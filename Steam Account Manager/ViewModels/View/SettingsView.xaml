@@ -1,0 +1,78 @@
+﻿<UserControl  x:Class="Steam_Account_Manager.ViewModels.View.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.View"
+             xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels"
+             xmlns:core="clr-namespace:Steam_Account_Manager.Infrastructure"
+             d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="600">
+    <UserControl.Resources>
+        <core:BoolInverterConverter x:Key="BoolInverterConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="43"/>
+            <RowDefinition Height="43"/>
+            <RowDefinition Height="43"/>
+            <RowDefinition Height="43"/>
+            <RowDefinition Height="43"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+        <!--Buttons-->
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <RadioButton Style="{StaticResource themeButton}"
+                         FontSize="14" Content="Dark" Margin="65 0 0 0"
+                         IsChecked="{Binding ThemeMode, Converter={StaticResource BoolInverterConverter}}"
+                         Cursor="Hand"/>
+            <RadioButton Style="{StaticResource themeButton}"
+                         FontSize="14" Content="Light" Margin="10 0 0 0"
+                         IsChecked="{Binding ThemeMode}"
+                         Cursor="Hand"/>
+
+        </StackPanel>
+  
+
+        <ToggleButton Grid.Row="3" Margin="225 0 0 0"
+                      Style="{StaticResource settingsButton}"
+                      IsChecked="{Binding AutoCloseMode}"
+                      >
+
+            
+        </ToggleButton>
+
+        <ToggleButton Grid.Row="4" Margin="315 0 0 0"
+                      IsChecked="{Binding NoConfirmMode}"
+                      Style="{StaticResource settingsButton}"/>
+        <ToggleButton Grid.Row="5" Margin="230 0 0 0"
+                      IsChecked="{Binding TakeAccountInfo}"
+                      Style="{StaticResource settingsButton}"/>
+        <Button Grid.Row="6" Width="200" Content="Save Changes" Cursor="Hand"
+                Command="{Binding SaveChangesCommand}"/>
+
+
+
+
+
+        <TextBlock Grid.Row="2" Text="Theme" Style="{StaticResource settingTextBlock}"/>
+
+        <TextBlock Grid.Row="3"  Text="Close the program after logging " Style="{StaticResource settingTextBlock}"/>
+
+        <TextBlock Grid.Row="4" Text="Disable confirmation when logging in account" Style="{StaticResource settingTextBlock}"/>
+
+        <TextBlock Grid.Row="5" Text="Collect account info when adding" Style="{StaticResource settingTextBlock}"/>
+
+        <TextBlock Grid.Row="1" Text="Settings" FontSize="30"  Foreground="#ffffff"
+                   Grid.Column="0" FontFamily="Cascadia Mono" />
+
+        <Rectangle Height="1" VerticalAlignment="Top" Grid.Row="1" Fill="#FF181B28" Margin="0,49,0,0"/>
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,184 @@
+﻿<Window x:Class="Steam_Account_Manager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels"
+        Height="550"
+        Width="860"
+        WindowStartupLocation="CenterScreen"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Background="Transparent"
+        Title="Steam Account Manager"
+        WindowState="{Binding MainWindowState}">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        
+        <Style x:Key="expandAreaStyle" TargetType="{x:Type Border}">
+            <Setter Property="Margin" Value="0 0 250 0"/>
+            <Style.Triggers>
+                <DataTrigger  Binding="{Binding IsVisible, ElementName=notification}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetProperty="Margin">
+                                <ThicknessAnimation To="0 0 0 0" Duration="0:0:0.3"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetProperty="Margin">
+                                <ThicknessAnimation To="0 0 250 0" Duration="0:0:0.3"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="30" Background="#232338" MouseDown="Border_MouseDown">
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--Left Menu-->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                
+
+
+                <!--Menu Icon-->
+                <Button Style="{StaticResource topButton}" HorizontalAlignment="Left" Margin="20 28 0 35">
+                    <Icon:PackIconMaterial Kind="Menu" Width="15" Height="15" />
+                </Button>
+                
+                
+               
+
+                <Border Grid.Row="1" Background="#433793" CornerRadius="0 50 0 30">
+                    <DockPanel>
+                        <!--Menu Logo-->
+                        <Border Width="100" Height="100" Padding="3" Background="#232338" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 -30 0 0">
+                            <Ellipse >
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="/Images/user.jpg"/>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                        </Border>
+
+                        <!--Menu Titles-->
+                        <TextBlock Text="Username" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalAccounts, StringFormat=Total accounts: {0}}"
+                                   Foreground="#D0BFFF" FontSize="14"
+                                   FontWeight="SemiBold" DockPanel.Dock="Top"
+                                   TextAlignment="Center"/>
+
+                        <!--Menu Seprator-->
+                        <Rectangle Fill="#b0b9c6" Margin="25" DockPanel.Dock="Top" Height="0.8"/>
+
+                        <!--Menu Buttons-->
+                        <StackPanel DockPanel.Dock="Top" >
+
+
+                            <RadioButton Style="{StaticResource menuButton}"
+                                         IsChecked="True" Cursor="Hand"
+                                         Command="{Binding AccountsViewCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="AccountMultipleOutline" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Accounts"/>
+                                </StackPanel>
+                            </RadioButton>
+
+                            <RadioButton Style="{StaticResource menuButton}"
+                                         Command="{Binding SettingsViewCommand}" Cursor="Hand"
+                                         >
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Cog" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Settings"/>
+                                </StackPanel>
+                            </RadioButton>
+                        </StackPanel>
+
+                        <Button Style="{StaticResource logoutButton}" VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Margin="15 0 15 20">
+                            <StackPanel Orientation="Horizontal">
+                                <Icon:PackIconMaterial Kind="Logout" Style="{StaticResource menuButtonIcon}"/>
+                                <TextBlock Text="Logout"/>
+                            </StackPanel>
+                        </Button>
+
+                    </DockPanel>
+                </Border>
+
+
+            </Grid>
+            
+            <!-- Notification Grid -->
+            <Grid Grid.Column="1"
+                  Width="250" Height="30" VerticalAlignment="Top" Margin="0 30 150 0">
+                <Border
+                    x:Name="notification"
+                    Height="30"
+                    Style="{DynamicResource expandAreaStyle}"
+                         VerticalAlignment="Top" 
+                         CornerRadius="10 10 10 10"
+                         Background="#7E5FDC" Opacity="0.85"
+                    Visibility="{Binding Path=NotificationVisible, Converter={StaticResource BoolToVis}}">
+
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="BellOutline"
+                                               VerticalAlignment="Center" Margin="15 0 0 0"
+                                               Foreground="White"/>
+                        <TextBlock Text="{Binding Path=NotifycationContent}" VerticalAlignment="Center" 
+                                   FontSize="11" Padding="15 0 0 0"
+                                   FontWeight="Regular" Foreground="White"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!--Main Section-->
+            <Grid Grid.Column="1" Margin="30,20,30,23">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" MinHeight="55"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+
+                <!--Service Buttons-->
+                <Button Style="{StaticResource serviceButton}"
+                        Command="{Binding CloseCommand}"
+                        Margin="570,-10,0,15" HorizontalAlignment="Right"
+                        Width="30">
+                    <Icon:PackIconMaterial Kind="WindowClose"
+                                           Height="20" Width="20"/>
+                </Button>
+
+                <Button Style="{StaticResource serviceButton}"
+                        Command="{Binding MinimizeCommand}"
+                        Margin="53,-10,35,15" HorizontalAlignment="Right"
+                        Width="30" >
+                    <Icon:PackIconMaterial Kind="WindowMinimize"
+                                           Height="6" Width="20"
+                                           Margin="0 12 0 0"/>
+                </Button>
+
+                <!--Page content-->
+                <ContentControl Grid.Row="1" 
+                        Content="{Binding CurrentView}"/>
+
+            </Grid>
+            
+        </Grid>
+    </Border>
+</Window>
