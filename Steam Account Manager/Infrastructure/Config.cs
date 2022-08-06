@@ -21,14 +21,16 @@ namespace Steam_Account_Manager.Infrastructure
             supportedThemes = new List<Themes>();
             supportedThemes.Add(Themes.Dark);
             supportedThemes.Add(Themes.Light);
+            supportedThemes.Add(Themes.Nebula);
             NoConfirmMode = TakeAccountInfo = AutoClose = false;
-            Theme = supportedThemes[0];
+            Theme = supportedThemes[2];
             SteamDirection = "";
         }
         public enum Themes
         {
             Dark = 0,
-            Light = 1
+            Light = 1,
+            Nebula = 2
         }
 
         public List<Account> accountsDB;
@@ -52,6 +54,9 @@ namespace Steam_Account_Manager.Infrastructure
                         break;
                     case Themes.Dark:
                         dict.Source = new Uri("Themes/ColorSchemes/Dark.xaml", UriKind.Relative);
+                        break;
+                    case Themes.Nebula:
+                        dict.Source = new Uri("Themes/ColorSchemes/Nebula.xaml", UriKind.Relative);
                         break;
                     default:
                         dict.Source = new Uri("Themes/ColorSchemes/Light.xaml", UriKind.Relative);

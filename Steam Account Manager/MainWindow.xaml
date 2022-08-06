@@ -68,10 +68,10 @@
 
 
 
-                <Border Grid.Row="1" Background="#433793" CornerRadius="0 50 0 30">
+                <Border Grid.Row="1" Background="{DynamicResource second_main_color}" CornerRadius="0 50 0 30">
                     <DockPanel>
                         <!--Menu Logo-->
-                        <Border Width="100" Height="100" Padding="3" Background="#232338" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 -30 0 0">
+                        <Border Width="100" Height="100" Padding="3" Background="{DynamicResource background_border_color}" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 -30 0 0">
                             <Ellipse >
                                 <Ellipse.Fill>
                                     <ImageBrush ImageSource="/Images/user.jpg"/>
@@ -82,7 +82,7 @@
                         <!--Menu Titles-->
                         <TextBlock Text="Username" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
                         <TextBlock Text="{Binding TotalAccounts, StringFormat=Total accounts: {0}}"
-                                   Foreground="#D0BFFF" FontSize="14"
+                                   Foreground="{DynamicResource menu_button_text}" FontSize="14"
                                    FontWeight="SemiBold" DockPanel.Dock="Top"
                                    TextAlignment="Center"/>
 
@@ -134,7 +134,7 @@
                     Style="{DynamicResource expandAreaStyle}"
                          VerticalAlignment="Top" 
                          CornerRadius="10 10 10 10"
-                         Background="#7E5FDC" Opacity="0.85"
+                         Background="{DynamicResource popup_border_background}" Opacity="0.85"
                     Visibility="{Binding Path=NotificationVisible, Converter={StaticResource BoolToVis}}">
 
                     <StackPanel Orientation="Horizontal">

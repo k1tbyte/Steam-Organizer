@@ -47,7 +47,6 @@ namespace Steam_Account_Manager.Infrastructure
             win.Close();
         }
 
-        public event EventHandler ClosingRequest;
 
     }
 }

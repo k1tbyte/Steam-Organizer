@@ -37,15 +37,15 @@
 
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#433793" />
-                        <Setter Property="Foreground" Value="#ffffff"/>
+                        <Setter Property="Background" Value="{DynamicResource second_main_color}"/>
+                        <Setter Property="Foreground" Value="White"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
 
             <Style x:Key="menuButton" TargetType="RadioButton">
                 <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="#D0C0FF" />
+                <Setter Property="Foreground" Value="{DynamicResource menu_button_text}" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                 <Setter Property="Height" Value="35" />
                 <Setter Property="Margin" Value="15 3" />
@@ -58,7 +58,7 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsChecked" Value="True">
-                                    <Setter Property="Background" Value="#7B5CD6"/>
+                                    <Setter Property="Background" Value="{DynamicResource menu_button_background}"/>
                                     <Setter Property="Foreground" Value="White"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
@@ -69,7 +69,7 @@
 
             <Style x:Key="logoutButton" TargetType="Button">
                 <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="#D0C0FF" />
+                <Setter Property="Foreground" Value="{DynamicResource menu_button_text}" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                 <Setter Property="Height" Value="35" />
                 <Setter Property="Margin" Value="15 3" />
@@ -82,7 +82,7 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#7B5CD6"/>
+                                    <Setter Property="Background" Value="{DynamicResource menu_button_background}"/>
                                     <Setter Property="Foreground" Value="White"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
@@ -93,7 +93,7 @@
 
             <Style x:Key="serviceButton" TargetType="Button">
                 <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="#b0b9c6" />
+                <Setter Property="Foreground" Value="{DynamicResource top_service_buttons}" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                 <Setter Property="Height" Value="30" />
                 <Setter Property="Cursor" Value="Hand"/>
@@ -141,7 +141,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ToggleButton">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}" >
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                         </ControlTemplate>
@@ -150,28 +150,30 @@
 
                 <Style.Triggers>
                     <Trigger Property="IsChecked" Value="true">
-                        <Setter Property="Background" Value="#433793"/>
+                        <Setter Property="Background" Value="{DynamicResource settings_buttons_isChecked}"/>
                         <Setter Property="Foreground" Value="#ffffff"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
                         <Setter Property="Content" Value="Enabled">
                         </Setter>
                     </Trigger>
                     <Trigger Property="IsChecked" Value="false">
-                        <Setter Property="Background" Value="#FF181B28"/>
-                        <Setter Property="Foreground" Value="#b0b9c6"/>
+                        <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
                         <Setter Property="Content" Value="Disabled"/>
                     </Trigger>
 
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#433793"/>
+                        <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
                         <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
                     </Trigger>
 
                 </Style.Triggers>
             </Style>
 
             <Style x:Key="addTextBox" TargetType="TextBox">
-                <Setter Property="Background" Value="#232338"/>
-                <Setter Property="Foreground" Value="#b0b9c6"/>
+                <Setter Property="Background" Value="{DynamicResource background_border_color}"/>
+                <Setter Property="Foreground" Value="{DynamicResource second_text_color}"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="BorderThickness" Value="0 0 0 0"/>
@@ -189,14 +191,14 @@
                 <Setter Property="BorderBrush" Value="#b0b9c6"/>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="BorderBrush" Value="#623ed0"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource settings_buttons_isMouseOver}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
 
             <Style x:Key="saveAccontButton" TargetType="Button">
-                <Setter Property="Background" Value="#FF181B28"/>
-                <Setter Property="Foreground" Value="#b0b9c6"/>
+                <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
+                <Setter Property="Foreground" Value="{DynamicResource main_text_color}"/>
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="Width" Value="80"/>
@@ -205,7 +207,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                         </ControlTemplate>
@@ -214,7 +216,7 @@
 
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#433793"/>
+                        <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
                         <Setter Property="Foreground" Value="White"/>
                     </Trigger>
 
@@ -222,7 +224,7 @@
             </Style>
 
             <Style x:Key="themeButton" TargetType="RadioButton">
-                <Setter Property="Background" Value="#FF181B28"/>
+                <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 <Setter Property="Width" Value="80"/>
@@ -232,7 +234,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="RadioButton">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}" >
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                         </ControlTemplate>
@@ -241,12 +243,13 @@
 
                 <Style.Triggers>
                     <Trigger Property="IsChecked" Value="true">
-                        <Setter Property="Background" Value="#433793"/>
+                        <Setter Property="Background" Value="{DynamicResource settings_buttons_isChecked}"/>
                         <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
                     </Trigger>
                     <Trigger Property="IsChecked" Value="false">
-                        <Setter Property="Background" Value="#FF181B28"/>
-                        <Setter Property="Foreground" Value="#b0b9c6"/>
+                        <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
                     </Trigger>
 
 
@@ -254,7 +257,7 @@
             </Style>
 
             <Style x:Key="settingTextBlock" TargetType="TextBlock">
-                <Setter Property="Foreground" Value="#b0b9c6"/>
+                <Setter Property="Foreground" Value="{DynamicResource first_settings_text}"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="FontSize" Value="14"/>
                 <Setter Property="FontWeight" Value="SemiBold"/>
@@ -264,7 +267,7 @@
             </Style>
 
             <Style x:Key="addButton" TargetType="Button">
-                <Setter Property="Background" Value="#FF181B28"/>
+                <Setter Property="Background" Value="{DynamicResource add_button_background}"/>
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 <Setter Property="Width" Value="150"/>
@@ -286,7 +289,7 @@
 
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="true">
-                        <Setter Property="Background" Value="#433793"/>
+                        <Setter Property="Background" Value="{DynamicResource add_button_isMouseOver}"/>
                         <Setter Property="Foreground" Value="White"/>
                     </Trigger>
                 </Style.Triggers>
@@ -320,20 +323,7 @@
 
 
 
-            <Style x:Key="loginButton" TargetType="Button">
-                <Setter Property="Width" Value="40"/>
-                <Setter Property="Height" Value="40"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Foreground" Value="#71D66F"/>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="SpringGreen"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
+
 
             <Style x:Key="gridEditButton" TargetType="Button">
                 <Setter Property="Background" Value="#512DA8" />
@@ -354,6 +344,32 @@
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter Property="Background" Value="#673AB7" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="loginButton" TargetType="Button" >
+                <Setter Property="Width" Value="40"/>
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="BorderThickness" Value="0 0 0 0"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Foreground" Value="#71D66F"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Template" >
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
+                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="SpringGreen"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -475,13 +491,13 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ScrollBar}">
                             <Grid>
-                                <Border x:Name="ThumbBorder" Grid.RowSpan="2" CornerRadius="5" Background="#FF181B28" />
+                                <Border x:Name="ThumbBorder" Grid.RowSpan="2" CornerRadius="5" Background="{DynamicResource first_main_color}" />
                                 <Track x:Name="PART_Track" Grid.Row="1" IsDirectionReversed="true">
                                     <Track.DecreaseRepeatButton>
                                         <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageUpCommand" />
                                     </Track.DecreaseRepeatButton>
                                     <Track.Thumb>
-                                        <Thumb x:Name="Thumb" Style="{StaticResource ScrollBarThumb}" Margin="1,0,1,0" Background="#433793"/>
+                                        <Thumb x:Name="Thumb" Style="{StaticResource ScrollBarThumb}" Margin="1,0,1,0" Background="{DynamicResource accounts_scroll_foreground}"/>
 
                                     </Track.Thumb>
                                     <Track.IncreaseRepeatButton>

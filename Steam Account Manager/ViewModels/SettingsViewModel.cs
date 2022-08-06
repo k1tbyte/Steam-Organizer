@@ -6,7 +6,7 @@ namespace Steam_Account_Manager.ViewModels
 {
     internal class SettingsViewModel : ObservableObject
     {
-        private bool _Theme_Key;
+        private bool[] _Theme_Key = new bool[] {true,false,false};
         private bool _AutoClose_Key;
         private bool _noConfirmMode_Key;
         private bool _TakeAccountInfo_Key;
@@ -21,7 +21,7 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public bool ThemeMode
+        public bool[] ThemeMode
         {
             get { return _Theme_Key; }
             set
@@ -54,14 +54,25 @@ namespace Steam_Account_Manager.ViewModels
         public SettingsViewModel()
         {
             Config config = Config.GetInstance();
-            if (config.Theme == Config.Themes.Light)
-                ThemeMode = true;
-            else if (config.Theme == Config.Themes.Dark)
-                ThemeMode = false;
+            for (int i = 0; i < 3; i++)
+                ThemeMode[i] = false;
+            if (config.Theme == Config.Themes.Dark)
+                ThemeMode[0] = true;
+            else if (config.Theme == Config.Themes.Light)
+                ThemeMode[1] = true;
+            else if (config.Theme == Config.Themes.Nebula)
+                ThemeMode[2] = true;
+
 
             SaveChangesCommand = new RelayCommand(o =>
             {
-                config.Theme = config.supportedThemes[Convert.ToInt32(ThemeMode)];
+                int i = 0;
+                for (; ; i++) 
+                    if (ThemeMode[i])
+                    {
+                        config.Theme = config.supportedThemes[Convert.ToInt32(i)];
+                        break;
+                    }
                 config.SaveChanges();
             });
         }

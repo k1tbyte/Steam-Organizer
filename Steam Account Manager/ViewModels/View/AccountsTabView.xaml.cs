@@ -2,7 +2,8 @@
 using System.Windows.Controls.Primitives;
 using System.Windows;
 using Steam_Account_Manager.ViewModels;
-
+using System.Windows.Media.Imaging;
+using System;
 
 namespace Steam_Account_Manager.ViewModels.View
 {
@@ -31,6 +32,12 @@ namespace Steam_Account_Manager.ViewModels.View
         {
             Popup.Visibility = Visibility.Collapsed;
             Popup.IsOpen = false;
+        }
+
+        private void SteamProfileImage_ImageFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            var uriSource = new Uri("/Images/default_steam_profile.png", UriKind.Relative);
+            SteamProfileImage.Source = new BitmapImage(uriSource);
         }
     }
 }

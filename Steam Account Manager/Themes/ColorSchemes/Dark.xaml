@@ -1,59 +1,40 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!--Scroll viewer-->
+    <!--Brushes-->
     <Brush x:Key="background_border_color">#232338</Brush>
-    <Brush x:Key="scroll_brush">#2F2F45</Brush>
-    <Brush x:Key="scroll_border_brush">#1CFFFFFF</Brush>
-    <!--Update button-->
-    <Brush x:Key="upd_background">#2F2F45</Brush>
-    <Brush x:Key="upd_foreground">#92929D</Brush>
-    <Brush x:Key="upd_border">#19FFFFFF</Brush>
-    <!--Edit checkbox-->
-    <Brush x:Key="edit_background">#2F2F45</Brush>
-    <Brush x:Key="edit_content">#92929D</Brush>
-    <Brush x:Key="edit_border">#19FFFFFF</Brush>
-    <!--Textbox and passwordbox-->
-    <Brush x:Key="text_n_pass">#2F2F45</Brush>
-    <Brush x:Key="text_n_pass_border">#19FFFFFF</Brush>
-    <Brush x:Key="text_n_pass_placeholder">#3FFFFFFF</Brush>
-    <Brush x:Key="text_n_pass_foreground">#FFFFFF</Brush>
-    <Brush x:Key="text_n_pass_showpass">#7FFFFFFF</Brush>
-    <!--Main window-->
-    <Brush x:Key="mw_logo_brush">#F5F5F5</Brush>
-    <Brush x:Key="mw_left_side_border">#2F2F45</Brush>
-    <Brush x:Key="mw_right_side_border">#16162A</Brush>
-    <Brush x:Key="mw_menu_radiobutton">#F5F5F5</Brush>
-    <Brush x:Key="mw_exit_n_minimize">#52526B</Brush>
-    <Brush x:Key="mw_accounts_update_background">#000000</Brush>
-    <Brush x:Key="mw_accounts_update_foreground">#FFFFFF</Brush>
-    <!--Account banner view-->
-    <Brush x:Key="abv_background">#2F2F45</Brush>
-    <Brush x:Key="abv_steam_nickname">#F5F5F5</Brush>
-    <Brush x:Key="abv_dad_button_background">#FFFFFF</Brush>
-    <Brush x:Key="abv_dad_button_lines">#4D4D4D</Brush>
-    <Brush x:Key="abv_steam_picture_border">#19FFFFFF</Brush>
-    <Brush x:Key="abv_vac_textblock">#2F2F45</Brush>
-    <Brush x:Key="abv_main_border">#0CFFFFFF</Brush>
-    <Brush x:Key="abv_account_id">#19FFFFFF</Brush>
-    <!--Add and edit account views-->
-    <Brush x:Key="add_n_edit_textblock">#F5F5F5</Brush>
-    <Brush x:Key="add_n_edit_cancel_background">#2F2F45</Brush>
-    <Brush x:Key="add_n_edit_cancel_foreground">#92929D</Brush>
-    <Brush x:Key="add_n_edit_cancel_border">#19FFFFFF</Brush>
-    <!--Settings view-->
-    <Brush x:Key="sv_textblock">#F5F5F5</Brush>
-    <Brush x:Key="sv_authors">#FFFFFF</Brush>
-    <!--PIN code-->
-    <Brush x:Key="pin_foreground">#FFFFFF</Brush>
-    <Brush x:Key="pin_background">#2F2F45</Brush>
-    <!--PIN code view-->
-    <Brush x:Key="pin_view_background">#16162A</Brush>
-    <Brush x:Key="pin_view_banner_exit_n_minimize">#D4D4D4</Brush>
-    <Brush x:Key="pin_view_banner_textblock">#F5F5F5</Brush>
-    <Color x:Key="pin_view_banner_shadow">#FFFFFF</Color>
-    <!--Custom message box-->
-    <Brush x:Key="cmb_background">#16162A</Brush>
-    <Brush x:Key="cmb_close">#D4D4D4</Brush>
-    <Brush x:Key="cmb_foreground">#F5F5F5</Brush>
-    <Color x:Key="cmb_shadow">#FFFFFF</Color>
+    <Brush x:Key="first_main_color">#FF181B28</Brush>
+    <Brush x:Key="second_main_color">#433793</Brush>
+    <Brush x:Key="top_service_buttons">#b0b9c6</Brush>
+    <Brush x:Key="searchbox">#FF181B28</Brush>
+    <Brush x:Key="main_text_color">#b0b9c6</Brush>
+    <Brush x:Key="second_text_color">#b0b9c6</Brush>
+    <Brush x:Key="account_tab_nickname">#E9E6E6</Brush>
+    <Brush x:Key="vac_border_text">#FF181B28</Brush>
+    <Brush x:Key="sub_accounttab_text">#7B5CD6</Brush>
+    <Brush x:Key="second_settings_text">white</Brush>
+    <Brush x:Key="first_settings_text">#b0b9c6</Brush>
+    <Brush x:Key="add_window_rectangle">#FF181B28</Brush>
+    <Brush x:Key="buttons_border_brush">#FF181B28</Brush>
+
+    <Brush x:Key="account_picture_border">#433793</Brush>
+
+    <Brush x:Key="settings_buttons_isMouseOver">#433793</Brush>
+    <Brush x:Key="settings_buttons_isChecked">#433793</Brush>
+    <Brush x:Key="settings_buttons_isUncheckedText">#b0b9c6</Brush>
+    <Brush x:Key="settings_rectangle">#FF181B28</Brush>
+    
+    
+    <Brush x:Key="add_button_background">#FF181B28</Brush>
+    <Brush x:Key="add_button_foreground">#b0b9c6</Brush>
+    <Brush x:Key="add_button_isMouseOver">#433793</Brush>
+
+    <Brush x:Key="menu_button_background">#7B5CD6</Brush>
+    <Brush x:Key="menu_button_text">#D0C0FF</Brush>
+
+    <Brush x:Key="popup_border_background">#7E5FDC</Brush>
+
+    <Brush x:Key="accounts_scroll_foreground">#433793</Brush>
+
+    <!--Colors -->
+    <Color x:Key="drop_shadow">black</Color>
 </ResourceDictionary>

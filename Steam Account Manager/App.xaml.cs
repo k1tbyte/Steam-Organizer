@@ -12,12 +12,9 @@ using Steam_Account_Manager.Infrastructure;
 
 namespace Steam_Account_Manager
 {
-    /// <summary>
-    /// Логика взаимодействия для App.xaml
-    /// </summary>
     public partial class App : Application
     {
-        static Mutex mutex = new Mutex(true, "Steam Connection OneAtATime");
+        static Mutex mutex = new Mutex(true, "Steam Account Manager OneAtATime");
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -26,10 +23,8 @@ namespace Steam_Account_Manager
                 Config config = Config.GetInstance();
 
                     MainWindow mainWindow = new MainWindow();
-                    mainWindow.Title = "Steam Connection";
                     mainWindow.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
                     mainWindow.Show();
-                
             }
             else
             {

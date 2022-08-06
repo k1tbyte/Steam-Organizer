@@ -5,13 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.View"
              xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels"
-             xmlns:converters="clr-namespace:Steam_Account_Manager.Converters"
              d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="600">
-    <UserControl.Resources>
-        <converters:BoolInverterConverter x:Key="BoolInverterConverter"/>
-    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -30,11 +26,15 @@
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <RadioButton Style="{StaticResource themeButton}"
                          FontSize="14" Content="Dark" Margin="65 0 0 0"
-                         IsChecked="{Binding ThemeMode, Converter={StaticResource BoolInverterConverter}}"
+                         IsChecked="{Binding ThemeMode[0]}"
                          Cursor="Hand"/>
             <RadioButton Style="{StaticResource themeButton}"
                          FontSize="14" Content="Light" Margin="10 0 0 0"
-                         IsChecked="{Binding ThemeMode}"
+                         IsChecked="{Binding ThemeMode[1]}"
+                         Cursor="Hand"/>
+            <RadioButton Style="{StaticResource themeButton}"
+                         FontSize="14" Content="Nebula" Margin="10 0 0 0"
+                         IsChecked="{Binding ThemeMode[2]}"
                          Cursor="Hand"/>
         </StackPanel>
 
@@ -68,10 +68,11 @@
 
         <TextBlock Grid.Row="5" Text="Collect account info when adding" Style="{StaticResource settingTextBlock}"/>
 
-        <TextBlock Grid.Row="1" Text="Settings" FontSize="30"  Foreground="#ffffff"
+        <TextBlock Grid.Row="1" Text="Settings" FontSize="30"  Foreground="{DynamicResource second_settings_text}"
                    Grid.Column="0" FontFamily="Cascadia Mono" />
 
-        <Rectangle Height="1" VerticalAlignment="Top" Grid.Row="1" Fill="#FF181B28" Margin="0,49,0,0"/>
+        <Rectangle Height="1" VerticalAlignment="Top" Grid.Row="1"
+                   Fill="{DynamicResource settings_rectangle}" Margin="0,49,0,0"/>
 
     </Grid>
 </UserControl>

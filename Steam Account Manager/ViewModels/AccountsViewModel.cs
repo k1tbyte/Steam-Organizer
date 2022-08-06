@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace Steam_Account_Manager.ViewModels
 {
+
     internal class AccountsViewModel : ObservableObject
     {
         public AsyncRelayCommand AddAccountViewOrUpdateCommand { get; set; }

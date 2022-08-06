@@ -18,8 +18,8 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
-    <Border CornerRadius="8" Background="#232338"  MouseDown="Border_MouseDown"
-            BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="#433793">
+    <Border CornerRadius="8" Background="{DynamicResource background_border_color}"  MouseDown="Border_MouseDown"
+            BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
         <Grid>
 
             <Grid.RowDefinitions>
@@ -35,7 +35,7 @@
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left" Margin="20 20" 
                        FontFamily="Cascadia Mono"
-                       Foreground="White"
+                       Foreground="{DynamicResource second_settings_text}"
                        Text="Account adding"
                        FontSize="20">
             </TextBlock>
@@ -44,14 +44,14 @@
                        VerticalAlignment="Bottom"
                        Grid.Row="0" Grid.ColumnSpan="2"
                        Margin="5"
-                       Fill="#FF181B28"
+                       Fill="{DynamicResource add_window_rectangle}"
                        Width="240"/>
 
             <Border Grid.Row="2" Style="{StaticResource borderAddTextBox}">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial Kind="Key"
                                            Height="34" Width="28"
-                                           Foreground="#b0b9c6"/>
+                                           Foreground="{DynamicResource second_text_color}"/>
                     <theme:MainPasswordBox Height="18.62"
                                            Password="{Binding SteamPassword, UpdateSourceTrigger=PropertyChanged}"
                                                Style="{StaticResource PasswordboxTheme}"/>
@@ -60,14 +60,14 @@
             <TextBlock Grid.Row="2" Text="Password" FontWeight="Thin"
                        Width="57" Height="20" HorizontalAlignment="Left"
                        FontSize="14"
-                       Foreground="#b0b9c6" Margin="20,-8,0,37" />
+                       Foreground="{DynamicResource second_text_color}" Margin="20,-8,0,37" />
 
             <Border Grid.Row="1" Style="{StaticResource borderAddTextBox}">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial Kind="AccountOutline"
                                            Height="22" Width="22"
                                            Margin="5 8 0 0"
-                                           Foreground="#b0b9c6"/>
+                                           Foreground="{DynamicResource second_text_color}"/>
                     <TextBox x:Name="Login" Style="{StaticResource addTextBox}"
                              Text="{Binding SteamLogin, UpdateSourceTrigger=PropertyChanged}"
                              Margin="6 0 0 0"/>
@@ -76,14 +76,14 @@
             <TextBlock Grid.Row="1" Text="Login" FontWeight="Thin"
                        Width="57" Height="20" HorizontalAlignment="Left"
                        FontSize="14"
-                       Foreground="#b0b9c6" Margin="20,-8,0,37" />
+                       Foreground="{DynamicResource second_text_color}" Margin="20,-8,0,37" />
 
             <Border Grid.Row="3" Style="{StaticResource borderAddTextBox}">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial Kind="Web"
                                            Height="22" Width="22"
                                            Margin="5 8 0 0"
-                                           Foreground="#b0b9c6"/>
+                                           Foreground="{DynamicResource second_text_color}"/>
                     <TextBox x:Name="SteamURL" Style="{StaticResource addTextBox}"
                              Text="{Binding SteamLink, UpdateSourceTrigger=PropertyChanged}"
                              Margin="6 0 0 0"/>
@@ -92,7 +92,7 @@
             <TextBlock Grid.Row="2" Text="Account URL" FontWeight="Thin"
                        Width="78" Height="20" HorizontalAlignment="Left"
                        FontSize="14"
-                       Foreground="#b0b9c6" Margin="20,65,0,45" Grid.RowSpan="2" />
+                       Foreground="{DynamicResource second_text_color}" Margin="20,65,0,45" Grid.RowSpan="2" />
 
 
             <!--Error Message TextBlock-->

@@ -23,17 +23,18 @@
         <!--Search Bar-->
         <Grid Width="440" HorizontalAlignment="Left" Grid.Row="0">
             <TextBlock Margin="20,0,45,0" VerticalAlignment="Center" Foreground="#b0b9c6" IsHitTestVisible="False"
+                       
                            Panel.ZIndex="1" Text="Search for accounts  .  .  ."
                           Visibility="{Binding ElementName=txtSearch, Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
-            <Border x:Name="border" Background="#FF181B28" CornerRadius="20">
+            <Border x:Name="border" Background="{DynamicResource searchbox}" CornerRadius="20">
                 <Border.Effect>
-                    <DropShadowEffect/>
+                    <DropShadowEffect Color="{DynamicResource drop_shadow}"/>
                 </Border.Effect>
             </Border>
 
             <TextBox x:Name="txtSearch" VerticalAlignment="Center"
                      Text="{Binding SearchBoxText, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="18,0,59,0" Background="#FF181B28" Foreground="#b0b9c6"
+                     Margin="18,0,59,0" Background="{DynamicResource searchbox}" Foreground="#b0b9c6"
                      BorderBrush="{x:Null}" BorderThickness="0,0,0,0" MaxLength="80"/>
 
 
@@ -48,13 +49,13 @@
                         HorizontalAlignment="Right"  Grid.Row="0"
                 Width="130" Height="44" Command="{Binding AddAccountWindowCommand}">
             <Button.Effect>
-                <DropShadowEffect/>
+                <DropShadowEffect Color="{DynamicResource drop_shadow}"/>
             </Button.Effect>
             <StackPanel Orientation="Horizontal">
                 <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center"
                                                Margin="0 1 8 0" Width="11"
-                                               Height="11" Foreground="#b0b9c6"/>
-                <TextBlock Text="Add"  Foreground="#b0b9c6"/>
+                                               Height="11" Foreground="{DynamicResource add_button_foreground}"/>
+                <TextBlock Text="Add"  Foreground="{DynamicResource add_button_foreground}"/>
             </StackPanel>
         </Button>
 
@@ -97,7 +98,7 @@
         <!--Confirmation-->
         <Border Margin="10 0 0 0" Grid.Row="2" VerticalAlignment="Bottom"
                 HorizontalAlignment="Left" x:Name="confirmBorder"
-                Width="320" Height="40" Background="#7E5FDC" Opacity="0.8"
+                Width="320" Height="40" Background="{DynamicResource popup_border_background}" Opacity="0.8"
                 CornerRadius="15" Visibility="{Binding ConfirmBanner, Converter={StaticResource BoolToVis}}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Are you sure you want to delete this account?" Foreground="White"

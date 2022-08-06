@@ -11,7 +11,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="50" d:DesignWidth="568">
     <Grid>
-        <Border Background="#FF181B28" CornerRadius="20">
+        <Border Background="{DynamicResource first_main_color}" CornerRadius="20">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
@@ -25,34 +25,47 @@
                 <TextBlock Text="#" HorizontalAlignment="Left"
                                Width="9" VerticalAlignment="Center"
                                FontSize="12" Margin="16 3 0 0"
-                               Foreground="#7B5CD6" FontWeight="Medium"/>
+                               Foreground="{DynamicResource sub_accounttab_text}" FontWeight="Medium"/>
                 <TextBlock Text="{Binding Id}" VerticalAlignment="Center" Margin="24 0 0 0"
-                               FontSize="13" FontWeight="Normal"  Foreground="#b0b9c6"/>
+                               FontSize="13" FontWeight="Normal"  Foreground="{DynamicResource main_text_color}"/>
 
                 <Border Grid.Column="1" CornerRadius="25"
-                        Background="#433793" Margin="3"
+                        Background="{DynamicResource account_picture_border}" Margin="3"
                         Cursor="Hand">
                     <Border.InputBindings>
                         <MouseBinding Command="{Binding OpenURLProfileCommand}" MouseAction="LeftClick" />
                     </Border.InputBindings>
-                    <Ellipse Height="42" Width="42">
-                        <Ellipse.Fill>
-                            <ImageBrush ImageSource="{Binding SteamPicture, UpdateSourceTrigger=PropertyChanged}"/>
-                        </Ellipse.Fill>
-                    </Ellipse>
+
+                    <WrapPanel Name ="container" Width="42" Height="42">
+                        <Image x:Name="SteamProfileImage" 
+                               Source="{Binding SteamPicture, UpdateSourceTrigger=PropertyChanged}"
+                               ImageFailed="SteamProfileImage_ImageFailed"
+                               VerticalAlignment="Center" 
+                               HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                        <WrapPanel.OpacityMask>
+                            <VisualBrush >
+                                <VisualBrush.Visual>
+                                    <Border Height="{Binding ElementName=container, Path=ActualHeight}" 
+                            Width="{Binding ElementName=container, Path=ActualWidth}"
+                            Background="White" CornerRadius="28"  />
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </WrapPanel.OpacityMask>
+                    </WrapPanel>
+
                 </Border>
 
                 <StackPanel Grid.Column="2" Margin="8 6 0 4" HorizontalAlignment="Left">
                     <TextBlock Text="{Binding SteamNickName}" HorizontalAlignment="Left"
                                FontSize="13" Width="200"
-                               Foreground="#E9E6E6" FontWeight="SemiBold"/>
+                               Foreground="{DynamicResource account_tab_nickname}" FontWeight="SemiBold"/>
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="ID:" HorizontalAlignment="Left"
                                Width="15" VerticalAlignment="Center"
                                FontSize="12"
-                               Foreground="#7B5CD6" FontWeight="Medium"/>
-                        <TextBox Background="#FF181B28" BorderThickness="0"
+                               Foreground="{DynamicResource sub_accounttab_text}" FontWeight="Medium"/>
+                        <TextBox Background="{DynamicResource first_main_color}" BorderThickness="0"
                             FontSize="12" FontWeight="Normal"  Foreground="#b0b9c6"
                                  Text="{Binding SteamID}" IsReadOnly="True" />
                     </StackPanel>
@@ -69,7 +82,7 @@
                             Width="50" Height="25" HorizontalAlignment="Left"
                         CornerRadius="12" MouseEnter="VacIndicator_MouseEnter"
                             MouseLeave="VacIndicator_MouseLeave">
-                        <TextBlock Text="VAC" Foreground="#FF181B28" VerticalAlignment="Center"
+                        <TextBlock Text="VAC" Foreground="{DynamicResource vac_border_text}" VerticalAlignment="Center"
                                HorizontalAlignment="Center" FontFamily="Cascadia Mono"
                                FontSize="18" FontWeight="UltraBold"/>
                         <Border.Style>
@@ -89,7 +102,7 @@
                     <TextBlock Text="LvL:" HorizontalAlignment="Left"
                                VerticalAlignment="Center"
                                FontSize="14" Margin="20 0 0 0"
-                               Foreground="#b0b9c6" FontWeight="Medium"/>
+                               Foreground="{DynamicResource main_text_color}" FontWeight="Medium"/>
                     <Grid>
                         <icon:PackIconMaterial Kind="CircleOutline"
                                        Grid.Column="3"
@@ -98,6 +111,7 @@
                                        Width="30"
                                        Height="30" Foreground="Cyan"/>
                         <TextBlock Text="{Binding SteamLevel}" FontSize="11" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource first_settings_text}"
                                    HorizontalAlignment="Center" Margin="6 0 0 0"
                                    FontFamily="Cascadia Mono" 
                                    TextAlignment="Center"/>
@@ -128,7 +142,7 @@
                         <icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
                     </Button>
 
-                    <Button Style="{StaticResource loginButton}">
+                    <Button Style="{StaticResource loginButton}" BorderBrush="Transparent">
                         <icon:PackIconMaterial x:Name="LoginIco" Kind="PlayCircleOutline"
                                                Height="30" Width="30" VerticalAlignment="Center"
                                                HorizontalAlignment="Center"
