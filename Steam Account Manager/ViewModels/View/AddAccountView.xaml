@@ -110,7 +110,7 @@
                         </Style.Triggers>
                     </Style>
                 </TextBlock.Style>
-                
+
             </TextBlock>
 
 
@@ -118,7 +118,7 @@
                     Command="{Binding AddAccountAsyncCommand}"
                     CommandParameter="{Binding ElementName=AddAccountWindow}"
                     Content="Save" Grid.Row="4"/>
-            
+
             <Button Grid.Column="1"  Style="{StaticResource serviceButton}"
                         Click="CloseEvent"
                         HorizontalAlignment="Right"

@@ -74,13 +74,13 @@
                                FontSize="18" FontWeight="UltraBold"/>
                         <Border.Style>
                             <Style TargetType="{x:Type Border}">
-                                <Setter Property="Background" Value="PaleGreen"/>
+                                <Setter Property="Background" Value="IndianRed"/>
                                 <Setter Property="BorderThickness" Value="1"/>
-                                <Setter Property="BorderBrush" Value="Green"/>
+                                <Setter Property="BorderBrush" Value="OrangeRed"/>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding VacCount, UpdateSourceTrigger=PropertyChanged}" Value="1">
-                                        <Setter Property="Background" Value="IndianRed"/>
-                                        <Setter Property="BorderBrush" Value="OrangeRed"/>
+                                    <DataTrigger Binding="{Binding VacCount, UpdateSourceTrigger=PropertyChanged}" Value="0">
+                                        <Setter Property="Background" Value="PaleGreen"/>
+                                        <Setter Property="BorderBrush" Value="Green"/> 
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -102,14 +102,14 @@
                                    FontFamily="Cascadia Mono" 
                                    TextAlignment="Center"/>
                     </Grid>
-                    
+
                 </StackPanel>
 
                 <Popup x:Name="Popup" Grid.Column="3" AllowsTransparency="True"
                        HorizontalOffset="0" VerticalOffset="10">
                     <style:MainPopup  x:Name="Header" Foreground="White"/>
                 </Popup>
-                
+
                 <Rectangle Height="35" Width="0.2" Grid.Column="3" Fill="White" HorizontalAlignment="Right">
                     <Rectangle.Effect>
                         <BlurEffect/>
@@ -127,14 +127,14 @@
                     <Button Style="{StaticResource gridEditButton}" HorizontalAlignment="Right" Margin="0 0 5 0">
                         <icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
                     </Button>
-                    
+
                     <Button Style="{StaticResource loginButton}">
                         <icon:PackIconMaterial x:Name="LoginIco" Kind="PlayCircleOutline"
                                                Height="30" Width="30" VerticalAlignment="Center"
                                                HorizontalAlignment="Center"
                                                />
                     </Button>
-                    
+
 
                 </StackPanel>
             </Grid>

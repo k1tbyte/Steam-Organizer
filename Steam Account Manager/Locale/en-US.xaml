@@ -1,8 +1,0 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:v="clr-namespace:System;assembly=mscorlib">
-   
-    <v:String x:Key="sv_on">Enabled</v:String>
-    <v:String x:Key="sv_off">Disabled</v:String>
-   
-</ResourceDictionary>

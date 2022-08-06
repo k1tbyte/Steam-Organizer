@@ -24,6 +24,5 @@ namespace Steam_Account_Manager.ViewModels.View
         {
             InitializeComponent();
         }
-
     }
 }

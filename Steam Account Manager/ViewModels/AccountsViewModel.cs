@@ -76,7 +76,7 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-       
+
         public string SearchBoxText
         {
             get { return _searchBoxText; }

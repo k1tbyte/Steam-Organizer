@@ -24,7 +24,7 @@ namespace Steam_Account_Manager.ViewModels.View
             InitializeComponent();
             DataContext = new AddAccountViewModel();
         }
-        
+
         private void CloseEvent(object sender, RoutedEventArgs e)
         {
             this.Close();

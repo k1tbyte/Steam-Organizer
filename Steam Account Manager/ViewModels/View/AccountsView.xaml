@@ -9,7 +9,6 @@
              d:DataContext="{d:DesignInstance Type=vm:AccountsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="600">
-        
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </UserControl.Resources>
@@ -58,7 +57,7 @@
                 <TextBlock Text="Add"  Foreground="#b0b9c6"/>
             </StackPanel>
         </Button>
-        
+
 
         <!--Members Data Grid-->
         <ScrollViewer VerticalScrollBarVisibility="Visible" 
@@ -108,7 +107,7 @@
                         Width="25" Height="25">
                     <Icon:PackIconMaterial Kind="Close" Foreground="White" VerticalAlignment="Center" Width="12" Height="12"/>
                 </Button>
-                
+
                 <Button Command="{Binding YesButtonCommand}" Margin="10 0 0 0" Style="{StaticResource confirmationYesButton}"
                         Width="25" Height="25">
                     <Icon:PackIconMaterial Kind="Check" Foreground="White" VerticalAlignment="Center"/>

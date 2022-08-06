@@ -5,12 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.View"
              xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels"
-             xmlns:core="clr-namespace:Steam_Account_Manager.Infrastructure"
+             xmlns:converters="clr-namespace:Steam_Account_Manager.Converters"
              d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="600">
     <UserControl.Resources>
-        <core:BoolInverterConverter x:Key="BoolInverterConverter"/>
+        <converters:BoolInverterConverter x:Key="BoolInverterConverter"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -36,16 +36,15 @@
                          FontSize="14" Content="Light" Margin="10 0 0 0"
                          IsChecked="{Binding ThemeMode}"
                          Cursor="Hand"/>
-
         </StackPanel>
-  
+
 
         <ToggleButton Grid.Row="3" Margin="225 0 0 0"
                       Style="{StaticResource settingsButton}"
                       IsChecked="{Binding AutoCloseMode}"
                       >
 
-            
+
         </ToggleButton>
 
         <ToggleButton Grid.Row="4" Margin="315 0 0 0"

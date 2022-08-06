@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using Steam_Account_Manager.ViewModels.View;
 using Steam_Account_Manager.Infrastructure;
 
 namespace Steam_Account_Manager.ViewModels
@@ -59,16 +58,10 @@ namespace Steam_Account_Manager.ViewModels
                 ThemeMode = true;
             else if (config.Theme == Config.Themes.Dark)
                 ThemeMode = false;
-            AutoCloseMode = config.AutoClose;
-            NoConfirmMode = config.NoConfirmMode;
-            TakeAccountInfo = config.TakeAccountInfo;
 
             SaveChangesCommand = new RelayCommand(o =>
             {
-                config.AutoClose = AutoCloseMode;
-                config.Theme = config.SupportedThemes[Convert.ToInt32(ThemeMode)];
-                config.TakeAccountInfo = TakeAccountInfo;
-                config.NoConfirmMode = NoConfirmMode;
+                config.Theme = config.supportedThemes[Convert.ToInt32(ThemeMode)];
                 config.SaveChanges();
             });
         }

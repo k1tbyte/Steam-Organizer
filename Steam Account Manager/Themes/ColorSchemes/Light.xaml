@@ -1,0 +1,59 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--Scroll viewer-->
+    <Brush x:Key="background_border_color">white</Brush>
+    <Brush x:Key="scroll_brush">#FFFFFF</Brush>
+    <Brush x:Key="scroll_border_brush">#3C000000</Brush>
+    <!--Update button-->
+    <Brush x:Key="upd_background">#FFFFFF</Brush>
+    <Brush x:Key="upd_foreground">#B0B0B0</Brush>
+    <Brush x:Key="upd_border">#19000000</Brush>
+    <!--Edit checkbox-->
+    <Brush x:Key="edit_background">#FFFFFF</Brush>
+    <Brush x:Key="edit_content">#7F000000</Brush>
+    <Brush x:Key="edit_border">#19000000</Brush>
+    <!--Textbox and passwordbox-->
+    <Brush x:Key="text_n_pass">#FFFFFF</Brush>
+    <Brush x:Key="text_n_pass_border">#19000000</Brush>
+    <Brush x:Key="text_n_pass_placeholder">#3F000000</Brush>
+    <Brush x:Key="text_n_pass_foreground">#000000</Brush>
+    <Brush x:Key="text_n_pass_showpass">#7F000000</Brush>
+    <!--Main window-->
+    <Brush x:Key="mw_logo_brush">#242731</Brush>
+    <Brush x:Key="mw_left_side_border">#FFFFFF</Brush>
+    <Brush x:Key="mw_right_side_border">#F5F5F5</Brush>
+    <Brush x:Key="mw_menu_radiobutton">#000000</Brush>
+    <Brush x:Key="mw_exit_n_minimize">#D4D4D4</Brush>
+    <Brush x:Key="mw_accounts_update_background">#FFFFFF</Brush>
+    <Brush x:Key="mw_accounts_update_foreground">#000000</Brush>
+    <!--Account banner view-->
+    <Brush x:Key="abv_background">#FFFFFF</Brush>
+    <Brush x:Key="abv_steam_nickname">#000000</Brush>
+    <Brush x:Key="abv_dad_button_background">#595959</Brush>
+    <Brush x:Key="abv_dad_button_lines">#FFFFFF</Brush>
+    <Brush x:Key="abv_steam_picture_border">#19000000</Brush>
+    <Brush x:Key="abv_vac_textblock">#FFFFFF</Brush>
+    <Brush x:Key="abv_main_border">#0C000000</Brush>
+    <Brush x:Key="abv_account_id">#19000000</Brush>
+    <!--Add and edit account views-->
+    <Brush x:Key="add_n_edit_textblock">#242731</Brush>
+    <Brush x:Key="add_n_edit_cancel_background">#FFFFFF</Brush>
+    <Brush x:Key="add_n_edit_cancel_foreground">#B0B0B0</Brush>
+    <Brush x:Key="add_n_edit_cancel_border">#19000000</Brush>
+    <!--Settings view-->
+    <Brush x:Key="sv_textblock">#242731</Brush>
+    <Brush x:Key="sv_authors">#000000</Brush>
+    <!--PIN code-->
+    <Brush x:Key="pin_foreground">#000000</Brush>
+    <Brush x:Key="pin_background">#FFFFFF</Brush>
+    <!--PIN code view-->
+    <Brush x:Key="pin_view_background">#F5F5F5</Brush>
+    <Brush x:Key="pin_view_banner_exit_n_minimize">#D4D4D4</Brush>
+    <Brush x:Key="pin_view_banner_textblock">#242731</Brush>
+    <Color x:Key="pin_view_banner_shadow">#000000</Color>
+    <!--Custom message box-->
+    <Brush x:Key="cmb_background">#F5F5F5</Brush>
+    <Brush x:Key="cmb_close">#D4D4D4</Brush>
+    <Brush x:Key="cmb_foreground">#242731</Brush>
+    <Color x:Key="cmb_shadow">#000000</Color>
+</ResourceDictionary>

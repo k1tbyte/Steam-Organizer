@@ -158,7 +158,7 @@ namespace Steam_Account_Manager.ViewModels
                 if (ErrorMessage == "")
                 {
                     ExecuteWindow(o);
-                    await Task.Run(() => NotificationView());
+                    Task.Run(() => NotificationView());
                     AccountsViewModel.FillAccountTabViews();
                 }
                 

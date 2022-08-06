@@ -1,4 +1,4 @@
-﻿<Window x:Class="Steam_Account_Manager.MainWindow"
+﻿<Window  x:Class="Steam_Account_Manager.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -11,13 +11,14 @@
         Background="Transparent"
         Title="Steam Account Manager"
         WindowState="{Binding MainWindowState}">
+
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
-        
+
         <Style x:Key="expandAreaStyle" TargetType="{x:Type Border}">
             <Setter Property="Margin" Value="0 0 250 0"/>
             <Style.Triggers>
@@ -41,7 +42,7 @@
         </Style>
     </Window.Resources>
 
-    <Border CornerRadius="30" Background="#232338" MouseDown="Border_MouseDown">
+    <Border CornerRadius="30" Background="{DynamicResource background_border_color}" MouseDown="Border_MouseDown">
         <Grid>
 
             <Grid.ColumnDefinitions>
@@ -55,17 +56,17 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                
-                
+
+
 
 
                 <!--Menu Icon-->
                 <Button Style="{StaticResource topButton}" HorizontalAlignment="Left" Margin="20 28 0 35">
                     <Icon:PackIconMaterial Kind="Menu" Width="15" Height="15" />
                 </Button>
-                
-                
-               
+
+
+
 
                 <Border Grid.Row="1" Background="#433793" CornerRadius="0 50 0 30">
                     <DockPanel>
@@ -123,7 +124,7 @@
 
 
             </Grid>
-            
+
             <!-- Notification Grid -->
             <Grid Grid.Column="1"
                   Width="250" Height="30" VerticalAlignment="Top" Margin="0 30 150 0">
@@ -178,7 +179,7 @@
                         Content="{Binding CurrentView}"/>
 
             </Grid>
-            
+
         </Grid>
     </Border>
 </Window>

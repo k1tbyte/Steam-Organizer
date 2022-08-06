@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using Steam_Account_Manager.Infrastructure.Base;
 using FuzzySharp;
+using System.Linq;
 
 namespace Steam_Account_Manager.Infrastructure
 {
@@ -17,40 +18,62 @@ namespace Steam_Account_Manager.Infrastructure
         private Config()
         {
             this.accountsDB = new List<Account>();
-            SupportedThemes = new List<Themes>();
-            SupportedThemes.Add(Themes.Dark);
-            SupportedThemes.Add(Themes.Light);
+            supportedThemes = new List<Themes>();
+            supportedThemes.Add(Themes.Dark);
+            supportedThemes.Add(Themes.Light);
             NoConfirmMode = TakeAccountInfo = AutoClose = false;
-            Theme = SupportedThemes[0];
+            Theme = supportedThemes[0];
             SteamDirection = "";
         }
         public enum Themes
         {
-            Dark,
-            Light
+            Dark = 0,
+            Light = 1
         }
 
         public List<Account> accountsDB;
         public string SteamDirection { get; set; }
-        public List<Themes> SupportedThemes { get; set; }
-        
+        public List<Themes> supportedThemes { get; set; }
         private Themes _theme;
-
-        //сюда добавляем темы
         public Themes Theme
         {
-            get { return _theme; }
-            set 
+            get
+            {
+                return _theme;
+            }
+            set
             {
                 _theme = value;
+                ResourceDictionary dict = new ResourceDictionary();
                 switch (value)
                 {
-                    case Themes.Dark: break;
-                    case Themes.Light: break;
-                    default:  break;
+                    case Themes.Light:
+                        dict.Source = new Uri("Themes/ColorSchemes/Light.xaml", UriKind.Relative);
+                        break;
+                    case Themes.Dark:
+                        dict.Source = new Uri("Themes/ColorSchemes/Dark.xaml", UriKind.Relative);
+                        break;
+                    default:
+                        dict.Source = new Uri("Themes/ColorSchemes/Light.xaml", UriKind.Relative);
+                        break;
+                }
+                ResourceDictionary oldDict = (from d in Application.Current.Resources.MergedDictionaries
+                                              where d.Source != null && d.Source.OriginalString.StartsWith("Themes/ColorSchemes/")
+                                              select d).First();
+                if (oldDict != null)
+                {
+                    int ind = Application.Current.Resources.MergedDictionaries.IndexOf(oldDict);
+                    Application.Current.Resources.MergedDictionaries.Remove(oldDict);
+                    Application.Current.Resources.MergedDictionaries.Insert(ind, dict);
+                }
+                else
+                {
+                    Application.Current.Resources.MergedDictionaries.Add(dict);
                 }
             }
         }
+
+
 
         public bool NoConfirmMode;
         public bool TakeAccountInfo;
@@ -91,7 +114,7 @@ namespace Steam_Account_Manager.Infrastructure
 
         public static Config GetInstance()
         {
-            if(config == null)
+            if (config == null)
             {
                 if (File.Exists("config.dat"))
                 {
@@ -120,7 +143,7 @@ namespace Steam_Account_Manager.Infrastructure
             object obj = binForm.Deserialize(inputStream);
             return obj;
         }
-        private static CryptoStream createEncryptionStream(byte[] key,Stream outputStream)
+        private static CryptoStream createEncryptionStream(byte[] key, Stream outputStream)
         {
             byte[] iv = new byte[ivSize];
             using (var rng = new RNGCryptoServiceProvider()) rng.GetNonZeroBytes(iv);
@@ -128,7 +151,7 @@ namespace Steam_Account_Manager.Infrastructure
             outputStream.Write(iv, 0, iv.Length);
             Rijndael rijndael = new RijndaelManaged();
             rijndael.KeySize = keySize;
-            CryptoStream encryptor = new CryptoStream(outputStream,rijndael.CreateEncryptor(key, iv),CryptoStreamMode.Write);
+            CryptoStream encryptor = new CryptoStream(outputStream, rijndael.CreateEncryptor(key, iv), CryptoStreamMode.Write);
             return encryptor;
         }
         public static CryptoStream CreateDecryptionStream(byte[] key, Stream inputStream)

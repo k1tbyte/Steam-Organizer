@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace Steam_Account_Manager.Infrastructure
+namespace Steam_Account_Manager.Converters
 {
     public class BoolInverterConverter : IValueConverter
     {
