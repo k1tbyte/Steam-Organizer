@@ -16,8 +16,8 @@ namespace Steam_Account_Manager.ViewModels
         public static RelayCommand SettingsViewCommand { get; set; }
 
 
-        public AccountsViewModel AccountsVM;
-        public SettingsViewModel SettingsVM;
+        public AccountsViewModel AccountsVm;
+        public SettingsViewModel SettingsVm;
 
         public static event EventHandler TotalAccountsChanged;
         private static int _totalAccounts;
@@ -43,39 +43,39 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public static event EventHandler NotifycationContentChanged;
-        private static string _notifycationContent;
-        public static string NotifycationContent
+        public static event EventHandler NotificationContentChanged;
+        private static string _notificationContent;
+        public static string NotificationContent
         {
-            get { return _notifycationContent; }
+            get { return _notificationContent; }
             set
             {
-                _notifycationContent = value;
-                NotifycationContentChanged?.Invoke(null, EventArgs.Empty);
+                _notificationContent = value;
+                NotificationContentChanged?.Invoke(null, EventArgs.Empty);
             }
         }
 
 
-        private object _CurrentView;
+        private object _currentView;
         public object CurrentView
         {
-            get { return _CurrentView; }
+            get { return _currentView; }
             set
             {
-                _CurrentView = value;
+                _currentView = value;
                 OnPropertyChanged();
             }
         }
 
 
-        private WindowState _MainWindowState;
+        private WindowState _mainWindowState;
 
         public WindowState MainWindowState
         {
-            get { return _MainWindowState; }
+            get { return _mainWindowState; }
             set
             {
-                _MainWindowState = value;
+                _mainWindowState = value;
                 base.OnPropertyChanged("MainWindowState");
             }
         }
@@ -96,19 +96,19 @@ namespace Steam_Account_Manager.ViewModels
 
         public MainWindowViewModel()
         {
-            AccountsVM = new AccountsViewModel();
-            SettingsVM = new SettingsViewModel();
+            AccountsVm = new AccountsViewModel();
+            SettingsVm = new SettingsViewModel();
 
-            CurrentView = AccountsVM;
+            CurrentView = AccountsVm;
 
             AccountsViewCommand = new RelayCommand(o =>
             {
-                CurrentView = AccountsVM;
+                CurrentView = AccountsVm;
             });
 
             SettingsViewCommand = new RelayCommand(o =>
             {
-                CurrentView = SettingsVM;
+                CurrentView = SettingsVm;
             });
 
             CloseCommand = new RelayCommand(o =>

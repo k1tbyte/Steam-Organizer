@@ -12,12 +12,12 @@ namespace Steam_Account_Manager.ViewModels.View
     /// </summary>
     public partial class AccountTabView : UserControl
     {
-        private AccountTabViewModel currentViewModel;
+        private AccountTabViewModel _currentViewModel;
         public AccountTabView(int id)
         {
             InitializeComponent();
-            currentViewModel = new AccountTabViewModel(id);
-            this.DataContext = currentViewModel;
+            _currentViewModel = new AccountTabViewModel(id);
+            this.DataContext = _currentViewModel;
         }
 
         private void VacIndicator_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -25,7 +25,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = VacIndicator;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Vac count: " + currentViewModel.VacCount.ToString();
+            Header.PopupText.Text = "Vac count: " + _currentViewModel.VacCount.ToString();
         }
 
         private void VacIndicator_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)

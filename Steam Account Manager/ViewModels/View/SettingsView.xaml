@@ -17,62 +17,71 @@
             <RowDefinition Height="43"/>
             <RowDefinition Height="43"/>
             <RowDefinition Height="43"/>
+            <RowDefinition Height="43"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
 
-        <!--Buttons-->
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <RadioButton Style="{StaticResource themeButton}"
-                         FontSize="14" Content="Dark" Margin="65 0 0 0"
-                         IsChecked="{Binding ThemeMode[0]}"
-                         Cursor="Hand"/>
-            <RadioButton Style="{StaticResource themeButton}"
-                         FontSize="14" Content="Light" Margin="10 0 0 0"
-                         IsChecked="{Binding ThemeMode[1]}"
-                         Cursor="Hand"/>
-            <RadioButton Style="{StaticResource themeButton}"
-                         FontSize="14" Content="Nebula" Margin="10 0 0 0"
-                         IsChecked="{Binding ThemeMode[2]}"
-                         Cursor="Hand"/>
-        </StackPanel>
-
-
-        <ToggleButton Grid.Row="3" Margin="225 0 0 0"
-                      Style="{StaticResource settingsButton}"
-                      IsChecked="{Binding AutoCloseMode}"
-                      >
-
-
-        </ToggleButton>
-
-        <ToggleButton Grid.Row="4" Margin="315 0 0 0"
-                      IsChecked="{Binding NoConfirmMode}"
-                      Style="{StaticResource settingsButton}"/>
-        <ToggleButton Grid.Row="5" Margin="230 0 0 0"
-                      IsChecked="{Binding TakeAccountInfo}"
-                      Style="{StaticResource settingsButton}"/>
-        <Button Grid.Row="6" Width="200" Content="Save Changes" Cursor="Hand"
-                Command="{Binding SaveChangesCommand}"/>
-
-
-
-
-
-        <TextBlock Grid.Row="2" Text="Theme" Style="{StaticResource settingTextBlock}"/>
-
-        <TextBlock Grid.Row="3"  Text="Close the program after logging " Style="{StaticResource settingTextBlock}"/>
-
-        <TextBlock Grid.Row="4" Text="Disable confirmation when logging in account" Style="{StaticResource settingTextBlock}"/>
-
-        <TextBlock Grid.Row="5" Text="Collect account info when adding" Style="{StaticResource settingTextBlock}"/>
-
-        <TextBlock Grid.Row="1" Text="Settings" FontSize="30"  Foreground="{DynamicResource second_settings_text}"
+        <!--Header-->
+        <TextBlock Grid.Row="1" Text="{DynamicResource sv_settings_title}" FontSize="30"  Foreground="{DynamicResource second_settings_text}"
                    Grid.Column="0" FontFamily="Cascadia Mono" />
 
         <Rectangle Height="1" VerticalAlignment="Top" Grid.Row="1"
                    Fill="{DynamicResource settings_rectangle}" Margin="0,49,0,0"/>
 
+
+        <!--Themes panel-->
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <TextBlock Grid.Row="2" Text="{DynamicResource sv_theme}" Style="{StaticResource settingTextBlock}"/>
+            <RadioButton Style="{StaticResource themeButton}"
+                         Content="/Images/dark_preview.png"
+                         IsChecked="{Binding ThemeMode[0]}"/>
+            
+            <RadioButton Style="{StaticResource themeButton}"
+ Content="/Images/light_preview.png"
+                         IsChecked="{Binding ThemeMode[1]}"/>
+
+            <RadioButton Style="{StaticResource themeButton}"
+                         Content="/Images/nebula_preview.png"
+                         IsChecked="{Binding ThemeMode[2]}">
+            </RadioButton>
+        </StackPanel>
+        
+        <!--Language panel-->
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <TextBlock Text="{DynamicResource sv_language}" Style="{StaticResource settingTextBlock}"/>
+            <RadioButton Style="{StaticResource languageButton}"          
+                         IsChecked="{Binding LocaleMode[0]}"
+                         Content="/Images/Countries_flags/United_Kingdom.png"/>
+            <RadioButton Style="{StaticResource languageButton}"
+                         IsChecked="{Binding LocaleMode[1]}"
+                          Content="/Images/Countries_flags/Russia.png"/>
+            <RadioButton Style="{StaticResource languageButton}"
+                         IsChecked="{Binding LocaleMode[2]}"
+                          Content="/Images/Countries_flags/Ukraine.png"/>
+        </StackPanel>
+
+        <!--Close after logging panel-->
+        <StackPanel Grid.Row="4" Orientation="Horizontal">
+            <TextBlock Text="{DynamicResource sv_close_after_logging}" 
+                       Style="{StaticResource settingTextBlock}"/>
+            <ToggleButton Style="{StaticResource settingsButton}"
+                          IsChecked="{Binding AutoCloseMode}"/>
+        </StackPanel>
+        
+        <!--Disable confirm when del acc-->
+        <StackPanel Grid.Row="5" Orientation="Horizontal">
+            <TextBlock Grid.Row="5" Text="{DynamicResource sv_confirm_when_del}" Style="{StaticResource settingTextBlock}"/>
+            <ToggleButton IsChecked="{Binding NoConfirmMode}"
+                          Style="{StaticResource settingsButton}"/>
+        </StackPanel>
+
+
+
+
+
+        <Button Grid.Row="7" Width="200" Content="{DynamicResource sv_save_changes}" Cursor="Hand"
+                Command="{Binding SaveChangesCommand}"/>
     </Grid>
 </UserControl>

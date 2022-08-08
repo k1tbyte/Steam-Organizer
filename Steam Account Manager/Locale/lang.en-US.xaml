@@ -1,81 +1,51 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:v="clr-namespace:System;assembly=mscorlib">
-    <!-- Main window -->
-    <v:String x:Key="mw_menu_accounts">Accounts</v:String>
-    <v:String x:Key="mw_menu_settings">Settings</v:String>
-    <v:String x:Key="mw_donation_banner_title">Support the author</v:String>
-    <v:String x:Key="mw_donation_banner_description">For coffee at McDonald's or a new skin in cs...</v:String>
-    <v:String x:Key="mw_accounts_update">Accounts updating</v:String>
-    <v:String x:Key="mw_account_adding">Account adding</v:String>
-    <v:String x:Key="mw_account_editing">Account editing</v:String>
-    <v:String x:Key="mw_account_steam_data">Getting Steam Data</v:String>
-    <v:String x:Key="mw_account_dota2_data">Getting Dota 2 Data</v:String>
-    <v:String x:Key="mw_account_csgo_data">Getting CS:GO Data</v:String>
-
-    <!-- Accounts view -->
-    <v:String x:Key="av_search_box_placeholder">Find account</v:String>
-    <v:String x:Key="av_add_account">Add account</v:String>
-    <v:String x:Key="av_update_accounts">Update the data</v:String>
-    <v:String x:Key="av_login_in_banner_description">Are you sure that you want to log in to account: </v:String>
-    <v:String x:Key="av_login_in_banner_yes">Yes</v:String>
-    <v:String x:Key="av_login_in_banner_no">No</v:String>
-
-    <!-- Add account view -->
-    <v:String x:Key="aav_title">New account</v:String>
-    <v:String x:Key="aav_steamlink">Steam link</v:String>
-    <v:String x:Key="aav_login">Login</v:String>
-    <v:String x:Key="aav_password">Password</v:String>
-    <v:String x:Key="aav_add_account">Add account</v:String>
-    <v:String x:Key="aav_cancel">Сancel</v:String>
-    <v:String x:Key="aav_banner_description_1">All your data from the account is stored on your computer.</v:String>
-    <v:String x:Key="aav_banner_description_2">Open source code will help to make sure that the project is honest.</v:String>
-
-    <!-- Edit account view -->
-    <v:String x:Key="eav_title">Editing account</v:String>
-    <v:String x:Key="eav_steamlink">Steam link</v:String>
-    <v:String x:Key="eav_login">Login</v:String>
-    <v:String x:Key="eav_password">Password</v:String>
-    <v:String x:Key="eav_save">Save</v:String>
-    <v:String x:Key="eav_cancel">Cancel</v:String>
-    <v:String x:Key="eav_banner_description_1">All your data from the account is stored on your computer.</v:String>
-    <v:String x:Key="eav_banner_description_2">Open source code will help to make sure that the project is honest.</v:String>
-
+    
     <!-- Settings view -->
-    <v:String x:Key="sv_title">Settings</v:String>
-    <v:String x:Key="sv_steam_directory">Steam directory</v:String>
-    <v:String x:Key="sv_language">Language</v:String>
+    <v:String x:Key="sv_settings_title">Settings</v:String>
     <v:String x:Key="sv_theme">Theme</v:String>
-    <v:String x:Key="sv_theme_light">Light</v:String>
-    <v:String x:Key="sv_theme_dark">Dark</v:String>
-    <v:String x:Key="sv_vac">Displaying the VAC status</v:String>
-    <v:String x:Key="sv_dota">Displaying Dota 2 ranks</v:String>
-    <v:String x:Key="sv_csgo">Displaying CS:GO ranks</v:String>
-    <v:String x:Key="sv_close">Close the program after logging in to your account</v:String>
-    <v:String x:Key="sv_pin_code">PIN code for the program</v:String>
-    <v:String x:Key="sv_pin_code_set">Change the PIN code</v:String>
-    <v:String x:Key="sv_save">Save</v:String>
+    <v:String x:Key="sv_language">Language</v:String>
+    <v:String x:Key="sv_close_after_logging">Close the program after logging</v:String>
+    <v:String x:Key="sv_confirm_when_del">Delete accounts without confirmation</v:String>
+    <v:String x:Key="sv_save_changes">Save changes</v:String>
     <v:String x:Key="sv_on">Enabled</v:String>
     <v:String x:Key="sv_off">Disabled</v:String>
-    <v:String x:Key="sv_non_confirmation">Disable confirmation when logging in to your account</v:String>
-    <v:String x:Key="sv_remember_password">Remember password</v:String>
+    
 
-    <!-- Pin code window -->
-    <v:String x:Key="pcw_enter_pin_code">Enter the PIN code</v:String>
-    <v:String x:Key="pcw_forgot_pin_code">Forgot your PIN code?</v:String>
-    <v:String x:Key="pcw_banner_description">You can reset the PIN code to restore access to the program, but all previously entered accounts will be deleted.</v:String>
-    <v:String x:Key="pcw_reset_pin_code">Reset PIN code</v:String>
+    <!-- Main view-->
+    <v:String x:Key="mv_total_accounts">Total accounts:</v:String>
+    <v:String x:Key="mv_accounts_title">Accounts</v:String>
+    <v:String x:Key="mv_settings_title">Settings</v:String>
+    <v:String x:Key="mv_logout_title">Logout</v:String>
+    <v:String x:Key="mv_account_added_notification">New account added!</v:String>
+    
 
-    <!-- Error messages -->
-    <v:String x:Key="error_invalid_steam_directory">Invalid steam directory.</v:String>
-    <v:String x:Key="error_empty_pin">Fill in the PIN code.</v:String>
-    <v:String x:Key="error_invalid_pin">Invalid PIN code.</v:String>
-    <v:String x:Key="error_invalid_steamlink">Invalid link to the steam account.</v:String>
-    <v:String x:Key="error_empty_login">The login field is empty.</v:String>
-    <v:String x:Key="error_invalid_login">Invalid login field.</v:String>
-    <v:String x:Key="error_empty_password">The password field is empty.</v:String>
+    <!-- Accounts View-->
+    <v:String x:Key="av_searchbar_title">Search for accounts  .  .  .</v:String>
+    <v:String x:Key="av_addbutton_title">Add</v:String>
+    <v:String x:Key="av_confirmation_delete">Are you sure you want to delete this account?</v:String>
+    
 
-    <!-- Message box -->
-    <v:String x:Key="mb_empty_steam_directory">Please fill in the "Steam Directory" field in the application settings.</v:String>
-    <v:String x:Key="mb_no_internet_connection">There is no internet connection, some functions may not work.</v:String>
+    <!-- Account add view-->
+    <v:String x:Key="adv_header_title">Account adding</v:String>
+    <v:String x:Key="adv_login">Login</v:String>
+    <v:String x:Key="adv_password">Password</v:String>
+    <v:String x:Key="adv_account_URL">Account URL</v:String>
+    <v:String x:Key="adv_save">Save</v:String>
+    
+    <v:String x:Key="adv_error_invalid_link">Invalid steam profile link!</v:String>
+    <v:String x:Key="adv_error_login_empty">The login field is empty!</v:String>
+    <v:String x:Key="adv_error_login_contain_spaces">Login cannot contain spaces!</v:String>
+    <v:String x:Key="adv_error_login_shortage">The minimum login length is 3 characters!</v:String>
+    <v:String x:Key="adv_error_login_overflow">The maximum login length is 20 characters!</v:String>
+    <v:String x:Key="adv_error_pass_empty">The password field is empty!</v:String>
+    <v:String x:Key="adv_error_pass_shortage">The minimum password length is 8 characters!</v:String>
+    <v:String x:Key="adv_error_pass_overflow">The maximum password length is 50 characters!</v:String>
+
+    <v:String x:Key="adv_info_connection_check">Network check in progress...</v:String>
+    <v:String x:Key="adv_info_collect_data">Gathering account information...</v:String>
+
+
+
 </ResourceDictionary>

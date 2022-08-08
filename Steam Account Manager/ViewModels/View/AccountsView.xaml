@@ -1,16 +1,15 @@
 ﻿<UserControl x:Class="Steam_Account_Manager.ViewModels.View.AccountsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels"
-             xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.View"
+             xmlns:Mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:D="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:Vm="clr-namespace:Steam_Account_Manager.ViewModels"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             d:DataContext="{d:DesignInstance Type=vm:AccountsViewModel}"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="600">
+             D:DataContext="{D:DesignInstance Type=Vm:AccountsViewModel}"
+             Mc:Ignorable="D"
+             D:DesignHeight="450" D:DesignWidth="600">
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <BooleanToVisibilityConverter x:Key="boolToVis" />
     </UserControl.Resources>
 
     <Grid>
@@ -23,9 +22,8 @@
         <!--Search Bar-->
         <Grid Width="440" HorizontalAlignment="Left" Grid.Row="0">
             <TextBlock Margin="20,0,45,0" VerticalAlignment="Center" Foreground="#b0b9c6" IsHitTestVisible="False"
-                       
-                           Panel.ZIndex="1" Text="Search for accounts  .  .  ."
-                          Visibility="{Binding ElementName=txtSearch, Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
+                           Panel.ZIndex="1" Text="{DynamicResource av_searchbar_title}"
+                          Visibility="{Binding ElementName=txtSearch, Path=Text.IsEmpty,Converter={StaticResource boolToVis}}"/>
             <Border x:Name="border" Background="{DynamicResource searchbox}" CornerRadius="20">
                 <Border.Effect>
                     <DropShadowEffect Color="{DynamicResource drop_shadow}"/>
@@ -45,8 +43,8 @@
         </Grid>
 
         <!--Add Button-->
-        <Button Style="{StaticResource addButton}" Name="BtnAdd"
-                        HorizontalAlignment="Right"  Grid.Row="0"
+        <Button Style="{StaticResource addButton}" Name="btnAdd"
+                         Grid.Row="0"
                 Width="130" Height="44" Command="{Binding AddAccountWindowCommand}">
             <Button.Effect>
                 <DropShadowEffect Color="{DynamicResource drop_shadow}"/>
@@ -55,15 +53,15 @@
                 <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center"
                                                Margin="0 1 8 0" Width="11"
                                                Height="11" Foreground="{DynamicResource add_button_foreground}"/>
-                <TextBlock Text="Add"  Foreground="{DynamicResource add_button_foreground}"/>
+                <TextBlock Text="{DynamicResource av_addbutton_title}"  Foreground="{DynamicResource add_button_foreground}"/>
             </StackPanel>
         </Button>
 
 
         <!--Members Data Grid-->
         <ScrollViewer VerticalScrollBarVisibility="Visible" 
-                      Grid.Row="3" HorizontalAlignment="Left"
-                      x:Name="ScrollViewer" >
+                      Grid.Row="2" HorizontalAlignment="Left"
+                      x:Name="scrollViewer" >
             <ListBox ItemsSource="{Binding Path=AccountTabViews}"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.CanContentScroll="True"
@@ -99,9 +97,9 @@
         <Border Margin="10 0 0 0" Grid.Row="2" VerticalAlignment="Bottom"
                 HorizontalAlignment="Left" x:Name="confirmBorder"
                 Width="320" Height="40" Background="{DynamicResource popup_border_background}" Opacity="0.8"
-                CornerRadius="15" Visibility="{Binding ConfirmBanner, Converter={StaticResource BoolToVis}}">
+                CornerRadius="15" Visibility="{Binding ConfirmBanner, Converter={StaticResource boolToVis}}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Are you sure you want to delete this account?" Foreground="White"
+                <TextBlock Text="{DynamicResource av_confirmation_delete}" Foreground="White"
                        FontWeight="Normal" VerticalAlignment="Center"
                        Margin="15 0 0 0" FontSize="11"/>
                 <Button Command="{Binding NoButtonCommand}" Margin="10 0 0 0" Style="{StaticResource confirmationNoButton}"

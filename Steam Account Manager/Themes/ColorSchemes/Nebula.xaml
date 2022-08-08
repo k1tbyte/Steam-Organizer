@@ -1,23 +1,43 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!--Brushes-->
-    <Brush x:Key="background_border_color">#131725</Brush>
 
+    <!--Brushes-->
+
+
+    <!-- Main window colors -->
+    <Brush x:Key="background_border_color">#131725</Brush>
     <Brush x:Key="first_main_color">#1f2b3a</Brush> 
     <Brush x:Key="second_main_color">#1d2335</Brush>
-
     <Brush x:Key="top_service_buttons">#778d9f</Brush>
-    <Brush x:Key="searchbox">#1f2b3a</Brush>
     <Brush x:Key="main_text_color">white</Brush>
     <Brush x:Key="second_text_color">#778d9f</Brush>
+    <Brush x:Key="menu_button_background">#2F4961</Brush>
+    <Brush x:Key="menu_button_text">#b0b9c6</Brush>
 
+
+    <!-- Accounts view -->
+    <Brush x:Key="searchbox">#1f2b3a</Brush>
+    <Brush x:Key="add_button_background">#1f2b3a</Brush>
+    <Brush x:Key="add_button_foreground">#b0b9c6</Brush>
+    <Brush x:Key="add_button_isMouseOver">#2F4961</Brush>
+    <Brush x:Key="accounts_scroll_foreground">#2F4961</Brush>
+
+
+    <!-- Add account view -->
+    <Brush x:Key="add_window_rectangle">#1f2b3a</Brush>
+
+
+    <!-- Account tab view-->
+    <Brush x:Key="account_picture_border">#A9D1F6</Brush>
+    <Brush x:Key="popup_border_background">#567CA0</Brush>
     <Brush x:Key="account_tab_nickname">white</Brush>
-
     <Brush x:Key="vac_border_text">#1f2b3a</Brush>
     <Brush x:Key="sub_accounttab_text">#A9D1F6</Brush>
-    <Brush x:Key="account_picture_border">#A9D1F6</Brush>
 
 
+    <!-- Settings view -->
+    <Brush x:Key="buttons_border_brush">#2F4961</Brush>
+    <Brush x:Key="theme_border_brush">#2F4961</Brush>
     <Brush x:Key="second_settings_text">white</Brush>
     <Brush x:Key="first_settings_text">#b0b9c6</Brush>
     <Brush x:Key="settings_buttons_isMouseOver">#2F4961</Brush>
@@ -26,21 +46,15 @@
     <Brush x:Key="settings_rectangle">#1d2335</Brush>
 
 
-    <Brush x:Key="add_window_rectangle">#1f2b3a</Brush>
-    
-    <Brush x:Key="buttons_border_brush">#2F4961</Brush>
-
-    <Brush x:Key="add_button_background">#1f2b3a</Brush>
-    <Brush x:Key="add_button_foreground">#b0b9c6</Brush>
-    <Brush x:Key="add_button_isMouseOver">#2F4961</Brush>
-
-    <Brush x:Key="menu_button_background">#2F4961</Brush>
-    <Brush x:Key="menu_button_text">#b0b9c6</Brush>
-
-    <Brush x:Key="popup_border_background">#567CA0</Brush>
-
-    <Brush x:Key="accounts_scroll_foreground">#2F4961</Brush>
-
     <!--Colors -->
     <Color x:Key="drop_shadow">#1d2335</Color>
+
+
 </ResourceDictionary>
+
+
+
+
+
+
+

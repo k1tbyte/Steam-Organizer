@@ -72,19 +72,28 @@
                     <DockPanel>
                         <!--Menu Logo-->
                         <Border Width="100" Height="100" Padding="3" Background="{DynamicResource background_border_color}" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 -30 0 0">
-                            <Ellipse >
+                            <Ellipse>
                                 <Ellipse.Fill>
-                                    <ImageBrush ImageSource="/Images/user.jpg"/>
+                                    <ImageBrush>
+                                        <ImageBrush.ImageSource>
+                                            <BitmapImage UriSource="\Images\user.jpg"
+                                                         CacheOption="OnLoad"
+                                                         DecodePixelHeight="200"/>
+                                        </ImageBrush.ImageSource>
+                                    </ImageBrush>
                                 </Ellipse.Fill>
                             </Ellipse>
                         </Border>
 
                         <!--Menu Titles-->
                         <TextBlock Text="Username" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
-                        <TextBlock Text="{Binding TotalAccounts, StringFormat=Total accounts: {0}}"
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal"  HorizontalAlignment="Center">
+                            <TextBlock Text="{DynamicResource mv_total_accounts}"
                                    Foreground="{DynamicResource menu_button_text}" FontSize="14"
-                                   FontWeight="SemiBold" DockPanel.Dock="Top"
-                                   TextAlignment="Center"/>
+                                   FontWeight="SemiBold" TextAlignment="Center"/>
+                            <TextBlock Text="{Binding TotalAccounts}" Margin="5 0 0 0"  FontWeight="Medium"
+                                       FontSize="14"  Foreground="{DynamicResource menu_button_text}"/>
+                        </StackPanel>
 
                         <!--Menu Seprator-->
                         <Rectangle Fill="#b0b9c6" Margin="25" DockPanel.Dock="Top" Height="0.8"/>
@@ -98,7 +107,7 @@
                                          Command="{Binding AccountsViewCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="AccountMultipleOutline" Style="{StaticResource menuButtonIcon}"/>
-                                    <TextBlock Text="Accounts"/>
+                                    <TextBlock Text="{DynamicResource mv_accounts_title}"/>
                                 </StackPanel>
                             </RadioButton>
 
@@ -107,7 +116,7 @@
                                          >
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Cog" Style="{StaticResource menuButtonIcon}"/>
-                                    <TextBlock Text="Settings"/>
+                                    <TextBlock Text="{DynamicResource mv_settings_title}"/>
                                 </StackPanel>
                             </RadioButton>
                         </StackPanel>
@@ -115,7 +124,7 @@
                         <Button Style="{StaticResource logoutButton}" VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Margin="15 0 15 20">
                             <StackPanel Orientation="Horizontal">
                                 <Icon:PackIconMaterial Kind="Logout" Style="{StaticResource menuButtonIcon}"/>
-                                <TextBlock Text="Logout"/>
+                                <TextBlock Text="{DynamicResource mv_logout_title}"/>
                             </StackPanel>
                         </Button>
 
@@ -141,7 +150,7 @@
                         <Icon:PackIconMaterial Kind="BellOutline"
                                                VerticalAlignment="Center" Margin="15 0 0 0"
                                                Foreground="White"/>
-                        <TextBlock Text="{Binding Path=NotifycationContent}" VerticalAlignment="Center" 
+                        <TextBlock Text="{Binding Path=NotificationContent}" VerticalAlignment="Center" 
                                    FontSize="11" Padding="15 0 0 0"
                                    FontWeight="Regular" Foreground="White"/>
                     </StackPanel>
@@ -157,18 +166,16 @@
 
 
                 <!--Service Buttons-->
-                <Button Style="{StaticResource serviceButton}"
+                <Button Grid.Row="0" Style="{StaticResource serviceButton}"
                         Command="{Binding CloseCommand}"
-                        Margin="570,-10,0,15" HorizontalAlignment="Right"
-                        Width="30">
+                        Margin="570,-10,0,15">
                     <Icon:PackIconMaterial Kind="WindowClose"
-                                           Height="20" Width="20"/>
+                                           Height="20" Width="20" />
                 </Button>
 
-                <Button Style="{StaticResource serviceButton}"
+                <Button Grid.Row="0" Style="{StaticResource serviceButton}"
                         Command="{Binding MinimizeCommand}"
-                        Margin="53,-10,35,15" HorizontalAlignment="Right"
-                        Width="30" >
+                        Margin="53,-10,35,15">
                     <Icon:PackIconMaterial Kind="WindowMinimize"
                                            Height="6" Width="20"
                                            Margin="0 12 0 0"/>

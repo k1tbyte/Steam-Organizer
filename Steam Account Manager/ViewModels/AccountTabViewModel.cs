@@ -1,13 +1,8 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Base;
-using Steam_Account_Manager.ViewModels.View;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -15,10 +10,10 @@ namespace Steam_Account_Manager.ViewModels
     {
         public RelayCommand DeleteAccoundCommand { get; set; }
         public RelayCommand EditAccountCommand { get; set; }
-        public RelayCommand OpenURLProfileCommand { get; set; }
+        public RelayCommand OpenUrlProfileCommand { get; set; }
         private string _steamPicture;
         private string _steamNickname;
-        private ulong _steamID;
+        private ulong _steamId;
         private DateTime _accCreatedTime;
         private uint _steamLevel;
         private int _vacCount;
@@ -26,101 +21,109 @@ namespace Steam_Account_Manager.ViewModels
 
         public uint SteamLevel
         {
-            get { return _steamLevel; }
+            get => _steamLevel;
             set
             {
                 _steamLevel = value;
-                OnPropertyChanged(nameof(SteamLevel));
+                OnPropertyChanged();
             }
         }
 
         public DateTime AccCreatedDate
         {
-            get { return _accCreatedTime; }
+            get => _accCreatedTime;
             set
             {
                 _accCreatedTime = value;
-                OnPropertyChanged(nameof(AccCreatedDate));
+                OnPropertyChanged();
             }
         }
 
-        public ulong SteamID
+        public ulong SteamId
         {
-            get { return _steamID; }
+            get => _steamId;
             set
             {
-                _steamID = value;
-                OnPropertyChanged(nameof(SteamID));
+                _steamId = value;
+                OnPropertyChanged();
             }
         }
+
         public string SteamPicture
         {
-            get { return _steamPicture; }
+            get => _steamPicture;
             set
             {
                 _steamPicture = value;
-                OnPropertyChanged(nameof(SteamPicture));
+                OnPropertyChanged();
             }
         }
+
         public string SteamNickName
         {
-            get { return _steamNickname; }
+            get => _steamNickname;
             set
             {
                 _steamNickname = value;
-                OnPropertyChanged(nameof(SteamNickName));
+                OnPropertyChanged();
             }
         }
+
         public int VacCount
         {
-            get { return _vacCount; }
+            get => _vacCount;
             set
             {
                 _vacCount = value;
-                OnPropertyChanged(nameof(VacCount));
+                OnPropertyChanged();
             }
         }
 
         public int Id
         {
-            get { return _id; }
+            get => _id;
             set
             {
                 _id = value;
-                OnPropertyChanged(nameof(Id));
+                OnPropertyChanged();
             }
         }
 
         public AccountTabViewModel(int id)
         {
             Config config = Config.GetInstance();
-            Account account = config.accountsDB.ElementAt(id);
+            Account account = config.AccountsDb.ElementAt(id);
             Id = id + 1;
-            SteamPicture = account.avatarFull;
-            SteamNickName = account.nickname;
-            VacCount = account.vacBansCount;
-            SteamID = account.steamID64;
-            AccCreatedDate = account.accCreatedDate;
-            SteamLevel = account.steamLevel;
+            SteamPicture = account.AvatarFull;
+            SteamNickName = account.Nickname;
+            VacCount = account.VacBansCount;
+            SteamId = account.SteamId64;
+            AccCreatedDate = account.AccCreatedDate;
+            SteamLevel = account.SteamLevel;
 
 
             DeleteAccoundCommand = new RelayCommand(o =>
             {
-                //MessageBox.Show("123");
-                config.accountsDB.RemoveAt(id);
+                config.AccountsDb.RemoveAt(id);
                 config.SaveChanges();
                 AccountsViewModel.FillAccountTabViews();
             });
 
-            OpenURLProfileCommand = new RelayCommand(o =>
+            OpenUrlProfileCommand = new RelayCommand(o =>
             {
-                Process.Start(new ProcessStartInfo("https://steamcommunity.com/profiles/" + SteamID.ToString()) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo("https://steamcommunity.com/profiles/" + SteamId.ToString()) { UseShellExecute = true });
             });
 
             DeleteAccoundCommand = new RelayCommand(o =>
             {
-                AccountsViewModel.RemoveAccount(id);
-                
+                if (!config.NoConfirmMode)
+                    AccountsViewModel.RemoveAccount(ref id);
+                else
+                {
+                    config.AccountsDb.RemoveAt(id);
+                    config.SaveChanges();
+                    AccountsViewModel.FillAccountTabViews();
+                }
             });
         }
     }

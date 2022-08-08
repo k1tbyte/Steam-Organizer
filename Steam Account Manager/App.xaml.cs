@@ -14,11 +14,11 @@ namespace Steam_Account_Manager
 {
     public partial class App : Application
     {
-        static Mutex mutex = new Mutex(true, "Steam Account Manager OneAtATime");
+        static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager OneAtATime");
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
         {
-            if (mutex.WaitOne(TimeSpan.Zero, true))
+            if (Mutex.WaitOne(TimeSpan.Zero, true))
             {
                 Config config = Config.GetInstance();
 

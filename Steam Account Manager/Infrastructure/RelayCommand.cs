@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Windows;
 using System.Windows.Input;
 
 namespace Steam_Account_Manager.Infrastructure
 {
-    class RelayCommand : ICommand
+    internal class RelayCommand : ICommand
     {
-        private Action<object> _execute;
-        private Func<object, bool> _canExecute;
+        private readonly Action<object> _execute;
+        private readonly Func<object, bool> _canExecute;
 
         public event EventHandler CanExecuteChanged
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
 
         public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
@@ -30,6 +29,5 @@ namespace Steam_Account_Manager.Infrastructure
         {
             _execute(parameter);
         }
-
     }
 }

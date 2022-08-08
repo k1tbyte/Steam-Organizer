@@ -1,15 +1,14 @@
 ﻿using Steam_Account_Manager.ViewModels;
-using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
 namespace Steam_Account_Manager.Infrastructure
 {
-    class ObservableObject : INotifyPropertyChanged
+    internal class ObservableObject : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private static PropertyChangedEventHandler StaticPropertyChanged;
+        private static PropertyChangedEventHandler _staticPropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
@@ -17,36 +16,33 @@ namespace Steam_Account_Manager.Infrastructure
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        protected virtual bool Set<T>(ref T field, T value, [CallerMemberName] string PropertyName = null)
+        protected virtual bool Set<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
             if (Equals(field, value)) return false;
             field = value;
-            OnPropertyChanged(PropertyName);
+            OnPropertyChanged(propertyName);
             return true;
         }
 
-        static protected void OnStaticPropertyChanged(string pname)
+        protected static void OnStaticPropertyChanged(string pname)
         {
-            System.ComponentModel.PropertyChangedEventArgs e = new System.ComponentModel.PropertyChangedEventArgs(pname);
-            System.ComponentModel.PropertyChangedEventHandler h = StaticPropertyChanged;
+            var e = new PropertyChangedEventArgs(pname);
+            var h = _staticPropertyChanged;
             if (h != null)
                 h(null, e);
-
         }
 
-        static protected void ShowDialogWindow(Window window)
+        protected static void ShowDialogWindow(Window window)
         {
             window.Owner = Application.Current.MainWindow;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
-
         }
-        static protected void ExecuteWindow(object obj)
+
+        protected static void ExecuteWindow(object obj)
         {
-            Window win = obj as Window;
+            var win = obj as Window;
             win.Close();
         }
-
-
     }
 }

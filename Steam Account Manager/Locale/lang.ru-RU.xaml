@@ -1,81 +1,49 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:v="clr-namespace:System;assembly=mscorlib">
-    <!-- Main window -->
-    <v:String x:Key="mw_menu_accounts">Аккаунты</v:String>
-    <v:String x:Key="mw_menu_settings">Настройки</v:String>
-    <v:String x:Key="mw_donation_banner_title">Поддержать автора</v:String>
-    <v:String x:Key="mw_donation_banner_description">На кофе в Макдоналдс или новый скин в кс...</v:String>
-    <v:String x:Key="mw_accounts_update">Аккаунты обновляются</v:String>
-    <v:String x:Key="mw_account_adding">Добавление аккаунта</v:String>
-    <v:String x:Key="mw_account_editing">Редактирование аккаунта</v:String>
-    <v:String x:Key="mw_account_steam_data">Получение Steam данных</v:String>
-    <v:String x:Key="mw_account_dota2_data">Получение Dota 2 данных</v:String>
-    <v:String x:Key="mw_account_csgo_data">Получение CS:GO данных</v:String>
-
-    <!-- Accounts view -->
-    <v:String x:Key="av_search_box_placeholder">Найти аккаунт</v:String>
-    <v:String x:Key="av_add_account">Добавить аккаунт</v:String>
-    <v:String x:Key="av_update_accounts">Обновить данные</v:String>
-    <v:String x:Key="av_login_in_banner_description">Вы уверены, что хотите авторизоваться в аккаунт: </v:String>
-    <v:String x:Key="av_login_in_banner_yes">Да</v:String>
-    <v:String x:Key="av_login_in_banner_no">Нет</v:String>
-
-    <!-- Add account view -->
-    <v:String x:Key="aav_title">Новый аккаунт</v:String>
-    <v:String x:Key="aav_steamlink">Ссылка на стим</v:String>
-    <v:String x:Key="aav_login">Логин</v:String>
-    <v:String x:Key="aav_password">Пароль</v:String>
-    <v:String x:Key="aav_add_account">Добавить аккаунт</v:String>
-    <v:String x:Key="aav_cancel">Отменить</v:String>
-    <v:String x:Key="aav_banner_description_1">Все ваши данные от аккаунта хранятся на вашем компьютере.</v:String>
-    <v:String x:Key="aav_banner_description_2">Открытый исходный код поможет убедиться в честности проекта.</v:String>
-
-    <!-- Edit account view -->
-    <v:String x:Key="eav_title">Редактирование аккаунта</v:String>
-    <v:String x:Key="eav_steamlink">Ссылка на стим</v:String>
-    <v:String x:Key="eav_login">Логин</v:String>
-    <v:String x:Key="eav_password">Пароль</v:String>
-    <v:String x:Key="eav_save">Сохранить</v:String>
-    <v:String x:Key="eav_cancel">Отменить</v:String>
-    <v:String x:Key="eav_banner_description_1">Все ваши данные от аккаунта хранятся на вашем компьютере.</v:String>
-    <v:String x:Key="eav_banner_description_2">Открытый исходный код поможет убедиться в честности проекта.</v:String>
 
     <!-- Settings view -->
-    <v:String x:Key="sv_title">Настройки</v:String>
-    <v:String x:Key="sv_steam_directory">Директория стим</v:String>
-    <v:String x:Key="sv_language">Язык</v:String>
+    <v:String x:Key="sv_settings_title">Настройки</v:String>
     <v:String x:Key="sv_theme">Тема</v:String>
-    <v:String x:Key="sv_theme_light">Светлая</v:String>
-    <v:String x:Key="sv_theme_dark">Темная</v:String>
-    <v:String x:Key="sv_vac">Отображение VAC статуса</v:String>
-    <v:String x:Key="sv_dota">Отображение Dota 2 рангов</v:String>
-    <v:String x:Key="sv_csgo">Отображение CS:GO рангов</v:String>
-    <v:String x:Key="sv_close">Закрывать программу после входа в аккаунт</v:String>
-    <v:String x:Key="sv_pin_code">Пин-код на программу</v:String>
-    <v:String x:Key="sv_pin_code_set">Изменить пин-код</v:String>
-    <v:String x:Key="sv_save">Сохранить</v:String>
+    <v:String x:Key="sv_language">Язык</v:String>
+    <v:String x:Key="sv_close_after_logging">Закрывать программу после входа в аккаунт</v:String>
+    <v:String x:Key="sv_confirm_when_del">Удалять аккаунты без подтверждения</v:String>
+    <v:String x:Key="sv_save_changes">Сохранить</v:String>
     <v:String x:Key="sv_on">Включено</v:String>
     <v:String x:Key="sv_off">Выключено</v:String>
-    <v:String x:Key="sv_non_confirmation">Отключить подтверждение при входе в аккаунт</v:String>
-    <v:String x:Key="sv_remember_password">Запоминать пароль</v:String>
 
-    <!-- Pin code window -->
-    <v:String x:Key="pcw_enter_pin_code">Введите пин-код</v:String>
-    <v:String x:Key="pcw_forgot_pin_code">Забыли пин-код?</v:String>
-    <v:String x:Key="pcw_banner_description">Вы можете сбросить пин-код, чтобы восстановить доступ к программе, но все внесенные ранее аккаунты будут удалены.</v:String>
-    <v:String x:Key="pcw_reset_pin_code">Сбросить пин-код</v:String>
 
-    <!-- Error messages -->
-    <v:String x:Key="error_invalid_steam_directory">Некорректная директория стим.</v:String>
-    <v:String x:Key="error_empty_pin">Заполните пин-код.</v:String>
-    <v:String x:Key="error_invalid_pin">Неверный пин-код.</v:String>
-    <v:String x:Key="error_invalid_steamlink">Некорректная ссылка на аккаунт стим.</v:String>
-    <v:String x:Key="error_empty_login">Поле с логином пустое.</v:String>
-    <v:String x:Key="error_invalid_login">Некорректное поле с логином.</v:String>
-    <v:String x:Key="error_empty_password">Поле с паролем пустое.</v:String>
+    <!-- Main view-->
+    <v:String x:Key="mv_total_accounts">Всего аккаунтов:</v:String>
+    <v:String x:Key="mv_accounts_title">Аккаунты</v:String>
+    <v:String x:Key="mv_settings_title">Настройки</v:String>
+    <v:String x:Key="mv_logout_title">Выйти</v:String>
+    <v:String x:Key="mv_account_added_notification">Аккаунт успешно добавлен!</v:String>
 
-    <!-- Message box -->
-    <v:String x:Key="mb_empty_steam_directory">Пожалуйста, заполните поле "Директория стим" в настройках приложения.</v:String>
-    <v:String x:Key="mb_no_internet_connection">Нет подключения к интернету, некоторые функции могут не работать.</v:String>
+
+    <!-- Accounts View-->
+    <v:String x:Key="av_searchbar_title">Поиск аккаунтов  .  .  .</v:String>
+    <v:String x:Key="av_addbutton_title">Добавить</v:String>
+    <v:String x:Key="av_confirmation_delete">Вы действительно хотите удалить аккаунт?</v:String>
+
+
+    <!-- Account add view-->
+    <v:String x:Key="adv_header_title">Добавление аккаунта</v:String>
+    <v:String x:Key="adv_login">Логин</v:String>
+    <v:String x:Key="adv_password">Пароль</v:String>
+    <v:String x:Key="adv_account_URL">URL-ссылка на аккаунт</v:String>
+    <v:String x:Key="adv_save">Сохранить</v:String>
+
+    <v:String x:Key="adv_error_invalid_link">Неверная ссылка на профиль!</v:String>
+    <v:String x:Key="adv_error_login_empty">Поле с логином пустое!</v:String>
+    <v:String x:Key="adv_error_login_contain_spaces">Логин не может содержать пробелы!</v:String>
+    <v:String x:Key="adv_error_login_shortage">Минимальная длина логина 3 символа!</v:String>
+    <v:String x:Key="adv_error_login_overflow">Максимальная длина логина 20 символов!</v:String>
+    <v:String x:Key="adv_error_pass_empty">Поле с паролем пустое!</v:String>
+    <v:String x:Key="adv_error_pass_shortage">Минимальная длина пароля 8 символов!</v:String>
+    <v:String x:Key="adv_error_pass_overflow">Максимальная длина пароля 50 символов!</v:String>
+
+    <v:String x:Key="adv_info_connection_check">Выполняется проверка сети...</v:String>
+    <v:String x:Key="adv_info_collect_data">Сбор информации об учетной записи...</v:String>
+
 </ResourceDictionary>

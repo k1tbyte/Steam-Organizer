@@ -1,0 +1,49 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:v="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Settings view-->
+    <v:String x:Key="sv_settings_title">Налаштування</v:String>
+    <v:String x:Key="sv_theme">Тема</v:String>
+    <v:String x:Key="sv_language">Мова</v:String>
+    <v:String x:Key="sv_close_after_logging">Закривати програму після входу в акаунт</v:String>
+    <v:String x:Key="sv_confirm_when_del">Видаляти акаунти без підтвердження</v:String>
+    <v:String x:Key="sv_save_changes">Зберегти</v:String>
+    <v:String x:Key="sv_on">Увімкнено</v:String>
+    <v:String x:Key="sv_off">Вимкнено</v:String>
+
+
+    <!-- Main view-->
+    <v:String x:Key="mv_total_accounts">Всього акаунтів:</v:String>
+    <v:String x:Key="mv_accounts_title">Акаунти</v:String>
+    <v:String x:Key="mv_settings_title">Налаштування</v:String>
+    <v:String x:Key="mv_logout_title">Вийти</v:String>
+    <v:String x:Key="mv_account_added_notification">Акаунт успішно доданий!</v:String>
+
+
+    <!-- Accounts View-->
+    <v:String x:Key="av_searchbar_title">Пошук акаунтів  .  .  .</v:String>
+    <v:String x:Key="av_addbutton_title">Додати</v:String>
+    <v:String x:Key="av_confirmation_delete">Ви дійсно хочете видалити даний акаунт?</v:String>
+
+
+    <!-- Account add view-->
+    <v:String x:Key="adv_header_title">Додання акаунту</v:String>
+    <v:String x:Key="adv_login">Логін</v:String>
+    <v:String x:Key="adv_password">Пароль</v:String>
+    <v:String x:Key="adv_account_URL">URL-посилання на акаунт</v:String>
+    <v:String x:Key="adv_save">Зберегти</v:String>
+
+    <v:String x:Key="adv_error_invalid_link">Неправильне посилання на профіль!</v:String>
+    <v:String x:Key="adv_error_login_empty">Поле з логіном пусте!</v:String>
+    <v:String x:Key="adv_error_login_contain_spaces">Логін не може містити пробіли!</v:String>
+    <v:String x:Key="adv_error_login_shortage">Мінімальна довжина логіну 3 символи!</v:String>
+    <v:String x:Key="adv_error_login_overflow">Максимальна довжина логіну 20 символів!</v:String>
+    <v:String x:Key="adv_error_pass_empty">Поле с паролем пусте!</v:String>
+    <v:String x:Key="adv_error_pass_shortage">Мінімальна довжина пароля 8 символів!</v:String>
+    <v:String x:Key="adv_error_pass_overflow">Максимальна довжина пароля 50 символів!</v:String>
+
+    <v:String x:Key="adv_info_connection_check">Виконується перевірка мережі...</v:String>
+    <v:String x:Key="adv_info_collect_data">Збір інформації про обліковий запис...</v:String>
+
+</ResourceDictionary>

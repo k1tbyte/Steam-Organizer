@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.Infrastructure.Parsers
 {
-    internal class CSGOStatsParser
+    internal class CsgoStatsParser
     {
     }
 }

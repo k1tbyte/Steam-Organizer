@@ -15,7 +15,7 @@ namespace Steam_Account_Manager
 
 
 
-        private bool IsMaximize = false;
+        private bool _isMaximize = false;
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)
         {

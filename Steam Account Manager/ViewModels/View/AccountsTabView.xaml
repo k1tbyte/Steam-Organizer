@@ -33,7 +33,7 @@
                         Background="{DynamicResource account_picture_border}" Margin="3"
                         Cursor="Hand">
                     <Border.InputBindings>
-                        <MouseBinding Command="{Binding OpenURLProfileCommand}" MouseAction="LeftClick" />
+                        <MouseBinding Command="{Binding OpenUrlProfileCommand}" MouseAction="LeftClick" />
                     </Border.InputBindings>
 
                     <WrapPanel Name ="container" Width="42" Height="42">
@@ -67,7 +67,7 @@
                                Foreground="{DynamicResource sub_accounttab_text}" FontWeight="Medium"/>
                         <TextBox Background="{DynamicResource first_main_color}" BorderThickness="0"
                             FontSize="12" FontWeight="Normal"  Foreground="#b0b9c6"
-                                 Text="{Binding SteamID}" IsReadOnly="True" />
+                                 Text="{Binding SteamId}" IsReadOnly="True" />
                     </StackPanel>
                 </StackPanel>
                 <Rectangle Height="35" Width="0.2" Grid.Column="3" Fill="White" HorizontalAlignment="Left">

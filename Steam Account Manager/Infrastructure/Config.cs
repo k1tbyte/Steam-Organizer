@@ -7,25 +7,42 @@ using System.Security.Cryptography;
 using Steam_Account_Manager.Infrastructure.Base;
 using FuzzySharp;
 using System.Linq;
+using System.Globalization;
+using System.Threading;
 
 namespace Steam_Account_Manager.Infrastructure
 {
     [Serializable]
     internal class Config
     {
-        private static Config config;
+        private static Config _config;
 
         private Config()
         {
-            this.accountsDB = new List<Account>();
-            supportedThemes = new List<Themes>();
-            supportedThemes.Add(Themes.Dark);
-            supportedThemes.Add(Themes.Light);
-            supportedThemes.Add(Themes.Nebula);
+            this.AccountsDb = new List<Account>();
+
+            SupportedThemes = new List<Themes>
+            {
+                Themes.Dark,
+                Themes.Light,
+                Themes.Nebula
+            };
+            SupportedLanguages = new List<CultureInfo>
+            {
+                new CultureInfo("en-US"),
+                new CultureInfo("ru-RU"),
+                new CultureInfo("uk-UA")
+            };
+
             NoConfirmMode = TakeAccountInfo = AutoClose = false;
-            Theme = supportedThemes[2];
+            Theme = SupportedThemes[2];
+            Language = SupportedLanguages[0];
             SteamDirection = "";
         }
+
+
+        #region Themes
+
         public enum Themes
         {
             Dark = 0,
@@ -33,9 +50,8 @@ namespace Steam_Account_Manager.Infrastructure
             Nebula = 2
         }
 
-        public List<Account> accountsDB;
-        public string SteamDirection { get; set; }
-        public List<Themes> supportedThemes { get; set; }
+        public List<Themes> SupportedThemes { get; set; }
+
         private Themes _theme;
         public Themes Theme
         {
@@ -76,7 +92,67 @@ namespace Steam_Account_Manager.Infrastructure
                     Application.Current.Resources.MergedDictionaries.Add(dict);
                 }
             }
+        } 
+
+        #endregion
+
+
+        public enum Languages
+        {
+            English = 0,
+            Russian = 1,
+            Ukrainian = 2
         }
+        public List<CultureInfo> SupportedLanguages { get; set; }
+        private CultureInfo _language;
+        public CultureInfo Language
+        {
+            get => _language; 
+            set
+            {
+                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value == Thread.CurrentThread.CurrentUICulture) return;
+                Thread.CurrentThread.CurrentUICulture = value;
+                ResourceDictionary dict = new ResourceDictionary();
+                switch (value.Name)
+                {
+                    case "en-US":
+                        dict.Source = new Uri($"Locale/lang.{value.Name}.xaml", UriKind.Relative);
+                        break;
+                    case "ru-RU":
+                        dict.Source = new Uri($"Locale/lang.{value.Name}.xaml", UriKind.Relative);
+                        break;
+                    case "uk-UA":
+                        dict.Source = new Uri($"Locale/lang.{value.Name}.xaml", UriKind.Relative);
+                        break;
+                    default:
+                        dict.Source = new Uri("Locale/lang.en-US.xaml", UriKind.Relative);
+                        break;
+                }
+                ResourceDictionary oldDict = (from d in Application.Current.Resources.MergedDictionaries
+                                              where d.Source != null && d.Source.OriginalString.StartsWith("Locale/lang.")
+                                              select d).First();
+                if (oldDict != null)
+                {
+                    var ind = Application.Current.Resources.MergedDictionaries.IndexOf(oldDict);
+                    Application.Current.Resources.MergedDictionaries.Remove(oldDict);
+                    Application.Current.Resources.MergedDictionaries.Insert(ind, dict);
+                }
+                else
+                {
+                    Application.Current.Resources.MergedDictionaries.Add(dict);
+                }
+
+                _language = Thread.CurrentThread.CurrentUICulture;
+            }
+        }
+
+
+
+        public List<Account> AccountsDb;
+        public string SteamDirection { get; set; }
+
+        
 
 
 
@@ -86,24 +162,24 @@ namespace Steam_Account_Manager.Infrastructure
 
         public void SaveChanges()
         {
-            serialize(config);
+            Serialize(_config);
         }
 
         public void Clear()
         {
-            config = new Config();
+            _config = new Config();
             SaveChanges();
         }
 
-        public List<int> searchByNickname(string nickname = "")
+        public List<int> SearchByNickname(string nickname = "")
         {
             var foundAccountsIndexes = new List<int>();
             if (nickname != "")
             {
-                for (int i = 0; i < accountsDB.Count; i++)
+                for (int i = 0; i < AccountsDb.Count; i++)
                 {
-                    if (accountsDB[i].nickname.ToLower().StartsWith(nickname) ||
-                        Fuzz.Ratio(nickname.ToLower(), accountsDB[i].nickname.ToLower()) > 40)
+                    if (AccountsDb[i].Nickname.ToLower().StartsWith(nickname) ||
+                        Fuzz.Ratio(nickname.ToLower(), AccountsDb[i].Nickname.ToLower()) > 40)
                     {
                         foundAccountsIndexes.Add(i);
                     }
@@ -111,7 +187,7 @@ namespace Steam_Account_Manager.Infrastructure
             }
             else
             {
-                for (int i = 0; i < accountsDB.Count; i++)
+                for (int i = 0; i < AccountsDb.Count; i++)
                     foundAccountsIndexes.Add(i);
             }
             return foundAccountsIndexes;
@@ -119,49 +195,51 @@ namespace Steam_Account_Manager.Infrastructure
 
         public static Config GetInstance()
         {
-            if (config == null)
+            if (_config == null)
             {
                 if (File.Exists("config.dat"))
                 {
-                    config = deserialize();
-                    config.Theme = config.Theme;
+                    _config = Deserialize();
+                    _config.Theme = _config.Theme;
+                    _config.Language = _config.Language;
                 }
-                else config = new Config();
+                else _config = new Config();
             }
-            return config;
+            return _config;
         }
 
         //Encrypting
         private const string CryptoKey = "Q3JpcHRvZ3JhZmlhcyBjb20gUmluamRhZWwgLyBBRVM=";
-        private const int keySize = 256;
-        private const int ivSize = 16; // block size is 128-bit
+        private const int KeySize = 256;
+        private const int IvSize = 16; // block size is 128-bit
 
-        private static void WriteObjectToStream(Stream outputStream, Object obj)
+        private static void WriteObjectToStream(Stream outputStream, object obj)
         {
-            if (object.ReferenceEquals(obj, null)) return;
+            if (ReferenceEquals(obj, null)) return;
             BinaryFormatter bf = new BinaryFormatter();
             bf.Serialize(outputStream, obj);
         }
+
         private static object ReadObjectFromStream(Stream inputStream)
         {
             BinaryFormatter binForm = new BinaryFormatter();
-            object obj = binForm.Deserialize(inputStream);
+            var obj = binForm.Deserialize(inputStream);
             return obj;
         }
-        private static CryptoStream createEncryptionStream(byte[] key, Stream outputStream)
+        private static CryptoStream CreateEncryptionStream(byte[] key, Stream outputStream)
         {
-            byte[] iv = new byte[ivSize];
-            using (var rng = new RNGCryptoServiceProvider()) rng.GetNonZeroBytes(iv);
+            byte[] iv = new byte[IvSize];
+            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider()) rng.GetNonZeroBytes(iv);
 
             outputStream.Write(iv, 0, iv.Length);
             Rijndael rijndael = new RijndaelManaged();
-            rijndael.KeySize = keySize;
+            rijndael.KeySize = KeySize;
             CryptoStream encryptor = new CryptoStream(outputStream, rijndael.CreateEncryptor(key, iv), CryptoStreamMode.Write);
             return encryptor;
         }
         public static CryptoStream CreateDecryptionStream(byte[] key, Stream inputStream)
         {
-            byte[] iv = new byte[ivSize];
+            byte[] iv = new byte[IvSize];
 
             if (inputStream.Read(iv, 0, iv.Length) != iv.Length)
             {
@@ -169,7 +247,7 @@ namespace Steam_Account_Manager.Infrastructure
             }
 
             Rijndael rijndael = new RijndaelManaged();
-            rijndael.KeySize = keySize;
+            rijndael.KeySize = KeySize;
 
             CryptoStream decryptor = new CryptoStream(
                 inputStream,
@@ -177,19 +255,19 @@ namespace Steam_Account_Manager.Infrastructure
                 CryptoStreamMode.Read);
             return decryptor;
         }
-        private static void serialize(Config config)
+        private static void Serialize(Config config)
         {
             byte[] key = Convert.FromBase64String(CryptoKey);
 
             using (FileStream file = new FileStream(Environment.CurrentDirectory + @"\config.dat", FileMode.Create))
             {
-                using (CryptoStream cryptoStream = createEncryptionStream(key, file))
+                using (CryptoStream cryptoStream = CreateEncryptionStream(key, file))
                 {
                     WriteObjectToStream(cryptoStream, config);
                 }
             }
         }
-        private static Config deserialize()
+        private static Config Deserialize()
         {
             byte[] key = Convert.FromBase64String(CryptoKey);
 

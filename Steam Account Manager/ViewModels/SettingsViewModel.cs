@@ -1,59 +1,84 @@
 ﻿using System;
-using System.Windows;
 using Steam_Account_Manager.Infrastructure;
 
 namespace Steam_Account_Manager.ViewModels
 {
     internal class SettingsViewModel : ObservableObject
     {
-        private bool[] _Theme_Key = new bool[] {true,false,false};
-        private bool _AutoClose_Key;
-        private bool _noConfirmMode_Key;
-        private bool _TakeAccountInfo_Key;
+        private bool[] _themeKey = { true, false, false };
+        private bool[] _localeKey = { true, false, false };
+        private bool _autoCloseKey;
+        private bool _noConfirmModeKey;
+        private bool _takeAccountInfoKey;
         public RelayCommand SaveChangesCommand { get; set; }
+
         public bool TakeAccountInfo
         {
-            get { return _TakeAccountInfo_Key; }
+            get => _takeAccountInfoKey;
             set
             {
-                _TakeAccountInfo_Key = value;
-                OnPropertyChanged(nameof(_TakeAccountInfo_Key));
+                _takeAccountInfoKey = value;
+                OnPropertyChanged(nameof(_takeAccountInfoKey));
+            }
+        }
+
+        public bool[] LocaleMode
+        {
+            get => _localeKey;
+            set
+            {
+                _localeKey = value;
+                OnPropertyChanged();
             }
         }
 
         public bool[] ThemeMode
         {
-            get { return _Theme_Key; }
+            get => _themeKey;
             set
             {
-                _Theme_Key = value;
-                OnPropertyChanged(nameof(_Theme_Key));
+                _themeKey = value;
+                OnPropertyChanged();
             }
         }
 
         public bool AutoCloseMode
         {
-            get { return _AutoClose_Key; }
+            get => _autoCloseKey;
             set
             {
-                _AutoClose_Key = value;
-                OnPropertyChanged(nameof(_AutoClose_Key));
+                _autoCloseKey = value;
+                OnPropertyChanged(nameof(_autoCloseKey));
             }
         }
 
         public bool NoConfirmMode
         {
-            get { return _noConfirmMode_Key; }
+            get => _noConfirmModeKey;
             set
             {
-                _noConfirmMode_Key = value;
-                OnPropertyChanged(nameof(_noConfirmMode_Key));
+                _noConfirmModeKey = value;
+                OnPropertyChanged(nameof(_noConfirmModeKey));
             }
         }
 
         public SettingsViewModel()
         {
-            Config config = Config.GetInstance();
+            var config = Config.GetInstance();
+
+            #region Считывание языка
+            for (int i = 0; i < 3; i++)
+                LocaleMode[i] = false;
+            if (config.Language == config.SupportedLanguages[(int)Config.Languages.English] || config.Language == null)
+                LocaleMode[0] = true;
+            else if (config.Language == config.SupportedLanguages[(int)Config.Languages.Russian])
+                LocaleMode[1] = true;
+            else if (config.Language == config.SupportedLanguages[(int)Config.Languages.Ukrainian])
+                LocaleMode[2] = true; 
+            #endregion
+
+            #region Считывание темы
+
             for (int i = 0; i < 3; i++)
                 ThemeMode[i] = false;
             if (config.Theme == Config.Themes.Dark)
@@ -62,17 +87,27 @@ namespace Steam_Account_Manager.ViewModels
                 ThemeMode[1] = true;
             else if (config.Theme == Config.Themes.Nebula)
                 ThemeMode[2] = true;
+            
+            #endregion
 
 
             SaveChangesCommand = new RelayCommand(o =>
             {
-                int i = 0;
+                byte i = 0;
                 for (; ; i++) 
                     if (ThemeMode[i])
                     {
-                        config.Theme = config.supportedThemes[Convert.ToInt32(i)];
+                        config.Theme = config.SupportedThemes[Convert.ToInt32(i)];
                         break;
                     }
+
+                for (i=0; ; i++)
+                    if (LocaleMode[i])
+                    {
+                        config.Language = config.SupportedLanguages[Convert.ToInt32(i)];
+                        break;
+                    }
+                config.NoConfirmMode = NoConfirmMode;
                 config.SaveChanges();
             });
         }

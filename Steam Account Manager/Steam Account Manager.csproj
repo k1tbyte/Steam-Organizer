@@ -176,6 +176,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Locale\lang.uk-UA.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -274,6 +278,20 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\default_steam_profile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Countries_flags\Russia.png" />
+    <Resource Include="Images\Countries_flags\Ukraine.png" />
+    <Resource Include="Images\Countries_flags\United_Kingdom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\nebula_preview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\light_preview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\dark_preview.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -36,7 +36,7 @@
                        HorizontalAlignment="Left" Margin="20 20" 
                        FontFamily="Cascadia Mono"
                        Foreground="{DynamicResource second_settings_text}"
-                       Text="Account adding"
+                       Text="{DynamicResource adv_header_title}"
                        FontSize="20">
             </TextBlock>
 
@@ -57,7 +57,7 @@
                                                Style="{StaticResource PasswordboxTheme}"/>
                 </StackPanel>
             </Border>
-            <TextBlock Grid.Row="2" Text="Password" FontWeight="Thin"
+            <TextBlock Grid.Row="2" Text="{DynamicResource adv_password}" FontWeight="Thin"
                        Width="57" Height="20" HorizontalAlignment="Left"
                        FontSize="14"
                        Foreground="{DynamicResource second_text_color}" Margin="20,-8,0,37" />
@@ -73,7 +73,7 @@
                              Margin="6 0 0 0"/>
                 </StackPanel>
             </Border>
-            <TextBlock Grid.Row="1" Text="Login" FontWeight="Thin"
+            <TextBlock Grid.Row="1" Text="{DynamicResource adv_login}" FontWeight="Thin"
                        Width="57" Height="20" HorizontalAlignment="Left"
                        FontSize="14"
                        Foreground="{DynamicResource second_text_color}" Margin="20,-8,0,37" />
@@ -89,8 +89,8 @@
                              Margin="6 0 0 0"/>
                 </StackPanel>
             </Border>
-            <TextBlock Grid.Row="2" Text="Account URL" FontWeight="Thin"
-                       Width="78" Height="20" HorizontalAlignment="Left"
+            <TextBlock Grid.Row="2" Text="{DynamicResource adv_account_URL}" FontWeight="Thin"
+                       Height="20" HorizontalAlignment="Left"
                        FontSize="14"
                        Foreground="{DynamicResource second_text_color}" Margin="20,65,0,45" Grid.RowSpan="2" />
 
@@ -117,7 +117,7 @@
             <Button Style="{StaticResource saveAccontButton}"
                     Command="{Binding AddAccountAsyncCommand}"
                     CommandParameter="{Binding ElementName=AddAccountWindow}"
-                    Content="Save" Grid.Row="4"/>
+                    Content="{DynamicResource adv_save}" Grid.Row="4"/>
 
             <Button Grid.Column="1"  Style="{StaticResource serviceButton}"
                         Click="CloseEvent"

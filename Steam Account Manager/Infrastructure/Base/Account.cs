@@ -1,55 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Steam_Account_Manager.Infrastructure.Parsers;
+﻿using Steam_Account_Manager.Infrastructure.Parsers;
+using System;
 
 namespace Steam_Account_Manager.Infrastructure.Base
 {
     [Serializable]
     internal class Account
     {
-        public string login { get; set; }
-        public string password { get; set; }
-        public string nickname { get; set; }
-        public ulong steamID64 { get; set; }
-        public string avatarFull { get; set; }
-        public uint steamLevel { get; set; }
-        public uint purchasedGamesCount { get; set; }
-        public int vacBansCount { get; set; }
-        public DateTime accCreatedDate { get; set; }
+        public string Login { get; set; }
+        public string Password { get; set; }
+        public string Nickname { get; set; }
+        public ulong SteamId64 { get; set; }
+        public string AvatarFull { get; set; }
+        public uint SteamLevel { get; set; }
+        public uint PurchasedGamesCount { get; set; }
+        public int VacBansCount { get; set; }
+        public DateTime AccCreatedDate { get; set; }
 
         public Account(string login,
             string password, string nickname,
-            ulong steamID64, string avatarFull,
+            ulong steamId64, string avatarFull,
             uint steamLevel, uint purchasedGamesCount,
             int vacBansCount, DateTime accCreatedDate)
         {
-            this.login = login;
-            this.password = password;
-            this.nickname = nickname;
-            this.steamID64 = steamID64;
-            this.avatarFull = avatarFull;
-            this.steamLevel = steamLevel;
-            this.purchasedGamesCount = purchasedGamesCount;
-            this.vacBansCount = vacBansCount;
-            this.accCreatedDate = accCreatedDate;
+            this.Login = login;
+            this.Password = password;
+            this.Nickname = nickname;
+            this.SteamId64 = steamId64;
+            this.AvatarFull = avatarFull;
+            this.SteamLevel = steamLevel;
+            this.PurchasedGamesCount = purchasedGamesCount;
+            this.VacBansCount = vacBansCount;
+            this.AccCreatedDate = accCreatedDate;
         }
 
-        public Account(string login, string password, ulong steamID64)
+        public Account(string login, string password, ulong steamId64)
         {
-            this.login = login;
-            this.password = password;
-            this.steamID64 = steamID64;
-            SteamParser steamParser = new SteamParser(steamID64);
+            this.Login = login;
+            this.Password = password;
+            this.SteamId64 = steamId64;
+            var steamParser = new SteamParser(steamId64);
             steamParser.AccountParse();
-            this.nickname = steamParser.GetNickname();
-            this.avatarFull = steamParser.GetSteamPicture();
-            this.steamLevel = steamParser.GetSteamLevel();
-            this.purchasedGamesCount = steamParser.GetOwnedGamesCount();
-            this.vacBansCount = steamParser.GetVacCount();
-            this.accCreatedDate = steamParser.GetAccCreatedDate();
+            this.Nickname = steamParser.GetNickname();
+            this.AvatarFull = steamParser.GetSteamPicture();
+            this.SteamLevel = steamParser.GetSteamLevel();
+            this.PurchasedGamesCount = steamParser.GetOwnedGamesCount();
+            this.VacBansCount = steamParser.GetVacCount();
+            this.AccCreatedDate = steamParser.GetAccCreatedDate();
         }
     }
 }

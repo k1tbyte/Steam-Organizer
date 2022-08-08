@@ -1,10 +1,10 @@
-﻿using System;
-using Steam_Account_Manager.Infrastructure;
+﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Parsers;
 using Steam_Account_Manager.Infrastructure.Validators;
-using System.Threading.Tasks;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -18,54 +18,54 @@ namespace Steam_Account_Manager.ViewModels
         private string _errorMessage;
         private string _infoMessage;
 
-        public string InfoMessage 
+        public string InfoMessage
         {
-            get { return _infoMessage; }
+            get => _infoMessage;
             set
-            { 
+            {
                 _infoMessage = value;
-                OnPropertyChanged(nameof(InfoMessage));
-            } 
+                OnPropertyChanged();
+            }
         }
 
-        
+
         public string SteamLink
         {
-            get { return _steamLink; }
+            get => _steamLink;
             set
             {
                 _steamLink = value;
-                OnPropertyChanged(nameof(SteamLink));
+                OnPropertyChanged();
             }
         }
 
         public string SteamPassword
         {
-            get { return _steamPassword; }
+            get => _steamPassword;
             set
             {
                 _steamPassword = value;
-                OnPropertyChanged(nameof(SteamPassword));
+                OnPropertyChanged();
             }
         }
 
         public string SteamLogin
         {
-            get { return _steamLogin; }
+            get => _steamLogin;
             set
             {
                 _steamLogin = value;
-                OnPropertyChanged(nameof(SteamLogin));
+                OnPropertyChanged();
             }
         }
 
         public string ErrorMessage
         {
-            get { return _errorMessage; }
+            get => _errorMessage;
             set
             {
                 _errorMessage = value;
-                OnPropertyChanged(nameof(ErrorMessage));
+                OnPropertyChanged();
             }
         }
 
@@ -73,45 +73,64 @@ namespace Steam_Account_Manager.ViewModels
         {
             var task = Task.Factory.StartNew(() =>
             {
-                ErrorMessage = "Network check in progress...";
+                ErrorMessage = (string)App.Current.FindResource("adv_info_connection_check");
                 if (NetworkConnectivityCheck())
                 {
-                    SteamValidator steamValidator = new SteamValidator(_steamLink);
-                    if (steamValidator.GetSteamLinkType() == SteamValidator.steamLinkTypes.errorType) ErrorMessage = "Invalid steam profile link!";
+                    var steamValidator = new SteamValidator(_steamLink);
+                    if (steamValidator.GetSteamLinkType() == SteamValidator.SteamLinkTypes.ErrorType)
+                    {
+                        ErrorMessage = (string)Application.Current.FindResource("adv_error_invalid_link");
+                    }
 
-                    else if (SteamLogin == "") ErrorMessage = "The login field is empty!";
+                    else if (SteamLogin == "")
+                    {
+                        ErrorMessage = (string)Application.Current.FindResource("adv_error_login_empty");
+                    }
 
-                    else if (SteamLogin.Contains(" ")) ErrorMessage = "Login cannot contain spaces!";
+                    else if (SteamLogin.Contains(" "))
+                    {
+                        ErrorMessage = (string)Application.Current.FindResource("adv_error_login_contain_spaces");
+                    }
 
-                    else if (SteamLogin.Length < 3) ErrorMessage = "The minimum login length is 3 characters!";
+                    else if (SteamLogin.Length < 3)
+                    {
+                        ErrorMessage = (string)Application.Current.FindResource("adv_error_login_shortage");
+                    }
 
-                    else if (SteamLogin.Length > 20) ErrorMessage = "The maximum login length is 20 characters!";
+                    else if (SteamLogin.Length > 20)
+                    {
+                        ErrorMessage = (string)Application.Current.FindResource("adv_error_login_overflow");
+                    }
 
-                    else if (SteamPassword == "") ErrorMessage = "The password field is empty!";
+                    else if (SteamPassword == "")
+                    {
+                        ErrorMessage = (string)Application.Current.FindResource("adv_error_pass_empty");
+                    }
 
-                    else if (SteamPassword.Length < 8) ErrorMessage = "The minimum password length is 8 characters!";
+                    else if (SteamPassword.Length < 8)
+                    {
+                        ErrorMessage = (string)Application.Current.FindResource("adv_error_pass_shortage");
+                    }
 
-                    else if (SteamPassword.Length > 50) ErrorMessage = "The maximum password length is 50 characters!";
+                    else if (SteamPassword.Length > 50)
+                    {
+                        ErrorMessage = (string)Application.Current.FindResource("adv_error_pass_overflow");
+                    }
 
                     else
                     {
-                        ErrorMessage = "Gathering account information...";
-                        Config config = Config.GetInstance();
+                        ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
+                        var config = Config.GetInstance();
 
-                        string nickname, avatarFull;
-                        int vacBansCount;
-                        DateTime accCreatedDate;
-                        uint steamLevel, purchasedGamesCount;
-
-                        SteamParser steamParser = new SteamParser(steamValidator.GetSteamID64());
+                        var steamParser = new SteamParser(steamValidator.GetSteamId64());
                         steamParser.AccountParse();
-                        nickname = steamParser.GetNickname();
-                        avatarFull = steamParser.GetSteamPicture();
-                        vacBansCount = steamParser.GetVacCount();
-                        accCreatedDate = steamParser.GetAccCreatedDate();
-                        steamLevel = steamParser.GetSteamLevel();
-                        purchasedGamesCount = steamParser.GetOwnedGamesCount();
-                        config.accountsDB.Add(new Infrastructure.Base.Account(SteamLogin, SteamPassword, nickname, steamValidator.GetSteamID64(), avatarFull, steamLevel,
+                        var nickname = steamParser.GetNickname();
+                        var avatarFull = steamParser.GetSteamPicture();
+                        var vacBansCount = steamParser.GetVacCount();
+                        var accCreatedDate = steamParser.GetAccCreatedDate();
+                        var steamLevel = steamParser.GetSteamLevel();
+                        var purchasedGamesCount = steamParser.GetOwnedGamesCount();
+                        config.AccountsDb.Add(new Infrastructure.Base.Account(SteamLogin, SteamPassword, nickname, steamValidator.GetSteamId64(), avatarFull, steamLevel,
                             purchasedGamesCount, vacBansCount, accCreatedDate));
                         config.SaveChanges();
                         MainWindowViewModel.AccountsViewCommand.Execute(null);
@@ -130,7 +149,7 @@ namespace Steam_Account_Manager.ViewModels
         private async Task NotificationView()
         {
             MainWindowViewModel.NotificationVisible = true;
-            MainWindowViewModel.NotifycationContent = "New account added!";
+            MainWindowViewModel.NotificationContent = (string)Application.Current.FindResource("mv_account_added_notification");
             Thread.Sleep(2300);
             MainWindowViewModel.NotificationVisible = false;
         }
@@ -141,7 +160,7 @@ namespace Steam_Account_Manager.ViewModels
             try
             {
                 var client = new WebClient();
-                var stream = client.OpenRead("http://www.google.com");
+                client.OpenRead("http://www.google.com");
                 return true;
             }
             catch

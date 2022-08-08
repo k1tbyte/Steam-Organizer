@@ -3,67 +3,66 @@ using System.Threading.Tasks;
 using SteamWebAPI2.Utilities;
 using System;
 using System.Net;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace Steam_Account_Manager.Infrastructure.Parsers
 {
     class SteamParser
     {
-        private static string APIKey = "55BB053C506F844D66D88D44F5598EC5";
-        private ulong steamID64;
-        private string nickname;
-        private string avatarFull;
-        private DateTime accCreatedDate;
-        private int vacCount;
-        private uint ownedGamesCount;
-        private uint level;
+        private const string _apiKey = "55BB053C506F844D66D88D44F5598EC5";
+        private readonly ulong _steamId64;
+        private string _nickname;
+        private string _avatarFull;
+        private DateTime _accCreatedDate;
+        private int _vacCount;
+        private uint _ownedGamesCount;
+        private uint _level;
 
-        private string getPlayerBansString(string steamId)
+        private string GetPlayerBansString(string steamId)
         {
             return "http://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key="
-                + APIKey + "&steamids=" + steamId;
+                + _apiKey + "&steamids=" + steamId;
         }
 
-        public async void parseVacsAsync()
-        { 
-            string apiString = getPlayerBansString(steamID64.ToString());
-            var webClient = new WebClient { Encoding = System.Text.Encoding.UTF8 };
+        public async void ParseVacsAsync()
+        {
+            var apiString = GetPlayerBansString(_steamId64.ToString());
+            var webClient = new WebClient { Encoding = Encoding.UTF8 };
             var json = await webClient.DownloadStringTaskAsync(apiString);
             var list = JsonConvert.DeserializeObject<RootObjectVacInfo>(json);
-            vacCount = Int32.Parse(list.players[0].NumberOfVACBans);
+            _vacCount = int.Parse(list.Players[0].NumberOfVacBans);
         }
 
         public SteamParser(ulong steamId64)
         {
-            steamID64 = steamId64;
+            _steamId64 = steamId64;
         }
 
         private async Task Tryparse()
         {
-            var webInterfaceFactory = new SteamWebInterfaceFactory(APIKey);
+            var webInterfaceFactory = new SteamWebInterfaceFactory(_apiKey);
             var steamProfileInterface = webInterfaceFactory.CreateSteamWebInterface<SteamUser>();
 
             //Получаем инфу о профиле
-            var playerSummaryResponse = await steamProfileInterface.GetPlayerSummaryAsync(steamID64);
+            var playerSummaryResponse = await steamProfileInterface.GetPlayerSummaryAsync(_steamId64);
             var playerSummaryData = playerSummaryResponse.Data;
 
             //Получаем инфу о банах
-            parseVacsAsync();
+            ParseVacsAsync();
 
             //Получаем инфу об играх и уровне
             var steamPlayerInterface = webInterfaceFactory.CreateSteamWebInterface<PlayerService>();
-            var profileLevel = await steamPlayerInterface.GetSteamLevelAsync(steamID64);
+            var profileLevel = await steamPlayerInterface.GetSteamLevelAsync(_steamId64);
             var profileLevelData = profileLevel.Data;
-            var ownedGames = await steamPlayerInterface.GetOwnedGamesAsync(steamID64);
+           // var ownedGames = await steamPlayerInterface.GetOwnedGamesAsync(_steamId64);
             var ownedGamesData = profileLevel.Data;
 
-            nickname = playerSummaryData.Nickname;
-            avatarFull = playerSummaryData.AvatarFullUrl;
-            accCreatedDate = playerSummaryData.AccountCreatedDate;
-            level = profileLevelData.Value;
-            ownedGamesCount = ownedGamesData.Value;
-
-
+            _nickname = playerSummaryData.Nickname;
+            _avatarFull = playerSummaryData.AvatarFullUrl;
+            _accCreatedDate = playerSummaryData.AccountCreatedDate;
+            if (profileLevelData != null) _level = profileLevelData.Value;
+            if (ownedGamesData != null) _ownedGamesCount = ownedGamesData.Value;
         }
 
         public void AccountParse()
@@ -74,39 +73,39 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
         public string GetNickname()
         {
-            return this.nickname;
+            return this._nickname;
         }
         public string GetSteamPicture()
         {
-            return this.avatarFull;
+            return this._avatarFull;
         }
         public int GetVacCount()
         {
-            return this.vacCount;
+            return this._vacCount;
         }
         public uint GetSteamLevel()
         {
-            return level;
+            return _level;
         }
         public uint GetOwnedGamesCount()
         {
-            return ownedGamesCount;
+            return _ownedGamesCount;
         }
-
 
 
         public DateTime GetAccCreatedDate()
         {
-            return accCreatedDate;
+            return _accCreatedDate;
         }
 
         private class RootObjectVacInfo
         {
-            public PlayerVacInfo[] players { get; set; }
+            public PlayerVacInfo[] Players { get; set; }
         }
+
         private class PlayerVacInfo
         {
-            public string NumberOfVACBans { get; set; }
+            public string NumberOfVacBans { get; set; }
         }
     }
 
