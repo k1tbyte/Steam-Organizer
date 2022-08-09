@@ -9,8 +9,9 @@ namespace Steam_Account_Manager.ViewModels
     internal class AccountTabViewModel : ObservableObject
     {
         public RelayCommand DeleteAccoundCommand { get; set; }
-        public RelayCommand EditAccountCommand { get; set; }
+        public RelayCommand EditOrViewAccountCommand { get; set; }
         public RelayCommand OpenUrlProfileCommand { get; set; }
+
         private string _steamPicture;
         private string _steamNickname;
         private ulong _steamId;
@@ -107,6 +108,11 @@ namespace Steam_Account_Manager.ViewModels
                 config.AccountsDb.RemoveAt(id);
                 config.SaveChanges();
                 AccountsViewModel.FillAccountTabViews();
+            });
+
+            EditOrViewAccountCommand = new RelayCommand(o =>
+            {
+                MainWindowViewModel.AccountDataViewCommand.Execute(o);
             });
 
             OpenUrlProfileCommand = new RelayCommand(o =>

@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="Steam_Account_Manager.ViewModels.View.AccountDataView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="600">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Width="580" Grid.Row="1" HorizontalAlignment="Left" CornerRadius="15" Background="{DynamicResource first_main_color}"/>
+
+
+        <Button Style="{StaticResource serviceButton}" Width="35"  Grid.Row="1" Margin="5 10 0 0"
+                VerticalAlignment="Top" HorizontalAlignment="Left">
+            <Icon:PackIconMaterial  Kind="ArrowLeft" Height="20" Width="40" />
+        </Button>
+        
+        
+        
+        <ScrollViewer Grid.Row="1" x:Name="scrollViewer" CanContentScroll="True" Margin="0 40 0 20">
+            <Grid Width="565" HorizontalAlignment="Left" Margin="25 0 25 0">
+
+                <StackPanel HorizontalAlignment="Left" Margin="10 5 0 0">
+                                      
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
+                        
+                        <!-- Avatar -->
+                        <Border Width="140" Height="140" Background="{DynamicResource account_picture_border}" CornerRadius="20">
+                            <WrapPanel Name ="container" Width="138" Height="138">
+                                <Image x:Name="SteamProfileImage" 
+                               Source="/Images/default_steam_profile.png"
+                               VerticalAlignment="Center" 
+                               HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                <WrapPanel.OpacityMask>
+                                    <VisualBrush >
+                                        <VisualBrush.Visual>
+                                            <Border Height="{Binding ElementName=container, Path=ActualHeight}" 
+                            Width="{Binding ElementName=container, Path=ActualWidth}"
+                            Background="White" CornerRadius="20" />
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </WrapPanel.OpacityMask>
+                            </WrapPanel>
+                        </Border>
+                        
+                        <!-- Nickname -->
+                        <TextBlock Text="Nickname"/>
+                    </StackPanel>
+
+
+
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+        
+    </Grid>
+</UserControl>

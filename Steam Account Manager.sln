@@ -5,6 +5,8 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steam Account Manager", "Steam Account Manager\Steam Account Manager.csproj", "{02A17623-84C2-413F-88CE-05A5B879C48A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parsers", "Parsers\Parsers.csproj", "{82CE0507-3C49-4EC6-BCED-9CF8AC95DA57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{02A17623-84C2-413F-88CE-05A5B879C48A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02A17623-84C2-413F-88CE-05A5B879C48A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02A17623-84C2-413F-88CE-05A5B879C48A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82CE0507-3C49-4EC6-BCED-9CF8AC95DA57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82CE0507-3C49-4EC6-BCED-9CF8AC95DA57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82CE0507-3C49-4EC6-BCED-9CF8AC95DA57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82CE0507-3C49-4EC6-BCED-9CF8AC95DA57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

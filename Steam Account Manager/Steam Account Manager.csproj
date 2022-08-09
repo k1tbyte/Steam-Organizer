@@ -62,9 +62,6 @@
     <Reference Include="FuzzySharp, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FuzzySharp.2.0.2\lib\net461\FuzzySharp.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.11.43.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.11.43\lib\Net45\HtmlAgilityPack.dll</HintPath>
-    </Reference>
     <Reference Include="MahApps.Metro.IconPacks.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0c0d510f9915137a, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.IconPacks.Material.4.11.0\lib\net47\MahApps.Metro.IconPacks.Core.dll</HintPath>
     </Reference>
@@ -151,11 +148,15 @@
     <Compile Include="Themes\MainPopup.xaml.cs">
       <DependentUpon>MainPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\AccountDataViewModel.cs" />
     <Compile Include="ViewModels\AccountsViewModel.cs" />
     <Compile Include="ViewModels\AccountTabViewModel.cs" />
     <Compile Include="ViewModels\AddAccountViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\View\AccountDataView.xaml.cs">
+      <DependentUpon>AccountDataView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\View\AccountsTabView.xaml.cs">
       <DependentUpon>AccountsTabView.xaml</DependentUpon>
     </Compile>
@@ -216,6 +217,10 @@
     <Page Include="Themes\PasswordboxTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="ViewModels\View\AccountDataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ViewModels\View\AccountsTabView.xaml">
       <SubType>Designer</SubType>
@@ -292,6 +297,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\dark_preview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Steam_years_of_Service\preview.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

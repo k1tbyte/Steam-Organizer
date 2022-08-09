@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Input;
 using Steam_Account_Manager.Infrastructure;
 using System.Net;
+using Steam_Account_Manager.ViewModels.View;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -14,10 +15,12 @@ namespace Steam_Account_Manager.ViewModels
         public static RelayCommand MinimizeCommand { get; set; }
         public static RelayCommand AccountsViewCommand { get; set; }
         public static RelayCommand SettingsViewCommand { get; set; }
+        public static RelayCommand AccountDataViewCommand { get; set; }
 
 
         public AccountsViewModel AccountsVm;
         public SettingsViewModel SettingsVm;
+        public AccountDataView AccountDataV; 
 
         public static event EventHandler TotalAccountsChanged;
         private static int _totalAccounts;
@@ -111,6 +114,12 @@ namespace Steam_Account_Manager.ViewModels
                 CurrentView = SettingsVm;
             });
 
+            AccountDataViewCommand = new RelayCommand(o =>
+            {
+                AccountDataV = new AccountDataView();
+                CurrentView = AccountDataV;
+            });
+
             CloseCommand = new RelayCommand(o =>
             {
                 Application.Current.Shutdown();   
@@ -120,6 +129,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 MainWindowState = WindowState.Minimized;
             });
+
 
         }
     }
