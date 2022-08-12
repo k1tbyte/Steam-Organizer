@@ -4,37 +4,208 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.View"
+             xmlns:viewmodels="clr-namespace:Steam_Account_Manager.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodels:AccountDataViewModel}"
+             xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
              mc:Ignorable="d" 
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="400" d:DesignWidth="600">
+
+    <UserControl.Resources>
+        
+        <!-- The styles of the expand area -->
+        <Style x:Key="expandCommunityArea" TargetType="{x:Type Border}">
+            <Setter Property="Height" Value="80"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChecked, ElementName=expandCommunityButton}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                 From="0" To="80" Duration="0:0:0.7"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                 From="80" To="0" Duration="0:0:0.7"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="expandCloseArea" TargetType="{x:Type Border}">
+            <Setter Property="MaxHeight" Value="0"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding [0].IsChecked}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="MaxHeight"
+                                                 From="0" To="122" Duration="0:0:0.7"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="MaxHeight"
+                                                 From="122" To="0" Duration="0:0:0.7"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="expandNoticeCopy" TargetType="{x:Type Border}">
+            <Setter Property="Width" Value="0"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding CopyNotice}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Width"
+                                                 From="0" To="150" Duration="0:0:0.4"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Width"
+                                                 From="150" To="0" Duration="0:0:0.6"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="expandCsgoArea" TargetType="{x:Type Border}">
+            <Setter Property="Height" Value="240"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChecked, ElementName=expandCsgoButton}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                 From="0" To="240" Duration="0:0:0.7"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                 From="240" To="0" Duration="0:0:0.7"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="showButton" TargetType="ToggleButton">
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Width" Value="14"/>
+            <Setter Property="Height" Value="14"/>
+            <Setter Property="Margin" Value="5 0 0 -1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="Transparent">
+                            <Icon:PackIconMaterial x:Name="arrowIcon" Kind="ArrowUpCircleOutline" Width="14" Height="14"
+                                                   VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource top_service_buttons}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="arrowIcon" Property="Kind" Value="ArrowDownCircleOutline"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="arrowIcon" Property="Foreground" Value="#ffff"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>       
+        
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        
+        <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
+                       HorizontalOffset="0" VerticalOffset="10">
+            <theme:MainPopup  x:Name="Header" Foreground="White"/>
+        </Popup>
 
         <Border Width="580" Grid.Row="1" HorizontalAlignment="Left" CornerRadius="15" Background="{DynamicResource first_main_color}"/>
 
 
-        <Button Style="{StaticResource serviceButton}" Width="35"  Grid.Row="1" Margin="5 10 0 0"
+        <!-- Cancel service button -->
+        <Button Style="{StaticResource serviceButton}"
+                Width="35"  Grid.Row="1" Margin="5 10 0 0"
+                Command="{Binding CancelCommand}"
                 VerticalAlignment="Top" HorizontalAlignment="Left">
             <Icon:PackIconMaterial  Kind="ArrowLeft" Height="20" Width="40" />
         </Button>
-        
-        
-        
+
+        <!-- Copy notice -->
+        <Border Grid.Row="1" Height="30" VerticalAlignment="Top" Margin="0 5 40 0" CornerRadius="10"
+                Background="{DynamicResource adv_expand_border}" Opacity="0.7" Style="{StaticResource expandNoticeCopy}">
+            <TextBlock Text="Copied to clipboard" Style="{StaticResource settingTextBlock}" TextWrapping="NoWrap" HorizontalAlignment="Center" Margin="0 0 0 0"/>
+        </Border>
+        <!-- Right service panel -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 50 0" Grid.Row="1">
+
+            <Button Style="{StaticResource serviceButton}"
+                Width="35"  Grid.Row="1" Margin="5 10 0 0"
+                VerticalAlignment="Top" HorizontalAlignment="Right">
+                <Icon:PackIconMaterial  Kind="ContentSave" Height="20" Width="40" />
+            </Button>
+
+            <Button Style="{StaticResource serviceButton}"
+                Width="35"  Grid.Row="1" Margin="5 10 0 0"
+                VerticalAlignment="Top" HorizontalAlignment="Right">
+                <Icon:PackIconMaterial  Kind="FileUpload" Height="20" Width="40" />
+            </Button>
+
+            <Button Style="{StaticResource serviceButton}"
+                Width="35"  Grid.Row="1" Margin="5 10 0 0"
+                VerticalAlignment="Top" HorizontalAlignment="Right">
+                <Icon:PackIconMaterial  Kind="Reload" Height="20" Width="40" />
+            </Button>
+
+
+        </StackPanel>
+
+
         <ScrollViewer Grid.Row="1" x:Name="scrollViewer" CanContentScroll="True" Margin="0 40 0 20">
             <Grid Width="565" HorizontalAlignment="Left" Margin="25 0 25 0">
 
                 <StackPanel HorizontalAlignment="Left" Margin="10 5 0 0">
-                                      
+<!-- put here -->
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
-                        
+
                         <!-- Avatar -->
-                        <Border Width="140" Height="140" Background="{DynamicResource account_picture_border}" CornerRadius="20">
+                        <Border Width="140" Height="140" Background="{DynamicResource account_picture_border}" 
+                                CornerRadius="20" Margin="0 10 0 0" Cursor="Hand">
+                            <Border.InputBindings>
+                                <MouseBinding Command="{Binding OpenUrlProfileCommand}" MouseAction="LeftClick" />
+                            </Border.InputBindings>
                             <WrapPanel Name ="container" Width="138" Height="138">
-                                <Image x:Name="SteamProfileImage" 
-                               Source="/Images/default_steam_profile.png"
+                                <Image x:Name="steamImage" 
+                               Source="{Binding AvatarFull, UpdateSourceTrigger=PropertyChanged}"
                                VerticalAlignment="Center" 
                                HorizontalAlignment="Center" Stretch="UniformToFill"/>
                                 <WrapPanel.OpacityMask>
@@ -48,12 +219,494 @@
                                 </WrapPanel.OpacityMask>
                             </WrapPanel>
                         </Border>
-                        
-                        <!-- Nickname -->
-                        <TextBlock Text="Nickname"/>
+
+                        <!-- Main profile info -->
+                        <StackPanel Orientation="Vertical">
+
+                            <!-- Nickname -->
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Nickname}" Style="{StaticResource settingTextBlock}"
+                                           Foreground="{DynamicResource account_tab_nickname}"
+                                   FontSize="25" Margin="15 5 0 0" VerticalAlignment="Top"/>
+                                <Grid Margin="10 7">
+                                    <Ellipse Fill="Transparent" StrokeThickness="2"
+                                             Stroke="Cyan" Width="35" Height="35"/>
+                                    
+                                    <!-- Steam Level -->
+                                    <TextBlock Text="{Binding SteamLevel}" FontSize="12" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource first_settings_text}"
+                                   HorizontalAlignment="Center" FontFamily="Cascadia Mono" />
+                                </Grid>
+                            </StackPanel>
+
+                            <Rectangle Margin="15 0 0 0" Width="360" Height="0.7" Fill="{DynamicResource adv_rectangle}"/>
+
+                            <!-- Profile URL -->
+                            <StackPanel Orientation="Horizontal" Margin="18 5 0 0">
+                                <TextBlock Text="Profile URL:" Style="{StaticResource settings_description}"/>
+                                <TextBox x:Name="URL" Style="{StaticResource settings_data_box}" Margin="5 0 0 0"  Width="230"
+                                 Text="{Binding SteamURL}"/>
+
+                                <Button Command="{Binding CopyCommand}"
+                                        CommandParameter="{Binding ElementName=URL}"
+                                        Style="{StaticResource settings_copy}"/>
+                            </StackPanel>
+                            
+                            <!-- Profile ID64 count -->
+                            <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
+                                <TextBlock Style="{StaticResource settings_description}" Text="ID64:"/>
+                                <TextBox x:Name="ID64" Style="{StaticResource settings_data_box}" 
+                                         Text="{Binding SteamID64}"/>
+                                <Button Command="{Binding CopyCommand}"
+                                        CommandParameter="{Binding ElementName=ID64}"
+                                        Style="{StaticResource settings_copy}"/>
+                            </StackPanel>
+
+                            <!-- Profile ID32 -->
+                            <StackPanel Orientation="Horizontal" Margin="18 3 0 0">
+                                <TextBlock Style="{StaticResource settings_description}" Text="ID32:" />
+                                <TextBox x:Name="ID32" Style="{StaticResource settings_data_box}" 
+                                         Text="{Binding SteamID32}"/>
+                                <Button Command="{Binding CopyCommand}"
+                                        CommandParameter="{Binding ElementName=ID32}"
+                                        Style="{StaticResource settings_copy}"/>
+                            </StackPanel>
+
+                            <!-- Profile visiblity -->
+                            <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
+                                <TextBlock Style="{StaticResource settings_description}" Text="Visiblity:"/>
+                                <TextBlock Style="{StaticResource data_description}" Text="{Binding ProfileVisiblity}"/>
+                            </StackPanel>
+
+
+                        </StackPanel>
+
                     </StackPanel>
 
+                    <!-- Community statuses badges -->
+                    <!--#region Community statuses -->
+                    <TextBlock Margin="5 15 0 0" Text="• Community statuses" FontSize="17" Style="{StaticResource settings_description}">
+                        <ToggleButton  x:Name="expandCommunityButton" Style="{StaticResource showButton}" IsChecked="True"  />
+                    </TextBlock>
 
+                    <Border x:Name="communityInfo" Margin="0 5 0 0"
+                    Style="{DynamicResource expandCommunityArea}" CornerRadius="15"
+                    Background="{DynamicResource adv_expand_border}" Opacity="0.8">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left"
+                                        Margin="30 0 0 0" Height="55">
+
+                                <!-- Years in steam label -->
+                                <Rectangle x:Name="YearsLabel" Width="50" Height="50" RadiusY="6" RadiusX="6" Cursor="Hand"
+                                           MouseEnter="YearsLabel_MouseEnter" MouseLeave="Popup_MouseLeave">
+                                    <Rectangle.Fill>
+                                        <ImageBrush ImageSource="{Binding CreatedDatePicuture}">
+                                        </ImageBrush>
+                                    </Rectangle.Fill>
+                                    <Rectangle.Effect>
+                                        <DropShadowEffect Color="{DynamicResource drop_shadow}" BlurRadius="15"/>
+                                    </Rectangle.Effect>
+                                </Rectangle>
+
+                                <!-- Purchased games Label  -->
+                                <Image x:Name="GamesCountLabel"  Margin="30 0 0 0" Height="55" VerticalAlignment="Center"
+                                       MouseLeave="Popup_MouseLeave"  MouseEnter="GamesCountLabel_MouseEnter"
+                                       Source="{Binding GameCountPicture}" Cursor="Hand">
+                                    <Image.Effect>
+                                        <DropShadowEffect Color="{DynamicResource drop_shadow}" BlurRadius="15"/>
+                                    </Image.Effect>
+                                </Image>
+
+                                <!-- Vac status -->
+                                <Border x:Name="VacBorder" Width="70" Height="40" CornerRadius="15" Margin="30 0 0 0"
+                                         BorderThickness="0.5" Opacity="0.9" Cursor="Hand"
+                                        MouseEnter="VacBorder_MouseEnter" MouseLeave="Popup_MouseLeave">
+                                    <Border.Style>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <LinearGradientBrush>
+                                                            <GradientStop Color="#A20303" Offset="0.0" />
+                                                            <GradientStop Color="OrangeRed" Offset="0.25" />
+                                                            <GradientStop Color="OrangeRed" Offset="0.75" />
+                                                            <GradientStop Color="#A20303" Offset="1.0" />
+                                                        </LinearGradientBrush>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding VacCount, UpdateSourceTrigger=PropertyChanged}" Value="0">
+                                                    <Setter Property="Background">
+                                                        <Setter.Value>
+                                                            <LinearGradientBrush>
+                                                                <GradientStop Color="Green" Offset="0.0" />
+                                                                <GradientStop Color="GreenYellow" Offset="0.25" />
+                                                                <GradientStop Color="LawnGreen" Offset="0.75" />
+                                                                <GradientStop Color="Green" Offset="1.0" />
+                                                            </LinearGradientBrush>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Border.Effect>
+                                        <DropShadowEffect  Color="{DynamicResource drop_shadow}" BlurRadius="15"/>
+                                    </Border.Effect>
+                                    <TextBlock Text="VAC" Foreground="{DynamicResource vac_border_text}" VerticalAlignment="Center"
+                               HorizontalAlignment="Center" FontFamily="Cascadia Mono"
+                               FontSize="25" FontWeight="UltraBold"/>
+                                </Border>
+
+                                <!-- Trade ban status -->
+                                <Border Width="70" Height="40" CornerRadius="15" Margin="30 0 0 0"
+                                         BorderThickness="0.5" Opacity="0.9">
+                                    <Border.Style>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <LinearGradientBrush>
+                                                        <GradientStop Color="Green" Offset="0.0" />
+                                                        <GradientStop Color="GreenYellow" Offset="0.25" />
+                                                        <GradientStop Color="LawnGreen" Offset="0.75" />
+                                                        <GradientStop Color="Green" Offset="1.0" />
+
+                                                    </LinearGradientBrush>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TradeBan, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Background">
+                                                        <Setter.Value>
+                                                            <LinearGradientBrush>
+                                                                <GradientStop Color="#A20303" Offset="0.0" />
+                                                                <GradientStop Color="OrangeRed" Offset="0.25" />
+                                                                <GradientStop Color="OrangeRed" Offset="0.75" />
+                                                                <GradientStop Color="#A20303" Offset="1.0" />
+                                                            </LinearGradientBrush>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Border.Effect>
+                                        <DropShadowEffect  Color="{DynamicResource drop_shadow}" BlurRadius="15"/>
+                                    </Border.Effect>
+                                    <TextBlock Text="Trade" Foreground="{DynamicResource vac_border_text}" VerticalAlignment="Center"
+                               HorizontalAlignment="Center" FontFamily="Cascadia Mono"
+                               FontSize="18" FontWeight="UltraBold"/>
+                                </Border>
+
+                                <!-- Community ban status -->
+                                <Border Width="90" Height="40" CornerRadius="15" Margin="30 0 0 0"
+                                       BorderThickness="0.5" Opacity="0.9">
+                                    <Border.Style>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <LinearGradientBrush>
+                                                        <GradientStop Color="Green" Offset="0.0" />
+                                                        <GradientStop Color="GreenYellow" Offset="0.25" />
+                                                        <GradientStop Color="LawnGreen" Offset="0.75" />
+                                                        <GradientStop Color="Green" Offset="1.0" />
+
+                                                    </LinearGradientBrush>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding CommunityBan, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Background">
+                                                        <Setter.Value>
+                                                            <LinearGradientBrush>
+                                                                <GradientStop Color="#A20303" Offset="0.0" />
+                                                                <GradientStop Color="OrangeRed" Offset="0.25" />
+                                                                <GradientStop Color="OrangeRed" Offset="0.75" />
+                                                                <GradientStop Color="#A20303" Offset="1.0" />
+                                                            </LinearGradientBrush>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Border.Effect>
+                                        <DropShadowEffect  Color="{DynamicResource drop_shadow}" BlurRadius="15"/>
+                                    </Border.Effect>
+                                    <TextBlock Text="Community" Foreground="{DynamicResource vac_border_text}" VerticalAlignment="Center"
+                               HorizontalAlignment="Center" FontFamily="Cascadia Mono"
+                               FontSize="15" FontWeight="UltraBold"/>
+                                </Border>
+
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Rectangle Margin="0 15 0 0" Width="505" Height="0.7" Fill="{DynamicResource adv_rectangle}"/>
+                    <!--#endregion-->
+
+                    <!-- Personal data -->
+                    <TextBlock Margin="5 15 0 0" Text="• Personal data" FontSize="17" Style="{StaticResource settings_description}"/>
+                    <StackPanel Margin="10 10 0 0" Orientation="Horizontal">
+                      
+                        <!-- Steam data -->
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Steam account" FontSize="16" Margin="0 0 0 10" Foreground="{DynamicResource second_text_color}"/>
+
+                            <!-- Login -->
+                            <TextBlock Text="Login" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                            <Border Background="{DynamicResource adv_expand_border}" HorizontalAlignment="Left"
+                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="AccountOutline"
+                                                       VerticalAlignment="Center"
+                                           Height="22" Width="22"
+                                           Margin="8 0 0 0"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                                    <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_expand_border}"
+                                         MaxLength="50" Width="173" Text="{Binding Login}"/>
+                                </StackPanel>
+
+                            </Border>
+
+                            <!-- Password -->
+                            <TextBlock Text="Password" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                            <Border Background="{DynamicResource adv_expand_border}" HorizontalAlignment="Left"
+                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Key"
+                                                       VerticalAlignment="Center"
+                                           Height="22" Width="22"
+                                           Margin="8 0 0 0"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                                    <theme:MainPasswordBox Height="20.62" Width="175" Margin="5 0 0 0" VerticalAlignment="Center"
+                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding Password}"/>
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Margin="3 25 0 5" Text="• CS:GO Statistics" FontSize="16" Style="{StaticResource settings_description}">
+                               <StackPanel Orientation="Horizontal">
+                                    <ToggleButton  x:Name="expandCsgoButton" Style="{StaticResource showButton}" IsChecked="True"/>
+                                   <Button Style="{StaticResource serviceButton}" Width="16" Height="14" Margin="6 0 0 -1">
+                                       <Icon:PackIconMaterial Kind="Reload" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                   </Button>
+                               </StackPanel>
+                            </TextBlock>
+                           
+                            <!-- CS GO Stats -->
+                            <Border CornerRadius="15" Background="{DynamicResource adv_expand_border}" 
+                                    Opacity="0.8" Width="220" Style="{StaticResource expandCsgoArea}" >
+                                <Grid>
+                                    <StackPanel>
+                                        <TextBlock Text="Ranks" FontSize="16" Margin="0 7 0 0" HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource second_text_color}" FontWeight="Medium"/>
+                                        
+                                        <!-- Ranks -->
+                                        <StackPanel Orientation="Horizontal" Margin="18 10 0 0" VerticalAlignment="Top">
+                                            <Image Width="80" Source="/Images/Ranks/CSGO/skillgroup7.png"/>
+                                            <Image Margin="27 0 0 0" Width="80"  Source="/Images/Ranks/CSGO/skillgroup8.png"/>
+                                        </StackPanel>
+                                        <TextBlock Text="General" FontSize="16" Margin="0 7 0 0" HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource second_text_color}" FontWeight="Medium"/>
+                                       
+                                        <!-- K/D -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="K/D:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="1.25"/>
+                                        </StackPanel>
+
+                                        <!-- Kills -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Kills:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="213,134"/>
+                                        </StackPanel>
+
+                                        <!-- Deaths -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Deaths:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="222,118"/>
+                                        </StackPanel>
+
+                                        <!-- Played matches -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Played matches:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="1134"/>
+                                        </StackPanel>
+
+                                        <!-- Percent of won matches -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Win percentage:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="38%"/>
+                                        </StackPanel>
+
+                                        <!-- won matches -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Matches won:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="228"/>
+                                        </StackPanel>
+
+                                        <!-- Shoots -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Shoots:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="821,443"/>
+                                        </StackPanel>
+
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                        </StackPanel>
+
+                        <!-- Other data -->
+                        <StackPanel Orientation="Vertical" Margin="50 0 0 0">
+
+                            <!-- Email data -->
+                            <TextBlock Text="Email from steam (optional)" FontSize="16" Margin="0 0 0 10"
+                                       Foreground="{DynamicResource second_text_color}">
+                                <ToggleButton  x:Name="expandButtonMail" Style="{StaticResource showButton}" IsChecked="False"/>
+                            </TextBlock>
+
+                            <Border Style="{StaticResource expandCloseArea}">
+                                <Border.DataContext>
+                                    <x:Array Type="system:Object">
+                                        <x:Reference>expandButtonMail</x:Reference>
+                                    </x:Array>
+                                </Border.DataContext>
+                                <Grid>
+                                    <StackPanel>
+                                        <!-- Mail login -->
+                                        <TextBlock Text="Email address" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <Border Background="{DynamicResource adv_expand_border}" HorizontalAlignment="Left"
+                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Icon:PackIconMaterial Kind="EmailBox"
+                                                       VerticalAlignment="Center"
+                                           Height="22" Width="22"
+                                           Margin="8 0 0 0"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                                                <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_expand_border}"
+                                         MaxLength="50" Width="173"/>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <!-- Mail password -->
+                                        <TextBlock Text="Password" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <Border Background="{DynamicResource adv_expand_border}" HorizontalAlignment="Left"
+                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Icon:PackIconMaterial Kind="ShieldKey"
+                                                       VerticalAlignment="Center"
+                                           Height="22" Width="22"
+                                           Margin="8 0 0 0"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                                                <theme:MainPasswordBox Margin="5 0 0 0" Height="20.62" Width="175" VerticalAlignment="Center"
+                                               Style="{StaticResource PasswordboxTheme}"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                                
+                            </Border>
+                            
+                            <!-- Rockstar games data -->
+                            <TextBlock Text="Rockstar games (additionaly)" FontSize="16" Margin="0 20 0 10"
+                                       Foreground="{DynamicResource second_text_color}">
+                                <ToggleButton  x:Name="expandButtonRockstarGames" Style="{StaticResource showButton}" IsChecked="False"/>
+                            </TextBlock>
+                            
+                            <Border Style="{StaticResource expandCloseArea}">
+                                <Border.DataContext>
+                                    <x:Array Type="system:Object">
+                                        <x:Reference>expandButtonRockstarGames</x:Reference>
+                                    </x:Array>
+                                </Border.DataContext>
+                                <Grid>
+                                    <StackPanel>
+                                        <!-- Mail login -->
+                                        <TextBlock Text="Email address" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <Border Background="{DynamicResource adv_expand_border}" HorizontalAlignment="Left"
+                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Icon:PackIconMaterial Kind="EmailBox"
+                                                       VerticalAlignment="Center"
+                                           Height="22" Width="22"
+                                           Margin="8 0 0 0"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                                                <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_expand_border}"
+                                         MaxLength="50" Width="173"/>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <!-- Mail password -->
+                                        <TextBlock Text="Password" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <Border Background="{DynamicResource adv_expand_border}" HorizontalAlignment="Left"
+                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Icon:PackIconMaterial Kind="ShieldKey"
+                                                       VerticalAlignment="Center"
+                                           Height="22" Width="22"
+                                           Margin="8 0 0 0"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                                                <theme:MainPasswordBox Margin="5 0 0 0" Height="20.62" Width="175" VerticalAlignment="Center"
+                                               Style="{StaticResource PasswordboxTheme}"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+
+                            </Border>
+                            
+                            
+                            <!-- UPlay data -->
+                            <TextBlock Text="UPlay (additionaly)" FontSize="16" Margin="0 20 0 10"
+                                       Foreground="{DynamicResource second_text_color}">
+                                <ToggleButton  x:Name="expandButtonUplay" Style="{StaticResource showButton}" IsChecked="False"/>
+                            </TextBlock>
+
+                            <Border Style="{StaticResource expandCloseArea}">
+                                <Border.DataContext>
+                                    <x:Array Type="system:Object">
+                                        <x:Reference>expandButtonUplay</x:Reference>
+                                    </x:Array>
+                                </Border.DataContext>
+                                <Grid>
+                                    <StackPanel>
+                                        
+                                        <!-- Mail login -->
+                                        <TextBlock Text="Email address" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <Border Background="{DynamicResource adv_expand_border}" HorizontalAlignment="Left"
+                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Icon:PackIconMaterial Kind="EmailBox"
+                                                       VerticalAlignment="Center"
+                                           Height="22" Width="22"
+                                           Margin="8 0 0 0"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                                                <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_expand_border}"
+                                         MaxLength="50" Width="173"/>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <!-- Mail password -->
+                                        <TextBlock Text="Password" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <Border Background="{DynamicResource adv_expand_border}" HorizontalAlignment="Left"
+                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Icon:PackIconMaterial Kind="ShieldKey"
+                                                       VerticalAlignment="Center"
+                                           Height="22" Width="22"
+                                           Margin="8 0 0 0"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                                                <theme:MainPasswordBox Margin="5 0 0 0" Height="20.62" Width="175" VerticalAlignment="Center"
+                                               Style="{StaticResource PasswordboxTheme}"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+
+                            </Border>
+                            
+                        </StackPanel>
+                        
+                    </StackPanel>
 
                 </StackPanel>
             </Grid>

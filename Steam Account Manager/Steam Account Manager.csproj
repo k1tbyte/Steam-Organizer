@@ -56,11 +56,11 @@
     </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoMapper, Version=10.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoMapper.10.1.1\lib\net461\AutoMapper.dll</HintPath>
-    </Reference>
     <Reference Include="FuzzySharp, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FuzzySharp.2.0.2\lib\net461\FuzzySharp.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.11.43.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.11.43\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro.IconPacks.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0c0d510f9915137a, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.IconPacks.Material.4.11.0\lib\net47\MahApps.Metro.IconPacks.Core.dll</HintPath>
@@ -68,56 +68,14 @@
     <Reference Include="MahApps.Metro.IconPacks.Material, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0c0d510f9915137a, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.IconPacks.Material.4.11.0\lib\net47\MahApps.Metro.IconPacks.Material.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=5.0.0.1, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.5.0.1\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Options, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Options.5.0.0\lib\net461\Microsoft.Extensions.Options.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Primitives, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Primitives.5.0.0\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Steam.Models, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SteamWebAPI2.4.3.2\lib\netstandard2.0\Steam.Models.dll</HintPath>
-    </Reference>
-    <Reference Include="SteamWebAPI2, Version=4.3.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SteamWebAPI2.4.3.2\lib\netstandard2.0\SteamWebAPI2.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -148,6 +106,7 @@
     <Compile Include="Themes\MainPopup.xaml.cs">
       <DependentUpon>MainPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utilities.cs" />
     <Compile Include="ViewModels\AccountDataViewModel.cs" />
     <Compile Include="ViewModels\AccountsViewModel.cs" />
     <Compile Include="ViewModels\AccountTabViewModel.cs" />
@@ -217,6 +176,10 @@
     <Page Include="Themes\PasswordboxTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="Themes\ScrollBarTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ViewModels\View\AccountDataView.xaml">
       <SubType>Designer</SubType>
@@ -299,18 +262,127 @@
     <Resource Include="Images\dark_preview.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Steam_years_of_Service\preview.png" />
+    <Resource Include="Images\Steam_years_of_service\year1.png" />
+    <Resource Include="Images\Steam_years_of_service\year10.png" />
+    <Resource Include="Images\Steam_years_of_service\year11.png" />
+    <Resource Include="Images\Steam_years_of_service\year12.png" />
+    <Resource Include="Images\Steam_years_of_service\year13.png" />
+    <Resource Include="Images\Steam_years_of_service\year14.png" />
+    <Resource Include="Images\Steam_years_of_service\year15.png" />
+    <Resource Include="Images\Steam_years_of_service\year16.png" />
+    <Resource Include="Images\Steam_years_of_service\year17.png" />
+    <Resource Include="Images\Steam_years_of_service\year18.png" />
+    <Resource Include="Images\Steam_years_of_service\year2.png" />
+    <Resource Include="Images\Steam_years_of_service\year3.png" />
+    <Resource Include="Images\Steam_years_of_service\year4.png" />
+    <Resource Include="Images\Steam_years_of_service\year5.png" />
+    <Resource Include="Images\Steam_years_of_service\year6.png" />
+    <Resource Include="Images\Steam_years_of_service\year7.png" />
+    <Resource Include="Images\Steam_years_of_service\year8.png" />
+    <Resource Include="Images\Steam_years_of_service\year9.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Ranks\CSGO\skillgroup1.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup10.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup11.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup12.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup13.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup14.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup15.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup16.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup17.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup18.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup2.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup3.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup4.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup5.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup6.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup7.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup8.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup9.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup_expired.png" />
+    <Resource Include="Images\Ranks\CSGO\skillgroup_none.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank0-0.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank1-1.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank1-2.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank1-3.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank1-4.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank1-5.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank2-1.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank2-2.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank2-3.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank2-4.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank2-5.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank3-1.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank3-2.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank3-3.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank3-4.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank3-5.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank4-1.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank4-2.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank4-3.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank4-4.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank4-5.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank5-1.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank5-2.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank5-3.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank5-4.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank5-5.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank6-1.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank6-2.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank6-3.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank6-4.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank6-5.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank7-1.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank7-2.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank7-3.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank7-4.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank7-5.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank8-0.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank8-1.png" />
+    <Resource Include="Images\Ranks\Dota2\SeasonalRank8-2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Games_count_badges\1.png" />
+    <Resource Include="Images\Games_count_badges\10.png" />
+    <Resource Include="Images\Games_count_badges\100.png" />
+    <Resource Include="Images\Games_count_badges\1000.png" />
+    <Resource Include="Images\Games_count_badges\10000.png" />
+    <Resource Include="Images\Games_count_badges\11000.png" />
+    <Resource Include="Images\Games_count_badges\12000.png" />
+    <Resource Include="Images\Games_count_badges\13000.png" />
+    <Resource Include="Images\Games_count_badges\14000.png" />
+    <Resource Include="Images\Games_count_badges\15000.png" />
+    <Resource Include="Images\Games_count_badges\16000.png" />
+    <Resource Include="Images\Games_count_badges\17000.png" />
+    <Resource Include="Images\Games_count_badges\18000.png" />
+    <Resource Include="Images\Games_count_badges\19000.png" />
+    <Resource Include="Images\Games_count_badges\2000.png" />
+    <Resource Include="Images\Games_count_badges\20000.png" />
+    <Resource Include="Images\Games_count_badges\21000.png" />
+    <Resource Include="Images\Games_count_badges\22000.png" />
+    <Resource Include="Images\Games_count_badges\23000.png" />
+    <Resource Include="Images\Games_count_badges\24000.png" />
+    <Resource Include="Images\Games_count_badges\25.png" />
+    <Resource Include="Images\Games_count_badges\250.png" />
+    <Resource Include="Images\Games_count_badges\25000.png" />
+    <Resource Include="Images\Games_count_badges\26000.png" />
+    <Resource Include="Images\Games_count_badges\27000.png" />
+    <Resource Include="Images\Games_count_badges\28000.png" />
+    <Resource Include="Images\Games_count_badges\3000.png" />
+    <Resource Include="Images\Games_count_badges\4000.png" />
+    <Resource Include="Images\Games_count_badges\5.png" />
+    <Resource Include="Images\Games_count_badges\50.png" />
+    <Resource Include="Images\Games_count_badges\500.png" />
+    <Resource Include="Images\Games_count_badges\5000.png" />
+    <Resource Include="Images\Games_count_badges\6000.png" />
+    <Resource Include="Images\Games_count_badges\7000.png" />
+    <Resource Include="Images\Games_count_badges\8000.png" />
+    <Resource Include="Images\Games_count_badges\9000.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-  </Target>
 </Project>

@@ -13,10 +13,6 @@ namespace Steam_Account_Manager
             InitializeComponent();
         }
 
-
-
-        private bool _isMaximize = false;
-
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)

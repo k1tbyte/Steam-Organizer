@@ -14,13 +14,13 @@ namespace Steam_Account_Manager.ViewModels
 
         private string _steamPicture;
         private string _steamNickname;
-        private ulong _steamId;
+        private string _steamId;
         private DateTime _accCreatedTime;
-        private uint _steamLevel;
-        private int _vacCount;
+        private string _steamLevel;
+        private uint _vacCount;
         private int _id;
 
-        public uint SteamLevel
+        public string SteamLevel
         {
             get => _steamLevel;
             set
@@ -40,7 +40,7 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public ulong SteamId
+        public string SteamId
         {
             get => _steamId;
             set
@@ -70,7 +70,7 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public int VacCount
+        public uint VacCount
         {
             get => _vacCount;
             set
@@ -112,12 +112,15 @@ namespace Steam_Account_Manager.ViewModels
 
             EditOrViewAccountCommand = new RelayCommand(o =>
             {
-                MainWindowViewModel.AccountDataViewCommand.Execute(o);
+                MainWindowViewModel.AccountDataViewCommand.Execute(id);
             });
 
             OpenUrlProfileCommand = new RelayCommand(o =>
             {
-                Process.Start(new ProcessStartInfo("https://steamcommunity.com/profiles/" + SteamId.ToString()) { UseShellExecute = true });
+                using (Process.Start(new ProcessStartInfo("https://steamcommunity.com/profiles/" + SteamId.ToString()) { UseShellExecute = true }))
+                {
+                    ;
+                }
             });
 
             DeleteAccoundCommand = new RelayCommand(o =>

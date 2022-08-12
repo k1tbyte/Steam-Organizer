@@ -116,7 +116,7 @@ namespace Steam_Account_Manager.ViewModels
 
             AccountDataViewCommand = new RelayCommand(o =>
             {
-                AccountDataV = new AccountDataView();
+                AccountDataV = new AccountDataView((int)o);
                 CurrentView = AccountDataV;
             });
 

@@ -46,6 +46,12 @@
     <Brush x:Key="settings_rectangle">#1d2335</Brush>
 
 
+    <!-- Account data view -->
+    <Brush x:Key="adv_rectangle">#131725</Brush>
+    <Brush x:Key="adv_copy_button">#1FAED6</Brush>
+    <Brush x:Key="adv_expand_border">#2F4961</Brush>
+
+
     <!--Colors -->
     <Color x:Key="drop_shadow">#1d2335</Color>
 

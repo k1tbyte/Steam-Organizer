@@ -122,16 +122,7 @@ namespace Steam_Account_Manager.ViewModels
                         ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
                         var config = Config.GetInstance();
 
-                        var steamParser = new SteamParser(steamValidator.GetSteamId64());
-                        steamParser.AccountParse();
-                        var nickname = steamParser.GetNickname();
-                        var avatarFull = steamParser.GetSteamPicture();
-                        var vacBansCount = steamParser.GetVacCount();
-                        var accCreatedDate = steamParser.GetAccCreatedDate();
-                        var steamLevel = steamParser.GetSteamLevel();
-                        var purchasedGamesCount = steamParser.GetOwnedGamesCount();
-                        config.AccountsDb.Add(new Infrastructure.Base.Account(SteamLogin, SteamPassword, nickname, steamValidator.GetSteamId64(), avatarFull, steamLevel,
-                            purchasedGamesCount, vacBansCount, accCreatedDate));
+                        config.AccountsDb.Add(new Infrastructure.Base.Account(_steamLogin,_steamPassword,steamValidator.GetSteamId64()));
                         config.SaveChanges();
                         MainWindowViewModel.AccountsViewCommand.Execute(null);
                         ErrorMessage = "";
