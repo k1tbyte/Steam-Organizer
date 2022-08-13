@@ -96,8 +96,9 @@
     <Compile Include="Infrastructure\AsyncRelayCommand.cs" />
     <Compile Include="Infrastructure\Base\Account.cs" />
     <Compile Include="Infrastructure\Config.cs" />
+    <Compile Include="Infrastructure\GamesModels\CsgoStats.cs" />
     <Compile Include="Infrastructure\OvservableObject.cs" />
-    <Compile Include="Infrastructure\Parsers\CSGOStatsParser.cs" />
+    <Compile Include="Infrastructure\Parsers\CsgoParser.cs" />
     <Compile Include="Infrastructure\Parsers\SteamParser.cs" />
     <Compile Include="Infrastructure\Validators\SteamValidator.cs" />
     <Compile Include="Themes\MainPasswordBox.xaml.cs">

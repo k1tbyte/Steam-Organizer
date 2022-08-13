@@ -1,5 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Base;
+using Steam_Account_Manager.Infrastructure.Parsers;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -13,6 +14,10 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand CancelCommand { get; set; }
         public RelayCommand CopyCommand { get; set; }
         public RelayCommand OpenUrlProfileCommand { get; set; }
+        public RelayCommand TakeCsgoStatsInfo { get; set; }
+
+        private Account currentAccount;
+        private Config config;
 
         private string _avatarFull, _nickname;
         private bool _copyNotice = false;
@@ -32,6 +37,23 @@ namespace Steam_Account_Manager.ViewModels
         private string _gamesTotal, _gamesPlayed, _hoursOnPlayed;
         private string _playedPercent;
 
+        //csgostats
+        private string _currentRank, _bestRank,
+            _kills, _deaths, _KD , _playedMatches, _matchesWon, _winrate, _totalShots, _headshots,
+            _headshotsPercent, _shotsHit,_accuracy, _roundsPlayed;
+
+        //eror msgs
+        private string _csgoParseError;
+
+        public string CsgoParseError
+        {
+            get => _csgoParseError;
+            set
+            {
+                _csgoParseError = value;
+                OnPropertyChanged(nameof(CsgoParseError));
+            }
+        }
         public string PlayedPercent
         {
             get => _playedPercent;
@@ -40,7 +62,6 @@ namespace Steam_Account_Manager.ViewModels
                 _playedPercent = value;
             }
         }
-
         public string GamesTotal
         {
             get => _gamesTotal;
@@ -66,7 +87,6 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-
         public uint DaysSinceLastBan
         {
             get => _daysSinceLastBan;
@@ -84,7 +104,6 @@ namespace Steam_Account_Manager.ViewModels
                 OnPropertyChanged(nameof(TradeBan));
             }
         }
-
         public bool CommunityBan
         {
             get => _communityBan;
@@ -233,6 +252,136 @@ namespace Steam_Account_Manager.ViewModels
                 OnPropertyChanged(nameof(Nickname));
             }
         }
+
+        #region CsGo Statistics
+        public string CurrentRank
+        {
+            get => _currentRank;
+            set
+            {
+                _currentRank = value;
+                OnPropertyChanged(nameof(CurrentRank));
+            }
+        }
+        public string BestRank
+        {
+            get => _bestRank;
+            set
+            {
+                _bestRank = value;
+                OnPropertyChanged(nameof(BestRank));
+            }
+        }
+        public string Kills
+        {
+            get => _kills;
+            set
+            {
+                _kills = value;
+                OnPropertyChanged(nameof(Kills));
+            }
+        }
+        public string Deaths
+        {
+            get => _deaths;
+            set
+            {
+                _deaths = value;
+                OnPropertyChanged(nameof(Deaths));
+            }
+        }
+        public string KD
+        {
+            get => _KD;
+            set
+            {
+                _KD = value;
+                OnPropertyChanged(nameof(KD));
+            }
+        }
+        public string PlayedMatches
+        {
+            get => _playedMatches;
+            set
+            {
+                _playedMatches = value;
+                OnPropertyChanged(nameof(PlayedMatches));
+            }
+        }
+        public string MatchesWon
+        {
+            get => _matchesWon;
+            set
+            {
+                _matchesWon = value;
+                OnPropertyChanged(nameof(MatchesWon));
+            }
+        }
+        public string Winrate
+        {
+            get => _winrate;
+            set
+            {
+                _winrate = value;
+                OnPropertyChanged(nameof(Winrate));
+            }
+        }
+        public string TotalShots
+        {
+            get => _totalShots;
+            set
+            {
+                _totalShots = value;
+                OnPropertyChanged(nameof(TotalShots));
+            }
+        }
+        public string Headshots
+        {
+            get => _headshots;
+            set
+            {
+                _headshots = value;
+                OnPropertyChanged(nameof(Headshots));
+            }
+        }
+        public string HeadshotsPercent
+        {
+            get => _headshotsPercent;
+            set
+            {
+                _headshotsPercent = value;
+                OnPropertyChanged(nameof(HeadshotsPercent));
+            }
+        }
+        public string ShotsHit
+        {
+            get => _shotsHit;
+            set
+            {
+                _shotsHit = value;
+                OnPropertyChanged(nameof(ShotsHit));
+            }
+        }
+        public string Accuracy
+        {
+            get => _accuracy;
+            set
+            {
+                _accuracy = value;
+                OnPropertyChanged(nameof(Accuracy));
+            }
+        }
+        public string RoundsPlayed
+        {
+            get => _roundsPlayed;
+            set
+            {
+                _roundsPlayed = value;
+                OnPropertyChanged(nameof(RoundsPlayed));
+            }
+        } 
+        #endregion
+
         private async Task CopyNoticeView()
         {
             CopyNotice = true;
@@ -240,10 +389,37 @@ namespace Steam_Account_Manager.ViewModels
             CopyNotice = false;
         }
 
+        private async Task CsgoStatsParse()
+        {
+            var csgo_parser = new CsgoParser(_steamId64);
+            
+            csgo_parser.RankParse();
+            csgo_parser.GlobalStatsParse();
+
+            currentAccount.CsgoStats = csgo_parser.GetCsgoStats;
+
+            CurrentRank = currentAccount.CsgoStats.CurrentRank;
+            BestRank = currentAccount.CsgoStats.BestRank;
+            Kills = currentAccount.CsgoStats.Kills;
+            Deaths = currentAccount.CsgoStats.Deaths;
+            KD = currentAccount.CsgoStats.KD;
+            PlayedMatches = currentAccount.CsgoStats.PlayedMatches;
+            MatchesWon = currentAccount.CsgoStats.MatchesWon;
+            Winrate = currentAccount.CsgoStats.Winrate;
+            TotalShots = currentAccount.CsgoStats.TotalShots;
+            Headshots = currentAccount.CsgoStats.Headshots;
+            HeadshotsPercent = currentAccount.CsgoStats.HeadshotPercent;
+            ShotsHit = currentAccount.CsgoStats.ShotsHit;
+            Accuracy = currentAccount.CsgoStats.Accuracy;
+            RoundsPlayed = currentAccount.CsgoStats.RoundsPlayed;
+
+            config.SaveChanges();
+        }
+
         public AccountDataViewModel(int id)
         {
-            Config config = Config.GetInstance();
-            Account currentAccount = config.AccountsDb[id];
+            config = Config.GetInstance();
+            currentAccount = config.AccountsDb[id];
 
             //Player summaries
             AvatarFull = currentAccount.AvatarFull;
@@ -271,8 +447,24 @@ namespace Steam_Account_Manager.ViewModels
             TradeBan = currentAccount.TradeBan;
             DaysSinceLastBan = currentAccount.DaysSinceLastBan;
 
+            //csgo info
+            CurrentRank = currentAccount.CsgoStats.CurrentRank;
+            BestRank = currentAccount.CsgoStats.BestRank;
+            Kills = currentAccount.CsgoStats.Kills;
+            Deaths = currentAccount.CsgoStats.Deaths;
+            KD = currentAccount.CsgoStats.KD;
+            PlayedMatches = currentAccount.CsgoStats.PlayedMatches;
+            MatchesWon = currentAccount.CsgoStats.MatchesWon;
+            Winrate = currentAccount.CsgoStats.Winrate;
+            TotalShots = currentAccount.CsgoStats.TotalShots;
+            Headshots = currentAccount.CsgoStats.Headshots;
+            HeadshotsPercent = currentAccount.CsgoStats.HeadshotPercent;
+            ShotsHit = currentAccount.CsgoStats.ShotsHit;
+            Accuracy = currentAccount.CsgoStats.Accuracy;
+            RoundsPlayed = currentAccount.CsgoStats.RoundsPlayed;
 
-            CancelCommand = new RelayCommand(o =>
+
+        CancelCommand = new RelayCommand(o =>
             {
                 MainWindowViewModel.AccountsViewCommand.Execute(null);
             });
@@ -291,6 +483,11 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     ;
                 }
+            });
+
+            TakeCsgoStatsInfo = new RelayCommand(o =>
+            {
+                Task.Run(() => CsgoStatsParse());
             });
         }
     }

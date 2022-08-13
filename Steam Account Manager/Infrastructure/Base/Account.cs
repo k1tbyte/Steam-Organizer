@@ -1,4 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure.Parsers;
+using Steam_Account_Manager.Infrastructure.GamesModels;
 using System;
 
 namespace Steam_Account_Manager.Infrastructure.Base
@@ -32,6 +33,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
         public string GamesPlayed { get; set; }
         public string HoursOnPlayed { get; set; }
         public string CountGamesImageUrl { get; set; }
+        public CsgoStats CsgoStats { get; set; }
 
         public Account(string login,string password,string steamId64)
         {
@@ -57,6 +59,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             this.HoursOnPlayed = steamParser.GetHoursOnPlayed;
             this.CountGamesImageUrl = steamParser.GetCountGamesImageUrl;
             this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
+            this.CsgoStats = new CsgoStats();
         }
     }
 }

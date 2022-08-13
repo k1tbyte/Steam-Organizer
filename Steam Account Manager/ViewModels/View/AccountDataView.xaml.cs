@@ -53,6 +53,30 @@ namespace Steam_Account_Manager.ViewModels.View
 
         }
 
+        private void SaveButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.PlacementTarget = SaveButton;
+            Popup.Placement = PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "Save account changes";
+        }
+
+        private void ExportButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.PlacementTarget = ExportButton;
+            Popup.Placement = PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "Export account to hard drive";
+        }
+
+        private void RefreshButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.PlacementTarget = RefreshButton;
+            Popup.Placement = PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "Update account information";
+        }
+
 
         /*        private void steamImage_ImageFailed(object sender, System.Windows.ExceptionRoutedEventArgs e)
                 {

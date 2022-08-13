@@ -87,14 +87,14 @@
         </Style>
 
         <Style x:Key="expandCsgoArea" TargetType="{x:Type Border}">
-            <Setter Property="Height" Value="240"/>
+            <Setter Property="Height" Value="340"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsChecked, ElementName=expandCsgoButton}" Value="True">
                     <DataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetProperty="Height"
-                                                 From="0" To="240" Duration="0:0:0.7"/>
+                                                 From="0" To="340" Duration="0:0:0.7"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
@@ -102,7 +102,7 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetProperty="Height"
-                                                 From="240" To="0" Duration="0:0:0.7"/>
+                                                 From="340" To="0" Duration="0:0:0.7"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.ExitActions>
@@ -168,20 +168,20 @@
         <!-- Right service panel -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 50 0" Grid.Row="1">
 
-            <Button Style="{StaticResource serviceButton}"
+            <Button x:Name="SaveButton" Style="{StaticResource serviceButton}"
                 Width="35"  Grid.Row="1" Margin="5 10 0 0"
-                VerticalAlignment="Top" HorizontalAlignment="Right">
+                VerticalAlignment="Top" HorizontalAlignment="Right" MouseEnter="SaveButton_MouseEnter" MouseLeave="Popup_MouseLeave" >
                 <Icon:PackIconMaterial  Kind="ContentSave" Height="20" Width="40" />
             </Button>
 
-            <Button Style="{StaticResource serviceButton}"
-                Width="35"  Grid.Row="1" Margin="5 10 0 0"
-                VerticalAlignment="Top" HorizontalAlignment="Right">
+            <Button x:Name="ExportButton" Style="{StaticResource serviceButton}"
+                Width="35"  Grid.Row="1" Margin="5 10 0 0" MouseEnter="ExportButton_MouseEnter" MouseLeave="Popup_MouseLeave"
+                VerticalAlignment="Top" HorizontalAlignment="Right" >
                 <Icon:PackIconMaterial  Kind="FileUpload" Height="20" Width="40" />
             </Button>
 
-            <Button Style="{StaticResource serviceButton}"
-                Width="35"  Grid.Row="1" Margin="5 10 0 0"
+            <Button x:Name="RefreshButton" Style="{StaticResource serviceButton}"
+                Width="35"  Grid.Row="1" Margin="5 10 0 0" MouseEnter="RefreshButton_MouseEnter" MouseLeave="Popup_MouseLeave"
                 VerticalAlignment="Top" HorizontalAlignment="Right">
                 <Icon:PackIconMaterial  Kind="Reload" Height="20" Width="40" />
             </Button>
@@ -485,7 +485,8 @@
                             <TextBlock Margin="3 25 0 5" Text="• CS:GO Statistics" FontSize="16" Style="{StaticResource settings_description}">
                                <StackPanel Orientation="Horizontal">
                                     <ToggleButton  x:Name="expandCsgoButton" Style="{StaticResource showButton}" IsChecked="True"/>
-                                   <Button Style="{StaticResource serviceButton}" Width="16" Height="14" Margin="6 0 0 -1">
+                                   <Button Style="{StaticResource serviceButton}" Width="16" Height="14" Margin="6 0 0 -1"
+                                           Command="{Binding TakeCsgoStatsInfo}">
                                        <Icon:PackIconMaterial Kind="Reload" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                    </Button>
                                </StackPanel>
@@ -501,8 +502,8 @@
                                         
                                         <!-- Ranks -->
                                         <StackPanel Orientation="Horizontal" Margin="18 10 0 0" VerticalAlignment="Top">
-                                            <Image Width="80" Source="/Images/Ranks/CSGO/skillgroup7.png"/>
-                                            <Image Margin="27 0 0 0" Width="80"  Source="/Images/Ranks/CSGO/skillgroup8.png"/>
+                                            <Image Width="80" Source="{Binding CurrentRank, UpdateSourceTrigger=PropertyChanged}"/>
+                                            <Image Margin="27 0 0 0" Width="80"  Source="{Binding BestRank, UpdateSourceTrigger=PropertyChanged}"/>
                                         </StackPanel>
                                         <TextBlock Text="General" FontSize="16" Margin="0 7 0 0" HorizontalAlignment="Center"
                                        Foreground="{DynamicResource second_text_color}" FontWeight="Medium"/>
@@ -510,43 +511,73 @@
                                         <!-- K/D -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
                                             <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="K/D:"/>
-                                            <TextBlock Style="{StaticResource data_description}" Text="1.25"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding KD}"/>
                                         </StackPanel>
 
                                         <!-- Kills -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
                                             <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Kills:"/>
-                                            <TextBlock Style="{StaticResource data_description}" Text="213,134"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding Kills}"/>
                                         </StackPanel>
 
                                         <!-- Deaths -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
                                             <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Deaths:"/>
-                                            <TextBlock Style="{StaticResource data_description}" Text="222,118"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding Deaths}"/>
                                         </StackPanel>
 
                                         <!-- Played matches -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
                                             <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Played matches:"/>
-                                            <TextBlock Style="{StaticResource data_description}" Text="1134"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding PlayedMatches}"/>
                                         </StackPanel>
 
-                                        <!-- Percent of won matches -->
-                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Win percentage:"/>
-                                            <TextBlock Style="{StaticResource data_description}" Text="38%"/>
-                                        </StackPanel>
-
-                                        <!-- won matches -->
+                                        <!-- Matches won -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
                                             <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Matches won:"/>
-                                            <TextBlock Style="{StaticResource data_description}" Text="228"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding MatchesWon}"/>
+                                        </StackPanel>
+
+                                        <!-- Winrate -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Winrate:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding Winrate}"/>
+                                        </StackPanel>
+
+                                        <!-- Rounds played -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Rounds played:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding RoundsPlayed}"/>
                                         </StackPanel>
 
                                         <!-- Shoots -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Shoots:"/>
-                                            <TextBlock Style="{StaticResource data_description}" Text="821,443"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Shots:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding TotalShots}"/>
+                                        </StackPanel>
+
+                                        <!-- Shots hit -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Shots hit:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding ShotsHit}"/>
+                                        </StackPanel>
+
+                                        <!-- Accuracy -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Average accuracy:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding Accuracy}"/>
+                                        </StackPanel>
+
+                                        <!-- Headshots -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Headshots:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding Headshots}"/>
+                                        </StackPanel>
+
+                                        <!-- Headshots percentage -->
+                                        <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="White" Text="Headshots percentage:"/>
+                                            <TextBlock Style="{StaticResource data_description}" Text="{Binding HeadshotsPercent}"/>
                                         </StackPanel>
 
                                     </StackPanel>
