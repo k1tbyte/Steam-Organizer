@@ -51,6 +51,18 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                 csgoStats.PlayedMatches = csgo_global_stats.ElementAt(7).InnerText;
                 csgoStats.Kills = csgo_global_stats.ElementAt(8).InnerText;
 
+                csgoStats.Winrate = csgoStats.PlayedMatches != "0" ? (float.Parse(csgoStats.MatchesWon.Replace(",", string.Empty)) /
+                    float.Parse(csgoStats.PlayedMatches.Replace(",", string.Empty)) * 100).ToString("0.00") + "%" : "-";
+
+                csgoStats.KD = csgoStats.Deaths != "0" ? (float.Parse(csgoStats.Kills.Replace(",", string.Empty)) /
+                    float.Parse(csgoStats.Deaths.Replace(",", string.Empty))).ToString("0.00") : "-";
+
+                csgoStats.HeadshotPercent = csgoStats.Kills != "0" ? (float.Parse(csgoStats.Headshots.Replace(",", string.Empty)) /
+                    float.Parse(csgoStats.Kills.Replace(",", string.Empty)) * 100).ToString("0.0") + "%" : "-";
+
+                csgoStats.Accuracy = csgoStats.TotalShots != "0" ? (float.Parse(csgoStats.ShotsHit.Replace(",", string.Empty)) /
+                    float.Parse(csgoStats.TotalShots.Replace(",", string.Empty)) * 100).ToString("0.0") + "%" : "-";
+
                 /// <summary>
                 /// 
                 /// 1. Shots hit

@@ -55,6 +55,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
         public void AccountParse()
         {
+
             Tryparse().GetAwaiter().GetResult();
 
         }

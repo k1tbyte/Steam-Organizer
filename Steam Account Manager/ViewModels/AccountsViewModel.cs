@@ -5,6 +5,7 @@ using Steam_Account_Manager.Infrastructure;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.Win32;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -15,6 +16,9 @@ namespace Steam_Account_Manager.ViewModels
         private RelayCommand _addAccountWindowCommand;
         public RelayCommand NoButtonCommand { get; set; }
         public RelayCommand YesButtonCommand { get; set; }
+        public RelayCommand RestoreAccountCommand { get; set; }
+        public RelayCommand RestoreAccountDatabaseCommand { get; set; }
+        public RelayCommand StoreAccountDatabaseCommand { get; set; }
 
         private static Config _config;
         private string _accountName;
@@ -154,6 +158,65 @@ namespace Steam_Account_Manager.ViewModels
                 _config.SaveChanges();
                 FillAccountTabViews();
             });
+            RestoreAccountCommand = new RelayCommand(o =>
+            {
+                var fileDialog = new OpenFileDialog
+                {
+                    Filter = "Steam Account (.sa)|*.sa"
+                };
+                if (fileDialog.ShowDialog() == true)
+                {
+                    try
+                    {
+                        _config.AccountsDb.Add((Infrastructure.Base.Account)Config.Deserialize(fileDialog.FileName));
+                        FillAccountTabViews();
+                        Task.Run(() => MainWindowViewModel.NotificationView("Account restored from file"));
+                        _config.SaveChanges();
+                    }
+                    catch
+                    {
+                        Task.Run(() => MainWindowViewModel.NotificationView("File decryption error"));
+                    }
+                }
+            });
+
+            StoreAccountDatabaseCommand = new RelayCommand(o =>
+            {
+                var fileDialog = new SaveFileDialog
+                {
+                    Filter = "Steam Account Database (.sadb)|*.sadb"
+                };
+                if (fileDialog.ShowDialog() == true)
+                {
+                    Config.Serialize(_config.AccountsDb, fileDialog.FileName);
+                    Task.Run(() => MainWindowViewModel.NotificationView("Database saved to file"));
+                }
+            });
+
+            RestoreAccountDatabaseCommand = new RelayCommand(o =>
+            {
+                var fileDialog = new OpenFileDialog
+                {
+                    Filter = "Steam Account (.sadb)|*.sadb"
+                };
+                if (fileDialog.ShowDialog() == true)
+                {
+                    try
+                    {
+                        _config.AccountsDb = (List<Infrastructure.Base.Account>)Config.Deserialize(fileDialog.FileName);
+                        FillAccountTabViews();
+                        Task.Run(() => MainWindowViewModel.NotificationView("Database restored from file"));
+                        _config.SaveChanges();
+                    }
+                    catch
+                    {
+                        Task.Run(() => MainWindowViewModel.NotificationView("File decryption error"));
+                    }
+                }
+
+            });
+
+
             FillAccountTabViews();
         }
 

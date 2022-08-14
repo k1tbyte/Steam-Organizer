@@ -10,8 +10,41 @@ namespace Steam_Account_Manager.Infrastructure.GamesModels
         private string _currentRank, _bestRank;
 
         //global stats
-        private string _kills, _deaths, _playedMatches, _matchesWon, _totalShots, _headshots, _shotsHit, _roundsPlayed; 
+        private string _kills, _deaths, _playedMatches, _matchesWon, _totalShots,
+            _headshots, _shotsHit, _roundsPlayed, _kd, _winrate, _headshotPercent, _accuracy; 
 
+        public string Accuracy
+        {
+            get => _accuracy;
+            set
+            {
+                _accuracy = value;
+            }
+        }
+        public string HeadshotPercent
+        {
+            get => _headshotPercent ?? "-";
+            set
+            {
+                _headshotPercent = value;
+            }
+        }
+        public string Winrate
+        {
+            get => _winrate ?? "-";
+            set
+            {
+                _winrate = value;
+            }
+        }
+        public string KD
+        {
+            get => _kd ?? "-";
+            set
+            {
+                _kd = value;
+            }
+        }
         public string RoundsPlayed
         {
             get => _roundsPlayed ?? "-";
@@ -78,14 +111,6 @@ namespace Steam_Account_Manager.Infrastructure.GamesModels
                 _deaths = value;
             }
         }
-        public string Winrate =>
-            _matchesWon != "-" ? (float.Parse(_matchesWon.Replace(",", string.Empty)) / float.Parse(_playedMatches.Replace(",", string.Empty)) * 100).ToString("#.##") + "%" : "-";
-        public string HeadshotPercent => 
-            _headshots != "-" ? (float.Parse(_headshots.Replace(",",string.Empty))/ float.Parse(_kills.Replace(",",string.Empty))*100).ToString("#.#") + "%" : "-";
-        public string KD =>
-            _kills  != "-" ? (float.Parse(_kills.Replace(",", string.Empty)) / float.Parse(_deaths.Replace(",", string.Empty))).ToString("#.#") : "-";
-        public string Accuracy => 
-           _shotsHit != "-" ? (float.Parse(_shotsHit.Replace(",", string.Empty)) / float.Parse(_totalShots.Replace(",", string.Empty)) * 100).ToString("#.#")+"%" : "-";
 
         public string CurrentRank
         {

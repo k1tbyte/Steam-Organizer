@@ -6,6 +6,8 @@ using System.Windows.Input;
 using Steam_Account_Manager.Infrastructure;
 using System.Net;
 using Steam_Account_Manager.ViewModels.View;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -95,6 +97,14 @@ namespace Steam_Account_Manager.ViewModels
             {
                 return false;
             }
+        }
+
+        public static async Task NotificationView(string msg)
+        {
+            NotificationVisible = true;
+            NotificationContent = msg;
+            Thread.Sleep(2300);
+            NotificationVisible = false;
         }
 
         public MainWindowViewModel()

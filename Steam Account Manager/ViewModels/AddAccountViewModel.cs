@@ -1,8 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.Infrastructure.Parsers;
 using Steam_Account_Manager.Infrastructure.Validators;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -119,13 +117,21 @@ namespace Steam_Account_Manager.ViewModels
 
                     else
                     {
-                        ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
-                        var config = Config.GetInstance();
+                        try
+                        {
+                            ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
+                            var config = Config.GetInstance();
 
-                        config.AccountsDb.Add(new Infrastructure.Base.Account(_steamLogin,_steamPassword,steamValidator.GetSteamId64()));
-                        config.SaveChanges();
-                        MainWindowViewModel.AccountsViewCommand.Execute(null);
-                        ErrorMessage = "";
+                            config.AccountsDb.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
+                            config.SaveChanges();
+                            MainWindowViewModel.AccountsViewCommand.Execute(null);
+                            ErrorMessage = "";
+                        }
+                        catch
+                        {
+                            ErrorMessage = "Error: (503) Steam is not responding";
+                        }
+
                     }
                 }
 
@@ -135,14 +141,6 @@ namespace Steam_Account_Manager.ViewModels
                 }
             });
             await task;
-        }
-
-        private async Task NotificationView()
-        {
-            MainWindowViewModel.NotificationVisible = true;
-            MainWindowViewModel.NotificationContent = (string)Application.Current.FindResource("mv_account_added_notification");
-            Thread.Sleep(2300);
-            MainWindowViewModel.NotificationVisible = false;
         }
 
 
@@ -168,7 +166,7 @@ namespace Steam_Account_Manager.ViewModels
                 if (ErrorMessage == "")
                 {
                     ExecuteWindow(o);
-                    Task.Run(() => NotificationView());
+                    Task.Run(() => MainWindowViewModel.NotificationView((string)Application.Current.FindResource("mv_account_added_notification")));
                     AccountsViewModel.FillAccountTabViews();
                 }
                 

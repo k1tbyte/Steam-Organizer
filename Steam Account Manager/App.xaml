@@ -548,7 +548,32 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-            </Style>            
+            </Style>
+
+            <Style x:Key="expandNotificationBorder" TargetType="{x:Type Border}">
+                <Setter Property="Width" Value="0"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Width"
+                                                 From="0" To="200" Duration="0:0:0.4"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Width"
+                                                 From="200" To="0" Duration="0:0:0.6"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
             <DataTemplate DataType="{x:Type viewModel:AccountsViewModel}">
                 <view:AccountsView/>
             </DataTemplate>

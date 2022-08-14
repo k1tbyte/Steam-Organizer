@@ -162,7 +162,7 @@ namespace Steam_Account_Manager.Infrastructure
 
         public void SaveChanges()
         {
-            Serialize(_config);
+            Serialize(_config, Environment.CurrentDirectory + @"\config.dat");
         }
 
         public void Clear()
@@ -199,7 +199,7 @@ namespace Steam_Account_Manager.Infrastructure
             {
                 if (File.Exists("config.dat"))
                 {
-                    _config = Deserialize();
+                    _config = (Config)Deserialize(Environment.CurrentDirectory + @"\config.dat");
                     _config.Theme = _config.Theme;
                     _config.Language = _config.Language;
                 }
@@ -237,7 +237,7 @@ namespace Steam_Account_Manager.Infrastructure
             CryptoStream encryptor = new CryptoStream(outputStream, rijndael.CreateEncryptor(key, iv), CryptoStreamMode.Write);
             return encryptor;
         }
-        public static CryptoStream CreateDecryptionStream(byte[] key, Stream inputStream)
+        private static CryptoStream CreateDecryptionStream(byte[] key, Stream inputStream)
         {
             byte[] iv = new byte[IvSize];
 
@@ -246,8 +246,10 @@ namespace Steam_Account_Manager.Infrastructure
                 throw new ApplicationException("Failed to read IV from stream.");
             }
 
-            Rijndael rijndael = new RijndaelManaged();
-            rijndael.KeySize = KeySize;
+            Rijndael rijndael = new RijndaelManaged
+            {
+                KeySize = KeySize
+            };
 
             CryptoStream decryptor = new CryptoStream(
                 inputStream,
@@ -255,26 +257,26 @@ namespace Steam_Account_Manager.Infrastructure
                 CryptoStreamMode.Read);
             return decryptor;
         }
-        private static void Serialize(Config config)
+        public static void Serialize(object obj, string path)
         {
             byte[] key = Convert.FromBase64String(CryptoKey);
 
-            using (FileStream file = new FileStream(Environment.CurrentDirectory + @"\config.dat", FileMode.Create))
+            using (FileStream file = new FileStream(path, FileMode.Create))
             {
                 using (CryptoStream cryptoStream = CreateEncryptionStream(key, file))
                 {
-                    WriteObjectToStream(cryptoStream, config);
+                    WriteObjectToStream(cryptoStream, obj);
                 }
             }
         }
-        private static Config Deserialize()
+        public static object Deserialize(string path)
         {
             byte[] key = Convert.FromBase64String(CryptoKey);
 
-            using (FileStream file = new FileStream(Environment.CurrentDirectory + @"\config.dat", FileMode.Open))
+            using (FileStream file = new FileStream(path, FileMode.Open))
             using (CryptoStream cryptoStream = CreateDecryptionStream(key, file))
             {
-                return (Config)ReadObjectFromStream(cryptoStream);
+                return ReadObjectFromStream(cryptoStream);
             }
         }
 

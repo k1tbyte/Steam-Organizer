@@ -1,4 +1,5 @@
-﻿using Steam_Account_Manager.Infrastructure;
+﻿using Microsoft.Win32;
+using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Base;
 using Steam_Account_Manager.Infrastructure.Parsers;
 using System;
@@ -18,6 +19,7 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand TakeCsgoStatsInfo { get; set; }
         public RelayCommand SaveChangesComamnd { get; set; }
         public RelayCommand OpenOtherLinksCommand { get; set; }
+        public RelayCommand ExportAccountCommand { get; set; }
         public AsyncRelayCommand RefreshCommand { get; set; }
 
         private Account currentAccount;
@@ -699,6 +701,20 @@ namespace Steam_Account_Manager.ViewModels
                 using (Process.Start(new ProcessStartInfo(SteamURL + (string)o) { UseShellExecute = true }))
                 {
                     ;
+                }
+
+            });
+
+            ExportAccountCommand = new RelayCommand(o =>
+            {
+                var fileDialog = new SaveFileDialog
+                {
+                    Filter = "Steam Account (.sa)|*.sa"
+                };
+                if (fileDialog.ShowDialog() == true)
+                {
+                    Config.Serialize(config.AccountsDb[id], fileDialog.FileName);
+                    Task.Run(() => BorderNoticeView("Account saved to file"));
                 }
 
             });

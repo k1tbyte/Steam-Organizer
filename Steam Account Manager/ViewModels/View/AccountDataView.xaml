@@ -8,7 +8,6 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:AccountDataViewModel}"
              xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
              mc:Ignorable="d" 
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="400" d:DesignWidth="600">
 
     <UserControl.Resources>
@@ -38,10 +37,10 @@
             </Style.Triggers>
         </Style>
         
-        <Style x:Key="expandEmailArea" TargetType="{x:Type Border}">
+        <Style x:Key="expandOtherDataArea" TargetType="{x:Type Border}">
             <Setter Property="MaxHeight" Value="0"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=expandButtonMail}" Value="True">
+                <DataTrigger Binding="{Binding Path=Tag, RelativeSource={RelativeSource Self}}" Value="True">
                     <DataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
@@ -62,77 +61,6 @@
             </Style.Triggers>
         </Style>
         
-        <Style x:Key="expandRockstarArea" TargetType="{x:Type Border}">
-            <Setter Property="MaxHeight" Value="0"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=expandButtonRockstarGames}" Value="True">
-                    <DataTrigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="MaxHeight"
-                                                 From="0" To="122" Duration="0:0:0.7"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.EnterActions>
-                    <DataTrigger.ExitActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="MaxHeight"
-                                                 From="122" To="0" Duration="0:0:0.7"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.ExitActions>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        
-        <Style x:Key="expandUplayArea" TargetType="{x:Type Border}">
-            <Setter Property="MaxHeight" Value="0"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsChecked, ElementName=expandButtonUplay}" Value="True">
-                        <DataTrigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="MaxHeight"
-                                                 From="0" To="122" Duration="0:0:0.7"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.EnterActions>
-                    <DataTrigger.ExitActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="MaxHeight"
-                                                 From="122" To="0" Duration="0:0:0.7"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.ExitActions>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="expandNoticeCopy" TargetType="{x:Type Border}">
-            <Setter Property="Width" Value="0"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding NoticeView}" Value="True">
-                    <DataTrigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Width"
-                                                 From="0" To="170" Duration="0:0:0.4"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.EnterActions>
-                    <DataTrigger.ExitActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Width"
-                                                 From="170" To="0" Duration="0:0:0.6"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.ExitActions>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
 
         <Style x:Key="expandCsgoArea" TargetType="{x:Type Border}">
             <Setter Property="Height" Value="340"/>
@@ -209,8 +137,8 @@
         </Button>
 
         <!-- notice Border -->
-        <Border Grid.Row="1" Height="30" VerticalAlignment="Top" Margin="0 5 40 0" CornerRadius="10"
-                Background="{DynamicResource adv_expand_border}" Opacity="0.7" Style="{StaticResource expandNoticeCopy}">
+        <Border Tag="{Binding NoticeView}" Grid.Row="1" Height="30" VerticalAlignment="Top" Margin="0 5 40 0" CornerRadius="10"
+                Background="{DynamicResource adv_expand_border}" Opacity="0.7" Style="{StaticResource expandNotificationBorder}">
             <TextBlock Text="{Binding NotifyMsg}" Style="{StaticResource settingTextBlock}" TextWrapping="NoWrap" HorizontalAlignment="Center" Margin="0 0 0 0"/>
         </Border>
         
@@ -223,7 +151,7 @@
                 <Icon:PackIconMaterial  Kind="ContentSave" Height="20" Width="40" />
             </Button>
 
-            <Button x:Name="ExportButton" Style="{StaticResource serviceButton}"
+            <Button x:Name="ExportButton" Style="{StaticResource serviceButton}" Command="{Binding ExportAccountCommand}"
                 Width="35"  Grid.Row="1" Margin="5 10 0 0" MouseEnter="ExportButton_MouseEnter" MouseLeave="Popup_MouseLeave"
                 VerticalAlignment="Top" HorizontalAlignment="Right" >
                 <Icon:PackIconMaterial  Kind="FileUpload" Height="20" Width="40" />
@@ -232,7 +160,7 @@
             <Button x:Name="RefreshButton" Style="{StaticResource serviceButton}" Command="{Binding RefreshCommand}"
                 Width="35"  Grid.Row="1" Margin="5 10 0 0" MouseEnter="RefreshButton_MouseEnter" MouseLeave="Popup_MouseLeave"
                 VerticalAlignment="Top" HorizontalAlignment="Right">
-                <Icon:PackIconMaterial  Kind="Reload" Height="20" Width="40" />
+                <Icon:PackIconMaterial  Kind="Refresh" Height="20" Width="40" />
             </Button>
 
 
@@ -569,7 +497,7 @@
                                         <Setter Property="Visibility" Value="Visible"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding CsgoParseError}" Value="">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Setter Property="Text" Value=""/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -683,7 +611,7 @@
                                 <ToggleButton  x:Name="expandButtonMail" Style="{StaticResource showButton}" IsChecked="False"/>
                             </TextBlock>
 
-                            <Border Style="{StaticResource expandEmailArea}">
+                            <Border Style="{StaticResource expandOtherDataArea}" Tag="{Binding IsChecked, ElementName=expandButtonMail}">
                                 <Grid>
                                     <StackPanel>
                                         <!-- Mail login -->
@@ -726,7 +654,7 @@
                                 <ToggleButton  x:Name="expandButtonRockstarGames" Style="{StaticResource showButton}" IsChecked="False"/>
                             </TextBlock>
 
-                            <Border Style="{StaticResource expandRockstarArea}">
+                            <Border Style="{StaticResource expandOtherDataArea}" Tag="{Binding IsChecked, ElementName=expandButtonRockstarGames}">
                                 <Grid>
                                     <StackPanel>
                                         <!-- Mail login -->
@@ -770,7 +698,7 @@
                                 <ToggleButton  x:Name="expandButtonUplay" Style="{StaticResource showButton}" IsChecked="False"/>
                             </TextBlock>
 
-                            <Border Style="{StaticResource expandUplayArea}">
+                            <Border Style="{StaticResource expandOtherDataArea}" Tag="{Binding IsChecked, ElementName=expandButtonUplay}">
                                 <Grid>
                                     <StackPanel>
 

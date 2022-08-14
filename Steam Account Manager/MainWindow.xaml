@@ -18,28 +18,6 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
-
-        <Style x:Key="expandAreaStyle" TargetType="{x:Type Border}">
-            <Setter Property="Margin" Value="0 0 250 0"/>
-            <Style.Triggers>
-                <DataTrigger  Binding="{Binding IsVisible, ElementName=notification}" Value="True">
-                    <DataTrigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard Storyboard.TargetProperty="Margin">
-                                <ThicknessAnimation To="0 0 0 0" Duration="0:0:0.3"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.EnterActions>
-                    <DataTrigger.ExitActions>
-                        <BeginStoryboard>
-                            <Storyboard Storyboard.TargetProperty="Margin">
-                                <ThicknessAnimation To="0 0 250 0" Duration="0:0:0.3"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.ExitActions>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
     </Window.Resources>
 
     <Border CornerRadius="30" Background="{DynamicResource background_border_color}" MouseDown="Border_MouseDown">
@@ -135,27 +113,18 @@
             </Grid>
 
             <!-- Notification Grid -->
-            <Grid Grid.Column="1"
-                  Width="250" Height="30" VerticalAlignment="Top" Margin="0 30 150 0">
-                <Border
-                    x:Name="notification"
-                    Height="30"
-                    Style="{DynamicResource expandAreaStyle}"
-                         VerticalAlignment="Top" 
-                         CornerRadius="10 10 10 10"
-                         Background="{DynamicResource popup_border_background}" Opacity="0.85"
-                    Visibility="{Binding Path=NotificationVisible, Converter={StaticResource BoolToVis}}">
-
-                    <StackPanel Orientation="Horizontal">
-                        <Icon:PackIconMaterial Kind="BellOutline"
-                                               VerticalAlignment="Center" Margin="15 0 0 0"
-                                               Foreground="White"/>
-                        <TextBlock Text="{Binding Path=NotificationContent}" VerticalAlignment="Center" 
-                                   FontSize="11" Padding="15 0 0 0"
+            <Border  Grid.Column="1"  HorizontalAlignment="Center" Margin="0 30 150 0"
+                     Height="30" Style="{DynamicResource expandNotificationBorder}"
+                     VerticalAlignment="Top" CornerRadius="10" Tag="{Binding Path=NotificationVisible}"
+                     Background="{DynamicResource popup_border_background}" Opacity="0.85">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    
+                    <Icon:PackIconMaterial Kind="BellOutline" VerticalAlignment="Center" Foreground="White"/>
+                    <TextBlock Text="{Binding Path=NotificationContent}" VerticalAlignment="Center" 
+                                   FontSize="11" Padding="7 0 0 0"
                                    FontWeight="Regular" Foreground="White"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
+                </StackPanel>
+            </Border>
 
             <!--Main Section-->
             <Grid Grid.Column="1" Margin="30,20,30,23">
