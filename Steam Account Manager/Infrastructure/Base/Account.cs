@@ -35,6 +35,15 @@ namespace Steam_Account_Manager.Infrastructure.Base
         public string CountGamesImageUrl { get; set; }
         public CsgoStats CsgoStats { get; set; }
 
+        //Other info
+        public string Note { get; set; }
+        public string EmailLogin { get; set; }
+        public string EmailPass { get; set; }
+        public string RockstarEmail { get; set; }
+        public string RockstarPass { get; set; }
+        public string UplayEmail { get; set; }
+        public string UplayPass { get; set; }
+
         public Account(string login,string password,string steamId64)
         {
             this.Login = login;
@@ -60,6 +69,8 @@ namespace Steam_Account_Manager.Infrastructure.Base
             this.CountGamesImageUrl = steamParser.GetCountGamesImageUrl;
             this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
             this.CsgoStats = new CsgoStats();
+
+            this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = "";
         }
     }
 }

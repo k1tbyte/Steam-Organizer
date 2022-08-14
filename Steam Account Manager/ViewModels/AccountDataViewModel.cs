@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Steam_Account_Manager.ViewModels
@@ -15,12 +16,15 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand CopyCommand { get; set; }
         public RelayCommand OpenUrlProfileCommand { get; set; }
         public RelayCommand TakeCsgoStatsInfo { get; set; }
+        public RelayCommand SaveChangesComamnd { get; set; }
+        public RelayCommand OpenOtherLinksCommand { get; set; }
+        public AsyncRelayCommand RefreshCommand { get; set; }
 
         private Account currentAccount;
         private Config config;
 
         private string _avatarFull, _nickname;
-        private bool _copyNotice = false;
+        private bool _noticeView = false, _savePermission = false, _isCsgoStatsSave = false, _rankRefreshPermission = true;
         private string _steamLevel, _steamURL, _steamId64;
         private ulong _steaId32;
         private string _login, _password;
@@ -42,9 +46,94 @@ namespace Steam_Account_Manager.ViewModels
             _kills, _deaths, _KD , _playedMatches, _matchesWon, _winrate, _totalShots, _headshots,
             _headshotsPercent, _shotsHit,_accuracy, _roundsPlayed;
 
-        //eror msgs
-        private string _csgoParseError;
+        //eror and notify msgs
+        private string _csgoParseError, _steamDataValidateError, _notifyMsg;
 
+        //other account info
+        private string _note, _emailLogin, _emailPass, _rockstarEmail, _rockstarPass, _uplayEmail, _uplayPass;
+
+        public string Note
+        {
+            get => _note;
+            set
+            {
+                _note = value;
+                OnPropertyChanged(nameof(Note));
+            }
+        }
+        public string EmailLogin
+        {
+            get => _emailLogin;
+            set
+            {
+                _emailLogin = value;
+                OnPropertyChanged(nameof(EmailLogin));
+            }
+        }
+        public string EmailPass
+        {
+            get => _emailPass;
+            set
+            {
+                _emailPass = value;
+                OnPropertyChanged(nameof(EmailPass));
+            }
+        }
+        public string RockstarEmail
+        {
+            get => _rockstarEmail;
+            set
+            {
+                _rockstarEmail = value;
+                OnPropertyChanged(nameof(RockstarEmail));
+            }
+        }
+        public string RockstarPass
+        {
+            get => _rockstarPass;
+            set
+            {
+                _rockstarPass = value;
+                OnPropertyChanged(nameof(RockstarPass));
+            }
+        }
+        public string UplayEmail
+        {
+            get => _uplayEmail;
+            set
+            {
+                _uplayEmail = value;
+                OnPropertyChanged(nameof(UplayEmail));
+            }
+        }
+        public string UplayPass
+        {
+            get => _uplayPass;
+            set
+            {
+                _uplayPass = value;
+                OnPropertyChanged(nameof(UplayPass));
+            }
+        }
+
+        public string NotifyMsg
+        {
+            get => _notifyMsg;
+            set
+            {
+                _notifyMsg = value;
+                OnPropertyChanged(nameof(NotifyMsg));
+            }
+        }
+        public string SteamDataValidateError
+        {
+            get => _steamDataValidateError;
+            set
+            {
+                _steamDataValidateError = value;
+                OnPropertyChanged(nameof(SteamDataValidateError));
+            }
+        }
         public string CsgoParseError
         {
             get => _csgoParseError;
@@ -186,7 +275,7 @@ namespace Steam_Account_Manager.ViewModels
             set
             {
                 _password = value;
-                OnPropertyChanged(nameof(Password));
+                if (!_savePermission) _savePermission = true;
             }
         }
         public ulong SteamID32
@@ -225,13 +314,13 @@ namespace Steam_Account_Manager.ViewModels
                 OnPropertyChanged(nameof(SteamLevel));
             }
         }
-        public bool CopyNotice
+        public bool NoticeView
         {
-            get => _copyNotice;
+            get => _noticeView;
             set
             {
-                _copyNotice = value;
-                OnPropertyChanged(nameof(CopyNotice));
+                _noticeView = value;
+                OnPropertyChanged(nameof(NoticeView));
             }
         }
         public string AvatarFull
@@ -382,49 +471,12 @@ namespace Steam_Account_Manager.ViewModels
         } 
         #endregion
 
-        private async Task CopyNoticeView()
+        private void FillSteamInfo()
         {
-            CopyNotice = true;
-            Thread.Sleep(2000);
-            CopyNotice = false;
-        }
-
-        private async Task CsgoStatsParse()
-        {
-            var csgo_parser = new CsgoParser(_steamId64);
-            
-            csgo_parser.RankParse();
-            csgo_parser.GlobalStatsParse();
-
-            currentAccount.CsgoStats = csgo_parser.GetCsgoStats;
-
-            CurrentRank = currentAccount.CsgoStats.CurrentRank;
-            BestRank = currentAccount.CsgoStats.BestRank;
-            Kills = currentAccount.CsgoStats.Kills;
-            Deaths = currentAccount.CsgoStats.Deaths;
-            KD = currentAccount.CsgoStats.KD;
-            PlayedMatches = currentAccount.CsgoStats.PlayedMatches;
-            MatchesWon = currentAccount.CsgoStats.MatchesWon;
-            Winrate = currentAccount.CsgoStats.Winrate;
-            TotalShots = currentAccount.CsgoStats.TotalShots;
-            Headshots = currentAccount.CsgoStats.Headshots;
-            HeadshotsPercent = currentAccount.CsgoStats.HeadshotPercent;
-            ShotsHit = currentAccount.CsgoStats.ShotsHit;
-            Accuracy = currentAccount.CsgoStats.Accuracy;
-            RoundsPlayed = currentAccount.CsgoStats.RoundsPlayed;
-
-            config.SaveChanges();
-        }
-
-        public AccountDataViewModel(int id)
-        {
-            config = Config.GetInstance();
-            currentAccount = config.AccountsDb[id];
-
             //Player summaries
             AvatarFull = currentAccount.AvatarFull;
             Nickname = currentAccount.Nickname;
-            SteamID32 = ulong.Parse(currentAccount.SteamId64)-76561197960265728;
+            SteamID32 = ulong.Parse(currentAccount.SteamId64) - 76561197960265728;
             SteamID64 = currentAccount.SteamId64;
             SteamURL = currentAccount.ProfileURL;
             Login = currentAccount.Login;
@@ -432,14 +484,14 @@ namespace Steam_Account_Manager.ViewModels
             CreatedDate = currentAccount.AccCreatedDate;
             ProfileVisiblity = currentAccount.ProfileVisility == true ? "Public" : "Private";
             CreatedDatePicuture = currentAccount.CreatedDateImageUrl;
-                
+
             //Games info
             SteamLevel = currentAccount.SteamLevel;
             GameCountPicture = currentAccount.CountGamesImageUrl;
             GamesTotal = currentAccount.TotalGames;
             GamesPlayed = currentAccount.GamesPlayed;
             HoursOnPlayed = currentAccount.HoursOnPlayed;
-            PlayedPercent = GamesPlayed != null ? " ("+(float.Parse(GamesPlayed.Replace(",", string.Empty)) / float.Parse(GamesTotal.Replace(",", String.Empty)) * 100).ToString("#.#")+ "%)" : "0";
+            PlayedPercent = currentAccount.ProfileVisility == true ? " (" + (float.Parse(GamesPlayed.Replace(",", string.Empty)) / float.Parse(GamesTotal.Replace(",", String.Empty)) * 100).ToString("#.#") + "%)" : "-";
 
             //Bans info
             VacCount = currentAccount.VacBansCount;
@@ -447,6 +499,17 @@ namespace Steam_Account_Manager.ViewModels
             TradeBan = currentAccount.TradeBan;
             DaysSinceLastBan = currentAccount.DaysSinceLastBan;
 
+            //Other info
+            Note = currentAccount.Note;
+            EmailLogin = currentAccount.EmailLogin;
+            EmailPass = currentAccount.EmailPass;
+            RockstarEmail = currentAccount.RockstarEmail;
+            RockstarPass = currentAccount.RockstarPass;
+            UplayEmail = currentAccount.UplayEmail;
+            UplayPass = currentAccount.UplayPass;
+        }
+        private void FillCsgoInfo()
+        {
             //csgo info
             CurrentRank = currentAccount.CsgoStats.CurrentRank;
             BestRank = currentAccount.CsgoStats.BestRank;
@@ -462,11 +525,84 @@ namespace Steam_Account_Manager.ViewModels
             ShotsHit = currentAccount.CsgoStats.ShotsHit;
             Accuracy = currentAccount.CsgoStats.Accuracy;
             RoundsPlayed = currentAccount.CsgoStats.RoundsPlayed;
+        }
+
+        private async Task BorderNoticeView(string message)
+        {
+            NotifyMsg = message;
+            NoticeView = true;
+            Thread.Sleep(2000);
+            NoticeView = false;
+        }
+
+        private async Task CsgoStatsParse()
+        {
+            _rankRefreshPermission = false;
+            var csgo_parser = new CsgoParser(_steamId64);
+            CsgoParseError = "Gathering rank data...";
+            csgo_parser.RankParse();
+            CsgoParseError = "Gathering statistics...";
+            if(csgo_parser.GlobalStatsParse())
+            {
+                currentAccount.CsgoStats = csgo_parser.GetCsgoStats;
+                FillCsgoInfo();
+
+                _isCsgoStatsSave = true;
+                if (!_savePermission) _savePermission = true;
+
+                CsgoParseError = "Player data has been updated!";
+                Thread.Sleep(2000);
+                CsgoParseError = "";
+                
+            }
+            else
+            {
+                CsgoParseError = "The server error, please try again...";
+                Thread.Sleep(2000);
+                CsgoParseError = "";
+            }
+            _rankRefreshPermission = true;
+
+        }
+
+        private async Task RefreshAccount(int id)
+        {
+            if (MainWindowViewModel.NetworkConnectivityCheck())
+            {
+                var task = Task.Factory.StartNew(() =>
+                {
+                    currentAccount = new Account(currentAccount.Login, currentAccount.Password, currentAccount.SteamId64)
+                    {
+                        CsgoStats = currentAccount.CsgoStats,
+                        Note = currentAccount.Note,
+                        EmailLogin = currentAccount.EmailLogin,
+                        EmailPass = currentAccount.EmailPass,
+                        RockstarEmail = currentAccount.RockstarEmail,
+                        RockstarPass = currentAccount.RockstarPass,
+                        UplayEmail = currentAccount.UplayEmail,
+                        UplayPass = currentAccount.UplayPass
+                    };
+
+                    config.AccountsDb[id] = currentAccount;
+                    config.SaveChanges();
+                    Task.Run(() => BorderNoticeView("Information updated"));
+                    FillSteamInfo();
+                });
+                await task;
+            }
+        }
+        public AccountDataViewModel(int id)
+        {
+            config = Config.GetInstance();
+            currentAccount = config.AccountsDb[id];
+            FillSteamInfo();
+            FillCsgoInfo();
 
 
-        CancelCommand = new RelayCommand(o =>
+            CancelCommand = new RelayCommand(o =>
             {
                 MainWindowViewModel.AccountsViewCommand.Execute(null);
+                AccountsViewModel.FillAccountTabViews();
             });
 
             CopyCommand = new RelayCommand(o =>
@@ -474,7 +610,7 @@ namespace Steam_Account_Manager.ViewModels
                 var box = o as TextBox;
                 box.SelectAll();
                 box.Copy();
-                Task.Run(() => CopyNoticeView());
+                Task.Run(() => BorderNoticeView("Copied to clipboard"));
             });
 
             OpenUrlProfileCommand = new RelayCommand(o =>
@@ -487,7 +623,84 @@ namespace Steam_Account_Manager.ViewModels
 
             TakeCsgoStatsInfo = new RelayCommand(o =>
             {
-                Task.Run(() => CsgoStatsParse());
+               if(currentAccount.ProfileVisility && _rankRefreshPermission)
+                    Task.Run(() => CsgoStatsParse());
+            });
+
+            SaveChangesComamnd = new RelayCommand(o =>
+            {
+                if (!_isCsgoStatsSave && (!_savePermission || (Password == currentAccount.Password && 
+                Login == currentAccount.Login && Note == currentAccount.Note && EmailLogin == currentAccount.EmailLogin &&
+                RockstarEmail == currentAccount.RockstarEmail &&  RockstarPass == currentAccount.RockstarPass &&
+                UplayEmail == currentAccount.UplayEmail && UplayPass == currentAccount.UplayPass))) { }
+
+                else if (Login == "")
+                {
+                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_login_empty");
+                }
+
+                else if (Login.Contains(" "))
+                {
+                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_login_contain_spaces");
+                }
+
+                else if (Login.Length < 3)
+                {
+                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_login_shortage");
+                }
+
+                else if (Login.Length > 20)
+                {
+                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_login_overflow");
+                }
+
+                else if (Password == "")
+                {
+                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_pass_empty");
+                }
+
+                else if (Password.Length < 8)
+                {
+                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_pass_shortage");
+                }
+
+                else if (Password.Length > 50)
+                {
+                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_pass_overflow");
+                }
+                else
+                {
+                    _savePermission = false;
+                    if(_isCsgoStatsSave)
+                    {
+                        config.AccountsDb[id].CsgoStats = currentAccount.CsgoStats;
+                        _isCsgoStatsSave = false;
+                    }
+                    config.AccountsDb[id].Password = Password;
+                    config.AccountsDb[id].Login = Login;
+                    config.AccountsDb[id].Note = Note;
+                    config.AccountsDb[id].EmailLogin = EmailLogin;
+                    config.AccountsDb[id].EmailPass = EmailPass;
+                    config.AccountsDb[id].RockstarEmail = RockstarEmail;
+                    config.AccountsDb[id].RockstarPass = RockstarPass;
+                    config.AccountsDb[id].UplayEmail = UplayEmail;
+                    config.AccountsDb[id].UplayPass = UplayPass;
+                    config.SaveChanges();
+                    Task.Run(() => BorderNoticeView("Account changes saved"));
+
+                }
+                
+            });
+
+            RefreshCommand = new AsyncRelayCommand(async (o) => await RefreshAccount(id));
+
+            OpenOtherLinksCommand = new RelayCommand(o =>
+            {
+                using (Process.Start(new ProcessStartInfo(SteamURL + (string)o) { UseShellExecute = true }))
+                {
+                    ;
+                }
+
             });
         }
     }

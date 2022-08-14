@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media.Imaging;
 
 namespace Steam_Account_Manager.ViewModels.View
 {
@@ -13,9 +14,16 @@ namespace Steam_Account_Manager.ViewModels.View
 
         public AccountDataView(int id)
         {
+            bool scrollToEnd = false;
             InitializeComponent();
-            currentViewModel = new AccountDataViewModel(id);
+            if (id < 0)
+            {
+                scrollToEnd = true;
+                id *= -1;
+            }
+            currentViewModel = new AccountDataViewModel(id-1);
             this.DataContext = currentViewModel;
+            if (scrollToEnd) scrollViewer.ScrollToEnd();
         }
 
         private void VacBorder_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -43,12 +51,19 @@ namespace Steam_Account_Manager.ViewModels.View
 
         private void GamesCountLabel_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            Popup.PlacementTarget = GamesCountLabel;
+           Popup.PlacementTarget = GamesCountLabel;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Games on account: " + currentViewModel.GamesTotal;
-            Header.PopupText.Text += "\nGames played: " + currentViewModel.GamesPlayed + currentViewModel.PlayedPercent;
-            Header.PopupText.Text += "\nPlaytime: " + currentViewModel.HoursOnPlayed.ToString() + "h";
+            if(currentViewModel.GamesTotal == "-" || currentViewModel.ProfileVisiblity == "Private")
+            {
+                Header.PopupText.Text = "Games missing or profile is private";
+            }
+            else
+            {
+                Header.PopupText.Text = "Games on account: " + currentViewModel.GamesTotal;
+                Header.PopupText.Text += "\nGames played: " + currentViewModel.GamesPlayed + currentViewModel.PlayedPercent;
+                Header.PopupText.Text += "\nPlaytime: " + currentViewModel.HoursOnPlayed.ToString() + "h";
+            }
 
 
         }
@@ -77,17 +92,28 @@ namespace Steam_Account_Manager.ViewModels.View
             Header.PopupText.Text = "Update account information";
         }
 
+        private void CurrentRank_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.PlacementTarget = CurrentRank;
+            Popup.Placement = PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "Current rank 5x5";
+        }
 
-        /*        private void steamImage_ImageFailed(object sender, System.Windows.ExceptionRoutedEventArgs e)
-                {
-                    var uriSource = new Uri("/Images/default_steam_profile.png", UriKind.Relative);
-                    steamImage.Source = new BitmapImage(uriSource);
-                }
+        private void BestRank_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.PlacementTarget = BestRank;
+            Popup.Placement = PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "Best rank 5x5";
+        }
 
-                private void copy_Click(object sender, System.Windows.RoutedEventArgs e)
-                {
-                    URL.SelectAll();
-                    URL.Copy();
-                }*/
+        private void steamImage_ImageFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            var uriSource = new Uri("/Images/default_steam_profile.png", UriKind.Relative);
+            steamImage.Source = new BitmapImage(uriSource);
+        }
+
+
     }
 }

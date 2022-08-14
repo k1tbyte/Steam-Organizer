@@ -520,7 +520,35 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            
+
+            <Style x:Key="steam_links" TargetType="Button">
+                <Setter Property="Margin" Value="20 5 20 0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="#b0b9c6"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource adv_expand_border}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderThickness="2" Height="32"
+                                    BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="6">
+                                <TextBlock Text="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Center"
+                                           HorizontalAlignment="Center" Foreground="{TemplateBinding Foreground}" FontWeight="Normal" FontSize="14"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource adv_expand_border}"/>
+                                    <Setter Property="Foreground" Value="#FFFF"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource sub_accounttab_text}"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="BorderBrush" Value="Transparent"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>            
             <DataTemplate DataType="{x:Type viewModel:AccountsViewModel}">
                 <view:AccountsView/>
             </DataTemplate>

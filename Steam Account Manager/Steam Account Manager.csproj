@@ -381,6 +381,12 @@
     <Resource Include="Images\Games_count_badges\8000.png" />
     <Resource Include="Images\Games_count_badges\9000.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Games_count_badges\unknown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Steam_years_of_service\year0.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

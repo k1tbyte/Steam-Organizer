@@ -11,7 +11,7 @@ namespace Steam_Account_Manager.ViewModels
 
     internal class AccountsViewModel : ObservableObject
     {
-        public AsyncRelayCommand AddAccountViewOrUpdateCommand { get; set; }
+        public AsyncRelayCommand UpdateDatabaseCommand { get; set; }
         private RelayCommand _addAccountWindowCommand;
         public RelayCommand NoButtonCommand { get; set; }
         public RelayCommand YesButtonCommand { get; set; }
@@ -111,30 +111,28 @@ namespace Steam_Account_Manager.ViewModels
             ShowDialogWindow(addAccountWindow);
         }
 
-        private async Task AddOrUpdate(object o)
+        private async Task UpdateDatabase()
         {
-            if ((bool)o)
+            if (MainWindowViewModel.NetworkConnectivityCheck())
             {
-                if (MainWindowViewModel.NetworkConnectivityCheck())
+                var task = Task.Factory.StartNew(() =>
                 {
-                    var task = Task.Factory.StartNew(() =>
+                    for (int i = 0; i < _config.AccountsDb.Count; i++)
                     {
-                        for (int i = 0; i < _config.AccountsDb.Count; i++)
-                        {
-                            //прогрессбар обновления данных об аккаунтах
-                            _config.AccountsDb[i] = new Infrastructure.Base.Account(_config.AccountsDb[i].Login, _config.AccountsDb[i].Password, _config.AccountsDb[i].SteamId64);
-                        }
-                        _config.SaveChanges();
-                    });
-                    await task;
-                    if (SearchBoxText != null) FillAccountTabViews(_config.SearchByNickname(SearchBoxText), SearchBoxText);
-                    else FillAccountTabViews();
-                }
-                else
-                {
-                    //уведомление об отсутствии инета
-                }
+                        //прогрессбар обновления данных об аккаунтах
+                        _config.AccountsDb[i] = new Infrastructure.Base.Account(_config.AccountsDb[i].Login, _config.AccountsDb[i].Password, _config.AccountsDb[i].SteamId64);
+                    }
+                    _config.SaveChanges();
+                });
+                await task;
+                if (SearchBoxText != null) FillAccountTabViews(_config.SearchByNickname(SearchBoxText), SearchBoxText);
+                else FillAccountTabViews();
             }
+            else
+            {
+                //уведомление об отсутствии инета
+            }
+
         }
 
 
@@ -144,7 +142,7 @@ namespace Steam_Account_Manager.ViewModels
             AccountTabViews = new ObservableCollection<AccountTabView>();
             AccountName = "";
             AccountId = -1;
-            AddAccountViewOrUpdateCommand = new AsyncRelayCommand(async (o) => await AddOrUpdate(o));
+            UpdateDatabaseCommand = new AsyncRelayCommand(async (o) => await UpdateDatabase());
             NoButtonCommand = new RelayCommand(o =>
             {
                 ConfirmBanner = false;

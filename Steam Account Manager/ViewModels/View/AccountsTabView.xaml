@@ -135,9 +135,11 @@
                     <Button Style="{StaticResource gridRemoveButton}" Command="{Binding DeleteAccoundCommand}" HorizontalAlignment="Right" Margin="0 0 5 0">
                         <icon:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
                     </Button>
-                    <Button Style="{StaticResource gridNoteButton}" HorizontalAlignment="Right" Margin="0 0 5 0">
+                    
+                    <Button Style="{StaticResource gridNoteButton}" Command="{Binding ViewAccountNoteModeCommand}" HorizontalAlignment="Right" Margin="0 0 5 0">
                         <icon:PackIconMaterial Kind="NoteEditOutline" Style="{StaticResource gridButtonIcon}"/>
                     </Button>
+                    
                     <Button Style="{StaticResource gridEditButton}" Command="{Binding EditOrViewAccountCommand}" HorizontalAlignment="Right" Margin="0 0 5 0">
                         <icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
                     </Button>

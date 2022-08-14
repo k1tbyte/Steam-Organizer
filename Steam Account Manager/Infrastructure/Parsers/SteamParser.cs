@@ -86,6 +86,9 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                
                 _totalGames = steam_games_info[0].InnerText.Split(' ', '\n')[4];
 
+                //Если спарсился мусор - выход
+                float.Parse(_totalGames);
+
                 #region Определение иконки в диапазоне количества игр
                 ushort[] gameImageVariableArr = {
                 1,5,10,25,50,100,250,500,1000,2000,3000,4000,5000,6000,7000,8000,8000,9000,10000,11000,13000,14000,15000,16000,17000,18000,20000,21000,
@@ -121,7 +124,12 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
 
             }
-            catch { _profileVisiblity = false; }
+            catch 
+            {
+                _totalGames = "-";
+                _profileVisiblity = false;
+                _countGamesImageUrl = "/Images/Games_count_badges/unknown.png";
+            }
             handler.Dispose();
             client.Dispose();
         }

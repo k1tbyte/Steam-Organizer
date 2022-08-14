@@ -11,6 +11,7 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand DeleteAccoundCommand { get; set; }
         public RelayCommand EditOrViewAccountCommand { get; set; }
         public RelayCommand OpenUrlProfileCommand { get; set; }
+        public RelayCommand ViewAccountNoteModeCommand { get; set; }
 
         private string _steamPicture;
         private string _steamNickname;
@@ -112,7 +113,12 @@ namespace Steam_Account_Manager.ViewModels
 
             EditOrViewAccountCommand = new RelayCommand(o =>
             {
-                MainWindowViewModel.AccountDataViewCommand.Execute(id);
+                MainWindowViewModel.AccountDataViewCommand.Execute(Id);
+            });
+
+            ViewAccountNoteModeCommand = new RelayCommand(o =>
+            {
+                MainWindowViewModel.AccountDataViewCommand.Execute(Id*-1);
             });
 
             OpenUrlProfileCommand = new RelayCommand(o =>

@@ -21,8 +21,9 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         public ref CsgoStats GetCsgoStats => ref csgoStats;
 
         //Global csgo statisctics parser
-        public async void GlobalStatsParse()
+        public bool GlobalStatsParse()
         {
+            bool message;
             var target = new Uri($"https://csgo-stats.com/player/{_steamId64}/");
             var handler = new HttpClientHandler
             {
@@ -63,13 +64,16 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                 /// 9. Kills
                 /// 
                 /// </summary>
+                message = true;
             }
             catch
             {
-               // Console.WriteLine("error");
+                message = false;
+                
             }
             handler.Dispose();
             client.Dispose();
+            return message;
         }
 
 
