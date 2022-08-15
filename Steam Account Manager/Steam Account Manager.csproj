@@ -96,6 +96,7 @@
     <Compile Include="Infrastructure\AsyncRelayCommand.cs" />
     <Compile Include="Infrastructure\Base\Account.cs" />
     <Compile Include="Infrastructure\Config.cs" />
+    <Compile Include="Infrastructure\Converters\InverseBooleanConverter.cs" />
     <Compile Include="Infrastructure\GamesModels\CsgoStats.cs" />
     <Compile Include="Infrastructure\OvservableObject.cs" />
     <Compile Include="Infrastructure\Parsers\CsgoParser.cs" />
@@ -178,7 +179,11 @@
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
-    <Page Include="Themes\ScrollBarTheme.xaml">
+    <Page Include="Themes\ProgressBarStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ScrollBarStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -241,9 +246,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\user.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\default_steam_profile.png" />
@@ -386,6 +388,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Steam_years_of_service\year0.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\user.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

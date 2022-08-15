@@ -117,25 +117,47 @@ namespace Steam_Account_Manager.ViewModels
 
         private async Task UpdateDatabase()
         {
-            if (MainWindowViewModel.NetworkConnectivityCheck())
+            try 
             {
-                var task = Task.Factory.StartNew(() =>
+                MainWindowViewModel.IsEnabledForUser = false;
+                await Task.Factory.StartNew(() =>
                 {
                     for (int i = 0; i < _config.AccountsDb.Count; i++)
                     {
-                        //прогрессбар обновления данных об аккаунтах
-                        _config.AccountsDb[i] = new Infrastructure.Base.Account(_config.AccountsDb[i].Login, _config.AccountsDb[i].Password, _config.AccountsDb[i].SteamId64);
+                        MainWindowViewModel.UpdatedAccountIndex = i + 1;
+                        _config.AccountsDb[i] = new Infrastructure.Base.Account(
+                              _config.AccountsDb[i].Login,
+                             _config.AccountsDb[i].Password,
+                             _config.AccountsDb[i].SteamId64,
+                             _config.AccountsDb[i].Note,
+                             _config.AccountsDb[i].EmailLogin,
+                             _config.AccountsDb[i].EmailPass,
+                             _config.AccountsDb[i].RockstarEmail,
+                             _config.AccountsDb[i].RockstarPass,
+                             _config.AccountsDb[i].UplayEmail,
+                             _config.AccountsDb[i].UplayPass,
+                             _config.AccountsDb[i].CsgoStats);
                     }
+                    MainWindowViewModel.UpdatedAccountIndex = 0;
+                    MainWindowViewModel.IsEnabledForUser = true;
+                    Task.Run(() => MainWindowViewModel.NotificationView("Database has been updated"));
                     _config.SaveChanges();
                 });
-                await task;
                 if (SearchBoxText != null) FillAccountTabViews(_config.SearchByNickname(SearchBoxText), SearchBoxText);
                 else FillAccountTabViews();
             }
-            else
+            catch
             {
-                //уведомление об отсутствии инета
+                MainWindowViewModel.UpdatedAccountIndex = 0;
+                MainWindowViewModel.IsEnabledForUser = true;
+                await Task.Run(() => MainWindowViewModel.NotificationView("Error, no internet connection..."));
             }
+
+        }
+
+        private void NowLoginUserParse()
+        {
+
 
         }
 

@@ -10,7 +10,8 @@
         WindowStyle="None"
         Background="Transparent"
         Title="Steam Account Manager"
-        WindowState="{Binding MainWindowState}">
+        WindowState="{Binding MainWindowState}"
+        IsHitTestVisible="{Binding IsEnabledForUser}">
 
     <Window.DataContext>
         <vm:MainWindowViewModel/>
@@ -40,7 +41,7 @@
 
                 <!--Menu Icon-->
                 <Button Style="{StaticResource topButton}" HorizontalAlignment="Left" Margin="20 28 0 35">
-                    <Icon:PackIconMaterial Kind="Menu" Width="15" Height="15" />
+                    <Icon:PackIconMaterial Kind="Menu" Width="15" Height="12" />
                 </Button>
 
 
@@ -50,21 +51,25 @@
                     <DockPanel>
                         <!--Menu Logo-->
                         <Border Width="100" Height="100" Padding="3" Background="{DynamicResource background_border_color}" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 -30 0 0">
-                            <Ellipse>
-                                <Ellipse.Fill>
-                                    <ImageBrush>
-                                        <ImageBrush.ImageSource>
-                                            <BitmapImage UriSource="\Images\user.jpg"
-                                                         CacheOption="OnLoad"
-                                                         DecodePixelHeight="200"/>
-                                        </ImageBrush.ImageSource>
-                                    </ImageBrush>
-                                </Ellipse.Fill>
-                            </Ellipse>
+                            <!-- Not critical error here idk why -->
+                            <WrapPanel Name ="container" Width="94" Height="94">
+                                <Image x:Name="steamImage" 
+                               Source="{Binding NowLoginUserImage, UpdateSourceTrigger=PropertyChanged}"
+                               ImageFailed="steamImage_ImageFailed"/>
+                                <WrapPanel.OpacityMask>
+                                    <VisualBrush >
+                                        <VisualBrush.Visual>
+                                            <Border Height="{Binding ElementName=container, Path=ActualHeight}" 
+                            Width="{Binding ElementName=container, Path=ActualWidth}"
+                            Background="White" CornerRadius="50" />
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </WrapPanel.OpacityMask>
+                            </WrapPanel>
                         </Border>
 
                         <!--Menu Titles-->
-                        <TextBlock Text="Username" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
+                        <TextBlock Text="{Binding NowLoginUserNickname, UpdateSourceTrigger=PropertyChanged}" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal"  HorizontalAlignment="Center">
                             <TextBlock Text="{DynamicResource mv_total_accounts}"
                                    Foreground="{DynamicResource menu_button_text}" FontSize="14"
@@ -99,7 +104,8 @@
                             </RadioButton>
                         </StackPanel>
 
-                        <Button Style="{StaticResource logoutButton}" VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Margin="15 0 15 20">
+                        <Button Style="{StaticResource logoutButton}" Cursor="Hand" VerticalAlignment="Bottom" 
+                                DockPanel.Dock="Bottom" Margin="15 0 15 20" Command="{Binding LogoutCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <Icon:PackIconMaterial Kind="Logout" Style="{StaticResource menuButtonIcon}"/>
                                 <TextBlock Text="{DynamicResource mv_logout_title}"/>
@@ -111,6 +117,10 @@
 
 
             </Grid>
+
+            <ProgressBar Grid.Column="1" HorizontalAlignment="Center" Margin="0 35 150 0" Width="160" Tag="{Binding UpdatedAccountIndex, UpdateSourceTrigger=PropertyChanged}"
+                     Height="25" VerticalAlignment="Top" Minimum="0" Maximum="{Binding TotalAccounts}" Value="{Binding UpdatedAccountIndex}">
+            </ProgressBar>
 
             <!-- Notification Grid -->
             <Border  Grid.Column="1"  HorizontalAlignment="Center" Margin="0 30 150 0"

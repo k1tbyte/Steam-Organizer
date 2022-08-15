@@ -66,5 +66,6 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.IsOpen = true;
             Header.PopupText.Text = "Update database information";
         }
+
     }
 }

@@ -36,7 +36,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         }
 
 
-        private async Task Tryparse()
+        public async Task AccountParse()
         {
 
             //Получаем инфу о банах
@@ -50,15 +50,9 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
             // Получаем инфу о уровне
             await ParseSteamLevelAsync();
-
         }
 
-        public void AccountParse()
-        {
 
-            Tryparse().GetAwaiter().GetResult();
-
-        }
 
         public string GetCreatedDateImageUrl => _createdDateImageUrl;
         public string GetCountGamesImageUrl => _countGamesImageUrl;
@@ -146,7 +140,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             var webClient = new WebClient { Encoding = Encoding.UTF8 };
             string json = await webClient.DownloadStringTaskAsync(GetSteamLevelLink());
             var list = JsonConvert.DeserializeObject<RootObjectPlayerLevel>(json);
-            _steamLevel = list.Response.Player_level;
+            _steamLevel = list.Response.Player_level != null ? list.Response.Player_level : "-";
         }
 
         private class RootObjectPlayerLevel
@@ -165,7 +159,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         private string GetPlayerSummariesLink() =>
             "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + _apiKey + "&steamids=" + _steamId64;
 
-        private async Task ParsePlayerSummariesAsync()
+        public async Task ParsePlayerSummariesAsync()
         {
             var webClient = new WebClient { Encoding = Encoding.UTF8 };
             string json = await webClient.DownloadStringTaskAsync(GetPlayerSummariesLink());
@@ -174,11 +168,18 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             _profileVisiblity = true;
             _customProfileUrl = list.Response.Players[0].Profileurl;
             _avatarUrlFull = list.Response.Players[0].AvatarFull;
-            _accountCreatedDate = Utilities.UnixTimeToDateTime(list.Response.Players[0].TimeCreated);
+            if (list.Response.Players[0].TimeCreated != 0)
+            {
+                _accountCreatedDate = Utilities.UnixTimeToDateTime(list.Response.Players[0].TimeCreated);
 
-            //Узнаем выслугу лет
-            var differ = DateTime.Now - _accountCreatedDate;
-            _createdDateImageUrl = $"/Images/Steam_years_of_service/year{(int)differ.TotalDays/365}.png";
+                //Узнаем выслугу лет
+                var differ = DateTime.Now - _accountCreatedDate;
+                _createdDateImageUrl = $"/Images/Steam_years_of_service/year{(int)differ.TotalDays / 365}.png";
+            }
+            else
+            {
+                _createdDateImageUrl = $"/Images/Steam_years_of_service/year0.png";
+            }
         }
 
         public string GetNickname => _nickname;

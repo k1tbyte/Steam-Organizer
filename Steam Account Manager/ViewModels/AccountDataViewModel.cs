@@ -16,7 +16,7 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand CancelCommand { get; set; }
         public RelayCommand CopyCommand { get; set; }
         public RelayCommand OpenUrlProfileCommand { get; set; }
-        public RelayCommand TakeCsgoStatsInfo { get; set; }
+        public AsyncRelayCommand TakeCsgoStatsInfo { get; set; }
         public RelayCommand SaveChangesComamnd { get; set; }
         public RelayCommand OpenOtherLinksCommand { get; set; }
         public RelayCommand ExportAccountCommand { get; set; }
@@ -26,7 +26,7 @@ namespace Steam_Account_Manager.ViewModels
         private Config config;
 
         private string _avatarFull, _nickname;
-        private bool _noticeView = false, _savePermission = false, _isCsgoStatsSave = false, _rankRefreshPermission = true;
+        private bool _noticeView = false, _savePermission = false, _isCsgoStatsSave = false;
         private string _steamLevel, _steamURL, _steamId64;
         private ulong _steaId32;
         private string _login, _password;
@@ -539,39 +539,39 @@ namespace Steam_Account_Manager.ViewModels
 
         private async Task CsgoStatsParse()
         {
-            _rankRefreshPermission = false;
-            var csgo_parser = new CsgoParser(_steamId64);
-            CsgoParseError = "Gathering rank data...";
-            csgo_parser.RankParse();
-            CsgoParseError = "Gathering statistics...";
-            if(csgo_parser.GlobalStatsParse())
+            await Task.Factory.StartNew(() =>
             {
-                currentAccount.CsgoStats = csgo_parser.GetCsgoStats;
-                FillCsgoInfo();
+                try
+                {
+                    var csgo_parser = new CsgoParser(_steamId64);
+                    CsgoParseError = "Gathering statistics...";
+                    csgo_parser.GlobalStatsParse();
+                    CsgoParseError = "Gathering rank data...";
+                    csgo_parser.RankParse();
 
-                _isCsgoStatsSave = true;
-                if (!_savePermission) _savePermission = true;
+                    currentAccount.CsgoStats = csgo_parser.GetCsgoStats;
+                    FillCsgoInfo();
 
-                CsgoParseError = "Player data has been updated!";
-                Thread.Sleep(2000);
-                CsgoParseError = "";
-                
-            }
-            else
-            {
-                CsgoParseError = "The server error, please try again...";
-                Thread.Sleep(2000);
-                CsgoParseError = "";
-            }
-            _rankRefreshPermission = true;
-
+                    _isCsgoStatsSave = true;
+                    if (!_savePermission) _savePermission = true;
+                    CsgoParseError = "Player data has been updated!";
+                    Thread.Sleep(2000);
+                    CsgoParseError = "";
+                }
+                catch
+                {
+                    CsgoParseError = "The server error, please try again later...";
+                    Thread.Sleep(2000);
+                    CsgoParseError = "";
+                }
+            });
         }
 
         private async Task RefreshAccount(int id)
         {
-            if (MainWindowViewModel.NetworkConnectivityCheck())
+            var task = Task.Factory.StartNew(() =>
             {
-                var task = Task.Factory.StartNew(() =>
+                try
                 {
                     currentAccount = new Account(currentAccount.Login, currentAccount.Password, currentAccount.SteamId64)
                     {
@@ -589,9 +589,15 @@ namespace Steam_Account_Manager.ViewModels
                     config.SaveChanges();
                     Task.Run(() => BorderNoticeView("Information updated"));
                     FillSteamInfo();
-                });
-                await task;
-            }
+                }
+                catch
+                {
+                    Task.Run(() => BorderNoticeView("Error, no internet connection..."));
+                }
+
+            });
+            await task;
+
         }
         public AccountDataViewModel(int id)
         {
@@ -623,10 +629,10 @@ namespace Steam_Account_Manager.ViewModels
                 }
             });
 
-            TakeCsgoStatsInfo = new RelayCommand(o =>
+            TakeCsgoStatsInfo = new AsyncRelayCommand(async (o) =>
             {
-               if(currentAccount.ProfileVisility && _rankRefreshPermission)
-                    Task.Run(() => CsgoStatsParse());
+               if(currentAccount.ProfileVisility)
+                    await CsgoStatsParse();
             });
 
             SaveChangesComamnd = new RelayCommand(o =>

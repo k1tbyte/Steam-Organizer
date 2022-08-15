@@ -18,6 +18,7 @@ namespace Steam_Account_Manager.ViewModels
         public static RelayCommand AccountsViewCommand { get; set; }
         public static RelayCommand SettingsViewCommand { get; set; }
         public static RelayCommand AccountDataViewCommand { get; set; }
+        public RelayCommand LogoutCommand { get; set; }
 
 
         public AccountsViewModel AccountsVm;
@@ -26,6 +27,25 @@ namespace Steam_Account_Manager.ViewModels
 
         public static event EventHandler TotalAccountsChanged;
         private static int _totalAccounts;
+        private string _nowLoginUserImage, _nowLoginUserNickname;
+        public string NowLoginUserNickname
+        {
+            get => _nowLoginUserNickname;
+            set
+            {
+                _nowLoginUserNickname = value;
+                OnPropertyChanged(nameof(NowLoginUserNickname));
+            }
+        }
+        public string NowLoginUserImage
+        {
+            get => _nowLoginUserImage;
+            set
+            {
+                _nowLoginUserImage = value;
+                OnPropertyChanged(nameof(NowLoginUserImage));
+            }
+        }
         public static int TotalAccounts
         {
             get { return _totalAccounts; }
@@ -59,6 +79,29 @@ namespace Steam_Account_Manager.ViewModels
                 NotificationContentChanged?.Invoke(null, EventArgs.Empty);
             }
         }
+        public static event EventHandler UpdatedAccountIndexChanged;
+        private static int _updatedAccountIndex;
+        public static int UpdatedAccountIndex
+        {
+            get => _updatedAccountIndex;
+            set
+            {
+                _updatedAccountIndex = value;
+                UpdatedAccountIndexChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        public static event EventHandler IsEnabledForUserChanged;
+        private static bool _isEnabledForUser = true;
+        public static bool IsEnabledForUser
+        {
+            get => _isEnabledForUser;
+            set
+            {
+                _isEnabledForUser = value;
+                IsEnabledForUserChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
 
 
         private object _currentView;
@@ -85,26 +128,31 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public static bool NetworkConnectivityCheck()
-        {
-            try
-            {
-                var client = new WebClient();
-                var stream = client.OpenRead("http://www.google.com");
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
         public static async Task NotificationView(string msg)
         {
             NotificationVisible = true;
             NotificationContent = msg;
             Thread.Sleep(2300);
             NotificationVisible = false;
+        }
+        private async Task NowLoginUserParse()
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    var steamID = Utilities.GetSteamRegistryActiveUser();
+                    var steamParser = new Infrastructure.Parsers.SteamParser(Utilities.SteamId32ToSteamId64(steamID));
+                    steamParser.ParsePlayerSummariesAsync().GetAwaiter().GetResult();
+                    NowLoginUserImage = steamParser.GetAvatarUrlFull;
+                    NowLoginUserNickname = steamParser.GetNickname;
+                }
+                catch
+                {
+                    NowLoginUserImage = "/Images/user.png";
+                    NowLoginUserNickname = "Username";
+                }
+            });
         }
 
         public MainWindowViewModel()
@@ -113,6 +161,8 @@ namespace Steam_Account_Manager.ViewModels
             SettingsVm = new SettingsViewModel();
 
             CurrentView = AccountsVm;
+
+            NowLoginUserParse();
 
             AccountsViewCommand = new RelayCommand(o =>
             {
@@ -140,6 +190,15 @@ namespace Steam_Account_Manager.ViewModels
                 MainWindowState = WindowState.Minimized;
             });
 
+            LogoutCommand = new RelayCommand(o =>
+            {
+                if(NowLoginUserNickname != "Username")
+                {
+                    Utilities.KillSteamProcess();
+                    NowLoginUserImage = "/Images/user.png";
+                    NowLoginUserNickname = "Username";
+                }
+            });
 
         }
     }

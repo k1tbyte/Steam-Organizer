@@ -49,8 +49,9 @@ namespace Steam_Account_Manager.Infrastructure.Base
             this.Login = login;
             this.Password = password;
             this.SteamId64 = steamId64;
+
             SteamParser steamParser = new SteamParser(steamId64);
-            steamParser.AccountParse();
+            steamParser.AccountParse().GetAwaiter().GetResult();
             this.Nickname = steamParser.GetNickname;
             this.AvatarFull = steamParser.GetAvatarUrlFull;
             this.ProfileURL = steamParser.GetCustomProfileUrl;
@@ -68,9 +69,48 @@ namespace Steam_Account_Manager.Infrastructure.Base
             this.HoursOnPlayed = steamParser.GetHoursOnPlayed;
             this.CountGamesImageUrl = steamParser.GetCountGamesImageUrl;
             this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
+
             this.CsgoStats = new CsgoStats();
 
             this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = "";
+        }
+
+        public Account( string login, string password, string steamId64, string note, string emailLogin,string emailPass,
+             string rockstarEmail, string rockstarPass, string uplayEmail,string uplayPass, CsgoStats csgoStats)
+        {
+            this.Login = login;
+            this.Password = password;
+            this.SteamId64 = steamId64;
+            SteamParser steamParser = new SteamParser(steamId64);
+            steamParser.AccountParse().GetAwaiter().GetResult();
+
+            this.Nickname = steamParser.GetNickname;
+            this.AvatarFull = steamParser.GetAvatarUrlFull;
+            this.ProfileURL = steamParser.GetCustomProfileUrl;
+            this.ProfileVisility = steamParser.GetProfileVisiblity;
+            this.AccCreatedDate = steamParser.GetAccountCreatedDate;
+
+            this.TradeBan = steamParser.GetEconomyBanStatus;
+            this.CommunityBan = steamParser.GetCommunityBanStatus;
+            this.VacBansCount = steamParser.GetVacCount;
+            this.DaysSinceLastBan = steamParser.GetDaysSinceLastBan;
+
+            this.SteamLevel = steamParser.GetSteamLevel;
+            this.TotalGames = steamParser.GetTotalGames;
+            this.GamesPlayed = steamParser.GetGamesPlayed;
+            this.HoursOnPlayed = steamParser.GetHoursOnPlayed;
+            this.CountGamesImageUrl = steamParser.GetCountGamesImageUrl;
+            this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
+
+            this.CsgoStats = csgoStats;
+
+            this.Note = note;
+            this.EmailLogin = emailLogin;
+            this.EmailPass = emailPass;
+            this.RockstarEmail = rockstarEmail;
+            this.RockstarPass = rockstarPass;
+            this.UplayEmail = uplayEmail;
+            this.UplayPass = uplayPass;
         }
     }
 }

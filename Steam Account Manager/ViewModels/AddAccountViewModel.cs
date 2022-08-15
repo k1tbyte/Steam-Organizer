@@ -72,7 +72,7 @@ namespace Steam_Account_Manager.ViewModels
             var task = Task.Factory.StartNew(() =>
             {
                 ErrorMessage = (string)App.Current.FindResource("adv_info_connection_check");
-                if (NetworkConnectivityCheck())
+                try
                 {
                     var steamValidator = new SteamValidator(_steamLink);
                     if (steamValidator.GetSteamLinkType() == SteamValidator.SteamLinkTypes.ErrorType)
@@ -121,7 +121,6 @@ namespace Steam_Account_Manager.ViewModels
                         {
                             ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
                             var config = Config.GetInstance();
-
                             config.AccountsDb.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
                             config.SaveChanges();
                             MainWindowViewModel.AccountsViewCommand.Execute(null);
@@ -134,29 +133,11 @@ namespace Steam_Account_Manager.ViewModels
 
                     }
                 }
-
-                else
-                {
-                    //no internet connection resource
-                }
+                catch { ErrorMessage = "Network error, please check your connection"; }
             });
             await task;
         }
 
-
-        public static bool NetworkConnectivityCheck()
-        {
-            try
-            {
-                var client = new WebClient();
-                client.OpenRead("http://www.google.com");
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
 
         public AddAccountViewModel()
         {

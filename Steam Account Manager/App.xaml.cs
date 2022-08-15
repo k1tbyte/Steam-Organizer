@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net;
+﻿using Steam_Account_Manager.ViewModels;
+using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using Steam_Account_Manager.Infrastructure;
 
 namespace Steam_Account_Manager
 {
     public partial class App : Application
     {
         static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager OneAtATime");
+        public string steamPath = "";
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
         {
             if (Mutex.WaitOne(TimeSpan.Zero, true))
             {
-                Config config = Config.GetInstance();
+                var mainWindow = new MainWindow
+                {
+                                
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+                    
+                };
 
-                    MainWindow mainWindow = new MainWindow();
-                    mainWindow.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                    mainWindow.Show();
+                mainWindow.Show();
             }
             else
             {

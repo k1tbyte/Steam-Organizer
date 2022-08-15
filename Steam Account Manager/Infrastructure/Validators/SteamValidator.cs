@@ -27,16 +27,8 @@ namespace Steam_Account_Manager.Infrastructure.Validators
         public SteamValidator(string steamProfileLink)
         {
             _steamLink = steamProfileLink;
-            try
-            {
-                CheckSteamLinkType();
-                ConvertLinkToId64();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString());
-                throw;
-            }
+            CheckSteamLinkType();
+            ConvertLinkToId64();
         }
 
 

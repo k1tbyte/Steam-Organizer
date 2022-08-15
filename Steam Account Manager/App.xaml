@@ -8,7 +8,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
 
-                <ResourceDictionary Source="Themes/ScrollBarTheme.xaml"/>
+                <ResourceDictionary Source="Themes/ScrollBarStyle.xaml"/>
+
+                <ResourceDictionary Source="Themes/ProgressBarStyle.xaml"/>
 
                 <ResourceDictionary Source="Themes/PasswordboxTheme.xaml"/>
 
@@ -573,6 +575,11 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+
+
+
+
+
 
             <DataTemplate DataType="{x:Type viewModel:AccountsViewModel}">
                 <view:AccountsView/>

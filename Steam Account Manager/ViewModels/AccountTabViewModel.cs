@@ -103,7 +103,6 @@ namespace Steam_Account_Manager.ViewModels
             AccCreatedDate = account.AccCreatedDate;
             SteamLevel = account.SteamLevel;
 
-
             DeleteAccoundCommand = new RelayCommand(o =>
             {
                 config.AccountsDb.RemoveAt(id);

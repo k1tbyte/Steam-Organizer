@@ -42,7 +42,12 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = YearsLabel;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Date of registration: " + currentViewModel.CreatedDate;
+            if (currentViewModel.CreatedDate != DateTime.MinValue)
+                Header.PopupText.Text = "Date of registration: " + currentViewModel.CreatedDate;
+            else
+                Header.PopupText.Text = "Registration date unknown";
+
+
         }
 
         private void Popup_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
@@ -64,7 +69,8 @@ namespace Steam_Account_Manager.ViewModels.View
             {
                 Header.PopupText.Text = "Games on account: " + currentViewModel.GamesTotal;
                 Header.PopupText.Text += "\nGames played: " + currentViewModel.GamesPlayed + currentViewModel.PlayedPercent;
-                Header.PopupText.Text += "\nPlaytime: " + currentViewModel.HoursOnPlayed.ToString() + "h";
+                Header.PopupText.Text += "\nPlaytime: " + currentViewModel.HoursOnPlayed;
+                if (currentViewModel.HoursOnPlayed != "Private") Header.PopupText.Text += "h";
             }
 
 

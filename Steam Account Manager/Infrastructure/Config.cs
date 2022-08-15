@@ -16,6 +16,10 @@ namespace Steam_Account_Manager.Infrastructure
     internal class Config
     {
         private static Config _config;
+        public static string SteamPath
+        {
+            get => Utilities.GetSteamRegistryDirection();
+        }
 
         private Config()
         {
@@ -153,9 +157,6 @@ namespace Steam_Account_Manager.Infrastructure
         public string SteamDirection { get; set; }
 
         
-
-
-
         public bool NoConfirmMode;
         public bool TakeAccountInfo;
         public bool AutoClose;
