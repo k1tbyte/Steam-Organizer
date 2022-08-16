@@ -19,28 +19,27 @@ namespace Steam_Account_Manager.ViewModels
         private string _steamPicture;
         private string _steamNickname;
         private string _steamId, _login, _password;
-        private DateTime _accCreatedTime;
         private string _steamLevel;
-        private uint _vacCount;
+        private int _vacCount;
         private int _id;
         private Config config;
+        private bool _containParseInfo;
 
+        public bool ContainParseInfo
+        {
+            get => _containParseInfo;
+            set
+            {
+                _containParseInfo = value;
+                OnPropertyChanged(nameof(ContainParseInfo));
+            }
+        }
         public string SteamLevel
         {
             get => _steamLevel;
             set
             {
                 _steamLevel = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public DateTime AccCreatedDate
-        {
-            get => _accCreatedTime;
-            set
-            {
-                _accCreatedTime = value;
                 OnPropertyChanged();
             }
         }
@@ -75,7 +74,7 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public uint VacCount
+        public int VacCount
         {
             get => _vacCount;
             set
@@ -129,12 +128,23 @@ namespace Steam_Account_Manager.ViewModels
             config = Config.GetInstance();
             Account account = config.AccountsDb.ElementAt(id);
             Id = id + 1;
-            SteamPicture = account.AvatarFull;
+            ContainParseInfo = account.ContainParseInfo;
+            if (account.ContainParseInfo)
+            {
+                SteamPicture = account.AvatarFull;
+                VacCount = account.VacBansCount;
+                SteamId = account.SteamId64;
+                SteamLevel = account.SteamLevel;
+            }
+            else
+            {
+                SteamLevel = "-";
+                SteamPicture = "/Images/default_steam_profile.png";
+                SteamId = "Unknown";
+                VacCount = -1;
+            }
+
             SteamNickName = account.Nickname;
-            VacCount = account.VacBansCount;
-            SteamId = account.SteamId64;
-            AccCreatedDate = account.AccCreatedDate;
-            SteamLevel = account.SteamLevel;
             _login = account.Login;
             _password = account.Password;
 

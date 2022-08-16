@@ -161,7 +161,7 @@ namespace Steam_Account_Manager.ViewModels
 
             CurrentView = AccountsVm;
 
-            NowLoginUserParse();
+            //_ = NowLoginUserParse();
 
             AccountsViewCommand = new RelayCommand(o =>
             {

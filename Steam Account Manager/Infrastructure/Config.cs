@@ -158,9 +158,8 @@ namespace Steam_Account_Manager.Infrastructure
 
 
         public List<Account> AccountsDb;
-        public string SteamDirection { get; set; }
+        public string SteamDirection;
 
-        
         public bool NoConfirmMode;
         public bool TakeAccountInfo;
         public bool AutoClose;

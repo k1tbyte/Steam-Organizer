@@ -1,4 +1,5 @@
-﻿using Steam_Account_Manager.ViewModels;
+﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.ViewModels;
 using System;
 using System.Threading;
 using System.Windows;
@@ -8,7 +9,7 @@ namespace Steam_Account_Manager
     public partial class App : Application
     {
         static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager OneAtATime");
-        public string steamPath = "";
+
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
         {

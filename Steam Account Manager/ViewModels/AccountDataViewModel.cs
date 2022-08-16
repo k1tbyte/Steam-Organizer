@@ -34,9 +34,11 @@ namespace Steam_Account_Manager.ViewModels
         private string _profileVisiblity;
         private string _steamYearPicture;
         private string _gameCountPicture, _createdDatePicture;
+        private bool _containParseInfo;
 
         //bans
-        private uint _vacCount, _daysSinceLastBan;
+        private int _vacCount;
+        private uint _daysSinceLastBan;
         private bool _tradeBan, _communityBan;
 
         //games
@@ -54,6 +56,15 @@ namespace Steam_Account_Manager.ViewModels
         //other account info
         private string _note, _emailLogin, _emailPass, _rockstarEmail, _rockstarPass, _uplayEmail, _uplayPass;
 
+        public bool ContainParseInfo
+        {
+            get => _containParseInfo;
+            set
+            {
+                _containParseInfo = value;
+                OnPropertyChanged(nameof(ContainParseInfo));
+            }
+        }
         public string Note
         {
             get => _note;
@@ -205,7 +216,7 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public uint VacCount 
+        public int VacCount 
         {
             get => _vacCount;
             set
@@ -475,40 +486,54 @@ namespace Steam_Account_Manager.ViewModels
 
         private void FillSteamInfo()
         {
-            //Player summaries
-            AvatarFull = currentAccount.AvatarFull;
             Nickname = currentAccount.Nickname;
-            SteamID32 = ulong.Parse(currentAccount.SteamId64) - 76561197960265728;
-            SteamID64 = currentAccount.SteamId64;
-            SteamURL = currentAccount.ProfileURL;
             Login = currentAccount.Login;
             Password = currentAccount.Password;
-            CreatedDate = currentAccount.AccCreatedDate;
-            ProfileVisiblity = currentAccount.ProfileVisility == true ? "Public" : "Private";
-            CreatedDatePicuture = currentAccount.CreatedDateImageUrl;
+            ContainParseInfo = currentAccount.ContainParseInfo;
 
-            //Games info
-            SteamLevel = currentAccount.SteamLevel;
-            GameCountPicture = currentAccount.CountGamesImageUrl;
-            GamesTotal = currentAccount.TotalGames;
-            GamesPlayed = currentAccount.GamesPlayed;
-            HoursOnPlayed = currentAccount.HoursOnPlayed;
-            PlayedPercent = currentAccount.ProfileVisility == true ? " (" + (float.Parse(GamesPlayed.Replace(",", string.Empty)) / float.Parse(GamesTotal.Replace(",", String.Empty)) * 100).ToString("#.#") + "%)" : "-";
+            if (currentAccount.ContainParseInfo)
+            {
+                //Player summaries
+                AvatarFull = currentAccount.AvatarFull;
+                SteamID32 = ulong.Parse(currentAccount.SteamId64) - 76561197960265728;
+                SteamID64 = currentAccount.SteamId64;
+                SteamURL = currentAccount.ProfileURL;
+                CreatedDate = currentAccount.AccCreatedDate;
+                ProfileVisiblity = currentAccount.ProfileVisility == true ? "Public" : "Private";
+                CreatedDatePicuture = currentAccount.CreatedDateImageUrl;
 
-            //Bans info
-            VacCount = currentAccount.VacBansCount;
-            CommunityBan = currentAccount.CommunityBan;
-            TradeBan = currentAccount.TradeBan;
-            DaysSinceLastBan = currentAccount.DaysSinceLastBan;
+                //Games info
+                SteamLevel = currentAccount.SteamLevel;
+                GameCountPicture = currentAccount.CountGamesImageUrl;
+                GamesTotal = currentAccount.TotalGames;
+                GamesPlayed = currentAccount.GamesPlayed;
+                HoursOnPlayed = currentAccount.HoursOnPlayed;
+                PlayedPercent = currentAccount.ProfileVisility == true ? " (" + (float.Parse(GamesPlayed.Replace(",", string.Empty)) / float.Parse(GamesTotal.Replace(",", String.Empty)) * 100).ToString("#.#") + "%)" : "-";
 
-            //Other info
-            Note = currentAccount.Note;
-            EmailLogin = currentAccount.EmailLogin;
-            EmailPass = currentAccount.EmailPass;
-            RockstarEmail = currentAccount.RockstarEmail;
-            RockstarPass = currentAccount.RockstarPass;
-            UplayEmail = currentAccount.UplayEmail;
-            UplayPass = currentAccount.UplayPass;
+                //Bans info
+                VacCount = currentAccount.VacBansCount;
+                CommunityBan = currentAccount.CommunityBan;
+                TradeBan = currentAccount.TradeBan;
+                DaysSinceLastBan = currentAccount.DaysSinceLastBan;
+            }
+            else
+            {
+                AvatarFull = "/Images/default_steam_profile.png";
+                ProfileVisiblity = SteamURL = SteamID64 = "Unknown";
+                GameCountPicture = CreatedDatePicuture = "/Images/Steam_years_of_service/year0";
+                SteamLevel = "-";
+                SteamID32 = 0;
+            }
+                //Other info
+                Note = currentAccount.Note;
+                EmailLogin = currentAccount.EmailLogin;
+                EmailPass = currentAccount.EmailPass;
+                RockstarEmail = currentAccount.RockstarEmail;
+                RockstarPass = currentAccount.RockstarPass;
+                UplayEmail = currentAccount.UplayEmail;
+                UplayPass = currentAccount.UplayPass;
+            
+
         }
         private void FillCsgoInfo()
         {
@@ -604,7 +629,7 @@ namespace Steam_Account_Manager.ViewModels
             config = Config.GetInstance();
             currentAccount = config.AccountsDb[id];
             FillSteamInfo();
-            FillCsgoInfo();
+            if(currentAccount.ContainParseInfo) FillCsgoInfo();
 
 
             CancelCommand = new RelayCommand(o =>

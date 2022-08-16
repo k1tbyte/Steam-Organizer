@@ -14,18 +14,16 @@ namespace Steam_Account_Manager.ViewModels
         private string _steamLink="";
         private string _steamPassword;
         private string _errorMessage;
-        private string _infoMessage;
-
-        public string InfoMessage
+        private bool _dontCollectInfo;
+        public bool DontCollectInfo
         {
-            get => _infoMessage;
+            get => _dontCollectInfo;
             set
             {
-                _infoMessage = value;
-                OnPropertyChanged();
+                _dontCollectInfo = value;
+                OnPropertyChanged(nameof(DontCollectInfo));
             }
         }
-
 
         public string SteamLink
         {
@@ -66,81 +64,114 @@ namespace Steam_Account_Manager.ViewModels
                 OnPropertyChanged();
             }
         }
+        private bool DataValidate()
+        {
+            if (SteamLogin == "")
+            {
+                ErrorMessage = (string)Application.Current.FindResource("adv_error_login_empty");
+                return false;
+            }
+
+            else if (SteamLogin.Contains(" "))
+            {
+                ErrorMessage = (string)Application.Current.FindResource("adv_error_login_contain_spaces");
+                return false;
+            }
+
+            else if (SteamLogin.Length < 3)
+            {
+                ErrorMessage = (string)Application.Current.FindResource("adv_error_login_shortage");
+                return false;
+            }
+
+            else if (SteamLogin.Length > 20)
+            {
+                ErrorMessage = (string)Application.Current.FindResource("adv_error_login_overflow");
+                return false;
+            }
+
+            else if (SteamPassword == "")
+            {
+                ErrorMessage = (string)Application.Current.FindResource("adv_error_pass_empty");
+                return false;
+            }
+
+            else if (SteamPassword.Length < 8)
+            {
+                ErrorMessage = (string)Application.Current.FindResource("adv_error_pass_shortage");
+                return false;
+            }
+
+            else if (SteamPassword.Length > 50)
+            {
+                ErrorMessage = (string)Application.Current.FindResource("adv_error_pass_overflow");
+                return false;
+            }
+            else if (DontCollectInfo)
+            {
+                if(SteamLink.Length < 2 || SteamLink.Length > 32)
+                {
+                    ErrorMessage = "Nickname length can be from 2 to 32 characters";
+                    return false;
+                }
+            }
+            return true;
+        }
 
         private async Task AddAccount(object o)
         {
-            var task = Task.Factory.StartNew(() =>
+            if (DontCollectInfo)
             {
-                ErrorMessage = (string)App.Current.FindResource("adv_info_connection_check");
-                try
+                if (DataValidate())
                 {
-                    var steamValidator = new SteamValidator(_steamLink);
-                    if (steamValidator.GetSteamLinkType() == SteamValidator.SteamLinkTypes.ErrorType)
-                    {
-                        ErrorMessage = (string)Application.Current.FindResource("adv_error_invalid_link");
-                    }
-
-                    else if (SteamLogin == "")
-                    {
-                        ErrorMessage = (string)Application.Current.FindResource("adv_error_login_empty");
-                    }
-
-                    else if (SteamLogin.Contains(" "))
-                    {
-                        ErrorMessage = (string)Application.Current.FindResource("adv_error_login_contain_spaces");
-                    }
-
-                    else if (SteamLogin.Length < 3)
-                    {
-                        ErrorMessage = (string)Application.Current.FindResource("adv_error_login_shortage");
-                    }
-
-                    else if (SteamLogin.Length > 20)
-                    {
-                        ErrorMessage = (string)Application.Current.FindResource("adv_error_login_overflow");
-                    }
-
-                    else if (SteamPassword == "")
-                    {
-                        ErrorMessage = (string)Application.Current.FindResource("adv_error_pass_empty");
-                    }
-
-                    else if (SteamPassword.Length < 8)
-                    {
-                        ErrorMessage = (string)Application.Current.FindResource("adv_error_pass_shortage");
-                    }
-
-                    else if (SteamPassword.Length > 50)
-                    {
-                        ErrorMessage = (string)Application.Current.FindResource("adv_error_pass_overflow");
-                    }
-
-                    else
-                    {
-                        try
-                        {
-                            ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
-                            var config = Config.GetInstance();
-                            config.AccountsDb.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
-                            config.SaveChanges();
-                            MainWindowViewModel.AccountsViewCommand.Execute(null);
-                            ErrorMessage = "";
-                        }
-                        catch
-                        {
-                            ErrorMessage = "Error: (503) Steam is not responding";
-                        }
-
-                    }
+                    var config = Config.GetInstance();
+                    config.AccountsDb.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword,_steamLink,true));
+                    config.SaveChanges();
+                    MainWindowViewModel.AccountsViewCommand.Execute(null);
+                    ErrorMessage = "";
                 }
-                catch { ErrorMessage = "Network error, please check your connection"; }
-            });
-            await task;
+            }
+            else
+            {
+                await Task.Factory.StartNew(() =>
+                {
+                    ErrorMessage = (string)App.Current.FindResource("adv_info_connection_check");
+                    try
+                    {
+                        var steamValidator = new SteamValidator(_steamLink);
+                        if (steamValidator.GetSteamLinkType() == SteamValidator.SteamLinkTypes.ErrorType)
+                        {
+                            ErrorMessage = (string)Application.Current.FindResource("adv_error_invalid_link");
+                        }
+                        else if (!DataValidate()) { }
+                        else
+                        {
+                            try
+                            {
+                                ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
+                                var config = Config.GetInstance();
+                                config.AccountsDb.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
+                                config.SaveChanges();
+                                MainWindowViewModel.AccountsViewCommand.Execute(null);
+                                ErrorMessage = "";
+                            }
+                            catch
+                            {
+                                ErrorMessage = "Error: (503) Steam is not responding";
+                            }
+
+                        }
+                    }
+                    catch { ErrorMessage = "Network error, please check your connection"; }
+                });
+            }
         }
 
 
         public AddAccountViewModel()
         {
+            var config = Config.GetInstance();
+            DontCollectInfo = config.TakeAccountInfo;
             AddAccountAsyncCommand = new AsyncRelayCommand(async (o) =>
             {
                 await AddAccount(o);

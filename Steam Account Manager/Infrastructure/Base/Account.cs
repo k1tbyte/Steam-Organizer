@@ -18,12 +18,13 @@ namespace Steam_Account_Manager.Infrastructure.Base
         public bool ProfileVisility { get; set; }
         public DateTime AccCreatedDate { get; set; }
         public string CreatedDateImageUrl { get; set; }
+        public bool ContainParseInfo { get; set; }
 
 
         //Player bans
         public bool TradeBan { get; set; }
         public bool CommunityBan { get; set; }
-        public uint VacBansCount { get; set; }
+        public int VacBansCount { get; set; }
         public uint DaysSinceLastBan { get; set; }
 
 
@@ -44,6 +45,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
         public string UplayEmail { get; set; }
         public string UplayPass { get; set; }
 
+        //Default
         public Account(string login,string password,string steamId64)
         {
             this.Login = login;
@@ -69,12 +71,14 @@ namespace Steam_Account_Manager.Infrastructure.Base
             this.HoursOnPlayed = steamParser.GetHoursOnPlayed;
             this.CountGamesImageUrl = steamParser.GetCountGamesImageUrl;
             this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
+            this.ContainParseInfo = true;
 
             this.CsgoStats = new CsgoStats();
 
             this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = "";
         }
 
+        //Update account counstructor
         public Account( string login, string password, string steamId64, string note, string emailLogin,string emailPass,
              string rockstarEmail, string rockstarPass, string uplayEmail,string uplayPass, CsgoStats csgoStats)
         {
@@ -111,6 +115,17 @@ namespace Steam_Account_Manager.Infrastructure.Base
             this.RockstarPass = rockstarPass;
             this.UplayEmail = uplayEmail;
             this.UplayPass = uplayPass;
+        }
+
+        public Account(string login,string password,string nickname,bool empty)
+        {
+            this.ContainParseInfo = false;
+
+            this.Login = login;
+            this.Password = password;
+            this.Nickname = nickname;
+
+            this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = "";
         }
     }
 }

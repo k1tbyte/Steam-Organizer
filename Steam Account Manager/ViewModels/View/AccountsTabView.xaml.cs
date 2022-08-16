@@ -25,7 +25,10 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = VacIndicator;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Vac count: " + _currentViewModel.VacCount.ToString();
+            if (_currentViewModel.VacCount != -1)
+                Header.PopupText.Text = "Vac count: " + _currentViewModel.VacCount.ToString();
+            else
+                Header.PopupText.Text = "Information is absent";
         }
 
         private void VacIndicator_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)

@@ -7,9 +7,7 @@ namespace Steam_Account_Manager.ViewModels
     {
         private bool[] _themeMode = { true, false, false };
         private bool[] _localeMode = { true, false, false };
-        private bool _autoCloseMode;
-        private bool _noConfirmMode;
-        private bool _takeAccountInfoMode;
+        private bool _autoCloseMode, _noConfirmMode, _takeAccountInfoMode;
         public RelayCommand SaveChangesCommand { get; set; }
 
         public bool TakeAccountInfoMode
@@ -68,7 +66,7 @@ namespace Steam_Account_Manager.ViewModels
 
             NoConfirmMode = config.NoConfirmMode;
             AutoCloseMode = config.AutoClose;
-
+            TakeAccountInfoMode = config.TakeAccountInfo;
 
             #region Считывание языка
             for (int i = 0; i < 3; i++)
@@ -113,6 +111,7 @@ namespace Steam_Account_Manager.ViewModels
                     }
                 config.NoConfirmMode = NoConfirmMode;
                 config.AutoClose = AutoCloseMode;
+                config.TakeAccountInfo = TakeAccountInfoMode;
                 config.SaveChanges();
             });
         }

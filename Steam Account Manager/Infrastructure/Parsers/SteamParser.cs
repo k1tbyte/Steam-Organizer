@@ -16,7 +16,8 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         private readonly string _steamId64;
 
         //Player bans
-        private uint _numberOfVacBans, _daysSinceLastBan;
+        private int _numberOfVacBans;
+        private uint _daysSinceLastBan;
         private bool _economyBan, _communityBan;
 
         //Player Summaries
@@ -219,7 +220,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             var webClient = new WebClient { Encoding = Encoding.UTF8 };
             string json = await webClient.DownloadStringTaskAsync(GetPlayerBansLink());
             var list = JsonConvert.DeserializeObject<RootObjectBansInfo>(json);
-            _numberOfVacBans = uint.Parse(list.Players[0].NumberOfVacBans);
+            _numberOfVacBans = int.Parse(list.Players[0].NumberOfVacBans);
             _communityBan = list.Players[0].CommunityBanned;
             _economyBan = list.Players[0].EconomyBan != "none";
             _daysSinceLastBan = list.Players[0].DaysSinceLastBan;
@@ -228,7 +229,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
         public bool GetCommunityBanStatus => _communityBan;
         public bool GetEconomyBanStatus => _economyBan;
-        public uint GetVacCount => _numberOfVacBans;
+        public int GetVacCount => _numberOfVacBans;
         public uint GetDaysSinceLastBan => _daysSinceLastBan;
 
 

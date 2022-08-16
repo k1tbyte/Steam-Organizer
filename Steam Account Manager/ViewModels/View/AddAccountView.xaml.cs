@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Steam_Account_Manager.ViewModels.View
 {
@@ -48,6 +37,18 @@ namespace Steam_Account_Manager.ViewModels.View
         public static readonly DependencyProperty IsPasswordProperty =
             DependencyProperty.Register("IsPassword", typeof(bool), typeof(AddAccountView));
 
+        private void takeInfo_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Popup.PlacementTarget = takeInfo;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "Don't collect information\nabout this account.";
+        }
 
+        private void takeInfo_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Popup.Visibility = Visibility.Collapsed;
+            Popup.IsOpen = false;
+        }
     }
 }

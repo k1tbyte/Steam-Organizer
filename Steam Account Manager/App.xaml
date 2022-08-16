@@ -576,10 +576,41 @@
                 </Style.Triggers>
             </Style>
 
+            
+            
 
+            <Style x:Key="checkbox" TargetType="{x:Type ToggleButton}">
+                <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
+                <Setter Property="Foreground" Value="{DynamicResource main_text_color}"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderThickness="1" BorderBrush="Transparent" CornerRadius="6">
+                                <Icon:PackIconMaterial x:Name="Icon" Foreground="{TemplateBinding Foreground}" Kind="Check" VerticalAlignment="Center"
+                                                       HorizontalAlignment="Center" Visibility="Visible" Padding="2 2 2 2"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource add_button_isMouseOver}"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="Icon" Property="Visibility" Value="Visible" />
+                                    <Setter TargetName="border" Property="Background" Value="{DynamicResource add_button_isMouseOver}"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="False">
+                                    <Setter TargetName="Icon" Property="Visibility" Value="Hidden"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
 
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
-
+            
+            
 
             <DataTemplate DataType="{x:Type viewModel:AccountsViewModel}">
                 <view:AccountsView/>

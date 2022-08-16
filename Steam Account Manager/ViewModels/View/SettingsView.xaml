@@ -77,6 +77,13 @@
                           Style="{StaticResource settingsButton}"/>
         </StackPanel>
 
+        <!--Disable confirm when del acc-->
+        <StackPanel Grid.Row="6" Orientation="Horizontal">
+            <TextBlock Grid.Row="5" Text="Dont collect account information" Style="{StaticResource settingTextBlock}"/>
+            <ToggleButton IsChecked="{Binding TakeAccountInfoMode}"
+                          Style="{StaticResource settingsButton}"/>
+        </StackPanel>
+
 
 
 

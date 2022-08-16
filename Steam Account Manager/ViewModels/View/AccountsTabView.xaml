@@ -29,7 +29,7 @@
                 <TextBlock Text="{Binding Id}" VerticalAlignment="Center" Margin="24 0 0 0"
                                FontSize="13" FontWeight="Normal"  Foreground="{DynamicResource main_text_color}"/>
 
-                <Border Grid.Column="1" CornerRadius="25"
+                <Border Grid.Column="1" CornerRadius="25" IsHitTestVisible="{Binding ContainParseInfo}"
                         Background="{DynamicResource account_picture_border}" Margin="3"
                         Cursor="Hand">
                     <Border.InputBindings>
@@ -94,6 +94,10 @@
                                     <DataTrigger Binding="{Binding VacCount, UpdateSourceTrigger=PropertyChanged}" Value="0">
                                         <Setter Property="Background" Value="PaleGreen"/>
                                         <Setter Property="BorderBrush" Value="Green"/> 
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding VacCount, UpdateSourceTrigger=PropertyChanged}" Value="-1">
+                                        <Setter Property="Background" Value="Gray"/>
+                                        <Setter Property="BorderBrush" Value="DarkGray"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
