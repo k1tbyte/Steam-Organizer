@@ -20,7 +20,6 @@ namespace Steam_Account_Manager.ViewModels
         public static RelayCommand AccountDataViewCommand { get; set; }
         public RelayCommand LogoutCommand { get; set; }
 
-
         public AccountsViewModel AccountsVm;
         public SettingsViewModel SettingsVm;
         public AccountDataView AccountDataV; 

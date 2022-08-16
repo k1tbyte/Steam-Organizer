@@ -155,12 +155,6 @@ namespace Steam_Account_Manager.ViewModels
 
         }
 
-        private void NowLoginUserParse()
-        {
-
-
-        }
-
 
         public AccountsViewModel()
         {

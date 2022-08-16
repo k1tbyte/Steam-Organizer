@@ -67,5 +67,25 @@ namespace Steam_Account_Manager
                 processSteam.Start();
             };
         }
+
+        public static void KillSteamAndConnect(string steamDir,string args)
+        {
+            using (Process processSteam = new Process())
+            {
+                processSteam.StartInfo.UseShellExecute = false;
+                processSteam.StartInfo.CreateNoWindow = true;
+                processSteam.StartInfo.FileName = "taskkill";
+                processSteam.StartInfo.Arguments = "/F /T /IM steam.exe";
+                processSteam.Start();
+            };
+            System.Threading.Thread.Sleep(2000);
+            using (Process processSteam = new Process())
+            {
+                processSteam.StartInfo.UseShellExecute = true;
+                processSteam.StartInfo.FileName = steamDir;
+                processSteam.StartInfo.Arguments = args;
+                processSteam.Start();
+            };
+        }
     }
 }

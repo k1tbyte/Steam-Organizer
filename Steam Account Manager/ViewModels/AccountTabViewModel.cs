@@ -3,6 +3,8 @@ using Steam_Account_Manager.Infrastructure.Base;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -12,14 +14,16 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand EditOrViewAccountCommand { get; set; }
         public RelayCommand OpenUrlProfileCommand { get; set; }
         public RelayCommand ViewAccountNoteModeCommand { get; set; }
+        public AsyncRelayCommand ConnectToSteamCommand { get; set; }
 
         private string _steamPicture;
         private string _steamNickname;
-        private string _steamId;
+        private string _steamId, _login, _password;
         private DateTime _accCreatedTime;
         private string _steamLevel;
         private uint _vacCount;
         private int _id;
+        private Config config;
 
         public string SteamLevel
         {
@@ -90,10 +94,39 @@ namespace Steam_Account_Manager.ViewModels
                 OnPropertyChanged();
             }
         }
+        private async Task ConnectToSteam()
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                config = Config.GetInstance();
+                MainWindowViewModel.IsEnabledForUser = false;
+                try
+                {
+                    Utilities.KillSteamAndConnect(config.SteamDirection, "-login " + _login + " " + _password + " -tcp");
+                    if (config.AutoClose) Application.Current.Dispatcher.InvokeShutdown();
+                    else _ = MainWindowViewModel.NotificationView("Logged in, wait for steam to start");
+                }
+                catch
+                {
+                    try
+                    {
+                        Utilities.KillSteamAndConnect(Utilities.GetSteamRegistryDirection(), "-login " + _login + " " + _password + " -tcp");
+                        config.SaveChanges();
+                        if (config.AutoClose) Application.Current.Dispatcher.InvokeShutdown();
+                        else _ = MainWindowViewModel.NotificationView("Logged in, wait for steam to start");
+                    }
+                    catch
+                    {
+                        _ = MainWindowViewModel.NotificationView("Steam not found or not installed");
+                    }
+                }
+                MainWindowViewModel.IsEnabledForUser = true;
+            });
+        }
 
         public AccountTabViewModel(int id)
         {
-            Config config = Config.GetInstance();
+            config = Config.GetInstance();
             Account account = config.AccountsDb.ElementAt(id);
             Id = id + 1;
             SteamPicture = account.AvatarFull;
@@ -102,6 +135,8 @@ namespace Steam_Account_Manager.ViewModels
             SteamId = account.SteamId64;
             AccCreatedDate = account.AccCreatedDate;
             SteamLevel = account.SteamLevel;
+            _login = account.Login;
+            _password = account.Password;
 
             DeleteAccoundCommand = new RelayCommand(o =>
             {
@@ -139,6 +174,8 @@ namespace Steam_Account_Manager.ViewModels
                     AccountsViewModel.FillAccountTabViews();
                 }
             });
+
+            ConnectToSteamCommand = new AsyncRelayCommand(async (o) => await ConnectToSteam());
         }
     }
 }

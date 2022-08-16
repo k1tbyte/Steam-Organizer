@@ -144,7 +144,8 @@
                         <icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
                     </Button>
 
-                    <Button Style="{StaticResource loginButton}" BorderBrush="Transparent">
+                    <Button Style="{StaticResource loginButton}" BorderBrush="Transparent"
+                            Command="{Binding ConnectToSteamCommand}">
                         <icon:PackIconMaterial x:Name="LoginIco" Kind="PlayCircleOutline"
                                                Height="30" Width="30" VerticalAlignment="Center"
                                                HorizontalAlignment="Center"

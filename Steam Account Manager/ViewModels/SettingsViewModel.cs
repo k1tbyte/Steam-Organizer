@@ -5,66 +5,70 @@ namespace Steam_Account_Manager.ViewModels
 {
     internal class SettingsViewModel : ObservableObject
     {
-        private bool[] _themeKey = { true, false, false };
-        private bool[] _localeKey = { true, false, false };
-        private bool _autoCloseKey;
-        private bool _noConfirmModeKey;
-        private bool _takeAccountInfoKey;
+        private bool[] _themeMode = { true, false, false };
+        private bool[] _localeMode = { true, false, false };
+        private bool _autoCloseMode;
+        private bool _noConfirmMode;
+        private bool _takeAccountInfoMode;
         public RelayCommand SaveChangesCommand { get; set; }
 
-        public bool TakeAccountInfo
+        public bool TakeAccountInfoMode
         {
-            get => _takeAccountInfoKey;
+            get => _takeAccountInfoMode;
             set
             {
-                _takeAccountInfoKey = value;
-                OnPropertyChanged(nameof(_takeAccountInfoKey));
+                _takeAccountInfoMode = value;
+                OnPropertyChanged(nameof(TakeAccountInfoMode));
             }
         }
 
         public bool[] LocaleMode
         {
-            get => _localeKey;
+            get => _localeMode;
             set
             {
-                _localeKey = value;
+                _localeMode = value;
                 OnPropertyChanged();
             }
         }
 
         public bool[] ThemeMode
         {
-            get => _themeKey;
+            get => _themeMode;
             set
             {
-                _themeKey = value;
+                _themeMode = value;
                 OnPropertyChanged();
             }
         }
 
         public bool AutoCloseMode
         {
-            get => _autoCloseKey;
+            get => _autoCloseMode;
             set
             {
-                _autoCloseKey = value;
-                OnPropertyChanged(nameof(_autoCloseKey));
+                _autoCloseMode = value;
+                OnPropertyChanged(nameof(AutoCloseMode));
             }
         }
 
         public bool NoConfirmMode
         {
-            get => _noConfirmModeKey;
+            get => _noConfirmMode;
             set
             {
-                _noConfirmModeKey = value;
-                OnPropertyChanged(nameof(_noConfirmModeKey));
+                _noConfirmMode = value;
+                OnPropertyChanged(nameof(NoConfirmMode));
             }
         }
 
         public SettingsViewModel()
         {
             var config = Config.GetInstance();
+
+            NoConfirmMode = config.NoConfirmMode;
+            AutoCloseMode = config.AutoClose;
+
 
             #region Считывание языка
             for (int i = 0; i < 3; i++)
@@ -108,6 +112,7 @@ namespace Steam_Account_Manager.ViewModels
                         break;
                     }
                 config.NoConfirmMode = NoConfirmMode;
+                config.AutoClose = AutoCloseMode;
                 config.SaveChanges();
             });
         }
