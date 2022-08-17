@@ -136,9 +136,11 @@ namespace Steam_Account_Manager.ViewModels
                 await Task.Factory.StartNew(() =>
                 {
                     ErrorMessage = (string)App.Current.FindResource("adv_info_connection_check");
+
                     try
                     {
                         var steamValidator = new SteamValidator(_steamLink);
+
                         if (steamValidator.GetSteamLinkType() == SteamValidator.SteamLinkTypes.ErrorType)
                         {
                             ErrorMessage = (string)Application.Current.FindResource("adv_error_invalid_link");
@@ -146,23 +148,19 @@ namespace Steam_Account_Manager.ViewModels
                         else if (!DataValidate()) { }
                         else
                         {
-                            try
-                            {
-                                ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
-                                var config = Config.GetInstance();
-                                config.AccountsDb.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
-                                config.SaveChanges();
-                                MainWindowViewModel.AccountsViewCommand.Execute(null);
-                                ErrorMessage = "";
-                            }
-                            catch
-                            {
-                                ErrorMessage = "Error: (503) Steam is not responding";
-                            }
-
+                            ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
+                            var config = Config.GetInstance();
+                            config.AccountsDb.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
+                            config.SaveChanges();
+                            MainWindowViewModel.AccountsViewCommand.Execute(null);
+                            ErrorMessage = "";
                         }
                     }
-                    catch { ErrorMessage = "Network error, please check your connection"; }
+                    catch
+                    {
+                        ErrorMessage = "Error: (403) Steam is not responding or steam web API key not valid";
+                    }
+
                 });
             }
         }

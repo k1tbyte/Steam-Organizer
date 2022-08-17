@@ -8,7 +8,7 @@ namespace Steam_Account_Manager.Infrastructure.Validators
 {
     internal class SteamValidator
     {
-        private const string _apiKey = "55BB053C506F844D66D88D44F5598EC5";
+        private string _apiKey = "STEAM_API_KEY";
         private const byte MaxSteamId64Len = 17;
         private readonly string _steamLink;
         private string _steamId64;
@@ -26,7 +26,9 @@ namespace Steam_Account_Manager.Infrastructure.Validators
 
         public SteamValidator(string steamProfileLink)
         {
+            Config config = Config.GetInstance();
             _steamLink = steamProfileLink;
+            if (config.WebApiKey != "") _apiKey = config.WebApiKey;
             CheckSteamLinkType();
             ConvertLinkToId64();
         }

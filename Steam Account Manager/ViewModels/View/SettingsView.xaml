@@ -5,9 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.View"
              xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
              d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="600">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -18,10 +23,15 @@
             <RowDefinition Height="43"/>
             <RowDefinition Height="43"/>
             <RowDefinition Height="43"/>
+            <RowDefinition Height="43"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
+        
+        <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
+                       HorizontalOffset="0" VerticalOffset="10">
+            <theme:MainPopup  x:Name="Header" Foreground="White"/>
+        </Popup>
 
         <!--Header-->
         <TextBlock Grid.Row="1" Text="{DynamicResource sv_settings_title}" FontSize="30"  Foreground="{DynamicResource second_settings_text}"
@@ -62,8 +72,39 @@
                           Content="/Images/Countries_flags/Ukraine.png"/>
         </StackPanel>
 
-        <!--Close after logging panel-->
+        <!-- Custom steam web api key -->
         <StackPanel Grid.Row="4" Orientation="Horizontal">
+            <TextBlock Text="Custom steam web API key" Style="{StaticResource settingTextBlock}"/>
+            <Border Background="{DynamicResource first_main_color}" 
+                    Width="250" CornerRadius="5" Margin="6 5 0 5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}">
+                <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
+                    <Icon:PackIconMaterial x:Name="apiIcon" Kind="Api" Foreground="{DynamicResource settings_buttons_isMouseOver}"
+                                           VerticalAlignment="Center" Height="20" Width="20" />
+
+                    <TextBox Margin="5 0 0 0" Width="205"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
+                         Text="{Binding WebApiKey, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"
+                         Background="{DynamicResource first_main_color}" MaxLength="32" BorderThickness="0" CaretBrush="White" />
+                </StackPanel>
+            </Border>
+
+            <Button x:Name="apiKeyInfo" Style="{StaticResource serviceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
+                    VerticalAlignment="Center" Background="Transparent" BorderThickness="0"
+                    Command="{Binding OpenApiKeyUrlCommand}"
+                    MouseEnter="apiKeyInfo_MouseEnter" MouseLeave="PopupLeave_MouseLeave">
+                <Icon:PackIconMaterial Width="20" Height="20" Kind="Information"/>
+            </Button>
+            
+            <Button x:Name="ErrorApiKey" Style="{StaticResource ErrorAlert}" 
+                    MouseEnter="ErrorApiKey_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
+                    Margin="5 7 0 7" Width="18" Height="18" Visibility="{Binding ApiKeyError,Converter={StaticResource BoolToVis},UpdateSourceTrigger=PropertyChanged}"
+                    VerticalAlignment="Center" Background="Transparent" BorderThickness="0">
+                <Icon:PackIconMaterial Width="15" Height="15" Kind="Alert"/>
+            </Button>
+
+        </StackPanel>
+
+        <!--Close after logging panel-->
+        <StackPanel Grid.Row="5" Orientation="Horizontal">
             <TextBlock Text="{DynamicResource sv_close_after_logging}" 
                        Style="{StaticResource settingTextBlock}"/>
             <ToggleButton Style="{StaticResource settingsButton}"
@@ -71,15 +112,15 @@
         </StackPanel>
         
         <!--Disable confirm when del acc-->
-        <StackPanel Grid.Row="5" Orientation="Horizontal">
-            <TextBlock Grid.Row="5" Text="{DynamicResource sv_confirm_when_del}" Style="{StaticResource settingTextBlock}"/>
+        <StackPanel Grid.Row="6" Orientation="Horizontal">
+            <TextBlock Text="{DynamicResource sv_confirm_when_del}" Style="{StaticResource settingTextBlock}"/>
             <ToggleButton IsChecked="{Binding NoConfirmMode}"
                           Style="{StaticResource settingsButton}"/>
         </StackPanel>
 
         <!--Disable confirm when del acc-->
-        <StackPanel Grid.Row="6" Orientation="Horizontal">
-            <TextBlock Grid.Row="5" Text="Dont collect account information" Style="{StaticResource settingTextBlock}"/>
+        <StackPanel Grid.Row="7" Orientation="Horizontal">
+            <TextBlock Text="Dont collect account information" Style="{StaticResource settingTextBlock}"/>
             <ToggleButton IsChecked="{Binding TakeAccountInfoMode}"
                           Style="{StaticResource settingsButton}"/>
         </StackPanel>
@@ -88,7 +129,7 @@
 
 
 
-        <Button Grid.Row="7" Width="200" Content="{DynamicResource sv_save_changes}" Cursor="Hand"
+        <Button Grid.Row="8" Width="200" Content="{DynamicResource sv_save_changes}" Cursor="Hand"
                 Command="{Binding SaveChangesCommand}"/>
     </Grid>
 </UserControl>

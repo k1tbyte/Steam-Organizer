@@ -12,7 +12,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
     internal class SteamParser
     {
-        private const string _apiKey = "55BB053C506F844D66D88D44F5598EC5";
+        private string _apiKey = "STEAM_API_KEY";
         private readonly string _steamId64;
 
         //Player bans
@@ -33,7 +33,9 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
         public SteamParser(string steamId64)
         {
+            Config config = Config.GetInstance();
             _steamId64 = steamId64;
+            if (config.WebApiKey != "") _apiKey = config.WebApiKey;
         }
 
 

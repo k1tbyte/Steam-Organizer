@@ -161,9 +161,9 @@
 
 
             <!--Error Message TextBlock-->
-            <TextBlock Grid.Row="3" VerticalAlignment="Bottom" FontSize="11"
-                       Grid.RowSpan="4" Margin="0 0 0 62" Padding="20 0 20 0"
-                       Foreground="PaleVioletRed" TextWrapping="WrapWithOverflow"
+            <TextBlock Grid.Row="3" VerticalAlignment="Top" FontSize="11"
+                       Grid.RowSpan="4" Margin="0 52 0 0" Padding="20 0 20 0"
+                       Foreground="PaleVioletRed" TextWrapping="Wrap"
                        Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">

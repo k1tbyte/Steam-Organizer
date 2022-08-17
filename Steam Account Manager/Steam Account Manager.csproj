@@ -394,6 +394,9 @@
   <ItemGroup>
     <Resource Include="Logo.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ViewModels\DialogWindows\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

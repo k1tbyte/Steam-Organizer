@@ -8,8 +8,29 @@ namespace Steam_Account_Manager.ViewModels
         private bool[] _themeMode = { true, false, false };
         private bool[] _localeMode = { true, false, false };
         private bool _autoCloseMode, _noConfirmMode, _takeAccountInfoMode;
+        private string _webApiKey;
+        private bool _apiKeyError;
         public RelayCommand SaveChangesCommand { get; set; }
+        public RelayCommand OpenApiKeyUrlCommand { get; set; }
 
+        public bool ApiKeyError
+        {
+            get => _apiKeyError;
+            set
+            {
+                _apiKeyError = value;
+                OnPropertyChanged(nameof(ApiKeyError));
+            }
+        }
+        public string WebApiKey
+        {
+            get => _webApiKey;
+            set
+            {
+                _webApiKey = value;
+                OnPropertyChanged(nameof(WebApiKey));
+            }
+        }
         public bool TakeAccountInfoMode
         {
             get => _takeAccountInfoMode;
@@ -67,7 +88,7 @@ namespace Steam_Account_Manager.ViewModels
             NoConfirmMode = config.NoConfirmMode;
             AutoCloseMode = config.AutoClose;
             TakeAccountInfoMode = config.TakeAccountInfo;
-
+            WebApiKey = config.WebApiKey;
             #region Считывание языка
             for (int i = 0; i < 3; i++)
                 LocaleMode[i] = false;
@@ -95,24 +116,44 @@ namespace Steam_Account_Manager.ViewModels
 
             SaveChangesCommand = new RelayCommand(o =>
             {
-                byte i = 0;
-                for (; ; i++) 
-                    if (ThemeMode[i])
-                    {
-                        config.Theme = config.SupportedThemes[Convert.ToInt32(i)];
-                        break;
-                    }
 
-                for (i=0; ; i++)
-                    if (LocaleMode[i])
-                    {
-                        config.Language = config.SupportedLanguages[Convert.ToInt32(i)];
-                        break;
-                    }
-                config.NoConfirmMode = NoConfirmMode;
-                config.AutoClose = AutoCloseMode;
-                config.TakeAccountInfo = TakeAccountInfoMode;
-                config.SaveChanges();
+                if(WebApiKey.Length != 32)
+                {
+                    ApiKeyError = true;
+                }
+
+                else
+                {
+                    byte i = 0;
+                    for (; ; i++)
+                        if (ThemeMode[i])
+                        {
+                            config.Theme = config.SupportedThemes[Convert.ToInt32(i)];
+                            break;
+                        }
+
+                    for (i = 0; ; i++)
+                        if (LocaleMode[i])
+                        {
+                            config.Language = config.SupportedLanguages[Convert.ToInt32(i)];
+                            break;
+                        }
+                    config.NoConfirmMode = NoConfirmMode;
+                    config.AutoClose = AutoCloseMode;
+                    config.TakeAccountInfo = TakeAccountInfoMode;
+                    config.WebApiKey = WebApiKey;
+                    config.SaveChanges();
+                    ApiKeyError = false;
+                }
+
+            });
+            
+            OpenApiKeyUrlCommand = new RelayCommand(o =>
+            {
+                using (System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://steamcommunity.com/dev/apikey")
+                {
+                    UseShellExecute = true
+                })) {; }
             });
         }
     }

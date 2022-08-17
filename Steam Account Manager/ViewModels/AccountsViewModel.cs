@@ -1,5 +1,4 @@
-﻿    using System;
-using System.Windows;
+﻿using System;
 using Steam_Account_Manager.ViewModels.View;
 using Steam_Account_Manager.Infrastructure;
 using System.Collections.ObjectModel;
@@ -59,11 +58,6 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public RelayCommand AddAccountWindowCommand
-        {
-            get { return _addAccountWindowCommand ?? new RelayCommand(o => { OpenAddAccountWindow(); }); }
-        }
-
         public static event EventHandler AccountTabViewsChanged;
         private static ObservableCollection<AccountTabView> _accountTabViews;
 
@@ -108,12 +102,6 @@ namespace Steam_Account_Manager.ViewModels
             TempId = id;
         }
 
-        private static void OpenAddAccountWindow()
-        {
-            AddAccountView addAccountWindow = new AddAccountView();
-            ConfirmBanner = false;
-            ShowDialogWindow(addAccountWindow);
-        }
 
         private async Task UpdateDatabase()
         {
@@ -155,6 +143,18 @@ namespace Steam_Account_Manager.ViewModels
 
         }
 
+        //Window commands
+        public RelayCommand AddAccountWindowCommand
+        {
+            get { return _addAccountWindowCommand ?? new RelayCommand(o => { OpenAddAccountWindow(); }); }
+        }
+
+        private static void OpenAddAccountWindow()
+        {
+            AddAccountView addAccountWindow = new AddAccountView();
+            ConfirmBanner = false;
+            ShowDialogWindow(addAccountWindow);
+        }
 
         public AccountsViewModel()
         {
@@ -174,6 +174,7 @@ namespace Steam_Account_Manager.ViewModels
                 _config.SaveChanges();
                 FillAccountTabViews();
             });
+
             RestoreAccountCommand = new RelayCommand(o =>
             {
                 var fileDialog = new OpenFileDialog

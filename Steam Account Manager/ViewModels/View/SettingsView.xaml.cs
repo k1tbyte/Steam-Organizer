@@ -24,5 +24,27 @@ namespace Steam_Account_Manager.ViewModels.View
         {
             InitializeComponent();
         }
+
+        private void apiKeyInfo_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Popup.PlacementTarget = apiKeyInfo;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "This key allows you to use the\nSteam web API and get Steam data.\nIf the main key does not work,\nyou can use your own key - <Click>";
+        }
+
+        private void PopupLeave_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Popup.Visibility = Visibility.Collapsed;
+            Popup.IsOpen = false;
+        }
+
+        private void ErrorApiKey_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Popup.PlacementTarget = ErrorApiKey;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "Key length can only be 32 characters";
+        }
     }
 }

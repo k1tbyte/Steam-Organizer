@@ -133,8 +133,6 @@
             </Style>
 
             <Style x:Key="settingsButton" TargetType="ToggleButton">
-                <Setter Property="Background" Value="#FF181B28"/>
-                <Setter Property="Foreground" Value="Transparent"/>
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="Width" Value="80"/>
@@ -609,8 +607,17 @@
                 </Setter>
             </Style>
 
-            
-            
+            <Style x:Key="ErrorAlert" TargetType="Button" BasedOn="{StaticResource serviceButton}">
+                <Setter Property="Foreground" Value="#D32F2F" />
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="#F44336" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+
+
 
             <DataTemplate DataType="{x:Type viewModel:AccountsViewModel}">
                 <view:AccountsView/>

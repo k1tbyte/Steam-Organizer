@@ -17,6 +17,14 @@ namespace Steam_Account_Manager.Infrastructure
     {
         private static Config _config;
 
+        public List<Account> AccountsDb;
+        public string SteamDirection;
+
+        public bool NoConfirmMode;
+        public bool TakeAccountInfo;
+        public bool AutoClose;
+        public string WebApiKey;
+
         private Config()
         {
             this.AccountsDb = new List<Account>();
@@ -35,6 +43,7 @@ namespace Steam_Account_Manager.Infrastructure
             };
 
             NoConfirmMode = TakeAccountInfo = AutoClose = false;
+            WebApiKey = "";
             Theme = SupportedThemes[2];
             Language = SupportedLanguages[0];
             try
@@ -156,13 +165,6 @@ namespace Steam_Account_Manager.Infrastructure
         }
 
 
-
-        public List<Account> AccountsDb;
-        public string SteamDirection;
-
-        public bool NoConfirmMode;
-        public bool TakeAccountInfo;
-        public bool AutoClose;
 
         public void SaveChanges()
         {

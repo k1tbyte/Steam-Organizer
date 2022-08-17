@@ -520,7 +520,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 AvatarFull = "/Images/default_steam_profile.png";
                 ProfileVisiblity = SteamURL = SteamID64 = "Unknown";
-                GameCountPicture = CreatedDatePicuture = "/Images/Steam_years_of_service/year0";
+                GameCountPicture = CreatedDatePicuture = "/Images/Steam_years_of_service/year0.png";
                 SteamLevel = "-";
                 SteamID32 = 0;
             }
