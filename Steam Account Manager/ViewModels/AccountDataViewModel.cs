@@ -2,6 +2,7 @@
 using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Base;
 using Steam_Account_Manager.Infrastructure.Parsers;
+using Steam_Account_Manager.ViewModels.View;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -20,6 +21,7 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand SaveChangesComamnd { get; set; }
         public RelayCommand OpenOtherLinksCommand { get; set; }
         public RelayCommand ExportAccountCommand { get; set; }
+        private RelayCommand _addAuthenticatorWindowCommand { get; set; }
         public AsyncRelayCommand RefreshCommand { get; set; }
 
         private Account currentAccount;
@@ -622,8 +624,21 @@ namespace Steam_Account_Manager.ViewModels
 
             });
             await task;
-
         }
+
+
+        public RelayCommand AddAuthenticatorWindowCommand
+        {
+            get { return _addAuthenticatorWindowCommand ?? new RelayCommand(o => { OpenAddAuthenticatorWindow(); }); }
+        }
+
+        private  void OpenAddAuthenticatorWindow()
+        {
+            var addAuthView = new AddAuthenticatorWindow(Login,Password);
+            ShowDialogWindow(addAuthView);
+        }
+
+
         public AccountDataViewModel(int id)
         {
             config = Config.GetInstance();
@@ -747,8 +762,8 @@ namespace Steam_Account_Manager.ViewModels
                     Config.Serialize(config.AccountsDb[id], fileDialog.FileName);
                     Task.Run(() => BorderNoticeView("Account saved to file"));
                 }
-
             });
+
         }
     }
 }

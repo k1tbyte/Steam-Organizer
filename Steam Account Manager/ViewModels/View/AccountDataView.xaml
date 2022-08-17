@@ -129,7 +129,7 @@
         <Border Width="580" Grid.Row="1" HorizontalAlignment="Left" CornerRadius="15" Background="{DynamicResource first_main_color}"/>
 
 
-        <!-- Cancel service button -->
+        <!-- Cancel button -->
         <Button Style="{StaticResource serviceButton}"
                 Width="35"  Grid.Row="1" Margin="5 10 0 0"
                 Command="{Binding CancelCommand}"
@@ -780,6 +780,44 @@
                 </StackPanel>
             </Grid>
         </ScrollViewer>
+
+
+        <!--#region 2FA -->
         
+        <!-- 2fa activate button -->
+        <Button x:Name="TwoFaActivate" Style="{StaticResource serviceButton}"
+                Width="45"  Grid.Row="1" Margin="60 10 0 0"
+                Click="TwoFaActivate_Click"
+                VerticalAlignment="Top" HorizontalAlignment="Left">
+            <Icon:PackIconMaterial  Kind="TwoFactorAuthentication" Height="18" Width="40" />
+        </Button>
+
+        <!--Confirmation 2FA-->
+        <Border x:Name="TwoFaAuthAddConfirm" Margin="10 0 0 0" Grid.Row="1" VerticalAlignment="Bottom"
+                HorizontalAlignment="Left"
+                Width="340" Height="40" Background="{DynamicResource popup_border_background}" Opacity="0.8"
+                CornerRadius="15" Visibility="Hidden">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Are you sure you want to add 2FA authentication?" Foreground="White"
+                       FontWeight="Normal" VerticalAlignment="Center"
+                       Margin="15 0 0 0" FontSize="11"/>
+                
+                <!-- No button -->
+                <Button x:Name="noConfirmButton" Click="CloseConfirm_Click" Margin="10 0 0 0" Style="{StaticResource confirmationNoButton}"
+                        Width="25" Height="25">
+                    <Icon:PackIconMaterial Kind="Close" Foreground="White" VerticalAlignment="Center" Width="12" Height="12"/>
+                </Button>
+
+                <!-- Yes button -->
+                <Button Command="{Binding AddAuthenticatorWindowCommand}" Margin="10 0 0 0" Style="{StaticResource confirmationYesButton}"
+                        Width="25" Height="25" Click="CloseConfirm_Click">
+                    <Icon:PackIconMaterial Kind="Check" Foreground="White" VerticalAlignment="Center"/>
+                </Button>
+            </StackPanel>
+        </Border>
+        
+        <!--#endregion-->
+
+
     </Grid>
 </UserControl>
