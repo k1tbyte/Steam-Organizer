@@ -44,6 +44,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
         public string RockstarPass { get; set; }
         public string UplayEmail { get; set; }
         public string UplayPass { get; set; }
+        public string AuthenticatorPath { get; set; }
 
         //Default
         public Account(string login,string password,string steamId64)

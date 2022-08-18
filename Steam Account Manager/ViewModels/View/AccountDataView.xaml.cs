@@ -122,11 +122,6 @@ namespace Steam_Account_Manager.ViewModels.View
             steamImage.Source = new BitmapImage(uriSource);
         }
 
-        //Confirmation to adding 2fa
-        private void TwoFaActivate_Click(object sender, RoutedEventArgs e)
-        {
-            TwoFaAuthAddConfirm.Visibility = Visibility.Visible;
-        }
 
         private void CloseConfirm_Click(object sender, RoutedEventArgs e)
         {

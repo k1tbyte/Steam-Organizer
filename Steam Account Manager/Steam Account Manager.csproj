@@ -118,6 +118,7 @@
     <Compile Include="ViewModels\AddAuthenticatorViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\ShowAuthenticatorViewModel.cs" />
     <Compile Include="ViewModels\View\AccountDataView.xaml.cs">
       <DependentUpon>AccountDataView.xaml</DependentUpon>
     </Compile>
@@ -135,6 +136,9 @@
     </Compile>
     <Compile Include="ViewModels\View\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\View\ShowAuthenticatorWindow.xaml.cs">
+      <DependentUpon>ShowAuthenticatorWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Locale\lang.en-US.xaml">
       <SubType>Designer</SubType>
@@ -214,6 +218,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ViewModels\View\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewModels\View\ShowAuthenticatorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

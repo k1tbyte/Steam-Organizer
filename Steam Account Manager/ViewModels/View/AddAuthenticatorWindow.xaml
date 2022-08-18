@@ -44,8 +44,23 @@
                        Margin="5"
                        Fill="{DynamicResource add_window_rectangle}"
                        Width="225"/>
-            
-            <Border Grid.Row="1" Style="{StaticResource borderAddTextBox}">
+
+            <StackPanel x:Name="buttons" Orientation="Horizontal" Grid.Row="1" Visibility="Visible"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 0 5">
+                
+                <Button Style="{StaticResource defaultButton}" Grid.Row="1"
+                        Margin="0 0 40 0" Command="{Binding AddNewCommand}" Click="buttons_Click">
+                    <TextBlock Text="Add new"/>
+                </Button>
+
+                <Button Style="{StaticResource defaultButton}" Grid.Row="1"
+                    Margin="0 0 0 0" Command="{Binding AuthenticatorLoadCommand}">
+                    <TextBlock Text="Load"/>
+                </Button>
+            </StackPanel>
+
+
+            <Border x:Name="add_panel" Grid.Row="1" Style="{StaticResource borderAddTextBox}" Visibility="Hidden">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial Kind="BadgeAccountAlert"
                                            Height="22" Width="22"
@@ -77,7 +92,6 @@
                         </Style.Triggers>
                     </Style>
                 </TextBlock.Style>
-
             </TextBlock>
 
         </Grid>

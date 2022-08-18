@@ -21,7 +21,8 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand SaveChangesComamnd { get; set; }
         public RelayCommand OpenOtherLinksCommand { get; set; }
         public RelayCommand ExportAccountCommand { get; set; }
-        private RelayCommand _addAuthenticatorWindowCommand { get; set; }
+        public RelayCommand AddAuthenticatorCommand { get; set; }
+        public RelayCommand YesAuthenticatorCommand { get; set; }
         public AsyncRelayCommand RefreshCommand { get; set; }
 
         private Account currentAccount;
@@ -37,6 +38,8 @@ namespace Steam_Account_Manager.ViewModels
         private string _steamYearPicture;
         private string _gameCountPicture, _createdDatePicture;
         private bool _containParseInfo;
+        private int _id;
+        private string _authenticatorPath;
 
         //bans
         private int _vacCount;
@@ -58,6 +61,15 @@ namespace Steam_Account_Manager.ViewModels
         //other account info
         private string _note, _emailLogin, _emailPass, _rockstarEmail, _rockstarPass, _uplayEmail, _uplayPass;
 
+        public string AuthenticatorPath
+        {
+            get => _authenticatorPath;
+            set
+            {
+                _authenticatorPath = value;
+                OnPropertyChanged(nameof(AuthenticatorPath));
+            }
+        }
         public bool ContainParseInfo
         {
             get => _containParseInfo;
@@ -626,16 +638,14 @@ namespace Steam_Account_Manager.ViewModels
             await task;
         }
 
-
-        public RelayCommand AddAuthenticatorWindowCommand
-        {
-            get { return _addAuthenticatorWindowCommand ?? new RelayCommand(o => { OpenAddAuthenticatorWindow(); }); }
-        }
-
         private  void OpenAddAuthenticatorWindow()
         {
-            var addAuthView = new AddAuthenticatorWindow(Login,Password);
-            ShowDialogWindow(addAuthView);
+            ShowDialogWindow(new AddAuthenticatorWindow(Login, Password, _id));
+        }
+
+        public void OpenShowAuthenticatorWindow()
+        {
+            ShowDialogWindow(new ShowAuthenticatorWindow(_id));
         }
 
 
@@ -645,7 +655,9 @@ namespace Steam_Account_Manager.ViewModels
             currentAccount = config.AccountsDb[id];
             FillSteamInfo();
             if(currentAccount.ContainParseInfo) FillCsgoInfo();
+            _id = id;
 
+            if(currentAccount.AuthenticatorPath != null) AuthenticatorPath = currentAccount.AuthenticatorPath;
 
             CancelCommand = new RelayCommand(o =>
             {
@@ -762,6 +774,26 @@ namespace Steam_Account_Manager.ViewModels
                     Config.Serialize(config.AccountsDb[id], fileDialog.FileName);
                     Task.Run(() => BorderNoticeView("Account saved to file"));
                 }
+            });
+
+            AddAuthenticatorCommand = new RelayCommand(o =>
+            {
+                config = Config.GetInstance();
+                AuthenticatorPath = config.AccountsDb[_id].AuthenticatorPath;
+                if (AuthenticatorPath == null || !System.IO.File.Exists(AuthenticatorPath))
+                {
+                    var border = o as Border;
+                    border.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    OpenShowAuthenticatorWindow();
+                }
+            });
+
+            YesAuthenticatorCommand = new RelayCommand(o =>
+            {
+                OpenAddAuthenticatorWindow();
             });
 
         }

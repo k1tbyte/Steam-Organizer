@@ -787,7 +787,7 @@
         <!-- 2fa activate button -->
         <Button x:Name="TwoFaActivate" Style="{StaticResource serviceButton}"
                 Width="45"  Grid.Row="1" Margin="60 10 0 0"
-                Click="TwoFaActivate_Click"
+                Command="{Binding AddAuthenticatorCommand}" CommandParameter="{Binding ElementName=TwoFaAuthAddConfirm}"
                 VerticalAlignment="Top" HorizontalAlignment="Left">
             <Icon:PackIconMaterial  Kind="TwoFactorAuthentication" Height="18" Width="40" />
         </Button>
@@ -809,7 +809,7 @@
                 </Button>
 
                 <!-- Yes button -->
-                <Button Command="{Binding AddAuthenticatorWindowCommand}" Margin="10 0 0 0" Style="{StaticResource confirmationYesButton}"
+                <Button x:Name="yesConfirmButton" Command="{Binding YesAuthenticatorCommand}" Margin="10 0 0 0" Style="{StaticResource confirmationYesButton}"
                         Width="25" Height="25" Click="CloseConfirm_Click">
                     <Icon:PackIconMaterial Kind="Check" Foreground="White" VerticalAlignment="Center"/>
                 </Button>

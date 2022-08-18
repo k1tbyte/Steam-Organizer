@@ -1,0 +1,98 @@
+﻿<Window x:Class="Steam_Account_Manager.ViewModels.View.ShowAuthenticatorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:vm ="clr-namespace:Steam_Account_Manager.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:ShowAuthenticatorViewModel}"
+        Background="Transparent"
+        Name="ShowAuthenticator" WindowStyle="None"
+        AllowsTransparency="True"
+        Height="200" Width="350">
+    
+    <Border CornerRadius="8" Background="{DynamicResource background_border_color}"
+            BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="55"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0"
+                VerticalAlignment="Top"
+                       HorizontalAlignment="Left" Margin="15 15" 
+                       FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                       Text="2FA Control"
+                       FontSize="20">
+            </TextBlock>
+
+            <!-- Exit button -->
+            <Button Grid.Row="0"  Style="{StaticResource serviceButton}"
+                    Command="{Binding CloseWindowCommand}" CommandParameter="{Binding ElementName=ShowAuthenticator}"
+                    VerticalAlignment="Top" HorizontalAlignment="Right"
+                        Width="15" Margin="0,10,15,0">
+                <Icon:PackIconMaterial Kind="WindowClose"
+                                       Height="15" Width="15" 
+                                       VerticalAlignment="Center"/>
+            </Button>
+
+            <Rectangle Height="1"
+                       VerticalAlignment="Bottom"
+                       Grid.Row="0" Grid.ColumnSpan="2"
+                       Margin="5"
+                       Fill="{DynamicResource add_window_rectangle}"
+                       Width="320"/>
+
+            <TextBlock Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 8 0 0" FontSize="12" 
+                       FontWeight="Medium" Text="{Binding AccountName, UpdateSourceTrigger=PropertyChanged}"/>
+            <Border Grid.Row="1" Background="{DynamicResource first_main_color}" 
+                    Width="150" Height="52" CornerRadius="5" Margin="0 0 0 30">
+                <TextBox  Text="{Binding SteamGuardCode,UpdateSourceTrigger=PropertyChanged}" Width="140" FontSize="30" HorizontalAlignment="Center"
+                     VerticalAlignment="Center" IsReadOnly="True" TextAlignment="Center" />
+            </Border>
+
+            <ProgressBar Grid.Row="1" Width="200" Height="5" Margin="0 40 0 0"
+                         Value="{Binding TimerValue}" Maximum="30"  Style="{StaticResource noTextProgreeBar}"/>
+
+            <!--Error Message TextBlock-->
+            <TextBlock Grid.Row="1" VerticalAlignment="Top" FontSize="11"
+                       Margin="0 100 0 0" Padding="15 0 70 0"
+                       Foreground="PaleVioletRed" TextWrapping="Wrap"
+                       Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ErrorMessage}" Value="">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <!-- Remove button -->
+            <StackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom"  Margin="0 0 12 12">
+
+                <Button x:Name="confirmDeleteYes" Click="confirmDeleteHidden_Click" Style="{StaticResource confirmationNoButton}" 
+                        Margin="0 0 0 4" Width="20" Height="20" Opacity="0.9" Visibility="Hidden"
+                        Command="{Binding RemoveAuthenticatorCommand}" CommandParameter="{Binding ElementName=ShowAuthenticator}">
+                    <Icon:PackIconMaterial Kind="Check" Style="{StaticResource gridButtonIcon}"
+                                           VerticalAlignment="Center" HorizontalAlignment="Center" Width="11"/>
+                </Button>
+
+                <Button x:Name="confirmDeleteNo" Click="confirmDeleteHidden_Click" Style="{StaticResource confirmationYesButton}" Margin="0 0 0 4"
+                        Width="20" Height="20" Opacity="0.9"  Visibility="Hidden" >
+                    <Icon:PackIconMaterial Kind="Close" Style="{StaticResource gridButtonIcon}"
+                                           VerticalAlignment="Center" HorizontalAlignment="Center" Width="11"/>
+                </Button>
+
+                <Button x:Name="deleteAuth" Click="deleteAuth_Click" Style="{StaticResource gridRemoveButton}" Opacity="1">
+                    <Icon:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

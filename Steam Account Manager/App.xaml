@@ -168,7 +168,31 @@
                         <Setter Property="Foreground" Value="White"/>
                         <Setter Property="BorderBrush" Value="Transparent"/>
                     </Trigger>
+                </Style.Triggers>
+            </Style>
 
+            <Style x:Key="defaultButton" TargetType="Button">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
+                <Setter Property="Width" Value="80"/>
+                <Setter Property="Height" Value="35"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}" >
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                    </Trigger>
                 </Style.Triggers>
             </Style>
 

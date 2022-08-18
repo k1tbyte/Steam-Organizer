@@ -119,7 +119,7 @@
             </Grid>
 
             <ProgressBar Grid.Column="1" HorizontalAlignment="Center" Margin="0 35 150 0" Width="160" Tag="{Binding UpdatedAccountIndex, UpdateSourceTrigger=PropertyChanged}"
-                     Height="25" VerticalAlignment="Top" Minimum="0" Maximum="{Binding TotalAccounts}" Value="{Binding UpdatedAccountIndex}">
+                     Height="25" VerticalAlignment="Top" Minimum="0" Maximum="{Binding TotalAccounts}" Value="{Binding UpdatedAccountIndex}" Style="{StaticResource accountProgressBar}">
             </ProgressBar>
 
             <!-- Notification Grid -->
