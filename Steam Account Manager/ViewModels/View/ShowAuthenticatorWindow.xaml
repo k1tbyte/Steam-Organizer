@@ -50,7 +50,7 @@
             <Border Grid.Row="1" Background="{DynamicResource first_main_color}" 
                     Width="150" Height="52" CornerRadius="5" Margin="0 0 0 30">
                 <TextBox  Text="{Binding SteamGuardCode,UpdateSourceTrigger=PropertyChanged}" Width="140" FontSize="30" HorizontalAlignment="Center"
-                     VerticalAlignment="Center" IsReadOnly="True" TextAlignment="Center" />
+                     VerticalAlignment="Center" IsReadOnly="True" TextAlignment="Center" Background="{DynamicResource first_main_color}" BorderThickness="0"  />
             </Border>
 
             <ProgressBar Grid.Row="1" Width="200" Height="5" Margin="0 40 0 0"

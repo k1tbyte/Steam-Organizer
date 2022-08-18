@@ -81,7 +81,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         //Update account counstructor
         public Account( string login, string password, string steamId64, string note, string emailLogin,string emailPass,
-             string rockstarEmail, string rockstarPass, string uplayEmail,string uplayPass, CsgoStats csgoStats)
+             string rockstarEmail, string rockstarPass, string uplayEmail,string uplayPass, CsgoStats csgoStats,string authenticatorPath)
         {
             this.Login = login;
             this.Password = password;
@@ -108,6 +108,9 @@ namespace Steam_Account_Manager.Infrastructure.Base
             this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
 
             this.CsgoStats = csgoStats;
+
+            this.AuthenticatorPath = AuthenticatorPath;
+            this.ContainParseInfo = true;
 
             this.Note = note;
             this.EmailLogin = emailLogin;

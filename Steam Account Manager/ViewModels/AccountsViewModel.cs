@@ -112,6 +112,7 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     for (int i = 0; i < _config.AccountsDb.Count; i++)
                     {
+                        if (!_config.AccountsDb[i].ContainParseInfo) continue;
                         MainWindowViewModel.UpdatedAccountIndex = i + 1;
                         _config.AccountsDb[i] = new Infrastructure.Base.Account(
                               _config.AccountsDb[i].Login,
@@ -124,7 +125,8 @@ namespace Steam_Account_Manager.ViewModels
                              _config.AccountsDb[i].RockstarPass,
                              _config.AccountsDb[i].UplayEmail,
                              _config.AccountsDb[i].UplayPass,
-                             _config.AccountsDb[i].CsgoStats);
+                             _config.AccountsDb[i].CsgoStats,
+                             _config.AccountsDb[i].AuthenticatorPath);
                     }
                     MainWindowViewModel.UpdatedAccountIndex = 0;
                     MainWindowViewModel.IsEnabledForUser = true;
@@ -170,9 +172,19 @@ namespace Steam_Account_Manager.ViewModels
 
             YesButtonCommand = new RelayCommand(o =>
             {
-                _config.AccountsDb.RemoveAt(TempId);
-                _config.SaveChanges();
-                FillAccountTabViews();
+                _config = Config.GetInstance();
+                if (_config.AccountsDb[TempId].AuthenticatorPath == null)
+                {
+                    _config.AccountsDb.RemoveAt(TempId);
+                    _config.SaveChanges();
+                    FillAccountTabViews();
+                }
+                else
+                {
+                    Task.Run(() => MainWindowViewModel.NotificationView("You cannot delete an account with 2FA"));
+                }
+                ConfirmBanner = false;
+
             });
 
             RestoreAccountCommand = new RelayCommand(o =>

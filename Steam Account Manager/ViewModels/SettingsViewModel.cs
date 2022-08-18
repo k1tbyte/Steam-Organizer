@@ -117,7 +117,7 @@ namespace Steam_Account_Manager.ViewModels
             SaveChangesCommand = new RelayCommand(o =>
             {
 
-                if(WebApiKey.Length != 32)
+                if(WebApiKey.Length < 32 && WebApiKey != "")
                 {
                     ApiKeyError = true;
                 }
