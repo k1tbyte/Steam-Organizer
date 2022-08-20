@@ -124,9 +124,9 @@ namespace Steam_Account_Manager.ViewModels
             {
                 if (DataValidate())
                 {
-                    var config = Config.GetInstance();
-                    config.AccountsDb.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword,_steamLink,true));
-                    config.SaveChanges();
+                    var database = CryptoBase.GetInstance();
+                    database.Accounts.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword,_steamLink,true));
+                    database.SaveDatabase();
                     MainWindowViewModel.AccountsViewCommand.Execute(null);
                     ErrorMessage = "";
                 }
@@ -149,9 +149,9 @@ namespace Steam_Account_Manager.ViewModels
                         else
                         {
                             ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
-                            var config = Config.GetInstance();
-                            config.AccountsDb.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
-                            config.SaveChanges();
+                            var database = CryptoBase.GetInstance();
+                            database.Accounts.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
+                            database.SaveDatabase();
                             MainWindowViewModel.AccountsViewCommand.Execute(null);
                             ErrorMessage = "";
                         }

@@ -24,7 +24,7 @@ namespace Steam_Account_Manager.ViewModels
         private Window _window;
         private int _id;
 
-        Config config;
+        CryptoBase database;
 
         public string UserInput
         {
@@ -117,7 +117,7 @@ namespace Steam_Account_Manager.ViewModels
                     string sgFile = JsonConvert.SerializeObject(linker.LinkedAccount, Formatting.Indented);
                     path += linker.LinkedAccount.AccountName + ".maFile";
                     System.IO.File.WriteAllText(path, sgFile);
-                    config.AccountsDb[_id].AuthenticatorPath = path;
+                    database.Accounts[_id].AuthenticatorPath = path;
                 }
                 catch
                 {
@@ -154,8 +154,8 @@ namespace Steam_Account_Manager.ViewModels
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    config.AccountsDb[_id].AuthenticatorPath = fileDialog.FileName;
-                    config.SaveChanges();
+                    database.Accounts[_id].AuthenticatorPath = fileDialog.FileName;
+                    database.SaveDatabase();
                     ErrorMessage = "Authenticator successfully added";
                     Thread.Sleep(2000);
                 }
@@ -164,7 +164,7 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand CloseWindowCommand { get; set; }
         public AddAuthenticatorViewModel(string login, string password,int accountId, object window)
         {
-            config = Config.GetInstance();
+            database = CryptoBase.GetInstance();
             _login = login;
             _password = password;
             _id = accountId;

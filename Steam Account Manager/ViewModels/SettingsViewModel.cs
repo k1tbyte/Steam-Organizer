@@ -9,10 +9,22 @@ namespace Steam_Account_Manager.ViewModels
         private bool[] _localeMode = { true, false, false };
         private bool _autoCloseMode, _noConfirmMode, _takeAccountInfoMode;
         private string _webApiKey;
-        private bool _apiKeyError;
+        private string _encryptingKey;
+        private bool _apiKeyError, _databaseResave;
         public RelayCommand SaveChangesCommand { get; set; }
         public RelayCommand OpenApiKeyUrlCommand { get; set; }
+        public RelayCommand GenerateCryptoKeyCommand { get; set; }
+        public RelayCommand ResetCryptoKeyCommand { get; set; }
 
+        public string EncryptingKey
+        {
+            get => _encryptingKey;
+            set
+            {
+                _encryptingKey = value;
+                OnPropertyChanged(nameof(EncryptingKey));
+            }
+        }
         public bool ApiKeyError
         {
             get => _apiKeyError;
@@ -89,6 +101,7 @@ namespace Steam_Account_Manager.ViewModels
             AutoCloseMode = config.AutoClose;
             TakeAccountInfoMode = config.TakeAccountInfo;
             WebApiKey = config.WebApiKey;
+            EncryptingKey = config.UserCryptoKey == Config.GetDefaultCryptoKey ? "By default" : config.UserCryptoKey;
             #region Считывание языка
             for (int i = 0; i < 3; i++)
                 LocaleMode[i] = false;
@@ -142,8 +155,23 @@ namespace Steam_Account_Manager.ViewModels
                     config.AutoClose = AutoCloseMode;
                     config.TakeAccountInfo = TakeAccountInfoMode;
                     config.WebApiKey = WebApiKey;
+                    if(EncryptingKey != "By default")
+                    {
+                        config.UserCryptoKey = EncryptingKey;
+                        Config._config.UserCryptoKey = EncryptingKey;
+                        if (System.IO.File.Exists("database.dat"))
+                            CryptoBase._database.SaveDatabase();
+                    }
+                    else
+                    {
+                        config.UserCryptoKey = Config.GetDefaultCryptoKey;
+                        if(System.IO.File.Exists("database.dat")) 
+                            CryptoBase._database.SaveDatabase();
+                        EncryptingKey = "By default";
+                    }
                     config.SaveChanges();
                     ApiKeyError = false;
+
                 }
 
             });
@@ -154,6 +182,16 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     UseShellExecute = true
                 })) {; }
+            });
+
+            GenerateCryptoKeyCommand = new RelayCommand(o =>
+            {
+                EncryptingKey = Config.GenerateCryptoKey();
+            });
+
+            ResetCryptoKeyCommand = new RelayCommand(o =>
+            {
+                EncryptingKey = "By default";
             });
         }
     }

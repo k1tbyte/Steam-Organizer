@@ -4,30 +4,31 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
-using Steam_Account_Manager.Infrastructure.Base;
-using FuzzySharp;
 using System.Linq;
 using System.Globalization;
 using System.Threading;
+using Steam_Account_Manager.Infrastructure.Base;
+using FuzzySharp;
 
 namespace Steam_Account_Manager.Infrastructure
 {
     [Serializable]
     internal class Config
     {
-        private static Config _config;
+        public static Config _config;
 
-        public List<Account> AccountsDb;
+        public static string TempUserKey;
+
         public string SteamDirection;
 
         public bool NoConfirmMode;
         public bool TakeAccountInfo;
         public bool AutoClose;
         public string WebApiKey;
+        public string UserCryptoKey;
 
         private Config()
         {
-            this.AccountsDb = new List<Account>();
 
             SupportedThemes = new List<Themes>
             {
@@ -44,6 +45,7 @@ namespace Steam_Account_Manager.Infrastructure
 
             NoConfirmMode = TakeAccountInfo = AutoClose = false;
             WebApiKey = "";
+            UserCryptoKey = CryptoKey;
             Theme = SupportedThemes[2];
             Language = SupportedLanguages[0];
             try
@@ -56,7 +58,6 @@ namespace Steam_Account_Manager.Infrastructure
             }
             
         }
-
 
         #region Themes
 
@@ -168,7 +169,7 @@ namespace Steam_Account_Manager.Infrastructure
 
         public void SaveChanges()
         {
-            Serialize(_config, Environment.CurrentDirectory + @"\config.dat");
+            Serialize(_config, Environment.CurrentDirectory + @"\config.dat",CryptoKey);
         }
 
         public void Clear()
@@ -177,35 +178,13 @@ namespace Steam_Account_Manager.Infrastructure
             SaveChanges();
         }
 
-        public List<int> SearchByNickname(string nickname = "")
-        {
-            var foundAccountsIndexes = new List<int>();
-            if (nickname != "")
-            {
-                for (int i = 0; i < AccountsDb.Count; i++)
-                {
-                    if (AccountsDb[i].Nickname.ToLower().StartsWith(nickname) ||
-                        Fuzz.Ratio(nickname.ToLower(), AccountsDb[i].Nickname.ToLower()) > 40)
-                    {
-                        foundAccountsIndexes.Add(i);
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < AccountsDb.Count; i++)
-                    foundAccountsIndexes.Add(i);
-            }
-            return foundAccountsIndexes;
-        }
-
         public static Config GetInstance()
         {
             if (_config == null)
             {
                 if (File.Exists("config.dat"))
                 {
-                    _config = (Config)Deserialize(Environment.CurrentDirectory + @"\config.dat");
+                    _config = (Config)Deserialize(Environment.CurrentDirectory + @"\config.dat",CryptoKey);
                     _config.Theme = _config.Theme;
                     _config.Language = _config.Language;
                 }
@@ -215,9 +194,22 @@ namespace Steam_Account_Manager.Infrastructure
         }
 
         //Encrypting
-        private const string CryptoKey = "Q3JpcHRvZ3JhZmlhcyBjb20gUmluamRhZWwgLyBBRVM=";
+        private static string CryptoKey = "Q3JpcHRvZ3JhZmlhcyBjb20gUmluamRhZWwgLyBBRVM=";
         private const int KeySize = 256;
         private const int IvSize = 16; // block size is 128-bit
+
+        public static string GetDefaultCryptoKey => CryptoKey;
+
+        public static string GenerateCryptoKey()
+        {
+            //Generate a cryptographic random number.
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+            byte[] buff = new byte[32];
+            rng.GetBytes(buff);
+
+            // Return a Base64 string representation of the random number.
+            return Convert.ToBase64String(buff);
+        }
 
         private static void WriteObjectToStream(Stream outputStream, object obj)
         {
@@ -243,6 +235,7 @@ namespace Steam_Account_Manager.Infrastructure
             CryptoStream encryptor = new CryptoStream(outputStream, rijndael.CreateEncryptor(key, iv), CryptoStreamMode.Write);
             return encryptor;
         }
+
         private static CryptoStream CreateDecryptionStream(byte[] key, Stream inputStream)
         {
             byte[] iv = new byte[IvSize];
@@ -263,7 +256,8 @@ namespace Steam_Account_Manager.Infrastructure
                 CryptoStreamMode.Read);
             return decryptor;
         }
-        public static void Serialize(object obj, string path)
+
+        public static void Serialize(object obj, string path, string CryptoKey)
         {
             byte[] key = Convert.FromBase64String(CryptoKey);
 
@@ -275,7 +269,7 @@ namespace Steam_Account_Manager.Infrastructure
                 }
             }
         }
-        public static object Deserialize(string path)
+        public static object Deserialize(string path,string CryptoKey)
         {
             byte[] key = Convert.FromBase64String(CryptoKey);
 
@@ -284,6 +278,60 @@ namespace Steam_Account_Manager.Infrastructure
             {
                 return ReadObjectFromStream(cryptoStream);
             }
+        }
+
+    }
+
+    [Serializable]
+    internal class CryptoBase
+    {
+        public List<Account> Accounts;
+        public static CryptoBase _database;
+
+        public CryptoBase()
+        {
+            this.Accounts = new List<Account>();
+        }
+
+        public static CryptoBase GetInstance()
+        {
+            if (_database == null)
+            {
+                if (File.Exists("database.dat"))
+                {
+                    _database = (CryptoBase)Config.Deserialize(Environment.CurrentDirectory + @"\database.dat", Config._config.UserCryptoKey);
+                }
+                else _database = new CryptoBase();
+            }
+            return _database;
+        }
+
+        public void SaveDatabase()
+        {
+            Config.Serialize(_database, Environment.CurrentDirectory + @"\database.dat", Config._config.UserCryptoKey);
+        }
+        
+
+        public List<int> SearchByNickname(string nickname = "")
+        {
+            var foundAccountsIndexes = new List<int>();
+            if (nickname != "")
+            {
+                for (int i = 0; i < Accounts.Count; i++)
+                {
+                    if (Accounts[i].Nickname.ToLower().StartsWith(nickname) ||
+                        Fuzz.Ratio(nickname.ToLower(), Accounts[i].Nickname.ToLower()) > 40)
+                    {
+                        foundAccountsIndexes.Add(i);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < Accounts.Count; i++)
+                    foundAccountsIndexes.Add(i);
+            }
+            return foundAccountsIndexes;
         }
 
     }

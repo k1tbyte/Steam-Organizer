@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Steam_Account_Manager.ViewModels.View;
+using System;
 using System.IO;
 using System.Threading;
 using System.Windows;
@@ -16,15 +17,31 @@ namespace Steam_Account_Manager
             {
                 var workingDir = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
                 DotEnv.Load(Path.Combine(workingDir, "Keys.env"));
+                Infrastructure.Config.GetInstance();
 
-                var mainWindow = new MainWindow
+                try
                 {
-                                
-                  WindowStartupLocation = WindowStartupLocation.CenterScreen
-                    
-                };
+                    Infrastructure.CryptoBase.GetInstance();
 
-                mainWindow.Show();
+                    var mainWindow = new MainWindow
+                    {
+
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen
+
+                    };
+
+                    mainWindow.Show();
+                }
+                catch
+                {
+                    var cryptoKeyWindow = new CryptoKeyWindow(true)
+                    {
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen
+                    };
+
+                    cryptoKeyWindow.ShowDialog();
+                }
+
             }
             else
             {

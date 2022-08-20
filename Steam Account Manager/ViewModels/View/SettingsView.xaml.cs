@@ -46,5 +46,31 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.IsOpen = true;
             Header.PopupText.Text = "Key length can only be 32 characters";
         }
+
+        private void CryptoKeyInfo_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Popup.PlacementTarget = CryptoKeyInfo;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "256-bit key to encrypt data when saving accounts.\n" +
+                "ATTENTION! If you lose the key, you will not be able to recover\n" +
+                "your data. After generating a new key, write it down or save it!";
+        }
+
+        private void GenerateKey_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Popup.PlacementTarget = GenerateKey;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "Generate a new encryption key";
+        }
+
+        private void ResetKey_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Popup.PlacementTarget = ResetKey;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "Reset by default";
+        }
     }
 }

@@ -22,6 +22,7 @@ namespace Steam_Account_Manager.ViewModels
         private string _steamLevel;
         private int _vacCount;
         private int _id;
+        private CryptoBase database;
         private Config config;
         private bool _containParseInfo;
 
@@ -125,8 +126,8 @@ namespace Steam_Account_Manager.ViewModels
 
         public AccountTabViewModel(int id)
         {
-            config = Config.GetInstance();
-            Account account = config.AccountsDb.ElementAt(id);
+            database = CryptoBase.GetInstance();
+            Account account = database.Accounts.ElementAt(id);
             Id = id + 1;
             ContainParseInfo = account.ContainParseInfo;
             if (account.ContainParseInfo)
@@ -150,8 +151,8 @@ namespace Steam_Account_Manager.ViewModels
 
             DeleteAccoundCommand = new RelayCommand(o =>
             {
-                config.AccountsDb.RemoveAt(id);
-                config.SaveChanges();
+                database.Accounts.RemoveAt(id);
+                database.SaveDatabase();
                 AccountsViewModel.FillAccountTabViews();
             });
 
@@ -179,8 +180,8 @@ namespace Steam_Account_Manager.ViewModels
                     AccountsViewModel.RemoveAccount(ref id);
                 else
                 {
-                    config.AccountsDb.RemoveAt(id);
-                    config.SaveChanges();
+                    database.Accounts.RemoveAt(id);
+                    database.SaveDatabase();
                     AccountsViewModel.FillAccountTabViews();
                 }
             });

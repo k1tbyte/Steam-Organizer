@@ -19,7 +19,7 @@ namespace Steam_Account_Manager.ViewModels
 
 
         private int _id;
-        private Config config;
+        private CryptoBase database;
         private string _authPath,_accountName = "Login", _steamGuardCode = "Loading...",_errorMessage;
         private SteamGuardAccount guard;
         private bool _remove;
@@ -104,9 +104,9 @@ namespace Steam_Account_Manager.ViewModels
                     ErrorMessage = success == true ? "Authenticator disabled, use your username and password to log in" :
                     "An error occurred while trying to deactivate the authenticator, please try again later";
                     _remove = true;
-                    File.Delete(config.AccountsDb[_id].AuthenticatorPath);
-                    config.AccountsDb[_id].AuthenticatorPath = null;
-                    config.SaveChanges();
+                    File.Delete(database.Accounts[_id].AuthenticatorPath);
+                    database.Accounts[_id].AuthenticatorPath = null;
+                    database.SaveDatabase();
                     Thread.Sleep(2500);
                 }
                 catch
@@ -120,8 +120,8 @@ namespace Steam_Account_Manager.ViewModels
         public ShowAuthenticatorViewModel(int accountId)
         {
             _id = accountId;
-            config = Config.GetInstance();
-            _authPath = config.AccountsDb[_id].AuthenticatorPath;
+            database = CryptoBase.GetInstance();
+            _authPath = database.Accounts[_id].AuthenticatorPath;
             CloseWindowCommand = new RelayCommand(o =>
             {
                 ExecuteWindow(o);

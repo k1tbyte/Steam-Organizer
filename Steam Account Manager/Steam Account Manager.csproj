@@ -135,6 +135,9 @@
     <Compile Include="ViewModels\View\AddAuthenticatorWindow.xaml.cs">
       <DependentUpon>AddAuthenticatorWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\View\CryptoKeyWindow.xaml.cs">
+      <DependentUpon>CryptoKeyWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\View\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
@@ -215,6 +218,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ViewModels\View\AddAuthenticatorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewModels\View\CryptoKeyWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -417,6 +424,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ViewModels\DialogWindows\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

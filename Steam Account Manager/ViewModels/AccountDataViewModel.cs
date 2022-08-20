@@ -26,7 +26,7 @@ namespace Steam_Account_Manager.ViewModels
         public AsyncRelayCommand RefreshCommand { get; set; }
 
         private Account currentAccount;
-        private Config config;
+        private CryptoBase database;
 
         private string _avatarFull, _nickname;
         private bool _noticeView = false, _savePermission = false, _isCsgoStatsSave = false;
@@ -624,8 +624,8 @@ namespace Steam_Account_Manager.ViewModels
                         UplayPass = currentAccount.UplayPass
                     };
 
-                    config.AccountsDb[id] = currentAccount;
-                    config.SaveChanges();
+                    database.Accounts[id] = currentAccount;
+                    database.SaveDatabase();
                     Task.Run(() => BorderNoticeView("Information updated"));
                     FillSteamInfo();
                 }
@@ -651,8 +651,8 @@ namespace Steam_Account_Manager.ViewModels
 
         public AccountDataViewModel(int id)
         {
-            config = Config.GetInstance();
-            currentAccount = config.AccountsDb[id];
+            database = CryptoBase.GetInstance();
+            currentAccount = database.Accounts[id];
             FillSteamInfo();
             if(currentAccount.ContainParseInfo) FillCsgoInfo();
             _id = id;
@@ -733,19 +733,19 @@ namespace Steam_Account_Manager.ViewModels
                     _savePermission = false;
                     if(_isCsgoStatsSave)
                     {
-                        config.AccountsDb[id].CsgoStats = currentAccount.CsgoStats;
+                        database.Accounts[id].CsgoStats = currentAccount.CsgoStats;
                         _isCsgoStatsSave = false;
                     }
-                    config.AccountsDb[id].Password = Password;
-                    config.AccountsDb[id].Login = Login;
-                    config.AccountsDb[id].Note = Note;
-                    config.AccountsDb[id].EmailLogin = EmailLogin;
-                    config.AccountsDb[id].EmailPass = EmailPass;
-                    config.AccountsDb[id].RockstarEmail = RockstarEmail;
-                    config.AccountsDb[id].RockstarPass = RockstarPass;
-                    config.AccountsDb[id].UplayEmail = UplayEmail;
-                    config.AccountsDb[id].UplayPass = UplayPass;
-                    config.SaveChanges();
+                    database.Accounts[id].Password = Password;
+                    database.Accounts[id].Login = Login;
+                    database.Accounts[id].Note = Note;
+                    database.Accounts[id].EmailLogin = EmailLogin;
+                    database.Accounts[id].EmailPass = EmailPass;
+                    database.Accounts[id].RockstarEmail = RockstarEmail;
+                    database.Accounts[id].RockstarPass = RockstarPass;
+                    database.Accounts[id].UplayEmail = UplayEmail;
+                    database.Accounts[id].UplayPass = UplayPass;
+                    database.SaveDatabase();
                     Task.Run(() => BorderNoticeView("Account changes saved"));
 
                 }
@@ -771,15 +771,16 @@ namespace Steam_Account_Manager.ViewModels
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    Config.Serialize(config.AccountsDb[id], fileDialog.FileName);
+                    Config.GetInstance();
+                    Config.Serialize(database.Accounts[id], fileDialog.FileName,Config._config.UserCryptoKey);
                     Task.Run(() => BorderNoticeView("Account saved to file"));
                 }
             });
 
             AddAuthenticatorCommand = new RelayCommand(o =>
             {
-                config = Config.GetInstance();
-                AuthenticatorPath = config.AccountsDb[_id].AuthenticatorPath;
+                database = CryptoBase.GetInstance();
+                AuthenticatorPath = database.Accounts[_id].AuthenticatorPath;
                 if (AuthenticatorPath == null || !System.IO.File.Exists(AuthenticatorPath))
                 {
                     var border = o as Border;
