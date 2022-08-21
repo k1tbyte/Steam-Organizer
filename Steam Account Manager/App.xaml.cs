@@ -17,29 +17,39 @@ namespace Steam_Account_Manager
             {
                 var workingDir = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
                 DotEnv.Load(Path.Combine(workingDir, "Keys.env"));
-                Infrastructure.Config.GetInstance();
+                var config = Infrastructure.Config.GetInstance();
 
-                try
+
+                if (config.Password == null)
                 {
-                    Infrastructure.CryptoBase.GetInstance();
-
-                    var mainWindow = new MainWindow
+                    try
                     {
+                        Infrastructure.CryptoBase.GetInstance();
 
-                        WindowStartupLocation = WindowStartupLocation.CenterScreen
+                        var mainWindow = new MainWindow
+                        {
+                            WindowStartupLocation = WindowStartupLocation.CenterScreen
+                        };
 
-                    };
+                        mainWindow.Show();
+                    }
+                    catch
+                    {
+                        var cryptoKeyWindow = new CryptoKeyWindow(true)
+                        {
+                            WindowStartupLocation = WindowStartupLocation.CenterScreen
+                        };
 
-                    mainWindow.Show();
+                        cryptoKeyWindow.Show();
+                    }
                 }
-                catch
+                else
                 {
-                    var cryptoKeyWindow = new CryptoKeyWindow(true)
+                    var auth = new AuthenticationWindow(true)
                     {
                         WindowStartupLocation = WindowStartupLocation.CenterScreen
                     };
-
-                    cryptoKeyWindow.ShowDialog();
+                    auth.Show();
                 }
 
             }

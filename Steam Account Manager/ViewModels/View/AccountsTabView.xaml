@@ -27,7 +27,7 @@
                                FontSize="12" Margin="16 3 0 0"
                                Foreground="{DynamicResource sub_accounttab_text}" FontWeight="Medium"/>
                 <TextBlock Text="{Binding Id}" VerticalAlignment="Center" Margin="24 0 0 0"
-                               FontSize="13" FontWeight="Normal"  Foreground="{DynamicResource main_text_color}"/>
+                               FontSize="13" FontWeight="Normal"  Foreground="{DynamicResource default_foreground}"/>
 
                 <Border Grid.Column="1" CornerRadius="25" IsHitTestVisible="{Binding ContainParseInfo}"
                         Background="{DynamicResource account_picture_border}" Margin="3"
@@ -70,7 +70,7 @@
                                  Text="{Binding SteamId}" IsReadOnly="True" />
                     </StackPanel>
                 </StackPanel>
-                <Rectangle Height="35" Width="0.2" Grid.Column="3" Fill="White" HorizontalAlignment="Left">
+                <Rectangle Height="35" Width="0.2" Grid.Column="3" Fill="{DynamicResource atv_rectangles_shadow}" HorizontalAlignment="Left">
                     <Rectangle.Effect>
                         <BlurEffect/>
                     </Rectangle.Effect>
@@ -106,7 +106,7 @@
                     <TextBlock Text="LvL:" HorizontalAlignment="Left"
                                VerticalAlignment="Center"
                                FontSize="14" Margin="20 0 0 0"
-                               Foreground="{DynamicResource main_text_color}" FontWeight="Medium"/>
+                               Foreground="{DynamicResource default_foreground}" FontWeight="Medium"/>
                     <Grid>
                         <icon:PackIconMaterial Kind="CircleOutline"
                                        Grid.Column="3"
@@ -128,7 +128,7 @@
                     <style:MainPopup  x:Name="Header" Foreground="White"/>
                 </Popup>
 
-                <Rectangle Height="35" Width="0.2" Grid.Column="3" Fill="White" HorizontalAlignment="Right">
+                <Rectangle Height="35" Width="0.2" Grid.Column="3" Fill="{DynamicResource atv_rectangles_shadow}" HorizontalAlignment="Right">
                     <Rectangle.Effect>
                         <BlurEffect/>
                     </Rectangle.Effect>

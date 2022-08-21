@@ -14,17 +14,34 @@ namespace ConsoleProgramm
     internal class Program
     {
 
-        private static string CreateSalt(int size)
+        static string sha256(string randomString)
         {
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            byte[] buff = new byte[size];
-            rng.GetBytes(buff);
-            return Convert.ToBase64String(buff);
+            var crypt = new SHA256Managed();
+            string hash = String.Empty;
+            byte[] crypto = crypt.ComputeHash(Encoding.ASCII.GetBytes(randomString));
+            foreach (byte theByte in crypto)
+            {
+                hash += theByte.ToString("x2");
+            }
+            return hash;
         }
 
         static void Main(string[] args)
         {
-            Console.WriteLine(CreateSalt(32));
+            string test = sha256("pass");
+            string pass;
+            while (true)
+            {
+                Console.WriteLine("Enter password:");
+                 pass =  Console.ReadLine();
+                if (sha256(pass) == test)
+                    break;
+                else
+                    Console.WriteLine("Ivalid password\n");
+            }
+            Console.WriteLine("nice");
+            Console.WriteLine(test);
+
         }
     }
 }

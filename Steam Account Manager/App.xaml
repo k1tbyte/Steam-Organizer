@@ -114,7 +114,7 @@
 
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="#ffffff" />
+                        <Setter Property="Foreground" Value="{DynamicResource adv_service_buttons_isMouseOver}" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -175,6 +175,7 @@
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
+                <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
                 <Setter Property="Width" Value="80"/>
                 <Setter Property="Height" Value="35"/>
                 <Setter Property="FontSize" Value="14"/>
@@ -501,7 +502,7 @@
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="FontSize" Value="14"/>
                 <Setter Property="FontWeight" Value="Normal"/>
-                <Setter Property="Foreground" Value="#b0b9c6"/>
+                <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
                 <Setter Property="IsReadOnly" Value="True"/>
             </Style>
 
@@ -511,7 +512,7 @@
                 <Setter Property="Margin" Value="5 0 0 0"/>
                 <Setter Property="FontSize" Value="14"/>
                 <Setter Property="FontWeight" Value="Normal"/>
-                <Setter Property="Foreground" Value="#b0b9c6"/>
+                <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
             </Style>
 
             <Style x:Key="settings_copy" TargetType="Button" BasedOn="{StaticResource gridEditButton}">
@@ -549,7 +550,7 @@
                 <Setter Property="Margin" Value="20 5 20 0"/>
                 <Setter Property="Cursor" Value="Hand"/>
                 <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Foreground" Value="#b0b9c6"/>
+                <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource adv_expand_border}"/>
                 <Setter Property="Template">
                     <Setter.Value>

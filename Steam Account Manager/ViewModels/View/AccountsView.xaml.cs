@@ -40,11 +40,11 @@ namespace Steam_Account_Manager.ViewModels.View
         private void restoreDb_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             Popup.PlacementTarget = restoreDb;
-            x = -215;
+            x = -240;
             Popup.CustomPopupPlacementCallback = new CustomPopupPlacementCallback(placementForPopup);
             Popup.Placement = PlacementMode.Custom;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Restore accounts database from file";
+            Header.PopupText.Text = "Restore accounts database from file\nAttention! Replaces your current base.";
         }
 
         private void restoreAcc_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)

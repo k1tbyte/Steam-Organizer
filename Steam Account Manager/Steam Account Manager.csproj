@@ -135,6 +135,9 @@
     <Compile Include="ViewModels\View\AddAuthenticatorWindow.xaml.cs">
       <DependentUpon>AddAuthenticatorWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\View\AuthenticationWindow.xaml.cs">
+      <DependentUpon>AuthenticationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\View\CryptoKeyWindow.xaml.cs">
       <DependentUpon>CryptoKeyWindow.xaml</DependentUpon>
     </Compile>
@@ -218,6 +221,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ViewModels\View\AddAuthenticatorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewModels\View\AuthenticationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

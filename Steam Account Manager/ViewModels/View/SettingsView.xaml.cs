@@ -72,5 +72,13 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.IsOpen = true;
             Header.PopupText.Text = "Reset by default";
         }
+
+        private void PasswordError_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Popup.PlacementTarget = PasswordError;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "The password must contain at least\n5 characters and no more than 30.\nAlso, the password cannot be empty.";
+        }
     }
 }

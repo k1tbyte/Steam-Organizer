@@ -7,14 +7,44 @@ namespace Steam_Account_Manager.ViewModels
     {
         private bool[] _themeMode = { true, false, false };
         private bool[] _localeMode = { true, false, false };
-        private bool _autoCloseMode, _noConfirmMode, _takeAccountInfoMode;
+        private bool _autoCloseMode, _noConfirmMode, _takeAccountInfoMode, _passwordEnabled;
         private string _webApiKey;
         private string _encryptingKey;
-        private bool _apiKeyError, _databaseResave;
+        private bool _apiKeyError, _passwordError;
+        private string _password;
         public RelayCommand SaveChangesCommand { get; set; }
         public RelayCommand OpenApiKeyUrlCommand { get; set; }
         public RelayCommand GenerateCryptoKeyCommand { get; set; }
         public RelayCommand ResetCryptoKeyCommand { get; set; }
+        public RelayCommand ChangeOrAddPasswordCommand { get; set; }
+
+        public bool PasswordError
+        {
+            get => _passwordError;
+            set
+            {
+                _passwordError = value;
+                OnPropertyChanged(nameof(PasswordError));
+            }
+        }
+        public string Password
+        {
+            get => _password;
+            set
+            {
+                _password = value;
+                OnPropertyChanged(nameof(Password));
+            }
+        }
+        public bool PasswordEnabled
+        {
+            get => _passwordEnabled;
+            set
+            {
+                _passwordEnabled = value;
+                OnPropertyChanged(nameof(PasswordEnabled));
+            }
+        }
 
         public string EncryptingKey
         {
@@ -93,6 +123,14 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
+        private static bool? OpenAuthWindow()
+        {
+            var authenticationWindow = new View.AuthenticationWindow(false);
+            authenticationWindow.Owner = App.Current.MainWindow;
+            authenticationWindow.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+            return authenticationWindow.ShowDialog();
+        }
+
         public SettingsViewModel()
         {
             var config = Config.GetInstance();
@@ -101,6 +139,8 @@ namespace Steam_Account_Manager.ViewModels
             AutoCloseMode = config.AutoClose;
             TakeAccountInfoMode = config.TakeAccountInfo;
             WebApiKey = config.WebApiKey;
+            if (Config._config.Password != null) _passwordEnabled = true;
+            
             EncryptingKey = config.UserCryptoKey == Config.GetDefaultCryptoKey ? "By default" : config.UserCryptoKey;
             #region Считывание языка
             for (int i = 0; i < 3; i++)
@@ -134,7 +174,10 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     ApiKeyError = true;
                 }
-
+                else if(Password != null && Password != "" && ( Password.Length < 5 || Password.Length > 30))
+                {
+                    PasswordError = true;
+                }
                 else
                 {
                     byte i = 0;
@@ -155,6 +198,10 @@ namespace Steam_Account_Manager.ViewModels
                     config.AutoClose = AutoCloseMode;
                     config.TakeAccountInfo = TakeAccountInfoMode;
                     config.WebApiKey = WebApiKey;
+                    if (Password != null && Password != "")
+                        config.Password = Config.Sha256(Password + Config.GetDefaultCryptoKey);
+                    else if(_passwordEnabled == false) config.Password = null;
+
                     if(EncryptingKey != "By default")
                     {
                         config.UserCryptoKey = EncryptingKey;
@@ -169,8 +216,10 @@ namespace Steam_Account_Manager.ViewModels
                             CryptoBase._database.SaveDatabase();
                         EncryptingKey = "By default";
                     }
+
                     config.SaveChanges();
                     ApiKeyError = false;
+                    PasswordError = false;
 
                 }
 
@@ -192,6 +241,34 @@ namespace Steam_Account_Manager.ViewModels
             ResetCryptoKeyCommand = new RelayCommand(o =>
             {
                 EncryptingKey = "By default";
+            });
+
+            ChangeOrAddPasswordCommand = new RelayCommand(o =>
+            {
+                System.Windows.Controls.StackPanel stackPanel = (System.Windows.Controls.StackPanel)o;
+
+                if (Config._config.Password == null)
+                {
+                    if (PasswordEnabled)
+                    {
+                        PasswordEnabled = false;
+                        stackPanel.Visibility = System.Windows.Visibility.Hidden;
+                    }
+                    else
+                    {
+                        PasswordEnabled = true;
+                        stackPanel.Visibility = System.Windows.Visibility.Visible;
+                    }
+                }
+                else
+                {
+                    PasswordEnabled = true;
+                    if (OpenAuthWindow() == true)
+                    {
+                        PasswordEnabled = false;
+                        stackPanel.Visibility = System.Windows.Visibility.Visible;
+                    }
+                }
             });
         }
     }

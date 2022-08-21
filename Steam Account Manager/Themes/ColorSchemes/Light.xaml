@@ -5,22 +5,23 @@
 
 
     <!-- Main window colors -->
-    <Brush x:Key="background_border_color">#EFF2F7</Brush>
+    <Brush x:Key="background_border_color">#f5f5f5</Brush>
     <Brush x:Key="first_main_color">#ffff</Brush>
     <Brush x:Key="second_main_color">#623ED0</Brush>
     <Brush x:Key="top_service_buttons">#b0b9c6</Brush>
-    <Brush x:Key="main_text_color">black</Brush>
+    <Brush x:Key="main_text_color">#e1e1e1</Brush>
     <Brush x:Key="second_text_color">#585858</Brush>
     <Brush x:Key="menu_button_background">#7B5CD6</Brush>
     <Brush x:Key="menu_button_text">#D0C0FF</Brush>
-
+    <Brush x:Key="default_foreground">#585858</Brush>
+    
 
     <!-- Accounts view -->
     <Brush x:Key="searchbox">#Ffffff</Brush>
     <Brush x:Key="add_button_background">#6741D9</Brush>
     <Brush x:Key="add_button_foreground">white</Brush>
     <Brush x:Key="add_button_isMouseOver">#7E5FDC</Brush>
-    <Brush x:Key="accounts_scroll_foreground">#623ED0</Brush>
+    <Brush x:Key="accounts_scroll_foreground">#7B5CD6</Brush>
 
 
     <!-- Add account view -->
@@ -33,7 +34,8 @@
     <Brush x:Key="account_tab_nickname">black</Brush>
     <Brush x:Key="vac_border_text">black</Brush>
     <Brush x:Key="sub_accounttab_text">#7B5CD6</Brush>
-
+    <Brush x:Key="atv_rectangles_shadow">black</Brush>
+    
 
     <!-- Settings view -->
     <Brush x:Key="buttons_border_brush">#b0b9c6</Brush>
@@ -50,7 +52,9 @@
     <Brush x:Key="adv_rectangle">#EFF2F7</Brush>
     <Brush x:Key="adv_copy_button">#623ED0</Brush>
     <Brush x:Key="adv_expand_border">#7B5CD6</Brush>
-
+    <Brush x:Key="adv_borders_background">#ececec</Brush>
+    <Brush x:Key="adv_csgo_text_foreground">#623ED0</Brush>
+    <Brush x:Key="adv_service_buttons_isMouseOver">#7B5CD6</Brush>
 
 
     <!--Colors -->

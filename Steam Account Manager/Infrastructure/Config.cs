@@ -26,6 +26,7 @@ namespace Steam_Account_Manager.Infrastructure
         public bool AutoClose;
         public string WebApiKey;
         public string UserCryptoKey;
+        public string Password;
 
         private Config()
         {
@@ -199,6 +200,19 @@ namespace Steam_Account_Manager.Infrastructure
         private const int IvSize = 16; // block size is 128-bit
 
         public static string GetDefaultCryptoKey => CryptoKey;
+
+        public static string Sha256(string randomString)
+        {
+            var crypt = new SHA256Managed();
+            string hash = String.Empty;
+            byte[] crypto = crypt.ComputeHash(System.Text.Encoding.ASCII.GetBytes(randomString));
+            foreach (byte theByte in crypto)
+            {
+                hash += theByte.ToString("x2");
+            }
+            return hash;
+        }
+
 
         public static string GenerateCryptoKey()
         {

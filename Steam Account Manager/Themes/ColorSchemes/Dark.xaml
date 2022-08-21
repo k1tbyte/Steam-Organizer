@@ -12,7 +12,8 @@
     <Brush x:Key="second_text_color">#b0b9c6</Brush>
     <Brush x:Key="menu_button_background">#7B5CD6</Brush>
     <Brush x:Key="menu_button_text">#D0C0FF</Brush>
-
+    <Brush x:Key="default_foreground">#b0b9c6</Brush>
+    
 
     <!-- Accounts view -->
     <Brush x:Key="searchbox">#FF181B28</Brush>
@@ -31,7 +32,8 @@
     <Brush x:Key="account_tab_nickname">#E9E6E6</Brush>
     <Brush x:Key="vac_border_text">#FF181B28</Brush>
     <Brush x:Key="sub_accounttab_text">#7B5CD6</Brush>
-
+    <Brush x:Key="atv_rectangles_shadow">#ffff</Brush>
+    
 
     <!-- Settings view -->
     <Brush x:Key="buttons_border_brush">#FF181B28</Brush>
@@ -48,7 +50,10 @@
     <Brush x:Key="adv_rectangle">#232338</Brush>
     <Brush x:Key="adv_copy_button">#433793</Brush>
     <Brush x:Key="adv_expand_border">#433793</Brush>
-
+    <Brush x:Key="adv_borders_background">#433793</Brush>
+    <Brush x:Key="adv_csgo_text_foreground">#ffff</Brush>
+    <Brush x:Key="adv_service_buttons_isMouseOver">#ffff</Brush>
+    
 
     <!--Colors -->
     <Color x:Key="drop_shadow">black</Color>

@@ -14,19 +14,11 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
     <Grid>
+        
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="60"/>
-            <RowDefinition Height="43"/>
-            <RowDefinition Height="43"/>
-            <RowDefinition Height="43"/>
-            <RowDefinition Height="43"/>
-            <RowDefinition Height="43"/>
-            <RowDefinition Height="43"/>
-            <RowDefinition Height="43"/>
-            <RowDefinition Height="43"/>
+            <RowDefinition Height="80"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
         
         <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
@@ -35,140 +27,174 @@
         </Popup>
 
         <!--Header-->
-        <TextBlock Grid.Row="1" Text="{DynamicResource sv_settings_title}" FontSize="30"  Foreground="{DynamicResource second_settings_text}"
-                   Grid.Column="0" FontFamily="Cascadia Mono" />
+        <TextBlock Grid.Row="0" Text="{DynamicResource sv_settings_title}" FontSize="30"  Foreground="{DynamicResource second_settings_text}"
+                   Grid.Column="0" Margin="0 10" FontFamily="Cascadia Mono" />
 
-        <Rectangle Height="1" VerticalAlignment="Top" Grid.Row="1"
-                   Fill="{DynamicResource settings_rectangle}" Margin="0,49,0,0"/>
+        <Rectangle Height="1" VerticalAlignment="Top" Grid.Row="0"
+                   Fill="{DynamicResource settings_rectangle}" Margin="0,60,0,0"/>
 
-
+        <ScrollViewer Grid.Row="1" >
+            <StackPanel>
         <!--Themes panel-->
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <TextBlock Grid.Row="2" Text="{DynamicResource sv_theme}" Style="{StaticResource settingTextBlock}"/>
-            <RadioButton Style="{StaticResource themeButton}"
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
+
+                    <TextBlock Text="{DynamicResource sv_theme}" Style="{StaticResource settingTextBlock}"/>
+                    <RadioButton Style="{StaticResource themeButton}"
                          Content="/Images/dark_preview.png"
                          IsChecked="{Binding ThemeMode[0]}"/>
-            
-            <RadioButton Style="{StaticResource themeButton}"
- Content="/Images/light_preview.png"
+
+                    <RadioButton Style="{StaticResource themeButton}"
+                         Content="/Images/light_preview.png"
                          IsChecked="{Binding ThemeMode[1]}"/>
 
-            <RadioButton Style="{StaticResource themeButton}"
+                    <RadioButton Style="{StaticResource themeButton}"
                          Content="/Images/nebula_preview.png"
                          IsChecked="{Binding ThemeMode[2]}">
-            </RadioButton>
-        </StackPanel>
-        
-        <!--Language panel-->
-        <StackPanel Grid.Row="3" Orientation="Horizontal">
-            <TextBlock Text="{DynamicResource sv_language}" Style="{StaticResource settingTextBlock}"/>
-            <RadioButton Style="{StaticResource languageButton}"          
+                    </RadioButton>
+                </StackPanel>
+
+                <!--Language panel-->
+                <StackPanel  Orientation="Horizontal" Margin="0 8 0 2">
+                    <TextBlock Text="{DynamicResource sv_language}" Style="{StaticResource settingTextBlock}"/>
+                    <RadioButton Style="{StaticResource languageButton}"          
                          IsChecked="{Binding LocaleMode[0]}"
                          Content="/Images/Countries_flags/United_Kingdom.png"/>
-            <RadioButton Style="{StaticResource languageButton}"
+                    <RadioButton Style="{StaticResource languageButton}"
                          IsChecked="{Binding LocaleMode[1]}"
                           Content="/Images/Countries_flags/Russia.png"/>
-            <RadioButton Style="{StaticResource languageButton}"
+                    <RadioButton Style="{StaticResource languageButton}"
                          IsChecked="{Binding LocaleMode[2]}"
                           Content="/Images/Countries_flags/Ukraine.png"/>
-        </StackPanel>
+                </StackPanel>
 
-        <!-- Custom steam web api key -->
-        <StackPanel Grid.Row="4" Orientation="Horizontal">
-            <TextBlock Text="Custom steam web API key" Style="{StaticResource settingTextBlock}"/>
-            <Border Background="{DynamicResource first_main_color}" 
+                <!-- Custom steam web api key -->
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
+                    <TextBlock Text="Custom steam web API key" Style="{StaticResource settingTextBlock}"/>
+                    <Border Background="{DynamicResource first_main_color}" Height="35"
                     Width="250" CornerRadius="5" Margin="6 5 0 5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}">
-                <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
-                    <Icon:PackIconMaterial x:Name="apiIcon" Kind="Api" Foreground="{DynamicResource settings_buttons_isMouseOver}"
+                        <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
+                            <Icon:PackIconMaterial x:Name="apiIcon" Kind="Api" Foreground="{DynamicResource settings_buttons_isMouseOver}"
                                            VerticalAlignment="Center" Height="20" Width="20" />
 
-                    <TextBox Margin="5 0 0 0" Width="205"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
+                            <TextBox Margin="5 0 0 0" Width="205"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
                          Text="{Binding WebApiKey, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"
                          Background="{DynamicResource first_main_color}" MaxLength="32" BorderThickness="0" CaretBrush="White" />
-                </StackPanel>
-            </Border>
+                        </StackPanel>
+                    </Border>
 
-            <Button x:Name="apiKeyInfo" Style="{StaticResource serviceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
+                    <Button x:Name="apiKeyInfo" Style="{StaticResource serviceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
                     VerticalAlignment="Center" Background="Transparent" BorderThickness="0"
                     Command="{Binding OpenApiKeyUrlCommand}"
                     MouseEnter="apiKeyInfo_MouseEnter" MouseLeave="PopupLeave_MouseLeave">
-                <Icon:PackIconMaterial Width="20" Height="20" Kind="Information"/>
-            </Button>
-            
-            <Button x:Name="ErrorApiKey" Style="{StaticResource ErrorAlert}" 
+                        <Icon:PackIconMaterial Width="20" Height="20" Kind="Information"/>
+                    </Button>
+
+                    <Button x:Name="ErrorApiKey" Style="{StaticResource ErrorAlert}" 
                     MouseEnter="ErrorApiKey_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
                     Margin="5 7 0 7" Width="18" Height="18" Visibility="{Binding ApiKeyError,Converter={StaticResource BoolToVis},UpdateSourceTrigger=PropertyChanged}"
                     VerticalAlignment="Center" Background="Transparent" BorderThickness="0">
-                <Icon:PackIconMaterial Width="15" Height="15" Kind="Alert"/>
-            </Button>
+                        <Icon:PackIconMaterial Width="15" Height="15" Kind="Alert"/>
+                    </Button>
 
-        </StackPanel>
+                </StackPanel>
 
-        <!-- Custom steam web api key -->
-        <StackPanel Grid.Row="5" Orientation="Horizontal">
-            <TextBlock Text="Encryption key" Style="{StaticResource settingTextBlock}"/>
-            <Border Background="{DynamicResource first_main_color}" 
+                <!-- Custom steam web api key -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Encryption key" Style="{StaticResource settingTextBlock}"/>
+                    <Border Background="{DynamicResource first_main_color}" Height="35"
                     Width="275" CornerRadius="5" Margin="6 5 0 5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}">
-                <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
-                    
-                    <Icon:PackIconMaterial Kind="ShieldKeyOutline" Foreground="{DynamicResource settings_buttons_isMouseOver}"
+                        <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
+
+                            <Icon:PackIconMaterial Kind="ShieldKeyOutline" Foreground="{DynamicResource settings_buttons_isMouseOver}"
                                            VerticalAlignment="Center" Height="20" Width="20" />
 
-                    <TextBox Margin="5 0 0 0" Width="235"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
+                            <TextBox Margin="5 0 0 0" Width="235"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
                          Text="{Binding EncryptingKey, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" IsReadOnly="True"
                          Background="{DynamicResource first_main_color}" MaxLength="32" BorderThickness="0" CaretBrush="White" />
-                </StackPanel>
-            </Border>
+                        </StackPanel>
+                    </Border>
 
-            <Button x:Name="CryptoKeyInfo" Style="{StaticResource serviceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
+                    <Button x:Name="CryptoKeyInfo" Style="{StaticResource serviceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
                     VerticalAlignment="Center" Background="Transparent" BorderThickness="0"
                     MouseEnter="CryptoKeyInfo_MouseEnter" MouseLeave="PopupLeave_MouseLeave">
-                <Icon:PackIconMaterial Width="20" Height="20" Kind="Information"/>
-            </Button>
+                        <Icon:PackIconMaterial Width="20" Height="20" Kind="Information"/>
+                    </Button>
 
-            <Button x:Name="GenerateKey" Style="{StaticResource ErrorAlert}" Foreground="{DynamicResource menu_button_background}" 
+                    <Button x:Name="GenerateKey" Style="{StaticResource ErrorAlert}" Foreground="{DynamicResource menu_button_background}" 
                     MouseEnter="GenerateKey_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
                     Margin="5 7 0 7" Width="18" Height="18" VerticalAlignment="Center"
                     Command="{Binding GenerateCryptoKeyCommand}" Background="Transparent" BorderThickness="0">
-                <Icon:PackIconMaterial Width="15" Height="15" Kind="RefreshCircle"/>
-            </Button>
+                        <Icon:PackIconMaterial Width="15" Height="15" Kind="RefreshCircle"/>
+                    </Button>
 
-            <Button x:Name="ResetKey" Style="{StaticResource ErrorAlert}" Foreground="DarkOrange" 
+                    <Button x:Name="ResetKey" Style="{StaticResource ErrorAlert}" Foreground="DarkOrange" 
                     MouseEnter="ResetKey_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
                     Margin="5 7 0 7" Width="18" Height="18" VerticalAlignment="Center"
                     Command="{Binding ResetCryptoKeyCommand}" Background="Transparent" BorderThickness="0">
-                <Icon:PackIconMaterial Width="15" Height="15" Kind="LockReset"/>
-            </Button>
+                        <Icon:PackIconMaterial Width="15" Height="15" Kind="LockReset"/>
+                    </Button>
 
-        </StackPanel>
+                </StackPanel>
 
-        <!--Close after logging panel-->
-        <StackPanel Grid.Row="6" Orientation="Horizontal">
-            <TextBlock Text="{DynamicResource sv_close_after_logging}" 
+                <!--Close after logging panel-->
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="{DynamicResource sv_close_after_logging}" 
                        Style="{StaticResource settingTextBlock}"/>
-            <ToggleButton Style="{StaticResource settingsButton}"
+                    <ToggleButton Style="{StaticResource settingsButton}"
                           IsChecked="{Binding AutoCloseMode}"/>
-        </StackPanel>
-        
-        <!--Disable confirm when del acc-->
-        <StackPanel Grid.Row="7" Orientation="Horizontal">
-            <TextBlock Text="{DynamicResource sv_confirm_when_del}" Style="{StaticResource settingTextBlock}"/>
-            <ToggleButton IsChecked="{Binding NoConfirmMode}"
+                </StackPanel>
+
+                            
+                <StackPanel Grid.Row="7" Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="{DynamicResource sv_confirm_when_del}" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding NoConfirmMode}"
                           Style="{StaticResource settingsButton}"/>
-        </StackPanel>
+                </StackPanel>
 
-        <!--Disable confirm when del acc-->
-        <StackPanel Grid.Row="8" Orientation="Horizontal">
-            <TextBlock Text="Dont collect account information" Style="{StaticResource settingTextBlock}"/>
-            <ToggleButton IsChecked="{Binding TakeAccountInfoMode}"
+                
+                <StackPanel Grid.Row="8" Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="Dont collect account information" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding TakeAccountInfoMode}"
                           Style="{StaticResource settingsButton}"/>
-        </StackPanel>
+                </StackPanel>
+                
 
 
+                <!--Set password-->
+                <StackPanel Grid.Row="8" Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="Set a password for the program" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton  IsChecked="{Binding PasswordEnabled,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}"
+                          Style="{StaticResource settingsButton}" Command="{Binding ChangeOrAddPasswordCommand}"
+                                   CommandParameter="{Binding ElementName=PasswordPanel}"/>
+                    
+                    <Button x:Name="PasswordError" Style="{StaticResource ErrorAlert}" 
+                    MouseEnter="PasswordError_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
+                    Margin="8 7 0 7" Width="18" Height="18" Visibility="{Binding PasswordError,Converter={StaticResource BoolToVis},UpdateSourceTrigger=PropertyChanged}"
+                    VerticalAlignment="Center" Background="Transparent" BorderThickness="0">
+                       
+                        <Icon:PackIconMaterial Width="15" Height="15" Kind="Alert"/>
+                    </Button>
+                </StackPanel>
 
+                <StackPanel x:Name="PasswordPanel" Orientation="Horizontal" Margin="20 0 0 0" Visibility="Hidden">
+                    <TextBlock Text="╰ Enter new password:" Style="{StaticResource settingTextBlock}"/>
+                    <Border Margin="10 5 0 0" Background="{DynamicResource first_main_color}"
+                    Width="250" CornerRadius="5" Height="35" BorderThickness="0.7" HorizontalAlignment="Left"
+                    BorderBrush="{DynamicResource buttons_border_brush}">
+                        <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
 
+                            <Icon:PackIconMaterial Kind="Key" Foreground="{DynamicResource settings_buttons_isMouseOver}"
+                                           VerticalAlignment="Center" Height="20" Width="20" />
+                            <theme:MainPasswordBox  Margin="-10 0 0 0" Width="220" Style="{StaticResource PasswordboxTheme}" 
+                                                Height="20" VerticalAlignment="Center" Password="{Binding Password}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
 
-        <Button Grid.Row="9" Width="200" Content="{DynamicResource sv_save_changes}" Cursor="Hand"
+            </StackPanel>
+        </ScrollViewer>
+
+        <Button Grid.Row="3" Width="200" Margin="0 10 0 0" Style="{StaticResource defaultButton}" Content="{DynamicResource sv_save_changes}" Cursor="Hand"
                 Command="{Binding SaveChangesCommand}"/>
     </Grid>
 </UserControl>

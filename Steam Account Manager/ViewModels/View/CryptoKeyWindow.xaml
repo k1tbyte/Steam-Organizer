@@ -9,7 +9,8 @@
         Background="Transparent"
         WindowStyle="None"
         AllowsTransparency="True"
-        Height="200" Width="330">
+        Height="200" Width="330"
+        Title="Data Decryption">
     
     <Border CornerRadius="8" Background="{DynamicResource background_border_color}"
             BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
