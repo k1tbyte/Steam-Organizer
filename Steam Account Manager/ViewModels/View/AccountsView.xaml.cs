@@ -28,7 +28,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = saveDb;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Save accounts database to file";
+            Header.PopupText.Text = (string)Application.Current.FindResource("av_popup_saveDatabase"); ;
         }
 
         private void Popup_leave(object sender, System.Windows.Input.MouseEventArgs e)
@@ -40,11 +40,11 @@ namespace Steam_Account_Manager.ViewModels.View
         private void restoreDb_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             Popup.PlacementTarget = restoreDb;
-            x = -240;
-            Popup.CustomPopupPlacementCallback = new CustomPopupPlacementCallback(placementForPopup);
-            Popup.Placement = PlacementMode.Custom;
+            Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Restore accounts database from file\nAttention! Replaces your current base.";
+            Header.PopupText.Text = 
+                (string)Application.Current.FindResource("av_popup_restoreDatabase_1")+"\n"+
+                (string)Application.Current.FindResource("av_popup_restoreDatabase_2");
         }
 
         private void restoreAcc_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -54,7 +54,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.CustomPopupPlacementCallback = new CustomPopupPlacementCallback(placementForPopup);
             Popup.Placement = PlacementMode.Custom;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Restore account from file";
+            Header.PopupText.Text = (string)Application.Current.FindResource("av_popup_restoreAccount");
         }
 
         private void refreshDb_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -64,7 +64,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.CustomPopupPlacementCallback = new CustomPopupPlacementCallback(placementForPopup);
             Popup.Placement = PlacementMode.Custom;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Update database information";
+            Header.PopupText.Text = (string)Application.Current.FindResource("av_popup_updAccounts");
         }
 
     }

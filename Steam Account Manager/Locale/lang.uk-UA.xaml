@@ -11,6 +11,10 @@
     <v:String x:Key="sv_save_changes">Зберегти</v:String>
     <v:String x:Key="sv_on">Увімкнено</v:String>
     <v:String x:Key="sv_off">Вимкнено</v:String>
+    <v:String x:Key="sv_password">Встановити пароль на програму</v:String>
+    <v:String x:Key="sv_info_collect">Не збирати інформацію об акаунтах</v:String>
+    <v:String x:Key="sv_crypto_key">Ключ шифрування</v:String>
+    <v:String x:Key="sv_steam_key">Користувалницьский steam web API ключ</v:String>
 
 
     <!-- Main view-->
@@ -25,6 +29,11 @@
     <v:String x:Key="av_searchbar_title">Пошук акаунтів  .  .  .</v:String>
     <v:String x:Key="av_addbutton_title">Додати</v:String>
     <v:String x:Key="av_confirmation_delete">Ви дійсно хочете видалити даний акаунт?</v:String>
+    <v:String x:Key="av_popup_saveDatabase">Зберегти базу акаунтів у файл</v:String>
+    <v:String x:Key="av_popup_restoreDatabase_1">Відновити базу акаунтів з файлу</v:String>
+    <v:String x:Key="av_popup_restoreDatabase_2">Увага! Замінює всі поточні акаунти.</v:String>
+    <v:String x:Key="av_popup_restoreAccount">Відновити акаунт з файлу</v:String>
+    <v:String x:Key="av_popup_updAccounts">Оновити інформацію про акаунти</v:String>
 
 
     <!-- Account add view-->
@@ -33,7 +42,6 @@
     <v:String x:Key="adv_password">Пароль</v:String>
     <v:String x:Key="adv_account_URL">URL-посилання на акаунт</v:String>
     <v:String x:Key="adv_save">Зберегти</v:String>
-
     <v:String x:Key="adv_error_invalid_link">Неправильне посилання на профіль!</v:String>
     <v:String x:Key="adv_error_login_empty">Поле з логіном пусте!</v:String>
     <v:String x:Key="adv_error_login_contain_spaces">Логін не може містити пробіли!</v:String>
@@ -42,8 +50,32 @@
     <v:String x:Key="adv_error_pass_empty">Поле с паролем пусте!</v:String>
     <v:String x:Key="adv_error_pass_shortage">Мінімальна довжина пароля 8 символів!</v:String>
     <v:String x:Key="adv_error_pass_overflow">Максимальна довжина пароля 50 символів!</v:String>
-
     <v:String x:Key="adv_info_connection_check">Виконується перевірка мережі...</v:String>
     <v:String x:Key="adv_info_collect_data">Збір інформації про обліковий запис...</v:String>
 
+
+    <!-- Account data view -->
+    <v:String x:Key="adat_visiblity">Видимість:</v:String>
+    <v:String x:Key="adat_profile_url">URL профіля:</v:String>
+    <v:String x:Key="adat_community_statuses">• Ком'юніті статуси</v:String>
+    <v:String x:Key="adat_personal_data">• Персональні дані</v:String>
+    <v:String x:Key="adat_steam_account">Steam акаунт</v:String>
+    <v:String x:Key="adat_login">Логін</v:String>
+    <v:String x:Key="adat_password">Пароль</v:String>
+
+    <v:String x:Key="adat_cs_header">• CS:GO Статистика</v:String>
+    <v:String x:Key="adat_cs_general">Головна</v:String>
+    <v:String x:Key="adat_cs_ranks">Звання</v:String>
+    <v:String x:Key="adat_cs_kd">В/С:</v:String>
+    <v:String x:Key="adat_cs_kills">Вбивства:</v:String>
+    <v:String x:Key="adat_cs_deaths">Смерті:</v:String>
+    <v:String x:Key="adat_cs_playedMatches">Матчів зіграно:</v:String>
+    <v:String x:Key="adat_cs_matchesWon">Перемог в матчах:</v:String>
+    <v:String x:Key="adat_cs_winrate">Шанс перемоги:</v:String>
+    <v:String x:Key="adat_cs_roundsPlayed">Раундів зіграно:</v:String>
+    <v:String x:Key="adat_cs_shots">Пострілів:</v:String>
+    <v:String x:Key="adat_cs_averageAccuracy">Середня точність:</v:String>
+    <v:String x:Key="adat_cs_shotsHit">Влучних пострілів:</v:String>
+    <v:String x:Key="adat_cs_headshots">Хэдшотів:</v:String>
+    <v:String x:Key="adat_cs_headshotspercent">Відсоток хэдшотів:</v:String>
 </ResourceDictionary>

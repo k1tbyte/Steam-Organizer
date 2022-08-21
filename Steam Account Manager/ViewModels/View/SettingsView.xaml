@@ -69,7 +69,7 @@
 
                 <!-- Custom steam web api key -->
                 <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
-                    <TextBlock Text="Custom steam web API key" Style="{StaticResource settingTextBlock}"/>
+                    <TextBlock Text="{DynamicResource sv_steam_key}" Style="{StaticResource settingTextBlock}"/>
                     <Border Background="{DynamicResource first_main_color}" Height="35"
                     Width="250" CornerRadius="5" Margin="6 5 0 5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}">
                         <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
@@ -100,7 +100,7 @@
 
                 <!-- Custom steam web api key -->
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Encryption key" Style="{StaticResource settingTextBlock}"/>
+                    <TextBlock Text="{DynamicResource sv_crypto_key}" Style="{StaticResource settingTextBlock}"/>
                     <Border Background="{DynamicResource first_main_color}" Height="35"
                     Width="275" CornerRadius="5" Margin="6 5 0 5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}">
                         <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
@@ -153,7 +153,7 @@
 
                 
                 <StackPanel Grid.Row="8" Orientation="Horizontal" Margin="0 5 0 0">
-                    <TextBlock Text="Dont collect account information" Style="{StaticResource settingTextBlock}"/>
+                    <TextBlock Text="{DynamicResource sv_info_collect}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding TakeAccountInfoMode}"
                           Style="{StaticResource settingsButton}"/>
                 </StackPanel>
@@ -162,7 +162,7 @@
 
                 <!--Set password-->
                 <StackPanel Grid.Row="8" Orientation="Horizontal" Margin="0 5 0 0">
-                    <TextBlock Text="Set a password for the program" Style="{StaticResource settingTextBlock}"/>
+                    <TextBlock Text="{DynamicResource sv_password}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton  IsChecked="{Binding PasswordEnabled,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}"
                           Style="{StaticResource settingsButton}" Command="{Binding ChangeOrAddPasswordCommand}"
                                    CommandParameter="{Binding ElementName=PasswordPanel}"/>

@@ -222,7 +222,7 @@
 
                             <!-- Profile URL -->
                             <StackPanel Orientation="Horizontal" Margin="18 5 0 0">
-                                <TextBlock Text="Profile URL:" Style="{StaticResource settings_description}"/>
+                                <TextBlock Text="{DynamicResource adat_profile_url}" Style="{StaticResource settings_description}"/>
                                 <TextBox x:Name="URL" Style="{StaticResource settings_data_box}" Margin="5 0 0 0"  Width="230"
                                  Text="{Binding SteamURL}"/>
 
@@ -253,7 +253,7 @@
 
                             <!-- Profile visiblity -->
                             <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
-                                <TextBlock Style="{StaticResource settings_description}" Text="Visiblity:"/>
+                                <TextBlock Style="{StaticResource settings_description}" Text="{DynamicResource adat_visiblity}"/>
                                 <TextBlock Style="{StaticResource data_description}" Text="{Binding ProfileVisiblity}"/>
                             </StackPanel>
 
@@ -264,10 +264,12 @@
 
                     <!-- Community statuses badges -->
                     <!--#region Community statuses -->
-                    <TextBlock Margin="5 15 0 0" Text="• Community statuses" FontSize="17" Style="{StaticResource settings_description}"
-                               Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}">
+                    <StackPanel Orientation="Horizontal" Margin="5 15 0 0">
+                        <TextBlock  Text="{DynamicResource adat_community_statuses}" FontSize="17" Style="{StaticResource settings_description}"
+                               Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"/>
                         <ToggleButton  x:Name="expandCommunityButton" Style="{StaticResource showButton}" IsChecked="True"  />
-                    </TextBlock>
+                    </StackPanel>
+                  
 
                     <Border x:Name="communityInfo" Margin="0 5 0 0" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
                     Style="{DynamicResource expandCommunityArea}" CornerRadius="15"
@@ -425,16 +427,16 @@
                     <!--#endregion-->
 
                     <!-- Personal data -->
-                    <TextBlock Margin="5 15 0 0" Text="• Personal data" FontSize="17" Style="{StaticResource settings_description}"/>
+                    <TextBlock Margin="5 15 0 0" Text="{DynamicResource adat_personal_data}" FontSize="17" Style="{StaticResource settings_description}"/>
                     <StackPanel Margin="10 10 0 0" Orientation="Horizontal">
                       
                         <!-- Steam data -->
                         <StackPanel Orientation="Vertical">
  <!--Put here x2-->
-                            <TextBlock Text="Steam account" FontSize="16" Margin="0 0 0 10" Foreground="{DynamicResource second_text_color}"/>
+                            <TextBlock Text="{DynamicResource adat_steam_account}" FontSize="16" Margin="0 0 0 10" Foreground="{DynamicResource second_text_color}"/>
 
                             <!-- Login -->
-                            <TextBlock Text="Login" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                            <TextBlock Text="{DynamicResource adat_login}" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                             <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
                                 Opacity="0.9" Height="35" Width="220" CornerRadius="8">
                                 <StackPanel Orientation="Horizontal">
@@ -450,7 +452,7 @@
                             </Border>
 
                             <!-- Password -->
-                            <TextBlock Text="Password" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                            <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                             <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
                                 Opacity="0.9" Height="35" Width="220" CornerRadius="8">
                                 <StackPanel Orientation="Horizontal">
@@ -480,15 +482,15 @@
                                 </TextBlock.Style>
                             </TextBlock>
 
-                            <TextBlock Margin="3 16 0 0" Text="• CS:GO Statistics" FontSize="16" Style="{StaticResource settings_description}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}">
-                               <StackPanel Orientation="Horizontal">
-                                    <ToggleButton  x:Name="expandCsgoButton" Style="{StaticResource showButton}" IsChecked="True"/>
-                                   <Button Style="{StaticResource serviceButton}" Width="16" Height="14" Margin="6 0 0 -1"
+
+                            <StackPanel  Margin="3 16 0 0" Orientation="Horizontal">
+                                <TextBlock Text="{DynamicResource adat_cs_header}" FontSize="16" Style="{StaticResource settings_description}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"/>
+                                <ToggleButton  x:Name="expandCsgoButton" Style="{StaticResource showButton}" IsChecked="True"/>
+                                <Button Style="{StaticResource serviceButton}" Width="16" Height="14" Margin="6 0 0 -1"
                                            Command="{Binding TakeCsgoStatsInfo}">
-                                       <Icon:PackIconMaterial Kind="Reload" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                   </Button>
-                               </StackPanel>
-                            </TextBlock>
+                                    <Icon:PackIconMaterial Kind="Reload" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Button>
+                            </StackPanel>
                             
                             <!--csgo parse error Message TextBlock-->
                             <TextBlock VerticalAlignment="Bottom" FontSize="11" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
@@ -511,7 +513,7 @@
                                     Opacity="0.8" Width="220" Style="{StaticResource expandCsgoArea}" >
                                 <Grid>
                                     <StackPanel>
-                                        <TextBlock Text="Ranks" FontSize="16" Margin="0 7 0 0" HorizontalAlignment="Center"
+                                        <TextBlock Text="{DynamicResource adat_cs_ranks}" FontSize="16" Margin="0 7 0 0" HorizontalAlignment="Center"
                                        Foreground="{DynamicResource second_text_color}" FontWeight="Medium"/>
                                         
                                         <!-- Ranks -->
@@ -523,78 +525,78 @@
                                                    Source="{Binding BestRank, UpdateSourceTrigger=PropertyChanged}"
                                                    MouseEnter="BestRank_MouseEnter" MouseLeave="Popup_MouseLeave"/>
                                         </StackPanel>
-                                        <TextBlock Text="General" FontSize="16" Margin="0 7 0 0" HorizontalAlignment="Center"
+                                        <TextBlock Text="{DynamicResource adat_cs_general}" FontSize="16" Margin="0 7 0 0" HorizontalAlignment="Center"
                                        Foreground="{DynamicResource second_text_color}" FontWeight="Medium"/>
                                        
                                         <!-- K/D -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="K/D:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_kd}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding KD}"/>
                                         </StackPanel>
 
                                         <!-- Kills -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="Kills:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_kills}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding Kills}"/>
                                         </StackPanel>
 
                                         <!-- Deaths -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="Deaths:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_deaths}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding Deaths}"/>
                                         </StackPanel>
 
                                         <!-- Played matches -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="Played matches:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_playedMatches}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding PlayedMatches}"/>
                                         </StackPanel>
 
                                         <!-- Matches won -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="Matches won:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_matchesWon}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding MatchesWon}"/>
                                         </StackPanel>
 
                                         <!-- Winrate -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="Winrate:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_winrate}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding Winrate}"/>
                                         </StackPanel>
 
                                         <!-- Rounds played -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="Rounds played:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_roundsPlayed}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding RoundsPlayed}"/>
                                         </StackPanel>
 
                                         <!-- Shoots -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="Shots:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_shots}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding TotalShots}"/>
                                         </StackPanel>
 
                                         <!-- Shots hit -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="Shots hit:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_shotsHit}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding ShotsHit}"/>
                                         </StackPanel>
 
                                         <!-- Accuracy -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="Average accuracy:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_averageAccuracy}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding Accuracy}"/>
                                         </StackPanel>
 
                                         <!-- Headshots -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="Headshots:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_headshots}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding Headshots}"/>
                                         </StackPanel>
 
                                         <!-- Headshots percentage -->
                                         <StackPanel  Orientation="Horizontal" Margin="18 0 0 0">
-                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="Headshots percentage:"/>
+                                            <TextBlock Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" Text="{DynamicResource adat_cs_headshotspercent}"/>
                                             <TextBlock Style="{StaticResource data_description}" Text="{Binding HeadshotsPercent}"/>
                                         </StackPanel>
 
@@ -617,7 +619,7 @@
                                 <Grid>
                                     <StackPanel>
                                         <!-- Mail login -->
-                                        <TextBlock Text="Email address" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <TextBlock Text="{DynamicResource adat_email_address}" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                                         <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
                                 Opacity="0.9" Height="35" Width="220" CornerRadius="8">
                                             <StackPanel Orientation="Horizontal">
@@ -632,7 +634,7 @@
                                         </Border>
 
                                         <!-- Mail password -->
-                                        <TextBlock Text="Password" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                                         <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
                                 Opacity="0.9" Height="35" Width="220" CornerRadius="8">
                                             <StackPanel Orientation="Horizontal">
@@ -660,7 +662,7 @@
                                 <Grid>
                                     <StackPanel>
                                         <!-- Mail login -->
-                                        <TextBlock Text="Email address" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <TextBlock Text="{DynamicResource adat_email_address}" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                                         <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
                                 Opacity="0.9" Height="35" Width="220" CornerRadius="8">
                                             <StackPanel Orientation="Horizontal">
@@ -675,7 +677,7 @@
                                         </Border>
 
                                         <!-- Mail password -->
-                                        <TextBlock Text="Password" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                                         <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
                                 Opacity="0.9" Height="35" Width="220" CornerRadius="8">
                                             <StackPanel Orientation="Horizontal">
@@ -705,7 +707,7 @@
                                     <StackPanel>
 
                                         <!-- Mail login -->
-                                        <TextBlock Text="Email address" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <TextBlock Text="{DynamicResource adat_email_address}" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                                         <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
                                 Opacity="0.9" Height="35" Width="220" CornerRadius="8">
                                             <StackPanel Orientation="Horizontal">
@@ -720,7 +722,7 @@
                                         </Border>
 
                                         <!-- Mail password -->
-                                        <TextBlock Text="Password" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                        <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                                         <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
                                 Opacity="0.9" Height="35" Width="220" CornerRadius="8">
                                             <StackPanel Orientation="Horizontal">

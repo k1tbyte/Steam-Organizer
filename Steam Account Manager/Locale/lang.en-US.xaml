@@ -11,7 +11,10 @@
     <v:String x:Key="sv_save_changes">Save changes</v:String>
     <v:String x:Key="sv_on">Enabled</v:String>
     <v:String x:Key="sv_off">Disabled</v:String>
-    
+    <v:String x:Key="sv_password">Set a password for the program</v:String>
+    <v:String x:Key="sv_info_collect">Dont collect account information</v:String>
+    <v:String x:Key="sv_crypto_key">Encryption key</v:String>
+    <v:String x:Key="sv_steam_key">Custom steam web API key</v:String>
 
     <!-- Main view-->
     <v:String x:Key="mv_total_accounts">Total accounts:</v:String>
@@ -25,7 +28,13 @@
     <v:String x:Key="av_searchbar_title">Search for accounts  .  .  .</v:String>
     <v:String x:Key="av_addbutton_title">Add</v:String>
     <v:String x:Key="av_confirmation_delete">Are you sure you want to delete this account?</v:String>
+    <v:String x:Key="av_popup_saveDatabase">Save accounts database to file</v:String>
     
+    <v:String x:Key="av_popup_restoreDatabase_1">Restore accounts database from file</v:String>
+    <v:String x:Key="av_popup_restoreDatabase_2">Attention! Replaces your current base.</v:String>
+    
+    <v:String x:Key="av_popup_restoreAccount">Restore account from file</v:String>
+    <v:String x:Key="av_popup_updAccounts">Update database information</v:String>
 
     <!-- Account add view-->
     <v:String x:Key="adv_header_title">Account adding</v:String>
@@ -33,7 +42,6 @@
     <v:String x:Key="adv_password">Password</v:String>
     <v:String x:Key="adv_account_URL">Account URL</v:String>
     <v:String x:Key="adv_save">Save</v:String>
-    
     <v:String x:Key="adv_error_invalid_link">Invalid steam profile link!</v:String>
     <v:String x:Key="adv_error_login_empty">The login field is empty!</v:String>
     <v:String x:Key="adv_error_login_contain_spaces">Login cannot contain spaces!</v:String>
@@ -42,10 +50,35 @@
     <v:String x:Key="adv_error_pass_empty">The password field is empty!</v:String>
     <v:String x:Key="adv_error_pass_shortage">The minimum password length is 8 characters!</v:String>
     <v:String x:Key="adv_error_pass_overflow">The maximum password length is 50 characters!</v:String>
-
     <v:String x:Key="adv_info_connection_check">Network check in progress...</v:String>
     <v:String x:Key="adv_info_collect_data">Gathering account information...</v:String>
+    
+    
+    <!-- Account data view -->
+    <v:String x:Key="adat_visiblity">Visiblity:</v:String>
+    <v:String x:Key="adat_profile_url">Profile URL:</v:String>
+    <v:String x:Key="adat_community_statuses">• Community statuses</v:String>
+    <v:String x:Key="adat_personal_data">• Personal data</v:String>
+    <v:String x:Key="adat_steam_account">Steam account</v:String>
+    <v:String x:Key="adat_login">Login</v:String>
+    <v:String x:Key="adat_password">Password</v:String>
+    <v:String x:Key="adat_email_address">Email address</v:String>
 
-
+    <v:String x:Key="adat_cs_header">• CS:GO Statistics</v:String>
+    <v:String x:Key="adat_cs_general">General</v:String>
+    <v:String x:Key="adat_cs_ranks">Ranks</v:String>
+    <v:String x:Key="adat_cs_kd">K/D:</v:String>
+    <v:String x:Key="adat_cs_kills">Kills:</v:String>
+    <v:String x:Key="adat_cs_deaths">Deaths:</v:String>
+    <v:String x:Key="adat_cs_playedMatches">Played matches:</v:String>
+    <v:String x:Key="adat_cs_matchesWon">Matches won:</v:String>
+    <v:String x:Key="adat_cs_winrate">Winrate:</v:String>
+    <v:String x:Key="adat_cs_roundsPlayed">Rounds played:</v:String>
+    <v:String x:Key="adat_cs_shots">Shots:</v:String>
+    <v:String x:Key="adat_cs_averageAccuracy">Average accuracy:</v:String>
+    <v:String x:Key="adat_cs_shotsHit">Shots hit:</v:String>
+    <v:String x:Key="adat_cs_headshots">Headshots:</v:String>
+    <v:String x:Key="adat_cs_headshotspercent">Headshots percentage:</v:String>
+    
 
 </ResourceDictionary>

@@ -11,6 +11,10 @@
     <v:String x:Key="sv_save_changes">Сохранить</v:String>
     <v:String x:Key="sv_on">Включено</v:String>
     <v:String x:Key="sv_off">Выключено</v:String>
+    <v:String x:Key="sv_password">Установить пароль на программу</v:String>
+    <v:String x:Key="sv_info_collect">Не собирать информацию об аккаунтах</v:String>
+    <v:String x:Key="sv_crypto_key">Ключ шифрования</v:String>
+    <v:String x:Key="sv_steam_key">Пользовательский steam web API ключ</v:String>
 
 
     <!-- Main view-->
@@ -25,7 +29,11 @@
     <v:String x:Key="av_searchbar_title">Поиск аккаунтов  .  .  .</v:String>
     <v:String x:Key="av_addbutton_title">Добавить</v:String>
     <v:String x:Key="av_confirmation_delete">Вы действительно хотите удалить аккаунт?</v:String>
-
+    <v:String x:Key="av_popup_saveDatabase">Сохранить базу аккаунтов в файл</v:String>
+    <v:String x:Key="av_popup_restoreDatabase_1">Восстановить базу аккаунтов из файла</v:String>
+    <v:String x:Key="av_popup_restoreDatabase_2">Внимание! Заменяет текущие аккаунты.</v:String>
+    <v:String x:Key="av_popup_restoreAccount">Восстановить аккаунт</v:String>
+    <v:String x:Key="av_popup_updAccounts">Обновить информацию об аккаунтах</v:String>
 
     <!-- Account add view-->
     <v:String x:Key="adv_header_title">Добавление аккаунта</v:String>
@@ -33,7 +41,6 @@
     <v:String x:Key="adv_password">Пароль</v:String>
     <v:String x:Key="adv_account_URL">URL-ссылка на аккаунт</v:String>
     <v:String x:Key="adv_save">Сохранить</v:String>
-
     <v:String x:Key="adv_error_invalid_link">Неверная ссылка на профиль!</v:String>
     <v:String x:Key="adv_error_login_empty">Поле с логином пустое!</v:String>
     <v:String x:Key="adv_error_login_contain_spaces">Логин не может содержать пробелы!</v:String>
@@ -42,8 +49,33 @@
     <v:String x:Key="adv_error_pass_empty">Поле с паролем пустое!</v:String>
     <v:String x:Key="adv_error_pass_shortage">Минимальная длина пароля 8 символов!</v:String>
     <v:String x:Key="adv_error_pass_overflow">Максимальная длина пароля 50 символов!</v:String>
-
     <v:String x:Key="adv_info_connection_check">Выполняется проверка сети...</v:String>
     <v:String x:Key="adv_info_collect_data">Сбор информации об учетной записи...</v:String>
 
+
+    <!-- Account data view -->
+    <v:String x:Key="adat_visiblity">Видимость:</v:String>
+    <v:String x:Key="adat_profile_url">URL профиля:</v:String>
+    <v:String x:Key="adat_community_statuses">• Комьюнити статусы</v:String>
+    <v:String x:Key="adat_personal_data">• Персональные данные</v:String>
+    <v:String x:Key="adat_steam_account">Steam акаунт</v:String>
+    <v:String x:Key="adat_login">Логин</v:String>
+    <v:String x:Key="adat_password">Пароль</v:String>
+
+    <v:String x:Key="adat_cs_header">• CS:GO Статистика</v:String>
+    <v:String x:Key="adat_cs_general">Основная</v:String>
+    <v:String x:Key="adat_cs_ranks">Звания</v:String>
+    <v:String x:Key="adat_cs_kd">У/С:</v:String>
+    <v:String x:Key="adat_cs_kills">Убийства:</v:String>
+    <v:String x:Key="adat_cs_deaths">Смерти:</v:String>
+    <v:String x:Key="adat_cs_playedMatches">Матчей сыграно:</v:String>
+    <v:String x:Key="adat_cs_matchesWon">Побед в матчах:</v:String>
+    <v:String x:Key="adat_cs_winrate">Шанс победы:</v:String>
+    <v:String x:Key="adat_cs_roundsPlayed">Раундов сыграно:</v:String>
+    <v:String x:Key="adat_cs_shots">Выстрелов:</v:String>
+    <v:String x:Key="adat_cs_averageAccuracy">Средняя точность:</v:String>
+    <v:String x:Key="adat_cs_shotsHit">Выстрелов попало:</v:String>
+    <v:String x:Key="adat_cs_headshots">Хэдшотов:</v:String>
+    <v:String x:Key="adat_cs_headshotspercent">Процент хэдшотов:</v:String>
+    
 </ResourceDictionary>
