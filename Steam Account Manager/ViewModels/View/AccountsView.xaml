@@ -104,16 +104,17 @@
         <ScrollViewer VerticalScrollBarVisibility="Visible" 
                       Grid.Row="2" HorizontalAlignment="Left"
                       x:Name="scrollViewer" >
-            <ListBox ItemsSource="{Binding Path=AccountTabViews}"
+            <ListView ItemsSource="{Binding Path=AccountTabViews}"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.CanContentScroll="True"
                      IsHitTestVisible="True" Background="Transparent"
->
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListBoxItem}">
+                     VirtualizingPanel.IsVirtualizing="True"
+                     VirtualizingPanel.VirtualizationMode="Recycling">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
                         <Setter Property="Template">
                             <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <ControlTemplate TargetType="{x:Type ListViewItem}">
                                     <ContentPresenter Margin="0 0 0 10"
                                                           Height="50"
                                                           Width="568">
@@ -122,16 +123,16 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.Template>
+                </ListView.ItemContainerStyle>
+                <ListView.Template>
                     <ControlTemplate TargetType="ItemsControl">
                         <Border>
                             <ItemsPresenter />
                         </Border>
                     </ControlTemplate>
-                </ListBox.Template>
+                </ListView.Template>
 
-            </ListBox>
+            </ListView>
 
         </ScrollViewer>
 

@@ -8,12 +8,11 @@ using System.Linq;
 using System.Globalization;
 using System.Threading;
 using Steam_Account_Manager.Infrastructure.Base;
-using FuzzySharp;
 
 namespace Steam_Account_Manager.Infrastructure
 {
     [Serializable]
-    internal class Config
+    internal sealed class Config
     {
         public static Config _config;
 
@@ -195,35 +194,11 @@ namespace Steam_Account_Manager.Infrastructure
         }
 
         //Encrypting
-        private static string CryptoKey = "Q3JpcHRvZ3JhZmlhcyBjb20gUmluamRhZWwgLyBBRVM=";
+        private static readonly string CryptoKey = "Q3JpcHRvZ3JhZmlhcyBjb20gUmluamRhZWwgLyBBRVM=";
         private const int KeySize = 256;
         private const int IvSize = 16; // block size is 128-bit
 
         public static string GetDefaultCryptoKey => CryptoKey;
-
-        public static string Sha256(string randomString)
-        {
-            var crypt = new SHA256Managed();
-            string hash = String.Empty;
-            byte[] crypto = crypt.ComputeHash(System.Text.Encoding.ASCII.GetBytes(randomString));
-            foreach (byte theByte in crypto)
-            {
-                hash += theByte.ToString("x2");
-            }
-            return hash;
-        }
-
-
-        public static string GenerateCryptoKey()
-        {
-            //Generate a cryptographic random number.
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            byte[] buff = new byte[32];
-            rng.GetBytes(buff);
-
-            // Return a Base64 string representation of the random number.
-            return Convert.ToBase64String(buff);
-        }
 
         private static void WriteObjectToStream(Stream outputStream, object obj)
         {
@@ -324,29 +299,5 @@ namespace Steam_Account_Manager.Infrastructure
         {
             Config.Serialize(_database, Environment.CurrentDirectory + @"\database.dat", Config._config.UserCryptoKey);
         }
-        
-
-        public List<int> SearchByNickname(string nickname = "")
-        {
-            var foundAccountsIndexes = new List<int>();
-            if (nickname != "")
-            {
-                for (int i = 0; i < Accounts.Count; i++)
-                {
-                    if (Accounts[i].Nickname.ToLower().StartsWith(nickname) ||
-                        Fuzz.Ratio(nickname.ToLower(), Accounts[i].Nickname.ToLower()) > 40)
-                    {
-                        foundAccountsIndexes.Add(i);
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < Accounts.Count; i++)
-                    foundAccountsIndexes.Add(i);
-            }
-            return foundAccountsIndexes;
-        }
-
     }
 }

@@ -172,12 +172,12 @@ namespace Steam_Account_Manager.ViewModels
             DontCollectInfo = config.TakeAccountInfo;
             AddAccountAsyncCommand = new AsyncRelayCommand(async (o) =>
             {
-                await AddAccount(o);
-                if (ErrorMessage == "")
-                {
-                    ExecuteWindow(o);
-                    Task.Run(() => MainWindowViewModel.NotificationView((string)Application.Current.FindResource("mv_account_added_notification")));
-                    AccountsViewModel.FillAccountTabViews();
+            await AddAccount(o);
+            if (ErrorMessage == "")
+            {
+                ExecuteWindow(o);
+                Task.Run(() => MainWindowViewModel.NotificationView((string)Application.Current.FindResource("mv_account_added_notification")));
+                AccountsViewModel.AddAccountTabView(CryptoBase._database.Accounts.Count - 1);
                 }
                 
             });

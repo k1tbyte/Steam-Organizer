@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace Steam_Account_Manager
 {
@@ -86,6 +87,30 @@ namespace Steam_Account_Manager
                 processSteam.StartInfo.Arguments = args;
                 processSteam.Start();
             };
+        }
+
+        public static string Sha256(string randomString)
+        {
+            var crypt = new SHA256Managed();
+            string hash = String.Empty;
+            byte[] crypto = crypt.ComputeHash(System.Text.Encoding.ASCII.GetBytes(randomString));
+            foreach (byte theByte in crypto)
+            {
+                hash += theByte.ToString("x2");
+            }
+            return hash;
+        }
+
+
+        public static string GenerateCryptoKey()
+        {
+            //Generate a cryptographic random number.
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+            byte[] buff = new byte[32];
+            rng.GetBytes(buff);
+
+            // Return a Base64 string representation of the random number.
+            return Convert.ToBase64String(buff);
         }
     }
 }

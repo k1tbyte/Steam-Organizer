@@ -23,7 +23,6 @@ namespace Steam_Account_Manager.ViewModels
         private int _vacCount;
         private int _id;
         private CryptoBase database;
-        private Config config;
         private bool _containParseInfo;
 
         public bool ContainParseInfo
@@ -98,22 +97,30 @@ namespace Steam_Account_Manager.ViewModels
         {
             await Task.Factory.StartNew(() =>
             {
-                config = Config.GetInstance();
+                Config.GetInstance();
                 MainWindowViewModel.IsEnabledForUser = false;
                 try
                 {
-                    Utilities.KillSteamAndConnect(config.SteamDirection, "-login " + _login + " " + _password + " -tcp");
-                    if (config.AutoClose) Application.Current.Dispatcher.InvokeShutdown();
-                    else _ = MainWindowViewModel.NotificationView("Logged in, wait for steam to start");
+                    Utilities.KillSteamAndConnect(Config._config.SteamDirection, "-login " + _login + " " + _password + " -tcp");
+                    if (Config._config.AutoClose) Application.Current.Dispatcher.InvokeShutdown();
+                    else
+                    {
+                        _ = MainWindowViewModel.NotificationView("Logged in, wait for steam to start");
+                        _ = MainWindowViewModel.NowLoginUserParse(20000);
+                    } 
                 }
                 catch
                 {
                     try
                     {
                         Utilities.KillSteamAndConnect(Utilities.GetSteamRegistryDirection(), "-login " + _login + " " + _password + " -tcp");
-                        config.SaveChanges();
-                        if (config.AutoClose) Application.Current.Dispatcher.InvokeShutdown();
-                        else _ = MainWindowViewModel.NotificationView("Logged in, wait for steam to start");
+                        Config._config.SaveChanges();
+                        if (Config._config.AutoClose) Application.Current.Dispatcher.InvokeShutdown();
+                        else
+                        {
+                            _ = MainWindowViewModel.NotificationView("Logged in, wait for steam to start");
+                            _ = MainWindowViewModel.NowLoginUserParse(20000);
+                        } 
                     }
                     catch
                     {
@@ -176,13 +183,14 @@ namespace Steam_Account_Manager.ViewModels
 
             DeleteAccoundCommand = new RelayCommand(o =>
             {
-                if (!config.NoConfirmMode)
+                if (!Config._config.NoConfirmMode)
                     AccountsViewModel.RemoveAccount(ref id);
                 else
                 {
                     database.Accounts.RemoveAt(id);
+                    AccountsViewModel.AccountTabViews.RemoveAt(id);
+                    MainWindowViewModel.TotalAccounts = database.Accounts.Count;
                     database.SaveDatabase();
-                    AccountsViewModel.FillAccountTabViews();
                 }
             });
 

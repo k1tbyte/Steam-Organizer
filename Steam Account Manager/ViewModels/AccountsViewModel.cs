@@ -5,6 +5,9 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Win32;
+using System.Runtime.CompilerServices;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -58,6 +61,8 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
+        private ICollectionView ByNicknameSearch;
+
         public static event EventHandler AccountTabViewsChanged;
         private static ObservableCollection<AccountTabView> _accountTabViews;
 
@@ -77,24 +82,47 @@ namespace Steam_Account_Manager.ViewModels
             get => _searchBoxText;
             set
             {
-                _searchBoxText = value;
-                FillAccountTabViews(database.SearchByNickname(value), _searchBoxText);
-                OnPropertyChanged();
+                if (value != _searchBoxText)
+                {
+                    _searchBoxText = value;
+                    ByNicknameSearch.Refresh();
+                    OnPropertyChanged();
+                }
             }
         }
 
-        public static void FillAccountTabViews(List<int> accountIndexes = null, string searchBoxText = null)
+        public static void SearchByNickname(string nickname)
         {
-            AccountTabViews.Clear();
-            ConfirmBanner = false;
-            if (accountIndexes == null) accountIndexes = database.SearchByNickname();
-            foreach (var index in accountIndexes)
-            {
-                AccountTabViews.Add(new AccountTabView(index));
-            }
-            MainWindowViewModel.TotalAccounts = accountIndexes.Count;
 
         }
+
+        public static void FillAccountTabViews()
+        {
+            ConfirmBanner = false;
+            if(AccountTabViews.Count == 0)
+            {
+                for (int i = 0; i < database.Accounts.Count; i++)
+                {
+                    AccountTabViews.Add(new AccountTabView(i));
+                }
+                MainWindowViewModel.TotalAccounts = database.Accounts.Count;
+            }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void UpdateAccountTabView(int id)
+        {
+            AccountTabViews[id] = new AccountTabView(id);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void AddAccountTabView(int id)
+        {
+            AccountTabViews.Add(new AccountTabView(id));
+            MainWindowViewModel.TotalAccounts++;
+        }
+
 
         public static void RemoveAccount(ref int id)
         {
@@ -108,6 +136,11 @@ namespace Steam_Account_Manager.ViewModels
             try 
             {
                 MainWindowViewModel.IsEnabledForUser = false;
+                var ids = new List<int>()
+                {
+                    Capacity = database.Accounts.Count
+                };
+
                 await Task.Factory.StartNew(() =>
                 {
                     for (int i = 0; i < database.Accounts.Count; i++)
@@ -127,14 +160,19 @@ namespace Steam_Account_Manager.ViewModels
                              database.Accounts[i].UplayPass,
                              database.Accounts[i].CsgoStats,
                              database.Accounts[i].AuthenticatorPath);
+                        ids.Add(i);
                     }
                     MainWindowViewModel.UpdatedAccountIndex = 0;
                     MainWindowViewModel.IsEnabledForUser = true;
                     Task.Run(() => MainWindowViewModel.NotificationView("Database has been updated"));
                     database.SaveDatabase();
                 });
-                if (SearchBoxText != null) FillAccountTabViews(database.SearchByNickname(SearchBoxText), SearchBoxText);
-                else FillAccountTabViews();
+
+                if(ids != null)
+                {
+                    for (short i = 0; i < ids.Count; i++)
+                        UpdateAccountTabView(ids[i]);
+                }
             }
             catch
             {
@@ -170,6 +208,9 @@ namespace Steam_Account_Manager.ViewModels
             database = CryptoBase._database;
 
             AccountTabViews = new ObservableCollection<AccountTabView>();
+            ByNicknameSearch = CollectionViewSource.GetDefaultView(AccountTabViews);
+            ByNicknameSearch.Filter = o => String.IsNullOrEmpty(SearchBoxText) ? true : ((AccountTabView)o).SteamNickname.Text.ToLower().Contains(SearchBoxText.ToLower());
+
             AccountName = "";
             AccountId = -1;
             UpdateDatabaseCommand = new AsyncRelayCommand(async (o) => await UpdateDatabase());
@@ -184,8 +225,9 @@ namespace Steam_Account_Manager.ViewModels
                 if (database.Accounts[TempId].AuthenticatorPath == null)
                 {
                     database.Accounts.RemoveAt(TempId);
+                    AccountTabViews.RemoveAt(TempId);
+                    MainWindowViewModel.TotalAccounts--;
                     database.SaveDatabase();
-                    FillAccountTabViews();
                 }
                 else
                 {

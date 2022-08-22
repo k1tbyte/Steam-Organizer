@@ -393,8 +393,9 @@ class SteamClient
 
     }
 
-    static void Main(string[] args)
+    static void Main()
     {
-        Console.WriteLine(DoLogin(args[0], args[1]));
+        Console.WriteLine(DoLogin("sheppardb7", "benjamin990"));
+        Console.ReadKey();
     }
 }

@@ -662,7 +662,7 @@ namespace Steam_Account_Manager.ViewModels
             CancelCommand = new RelayCommand(o =>
             {
                 MainWindowViewModel.AccountsViewCommand.Execute(null);
-                AccountsViewModel.FillAccountTabViews();
+                AccountsViewModel.UpdateAccountTabView(id);
             });
 
             CopyCommand = new RelayCommand(o =>

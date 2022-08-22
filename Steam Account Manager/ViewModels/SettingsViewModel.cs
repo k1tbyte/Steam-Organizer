@@ -199,7 +199,7 @@ namespace Steam_Account_Manager.ViewModels
                     config.TakeAccountInfo = TakeAccountInfoMode;
                     config.WebApiKey = WebApiKey;
                     if (Password != null && Password != "")
-                        config.Password = Config.Sha256(Password + Config.GetDefaultCryptoKey);
+                        config.Password = Utilities.Sha256(Password + Config.GetDefaultCryptoKey);
                     else if(_passwordEnabled == false) config.Password = null;
 
                     if(EncryptingKey != "By default")
@@ -235,7 +235,7 @@ namespace Steam_Account_Manager.ViewModels
 
             GenerateCryptoKeyCommand = new RelayCommand(o =>
             {
-                EncryptingKey = Config.GenerateCryptoKey();
+                EncryptingKey = Utilities.GenerateCryptoKey();
             });
 
             ResetCryptoKeyCommand = new RelayCommand(o =>

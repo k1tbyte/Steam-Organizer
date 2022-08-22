@@ -24,7 +24,7 @@ namespace Steam_Account_Manager.ViewModels.View
                 return;
             }
 
-            if (Config.Sha256(Password.Password + Config.GetDefaultCryptoKey) == Config._config.Password)
+            if (Utilities.Sha256(Password.Password + Config.GetDefaultCryptoKey) == Config._config.Password)
             {
                 if (!mainWindow) DialogResult = true;
                 else
@@ -67,8 +67,6 @@ namespace Steam_Account_Manager.ViewModels.View
                     if (mainWindow) App.Current.Shutdown();
                     else DialogResult = false;
                 }
-                    
-                
             }
         }
 

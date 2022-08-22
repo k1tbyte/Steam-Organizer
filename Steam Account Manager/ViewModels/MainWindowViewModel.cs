@@ -25,24 +25,26 @@ namespace Steam_Account_Manager.ViewModels
         public AccountDataView AccountDataV; 
 
         public static event EventHandler TotalAccountsChanged;
+        public static event EventHandler NowLoginUserImageChanged;
+        public static event EventHandler NowLoginUserNicknameChanged;
         private static int _totalAccounts;
-        private string _nowLoginUserImage, _nowLoginUserNickname;
-        public string NowLoginUserNickname
+        private static string _nowLoginUserImage, _nowLoginUserNickname;
+        public static string NowLoginUserNickname
         {
             get => _nowLoginUserNickname;
             set
             {
                 _nowLoginUserNickname = value;
-                OnPropertyChanged(nameof(NowLoginUserNickname));
+                NowLoginUserNicknameChanged?.Invoke(null, EventArgs.Empty);
             }
         }
-        public string NowLoginUserImage
+        public static string NowLoginUserImage
         {
             get => _nowLoginUserImage;
             set
             {
                 _nowLoginUserImage = value;
-                OnPropertyChanged(nameof(NowLoginUserImage));
+                NowLoginUserImageChanged?.Invoke(null, EventArgs.Empty);
             }
         }
         public static int TotalAccounts
@@ -134,13 +136,15 @@ namespace Steam_Account_Manager.ViewModels
             Thread.Sleep(2300);
             NotificationVisible = false;
         }
-        private async Task NowLoginUserParse()
+        public static async Task NowLoginUserParse(ushort awaitingMs=0)
         {
             await Task.Factory.StartNew(() =>
             {
+                if (awaitingMs != 0) Thread.Sleep(awaitingMs);
                 try
                 {
                     var steamID = Utilities.GetSteamRegistryActiveUser();
+                    if (steamID == 0) throw (new NullReferenceException());
                     var steamParser = new Infrastructure.Parsers.SteamParser(Utilities.SteamId32ToSteamId64(steamID));
                     steamParser.ParsePlayerSummariesAsync().GetAwaiter().GetResult();
                     NowLoginUserImage = steamParser.GetAvatarUrlFull;
@@ -148,8 +152,8 @@ namespace Steam_Account_Manager.ViewModels
                 }
                 catch
                 {
-                    NowLoginUserImage = "/Images/user.png";
-                    NowLoginUserNickname = "Username";
+                    _nowLoginUserImage = "/Images/user.png";
+                    _nowLoginUserNickname = "Username";
                 }
             });
         }
@@ -161,7 +165,7 @@ namespace Steam_Account_Manager.ViewModels
 
             CurrentView = AccountsVm;
 
-            //_ = NowLoginUserParse();
+            _ = NowLoginUserParse();
 
             AccountsViewCommand = new RelayCommand(o =>
             {
