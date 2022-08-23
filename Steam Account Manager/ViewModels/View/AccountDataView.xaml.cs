@@ -33,8 +33,10 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = VacBorder;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Vac count: " + currentViewModel.VacCount.ToString();
-            if (currentViewModel.DaysSinceLastBan != 0) Header.PopupText.Text += "\nDays since first ban: " + currentViewModel.DaysSinceLastBan.ToString();
+            Header.PopupText.Text = (string)FindResource("adat_popup_vacCount")+ " " + currentViewModel.VacCount.ToString();
+            if (currentViewModel.DaysSinceLastBan != 0) Header.PopupText.Text += '\n' + 
+                    (string)FindResource("adat_popup_daysFirstBan") + " " +
+                    currentViewModel.DaysSinceLastBan.ToString();
         }
 
         private void YearsLabel_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -43,9 +45,9 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
             if (currentViewModel.CreatedDate != DateTime.MinValue)
-                Header.PopupText.Text = "Date of registration: " + currentViewModel.CreatedDate;
+                Header.PopupText.Text = (string)FindResource("adat_popup_regDate") + " " + currentViewModel.CreatedDate;
             else
-                Header.PopupText.Text = "Registration date unknown";
+                Header.PopupText.Text = (string)FindResource("adat_popup_regDateUnknown");
 
 
         }
@@ -63,13 +65,13 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.IsOpen = true;
             if(currentViewModel.GamesTotal == "-" || currentViewModel.ProfileVisiblity == "Private")
             {
-                Header.PopupText.Text = "Games missing or profile is private";
+                Header.PopupText.Text = (string)FindResource("adat_popup_nullGames");
             }
             else
             {
-                Header.PopupText.Text = "Games on account: " + currentViewModel.GamesTotal;
-                Header.PopupText.Text += "\nGames played: " + currentViewModel.GamesPlayed + currentViewModel.PlayedPercent;
-                Header.PopupText.Text += "\nPlaytime: " + currentViewModel.HoursOnPlayed;
+                Header.PopupText.Text = (string)FindResource("adat_popup_countGames") + " " + currentViewModel.GamesTotal + '\n';
+                Header.PopupText.Text += (string)FindResource("adat_popup_playedGames") + " " + currentViewModel.GamesPlayed + currentViewModel.PlayedPercent + '\n';
+                Header.PopupText.Text += (string)FindResource("adat_popup_playtime") + " " + currentViewModel.HoursOnPlayed;
                 if (currentViewModel.HoursOnPlayed != "Private") Header.PopupText.Text += "h";
             }
 
@@ -81,7 +83,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = SaveButton;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Save account changes";
+            Header.PopupText.Text = (string)FindResource("adat_popup_save_chanes");
         }
 
         private void ExportButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -89,7 +91,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = ExportButton;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Export account to hard drive";
+            Header.PopupText.Text = (string)FindResource("adat_popup_account_export");
         }
 
         private void RefreshButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -97,7 +99,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = RefreshButton;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Update account information";
+            Header.PopupText.Text = (string)FindResource("adat_popup_update_info");
         }
 
         private void CurrentRank_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -105,7 +107,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = CurrentRank;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Current rank 5x5";
+            Header.PopupText.Text = (string)FindResource("adat_popup_current_rank");
         }
 
         private void BestRank_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -113,7 +115,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = BestRank;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Best rank 5x5";
+            Header.PopupText.Text = (string)FindResource("adat_popup_best_rank");
         }
 
         private void steamImage_ImageFailed(object sender, ExceptionRoutedEventArgs e)

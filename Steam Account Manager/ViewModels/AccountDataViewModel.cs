@@ -584,7 +584,7 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     var csgo_parser = new CsgoParser(_steamId64);
                     CsgoParseError = "Gathering statistics...";
-                    csgo_parser.GlobalStatsParse();
+                    csgo_parser.GlobalStatsParse().GetAwaiter().GetResult();
                     CsgoParseError = "Gathering rank data...";
                     csgo_parser.RankParse();
 

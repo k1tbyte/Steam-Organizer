@@ -136,8 +136,9 @@ namespace Steam_Account_Manager.ViewModels
             Thread.Sleep(2300);
             NotificationVisible = false;
         }
-        public static async Task NowLoginUserParse(ushort awaitingMs=0)
+        public static async Task<bool> NowLoginUserParse(ushort awaitingMs=0)
         {
+            bool accountDetected = false;
             await Task.Factory.StartNew(() =>
             {
                 if (awaitingMs != 0) Thread.Sleep(awaitingMs);
@@ -149,6 +150,7 @@ namespace Steam_Account_Manager.ViewModels
                     steamParser.ParsePlayerSummariesAsync().GetAwaiter().GetResult();
                     NowLoginUserImage = steamParser.GetAvatarUrlFull;
                     NowLoginUserNickname = steamParser.GetNickname;
+                    accountDetected = true;
                 }
                 catch
                 {
@@ -156,6 +158,7 @@ namespace Steam_Account_Manager.ViewModels
                     _nowLoginUserNickname = "Username";
                 }
             });
+            return accountDetected;
         }
 
         public MainWindowViewModel()

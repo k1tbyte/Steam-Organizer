@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Steam_Account_Manager.Infrastructure.GamesModels;
 
@@ -21,20 +22,17 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         public ref CsgoStats GetCsgoStats => ref csgoStats;
 
         //Global csgo statisctics parser
-        public void GlobalStatsParse()
+        public async Task GlobalStatsParse()
         {
-            var target = new Uri($"https://csgo-stats.com/player/{_steamId64}/");
-            var handler = new HttpClientHandler
-            {
-                UseDefaultCredentials = true
-            };
-            var client = new HttpClient(handler);
-            client.DefaultRequestHeaders.Add("accept", "text/javascript, text/html, application/xml, text/xml, */*");
-            client.DefaultRequestHeaders.Add("Referer", "https://csgo-stats.com/");
-            client.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Linux; U; Android 4.1.1; en-us; Google Nexus 4 - 4.1.1 - API 16 - 768x1280 Build/JRO03S) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30");
+            var client = Utilities.CreateHttpClientFactory();
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://csgo-stats.com/player/{_steamId64}/");
 
-            var response = client.GetAsync(target).Result;
-            var html = response.Content.ReadAsStringAsync().Result;
+            request.Headers.Add("accept", "text/javascript, text/html, application/xml, text/xml, */*");
+            request.Headers.Add("Referer", "https://csgo-stats.com/");
+            request.Headers.Add("user-agent", "Mozilla/5.0 (Linux; U; Android 4.1.1; en-us; Google Nexus 4 - 4.1.1 - API 16 - 768x1280 Build/JRO03S) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30");
+
+            var response = await client.SendAsync(request);
+            var html = await response.Content.ReadAsStringAsync();
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(html);
 
@@ -74,8 +72,6 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             /// 9. Kills
             /// 
             /// </summary>
-            handler.Dispose();
-            client.Dispose();
         }
 
 

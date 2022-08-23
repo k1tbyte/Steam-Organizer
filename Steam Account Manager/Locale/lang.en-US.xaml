@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:v="clr-namespace:System;assembly=mscorlib">
     
-    <!-- Settings view -->
+    <!--#region Settings view -->
     <v:String x:Key="sv_settings_title">Settings</v:String>
     <v:String x:Key="sv_theme">Theme</v:String>
     <v:String x:Key="sv_language">Language</v:String>
@@ -15,28 +15,33 @@
     <v:String x:Key="sv_info_collect">Dont collect account information</v:String>
     <v:String x:Key="sv_crypto_key">Encryption key</v:String>
     <v:String x:Key="sv_steam_key">Custom steam web API key</v:String>
+    <!--#endregion-->
 
-    <!-- Main view-->
+
+    <!--#region Main view -->
     <v:String x:Key="mv_total_accounts">Total accounts:</v:String>
     <v:String x:Key="mv_accounts_title">Accounts</v:String>
     <v:String x:Key="mv_settings_title">Settings</v:String>
     <v:String x:Key="mv_logout_title">Logout</v:String>
     <v:String x:Key="mv_account_added_notification">New account added!</v:String>
-    
+    <!--#endregion-->
 
-    <!-- Accounts View-->
+
+    <!--#region Accounts View -->
     <v:String x:Key="av_searchbar_title">Search for accounts  .  .  .</v:String>
     <v:String x:Key="av_addbutton_title">Add</v:String>
     <v:String x:Key="av_confirmation_delete">Are you sure you want to delete this account?</v:String>
     <v:String x:Key="av_popup_saveDatabase">Save accounts database to file</v:String>
-    
+
     <v:String x:Key="av_popup_restoreDatabase_1">Restore accounts database from file</v:String>
     <v:String x:Key="av_popup_restoreDatabase_2">Attention! Replaces your current base.</v:String>
-    
+
     <v:String x:Key="av_popup_restoreAccount">Restore account from file</v:String>
     <v:String x:Key="av_popup_updAccounts">Update database information</v:String>
+    <!--#endregion-->
 
-    <!-- Account add view-->
+
+    <!--#region Account add view -->
     <v:String x:Key="adv_header_title">Account adding</v:String>
     <v:String x:Key="adv_login">Login</v:String>
     <v:String x:Key="adv_password">Password</v:String>
@@ -52,9 +57,10 @@
     <v:String x:Key="adv_error_pass_overflow">The maximum password length is 50 characters!</v:String>
     <v:String x:Key="adv_info_connection_check">Network check in progress...</v:String>
     <v:String x:Key="adv_info_collect_data">Gathering account information...</v:String>
-    
-    
-    <!-- Account data view -->
+    <!--#endregion-->
+
+
+    <!--#region Account data view -->
     <v:String x:Key="adat_visiblity">Visiblity:</v:String>
     <v:String x:Key="adat_profile_url">Profile URL:</v:String>
     <v:String x:Key="adat_community_statuses">• Community statuses</v:String>
@@ -63,6 +69,15 @@
     <v:String x:Key="adat_login">Login</v:String>
     <v:String x:Key="adat_password">Password</v:String>
     <v:String x:Key="adat_email_address">Email address</v:String>
+    <v:String x:Key="adat_noteAbout">• Note about account</v:String>
+    <v:String x:Key="adat_2fa_confirm">Are you sure you want to link 2FA to your account?</v:String>
+
+    <v:String x:Key="adat_links_header">Steam links</v:String>
+    <v:String x:Key="adat_links_games">Games</v:String>
+    <v:String x:Key="adat_links_inventory">Inventory</v:String>
+    <v:String x:Key="adat_links_friends">Friends</v:String>
+    <v:String x:Key="adat_links_badges">Badges</v:String>
+    <v:String x:Key="adat_links_groups">Groups</v:String>
 
     <v:String x:Key="adat_cs_header">• CS:GO Statistics</v:String>
     <v:String x:Key="adat_cs_general">General</v:String>
@@ -79,6 +94,49 @@
     <v:String x:Key="adat_cs_shotsHit">Shots hit:</v:String>
     <v:String x:Key="adat_cs_headshots">Headshots:</v:String>
     <v:String x:Key="adat_cs_headshotspercent">Headshots percentage:</v:String>
+
+    <v:String x:Key="adat_popup_update_info">Update account information</v:String>
+    <v:String x:Key="adat_popup_account_export">Export account to hard drive</v:String>
+    <v:String x:Key="adat_popup_save_chanes">Save account changes</v:String>
+    <v:String x:Key="adat_popup_current_rank">Current rank 5x5</v:String>
+    <v:String x:Key="adat_popup_best_rank">Best rank 5x5</v:String>
+    <v:String x:Key="adat_popup_nullGames">Games missing or profile is private</v:String>
+    <v:String x:Key="adat_popup_countGames">Games on account:</v:String>
+    <v:String x:Key="adat_popup_playedGames">Games played:</v:String>
+    <v:String x:Key="adat_popup_playtime">Playtime:</v:String>
+    <v:String x:Key="adat_popup_regDate">Date of registration:</v:String>
+    <v:String x:Key="adat_popup_regDateUnknown">Registration date unknown</v:String>
+    <v:String x:Key="adat_popup_vacCount">Vac count:</v:String>
+    <v:String x:Key="adat_popup_daysFirstBan">Days since first ban:</v:String>
+    <!--#endregion-->
+
     
+    <!--#region Add authenticator window -->
+    <v:String x:Key="aaw_add_header">2FA Adding</v:String>
+    <v:String x:Key="aaw_add_new">Add new</v:String>
+    <v:String x:Key="aaw_add_load">Load</v:String>
+
+    <v:String x:Key="aaw_dataWait">Please wait, getting data...</v:String>
+    <v:String x:Key="aaw_emailCode">Please enter your email code</v:String>
+    <v:String x:Key="aaw_installing">Installing an Authenticator...</v:String>
+    <v:String x:Key="aaw_captcha">Please enter captcha</v:String>
+    <v:String x:Key="aaw_2faCode">Please enter your 2FA code</v:String>
+    <v:String x:Key="aaw_manyAttempts">Too many attempts, try again later</v:String>
+    <v:String x:Key="aaw_dataIncorrect">Account information is incorrect, edit your account data</v:String>
+    <v:String x:Key="aaw_addFail">Failed to add authenticator:</v:String>
+    <v:String x:Key="aaw_errorSave">Error saving authenticator file, authenticator not added</v:String>
+    <v:String x:Key="aaw_smsCode">Please enter SMS-code</v:String>
+    <v:String x:Key="aaw_successAdd">Authenticator successfully added</v:String>
+    <!--#endregion-->
+
+
+    <!--#region Show authenticator window -->
+    <v:String x:Key="saw_header">2FA Control</v:String>
+    <v:String x:Key="saw_loading">Loading...</v:String>
+    <v:String x:Key="saw_authRemove">Authenticator being removed...</v:String>
+    <v:String x:Key="saw_authRemoveSuccess">Authenticator disabled, use your username and password to log in</v:String>
+    <v:String x:Key="saw_authRemoveError">An error occurred while trying to deactivate the authenticator, please try again later</v:String>
+    <v:String x:Key="saw_unknownError">An unknown error occurred during deactivation, the authenticator was not removed</v:String>
+    <!--#endregion-->
 
 </ResourceDictionary>

@@ -23,6 +23,7 @@ namespace Steam_Account_Manager.Infrastructure
         public bool NoConfirmMode;
         public bool TakeAccountInfo;
         public bool AutoClose;
+        public bool AutoGetSteamId;
         public string WebApiKey;
         public string UserCryptoKey;
         public string Password;

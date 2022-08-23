@@ -1,14 +1,10 @@
-﻿using Steam_Account_Manager.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+using Steam_Account_Manager.Infrastructure;
 using SteamAuth;
+using System;
 using System.IO;
-using Newtonsoft.Json;
-using Steam_Account_Manager.Infrastructure.Base;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -20,7 +16,7 @@ namespace Steam_Account_Manager.ViewModels
 
         private int _id;
         private CryptoBase database;
-        private string _authPath,_accountName = "Login", _steamGuardCode = "Loading...",_errorMessage;
+        private string _authPath,_accountName = "Login", _steamGuardCode = (string)App.Current.FindResource("saw_loading"), _errorMessage;
         private SteamGuardAccount guard;
         private bool _remove;
 
@@ -99,10 +95,10 @@ namespace Steam_Account_Manager.ViewModels
             {
                 try
                 {
-                    ErrorMessage = "Authenticator being removed...";
+                    ErrorMessage = (string)App.Current.FindResource("saw_authRemove");
                     bool success = guard.DeactivateAuthenticator();
-                    ErrorMessage = success == true ? "Authenticator disabled, use your username and password to log in" :
-                    "An error occurred while trying to deactivate the authenticator, please try again later";
+                    ErrorMessage = success == true ? (string)App.Current.FindResource("saw_authRemoveSuccess") :
+                    (string)App.Current.FindResource("saw_authRemoveError");
                     _remove = true;
                     File.Delete(database.Accounts[_id].AuthenticatorPath);
                     database.Accounts[_id].AuthenticatorPath = null;
@@ -111,7 +107,7 @@ namespace Steam_Account_Manager.ViewModels
                 }
                 catch
                 {
-                    ErrorMessage = "An unknown error occurred during deactivation, the authenticator was not removed.";
+                    ErrorMessage = (string)App.Current.FindResource("saw_unknownError");
                     Thread.Sleep(2000);
                 }
             });

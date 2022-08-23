@@ -144,20 +144,26 @@
                           IsChecked="{Binding AutoCloseMode}"/>
                 </StackPanel>
 
-                            
-                <StackPanel Grid.Row="7" Orientation="Horizontal" Margin="0 5 0 0">
+                 <!-- Delete without confirmation -->  
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_confirm_when_del}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding NoConfirmMode}"
                           Style="{StaticResource settingsButton}"/>
                 </StackPanel>
 
-                
-                <StackPanel Grid.Row="8" Orientation="Horizontal" Margin="0 5 0 0">
+                <!-- Dont collect information -->
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_info_collect}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding TakeAccountInfoMode}"
                           Style="{StaticResource settingsButton}"/>
                 </StackPanel>
-                
+
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="Get steam ID when logging in anonymous account" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding AutoGetSteamId}"
+                          Style="{StaticResource settingsButton}"/>
+                </StackPanel>
+
 
 
                 <!--Set password-->

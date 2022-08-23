@@ -51,7 +51,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 UserLogin user = new UserLogin(_login, _password);
                 LoginResult response = LoginResult.BadCredentials;
-                ErrorMessage = "Please wait, getting data...";
+                ErrorMessage = (string)Application.Current.FindResource("aaw_dataWait");
 
                 while ((response = user.DoLogin()) != LoginResult.LoginOkay)
                 {
@@ -59,35 +59,35 @@ namespace Steam_Account_Manager.ViewModels
                     switch (response)
                     {
                         case LoginResult.NeedEmail:
-                            ErrorMessage = "Please enter your email code";
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_emailCode");
                             while (!_isReady) Thread.Sleep(100);
                             user.EmailCode = UserInput;
-                            ErrorMessage = "Installing an Authenticator...";
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
                             break;
 
                         case LoginResult.NeedCaptcha:
                             System.Diagnostics.Process.Start(APIEndpoints.COMMUNITY_BASE + "/public/captcha.php?gid=" + user.CaptchaGID); //Open a web browser to the captcha image
-                            ErrorMessage = "Please enter captcha";
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_captcha");
                             while (!_isReady) Thread.Sleep(100);
                             user.CaptchaText = UserInput;
-                            ErrorMessage = "Installing an Authenticator...";
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
                             break;
 
                         case LoginResult.Need2FA:
-                            ErrorMessage = "Please enter your 2FA code";
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_2faCode");
                             while (!_isReady) Thread.Sleep(100);
                             user.TwoFactorCode = UserInput;
-                            ErrorMessage = "Installing an Authenticator...";
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
                             break;
 
                         case LoginResult.TooManyFailedLogins:
-                            ErrorMessage = "Too many attempts, try again later";
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_manyAttempts");
                             Thread.Sleep(2000);
                             _window.Dispatcher.Invoke(DispatcherPriority.Normal, new ThreadStart(_window.Close));
                             return;
 
                         case LoginResult.GeneralFailure:
-                            ErrorMessage = "Account information is incorrect, edit your account data";
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_dataIncorrect");
                             Thread.Sleep(2000);
                             _window.Dispatcher.Invoke(DispatcherPriority.Normal, new ThreadStart(_window.Close));
                             return;
@@ -102,7 +102,7 @@ namespace Steam_Account_Manager.ViewModels
                 var result = linker.AddAuthenticator();
                 if (result != AuthenticatorLinker.LinkResult.AwaitingFinalization)
                 {
-                    ErrorMessage = "Failed to add authenticator: " + result;
+                    ErrorMessage = (string)Application.Current.FindResource("aaw_addFail")+ " " + result;
                     Thread.Sleep(2000);
                     _window.Dispatcher.Invoke(DispatcherPriority.Normal, new ThreadStart(_window.Close));
                 }
@@ -121,19 +121,19 @@ namespace Steam_Account_Manager.ViewModels
                 }
                 catch
                 {
-                    ErrorMessage = "Error saving authenticator file, authenticator not added.";
+                    ErrorMessage = (string)Application.Current.FindResource("aaw_errorSave");
                     Thread.Sleep(2000);
                     _window.Dispatcher.Invoke(DispatcherPriority.Normal, new ThreadStart(_window.Close));
                 }
 
-                ErrorMessage = "Please enter SMS-code";
+                ErrorMessage = (string)Application.Current.FindResource("aaw_smsCode");
                 while (!_isReady) Thread.Sleep(100);
 
                 var linkResult = linker.FinalizeAddAuthenticator(UserInput);
 
                 if (linkResult == AuthenticatorLinker.FinalizeResult.Success)
                 {
-                    ErrorMessage = "Authenticator successfully added";
+                    ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
                 }
                 else
                 {
@@ -156,7 +156,7 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     database.Accounts[_id].AuthenticatorPath = fileDialog.FileName;
                     database.SaveDatabase();
-                    ErrorMessage = "Authenticator successfully added";
+                    ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
                     Thread.Sleep(2000);
                 }
             });

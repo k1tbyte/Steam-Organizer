@@ -7,7 +7,7 @@ namespace Steam_Account_Manager.ViewModels
     {
         private bool[] _themeMode = { true, false, false };
         private bool[] _localeMode = { true, false, false };
-        private bool _autoCloseMode, _noConfirmMode, _takeAccountInfoMode, _passwordEnabled;
+        private bool _autoCloseMode, _noConfirmMode, _takeAccountInfoMode, _passwordEnabled, _autoGetSteamId;
         private string _webApiKey;
         private string _encryptingKey;
         private bool _apiKeyError, _passwordError;
@@ -17,6 +17,16 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand GenerateCryptoKeyCommand { get; set; }
         public RelayCommand ResetCryptoKeyCommand { get; set; }
         public RelayCommand ChangeOrAddPasswordCommand { get; set; }
+
+        public bool AutoGetSteamId
+        {
+            get => _autoGetSteamId;
+            set
+            {
+                _autoGetSteamId = value;
+                OnPropertyChanged(nameof(AutoGetSteamId));
+            }
+        }
 
         public bool PasswordError
         {
@@ -139,6 +149,8 @@ namespace Steam_Account_Manager.ViewModels
             AutoCloseMode = config.AutoClose;
             TakeAccountInfoMode = config.TakeAccountInfo;
             WebApiKey = config.WebApiKey;
+            AutoGetSteamId = config.AutoGetSteamId;
+            
             if (Config._config.Password != null) _passwordEnabled = true;
             
             EncryptingKey = config.UserCryptoKey == Config.GetDefaultCryptoKey ? "By default" : config.UserCryptoKey;
@@ -198,6 +210,7 @@ namespace Steam_Account_Manager.ViewModels
                     config.AutoClose = AutoCloseMode;
                     config.TakeAccountInfo = TakeAccountInfoMode;
                     config.WebApiKey = WebApiKey;
+                    config.AutoGetSteamId = AutoGetSteamId;
                     if (Password != null && Password != "")
                         config.Password = Utilities.Sha256(Password + Config.GetDefaultCryptoKey);
                     else if(_passwordEnabled == false) config.Password = null;

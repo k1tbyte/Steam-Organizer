@@ -11,8 +11,8 @@
              d:DesignHeight="400" d:DesignWidth="600">
 
     <UserControl.Resources>
-        
-        <!-- The styles of the expand area -->
+
+        <!--#region Styles of the expand area -->
         <Style x:Key="expandCommunityArea" TargetType="{x:Type Border}">
             <Setter Property="Height" Value="80"/>
             <Style.Triggers>
@@ -36,7 +36,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style x:Key="expandOtherDataArea" TargetType="{x:Type Border}">
             <Setter Property="MaxHeight" Value="0"/>
             <Style.Triggers>
@@ -60,7 +60,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        
+
 
         <Style x:Key="expandCsgoArea" TargetType="{x:Type Border}">
             <Setter Property="Height" Value="340"/>
@@ -85,6 +85,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+        <!--#endregion-->
 
         <Style x:Key="showButton" TargetType="ToggleButton">
             <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -113,6 +114,7 @@
         </Style>
 
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        
     </UserControl.Resources>
     
     <Grid>
@@ -158,21 +160,20 @@
                 <Icon:PackIconMaterial  Kind="FileUpload" Height="20" Width="40" />
             </Button>
 
-            <Button x:Name="RefreshButton" Style="{StaticResource serviceButton}" Command="{Binding RefreshCommand}"
+            <Button x:Name="RefreshButton" Style="{StaticResource serviceButton}" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"  Command="{Binding RefreshCommand}"
                 Width="35"  Grid.Row="1" Margin="5 10 0 0" MouseEnter="RefreshButton_MouseEnter" MouseLeave="Popup_MouseLeave"
                 VerticalAlignment="Top" HorizontalAlignment="Right">
                 <Icon:PackIconMaterial  Kind="Refresh" Height="20" Width="40" />
             </Button>
 
-
         </StackPanel>
-
 
         <ScrollViewer Grid.Row="1" x:Name="scrollViewer" CanContentScroll="True" Margin="0 40 0 20">
             <Grid Width="565" HorizontalAlignment="Left" Margin="25 0 25 0">
 
                 <StackPanel HorizontalAlignment="Left" Margin="10 5 0 0">
 <!-- put here -->
+                    <!--#region Header info -->
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
 
                         <!-- Avatar -->
@@ -261,12 +262,11 @@
                         </StackPanel>
 
                     </StackPanel>
+                    <!--#endregion-->
 
-                    <!-- Community statuses badges -->
                     <!--#region Community statuses -->
-                    <StackPanel Orientation="Horizontal" Margin="5 15 0 0">
-                        <TextBlock  Text="{DynamicResource adat_community_statuses}" FontSize="17" Style="{StaticResource settings_description}"
-                               Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"/>
+                    <StackPanel Orientation="Horizontal" Margin="5 15 0 0" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}">
+                        <TextBlock  Text="{DynamicResource adat_community_statuses}" FontSize="17" Style="{StaticResource settings_description}"/>
                         <ToggleButton  x:Name="expandCommunityButton" Style="{StaticResource showButton}" IsChecked="True"  />
                     </StackPanel>
                   
@@ -305,28 +305,10 @@
                                         MouseEnter="VacBorder_MouseEnter" MouseLeave="Popup_MouseLeave">
                                     <Border.Style>
                                         <Style TargetType="{x:Type Border}">
-                                            <Setter Property="Background">
-                                                <Setter.Value>
-                                                    <LinearGradientBrush>
-                                                        <GradientStop Color="#A20303" Offset="0.0" />
-                                                        <GradientStop Color="OrangeRed" Offset="0.25" />
-                                                        <GradientStop Color="OrangeRed" Offset="0.75" />
-                                                        <GradientStop Color="#A20303" Offset="1.0" />
-                                                    </LinearGradientBrush>
-                                                </Setter.Value>
-                                            </Setter>
+                                            <Setter Property="Background" Value="{StaticResource RedGrad}"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding VacCount, UpdateSourceTrigger=PropertyChanged}" Value="0">
-                                                    <Setter Property="Background">
-                                                        <Setter.Value>
-                                                            <LinearGradientBrush>
-                                                                <GradientStop Color="Green" Offset="0.0" />
-                                                                <GradientStop Color="GreenYellow" Offset="0.25" />
-                                                                <GradientStop Color="LawnGreen" Offset="0.75" />
-                                                                <GradientStop Color="Green" Offset="1.0" />
-                                                            </LinearGradientBrush>
-                                                        </Setter.Value>
-                                                    </Setter>
+                                                    <Setter Property="Background" Value="{StaticResource AcidGrad}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -344,29 +326,11 @@
                                          BorderThickness="0.5" Opacity="0.9">
                                     <Border.Style>
                                         <Style TargetType="{x:Type Border}">
-                                            <Setter Property="Background">
-                                                <Setter.Value>
-                                                    <LinearGradientBrush>
-                                                        <GradientStop Color="Green" Offset="0.0" />
-                                                        <GradientStop Color="GreenYellow" Offset="0.25" />
-                                                        <GradientStop Color="LawnGreen" Offset="0.75" />
-                                                        <GradientStop Color="Green" Offset="1.0" />
+                                            <Setter Property="Background" Value="{StaticResource AcidGrad}"/>
 
-                                                    </LinearGradientBrush>
-                                                </Setter.Value>
-                                            </Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding TradeBan, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                    <Setter Property="Background">
-                                                        <Setter.Value>
-                                                            <LinearGradientBrush>
-                                                                <GradientStop Color="#A20303" Offset="0.0" />
-                                                                <GradientStop Color="OrangeRed" Offset="0.25" />
-                                                                <GradientStop Color="OrangeRed" Offset="0.75" />
-                                                                <GradientStop Color="#A20303" Offset="1.0" />
-                                                            </LinearGradientBrush>
-                                                        </Setter.Value>
-                                                    </Setter>
+                                                    <Setter Property="Background" Value="{StaticResource RedGrad}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -384,29 +348,11 @@
                                        BorderThickness="0.5" Opacity="0.9">
                                     <Border.Style>
                                         <Style TargetType="{x:Type Border}">
-                                            <Setter Property="Background">
-                                                <Setter.Value>
-                                                    <LinearGradientBrush>
-                                                        <GradientStop Color="Green" Offset="0.0" />
-                                                        <GradientStop Color="GreenYellow" Offset="0.25" />
-                                                        <GradientStop Color="LawnGreen" Offset="0.75" />
-                                                        <GradientStop Color="Green" Offset="1.0" />
+                                            <Setter Property="Background" Value="{StaticResource AcidGrad}"/>
 
-                                                    </LinearGradientBrush>
-                                                </Setter.Value>
-                                            </Setter>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding CommunityBan, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                    <Setter Property="Background">
-                                                        <Setter.Value>
-                                                            <LinearGradientBrush>
-                                                                <GradientStop Color="#A20303" Offset="0.0" />
-                                                                <GradientStop Color="OrangeRed" Offset="0.25" />
-                                                                <GradientStop Color="OrangeRed" Offset="0.75" />
-                                                                <GradientStop Color="#A20303" Offset="1.0" />
-                                                            </LinearGradientBrush>
-                                                        </Setter.Value>
-                                                    </Setter>
+                                                    <Setter Property="Background" Value="{StaticResource RedGrad}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -483,8 +429,8 @@
                             </TextBlock>
 
 
-                            <StackPanel  Margin="3 16 0 0" Orientation="Horizontal">
-                                <TextBlock Text="{DynamicResource adat_cs_header}" FontSize="16" Style="{StaticResource settings_description}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"/>
+                            <StackPanel  Margin="3 16 0 0" Orientation="Horizontal" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="{DynamicResource adat_cs_header}" FontSize="16" Style="{StaticResource settings_description}"/>
                                 <ToggleButton  x:Name="expandCsgoButton" Style="{StaticResource showButton}" IsChecked="True"/>
                                 <Button Style="{StaticResource serviceButton}" Width="16" Height="14" Margin="6 0 0 -1"
                                            Command="{Binding TakeCsgoStatsInfo}">
@@ -744,17 +690,17 @@
                             <!-- Steam links -->
                             <Grid  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}">
                                 <StackPanel>
-                                    <TextBlock Margin="0 60 0 10" Text="Steam links" FontSize="17" 
+                                    <TextBlock Margin="0 60 0 10" Text="{DynamicResource adat_links_header}" FontSize="17" 
                                        Style="{StaticResource settings_description}" HorizontalAlignment="Center"/>
-                                    <Button Style="{StaticResource steam_links}" Content="Games"
+                                    <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_games}"
                                     Command="{Binding OpenOtherLinksCommand}" CommandParameter="games"/>
-                                    <Button Style="{StaticResource steam_links}" Content="Inventory"
+                                    <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_inventory}"
                                     Command="{Binding OpenOtherLinksCommand}" CommandParameter="inventory"/>
-                                    <Button Style="{StaticResource steam_links}" Content="Friends"
+                                    <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_friends}"
                                      Command="{Binding OpenOtherLinksCommand}" CommandParameter="friends"/>
-                                    <Button Style="{StaticResource steam_links}" Content="Badges"
+                                    <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_badges}"
                                      Command="{Binding OpenOtherLinksCommand}" CommandParameter="badges"/>
-                                    <Button Style="{StaticResource steam_links}" Content="Groups"
+                                    <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_groups}"
                                      Command="{Binding OpenOtherLinksCommand}" CommandParameter="groups"/>
                                 </StackPanel>
                             </Grid>
@@ -765,7 +711,7 @@
                     </StackPanel>
 
                     <!-- Note abount account -->
-                    <TextBlock Margin="5 25 0 10" Text="• Note about account" FontSize="17" Style="{StaticResource settings_description}"/>
+                    <TextBlock Margin="5 25 0 10" Text="{DynamicResource adat_noteAbout}" FontSize="17" Style="{StaticResource settings_description}"/>
                     <Grid Height="120">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="487"/>
@@ -783,7 +729,6 @@
             </Grid>
         </ScrollViewer>
 
-
         <!--#region 2FA -->
         
         <!-- 2fa activate button -->
@@ -797,10 +742,10 @@
         <!--Confirmation 2FA-->
         <Border x:Name="TwoFaAuthAddConfirm" Margin="10 0 0 0" Grid.Row="1" VerticalAlignment="Bottom"
                 HorizontalAlignment="Left"
-                Width="340" Height="40" Background="{DynamicResource popup_border_background}" Opacity="0.8"
+                Width="355" Height="40" Background="{DynamicResource popup_border_background}" Opacity="0.8"
                 CornerRadius="15" Visibility="Hidden">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Are you sure you want to add 2FA authentication?" Foreground="White"
+                <TextBlock Text="{DynamicResource adat_2fa_confirm}" Foreground="White"
                        FontWeight="Normal" VerticalAlignment="Center"
                        Margin="15 0 0 0" FontSize="11"/>
                 
@@ -819,7 +764,6 @@
         </Border>
         
         <!--#endregion-->
-
 
     </Grid>
 </UserControl>

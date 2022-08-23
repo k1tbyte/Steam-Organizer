@@ -24,7 +24,7 @@
                        HorizontalAlignment="Left" Margin="15 15" 
                        FontFamily="Cascadia Mono"
                        Foreground="{DynamicResource second_settings_text}"
-                       Text="2FA Adding"
+                       Text="{DynamicResource aaw_add_header}"
                        FontSize="20">
             </TextBlock>
             
@@ -50,12 +50,12 @@
                 
                 <Button Style="{StaticResource defaultButton}" Grid.Row="1"
                         Margin="0 0 40 0" Command="{Binding AddNewCommand}" Click="buttons_Click">
-                    <TextBlock Text="Add new"/>
+                    <TextBlock Text="{DynamicResource aaw_add_new}"/>
                 </Button>
 
                 <Button Style="{StaticResource defaultButton}" Grid.Row="1"
                     Margin="0 0 0 0" Command="{Binding AuthenticatorLoadCommand}">
-                    <TextBlock Text="Load"/>
+                    <TextBlock Text="{DynamicResource aaw_add_load}"/>
                 </Button>
             </StackPanel>
 

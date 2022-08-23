@@ -1,12 +1,15 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Security.Cryptography;
 
 namespace Steam_Account_Manager
 {
     internal class Utilities
     {
+        private static HttpClient HttpClientFactory;
+
         public static DateTime UnixTimeToDateTime(long unixtime)
         {
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0);
@@ -17,6 +20,15 @@ namespace Steam_Account_Manager
         public static long SteamId64ToSteamId32(string steamId64) => long.Parse(steamId64) - 76561197960265728;
 
         public static string SteamId32ToSteamId64(int steamId32) => (steamId32 + 76561197960265728).ToString();
+
+        public static ref HttpClient CreateHttpClientFactory()
+        {
+            if(HttpClientFactory == null)
+            {
+                HttpClientFactory = new HttpClient(new HttpClientHandler(), disposeHandler: false);
+            }
+            return ref HttpClientFactory;
+        }
 
         public static int GetSteamRegistryActiveUser()
         {

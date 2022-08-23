@@ -107,7 +107,8 @@ namespace Steam_Account_Manager.Infrastructure.Base
             this.CountGamesImageUrl = steamParser.GetCountGamesImageUrl;
             this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
 
-            this.CsgoStats = csgoStats;
+            if(csgoStats == null) this.CsgoStats = new CsgoStats();
+            else this.CsgoStats = csgoStats;
 
             this.AuthenticatorPath = AuthenticatorPath;
             this.ContainParseInfo = true;

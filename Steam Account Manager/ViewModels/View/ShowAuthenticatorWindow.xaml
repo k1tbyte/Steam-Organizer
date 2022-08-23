@@ -24,7 +24,7 @@
                        HorizontalAlignment="Left" Margin="15 15" 
                        FontFamily="Cascadia Mono"
                        Foreground="{DynamicResource second_settings_text}"
-                       Text="2FA Control"
+                       Text="{DynamicResource saw_header}"
                        FontSize="20">
             </TextBlock>
 

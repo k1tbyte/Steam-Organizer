@@ -95,6 +95,9 @@ namespace Steam_Account_Manager.ViewModels
         }
         private async Task ConnectToSteam()
         {
+            int id = Id - 1;
+            bool success = false, update = false;
+
             await Task.Factory.StartNew(() =>
             {
                 Config.GetInstance();
@@ -102,12 +105,7 @@ namespace Steam_Account_Manager.ViewModels
                 try
                 {
                     Utilities.KillSteamAndConnect(Config._config.SteamDirection, "-login " + _login + " " + _password + " -tcp");
-                    if (Config._config.AutoClose) Application.Current.Dispatcher.InvokeShutdown();
-                    else
-                    {
-                        _ = MainWindowViewModel.NotificationView("Logged in, wait for steam to start");
-                        _ = MainWindowViewModel.NowLoginUserParse(20000);
-                    } 
+                    success = true;
                 }
                 catch
                 {
@@ -115,20 +113,49 @@ namespace Steam_Account_Manager.ViewModels
                     {
                         Utilities.KillSteamAndConnect(Utilities.GetSteamRegistryDirection(), "-login " + _login + " " + _password + " -tcp");
                         Config._config.SaveChanges();
-                        if (Config._config.AutoClose) Application.Current.Dispatcher.InvokeShutdown();
-                        else
-                        {
-                            _ = MainWindowViewModel.NotificationView("Logged in, wait for steam to start");
-                            _ = MainWindowViewModel.NowLoginUserParse(20000);
-                        } 
+                        success = true;
                     }
                     catch
                     {
                         _ = MainWindowViewModel.NotificationView("Steam not found or not installed");
                     }
                 }
+
+                if(success)
+                {
+                    if (Config._config.AutoClose) Application.Current.Dispatcher.InvokeShutdown();
+                    else
+                    {
+                        _ = MainWindowViewModel.NotificationView("Logged in, wait for steam to start");
+                        if (MainWindowViewModel.NowLoginUserParse(15000).Result && Config._config.AutoGetSteamId && !database.Accounts[id].ContainParseInfo)
+                        {
+                            try
+                            {
+                                _ = MainWindowViewModel.NotificationView("Getting account information...");
+                                string steamId = Utilities.SteamId32ToSteamId64(Utilities.GetSteamRegistryActiveUser());
+                                database.Accounts[id] = new Account(
+                                    _login, _password, steamId,
+                                    database.Accounts[id].Note,
+                                    database.Accounts[id].EmailLogin,
+                                    database.Accounts[id].EmailPass,
+                                    database.Accounts[id].RockstarEmail,
+                                    database.Accounts[id].RockstarPass,
+                                    database.Accounts[id].UplayEmail,
+                                    database.Accounts[id].UplayPass, null,
+                                    database.Accounts[id].AuthenticatorPath);
+                                database.SaveDatabase();
+                                update = true;
+                            }
+                            catch
+                            {
+                                _ = MainWindowViewModel.NotificationView("Error while scanning account");
+                            }
+                        }
+                    }
+                }
                 MainWindowViewModel.IsEnabledForUser = true;
             });
+            if(update) AccountsViewModel.UpdateAccountTabView(id);
         }
 
         public AccountTabViewModel(int id)

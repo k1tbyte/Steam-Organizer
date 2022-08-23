@@ -49,7 +49,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             await ParsePlayerSummariesAsync();
 
             //Получаем инфу об количестве игр, уровне и наигранных часах
-            ParseGamesInfo();
+            await ParseGamesInfo();
 
             // Получаем инфу о уровне
             await ParseSteamLevelAsync();
@@ -65,18 +65,17 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         public string GetTotalGames => _totalGames;
 
 
-        private void ParseGamesInfo()
+        private async Task ParseGamesInfo()
         {
-            var url = new Uri($"https://steamdb.info/calculator/{_steamId64}/");
-            var handler = new HttpClientHandler();
-            var client = new HttpClient(handler);
-            client.DefaultRequestHeaders.Add("accept", "text/javascript, text/html, application/xml, text/xml, */*");
-            client.DefaultRequestHeaders.Add("Referer", "https://csgo-stats.com/");
-            client.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Linux; U; Android 4.1.1; en-us; Google Nexus 4 - 4.1.1 - API 16 - 768x1280 Build/JRO03S) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30");
+            var client = Utilities.CreateHttpClientFactory();
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://steamdb.info/calculator/{_steamId64}/");
+            request.Headers.Add("accept", "text/javascript, text/html, application/xml, text/xml, */*");
+            request.Headers.Add("Referer", "https://steamdb.info/calculator/");
+            request.Headers.Add("user-agent", "Mozilla/5.0 (Linux; U; Android 4.1.1; en-us; Google Nexus 4 - 4.1.1 - API 16 - 768x1280 Build/JRO03S) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30");
             try
             {
-                var response = client.GetAsync(url).Result;
-                var html = response.Content.ReadAsStringAsync().Result;
+                var response = await client.SendAsync(request);
+                var html = await response.Content.ReadAsStringAsync();
                 var htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(html);
 
@@ -128,8 +127,6 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                 _profileVisiblity = false;
                 _countGamesImageUrl = "/Images/Games_count_badges/unknown.png";
             }
-            handler.Dispose();
-            client.Dispose();
         }
 
 

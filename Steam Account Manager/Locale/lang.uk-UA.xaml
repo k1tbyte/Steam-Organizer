@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:v="clr-namespace:System;assembly=mscorlib">
 
-    <!-- Settings view-->
+    <!--#region Settings view -->
     <v:String x:Key="sv_settings_title">Налаштування</v:String>
     <v:String x:Key="sv_theme">Тема</v:String>
     <v:String x:Key="sv_language">Мова</v:String>
@@ -15,17 +15,19 @@
     <v:String x:Key="sv_info_collect">Не збирати інформацію об акаунтах</v:String>
     <v:String x:Key="sv_crypto_key">Ключ шифрування</v:String>
     <v:String x:Key="sv_steam_key">Користувалницьский steam web API ключ</v:String>
+    <!--#endregion-->
 
 
-    <!-- Main view-->
+    <!--#region Main view -->
     <v:String x:Key="mv_total_accounts">Всього акаунтів:</v:String>
     <v:String x:Key="mv_accounts_title">Акаунти</v:String>
     <v:String x:Key="mv_settings_title">Налаштування</v:String>
     <v:String x:Key="mv_logout_title">Вийти</v:String>
     <v:String x:Key="mv_account_added_notification">Акаунт успішно доданий!</v:String>
+    <!--#endregion-->
 
 
-    <!-- Accounts View-->
+    <!--#region Accounts View -->
     <v:String x:Key="av_searchbar_title">Пошук акаунтів  .  .  .</v:String>
     <v:String x:Key="av_addbutton_title">Додати</v:String>
     <v:String x:Key="av_confirmation_delete">Ви дійсно хочете видалити даний акаунт?</v:String>
@@ -34,9 +36,10 @@
     <v:String x:Key="av_popup_restoreDatabase_2">Увага! Замінює всі поточні акаунти.</v:String>
     <v:String x:Key="av_popup_restoreAccount">Відновити акаунт з файлу</v:String>
     <v:String x:Key="av_popup_updAccounts">Оновити інформацію про акаунти</v:String>
+    <!--#endregion-->
 
 
-    <!-- Account add view-->
+    <!--#region Account add view -->
     <v:String x:Key="adv_header_title">Додання акаунту</v:String>
     <v:String x:Key="adv_login">Логін</v:String>
     <v:String x:Key="adv_password">Пароль</v:String>
@@ -52,9 +55,10 @@
     <v:String x:Key="adv_error_pass_overflow">Максимальна довжина пароля 50 символів!</v:String>
     <v:String x:Key="adv_info_connection_check">Виконується перевірка мережі...</v:String>
     <v:String x:Key="adv_info_collect_data">Збір інформації про обліковий запис...</v:String>
+    <!--#endregion-->
 
 
-    <!-- Account data view -->
+    <!--#region Account data view -->
     <v:String x:Key="adat_visiblity">Видимість:</v:String>
     <v:String x:Key="adat_profile_url">URL профіля:</v:String>
     <v:String x:Key="adat_community_statuses">• Ком'юніті статуси</v:String>
@@ -62,6 +66,16 @@
     <v:String x:Key="adat_steam_account">Steam акаунт</v:String>
     <v:String x:Key="adat_login">Логін</v:String>
     <v:String x:Key="adat_password">Пароль</v:String>
+    <v:String x:Key="adat_email_address">Email адреса</v:String>
+    <v:String x:Key="adat_noteAbout">• Нотатка про акаунт</v:String>
+    <v:String x:Key="adat_2fa_confirm">Ви впевнені, що хочете прив'язати 2FA до акаунту?</v:String>
+
+    <v:String x:Key="adat_links_header">Steam посилання</v:String>
+    <v:String x:Key="adat_links_games">Ігри</v:String>
+    <v:String x:Key="adat_links_inventory">Інвентар</v:String>
+    <v:String x:Key="adat_links_friends">Друзі</v:String>
+    <v:String x:Key="adat_links_badges">Значки</v:String>
+    <v:String x:Key="adat_links_groups">Групи</v:String>
 
     <v:String x:Key="adat_cs_header">• CS:GO Статистика</v:String>
     <v:String x:Key="adat_cs_general">Головна</v:String>
@@ -78,4 +92,48 @@
     <v:String x:Key="adat_cs_shotsHit">Влучних пострілів:</v:String>
     <v:String x:Key="adat_cs_headshots">Хэдшотів:</v:String>
     <v:String x:Key="adat_cs_headshotspercent">Відсоток хэдшотів:</v:String>
+
+    <v:String x:Key="adat_popup_update_info">Обновить данные об аккаунте</v:String>
+    <v:String x:Key="adat_popup_account_export">Экспорт аккаунта в файл</v:String>
+    <v:String x:Key="adat_popup_save_chanes">Сохранить изменения</v:String>
+    <v:String x:Key="adat_popup_current_rank">Текущее звание 5x5</v:String>
+    <v:String x:Key="adat_popup_best_rank">Лучшее звание 5x5</v:String>
+    <v:String x:Key="adat_popup_nullGames">Игры отсутствуют или информация скрыта</v:String>
+    <v:String x:Key="adat_popup_countGames">Игр на аккаунте:</v:String>
+    <v:String x:Key="adat_popup_playedGames">Из них сыграно:</v:String>
+    <v:String x:Key="adat_popup_playtime">Игровое время:</v:String>
+    <v:String x:Key="adat_popup_regDate">Дата регистрации:</v:String>
+    <v:String x:Key="adat_popup_regDateUnknown">Дата регистрации неизвестна</v:String>
+    <v:String x:Key="adat_popup_vacCount">Колиество VAC банов:</v:String>
+    <v:String x:Key="adat_popup_daysFirstBan">Дней после первого бана:</v:String>
+    <!--#endregion-->
+
+
+    <!--#region Add authenticator window -->
+    <v:String x:Key="aaw_add_header">Додання 2FA</v:String>
+    <v:String x:Key="aaw_add_new">Новий</v:String>
+    <v:String x:Key="aaw_add_load">З файлу</v:String>
+
+    <v:String x:Key="aaw_dataWait">Зачекайте, надходять дані...</v:String>
+    <v:String x:Key="aaw_emailCode">Будь ласка, введіть код з електронної пошти</v:String>
+    <v:String x:Key="aaw_installing">Встановлення аутентифікатора...</v:String>
+    <v:String x:Key="aaw_captcha">Будь ласка, введіть капчу</v:String>
+    <v:String x:Key="aaw_2faCode">Будь ласка, введіть свій код 2FA</v:String>
+    <v:String x:Key="aaw_manyAttempts">Забагато спроб, повторіть спробу пізніше</v:String>
+    <v:String x:Key="aaw_dataIncorrect">Інформація про акаунт неправильна, відредагуйте дані свого акаунту</v:String>
+    <v:String x:Key="aaw_addFail">Не вдалося додати аутентифікатор:</v:String>
+    <v:String x:Key="aaw_errorSave">Помилка збереження файлу аутентифітора, аутентифікатор не додано</v:String>
+    <v:String x:Key="aaw_smsCode">Будь ласка, введіть SMS-код</v:String>
+    <v:String x:Key="aaw_successAdd">Аутентифікатор успішно доданий</v:String>
+    <!--#endregion-->
+
+
+    <!--#region Show authenticator window -->
+    <v:String x:Key="saw_header">Управління 2FA</v:String>
+    <v:String x:Key="saw_loading">Загрузка...</v:String>
+    <v:String x:Key="saw_authRemove">Аутентифікатор видаляється...</v:String>
+    <v:String x:Key="saw_authRemoveSuccess">Аутентифікатор вимкнено, використовуйте своє ім'я користувача та пароль для входу</v:String>
+    <v:String x:Key="saw_authRemoveError">Під час спроби дезактивувати аутентифікатор сталася помилка. Повторіть спробу пізніше</v:String>
+    <v:String x:Key="saw_unknownError">Під час деактивації сталася невідома помилка, аутентифікатор не видалено</v:String>
+    <!--#endregion-->
 </ResourceDictionary>

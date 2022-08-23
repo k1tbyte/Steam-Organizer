@@ -50,9 +50,9 @@
                 <Border Grid.Row="1" Background="{DynamicResource second_main_color}" CornerRadius="0 50 0 30">
                     <DockPanel>
                         <!--Menu Logo-->
-                        <Border Width="100" Height="100" Padding="3" Background="{DynamicResource background_border_color}" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 -30 0 0">
+                        <Border Width="99" Height="100" Padding="3" Background="{DynamicResource background_border_color}" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 -30 0 0">
                             <!-- Not critical error here idk why -->
-                            <WrapPanel Name ="container" Width="94" Height="94">
+                            <WrapPanel Name ="container" Width="93" Height="93">
                                 <Image x:Name="steamImage" 
                                Source="{Binding NowLoginUserImage, UpdateSourceTrigger=PropertyChanged}"
                                ImageFailed="steamImage_ImageFailed"/>
@@ -69,7 +69,8 @@
                         </Border>
 
                         <!--Menu Titles-->
-                        <TextBlock Text="{Binding NowLoginUserNickname, UpdateSourceTrigger=PropertyChanged}" Foreground="White" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"/>
+                        <TextBlock Text="{Binding NowLoginUserNickname, UpdateSourceTrigger=PropertyChanged}" Foreground="White" FontSize="22" 
+                                   FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 5 10" TextAlignment="Center" />
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal"  HorizontalAlignment="Center">
                             <TextBlock Text="{DynamicResource mv_total_accounts}"
                                    Foreground="{DynamicResource menu_button_text}" FontSize="14"
