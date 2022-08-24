@@ -583,7 +583,7 @@
                             <BeginStoryboard>
                                 <Storyboard>
                                     <DoubleAnimation Storyboard.TargetProperty="Width"
-                                                 From="0" To="220" Duration="0:0:0.4"/>
+                                                 From="0" To="245" Duration="0:0:0.4"/>
                                 </Storyboard>
                             </BeginStoryboard>
                         </DataTrigger.EnterActions>
@@ -591,7 +591,7 @@
                             <BeginStoryboard>
                                 <Storyboard>
                                     <DoubleAnimation Storyboard.TargetProperty="Width"
-                                                 From="220" To="0" Duration="0:0:0.6"/>
+                                                 From="245" To="0" Duration="0:0:0.6"/>
                                 </Storyboard>
                             </BeginStoryboard>
                         </DataTrigger.ExitActions>

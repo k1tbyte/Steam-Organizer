@@ -195,7 +195,7 @@ namespace Steam_Account_Manager.Infrastructure
         }
 
         //Encrypting
-        private static readonly string CryptoKey = "Q3JpcHRvZ3JhZmlhcyBjb20gUmluamRhZWwgLyBBRVM=";
+        private static readonly string CryptoKey = "EOtzannXEOSd5HGBSJvs0op1BHRuvFwlKMZcJXcOp0M=";
         private const int KeySize = 256;
         private const int IvSize = 16; // block size is 128-bit
 

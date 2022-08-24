@@ -15,6 +15,21 @@
     <v:String x:Key="sv_info_collect">Dont collect account information</v:String>
     <v:String x:Key="sv_crypto_key">Encryption key</v:String>
     <v:String x:Key="sv_steam_key">Custom steam web API key</v:String>
+    <v:String x:Key="sv_getID">Get steam ID when logging in anonymous account</v:String>
+    <v:String x:Key="sv_newPass">╰ Enter new password:</v:String>
+
+    <v:String x:Key="sv_popup_apiKeyInfo_1">This key allows you to use the</v:String>
+    <v:String x:Key="sv_popup_apiKeyInfo_2">Steam web API and get Steam data.</v:String>
+    <v:String x:Key="sv_popup_apiKeyInfo_3">If the main key does not work,</v:String>
+    <v:String x:Key="sv_popup_apiKeyInfo_4">you can use your own key - "Click"</v:String>
+    <v:String x:Key="sv_popup_maxApiKeyLength">Key length can only be 32 characters</v:String>
+    <v:String x:Key="sv_popup_cryptoKeyInfo_1">256-bit key to encrypt data when saving accounts.</v:String>
+    <v:String x:Key="sv_popup_cryptoKeyInfo_2">ATTENTION! If you lose the key, you will not be able to recover</v:String>
+    <v:String x:Key="sv_popup_cryptoKeyInfo_3">your data. After generating a new key, write it down or save it!</v:String>
+    <v:String x:Key="sv_popup_generateCryptoKey">Generate a new encryption key</v:String>
+    <v:String x:Key="sv_popup_resetCrypto">Reset by default</v:String>
+    <v:String x:Key="sv_popup_passwordError_1">The password must contain at least</v:String>
+    <v:String x:Key="sv_popup_passwordError_2">5 characters and no more than 30</v:String>
     <!--#endregion-->
 
 
@@ -55,8 +70,14 @@
     <v:String x:Key="adv_error_pass_empty">The password field is empty!</v:String>
     <v:String x:Key="adv_error_pass_shortage">The minimum password length is 8 characters!</v:String>
     <v:String x:Key="adv_error_pass_overflow">The maximum password length is 50 characters!</v:String>
+    <v:String x:Key="adv_error_nickError">Nickname length can be from 2 to 32 characters</v:String>
+    <v:String x:Key="adv_error_error403">Error: (403) Steam is not responding or steam web API key not valid</v:String>
     <v:String x:Key="adv_info_connection_check">Network check in progress...</v:String>
     <v:String x:Key="adv_info_collect_data">Gathering account information...</v:String>
+    <v:String x:Key="adv_nickname">Nickname</v:String>
+    
+    <v:String x:Key="adv_dontCollectInfo_1">Don't collect information</v:String>
+    <v:String x:Key="adv_dontCollectInfo_2">about this account</v:String>
     <!--#endregion-->
 
 
@@ -95,6 +116,17 @@
     <v:String x:Key="adat_cs_headshots">Headshots:</v:String>
     <v:String x:Key="adat_cs_headshotspercent">Headshots percentage:</v:String>
 
+    <v:String x:Key="adat_cs_inf_takeStats">Gathering statistics...</v:String>
+    <v:String x:Key="adat_cs_inf_takeRank">Gathering rank data...</v:String>
+    <v:String x:Key="adat_cs_inf_updSucces">Player data has been updated!</v:String>
+    <v:String x:Key="adat_cs_inf_serverError">The server error, please try again later...</v:String>
+    <v:String x:Key="adat_cs_inf_updated">Information updated</v:String>
+    <v:String x:Key="adat_cs_inf_noInternet">"Error, no internet connection...</v:String>
+    
+    <v:String x:Key="adat_notif_copiedClipoard">Copied to clipboard</v:String>
+    <v:String x:Key="adat_notif_changesSaved">Account changes saved</v:String>
+    <v:String x:Key="adat_notif_accountExported">Account saved to file</v:String>
+
     <v:String x:Key="adat_popup_update_info">Update account information</v:String>
     <v:String x:Key="adat_popup_account_export">Export account to hard drive</v:String>
     <v:String x:Key="adat_popup_save_chanes">Save account changes</v:String>
@@ -111,6 +143,16 @@
     <!--#endregion-->
 
     
+    <!--#region Account tab view -->
+    <v:String x:Key="atv_inf_steamNotFound">Steam not found or not installed</v:String>
+    <v:String x:Key="atv_inf_loggedInSteam">Logged in, wait for steam to start</v:String>
+    <v:String x:Key="atv_inf_getLocalAccInfo">Getting account information...</v:String>
+    <v:String x:Key="atv_inf_errorWhileScanning">Error while scanning account</v:String>
+    <v:String x:Key="atv_vacCount">Vac count:</v:String>
+    <v:String x:Key="atv_vacInfoAbsent">Information is absent</v:String>
+    <!--#endregion-->
+
+
     <!--#region Add authenticator window -->
     <v:String x:Key="aaw_add_header">2FA Adding</v:String>
     <v:String x:Key="aaw_add_new">Add new</v:String>
@@ -139,4 +181,22 @@
     <v:String x:Key="saw_unknownError">An unknown error occurred during deactivation, the authenticator was not removed</v:String>
     <!--#endregion-->
 
+
+    <!--#region Authentication view -->
+    <v:String x:Key="aw_enterPassword">Enter user password</v:String>
+    <v:String x:Key="aw_cancel">Cancel</v:String>
+    <v:String x:Key="aw_reset">Reset</v:String>
+    <v:String x:Key="aw_authentication">Authentication</v:String>
+    <v:String x:Key="aw_longPass">Password cannot be that long</v:String>
+    <v:String x:Key="aw_invalidPass">Error! Invalid password</v:String>
+    <v:String x:Key="aw_manyAttempts">Too many attempts...</v:String>
+    <v:String x:Key="aw_resetPass">Your config will be deleted, are you sure?</v:String>
+
+    <v:String x:Key="aw_encryptedData">Data is encrypted</v:String>
+    <v:String x:Key="aw_enterCryptoKey">Enter crypto key</v:String>
+    <v:String x:Key="aw_resetDataLost">Accounts data will be lost, are you sure?</v:String>
+    <v:String x:Key="aw_invalidKey">Error! Invalid key</v:String>
+    <v:String x:Key="aw_keyOnlyLength">Key length can only be 44 characters</v:String>
+    <!--#endregion-->
+    
 </ResourceDictionary>

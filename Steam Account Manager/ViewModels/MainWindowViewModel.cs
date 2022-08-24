@@ -154,8 +154,8 @@ namespace Steam_Account_Manager.ViewModels
                 }
                 catch
                 {
-                    _nowLoginUserImage = "/Images/user.png";
-                    _nowLoginUserNickname = "Username";
+                    NowLoginUserImage = "/Images/user.png";
+                    NowLoginUserNickname = "Username";
                 }
             });
             return accountDetected;

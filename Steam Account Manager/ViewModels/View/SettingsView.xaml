@@ -158,8 +158,9 @@
                           Style="{StaticResource settingsButton}"/>
                 </StackPanel>
 
+                
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <TextBlock Text="Get steam ID when logging in anonymous account" Style="{StaticResource settingTextBlock}"/>
+                    <TextBlock Text="{DynamicResource sv_getID}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding AutoGetSteamId}"
                           Style="{StaticResource settingsButton}"/>
                 </StackPanel>
@@ -183,7 +184,7 @@
                 </StackPanel>
 
                 <StackPanel x:Name="PasswordPanel" Orientation="Horizontal" Margin="20 0 0 0" Visibility="Hidden">
-                    <TextBlock Text="╰ Enter new password:" Style="{StaticResource settingTextBlock}"/>
+                    <TextBlock Text="{DynamicResource sv_newPass}" Style="{StaticResource settingTextBlock}"/>
                     <Border Margin="10 5 0 0" Background="{DynamicResource first_main_color}"
                     Width="250" CornerRadius="5" Height="35" BorderThickness="0.7" HorizontalAlignment="Left"
                     BorderBrush="{DynamicResource buttons_border_brush}">

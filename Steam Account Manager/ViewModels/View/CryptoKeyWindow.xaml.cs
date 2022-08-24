@@ -49,11 +49,11 @@ namespace Steam_Account_Manager.ViewModels.View
                 {
                     if (errorCounter > 1)
                     {
-                        ErrorBlock.Text = "Error! Invalid key";
+                        ErrorBlock.Text = (string)FindResource("aw_invalidKey");
                         errorCounter--;
                     }
                     else if (errorCounter == 1)
-                        ErrorBlock.Text = "Too many attempts...";
+                        ErrorBlock.Text = (string)FindResource("aw_manyAttempts");
                     else
                     {
                         if (mainWindow) Application.Current.Shutdown();
@@ -63,7 +63,7 @@ namespace Steam_Account_Manager.ViewModels.View
             }
             else
             {
-                ErrorBlock.Text = "Key length can only be 44 characters";
+                ErrorBlock.Text = (string)FindResource("aw_keyOnlyLength");
             }
 
         }

@@ -61,6 +61,7 @@ namespace Steam_Account_Manager.ViewModels
         //other account info
         private string _note, _emailLogin, _emailPass, _rockstarEmail, _rockstarPass, _uplayEmail, _uplayPass;
 
+        #region Getters && setters
         public string AuthenticatorPath
         {
             get => _authenticatorPath;
@@ -230,7 +231,7 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public int VacCount 
+        public int VacCount
         {
             get => _vacCount;
             set
@@ -367,7 +368,8 @@ namespace Steam_Account_Manager.ViewModels
                 _nickname = value;
                 OnPropertyChanged(nameof(Nickname));
             }
-        }
+        } 
+        #endregion
 
         #region CsGo Statistics
         public string CurrentRank
@@ -583,9 +585,9 @@ namespace Steam_Account_Manager.ViewModels
                 try
                 {
                     var csgo_parser = new CsgoParser(_steamId64);
-                    CsgoParseError = "Gathering statistics...";
+                    CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_takeStats");
                     csgo_parser.GlobalStatsParse().GetAwaiter().GetResult();
-                    CsgoParseError = "Gathering rank data...";
+                    CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_takeRank");
                     csgo_parser.RankParse();
 
                     currentAccount.CsgoStats = csgo_parser.GetCsgoStats;
@@ -593,13 +595,13 @@ namespace Steam_Account_Manager.ViewModels
 
                     _isCsgoStatsSave = true;
                     if (!_savePermission) _savePermission = true;
-                    CsgoParseError = "Player data has been updated!";
+                    CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_updSucces");
                     Thread.Sleep(2000);
                     CsgoParseError = "";
                 }
                 catch
                 {
-                    CsgoParseError = "The server error, please try again later...";
+                    CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_serverError");
                     Thread.Sleep(2000);
                     CsgoParseError = "";
                 }
@@ -626,12 +628,12 @@ namespace Steam_Account_Manager.ViewModels
 
                     database.Accounts[id] = currentAccount;
                     database.SaveDatabase();
-                    Task.Run(() => BorderNoticeView("Information updated"));
+                    Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_cs_inf_updated")));
                     FillSteamInfo();
                 }
                 catch
                 {
-                    Task.Run(() => BorderNoticeView("Error, no internet connection..."));
+                    Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_cs_inf_noInternet")));
                 }
 
             });
@@ -670,7 +672,7 @@ namespace Steam_Account_Manager.ViewModels
                 var box = o as TextBox;
                 box.SelectAll();
                 box.Copy();
-                Task.Run(() => BorderNoticeView("Copied to clipboard"));
+                Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_copiedClipoard")));
             });
 
             OpenUrlProfileCommand = new RelayCommand(o =>
@@ -746,7 +748,7 @@ namespace Steam_Account_Manager.ViewModels
                     database.Accounts[id].UplayEmail = UplayEmail;
                     database.Accounts[id].UplayPass = UplayPass;
                     database.SaveDatabase();
-                    Task.Run(() => BorderNoticeView("Account changes saved"));
+                    Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_changesSaved")));
 
                 }
                 
@@ -773,7 +775,7 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     Config.GetInstance();
                     Config.Serialize(database.Accounts[id], fileDialog.FileName,Config._config.UserCryptoKey);
-                    Task.Run(() => BorderNoticeView("Account saved to file"));
+                    Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_accountExported")));
                 }
             });
 

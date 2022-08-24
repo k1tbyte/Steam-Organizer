@@ -144,7 +144,7 @@
             </TextBlock>
 
             <!-- Optional nickname -->
-            <TextBlock Grid.Row="2" Text="Nickname" FontWeight="Thin"
+            <TextBlock Grid.Row="2" Text="{DynamicResource adv_nickname}" FontWeight="Thin"
                        Height="20" HorizontalAlignment="Left"
                        FontSize="14"
                        Foreground="{DynamicResource second_text_color}" Margin="20,65,0,45" Grid.RowSpan="2">

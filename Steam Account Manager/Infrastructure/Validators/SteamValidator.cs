@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace Steam_Account_Manager.Infrastructure.Validators
 {
-    internal class SteamValidator
+    internal sealed class SteamValidator
     {
         private string _apiKey = Environment.GetEnvironmentVariable("STEAM_API_KEY");
         private const byte MaxSteamId64Len = 17;

@@ -15,6 +15,21 @@
     <v:String x:Key="sv_info_collect">Не збирати інформацію об акаунтах</v:String>
     <v:String x:Key="sv_crypto_key">Ключ шифрування</v:String>
     <v:String x:Key="sv_steam_key">Користувалницьский steam web API ключ</v:String>
+    <v:String x:Key="sv_getID">Отримувати steam ID при вході в анонімний акаунт</v:String>
+    <v:String x:Key="sv_newPass">╰ Введіть новий пароль:</v:String>
+
+    <v:String x:Key="sv_popup_apiKeyInfo_1">Цей ключ дозволяє використовувати</v:String>
+    <v:String x:Key="sv_popup_apiKeyInfo_2">API Steam і отримувати дані про акаунт</v:String>
+    <v:String x:Key="sv_popup_apiKeyInfo_3">Якщо основний ключ не працює,</v:String>
+    <v:String x:Key="sv_popup_apiKeyInfo_4">можна використовувати власний - "Клік"</v:String>
+    <v:String x:Key="sv_popup_maxApiKeyLength">Довжина ключа може складати лише 32 символи</v:String>
+    <v:String x:Key="sv_popup_cryptoKeyInfo_1">256-бітний ключ для шифрування даних при збереженні акаунтів.</v:String>
+    <v:String x:Key="sv_popup_cryptoKeyInfo_2">УВАГА! Якщо ви втратите ключ, ви не зможете відновити свої дані</v:String>
+    <v:String x:Key="sv_popup_cryptoKeyInfo_3">Після створення нового ключа запишіть його або збережіть!</v:String>
+    <v:String x:Key="sv_popup_generateCryptoKey">Згенеруйте новий ключ шифрування</v:String>
+    <v:String x:Key="sv_popup_resetCrypto">Скинути за замовчуванням</v:String>
+    <v:String x:Key="sv_popup_passwordError_1">Пароль має містити принаймні</v:String>
+    <v:String x:Key="sv_popup_passwordError_2">5 символів і не більше 30</v:String>
     <!--#endregion-->
 
 
@@ -53,8 +68,14 @@
     <v:String x:Key="adv_error_pass_empty">Поле с паролем пусте!</v:String>
     <v:String x:Key="adv_error_pass_shortage">Мінімальна довжина пароля 8 символів!</v:String>
     <v:String x:Key="adv_error_pass_overflow">Максимальна довжина пароля 50 символів!</v:String>
+    <v:String x:Key="adv_error_nickError">Довжина ніка може бути від 2 до 32 символів</v:String>
+    <v:String x:Key="adv_error_error403">Помилка: (403) Steam не відповідає або веб-ключ Steam API недійсний</v:String>
     <v:String x:Key="adv_info_connection_check">Виконується перевірка мережі...</v:String>
     <v:String x:Key="adv_info_collect_data">Збір інформації про обліковий запис...</v:String>
+    <v:String x:Key="adv_nickname">Нікнейм</v:String>
+
+    <v:String x:Key="adv_dontCollectInfo_1">Не збирати інформацію</v:String>
+    <v:String x:Key="adv_dontCollectInfo_2">про цей акаунт</v:String>
     <!--#endregion-->
 
 
@@ -93,19 +114,40 @@
     <v:String x:Key="adat_cs_headshots">Хэдшотів:</v:String>
     <v:String x:Key="adat_cs_headshotspercent">Відсоток хэдшотів:</v:String>
 
-    <v:String x:Key="adat_popup_update_info">Обновить данные об аккаунте</v:String>
-    <v:String x:Key="adat_popup_account_export">Экспорт аккаунта в файл</v:String>
-    <v:String x:Key="adat_popup_save_chanes">Сохранить изменения</v:String>
-    <v:String x:Key="adat_popup_current_rank">Текущее звание 5x5</v:String>
-    <v:String x:Key="adat_popup_best_rank">Лучшее звание 5x5</v:String>
-    <v:String x:Key="adat_popup_nullGames">Игры отсутствуют или информация скрыта</v:String>
-    <v:String x:Key="adat_popup_countGames">Игр на аккаунте:</v:String>
-    <v:String x:Key="adat_popup_playedGames">Из них сыграно:</v:String>
-    <v:String x:Key="adat_popup_playtime">Игровое время:</v:String>
-    <v:String x:Key="adat_popup_regDate">Дата регистрации:</v:String>
-    <v:String x:Key="adat_popup_regDateUnknown">Дата регистрации неизвестна</v:String>
-    <v:String x:Key="adat_popup_vacCount">Колиество VAC банов:</v:String>
-    <v:String x:Key="adat_popup_daysFirstBan">Дней после первого бана:</v:String>
+    <v:String x:Key="adat_cs_inf_takeStats">Отримання статистики...</v:String>
+    <v:String x:Key="adat_cs_inf_takeRank">Отримання рангу...</v:String>
+    <v:String x:Key="adat_cs_inf_updSucces">Дані про гравця оновлені!</v:String>
+    <v:String x:Key="adat_cs_inf_serverError">Помилка сервера, повторіть пізніше...</v:String>
+    <v:String x:Key="adat_cs_inf_updated">Інформація оновлена</v:String>
+    <v:String x:Key="adat_cs_inf_noInternet">"Помилка, нема доступу до інтернету...</v:String>
+
+    <v:String x:Key="adat_notif_copiedClipoard">Скопійовано у буфер</v:String>
+    <v:String x:Key="adat_notif_changesSaved">Зміни акаунту збережені</v:String>
+    <v:String x:Key="adat_notif_accountExported">Акаунт збережений у файл</v:String>
+
+    <v:String x:Key="adat_popup_update_info">Оновити дані про акаунт</v:String>
+    <v:String x:Key="adat_popup_account_export">Експорт акаунту у файлу</v:String>
+    <v:String x:Key="adat_popup_save_chanes">Зберегти зміни</v:String>
+    <v:String x:Key="adat_popup_current_rank">Поточне звання 5x5</v:String>
+    <v:String x:Key="adat_popup_best_rank">Краще звання 5x5</v:String>
+    <v:String x:Key="adat_popup_nullGames">Ігри відсутні або інформація прихована</v:String>
+    <v:String x:Key="adat_popup_countGames">Ігор на акаунті:</v:String>
+    <v:String x:Key="adat_popup_playedGames">З них зіграно:</v:String>
+    <v:String x:Key="adat_popup_playtime">Ігровий час:</v:String>
+    <v:String x:Key="adat_popup_regDate">Дата реєстрації:</v:String>
+    <v:String x:Key="adat_popup_regDateUnknown">Дата реєстрації невідома</v:String>
+    <v:String x:Key="adat_popup_vacCount">Кількість VAC банів:</v:String>
+    <v:String x:Key="adat_popup_daysFirstBan">Днів після першого бану:</v:String>
+    <!--#endregion-->
+
+
+    <!--#region Account tab view -->
+    <v:String x:Key="atv_inf_steamNotFound">Steam не знайдений або не встановлений</v:String>
+    <v:String x:Key="atv_inf_loggedInSteam">Авторизовано, дочекайтеся запуску Steam</v:String>
+    <v:String x:Key="atv_inf_getLocalAccInfo">Отримання інформації про аккаунт...</v:String>
+    <v:String x:Key="atv_inf_errorWhileScanning">Помилка під час сканування акаунту</v:String>
+    <v:String x:Key="atv_vacCount">Кількість VAC:</v:String>
+    <v:String x:Key="atv_vacInfoAbsent">Інфомація відсутня</v:String>
     <!--#endregion-->
 
 
@@ -136,4 +178,23 @@
     <v:String x:Key="saw_authRemoveError">Під час спроби дезактивувати аутентифікатор сталася помилка. Повторіть спробу пізніше</v:String>
     <v:String x:Key="saw_unknownError">Під час деактивації сталася невідома помилка, аутентифікатор не видалено</v:String>
     <!--#endregion-->
+
+
+    <!--#region Authentication view -->
+    <v:String x:Key="aw_enterPassword">Введіть пароль</v:String>
+    <v:String x:Key="aw_cancel">Скасувати</v:String>
+    <v:String x:Key="aw_reset">Скинути</v:String>
+    <v:String x:Key="aw_authentication">Аутентифікація</v:String>
+    <v:String x:Key="aw_longPass">Пароль не може бути такої довжини</v:String>
+    <v:String x:Key="aw_invalidPass">Помилка! Неправильний пароль</v:String>
+    <v:String x:Key="aw_manyAttempts">Занадто багато спроб...</v:String>
+    <v:String x:Key="aw_resetPass">Ваш конфіг буде видалений, ви впевнені?</v:String>
+    
+    <v:String x:Key="aw_encryptedData">Дані зашифровані</v:String>
+    <v:String x:Key="aw_enterCryptoKey">Введіть криптоключ</v:String>
+    <v:String x:Key="aw_resetDataLost">Дані акаунтів будуть втрачені, ви впевнені?</v:String>
+    <v:String x:Key="aw_invalidKey">Помилка! Неправильний ключ</v:String>
+    <v:String x:Key="aw_keyOnlyLength">Довжина ключа може бути лише 44 символи</v:String>
+    <!--#endregion-->
+    
 </ResourceDictionary>

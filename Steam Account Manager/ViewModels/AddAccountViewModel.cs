@@ -111,7 +111,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 if(SteamLink.Length < 2 || SteamLink.Length > 32)
                 {
-                    ErrorMessage = "Nickname length can be from 2 to 32 characters";
+                    ErrorMessage = (string)Application.Current.FindResource("adv_error_nickError");
                     return false;
                 }
             }
@@ -158,7 +158,7 @@ namespace Steam_Account_Manager.ViewModels
                     }
                     catch
                     {
-                        ErrorMessage = "Error: (403) Steam is not responding or steam web API key not valid";
+                        ErrorMessage = (string)Application.Current.FindResource("adv_error_error403");
                     }
 
                 });

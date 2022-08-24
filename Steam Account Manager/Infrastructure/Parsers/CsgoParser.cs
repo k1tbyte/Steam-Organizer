@@ -9,7 +9,7 @@ using Steam_Account_Manager.Infrastructure.GamesModels;
 
 namespace Steam_Account_Manager.Infrastructure.Parsers
 {
-    internal class CsgoParser
+    internal sealed class CsgoParser
     {
         private string _steamId64;
 

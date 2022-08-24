@@ -42,7 +42,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = takeInfo;
             Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Don't collect information\nabout this account.";
+            Header.PopupText.Text = (string)FindResource("adv_dontCollectInfo_1") + '\n' + (string)FindResource("adv_dontCollectInfo_2");
         }
 
         private void takeInfo_MouseLeave(object sender, MouseEventArgs e)

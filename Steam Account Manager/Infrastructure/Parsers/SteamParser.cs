@@ -10,7 +10,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 {
 
 
-    internal class SteamParser
+    internal sealed class SteamParser
     {
         private string _apiKey = Environment.GetEnvironmentVariable("STEAM_API_KEY");
         private readonly string _steamId64;

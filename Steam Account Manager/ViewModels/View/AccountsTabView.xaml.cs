@@ -1,15 +1,11 @@
-﻿using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
+﻿using System;
 using System.Windows;
-using Steam_Account_Manager.ViewModels;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
-using System;
 
 namespace Steam_Account_Manager.ViewModels.View
 {
-    /// <summary>
-    /// Логика взаимодействия для AccountTabView.xaml
-    /// </summary>
     public partial class AccountTabView : UserControl
     {
         private AccountTabViewModel _currentViewModel;
@@ -26,9 +22,9 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
             if (_currentViewModel.VacCount != -1)
-                Header.PopupText.Text = "Vac count: " + _currentViewModel.VacCount.ToString();
+                Header.PopupText.Text = (string)FindResource("atv_vacCount") + ' ' + _currentViewModel.VacCount.ToString();
             else
-                Header.PopupText.Text = "Information is absent";
+                Header.PopupText.Text = (string)FindResource("atv_vacInfoAbsent");
         }
 
         private void VacIndicator_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)

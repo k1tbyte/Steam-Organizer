@@ -117,7 +117,7 @@ namespace Steam_Account_Manager.ViewModels
                     }
                     catch
                     {
-                        _ = MainWindowViewModel.NotificationView("Steam not found or not installed");
+                        _ = MainWindowViewModel.NotificationView((string)Application.Current.FindResource("atv_inf_steamNotFound"));
                     }
                 }
 
@@ -126,12 +126,12 @@ namespace Steam_Account_Manager.ViewModels
                     if (Config._config.AutoClose) Application.Current.Dispatcher.InvokeShutdown();
                     else
                     {
-                        _ = MainWindowViewModel.NotificationView("Logged in, wait for steam to start");
+                        _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_loggedInSteam"));
                         if (MainWindowViewModel.NowLoginUserParse(15000).Result && Config._config.AutoGetSteamId && !database.Accounts[id].ContainParseInfo)
                         {
                             try
                             {
-                                _ = MainWindowViewModel.NotificationView("Getting account information...");
+                                _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_getLocalAccInfo"));
                                 string steamId = Utilities.SteamId32ToSteamId64(Utilities.GetSteamRegistryActiveUser());
                                 database.Accounts[id] = new Account(
                                     _login, _password, steamId,
@@ -148,7 +148,7 @@ namespace Steam_Account_Manager.ViewModels
                             }
                             catch
                             {
-                                _ = MainWindowViewModel.NotificationView("Error while scanning account");
+                                _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
                             }
                         }
                     }

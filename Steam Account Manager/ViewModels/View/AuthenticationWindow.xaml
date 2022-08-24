@@ -32,7 +32,7 @@
                        HorizontalAlignment="Center" Margin="0 10 0 0" 
                        FontFamily="Cascadia Mono"
                        Foreground="{DynamicResource second_settings_text}"
-                       Text="Authentication"
+                       Text="{DynamicResource aw_authentication}"
                        FontSize="20">
             </TextBlock>
 
@@ -43,7 +43,7 @@
                        Fill="{DynamicResource add_window_rectangle}"
                        Width="300"/>
 
-            <TextBlock Margin="15 0 0 95" VerticalAlignment="Center" Grid.Row="1" Text="Enter user password" Style="{StaticResource settingTextBlock}"/>
+            <TextBlock Margin="15 0 0 95" VerticalAlignment="Center" Grid.Row="1" Text="{DynamicResource aw_enterPassword}" Style="{StaticResource settingTextBlock}"/>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1"  Margin="15 0 0 35" VerticalAlignment="Center">
                 <Border Background="{DynamicResource first_main_color}"
@@ -71,13 +71,36 @@
                        Text="">
             </TextBlock>
 
+            <!--Confirmation Rest-->
+            <Border x:Name="ResetBorder" Margin="0 0 0 30" Grid.Row="1" VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Width="300" Height="40" Background="{DynamicResource popup_border_background}" Opacity="0.8"
+                CornerRadius="15" Visibility="Hidden" >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{DynamicResource aw_resetPass}" Foreground="White"
+                       FontWeight="Normal" VerticalAlignment="Center"
+                       Margin="15 0 0 0" FontSize="11"/>
+
+                    <!-- No button -->
+                    <Button x:Name="noConfirmButton" Click="noConfirmButton_Click" Margin="10 0 0 0" Style="{StaticResource confirmationNoButton}"
+                        Width="25" Height="25">
+                        <Icon:PackIconMaterial Kind="Close" Foreground="White" VerticalAlignment="Center" Width="12" Height="12"/>
+                    </Button>
+
+                    <!-- Yes button -->
+                    <Button x:Name="yesConfirmButton"  Margin="10 0 0 0" Style="{StaticResource confirmationYesButton}"
+                        Width="25" Height="25" Click="yesConfirmButton_Click">
+                        <Icon:PackIconMaterial Kind="Check" Foreground="White" VerticalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
+            </Border>
 
 
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0 0 0 15"
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0 0 0 15"
                         VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                <Button x:Name="Cancel" Style="{StaticResource defaultButton}" Height="30" Content="Cancel" Click="Cancel_Click"/>
-                <Button x:Name="Forgot" IsHitTestVisible="True"
-                        Style="{StaticResource defaultButton}" Height="30" Margin="20 0 0 0" Content="Forgot"/>
+                <Button x:Name="Cancel" Style="{StaticResource defaultButton}" Height="30" Content="{DynamicResource aw_cancel}" Click="Cancel_Click"/>
+                <Button x:Name="Reset" IsHitTestVisible="True" Click="Reset_Click"
+                        Style="{StaticResource defaultButton}" Height="30" Margin="20 0 0 0" Content="{DynamicResource aw_reset}"/>
             </StackPanel>
 
         </Grid>

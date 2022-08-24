@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Steam_Account_Manager
 {
-    internal class DotEnv
+    internal sealed class DotEnv
     {
         public static void Load(string filePath)
         {

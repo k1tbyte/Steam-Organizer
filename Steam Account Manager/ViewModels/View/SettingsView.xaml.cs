@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace Steam_Account_Manager.ViewModels.View
 {
-    /// <summary>
-    /// Логика взаимодействия для SettingsView.xaml
-    /// </summary>
     public partial class SettingsView : UserControl
     {
         public SettingsView()
@@ -30,7 +27,11 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = apiKeyInfo;
             Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "This key allows you to use the\nSteam web API and get Steam data.\nIf the main key does not work,\nyou can use your own key - <Click>";
+            Header.PopupText.Text =
+                (string)FindResource("sv_popup_apiKeyInfo_1") + '\n'+
+                (string)FindResource("sv_popup_apiKeyInfo_2") + '\n' +
+                (string)FindResource("sv_popup_apiKeyInfo_3") + '\n' +
+                (string)FindResource("sv_popup_apiKeyInfo_4");
         }
 
         private void PopupLeave_MouseLeave(object sender, MouseEventArgs e)
@@ -44,7 +45,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = ErrorApiKey;
             Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Key length can only be 32 characters";
+            Header.PopupText.Text = (string)FindResource("sv_popup_maxApiKeyLength");
         }
 
         private void CryptoKeyInfo_MouseEnter(object sender, MouseEventArgs e)
@@ -52,9 +53,10 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = CryptoKeyInfo;
             Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "256-bit key to encrypt data when saving accounts.\n" +
-                "ATTENTION! If you lose the key, you will not be able to recover\n" +
-                "your data. After generating a new key, write it down or save it!";
+            Header.PopupText.Text =
+                (string)FindResource("sv_popup_cryptoKeyInfo_1") + '\n' +
+                (string)FindResource("sv_popup_cryptoKeyInfo_2") + '\n' +
+                (string)FindResource("sv_popup_cryptoKeyInfo_3");
         }
 
         private void GenerateKey_MouseEnter(object sender, MouseEventArgs e)
@@ -62,7 +64,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = GenerateKey;
             Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Generate a new encryption key";
+            Header.PopupText.Text = (string)FindResource("sv_popup_generateCryptoKey");
         }
 
         private void ResetKey_MouseEnter(object sender, MouseEventArgs e)
@@ -70,7 +72,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = ResetKey;
             Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Reset by default";
+            Header.PopupText.Text = (string)FindResource("sv_popup_resetCrypto");
         }
 
         private void PasswordError_MouseEnter(object sender, MouseEventArgs e)
@@ -78,7 +80,9 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = PasswordError;
             Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "The password must contain at least\n5 characters and no more than 30.\nAlso, the password cannot be empty.";
+            Header.PopupText.Text =
+                (string)FindResource("sv_popup_passwordError_1") + '\n' +
+                (string)FindResource("sv_popup_passwordError_2");
         }
     }
 }

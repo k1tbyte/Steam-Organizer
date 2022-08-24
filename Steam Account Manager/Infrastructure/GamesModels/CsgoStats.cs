@@ -4,7 +4,7 @@
 namespace Steam_Account_Manager.Infrastructure.GamesModels
 {
     [Serializable]
-    internal class CsgoStats
+    internal sealed class CsgoStats
     {
         //ranks 5x5
         private string _currentRank, _bestRank;

@@ -3,9 +3,6 @@ using Steam_Account_Manager.Infrastructure;
 
 namespace Steam_Account_Manager.ViewModels.View
 {
-    /// <summary>
-    /// Логика взаимодействия для AuthenticationWindow.xaml
-    /// </summary>
     public partial class AuthenticationWindow : Window
     {
         private int errorCounter = 3;
@@ -20,7 +17,7 @@ namespace Steam_Account_Manager.ViewModels.View
         {
             if(Password.Password.Length > 30)
             {
-                ErrorBlock.Text = "Password cannot be that long";
+                ErrorBlock.Text = (string)FindResource("aw_longPass");
                 return;
             }
 
@@ -54,12 +51,12 @@ namespace Steam_Account_Manager.ViewModels.View
             {
                 if (errorCounter > 1)
                 {
-                    ErrorBlock.Text = "Error! Invalid password";
+                    ErrorBlock.Text = (string)FindResource("aw_invalidPass");
                     errorCounter--;
                 }
                 else if (errorCounter == 1)
                 {
-                    ErrorBlock.Text = "Too many attempts...";
+                    ErrorBlock.Text = (string)FindResource("aw_manyAttempts");
                     errorCounter--;
                 }
                 else
@@ -74,6 +71,41 @@ namespace Steam_Account_Manager.ViewModels.View
         {
             if (mainWindow) App.Current.Shutdown();
             else DialogResult = false;
+        }
+
+        private void noConfirmButton_Click(object sender, RoutedEventArgs e)
+        {
+            ResetBorder.Visibility = Visibility.Hidden;
+        }
+
+        private void yesConfirmButton_Click(object sender, RoutedEventArgs e)
+        {
+            ResetBorder.Visibility = Visibility.Hidden;
+            System.IO.File.Delete("config.dat");
+            Config._config.Clear();
+            try
+            {
+                Infrastructure.CryptoBase.GetInstance();
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.Show();
+                this.Hide();
+
+            }
+            catch
+            {
+                var cryptoKeyWindow = new CryptoKeyWindow(true)
+                {
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen
+                };
+                this.Close();
+                cryptoKeyWindow.Show();
+
+            }
+        }
+
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            ResetBorder.Visibility = Visibility.Visible;
         }
     }
 }

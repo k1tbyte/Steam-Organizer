@@ -15,6 +15,21 @@
     <v:String x:Key="sv_info_collect">Не собирать информацию об аккаунтах</v:String>
     <v:String x:Key="sv_crypto_key">Ключ шифрования</v:String>
     <v:String x:Key="sv_steam_key">Пользовательский steam web API ключ</v:String>
+    <v:String x:Key="sv_getID">Получать steam ID у анонимных аккаунтов при логине</v:String>
+    <v:String x:Key="sv_newPass">╰ Введите новый пароль:</v:String>
+
+    <v:String x:Key="sv_popup_apiKeyInfo_1">Этот ключ позволяет использовать</v:String>
+    <v:String x:Key="sv_popup_apiKeyInfo_2">API Steam и получать данные аккаунтов</v:String>
+    <v:String x:Key="sv_popup_apiKeyInfo_3">Если основной ключ не работает,</v:String>
+    <v:String x:Key="sv_popup_apiKeyInfo_4">можно использовать свой ключ - "Клик"</v:String>
+    <v:String x:Key="sv_popup_maxApiKeyLength">Длина ключа может быть только 32 символа</v:String>
+    <v:String x:Key="sv_popup_cryptoKeyInfo_1">256-битный ключ для шифрования данных при сохранении аккаунтов.</v:String>
+    <v:String x:Key="sv_popup_cryptoKeyInfo_2">ВНИМАНИЕ! Если вы потеряете ключ, вы не сможете восстановить ваши</v:String>
+    <v:String x:Key="sv_popup_cryptoKeyInfo_3">данные. После создания нового ключа запишите его или сохраните!</v:String>
+    <v:String x:Key="sv_popup_generateCryptoKey">Сгенерировать новый ключ шифрования</v:String>
+    <v:String x:Key="sv_popup_resetCrypto">Сбросить по умолчанию</v:String>
+    <v:String x:Key="sv_popup_passwordError_1">Пароль должен содержать не менее</v:String>
+    <v:String x:Key="sv_popup_passwordError_2">5 символов и не более 30</v:String>
     <!--#endregion-->
 
 
@@ -53,8 +68,14 @@
     <v:String x:Key="adv_error_pass_empty">Поле с паролем пустое!</v:String>
     <v:String x:Key="adv_error_pass_shortage">Минимальная длина пароля 8 символов!</v:String>
     <v:String x:Key="adv_error_pass_overflow">Максимальная длина пароля 50 символов!</v:String>
+    <v:String x:Key="adv_error_nickError">Длина ника может быть от 2 до 32 символов</v:String>
+    <v:String x:Key="adv_error_error403">Ошибка: (403) Steam не отвечает или ключ Steam Web API недействителен</v:String>
     <v:String x:Key="adv_info_connection_check">Выполняется проверка сети...</v:String>
     <v:String x:Key="adv_info_collect_data">Сбор информации об учетной записи...</v:String>
+    <v:String x:Key="adv_nickname">Никнейм</v:String>
+
+    <v:String x:Key="adv_dontCollectInfo_1">Не собирать информацию</v:String>
+    <v:String x:Key="adv_dontCollectInfo_2">об этом аккаунте</v:String>
     <!--#endregion-->
 
 
@@ -93,6 +114,17 @@
     <v:String x:Key="adat_cs_headshots">Хэдшотов:</v:String>
     <v:String x:Key="adat_cs_headshotspercent">Процент хэдшотов:</v:String>
 
+    <v:String x:Key="adat_cs_inf_takeStats">Получение статистики...</v:String>
+    <v:String x:Key="adat_cs_inf_takeRank">Получение ранга...</v:String>
+    <v:String x:Key="adat_cs_inf_updSucces">Данные игрока обновлены!</v:String>
+    <v:String x:Key="adat_cs_inf_serverError">Ошибка сервера, повторите попытку позже...</v:String>
+    <v:String x:Key="adat_cs_inf_updated">Информация обновлена</v:String>
+    <v:String x:Key="adat_cs_inf_noInternet">"Ошибка, нет подключения к интернету...</v:String>
+
+    <v:String x:Key="adat_notif_copiedClipoard">Скопировано в буфер</v:String>
+    <v:String x:Key="adat_notif_changesSaved">Изменения об аккаунте сохранены</v:String>
+    <v:String x:Key="adat_notif_accountExported">Аккаунт сохранен в файл</v:String>
+
     <v:String x:Key="adat_popup_update_info">Обновить данные об аккаунте</v:String>
     <v:String x:Key="adat_popup_account_export">Экспорт аккаунта в файл</v:String>
     <v:String x:Key="adat_popup_save_chanes">Сохранить изменения</v:String>
@@ -104,11 +136,21 @@
     <v:String x:Key="adat_popup_playtime">Игровое время:</v:String>
     <v:String x:Key="adat_popup_regDate">Дата регистрации:</v:String>
     <v:String x:Key="adat_popup_regDateUnknown">Дата регистрации неизвестна</v:String>
-    <v:String x:Key="adat_popup_vacCount">Колиество VAC банов:</v:String>
+    <v:String x:Key="adat_popup_vacCount">Количество VAC банов:</v:String>
     <v:String x:Key="adat_popup_daysFirstBan">Дней после первого бана:</v:String>
     <!--#endregion-->
 
 
+    <!--#region Account tab view -->
+    <v:String x:Key="atv_inf_steamNotFound">Steam не найден или не установлен</v:String>
+    <v:String x:Key="atv_inf_loggedInSteam">Авторизировано, дождитесь запуска Steam</v:String>
+    <v:String x:Key="atv_inf_getLocalAccInfo">Получение информации об акаунте...</v:String>
+    <v:String x:Key="atv_inf_errorWhileScanning">Ошибка при сканировании аккаунта</v:String>
+    <v:String x:Key="atv_vacCount">Количество VAC:</v:String>
+    <v:String x:Key="atv_vacInfoAbsent">Информация отсутствует</v:String>
+    <!--#endregion-->
+
+    
     <!--#region Add authenticator window -->
     <v:String x:Key="aaw_add_header">Добавление 2FA</v:String>
     <v:String x:Key="aaw_add_new">Новый</v:String>
@@ -136,4 +178,24 @@
     <v:String x:Key="saw_authRemoveError">Произошла ошибка при попытке деактивировать аутентификатор, повторите попытку позже</v:String>
     <v:String x:Key="saw_unknownError">При деактивации произошла неизвестная ошибка, аутентификатор не был удален</v:String>
     <!--#endregion-->
+
+
+    <!--#region Authentication view -->
+    <v:String x:Key="aw_enterPassword">Введите пароль</v:String>
+    <v:String x:Key="aw_cancel">Отмена</v:String>
+    <v:String x:Key="aw_reset">Сброс</v:String>
+    <v:String x:Key="aw_authentication">Аутентификация</v:String>
+    <v:String x:Key="aw_longPass">Пароль не может быть такой длины</v:String>
+    <v:String x:Key="aw_invalidPass">Ошибка! Неправильный пароль</v:String>
+    <v:String x:Key="aw_manyAttempts">Слишком много попыток...</v:String>
+    <v:String x:Key="aw_resetPass">Ваш конфиг будет удален, вы уверены?</v:String>
+
+    <v:String x:Key="aw_encryptedData">Данные зашифрованы</v:String>
+    <v:String x:Key="aw_enterCryptoKey">Введите криптоключ</v:String>
+    <v:String x:Key="aw_resetDataLost">Данные аккаунтов будут потеряны, вы уверены?</v:String>
+    <v:String x:Key="aw_invalidKey">Ошибка! Неправильный ключ</v:String>
+    <v:String x:Key="aw_keyOnlyLength">Длина ключа может быть только 44 символа</v:String>
+    <!--#endregion-->
+    
+    
 </ResourceDictionary>
