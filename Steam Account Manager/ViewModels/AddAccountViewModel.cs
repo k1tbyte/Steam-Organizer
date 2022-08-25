@@ -84,7 +84,7 @@ namespace Steam_Account_Manager.ViewModels
                 return false;
             }
 
-            else if (SteamLogin.Length > 20)
+            else if (SteamLogin.Length > 32)
             {
                 ErrorMessage = (string)Application.Current.FindResource("adv_error_login_overflow");
                 return false;

@@ -150,7 +150,9 @@ namespace Steam_Account_Manager.ViewModels
             {
                 var fileDialog = new OpenFileDialog
                 {
-                    Filter = "Mobile authenticator File (.maFile)|*.maFile"
+                    Filter = "Mobile authenticator File (.maFile)|*.maFile",
+                    InitialDirectory = Directory.GetCurrentDirectory()
+                    
                 };
                 if (fileDialog.ShowDialog() == true)
                 {

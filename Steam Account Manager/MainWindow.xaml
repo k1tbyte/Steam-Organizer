@@ -32,17 +32,11 @@
             <!--Left Menu-->
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="80"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
 
-
-
-                <!--Menu Icon-->
-                <Button Style="{StaticResource topButton}" HorizontalAlignment="Left" Margin="20 28 0 35">
-                    <Icon:PackIconMaterial Kind="Menu" Width="15" Height="12" />
-                </Button>
 
 
 

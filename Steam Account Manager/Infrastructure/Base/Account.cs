@@ -110,7 +110,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             if(csgoStats == null) this.CsgoStats = new CsgoStats();
             else this.CsgoStats = csgoStats;
 
-            this.AuthenticatorPath = AuthenticatorPath;
+            this.AuthenticatorPath = authenticatorPath;
             this.ContainParseInfo = true;
 
             this.Note = note;

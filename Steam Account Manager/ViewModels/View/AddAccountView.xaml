@@ -187,10 +187,10 @@
             <Button Style="{StaticResource saveAccontButton}"
                     Command="{Binding AddAccountAsyncCommand}"
                     CommandParameter="{Binding ElementName=AddAccountWindow}"
-                    Content="{DynamicResource adv_save}" Grid.Row="4"/>
+                    Content="{DynamicResource adv_save}" Grid.Row="4"  IsDefault="True"/>
 
             <Button Grid.Column="1"  Style="{StaticResource serviceButton}"
-                        Click="CloseEvent"
+                        Click="CloseEvent" IsCancel="True"
                         HorizontalAlignment="Right"
                         
                         Width="15" Margin="0,0,20,0">

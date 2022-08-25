@@ -9,6 +9,7 @@
         d:DataContext="{d:DesignInstance Type=vm:ShowAuthenticatorViewModel}"
         Background="Transparent"
         Name="ShowAuthenticator" WindowStyle="None"
+        Title="2FA Control"
         AllowsTransparency="True"
         Height="200" Width="350">
     

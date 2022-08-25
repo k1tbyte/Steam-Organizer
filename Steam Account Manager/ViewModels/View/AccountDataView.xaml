@@ -132,7 +132,7 @@
 
 
         <!-- Cancel button -->
-        <Button Style="{StaticResource serviceButton}"
+        <Button Style="{StaticResource serviceButton}" IsCancel="True"
                 Width="35"  Grid.Row="1" Margin="5 10 0 0"
                 Command="{Binding CancelCommand}"
                 VerticalAlignment="Top" HorizontalAlignment="Left">

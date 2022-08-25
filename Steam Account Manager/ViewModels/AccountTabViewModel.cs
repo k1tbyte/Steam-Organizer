@@ -1,5 +1,7 @@
-﻿using Steam_Account_Manager.Infrastructure;
+﻿using Newtonsoft.Json;
+using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Base;
+using SteamAuth;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -97,6 +99,7 @@ namespace Steam_Account_Manager.ViewModels
         {
             int id = Id - 1;
             bool success = false, update = false;
+            string authPath;
 
             await Task.Factory.StartNew(() =>
             {
@@ -123,11 +126,22 @@ namespace Steam_Account_Manager.ViewModels
 
                 if(success)
                 {
-                    if (Config._config.AutoClose) Application.Current.Dispatcher.InvokeShutdown();
+                    //Copy steam auth code in clipboard
+                    if (!String.IsNullOrEmpty(authPath = database.Accounts[id].AuthenticatorPath) && System.IO.File.Exists(authPath))
+                    {
+                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            Clipboard.SetText(
+                            JsonConvert.DeserializeObject<SteamGuardAccount>(
+                                System.IO.File.ReadAllText(authPath)).GenerateSteamGuardCode());
+                        }));
+                    }
+                    if (Config._config.AutoClose)
+                        Application.Current.Dispatcher.InvokeShutdown();
                     else
                     {
                         _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_loggedInSteam"));
-                        if (MainWindowViewModel.NowLoginUserParse(15000).Result && Config._config.AutoGetSteamId && !database.Accounts[id].ContainParseInfo)
+                        if (MainWindowViewModel.NowLoginUserParse(12000).Result && Config._config.AutoGetSteamId && !database.Accounts[id].ContainParseInfo)
                         {
                             try
                             {

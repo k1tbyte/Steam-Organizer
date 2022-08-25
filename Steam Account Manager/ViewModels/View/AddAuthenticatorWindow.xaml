@@ -8,6 +8,7 @@
         d:DataContext="{d:DesignInstance Type=vm:AddAuthenticatorViewModel}"
         mc:Ignorable="d"
         Background="Transparent"
+        Title="2FA Adding"
         Name="AddAuthenticator" WindowStyle="None"
         AllowsTransparency="True"
         Height="170" Width="250">
@@ -31,7 +32,7 @@
             <!-- Exit button -->
             <Button Grid.Row="0"  Style="{StaticResource serviceButton}"
                     Command="{Binding CloseWindowCommand}" CommandParameter="{Binding ElementName=AddAuthenticator}"
-                    VerticalAlignment="Top" HorizontalAlignment="Right"
+                    VerticalAlignment="Top" HorizontalAlignment="Right"  IsCancel="True"
                         Width="15" Margin="0,10,15,0">
                 <Icon:PackIconMaterial Kind="WindowClose"
                                        Height="15" Width="15" 
