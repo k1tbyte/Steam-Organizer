@@ -19,13 +19,37 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand StatusChanged { get; set; }
         public AsyncRelayCommand AuthenticatorLoadCommand { get; set; }
         public AsyncRelayCommand AddNewCommand { get; set; }
-        private string _login, _password, _errorMessage, _userInput;
-        private bool _isReady;
+        private string _login, _password, _errorMessage, _userInput, _captchaLink;
+        private bool _isReady, _isCaptchaVisible;
         private Window _window;
         private int _id;
 
         CryptoBase database;
 
+        private class RootObjectUsername
+        {
+            public string Account_name { get; set; }
+        }
+
+
+        public bool IsCaptchaVisible
+        {
+            get => _isCaptchaVisible;
+            set
+            {
+                _isCaptchaVisible = value;
+                OnPropertyChanged(nameof(IsCaptchaVisible));
+            }
+        }
+        public string CaptchaLink
+        {
+            get => _captchaLink;
+            set
+            {
+                _captchaLink = value;
+                OnPropertyChanged(nameof(CaptchaLink));
+            }
+        }
         public string UserInput
         {
             get => _userInput;
@@ -44,6 +68,7 @@ namespace Steam_Account_Manager.ViewModels
                 OnPropertyChanged(nameof(ErrorMessage));
             }
         }
+
 
         private async Task TryToConnect()
         {
@@ -66,8 +91,9 @@ namespace Steam_Account_Manager.ViewModels
                             break;
 
                         case LoginResult.NeedCaptcha:
-                            System.Diagnostics.Process.Start(APIEndpoints.COMMUNITY_BASE + "/public/captcha.php?gid=" + user.CaptchaGID); //Open a web browser to the captcha image
+                            _captchaLink = APIEndpoints.COMMUNITY_BASE + "/public/captcha.php?gid=" + user.CaptchaGID;
                             ErrorMessage = (string)Application.Current.FindResource("aaw_captcha");
+                            IsCaptchaVisible = true;
                             while (!_isReady) Thread.Sleep(100);
                             user.CaptchaText = UserInput;
                             ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
@@ -93,7 +119,7 @@ namespace Steam_Account_Manager.ViewModels
                             return;
                     }
                 }
-
+                if (_captchaLink != null) IsCaptchaVisible = false;
                 var linker = new AuthenticatorLinker(user.Session)
                 {
                     PhoneNumber = null
@@ -156,10 +182,21 @@ namespace Steam_Account_Manager.ViewModels
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    database.Accounts[_id].AuthenticatorPath = fileDialog.FileName;
-                    database.SaveDatabase();
-                    ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
-                    Thread.Sleep(2000);
+                    //Veryfication account
+                    var list = JsonConvert.DeserializeObject<RootObjectUsername>(File.ReadAllText(fileDialog.FileName));
+                    if(list.Account_name != _login)
+                    {
+                        ErrorMessage = "You cannot add an authenticator from another account";
+                        Thread.Sleep(2000);
+                        _window.Dispatcher.Invoke(DispatcherPriority.Normal, new ThreadStart(_window.Close));
+                    }
+                    else
+                    {
+                        database.Accounts[_id].AuthenticatorPath = fileDialog.FileName;
+                        database.SaveDatabase();
+                        ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
+                        Thread.Sleep(2000);
+                    }
                 }
             });
         }

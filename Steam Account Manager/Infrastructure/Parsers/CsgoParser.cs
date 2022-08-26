@@ -1,18 +1,20 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using Steam_Account_Manager.Infrastructure.GamesModels;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
-using Steam_Account_Manager.Infrastructure.GamesModels;
+using System.Linq;
+using System;
+using System.Globalization;
 
 namespace Steam_Account_Manager.Infrastructure.Parsers
 {
     internal sealed class CsgoParser
     {
         private string _steamId64;
-
+        private string _apiKey = System.Environment.GetEnvironmentVariable("STEAM_API_KEY");
         private CsgoStats csgoStats = new CsgoStats();
         public CsgoParser(string SteamId64)
         {
@@ -24,52 +26,43 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         //Global csgo statisctics parser
         public async Task GlobalStatsParse()
         {
-            var client = Utilities.CreateHttpClientFactory();
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://csgo-stats.com/player/{_steamId64}/");
+            var webClient = new WebClient { Encoding = Encoding.UTF8 };
+            string json = await webClient.DownloadStringTaskAsync(
+                $"http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key={_apiKey}&steamid={_steamId64}");
 
-            request.Headers.Add("accept", "text/javascript, text/html, application/xml, text/xml, */*");
-            request.Headers.Add("Referer", "https://csgo-stats.com/");
-            request.Headers.Add("user-agent", "Mozilla/5.0 (Linux; U; Android 4.1.1; en-us; Google Nexus 4 - 4.1.1 - API 16 - 768x1280 Build/JRO03S) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30");
+            JObject jo = JObject.Parse(json);
+            JToken myTest = jo.SelectToken("*.stats");
+            var nodes = myTest.SelectTokens(@"$.[0,1,25,42,43,44,112,113]['value']");
+            float[] items = new float[8];
 
-            var response = await client.SendAsync(request);
-            var html = await response.Content.ReadAsStringAsync();
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(html);
+            for (int i = 0; i < 8; i++)
+                items[i] = float.Parse(nodes.ElementAt(i).ToString());
+            
 
-            var csgo_global_stats = htmlDoc.DocumentNode.SelectNodes("//div[@class='panel-body']//p[@class='other-stats-data']").Reverse().Skip(18);
+            csgoStats.Winrate          =  items[7] != 0 ? (items[6] / items[7]*100).ToString("0.00") + "%" : "-";
+            csgoStats.KD               =  items[1] != 0 ? (items[0] / items[1]).ToString("0.00") : "-";
+            csgoStats.HeadshotPercent  =  items[0] != 0 ? (items[2] / items[0] * 100).ToString("0.0") + "%" : "-";
+            csgoStats.Accuracy         =  items[4] != 0 ? (items[3] / items[4] * 100).ToString("0.0") + "%" : "-";
 
-            csgoStats.ShotsHit = csgo_global_stats.ElementAt(0).InnerText;
-            csgoStats.RoundsPlayed = csgo_global_stats.ElementAt(1).InnerText;
-            csgoStats.Headshots = csgo_global_stats.ElementAt(2).InnerText;
-            csgoStats.TotalShots = csgo_global_stats.ElementAt(3).InnerText;
-            csgoStats.MatchesWon = csgo_global_stats.ElementAt(4).InnerText;
-            csgoStats.Deaths = csgo_global_stats.ElementAt(5).InnerText;
-            csgoStats.PlayedMatches = csgo_global_stats.ElementAt(7).InnerText;
-            csgoStats.Kills = csgo_global_stats.ElementAt(8).InnerText;
-
-            csgoStats.Winrate = csgoStats.PlayedMatches != "0" ? (float.Parse(csgoStats.MatchesWon.Replace(",", string.Empty)) /
-                float.Parse(csgoStats.PlayedMatches.Replace(",", string.Empty)) * 100).ToString("0.00") + "%" : "-";
-
-            csgoStats.KD = csgoStats.Deaths != "0" ? (float.Parse(csgoStats.Kills.Replace(",", string.Empty)) /
-                float.Parse(csgoStats.Deaths.Replace(",", string.Empty))).ToString("0.00") : "-";
-
-            csgoStats.HeadshotPercent = csgoStats.Kills != "0" ? (float.Parse(csgoStats.Headshots.Replace(",", string.Empty)) /
-                float.Parse(csgoStats.Kills.Replace(",", string.Empty)) * 100).ToString("0.0") + "%" : "-";
-
-            csgoStats.Accuracy = csgoStats.TotalShots != "0" ? (float.Parse(csgoStats.ShotsHit.Replace(",", string.Empty)) /
-                float.Parse(csgoStats.TotalShots.Replace(",", string.Empty)) * 100).ToString("0.0") + "%" : "-";
+            csgoStats.Kills         =  items[0].ToString("0,0", CultureInfo.InvariantCulture);
+            csgoStats.Deaths        =  items[1].ToString("0,0", CultureInfo.InvariantCulture);
+            csgoStats.Headshots     =  items[2].ToString("0,0", CultureInfo.InvariantCulture);
+            csgoStats.ShotsHit      =  items[3].ToString("0,0", CultureInfo.InvariantCulture);
+            csgoStats.TotalShots    =  items[4].ToString("0,0", CultureInfo.InvariantCulture);
+            csgoStats.RoundsPlayed  =  items[5].ToString("0,0", CultureInfo.InvariantCulture);
+            csgoStats.MatchesWon    =  items[6].ToString("0,0", CultureInfo.InvariantCulture);
+            csgoStats.PlayedMatches =  items[7].ToString("0,0", CultureInfo.InvariantCulture);
 
             /// <summary>
             /// 
-            /// 1. Shots hit
-            /// 2. Rounds played
-            /// 3. Headshoots
+            /// 0. Kills
+            /// 1. Deaths
+            /// 2. Headshoots
+            /// 3. Shots hit
             /// 4. Total shots
-            /// 5. Total mathes won
-            /// 6. Deaths
-            /// 7. Aiming snipers killed
-            /// 8. Total played matches
-            /// 9. Kills
+            /// 5. Rounds played
+            /// 6. Total matches won
+            /// 7. Played matches
             /// 
             /// </summary>
         }

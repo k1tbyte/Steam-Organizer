@@ -12,6 +12,10 @@
         Name="AddAuthenticator" WindowStyle="None"
         AllowsTransparency="True"
         Height="170" Width="250">
+    
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Window.Resources>
 
     <Border CornerRadius="8" Background="{DynamicResource background_border_color}" MouseDown="Border_MouseDown"
             BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
@@ -63,6 +67,8 @@
 
             <Border x:Name="add_panel" Grid.Row="1" Style="{StaticResource borderAddTextBox}" Visibility="Hidden">
                 <StackPanel Orientation="Horizontal">
+                    <Image Margin="27  -37 -202 35" Source="{Binding CaptchaLink,UpdateSourceTrigger=PropertyChanged}" 
+                           Stretch="Fill" Visibility="{Binding IsCaptchaVisible,UpdateSourceTrigger=PropertyChanged,Converter={StaticResource BoolToVis}}"/>
                     <Icon:PackIconMaterial Kind="BadgeAccountAlert"
                                            Height="22" Width="22"
                                            Margin="5 8 0 0"
