@@ -15,10 +15,8 @@ namespace Steam_Account_Manager
         {
             if (Mutex.WaitOne(TimeSpan.Zero, true))
             {
-#if DEBUG
                 var workingDir = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
                 DotEnv.Load(Path.Combine(workingDir, "Keys.env"));
-#endif
                 var config = Infrastructure.Config.GetInstance();
 
 
