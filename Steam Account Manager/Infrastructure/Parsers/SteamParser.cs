@@ -12,7 +12,13 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
     internal sealed class SteamParser
     {
+
+#if DEBUG
         private string _apiKey = Environment.GetEnvironmentVariable("STEAM_API_KEY");
+#else
+        API_KEY
+#endif
+
         private readonly string _steamId64;
 
         //Player bans

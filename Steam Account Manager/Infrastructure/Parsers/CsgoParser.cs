@@ -13,12 +13,24 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 {
     internal sealed class CsgoParser
     {
+
+#if DEBUG
+        private string _apiKey = Environment.GetEnvironmentVariable("STEAM_API_KEY");
+#else
+        API_KEY
+#endif
+        
         private string _steamId64;
-        private string _apiKey = System.Environment.GetEnvironmentVariable("STEAM_API_KEY");
         private CsgoStats csgoStats = new CsgoStats();
+        
+        private static readonly string[] parseZones = {
+            "total_kills","total_deaths","total_kills_headshot","total_shots_hit",
+            "total_shots_fired","total_rounds_played","total_matches_won","total_matches_played" };
+
         public CsgoParser(string SteamId64)
         {
             _steamId64 = SteamId64;
+            if (Config._config.WebApiKey != "") _apiKey = Config._config.WebApiKey;
         }
 
         public ref CsgoStats GetCsgoStats => ref csgoStats;
@@ -31,12 +43,13 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                 $"http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key={_apiKey}&steamid={_steamId64}");
 
             JObject jo = JObject.Parse(json);
-            JToken myTest = jo.SelectToken("*.stats");
-            var nodes = myTest.SelectTokens(@"$.[0,1,25,42,43,44,112,113]['value']");
+            JToken nodes = jo.SelectToken("*.stats");
+
+            
             float[] items = new float[8];
 
             for (int i = 0; i < 8; i++)
-                items[i] = float.Parse(nodes.ElementAt(i).ToString());
+                items[i] = float.Parse(nodes.SelectToken($@"$.[?(@.name == '{parseZones[i]}')]['value']").ToString());
             
 
             csgoStats.Winrate          =  items[7] != 0 ? (items[6] / items[7]*100).ToString("0.00") + "%" : "-";
@@ -44,14 +57,14 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             csgoStats.HeadshotPercent  =  items[0] != 0 ? (items[2] / items[0] * 100).ToString("0.0") + "%" : "-";
             csgoStats.Accuracy         =  items[4] != 0 ? (items[3] / items[4] * 100).ToString("0.0") + "%" : "-";
 
-            csgoStats.Kills         =  items[0].ToString("0,0", CultureInfo.InvariantCulture);
-            csgoStats.Deaths        =  items[1].ToString("0,0", CultureInfo.InvariantCulture);
-            csgoStats.Headshots     =  items[2].ToString("0,0", CultureInfo.InvariantCulture);
-            csgoStats.ShotsHit      =  items[3].ToString("0,0", CultureInfo.InvariantCulture);
-            csgoStats.TotalShots    =  items[4].ToString("0,0", CultureInfo.InvariantCulture);
-            csgoStats.RoundsPlayed  =  items[5].ToString("0,0", CultureInfo.InvariantCulture);
-            csgoStats.MatchesWon    =  items[6].ToString("0,0", CultureInfo.InvariantCulture);
-            csgoStats.PlayedMatches =  items[7].ToString("0,0", CultureInfo.InvariantCulture);
+            csgoStats.Kills         =  items[0].ToString("#,#", CultureInfo.InvariantCulture);
+            csgoStats.Deaths        =  items[1].ToString("#,#", CultureInfo.InvariantCulture);
+            csgoStats.Headshots     =  items[2].ToString("#,#", CultureInfo.InvariantCulture);
+            csgoStats.ShotsHit      =  items[3].ToString("#,#", CultureInfo.InvariantCulture);
+            csgoStats.TotalShots    =  items[4].ToString("#,#", CultureInfo.InvariantCulture);
+            csgoStats.RoundsPlayed  =  items[5].ToString("#,#", CultureInfo.InvariantCulture);
+            csgoStats.MatchesWon    =  items[6].ToString("#,#", CultureInfo.InvariantCulture);
+            csgoStats.PlayedMatches =  items[7].ToString("#,#", CultureInfo.InvariantCulture);
 
             /// <summary>
             /// 

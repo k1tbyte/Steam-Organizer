@@ -18,6 +18,8 @@ namespace ConsoleProgramm
 
         static void Main(string[] args)
         {
+            Console.WriteLine(System.IO.Directory.GetCurrentDirectory());
+            Console.ReadKey();
         }
     }
 }
