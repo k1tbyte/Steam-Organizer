@@ -47,8 +47,23 @@ namespace Steam_Account_Manager.Infrastructure
             NoConfirmMode = TakeAccountInfo = AutoClose = false;
             WebApiKey = "";
             UserCryptoKey = CryptoKey;
-            Theme = SupportedThemes[2];
-            Language = SupportedLanguages[0];
+            Theme = SupportedThemes[0];
+            
+            switch(Utilities.GetSteamRegistryLanguage()){
+
+                case "russian":
+                    Language = SupportedLanguages[1];
+                    break;
+
+                case "ukrainian":
+                    Language = SupportedLanguages[2];
+                    break;
+
+                default:
+                    Language = SupportedLanguages[0];
+                    break;
+            }
+            
             try
             {
                 SteamDirection = Utilities.GetSteamRegistryDirection();
@@ -189,7 +204,11 @@ namespace Steam_Account_Manager.Infrastructure
                     _config.Theme = _config.Theme;
                     _config.Language = _config.Language;
                 }
-                else _config = new Config();
+                else
+                {
+                    _config = new Config();
+                    _config.SaveChanges();
+                } 
             }
             return _config;
         }

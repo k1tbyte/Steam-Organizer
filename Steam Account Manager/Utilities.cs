@@ -69,6 +69,19 @@ namespace Steam_Account_Manager
             catch { throw; }
         }
 
+        public static string GetSteamRegistryLanguage()
+        {
+            RegistryKey registryKey = Environment.Is64BitOperatingSystem ?
+        RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64) :
+        RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
+            try
+            {
+                registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam", false);
+                return (string)registryKey.GetValue("Language");
+            }
+            catch { throw; }
+        }
+
         public static void KillSteamProcess()
         {
             using (Process processSteam = new Process())
