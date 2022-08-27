@@ -8,7 +8,13 @@ namespace Steam_Account_Manager.Infrastructure.Validators
 {
     internal sealed class SteamValidator
     {
+
+#if DEBUG
         private string _apiKey = Environment.GetEnvironmentVariable("STEAM_API_KEY");
+#else
+        API_KEY
+#endif
+
         private const byte MaxSteamId64Len = 17;
         private readonly string _steamLink;
         private string _steamId64;
