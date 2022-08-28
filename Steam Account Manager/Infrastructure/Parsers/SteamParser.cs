@@ -16,7 +16,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 #if DEBUG
         private string _apiKey = Environment.GetEnvironmentVariable("STEAM_API_KEY");
 #else
-        API_KEY
+        private string _apiKey = "70099DD585D856CFBD04868CD42F968F";
 #endif
 
         private readonly string _steamId64;

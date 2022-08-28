@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamChecker", "Checker\SteamChecker.csproj", "{63363998-FE1E-498D-8036-B66E5D640DB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater.csproj", "{324D241D-5287-42E6-AF40-C7BC0396200B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater.csproj", "{1FBA098E-29AC-4FB6-915F-BC34318103A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{63363998-FE1E-498D-8036-B66E5D640DB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63363998-FE1E-498D-8036-B66E5D640DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63363998-FE1E-498D-8036-B66E5D640DB8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{324D241D-5287-42E6-AF40-C7BC0396200B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{324D241D-5287-42E6-AF40-C7BC0396200B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{324D241D-5287-42E6-AF40-C7BC0396200B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{324D241D-5287-42E6-AF40-C7BC0396200B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FBA098E-29AC-4FB6-915F-BC34318103A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FBA098E-29AC-4FB6-915F-BC34318103A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FBA098E-29AC-4FB6-915F-BC34318103A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FBA098E-29AC-4FB6-915F-BC34318103A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

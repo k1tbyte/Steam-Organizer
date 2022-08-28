@@ -29,17 +29,14 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
+
+            
             <!--Left Menu-->
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="80"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-
-
-
-
-
 
                 <Border Grid.Row="1" Background="{DynamicResource second_main_color}" CornerRadius="0 50 0 30">
                     <DockPanel>
@@ -160,6 +157,27 @@
                         Content="{Binding CurrentView}"/>
 
             </Grid>
+
+            <!--Updates detect-->
+            <Border Margin="10 0 0 0" Grid.ColumnSpan="2" VerticalAlignment="Center"
+                HorizontalAlignment="Center" Visibility="{Binding UpdateDetect, Converter={StaticResource BoolToVis}}"
+                Width="400" Height="50" Background="{DynamicResource popup_border_background}" Opacity="0.9"
+                CornerRadius="15">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="New app version detected, update now?" Foreground="White"
+                       FontWeight="Normal" VerticalAlignment="Center"
+                       Margin="0 0 0 0" FontSize="16"/>
+                    <Button Command="{Binding NoLoadUpdateCommand}" Margin="10 0 0 0" Style="{StaticResource confirmationNoButton}"
+                        Width="30" Height="30">
+                        <Icon:PackIconMaterial Kind="Close" Foreground="White" VerticalAlignment="Center" Width="12" Height="12"/>
+                    </Button>
+
+                    <Button Command="{Binding YesLoadUpdateCommand}" Margin="10 0 0 0" Style="{StaticResource confirmationYesButton}"
+                        Width="30" Height="30">
+                        <Icon:PackIconMaterial Kind="Check" Foreground="White" VerticalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
+            </Border>
 
         </Grid>
     </Border>

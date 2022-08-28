@@ -9,6 +9,7 @@ namespace Steam_Account_Manager
     public partial class App : Application
     {
         static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager");
+        public static readonly uint Version = 110;
 
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
@@ -20,7 +21,7 @@ namespace Steam_Account_Manager
                 DotEnv.Load(Path.Combine(workingDir, "Keys.env"));
 #endif
                 var config = Infrastructure.Config.GetInstance();
-
+                
                 if (config.Password == null)
                 {
                     try

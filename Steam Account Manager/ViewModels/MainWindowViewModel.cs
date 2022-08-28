@@ -18,6 +18,8 @@ namespace Steam_Account_Manager.ViewModels
         public static RelayCommand AccountsViewCommand { get; set; }
         public static RelayCommand SettingsViewCommand { get; set; }
         public static RelayCommand AccountDataViewCommand { get; set; }
+        public static RelayCommand NoLoadUpdateCommand { get; set; }
+        public static RelayCommand YesLoadUpdateCommand { get; set; }
         public RelayCommand LogoutCommand { get; set; }
 
         public AccountsViewModel AccountsVm;
@@ -29,6 +31,18 @@ namespace Steam_Account_Manager.ViewModels
         public static event EventHandler NowLoginUserNicknameChanged;
         private static int _totalAccounts;
         private static string _nowLoginUserImage, _nowLoginUserNickname;
+        private bool _updateDetect;
+
+        public bool UpdateDetect
+        {
+            get => _updateDetect;
+            set
+            {
+                _updateDetect = value;
+                OnPropertyChanged(nameof(UpdateDetect));
+            }
+        }
+
         public static string NowLoginUserNickname
         {
             get => _nowLoginUserNickname;
@@ -161,6 +175,23 @@ namespace Steam_Account_Manager.ViewModels
             return accountDetected;
         }
 
+        private async Task CheckingUpdates()
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    var webClient = new WebClient();
+                    var version = webClient.DownloadString("https://raw.githubusercontent.com/Explynex/Steam_Account_Manager/master/VERSION.md").Replace(".",String.Empty);
+                    if(uint.Parse(version) > App.Version)
+                    {
+                        UpdateDetect = true;
+                    }
+                }
+                catch { }
+            });
+        }
+
         public MainWindowViewModel()
         {
             AccountsVm = new AccountsViewModel();
@@ -169,10 +200,27 @@ namespace Steam_Account_Manager.ViewModels
             CurrentView = AccountsVm;
 
             _ = NowLoginUserParse();
+            _ = CheckingUpdates();
 
             AccountsViewCommand = new RelayCommand(o =>
             {
                 CurrentView = AccountsVm;
+            });
+
+            YesLoadUpdateCommand = new RelayCommand(o =>
+            {
+                System.Diagnostics.Process updater = new System.Diagnostics.Process();
+
+                updater.StartInfo.FileName = @".\Updater.exe";
+                updater.StartInfo.Arguments = "Upd";
+                updater.Start();
+
+                Application.Current.Shutdown();
+            });
+
+            NoLoadUpdateCommand = new RelayCommand(o =>
+            {
+                UpdateDetect = false;
             });
 
             SettingsViewCommand = new RelayCommand(o =>
@@ -205,6 +253,8 @@ namespace Steam_Account_Manager.ViewModels
                     NowLoginUserNickname = "Username";
                 }
             });
+
+
 
         }
     }
