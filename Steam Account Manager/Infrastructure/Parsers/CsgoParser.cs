@@ -14,11 +14,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
     internal sealed class CsgoParser
     {
 
-#if DEBUG
-        private string _apiKey = Environment.GetEnvironmentVariable("STEAM_API_KEY");
-#else
-        private string _apiKey = "70099DD585D856CFBD04868CD42F968F";
-#endif
+        private string _apiKey = Keys.STEAM_API_KEY;
 
         private string _steamId64;
         private CsgoStats csgoStats = new CsgoStats();

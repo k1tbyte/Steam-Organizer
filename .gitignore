@@ -362,4 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Parsers
-/Steam Account Manager/Keys.env
+/Steam Account Manager/Keys.cs
+/TestProject

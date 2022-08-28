@@ -92,7 +92,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DotEnv.cs" />
     <Compile Include="Infrastructure\AsyncRelayCommand.cs" />
     <Compile Include="Infrastructure\Base\Account.cs" />
     <Compile Include="Infrastructure\Config.cs" />
@@ -103,6 +102,7 @@
     <Compile Include="Infrastructure\Parsers\SteamParser.cs" />
     <Compile Include="Infrastructure\SteamHandler.cs" />
     <Compile Include="Infrastructure\Validators\SteamValidator.cs" />
+    <Compile Include="Keys.cs" />
     <Compile Include="Themes\MainPasswordBox.xaml.cs">
       <DependentUpon>MainPasswordBox.xaml</DependentUpon>
     </Compile>
@@ -257,7 +257,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Keys.env" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

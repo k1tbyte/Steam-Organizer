@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamChecker", "Checker\Ste
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Updater", "Updater\Updater.csproj", "{1FBA098E-29AC-4FB6-915F-BC34318103A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{68828099-E72D-4C3C-AE58-0A71A4B8EECE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{1FBA098E-29AC-4FB6-915F-BC34318103A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FBA098E-29AC-4FB6-915F-BC34318103A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FBA098E-29AC-4FB6-915F-BC34318103A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68828099-E72D-4C3C-AE58-0A71A4B8EECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68828099-E72D-4C3C-AE58-0A71A4B8EECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68828099-E72D-4C3C-AE58-0A71A4B8EECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68828099-E72D-4C3C-AE58-0A71A4B8EECE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
