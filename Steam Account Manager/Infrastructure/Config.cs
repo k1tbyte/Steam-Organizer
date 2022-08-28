@@ -1,13 +1,13 @@
-﻿using System;
-using System.IO;
+﻿using Steam_Account_Manager.Infrastructure.Base;
+using System;
 using System.Collections.Generic;
-using System.Windows;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
-using System.Linq;
-using System.Globalization;
 using System.Threading;
-using Steam_Account_Manager.Infrastructure.Base;
+using System.Windows;
 
 namespace Steam_Account_Manager.Infrastructure
 {
@@ -17,13 +17,12 @@ namespace Steam_Account_Manager.Infrastructure
         public static Config _config;
 
         public static string TempUserKey;
-
         public string SteamDirection;
-
         public bool NoConfirmMode;
         public bool TakeAccountInfo;
         public bool AutoClose;
         public bool AutoGetSteamId;
+        public bool RememberPassword;
         public string WebApiKey;
         public string UserCryptoKey;
         public string Password;
@@ -44,7 +43,7 @@ namespace Steam_Account_Manager.Infrastructure
                 new CultureInfo("uk-UA")
             };
 
-            NoConfirmMode = TakeAccountInfo = AutoClose = false;
+            NoConfirmMode = TakeAccountInfo = AutoClose = RememberPassword = false;
             WebApiKey = "";
             UserCryptoKey = CryptoKey;
             Theme = SupportedThemes[0];

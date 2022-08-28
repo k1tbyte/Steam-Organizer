@@ -502,72 +502,72 @@ namespace Steam_Account_Manager.ViewModels
 
         private void FillSteamInfo()
         {
-            Nickname = currentAccount.Nickname;
-            Login = currentAccount.Login;
-            Password = currentAccount.Password;
+            Nickname         = currentAccount.Nickname;
+            Login            = currentAccount.Login;
+            Password         = currentAccount.Password;
             ContainParseInfo = currentAccount.ContainParseInfo;
 
             if (currentAccount.ContainParseInfo)
             {
                 //Player summaries
-                AvatarFull = currentAccount.AvatarFull;
-                SteamID32 = ulong.Parse(currentAccount.SteamId64) - 76561197960265728;
-                SteamID64 = currentAccount.SteamId64;
-                SteamURL = currentAccount.ProfileURL;
-                CreatedDate = currentAccount.AccCreatedDate;
-                ProfileVisiblity = currentAccount.ProfileVisility == true ? "Public" : "Private";
+                AvatarFull          = currentAccount.AvatarFull;
+                SteamID32           = ulong.Parse(currentAccount.SteamId64) - 76561197960265728;
+                SteamID64           = currentAccount.SteamId64;
+                SteamURL            = currentAccount.ProfileURL;
+                CreatedDate         = currentAccount.AccCreatedDate;
+                ProfileVisiblity    = currentAccount.ProfileVisility == true ? "Public" : "Private";
                 CreatedDatePicuture = currentAccount.CreatedDateImageUrl;
 
                 //Games info
-                SteamLevel = currentAccount.SteamLevel;
-                GameCountPicture = currentAccount.CountGamesImageUrl;
-                GamesTotal = currentAccount.TotalGames;
-                GamesPlayed = currentAccount.GamesPlayed;
-                HoursOnPlayed = currentAccount.HoursOnPlayed;
-                PlayedPercent = currentAccount.ProfileVisility == true ? " (" + (float.Parse(GamesPlayed.Replace(",", string.Empty)) / float.Parse(GamesTotal.Replace(",", String.Empty)) * 100).ToString("#.#") + "%)" : "-";
+                SteamLevel          = currentAccount.SteamLevel;
+                GameCountPicture    = currentAccount.CountGamesImageUrl;
+                GamesTotal          = currentAccount.TotalGames;
+                GamesPlayed         = currentAccount.GamesPlayed;
+                HoursOnPlayed       = currentAccount.HoursOnPlayed;
+                PlayedPercent       = currentAccount.ProfileVisility == true ? " (" + (float.Parse(GamesPlayed.Replace(",", string.Empty)) / float.Parse(GamesTotal.Replace(",", String.Empty)) * 100).ToString("#.#") + "%)" : "-";
 
                 //Bans info
-                VacCount = currentAccount.VacBansCount;
-                CommunityBan = currentAccount.CommunityBan;
-                TradeBan = currentAccount.TradeBan;
-                DaysSinceLastBan = currentAccount.DaysSinceLastBan;
+                VacCount            = currentAccount.VacBansCount;
+                CommunityBan        = currentAccount.CommunityBan;
+                TradeBan            = currentAccount.TradeBan;
+                DaysSinceLastBan    = currentAccount.DaysSinceLastBan;
             }
             else
             {
-                AvatarFull = "/Images/default_steam_profile.png";
+                AvatarFull       = "/Images/default_steam_profile.png";
                 ProfileVisiblity = SteamURL = SteamID64 = "Unknown";
                 GameCountPicture = CreatedDatePicuture = "/Images/Steam_years_of_service/year0.png";
-                SteamLevel = "-";
-                SteamID32 = 0;
+                SteamLevel       = "-";
+                SteamID32        = 0;
             }
                 //Other info
-                Note = currentAccount.Note;
-                EmailLogin = currentAccount.EmailLogin;
-                EmailPass = currentAccount.EmailPass;
+                Note          = currentAccount.Note;
+                EmailLogin    = currentAccount.EmailLogin;
+                EmailPass     = currentAccount.EmailPass;
                 RockstarEmail = currentAccount.RockstarEmail;
-                RockstarPass = currentAccount.RockstarPass;
-                UplayEmail = currentAccount.UplayEmail;
-                UplayPass = currentAccount.UplayPass;
+                RockstarPass  = currentAccount.RockstarPass;
+                UplayEmail    = currentAccount.UplayEmail;
+                UplayPass     = currentAccount.UplayPass;
             
 
         }
         private void FillCsgoInfo()
         {
             //csgo info
-            CurrentRank = currentAccount.CsgoStats.CurrentRank;
-            BestRank = currentAccount.CsgoStats.BestRank;
-            Kills = currentAccount.CsgoStats.Kills;
-            Deaths = currentAccount.CsgoStats.Deaths;
-            KD = currentAccount.CsgoStats.KD;
-            PlayedMatches = currentAccount.CsgoStats.PlayedMatches;
-            MatchesWon = currentAccount.CsgoStats.MatchesWon;
-            Winrate = currentAccount.CsgoStats.Winrate;
-            TotalShots = currentAccount.CsgoStats.TotalShots;
-            Headshots = currentAccount.CsgoStats.Headshots;
+            CurrentRank      = currentAccount.CsgoStats.CurrentRank;
+            BestRank         = currentAccount.CsgoStats.BestRank;
+            Kills            = currentAccount.CsgoStats.Kills;
+            Deaths           = currentAccount.CsgoStats.Deaths;
+            KD               = currentAccount.CsgoStats.KD;
+            PlayedMatches    = currentAccount.CsgoStats.PlayedMatches;
+            MatchesWon       = currentAccount.CsgoStats.MatchesWon;
+            Winrate          = currentAccount.CsgoStats.Winrate;
+            TotalShots       = currentAccount.CsgoStats.TotalShots;
+            Headshots        = currentAccount.CsgoStats.Headshots;
             HeadshotsPercent = currentAccount.CsgoStats.HeadshotPercent;
-            ShotsHit = currentAccount.CsgoStats.ShotsHit;
-            Accuracy = currentAccount.CsgoStats.Accuracy;
-            RoundsPlayed = currentAccount.CsgoStats.RoundsPlayed;
+            ShotsHit         = currentAccount.CsgoStats.ShotsHit;
+            Accuracy         = currentAccount.CsgoStats.Accuracy;
+            RoundsPlayed     = currentAccount.CsgoStats.RoundsPlayed;
         }
 
         private async Task BorderNoticeView(string message)
@@ -616,14 +616,14 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     currentAccount = new Account(currentAccount.Login, currentAccount.Password, currentAccount.SteamId64)
                     {
-                        CsgoStats = currentAccount.CsgoStats,
-                        Note = currentAccount.Note,
-                        EmailLogin = currentAccount.EmailLogin,
-                        EmailPass = currentAccount.EmailPass,
+                        CsgoStats     = currentAccount.CsgoStats,
+                        Note          = currentAccount.Note,
+                        EmailLogin    = currentAccount.EmailLogin,
+                        EmailPass     = currentAccount.EmailPass,
                         RockstarEmail = currentAccount.RockstarEmail,
-                        RockstarPass = currentAccount.RockstarPass,
-                        UplayEmail = currentAccount.UplayEmail,
-                        UplayPass = currentAccount.UplayPass
+                        RockstarPass  = currentAccount.RockstarPass,
+                        UplayEmail    = currentAccount.UplayEmail,
+                        UplayPass     = currentAccount.UplayPass
                     };
 
                     database.Accounts[id] = currentAccount;
@@ -738,15 +738,15 @@ namespace Steam_Account_Manager.ViewModels
                         database.Accounts[id].CsgoStats = currentAccount.CsgoStats;
                         _isCsgoStatsSave = false;
                     }
-                    database.Accounts[id].Password = Password;
-                    database.Accounts[id].Login = Login;
-                    database.Accounts[id].Note = Note;
-                    database.Accounts[id].EmailLogin = EmailLogin;
-                    database.Accounts[id].EmailPass = EmailPass;
+                    database.Accounts[id].Password      = Password;
+                    database.Accounts[id].Login         = Login;
+                    database.Accounts[id].Note          = Note;
+                    database.Accounts[id].EmailLogin    = EmailLogin;
+                    database.Accounts[id].EmailPass     = EmailPass;
                     database.Accounts[id].RockstarEmail = RockstarEmail;
-                    database.Accounts[id].RockstarPass = RockstarPass;
-                    database.Accounts[id].UplayEmail = UplayEmail;
-                    database.Accounts[id].UplayPass = UplayPass;
+                    database.Accounts[id].RockstarPass  = RockstarPass;
+                    database.Accounts[id].UplayEmail    = UplayEmail;
+                    database.Accounts[id].UplayPass     = UplayPass;
                     database.SaveDatabase();
                     Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_changesSaved")));
 

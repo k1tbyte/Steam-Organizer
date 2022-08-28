@@ -5,19 +5,40 @@ namespace Steam_Account_Manager.ViewModels
 {
     internal class SettingsViewModel : ObservableObject
     {
-        private bool[] _themeMode = { true, false, false };
+        private bool[] _themeMode  = { true, false, false };
         private bool[] _localeMode = { true, false, false };
-        private bool _autoCloseMode, _noConfirmMode, _takeAccountInfoMode, _passwordEnabled, _autoGetSteamId;
-        private string _webApiKey;
-        private string _encryptingKey;
-        private bool _apiKeyError, _passwordError;
-        private string _password;
+
+        bool  _autoCloseMode,
+              _noConfirmMode, 
+              _takeAccountInfoMode,
+              _passwordEnabled,
+              _autoGetSteamId,
+              _apiKeyError,
+              _passwordError,
+              _rememberPassword;
+
+        string _webApiKey,
+               _encryptingKey,
+               _password;
+
         public RelayCommand SaveChangesCommand { get; set; }
         public RelayCommand OpenApiKeyUrlCommand { get; set; }
         public RelayCommand GenerateCryptoKeyCommand { get; set; }
         public RelayCommand ResetCryptoKeyCommand { get; set; }
         public RelayCommand ChangeOrAddPasswordCommand { get; set; }
 
+        #region Getters && Setters
+
+        public bool RememberPassword
+        {
+            get => _rememberPassword;
+            set
+            {
+                _rememberPassword = value;
+                OnPropertyChanged(nameof(RememberPassword));
+            }
+
+        }
         public bool AutoGetSteamId
         {
             get => _autoGetSteamId;
@@ -131,7 +152,8 @@ namespace Steam_Account_Manager.ViewModels
                 _noConfirmMode = value;
                 OnPropertyChanged(nameof(NoConfirmMode));
             }
-        }
+        } 
+        #endregion
 
         private static bool? OpenAuthWindow()
         {
@@ -145,11 +167,13 @@ namespace Steam_Account_Manager.ViewModels
         {
             var config = Config.GetInstance();
 
-            NoConfirmMode = config.NoConfirmMode;
-            AutoCloseMode = config.AutoClose;
+            NoConfirmMode       = config.NoConfirmMode;
+            AutoCloseMode       = config.AutoClose;
             TakeAccountInfoMode = config.TakeAccountInfo;
-            WebApiKey = config.WebApiKey;
-            AutoGetSteamId = config.AutoGetSteamId;
+            WebApiKey           = config.WebApiKey;
+            AutoGetSteamId      = config.AutoGetSteamId;
+            RememberPassword    = config.RememberPassword;
+
             
             if (Config._config.Password != null) _passwordEnabled = true;
             
@@ -206,11 +230,14 @@ namespace Steam_Account_Manager.ViewModels
                             config.Language = config.SupportedLanguages[Convert.ToInt32(i)];
                             break;
                         }
-                    config.NoConfirmMode = NoConfirmMode;
-                    config.AutoClose = AutoCloseMode;
-                    config.TakeAccountInfo = TakeAccountInfoMode;
-                    config.WebApiKey = WebApiKey;
-                    config.AutoGetSteamId = AutoGetSteamId;
+
+                    config.NoConfirmMode    = NoConfirmMode;
+                    config.AutoClose        = AutoCloseMode;
+                    config.TakeAccountInfo  = TakeAccountInfoMode;
+                    config.WebApiKey        = WebApiKey;
+                    config.AutoGetSteamId   = AutoGetSteamId;
+                    config.RememberPassword = RememberPassword;
+
                     if (Password != null && Password != "")
                         config.Password = Utilities.Sha256(Password + Config.GetDefaultCryptoKey);
                     else if(_passwordEnabled == false) config.Password = null;
@@ -231,7 +258,7 @@ namespace Steam_Account_Manager.ViewModels
                     }
 
                     config.SaveChanges();
-                    ApiKeyError = false;
+                    ApiKeyError   = false;
                     PasswordError = false;
 
                 }

@@ -88,18 +88,18 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             //External parser because the site csgostats.gg does not enter the .Dot NET Framework :\ 
             using (Process rankParser = new Process())
             {
-                rankParser.StartInfo.UseShellExecute = false;
-                rankParser.StartInfo.CreateNoWindow = true;
+                rankParser.StartInfo.UseShellExecute        = false;
+                rankParser.StartInfo.CreateNoWindow         = true;
                 rankParser.StartInfo.RedirectStandardOutput = true;
-                rankParser.StartInfo.FileName = $"{Directory.GetCurrentDirectory()}\\Binary\\CSGO_RankParser.exe";
-                rankParser.StartInfo.Arguments = _steamId64;
+                rankParser.StartInfo.FileName               = $"{Directory.GetCurrentDirectory()}\\Binary\\CSGO_RankParser.exe";
+                rankParser.StartInfo.Arguments              = _steamId64;
                 rankParser.Start();
 
                 //[0] - current skillgroup [1] - best skillgroup
-                string[] result = rankParser.StandardOutput.ReadToEnd().Split(' ');
+                string[] result       = rankParser.StandardOutput.ReadToEnd().Split(' ');
 
                 csgoStats.CurrentRank = result[0];
-                csgoStats.BestRank = result[1];
+                csgoStats.BestRank    = result[1];
                 rankParser.WaitForExit();
             };
         }

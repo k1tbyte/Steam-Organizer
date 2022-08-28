@@ -16,6 +16,7 @@
     <v:String x:Key="sv_crypto_key">Encryption key</v:String>
     <v:String x:Key="sv_steam_key">Custom steam web API key</v:String>
     <v:String x:Key="sv_getID">Get steam ID when logging in anonymous account</v:String>
+    <v:String x:Key="sv_rememberPass">Remember password when logging</v:String>
     <v:String x:Key="sv_newPass">╰ Enter new password:</v:String>
 
     <v:String x:Key="sv_popup_apiKeyInfo_1">This key allows you to use the</v:String>

@@ -16,6 +16,7 @@
     <v:String x:Key="sv_crypto_key">Ключ шифрования</v:String>
     <v:String x:Key="sv_steam_key">Пользовательский steam web API ключ</v:String>
     <v:String x:Key="sv_getID">Получать steam ID у анонимных аккаунтов при логине</v:String>
+    <v:String x:Key="sv_rememberPass">Запоминать пароль при входе</v:String>
     <v:String x:Key="sv_newPass">╰ Введите новый пароль:</v:String>
 
     <v:String x:Key="sv_popup_apiKeyInfo_1">Этот ключ позволяет использовать</v:String>
@@ -117,7 +118,7 @@
     <v:String x:Key="adat_cs_inf_takeStats">Получение статистики...</v:String>
     <v:String x:Key="adat_cs_inf_takeRank">Получение ранга...</v:String>
     <v:String x:Key="adat_cs_inf_updSucces">Данные игрока обновлены!</v:String>
-    <v:String x:Key="adat_cs_inf_serverError">Ошибка сервера, повторите попытку позже...</v:String>
+    <v:String x:Key="adat_cs_inf_serverError">Ошибка, повторите попытку позже...</v:String>
     <v:String x:Key="adat_cs_inf_updated">Информация обновлена</v:String>
     <v:String x:Key="adat_cs_inf_noInternet">"Ошибка, нет подключения к интернету...</v:String>
 
@@ -143,7 +144,7 @@
 
     <!--#region Account tab view -->
     <v:String x:Key="atv_inf_steamNotFound">Steam не найден или не установлен</v:String>
-    <v:String x:Key="atv_inf_loggedInSteam">Авторизировано, дождитесь запуска Steam</v:String>
+    <v:String x:Key="atv_inf_loggedInSteam">Авторизировано, ожидается запуск Steam</v:String>
     <v:String x:Key="atv_inf_getLocalAccInfo">Получение информации об акаунте...</v:String>
     <v:String x:Key="atv_inf_errorWhileScanning">Ошибка при сканировании аккаунта</v:String>
     <v:String x:Key="atv_vacCount">Количество VAC:</v:String>

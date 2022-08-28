@@ -1,191 +1,192 @@
-﻿using SteamKit2;
-using SteamKit2.Discovery;
-using SteamKit2.Internal.Steamworks;
-using SteamKit2.Internal;
-using System;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Automation;
 
-namespace Steam_Account_Manager
+
+namespace ConsoleProgramm
 {
-    class Checker
+    internal class Program
     {
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        CallbackManager  _callbackManager;
-        SteamUser        _steamUser;
-        SteamClient      _steamClient;
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, IntPtr lParam);
 
-        string Username;
-        string Password;
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
-        public bool IsLoggedOn { get; private set; }
-        public bool IsReadyForConnect { get; private set; }
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr lpdwProcessId);
 
-        //User
-        public string SteamID64 { get; private set; }
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
 
-        public string Balance { get; private set; }
+        [DllImport("kernel32.dll")]
+        static extern uint GetCurrentThreadId();
 
-        //Email
-        public string EmailAddress { get; private set; }
-        public bool EmailIsValidated { get; private set; }
+        [DllImport("user32.dll")]
+        static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
 
-        public Checker(string username, string password)
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern bool BringWindowToTop(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern IntPtr SetFocus(IntPtr hWnd);
+
+        private enum WM : uint
         {
-            IsLoggedOn = false;
-            Username = username;
-            Password = password;
-
-            Init();
-            RegCallbacks();
-            Connect();
+            KEYDOWN = 0x0100,
+            KEYUP = 0x0101,
+            CHAR = 0x0102
+        }
+        public enum VK : uint
+        {
+            RETURN = 0x0D,
+            TAB = 0x09,
+            SPACE = 0x20
+        }
+        public enum SW : int
+        {
+            SHOW = 5
         }
 
-        private void Init()
+        public static void ForceWindowToForeground(IntPtr hwnd)
         {
-            _steamClient = new SteamClient();
-            _callbackManager = new CallbackManager(_steamClient);
-            _steamUser = _steamClient.GetHandler<SteamUser>();
+            const int SW_SHOW = 5;
+            AttachedThreadInputAction(
+                () =>
+                {
+                    BringWindowToTop(hwnd);
+                    ShowWindow(hwnd, SW_SHOW);
+                });
         }
 
-        private void RegCallbacks()
+        private static void AttachedThreadInputAction(Action action)
         {
-            _callbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
-            _callbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnected);
-
-            _callbackManager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
-            _callbackManager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
-
-            _callbackManager.Subscribe<SteamUser.WalletInfoCallback>(OnAccountWallet);
-            _callbackManager.Subscribe<SteamUser.EmailAddrInfoCallback>(OnAccountEmail);
-            _callbackManager.Subscribe<SteamUser.AccountInfoCallback>(sus);
-        }
-
-        private void Connect()
-        {
-            _steamClient.Connect();
-            IsReadyForConnect = true;
-            Console.WriteLine("LOG | Connected to steam");
-        }
-
-        public void WaitForCallbacks()
-        {
-            _callbackManager.RunWaitAllCallbacks(TimeSpan.FromSeconds(1));
-        }
-
-
-
-        #region Callbacks
-
-
-        #region Connect && login
-        private void OnDisconnected(SteamClient.DisconnectedCallback disconnectedCallback)
-        {
-            Console.WriteLine("LOG | Disconnected from steam...");
-            _steamClient.Disconnect();
-            IsReadyForConnect = false;
-        }
-
-        private void OnLoggedOn(SteamUser.LoggedOnCallback loggedOnCallback)
-        {
-            bool IsSteamGuard = loggedOnCallback.Result == EResult.AccessDenied;
-            bool Is2FA = loggedOnCallback.Result == EResult.AccountLoginDeniedNeedTwoFactor;
-
-            if (IsSteamGuard)
+            var foreThread = GetWindowThreadProcessId(GetForegroundWindow(), IntPtr.Zero);
+            var appThread = GetCurrentThreadId();
+            bool threadsAttached = false;
+            try
             {
-                Console.WriteLine("LOG | This account is SteamGuard protected!");
+                threadsAttached =
+                    foreThread == appThread ||
+                    AttachThreadInput(foreThread, appThread, true);
+                if (threadsAttached) action();
+                else throw new ThreadStateException("AttachThreadInput failed.");
             }
-            else if (Is2FA)
+            finally
             {
-                Console.WriteLine("LOG | This account is 2FA protected");
-            }
-            else if (loggedOnCallback.Result != EResult.OK)
-            {
-                Console.WriteLine("LOG | Unable to logon to Steam: {0} / {1}", loggedOnCallback.Result, loggedOnCallback.ExtendedResult);
-            }
-            else
-            {
-                Console.WriteLine("LOG | Successfully logged on.");
-                SteamID64 = _steamUser.SteamID.ConvertToUInt64().ToString();
-                Console.WriteLine("EMAIL DOMAIN " +  loggedOnCallback.EmailDomain);
-                Console.WriteLine(loggedOnCallback.PublicIP);
-                Console.WriteLine(loggedOnCallback.InGameSecsPerHeartbeat);
-                Console.WriteLine(loggedOnCallback.IPCountryCode);
-                Console.WriteLine(loggedOnCallback.VanityURL);
-                Console.WriteLine(loggedOnCallback.WebAPIUserNonce);
-                IsLoggedOn = true;
-
-               // IsReadyForConnect = false;
-
+                if (threadsAttached)
+                    AttachThreadInput(foreThread, appThread, false);
             }
         }
 
-        private void OnLoggedOff(SteamUser.LoggedOffCallback loggedOffCallback)
+
+        public static void SendCharacter(IntPtr hwnd, char c)
         {
-            IsLoggedOn = false;
-            Console.WriteLine("LOG | Logged off of Steam: {0}", loggedOffCallback.Result);
+            SendMessage(hwnd, (int)WM.CHAR, c, IntPtr.Zero);
         }
-
-        private void OnConnected(SteamClient.ConnectedCallback connectedCallback)
+        public static void SendVirtualKey(IntPtr hwnd, VK vk)
         {
-            Console.WriteLine("LOG | Connected to Steam. Logging in '{0}'", Username);
-
-            SteamUser.LogOnDetails Details = new SteamUser.LogOnDetails
+            SendMessage(hwnd, (int)WM.KEYDOWN, (int)vk, IntPtr.Zero);
+            SendMessage(hwnd, (int)WM.KEYUP, (int)vk, IntPtr.Zero);
+        }
+        public static Process KillSteamAndConnect(string steamDir = "d:/program files/steam/steam.exe", string args = "")
+        {
+            using (Process processSteamKill = new Process())
             {
-                Username = this.Username,
-                Password = this.Password,
-                TwoFactorCode = "2RPKD"
+                processSteamKill.StartInfo.UseShellExecute = false;
+                processSteamKill.StartInfo.CreateNoWindow = true;
+                processSteamKill.StartInfo.FileName = "taskkill";
+                processSteamKill.StartInfo.Arguments = "/F /T /IM steam.exe";
+                processSteamKill.Start();
             };
 
-            _steamUser.LogOn(Details);
-        }
-        #endregion
+            System.Threading.Thread.Sleep(2000);
+            Process processSteam = new Process();
+            processSteam.StartInfo.UseShellExecute = true;
+            processSteam.StartInfo.FileName = steamDir;
+            processSteam.StartInfo.Arguments = args;
+            processSteam.Start();
+            return processSteam;
 
-        private void OnAccountWallet(SteamUser.WalletInfoCallback walletInfoCallback)
-        {
-            Balance = walletInfoCallback.Balance.ToString();
-
-            if (Balance[0] != '0')
-                Balance = Balance.Insert(Balance.Length - 2, ",");
-            if (Balance.Length != 1)
-                Balance += " " + walletInfoCallback.Currency.ToString();
-           // IsReadyForConnect = false;
         }
 
-        private void OnAccountEmail(SteamUser.EmailAddrInfoCallback emailAddrInfoCallback)
+        private static async Task callback()
         {
-            EmailAddress = emailAddrInfoCallback.EmailAddress;
-            EmailIsValidated = emailAddrInfoCallback.IsValidated;
-        }
-
-        private  void sus(SteamUser.AccountInfoCallback callback)
-        {
-            Console.WriteLine(callback.Country);
-            Console.WriteLine(callback.AccountFlags);
-            Console.WriteLine(callback.CountAuthedComputers);
-            Console.WriteLine(callback.PersonaName);
-        }
-
-
-
-        #endregion
-
-    }
-
-    class def
-    {
-        public static void Main()
-        {
-            var checker = new Checker("D1lettantZz", "Andreyhackv3");
-            while (checker.IsReadyForConnect)
+            await Task.Factory.StartNew(() =>
             {
-                checker.WaitForCallbacks();
-            }
-            Console.WriteLine("\n\nFINALLY: \n");
-            Console.WriteLine("Balance: " + checker.Balance);
-            Console.WriteLine("SteamID64: " + checker.SteamID64);
-            Console.WriteLine("\n\nEMAIL STATUS:\n");
-            Console.WriteLine("Address: " + checker.EmailAddress);
-            Console.WriteLine("Is verified: " + checker.EmailIsValidated);
-            Console.ReadKey();
+                Automation.RemoveAllEventHandlers();
+                Process steamProcess = KillSteamAndConnect();
+                int steamCount = 0;
+                Automation.AddAutomationEventHandler(
+                WindowPattern.WindowOpenedEvent,
+                AutomationElement.RootElement,
+                TreeScope.Children,
+                (sender, e) =>
+                {
+                    var element = sender as AutomationElement;
+                    if (element.Current.Name.Equals("Steam"))
+                    {
+                        if (++steamCount >= 2)
+                        {
+                            Automation.RemoveAllEventHandlers();
+                            Console.WriteLine("cock!");
+                        }
+                    }
+                    if (element.Current.ClassName.Equals("vguiPopupWindow") && element.Current.Name.Contains("Steam") && element.Current.Name.Length > 5)
+                    {
+                        Thread.Sleep(500);
+                        ForceWindowToForeground((IntPtr)element.Current.NativeWindowHandle);
+                        SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                        Thread.Sleep(100);
+                        foreach (char c in "assaadasda")
+                        {
+                            SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                            Thread.Sleep(10);
+                            SendCharacter((IntPtr)element.Current.NativeWindowHandle, c);
+                        }
+                        Thread.Sleep(100);
+                        SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.TAB);
+                        Thread.Sleep(100);
+
+                        foreach (char c in "asadasda")
+                        {
+                            SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                            Thread.Sleep(10);
+                            SendCharacter((IntPtr)element.Current.NativeWindowHandle, c);
+                        }
+
+                        SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                        Thread.Sleep(100);
+                        SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.TAB);
+                        Thread.Sleep(100);
+                        SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.SPACE);
+
+                        SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                        Thread.Sleep(100);
+                        SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.RETURN);
+                        Automation.RemoveAllEventHandlers();
+
+                        Console.WriteLine("cockovich");
+                    }
+                });
+            });
+        }
+
+        static void Main(string[] args)
+        {
+            callback().GetAwaiter().GetResult();
+            Console.WriteLine("cock");
         }
     }
 }

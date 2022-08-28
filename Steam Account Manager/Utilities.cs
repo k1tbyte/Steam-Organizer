@@ -82,6 +82,35 @@ namespace Steam_Account_Manager
             catch { throw; }
         }
 
+        public static string GetSteamRegistryRememberUser()
+        {
+            string RememberUser = String.Empty;
+
+            RegistryKey registryKey = Environment.Is64BitOperatingSystem ?
+        RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64) :
+        RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
+            try
+            {
+                registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam", false);
+                RememberUser = registryKey.GetValue("AutoLoginUser").ToString();
+            }
+            catch { throw; }
+            return RememberUser;
+        }
+
+        public static void SetSteamRegistryRememberUser(string autoLoginUser)
+        {
+            RegistryKey registryKey = Environment.Is64BitOperatingSystem ?
+                RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64) :
+                RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
+            try
+            {
+                registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam", true);
+                registryKey.SetValue("AutoLoginUser", autoLoginUser, RegistryValueKind.String);
+            }
+            catch { throw; }
+        }
+
         public static void KillSteamProcess()
         {
             using (Process processSteam = new Process())
@@ -94,7 +123,7 @@ namespace Steam_Account_Manager
             };
         }
 
-        public static void KillSteamAndConnect(string steamDir,string args)
+        public static void KillSteamAndConnect(string steamDir,string args="")
         {
             using (Process processSteam = new Process())
             {

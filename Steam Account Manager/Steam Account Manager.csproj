@@ -55,9 +55,6 @@
     <ApplicationIcon>Logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FuzzySharp, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FuzzySharp.2.0.2\lib\net461\FuzzySharp.dll</HintPath>
-    </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.11.43.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlAgilityPack.1.11.43\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
@@ -104,6 +101,7 @@
     <Compile Include="Infrastructure\OvservableObject.cs" />
     <Compile Include="Infrastructure\Parsers\CsgoParser.cs" />
     <Compile Include="Infrastructure\Parsers\SteamParser.cs" />
+    <Compile Include="Infrastructure\SteamHandler.cs" />
     <Compile Include="Infrastructure\Validators\SteamValidator.cs" />
     <Compile Include="Themes\MainPasswordBox.xaml.cs">
       <DependentUpon>MainPasswordBox.xaml</DependentUpon>

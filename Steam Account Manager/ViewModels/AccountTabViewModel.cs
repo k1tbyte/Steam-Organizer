@@ -135,13 +135,20 @@ namespace Steam_Account_Manager.ViewModels
                             JsonConvert.DeserializeObject<SteamGuardAccount>(
                                 System.IO.File.ReadAllText(authPath)).GenerateSteamGuardCode());
                         }));
+                        SteamHandler.VirtualSteamLogger(_login, _password, Config._config.RememberPassword, true).GetAwaiter().GetResult();
                     }
+                    else if (Config._config.RememberPassword)
+                    {
+                        SteamHandler.VirtualSteamLogger(_login, _password, true, false).GetAwaiter().GetResult();
+                    }
+
                     if (Config._config.AutoClose)
                         Application.Current.Dispatcher.InvokeShutdown();
                     else
                     {
                         _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_loggedInSteam"));
-                        if (MainWindowViewModel.NowLoginUserParse(12000).Result && Config._config.AutoGetSteamId && !database.Accounts[id].ContainParseInfo)
+                        MainWindowViewModel.IsEnabledForUser = true;
+                        if (MainWindowViewModel.NowLoginUserParse(15000).Result && Config._config.AutoGetSteamId && !database.Accounts[id].ContainParseInfo)
                         {
                             try
                             {
@@ -167,7 +174,6 @@ namespace Steam_Account_Manager.ViewModels
                         }
                     }
                 }
-                MainWindowViewModel.IsEnabledForUser = true;
             });
             if(update) AccountsViewModel.UpdateAccountTabView(id);
         }

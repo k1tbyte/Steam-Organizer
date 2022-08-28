@@ -16,6 +16,7 @@
     <v:String x:Key="sv_crypto_key">Ключ шифрування</v:String>
     <v:String x:Key="sv_steam_key">Користувалницьский steam web API ключ</v:String>
     <v:String x:Key="sv_getID">Отримувати steam ID при вході в анонімний акаунт</v:String>
+    <v:String x:Key="sv_rememberPass">Запам'ятовувати пароль при вході</v:String>
     <v:String x:Key="sv_newPass">╰ Введіть новий пароль:</v:String>
 
     <v:String x:Key="sv_popup_apiKeyInfo_1">Цей ключ дозволяє використовувати</v:String>
@@ -120,6 +121,7 @@
     <v:String x:Key="adat_cs_inf_serverError">Помилка сервера, повторіть пізніше...</v:String>
     <v:String x:Key="adat_cs_inf_updated">Інформація оновлена</v:String>
     <v:String x:Key="adat_cs_inf_noInternet">"Помилка, нема доступу до інтернету...</v:String>
+    
 
     <v:String x:Key="adat_notif_copiedClipoard">Скопійовано у буфер</v:String>
     <v:String x:Key="adat_notif_changesSaved">Зміни акаунту збережені</v:String>

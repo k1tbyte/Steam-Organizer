@@ -158,7 +158,14 @@
                           Style="{StaticResource settingsButton}"/>
                 </StackPanel>
 
-                
+                <!-- Dont collect information -->
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="{DynamicResource sv_rememberPass}" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding RememberPassword}"
+                          Style="{StaticResource settingsButton}"/>
+                </StackPanel>
+
+
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_getID}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding AutoGetSteamId}"

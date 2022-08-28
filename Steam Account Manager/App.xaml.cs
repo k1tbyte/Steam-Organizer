@@ -21,7 +21,6 @@ namespace Steam_Account_Manager
 #endif
                 var config = Infrastructure.Config.GetInstance();
 
-
                 if (config.Password == null)
                 {
                     try
