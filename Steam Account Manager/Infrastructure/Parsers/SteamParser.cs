@@ -37,7 +37,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         {
             Config config = Config.GetInstance();
             _steamId64 = steamId64;
-            if (config.WebApiKey != "") _apiKey = config.WebApiKey;
+            if (!String.IsNullOrEmpty(config.WebApiKey)) _apiKey = config.WebApiKey;
         }
 
 

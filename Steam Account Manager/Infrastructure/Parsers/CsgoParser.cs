@@ -26,7 +26,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         public CsgoParser(string SteamId64)
         {
             _steamId64 = SteamId64;
-            if (Config._config.WebApiKey != "") _apiKey = Config._config.WebApiKey;
+            if (!String.IsNullOrEmpty(Config._config.WebApiKey)) _apiKey = Config._config.WebApiKey;
         }
 
         public ref CsgoStats GetCsgoStats => ref csgoStats;

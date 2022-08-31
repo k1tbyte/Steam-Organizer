@@ -30,7 +30,7 @@ namespace Steam_Account_Manager.Infrastructure.Validators
         {
             Config config = Config.GetInstance();
             _steamLink = steamProfileLink;
-            if (config.WebApiKey != "") _apiKey = config.WebApiKey;
+            if (!String.IsNullOrEmpty(config.WebApiKey)) _apiKey = config.WebApiKey;
             CheckSteamLinkType();
             ConvertLinkToId64();
         }

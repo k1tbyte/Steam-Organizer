@@ -10,14 +10,14 @@ namespace Updater
         static void Main(string[] args)
         {
 
-            if(args.Length != 0)
+            if (args.Length != 0)
             {
                 try
                 {
                     Console.SetWindowSize(40, 5);
                     Console.WriteLine("Donwloading...");
                     var webClient = new WebClient();
-                    webClient.DownloadFile("https://drive.google.com/uc?export=download&id=1QhY5OYsr_bI50rq0zoY4eoT2YSCiJspD", @"LastUpd.zip");
+                    webClient.DownloadFile("https://drive.google.com/uc?export=download&id=11ivjqOtmPdVgTaJP6kZL9_5bcYgwog0u", @"LastUpd.zip");
                     Console.WriteLine("Extract...");
 
                     if (File.Exists(@".\Steam Account Manager.exe"))

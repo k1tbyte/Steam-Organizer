@@ -9,7 +9,7 @@ namespace Steam_Account_Manager
     public partial class App : Application
     {
         static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager");
-        public static readonly uint Version = 110;
+        public static readonly uint Version = 111;
 
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)

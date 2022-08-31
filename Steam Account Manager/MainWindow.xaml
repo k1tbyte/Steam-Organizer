@@ -86,6 +86,17 @@
                                 </StackPanel>
                             </RadioButton>
 
+                            
+                            <RadioButton Style="{StaticResource menuButton}"
+                                         Command="{Binding RemoteControlViewCommand}" Cursor="Hand">
+                                
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="RemoteDesktop" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Remote control"/>
+                                </StackPanel>
+                            </RadioButton>
+
+                            
                             <RadioButton Style="{StaticResource menuButton}"
                                          Command="{Binding SettingsViewCommand}" Cursor="Hand"
                                          >

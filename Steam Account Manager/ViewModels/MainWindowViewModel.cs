@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Windows;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Input;
+using Steam_Account_Manager.ViewModels.RemoteControl.View;
+using Steam_Account_Manager.ViewModels.RemoteControl;
 using Steam_Account_Manager.Infrastructure;
 using System.Net;
 using Steam_Account_Manager.ViewModels.View;
@@ -13,17 +12,19 @@ namespace Steam_Account_Manager.ViewModels
 {
     internal class MainWindowViewModel : ObservableObject
     {
-        public static RelayCommand CloseCommand { get; set; }
-        public static RelayCommand MinimizeCommand { get; set; }
-        public static RelayCommand AccountsViewCommand { get; set; }
-        public static RelayCommand SettingsViewCommand { get; set; }
-        public static RelayCommand AccountDataViewCommand { get; set; }
-        public static RelayCommand NoLoadUpdateCommand { get; set; }
-        public static RelayCommand YesLoadUpdateCommand { get; set; }
+        public static RelayCommand CloseCommand             { get; set; }
+        public static RelayCommand MinimizeCommand          { get; set; }
+        public static RelayCommand AccountsViewCommand      { get; set; }
+        public static RelayCommand SettingsViewCommand      { get; set; }
+        public static RelayCommand AccountDataViewCommand   { get; set; }
+        public static RelayCommand RemoteControlViewCommand { get; set; }
+        public static RelayCommand NoLoadUpdateCommand      { get; set; }
+        public static RelayCommand YesLoadUpdateCommand     { get; set; }
         public RelayCommand LogoutCommand { get; set; }
 
         public AccountsViewModel AccountsVm;
         public SettingsViewModel SettingsVm;
+        public MainRemoteControlView RemoteControlV;
         public AccountDataView AccountDataV; 
 
         public static event EventHandler TotalAccountsChanged;
@@ -196,6 +197,7 @@ namespace Steam_Account_Manager.ViewModels
         {
             AccountsVm = new AccountsViewModel();
             SettingsVm = new SettingsViewModel();
+            RemoteControlV = new MainRemoteControlView();
 
             CurrentView = AccountsVm;
 
@@ -207,22 +209,6 @@ namespace Steam_Account_Manager.ViewModels
                 CurrentView = AccountsVm;
             });
 
-            YesLoadUpdateCommand = new RelayCommand(o =>
-            {
-                System.Diagnostics.Process updater = new System.Diagnostics.Process();
-
-                updater.StartInfo.FileName = @".\Updater.exe";
-                updater.StartInfo.Arguments = "Upd";
-                updater.Start();
-
-                Application.Current.Shutdown();
-            });
-
-            NoLoadUpdateCommand = new RelayCommand(o =>
-            {
-                UpdateDetect = false;
-            });
-
             SettingsViewCommand = new RelayCommand(o =>
             {
                 CurrentView = SettingsVm;
@@ -232,6 +218,11 @@ namespace Steam_Account_Manager.ViewModels
             {
                 AccountDataV = new AccountDataView((int)o);
                 CurrentView = AccountDataV;
+            });
+
+            RemoteControlViewCommand = new RelayCommand(o =>
+            {
+                CurrentView = RemoteControlV;
             });
 
             CloseCommand = new RelayCommand(o =>
@@ -254,7 +245,21 @@ namespace Steam_Account_Manager.ViewModels
                 }
             });
 
+            YesLoadUpdateCommand = new RelayCommand(o =>
+            {
+                System.Diagnostics.Process updater = new System.Diagnostics.Process();
 
+                updater.StartInfo.FileName = @".\Updater.exe";
+                updater.StartInfo.Arguments = "Upd";
+                updater.Start();
+
+                Application.Current.Shutdown();
+            });
+
+            NoLoadUpdateCommand = new RelayCommand(o =>
+            {
+                UpdateDetect = false;
+            });
 
         }
     }
