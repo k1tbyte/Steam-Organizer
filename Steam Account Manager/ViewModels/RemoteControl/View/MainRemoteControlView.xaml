@@ -9,31 +9,6 @@
              d:DataContext="{d:DesignInstance Type=vm:MainRemoteControlViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="600">
-    <UserControl.Resources>
-        <Style x:Key="pageSwitch" TargetType="ToggleButton">
-            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="BorderBrush" Value="White"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Border Background="Transparent" BorderThickness="0 0 0 4" BorderBrush="{TemplateBinding BorderBrush}">
-                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            
-            <Style.Triggers>
-                <Trigger Property="IsChecked" Value="True">
-                    <Setter Property="Foreground" Value="#ffff"/>
-                    <Setter Property="BorderBrush" Value="{DynamicResource second_main_color}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Resources>
     
     <Grid>
         <Grid.RowDefinitions>
@@ -42,10 +17,11 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="1" HorizontalAlignment="Center" Margin="-30 0 0 0" CornerRadius="15" 
+        <Border Grid.Row="1" HorizontalAlignment="Center" CornerRadius="15" 
                 Background="{DynamicResource second_main_color}" Width="280">
             <StackPanel Orientation="Horizontal" Margin="20 5 0 5">
-                <RadioButton Style="{StaticResource RemoteControlButton}"
+                
+                <RadioButton Style="{StaticResource RemoteControlButton}" Command="{Binding LoginViewCommand}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="True">
                     <Icon:PackIconMaterial Kind="Account"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
@@ -53,7 +29,7 @@
 
                 <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5"  Opacity="0.8" />
 
-                <RadioButton Style="{StaticResource RemoteControlButton}"
+                <RadioButton Style="{StaticResource RemoteControlButton}" Command="{Binding GamesViewCommand}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
                     <Icon:PackIconMaterial Kind="GoogleController"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
@@ -62,7 +38,7 @@
 
                 <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5" Opacity="0.8"/>
 
-                <RadioButton Style="{StaticResource RemoteControlButton}"
+                <RadioButton Style="{StaticResource RemoteControlButton}" Command="{Binding MessagesViewCommand}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
                     <Icon:PackIconMaterial Kind="Message"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
@@ -70,15 +46,16 @@
                 
                 <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5" Opacity="0.8"/>
 
-                <RadioButton Style="{StaticResource RemoteControlButton}"
+                <RadioButton Style="{StaticResource RemoteControlButton}" Command="{Binding FriendsViewCommand}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
                     <Icon:PackIconMaterial Kind="AccountGroup"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
                 </RadioButton>
             </StackPanel>
 
-
         </Border>
 
+        <ContentPresenter Margin="0 25 0 0" Grid.Row="2" Content="{Binding CurrentView}"/>
+        
     </Grid>
 </UserControl>

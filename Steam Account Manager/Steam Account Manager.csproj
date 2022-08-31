@@ -127,6 +127,8 @@
     </ApplicationDefinition>
     <Compile Include="Infrastructure\AsyncRelayCommand.cs" />
     <Compile Include="Infrastructure\Base\Account.cs" />
+    <Compile Include="Infrastructure\Base\GamesHandler.cs" />
+    <Compile Include="Infrastructure\Base\SteamRemoteClient.cs" />
     <Compile Include="Infrastructure\Config.cs" />
     <Compile Include="Infrastructure\Converters\InverseBooleanConverter.cs" />
     <Compile Include="Infrastructure\GamesModels\CsgoStats.cs" />
@@ -149,9 +151,22 @@
     <Compile Include="ViewModels\AddAccountViewModel.cs" />
     <Compile Include="ViewModels\AddAuthenticatorViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\RemoteControl\LoginViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\MainRemoteControlViewModel.cs" />
+    <Compile Include="ViewModels\RemoteControl\View\FriendsView.xaml.cs">
+      <DependentUpon>FriendsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\RemoteControl\View\GamesView.xaml.cs">
+      <DependentUpon>GamesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\RemoteControl\View\LoginView.xaml.cs">
+      <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\RemoteControl\View\MainRemoteControlView.xaml.cs">
       <DependentUpon>MainRemoteControlView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\RemoteControl\View\MessagesView.xaml.cs">
+      <DependentUpon>MessagesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\ShowAuthenticatorViewModel.cs" />
@@ -239,7 +254,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ViewModels\RemoteControl\View\FriendsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewModels\RemoteControl\View\GamesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewModels\RemoteControl\View\LoginView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ViewModels\RemoteControl\View\MainRemoteControlView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewModels\RemoteControl\View\MessagesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
