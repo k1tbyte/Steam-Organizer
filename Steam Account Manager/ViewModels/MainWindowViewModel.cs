@@ -227,7 +227,7 @@ namespace Steam_Account_Manager.ViewModels
 
             CloseCommand = new RelayCommand(o =>
             {
-                Application.Current.Shutdown();   
+                App.Shutdown();
             });
 
             MinimizeCommand = new RelayCommand(o =>
@@ -253,7 +253,7 @@ namespace Steam_Account_Manager.ViewModels
                 updater.StartInfo.Arguments = "Upd";
                 updater.Start();
 
-                Application.Current.Shutdown();
+                App.Shutdown();
             });
 
             NoLoadUpdateCommand = new RelayCommand(o =>

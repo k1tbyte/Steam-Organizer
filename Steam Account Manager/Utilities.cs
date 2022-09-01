@@ -166,5 +166,6 @@ namespace Steam_Account_Manager
             // Return a Base64 string representation of the random number.
             return Convert.ToBase64String(buff);
         }
+
     }
 }

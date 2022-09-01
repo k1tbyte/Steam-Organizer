@@ -21,7 +21,7 @@
                 Background="{DynamicResource second_main_color}" Width="280">
             <StackPanel Orientation="Horizontal" Margin="20 5 0 5">
                 
-                <RadioButton Style="{StaticResource RemoteControlButton}" Command="{Binding LoginViewCommand}"
+                <RadioButton x:Name="Login" Style="{StaticResource RemoteControlButton}" Command="{Binding LoginViewCommand}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="True">
                     <Icon:PackIconMaterial Kind="Account"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
@@ -29,7 +29,8 @@
 
                 <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5"  Opacity="0.8" />
 
-                <RadioButton Style="{StaticResource RemoteControlButton}" Command="{Binding GamesViewCommand}"
+                <RadioButton Style="{StaticResource RemoteControlButton}" 
+                             Command="{Binding GamesViewCommand}" CommandParameter="{Binding ElementName=Login}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
                     <Icon:PackIconMaterial Kind="GoogleController"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
@@ -38,7 +39,8 @@
 
                 <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5" Opacity="0.8"/>
 
-                <RadioButton Style="{StaticResource RemoteControlButton}" Command="{Binding MessagesViewCommand}"
+                <RadioButton Style="{StaticResource RemoteControlButton}" 
+                             Command="{Binding MessagesViewCommand}"  CommandParameter="{Binding ElementName=Login}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
                     <Icon:PackIconMaterial Kind="Message"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
@@ -46,13 +48,25 @@
                 
                 <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5" Opacity="0.8"/>
 
-                <RadioButton Style="{StaticResource RemoteControlButton}" Command="{Binding FriendsViewCommand}"
+                <RadioButton Style="{StaticResource RemoteControlButton}" 
+                             Command="{Binding FriendsViewCommand}"  CommandParameter="{Binding ElementName=Login}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
                     <Icon:PackIconMaterial Kind="AccountGroup"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
                 </RadioButton>
             </StackPanel>
-
+            
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SuccessLogOn}" Value="False">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            
         </Border>
 
         <ContentPresenter Margin="0 25 0 0" Grid.Row="2" Content="{Binding CurrentView}"/>

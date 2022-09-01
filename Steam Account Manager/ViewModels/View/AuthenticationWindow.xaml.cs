@@ -61,7 +61,7 @@ namespace Steam_Account_Manager.ViewModels.View
                 }
                 else
                 {
-                    if (mainWindow) App.Current.Shutdown();
+                    if (mainWindow) App.Shutdown();
                     else DialogResult = false;
                 }
             }
@@ -69,7 +69,7 @@ namespace Steam_Account_Manager.ViewModels.View
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            if (mainWindow) App.Current.Shutdown();
+            if (mainWindow) App.Shutdown();
             else DialogResult = false;
         }
 

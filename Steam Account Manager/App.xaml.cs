@@ -10,6 +10,7 @@ namespace Steam_Account_Manager
     {
         static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager");
         public static readonly uint Version = 111;
+        public static bool IsShuttingDown { get; private set; }
 
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
@@ -53,8 +54,14 @@ namespace Steam_Account_Manager
             }
             else
             {
-                Application.Current.Shutdown();
+                App.Shutdown();
             }
+        }
+
+        public static new void Shutdown()
+        {
+            IsShuttingDown = true;
+            Application.Current.Shutdown();
         }
     }
 }

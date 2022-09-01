@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.ViewModels.RemoteControl.View;
 
@@ -42,22 +43,32 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             LoginViewCommand = new RelayCommand(o =>
             {
-                CurrentView = LoginV;
+                 CurrentView = LoginV;
             });
 
             GamesViewCommand = new RelayCommand(o =>
             {
-                CurrentView = GamesV;
+                if (LoginViewModel.SuccessLogOn)
+                    CurrentView = GamesV;
+                else
+                    (o as RadioButton).IsChecked = true;
             });
 
             MessagesViewCommand = new RelayCommand(o =>
             {
-                CurrentView = MessagesV;
+                if (LoginViewModel.SuccessLogOn)
+                    CurrentView = MessagesV;
+                else
+                    (o as RadioButton).IsChecked = true;
             });
 
             FriendsViewCommand = new RelayCommand(o =>
             {
-                CurrentView = FriendsV;
+                if (LoginViewModel.SuccessLogOn)
+                    CurrentView = FriendsV;
+                else
+                   (o as RadioButton).IsChecked = true;
+                
             });
         }
     }
