@@ -17,7 +17,7 @@ namespace Steam_Account_Manager.ViewModels.View
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            if (mainWindow) Application.Current.Shutdown();
+            if (mainWindow) App.Shutdown();
             else DialogResult = false;
         }
 
@@ -56,7 +56,7 @@ namespace Steam_Account_Manager.ViewModels.View
                         ErrorBlock.Text = (string)FindResource("aw_manyAttempts");
                     else
                     {
-                        if (mainWindow) Application.Current.Shutdown();
+                        if (mainWindow) App.Shutdown();
                         else DialogResult = false;
                     }
                 }

@@ -7,14 +7,23 @@
              xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl.View"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
-             xmlns:converter="clr-namespace:Steam_Account_Manager.Infrastructure.Converters"
              d:DataContext="{d:DesignInstance Type=vm:LoginViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="600">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <Style x:Key="nickname" TargetType="TextBox">
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Tag,RelativeSource={RelativeSource Self}}" Value="True">
+                    <Setter Property="IsReadOnly" Value="False"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
     <Grid>
+        <!-- Login border -->
         <Border Background="{DynamicResource first_main_color}" Width="280" CornerRadius="20"  VerticalAlignment="Top">
             <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 20 0 0">
 
@@ -76,7 +85,7 @@
                                            Foreground="{DynamicResource second_text_color}"/>
 
                             <TextBox Style="{StaticResource addTextBox}" MaxLength="5"
-                             Background="{DynamicResource first_main_color}"
+                             Background="{DynamicResource first_main_color}" CaretBrush="{DynamicResource atv_rectangles_shadow}"
                              Margin="6 0 0 0" Text="{Binding AuthCode,UpdateSourceTrigger=PropertyChanged}"/>
                         </StackPanel>
                     </Border>
@@ -86,7 +95,7 @@
                 <TextBlock Grid.Row="3" VerticalAlignment="Top" FontSize="11"
                        Grid.RowSpan="4" Margin="0 5 0 0" Padding="5 0 20 0"
                        Foreground="PaleVioletRed" TextWrapping="Wrap" Text="{Binding ErrorMsg,UpdateSourceTrigger=PropertyChanged}" />
-                <Button Margin="0 10 0 20" Style="{StaticResource defaultButton}" Content="Login" 
+                <Button Margin="0 10 0 20" Style="{StaticResource defaultButton}" Content="Login" IsDefault="True"
                         Background="{DynamicResource second_main_color}" Width="100" Command="{Binding LogOnCommand}">
                 </Button>
 
@@ -102,5 +111,74 @@
                 </Style>
             </Border.Style>
         </Border>
+
+        <Border Visibility="{Binding SuccessLogOn,Converter={StaticResource BoolToVis}}" BorderThickness="0.8"
+                Background="{DynamicResource first_main_color}" CornerRadius="25" >
+            <Grid>
+                <StackPanel>
+                    <Ellipse Margin="0 15 0 5" HorizontalAlignment="Center" Width="100" Height="100" Stroke="LightGreen" StrokeThickness="1.5">
+                        <Ellipse.Fill>
+                            <ImageBrush ImageSource="https://avatars.akamai.steamstatic.com/215ebdefee1d7baeb40d4b16b1f1a378b620b099_full.jpg"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Text="Logged in: " FontSize="16" FontWeight="Medium" Foreground="{DynamicResource second_main_color}" />
+                        <TextBlock Text="{Binding Username}" FontSize="16" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                    </StackPanel>
+
+                    <Rectangle Margin="0 10 0 0" Width="530" Height="1" Fill="{DynamicResource adv_rectangle}" Opacity="1"/>
+
+                </StackPanel>
+
+                <TextBlock Text="{Binding Wallet,UpdateSourceTrigger=PropertyChanged}" FontSize="15" FontWeight="Medium" HorizontalAlignment="Right" Margin="0 20 25 0"
+                           Foreground="{DynamicResource menu_button_background}"/>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 0 12">
+                    <TextBlock Text="Nickname: " FontSize="16" FontWeight="Medium" Foreground="{DynamicResource second_main_color}" />
+                    <TextBox x:Name="nickname" FontSize="15" Text="{Binding Nickname,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource nickname}"
+                             Tag="{Binding ElementName=editNick,Path=IsChecked}" Margin="-1 -2 0 -5"
+                             FontWeight="Normal" Foreground="{DynamicResource default_foreground}"
+                             MaxLength="30">
+                    </TextBox>
+                    
+                    <ToggleButton x:Name="editNick" Style="{StaticResource small_button}"  HorizontalAlignment="Right" 
+                                   Tag="{Binding ChangeNicknameCommand}" Width="18" Height="18" Margin="3 1 0 0" >
+                        <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}" Width="1" Height="10"/>
+                    </ToggleButton>
+                    
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70 200 0 0">
+
+
+                    <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
+                        <TextBlock Text="SteamID64: " FontSize="14" FontWeight="Medium" Foreground="{DynamicResource second_main_color}" />
+                        <TextBox Style="{StaticResource settings_data_box}" Text="{Binding SteamId64}" Height="18.62"/>
+                    </StackPanel>
+                    
+
+                    <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
+                        <TextBlock Text="Hosted on: " FontSize="14" FontWeight="Medium" Foreground="{DynamicResource second_main_color}" />
+                        <TextBlock Text="{Binding IPCountryCode}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
+                        <TextBlock Text="Authenticated devices: " FontSize="14" FontWeight="Medium" Foreground="{DynamicResource second_main_color}" />
+                        <TextBlock Text="{Binding AuthedComputers}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
+                        <TextBlock Text="Email address: " FontSize="14" FontWeight="Medium" Foreground="{DynamicResource second_main_color}" />
+                        <TextBox Style="{StaticResource settings_data_box}" Text="{Binding EmailAddress}"  Height="18.62"/>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
+                        <TextBlock Text="Email verification: " FontSize="14" FontWeight="Medium" Foreground="{DynamicResource second_main_color}" />
+                        <TextBlock Text="{Binding EmailVerification}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                    </StackPanel>
+                </StackPanel>
+
+            </Grid>
+        </Border>
+        
     </Grid>
 </UserControl>

@@ -111,7 +111,7 @@
                                 DockPanel.Dock="Bottom" Margin="15 0 15 20" Command="{Binding LogoutCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <Icon:PackIconMaterial Kind="Logout" Style="{StaticResource menuButtonIcon}"/>
-                                <TextBlock Text="{DynamicResource mv_logout_title}"/>
+                                <TextBlock Text="Exit from steam"/>
                             </StackPanel>
                         </Button>
 

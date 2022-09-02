@@ -12,12 +12,99 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
     internal class LoginViewModel : ObservableObject
     {
         public AsyncRelayCommand LogOnCommand { get; set; }
-
+        public RelayCommand ChangeNicknameCommand { get; set; }
         public static event EventHandler SuccessLogOnChanged;
 
         private bool _isAuthCode;
         private string _username, _password,_authCode, _errorMsg;
         private static bool _successLogOn;
+
+        #region Callbacks receiver handlers
+
+        private static string _steamId64;
+        public static event EventHandler SteamId64Changed;
+        public static string SteamId64
+        {
+            get => _steamId64;
+            set
+            {
+                _steamId64 = value;
+                SteamId64Changed?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        private static string _wallet;
+        public static event EventHandler WalletChanged;
+        public static string Wallet
+        {
+            get => _wallet;
+            set
+            {
+                _wallet = value;
+                WalletChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        private static string _ipCountryCode;
+        public static event EventHandler IPCountryCodeChanged;
+        public static string IPCountryCode
+        {
+            get => _ipCountryCode;
+            set
+            {
+                _ipCountryCode = value;
+                IPCountryCodeChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        private static string _nickname;
+        public static event EventHandler NicknameChanged;
+        public static string Nickname
+        {
+            get => _nickname;
+            set
+            {
+                _nickname = value;
+                NicknameChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+        private static int _authedComputers;
+        public static event EventHandler AuthedComputersChanged;
+        public static int AuthedComputers
+        {
+            get => _authedComputers;
+            set
+            {
+                _authedComputers = value;
+                AuthedComputersChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        private static string _emailAddress;
+        public static event EventHandler EmailAddressChanged;
+        public static string EmailAddress
+        {
+            get => _emailAddress;
+            set
+            {
+                _emailAddress = value;
+                EmailAddressChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        private static bool _emailVerification;
+        public static event EventHandler EmailVerificationChanged;
+        public static bool EmailVerification
+        {
+            get => _emailVerification;
+            set
+            {
+                _emailVerification = value;
+                EmailVerificationChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        #endregion
 
         public static bool SuccessLogOn
         {
@@ -28,7 +115,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 SuccessLogOnChanged?.Invoke(null, EventArgs.Empty);
             }
         }
-
         public string ErrorMsg
         {
             get => _errorMsg;
@@ -38,7 +124,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 OnPropertyChanged(nameof(ErrorMsg));
             }
         }
-
         public string AuthCode
         {
             get => _authCode;
@@ -66,7 +151,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 OnPropertyChanged(nameof(Username));
             }
         }
-
         public bool IsAuthCode
         {
             get => _isAuthCode;
@@ -86,7 +170,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     return SteamRemoteClient.Login(Username, Password, AuthCode);
                 }); 
 
-                if (result == EResult.AccountLoginDeniedNeedTwoFactor || result == EResult.AccountLogonDenied)
+                if (result == EResult.AccountLoginDeniedNeedTwoFactor || result == EResult.AccountLogonDenied || result == EResult.Cancelled)
                 {
                     IsAuthCode = true;
                     ErrorMsg = "";
@@ -119,7 +203,15 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     }
                 }
                 
-                
+            });
+
+            ChangeNicknameCommand = new RelayCommand(o =>
+            {
+                if (Nickname != SteamRemoteClient.UserPersonaName)
+                {
+                    SteamRemoteClient.ChangeCurrentName(Nickname);
+                }
+
             });
         }
     }

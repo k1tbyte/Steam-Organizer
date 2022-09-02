@@ -8,26 +8,43 @@ using System.Windows;
 using SteamKit2;
 using SteamKit2.Internal;
 using Steam_Account_Manager.ViewModels.RemoteControl;
+using Newtonsoft.Json;
 
 namespace Steam_Account_Manager.Infrastructure.Base
 {
+    public partial class User
+    {
+        [JsonProperty("Username")]
+        public string Username { get; set; }
+
+        [JsonProperty("Loginkey")]
+        public string LoginKey { get; set; }
+
+        [JsonProperty("SteamID64")]
+        public string SteamID64 { get; set; }
+    }
+
+    public class RootObject
+    {
+        public User RemoteUser { get; set; }
+    }
+
     internal static class SteamRemoteClient
     {
-        #region User information
+        /*        #region User information
+                private static string        _steamID64;
+                private static string        _userPersonaName;
+                private static string        _userCountry;
+                private static string        _iPCountryCode;
+                private static string        _userWallet;
+                private static string        _emailAdress;
+                private static int           _userPersonaState;
+                private static bool          _isEmailValidated;
+                private static bool          _isUserPlaying;
+                private static List<SteamID> _friends;
+                #endregion*/
 
-        public static string         SteamID64         { get; private set; }
-        public static string         UserPersonaName   { get; private set; }
-        public static string         UserCountry       { get; private set; }
-        public static string         IPCountryCode     { get; private set; }
-        public static string         UserWallet        { get; private set; }
-        public static string         EmailAdress       { get; private set; }
-        public static int            UserPersonaState  { get; private set; }
-        public static bool           IsEmailValidated  { get; private set; }
-        public static bool           IsUserPlaying     { get; private set; }
-        public static List<SteamID>  Friends           { get; private set; }
-
-        #endregion
-
+        public static string UserPersonaName { get; private set; }
 
         private static readonly CallbackManager      callbackManager;
         private static readonly SteamClient          steamClient;
@@ -36,17 +53,20 @@ namespace Steam_Account_Manager.Infrastructure.Base
         private static readonly GamesHandler         gamesHandler;
         private static readonly SteamUnifiedMessages steamUnified;
 
-        private static string SteamGuardCode { get; set; }
-        private static string TwoFactorCode  { get; set; }
+        private static string SteamGuardCode;
+        private static string TwoFactorCode;
         private static string Username;
         private static string Password;
+        private static string LoginKey;
         private static EResult LastLogOnResult;
+        private static RootObject CurrentUser;
 
         public static bool IsRunning     { get; set; }
         public static bool IsLoggedIn    { get; private set; }
 
         internal const ushort CallbackSleep = 500; //milliseconds
-        private const byte CaptchaLoginCooldown = 25; //minutes
+        private const uint LoginID = 1488; // This must be the same for all processes
+        //private const byte CaptchaLoginCooldown = 25; //minutes
 
         static SteamRemoteClient()
         {
@@ -63,7 +83,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             callbackManager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
             callbackManager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
             callbackManager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
-         //   callbackManager.Subscribe<SteamUser.LoginKeyCallback>(OnLoginKey);
+            callbackManager.Subscribe<SteamUser.LoginKeyCallback>(OnLoginKey);
 
             callbackManager.Subscribe<SteamUser.AccountInfoCallback>(OnAccountInfo);
             callbackManager.Subscribe<SteamUser.WalletInfoCallback>(OnWalletInfo);
@@ -88,6 +108,9 @@ namespace Steam_Account_Manager.Infrastructure.Base
             Password  = password;
             IsRunning = true;
 
+            if (!Directory.Exists(@".\RemoteUsers"))
+                Directory.CreateDirectory(@".\RemoteUsers");
+
             if(!string.IsNullOrEmpty(authCode))
             {
                 if (LastLogOnResult == EResult.AccountLogonDenied)
@@ -102,15 +125,43 @@ namespace Steam_Account_Manager.Infrastructure.Base
             {
                 if (App.IsShuttingDown) Logout();
                 callbackManager.RunWaitCallbacks(TimeSpan.FromMilliseconds(CallbackSleep));
-                File.AppendAllText("container.txt", DateTime.Now + "\n");
             }
 
             return LastLogOnResult;
         }
 
+        #region In file save
+        private static void SerializeUser()
+        {
+            var ConvertedJson = JsonConvert.SerializeObject(CurrentUser, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.Populate,
+                Formatting = Formatting.Indented
+            });
+
+            File.WriteAllText($@".\RemoteUsers\{Username}.json", ConvertedJson);
+        }
+
+        private static bool DeserializeUser()
+        {
+            if (File.Exists($@".\RemoteUsers\{Username}.json"))
+            {
+                CurrentUser = JsonConvert.DeserializeObject<RootObject>(File.ReadAllText($@".\RemoteUsers\{Username}.json"));
+                return true;
+            }
+
+            CurrentUser = new RootObject
+            {
+                RemoteUser = new User()
+            };
+            SerializeUser();
+
+            return false;
+        } 
+        #endregion
+
         public static void Logout()
         {
-            IsRunning = false;
             IsLoggedIn = false;
             steamUser.LogOff();
 
@@ -121,6 +172,11 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         private static void OnConnected(SteamClient.ConnectedCallback callback)
         {
+            if (DeserializeUser())
+            {
+                LoginKey = CurrentUser.RemoteUser.LoginKey;
+            } 
+
             byte[] sentryHash = null;
             if(File.Exists(Username + ".bin"))
             {
@@ -134,8 +190,10 @@ namespace Steam_Account_Manager.Infrastructure.Base
                 Password       = Password,
                 AuthCode       = SteamGuardCode,
                 TwoFactorCode  = TwoFactorCode,
-                SentryFileHash = sentryHash
-
+                LoginID        = LoginID,
+                ShouldRememberPassword = true,
+                LoginKey = LoginKey,
+                SentryFileHash = sentryHash,
             });
         }
 
@@ -148,11 +206,14 @@ namespace Steam_Account_Manager.Infrastructure.Base
                 return;
             }
 
-            SteamID64     = steamClient.SteamID.ConvertToUInt64().ToString();
-            IPCountryCode = callback.IPCountryCode;
-            IsLoggedIn    = true;
-            LoginViewModel.SuccessLogOn = true;
+            LoginViewModel.SteamId64 = steamClient.SteamID.ConvertToUInt64().ToString();
 
+            if (CurrentUser.RemoteUser.SteamID64 == null)
+                CurrentUser.RemoteUser.SteamID64 = LoginViewModel.SteamId64;
+
+            LoginViewModel.IPCountryCode = callback.PublicIP + " | " + callback.IPCountryCode;
+            IsLoggedIn     = true;
+            LoginViewModel.SuccessLogOn = true;
         }
 
         private static void OnLoggedOff(SteamUser.LoggedOffCallback callback)
@@ -169,6 +230,12 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         private static void OnDisconnected(SteamClient.DisconnectedCallback callback)
         {
+            if(LastLogOnResult == EResult.InvalidPassword && LoginKey != null)
+            {
+                CurrentUser.RemoteUser.LoginKey = null;
+                LastLogOnResult = EResult.Cancelled;
+            }
+            SerializeUser();
             IsRunning = false;
         }
 
@@ -191,24 +258,40 @@ namespace Steam_Account_Manager.Infrastructure.Base
             });
         }
 
+        private static void OnLoginKey(SteamUser.LoginKeyCallback callback)
+        {
+            steamUser.AcceptNewLoginKey(callback);
+            if(CurrentUser.RemoteUser.Username == null)
+                CurrentUser.RemoteUser.Username = Username;
+            CurrentUser.RemoteUser.LoginKey = callback.LoginKey;
+        }
+
         private static void OnAccountInfo(SteamUser.AccountInfoCallback callback)
         {
-            UserPersonaName = callback.PersonaName;
-            UserCountry     = callback.Country;
+            LoginViewModel.Nickname = UserPersonaName = callback.PersonaName;
+            LoginViewModel.AuthedComputers = callback.CountAuthedComputers;
         }
 
         private static void OnEmailInfo(SteamUser.EmailAddrInfoCallback callback)
         {
-            EmailAdress      = callback.EmailAddress;
-            IsEmailValidated = callback.IsValidated;
+          LoginViewModel.EmailAddress      = callback.EmailAddress;
+          LoginViewModel.EmailVerification =  callback.IsValidated;
         }
 
         private static void OnWalletInfo(SteamUser.WalletInfoCallback callback)
         {
             if (callback.HasWallet)
             {
-               
+                LoginViewModel.Wallet =  (float.Parse(callback.LongBalance.ToString())/100).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+                if (callback.Currency != ECurrencyCode.Invalid)
+                    LoginViewModel.Wallet += " " + callback.Currency.ToString();
             }
+            else
+            {
+                LoginViewModel.Wallet = "0.00 USD";
+            }
+
+            
         }
 
         private static void OnPersonaNameChange(SteamFriends.PersonaChangeCallback callback)
@@ -223,5 +306,9 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         #endregion
 
+        public static void ChangeCurrentName(string Name)
+        {
+            steamFriends.SetPersonaName(Name);
+        }
     }
 }
