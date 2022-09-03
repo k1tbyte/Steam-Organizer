@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Base;
 using SteamKit2;
@@ -104,6 +105,30 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
+        private static string _imageUrl;
+        public static event EventHandler ImageUrlChanged;
+        public static string ImageUrl
+        {
+            get => _imageUrl;
+            set
+            {
+                _imageUrl = value;
+                ImageUrlChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        private static Brush _avatarStateOutline;
+        public static event EventHandler AvatarStateOutlineChanged;
+        public Brush AvatarStateOutline
+        {
+            get => _avatarStateOutline;
+            set
+            {
+                _avatarStateOutline = value;
+                AvatarStateOutlineChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
         #endregion
 
         public static bool SuccessLogOn
@@ -163,6 +188,8 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
         public LoginViewModel()
         {
+            IsAuthCode = true;
+
             LogOnCommand = new AsyncRelayCommand(async (o) =>
             {
                 EResult result =  await Task<EResult>.Factory.StartNew(() =>

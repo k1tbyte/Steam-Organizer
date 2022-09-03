@@ -30,6 +30,15 @@ namespace Steam_Account_Manager
             return ref HttpClientFactory;
         }
 
+        /*        public static System.Windows.Media.Brush StringToBrush(string Color)
+                {
+                    if(BrushConverter == null)
+                    {
+                        BrushConverter = new System.Windows.Media.BrushConverter();
+                    }
+                    return (System.Windows.Media.Brush)BrushConverter.ConvertFromString(Color);
+                }*/
+
         public static int GetSteamRegistryActiveUser()
         {
             RegistryKey registryKey = Environment.Is64BitOperatingSystem ?

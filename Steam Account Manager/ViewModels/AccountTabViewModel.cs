@@ -27,6 +27,7 @@ namespace Steam_Account_Manager.ViewModels
         private CryptoBase database;
         private bool _containParseInfo;
 
+        #region Getters && setters
         public bool ContainParseInfo
         {
             get => _containParseInfo;
@@ -94,7 +95,9 @@ namespace Steam_Account_Manager.ViewModels
                 _id = value;
                 OnPropertyChanged();
             }
-        }
+        } 
+        #endregion
+
         private async Task ConnectToSteam()
         {
             int id = Id - 1;

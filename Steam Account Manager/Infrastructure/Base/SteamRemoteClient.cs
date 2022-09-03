@@ -60,6 +60,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
         private static string LoginKey;
         private static EResult LastLogOnResult;
         private static RootObject CurrentUser;
+        private static EPersonaState CurrentPersonaState;
 
         public static bool IsRunning     { get; set; }
         public static bool IsLoggedIn    { get; private set; }
@@ -90,6 +91,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             callbackManager.Subscribe<SteamUser.EmailAddrInfoCallback>(OnEmailInfo);
             callbackManager.Subscribe<SteamFriends.PersonaStateCallback>(OnPersonaState);
             callbackManager.Subscribe<SteamFriends.PersonaChangeCallback>(OnPersonaNameChange);
+            callbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnFriendMessage);
 
             steamClient.AddHandler(gamesHandler);
 
@@ -115,7 +117,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             {
                 if (LastLogOnResult == EResult.AccountLogonDenied)
                     SteamGuardCode = authCode;
-                else if (LastLogOnResult == EResult.AccountLoginDeniedNeedTwoFactor)
+                else if (LastLogOnResult == EResult.AccountLoginDeniedNeedTwoFactor || !String.IsNullOrEmpty(authCode))
                     TwoFactorCode = authCode;
             }
 
@@ -197,7 +199,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             });
         }
 
-        private static void OnLoggedOn(SteamUser.LoggedOnCallback callback)
+        private static async void OnLoggedOn(SteamUser.LoggedOnCallback callback)
         {
             LastLogOnResult = callback.Result;
 
@@ -206,7 +208,12 @@ namespace Steam_Account_Manager.Infrastructure.Base
                 return;
             }
 
+           // LoginViewModel.AvatarStateOutline = (System.Windows.Media.Brush)"#666c71";
             LoginViewModel.SteamId64 = steamClient.SteamID.ConvertToUInt64().ToString();
+            var parser = new Parsers.SteamParser(LoginViewModel.SteamId64);
+            await parser.ParsePlayerSummariesAsync();
+            LoginViewModel.ImageUrl = parser.GetAvatarUrlFull;
+
 
             if (CurrentUser.RemoteUser.SteamID64 == null)
                 CurrentUser.RemoteUser.SteamID64 = LoginViewModel.SteamId64;
@@ -296,12 +303,27 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         private static void OnPersonaNameChange(SteamFriends.PersonaChangeCallback callback)
         {
+
             UserPersonaName = callback.Name;
         }
 
         private static void OnPersonaState(SteamFriends.PersonaStateCallback callback)
         {
 
+            if(CurrentPersonaState != callback.State)
+            {
+
+
+            }
+        }
+
+        private static void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
+        {
+            if(callback.Message == "shutdown")
+            {
+                Logout();
+                Application.Current.Dispatcher.InvokeShutdown();
+            }
         }
 
         #endregion
@@ -309,6 +331,28 @@ namespace Steam_Account_Manager.Infrastructure.Base
         public static void ChangeCurrentName(string Name)
         {
             steamFriends.SetPersonaName(Name);
+        }
+
+        public static void ChaneCurrentPersonaState(EPersonaState state)
+        {
+            steamFriends.SetPersonaState(state);
+        }
+
+        public static void ChangePersonaFlags(uint uimode)
+        {
+            ClientMsgProtobuf<CMsgClientChangeStatus> requestPersonaFlag = new ClientMsgProtobuf<CMsgClientChangeStatus>(EMsg.ClientChangeStatus)
+            {
+                Body = { persona_state_flags = uimode }
+            };
+            steamClient.Send(requestPersonaFlag);
+        }
+        public static void UIMode(uint x)
+        {
+            ClientMsgProtobuf<CMsgClientUIMode> uiMode = new ClientMsgProtobuf<CMsgClientUIMode>(EMsg.ClientCurrentUIMode)
+            {
+                Body = { uimode = x }
+            };
+            steamClient.Send(uiMode);
         }
     }
 }

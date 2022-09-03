@@ -56,17 +56,7 @@
                 </RadioButton>
             </StackPanel>
             
-            <Border.Style>
-                <Style TargetType="Border">
-                    <Setter Property="Visibility" Value="Visible"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding SuccessLogOn}" Value="False">
-                            <Setter Property="Visibility" Value="Hidden"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-            
+
         </Border>
 
         <ContentPresenter Margin="0 25 0 0" Grid.Row="2" Content="{Binding CurrentView}"/>

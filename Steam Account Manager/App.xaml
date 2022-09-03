@@ -14,6 +14,8 @@
 
                 <ResourceDictionary Source="Themes/PasswordboxTheme.xaml"/>
 
+                <ResourceDictionary Source="Themes/ComboBoxStyle.xaml"/>
+
                 <ResourceDictionary Source="Themes/ColorSchemes/Dark.xaml"/>
 
                 <ResourceDictionary Source="Locale/lang.en-US.xaml" />

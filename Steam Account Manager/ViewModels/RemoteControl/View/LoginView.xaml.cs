@@ -1,29 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows.Controls;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {
-    /// <summary>
-    /// Логика взаимодействия для LoginView.xaml
-    /// </summary>
     public partial class LoginView : UserControl
     {
         public LoginView()
         {
             InitializeComponent();
             this.DataContext = new LoginViewModel();
+        }
+
+        private void state_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Infrastructure.Base.SteamRemoteClient.ChaneCurrentPersonaState((SteamKit2.EPersonaState)state_box.SelectedIndex);
+        }
+
+        private void ui_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch (ui_box.SelectedIndex)
+            {
+                case 0:
+                    Infrastructure.Base.SteamRemoteClient.UIMode(0);
+                    Infrastructure.Base.SteamRemoteClient.ChangePersonaFlags(0);
+                    break;
+                case 1:
+                    Infrastructure.Base.SteamRemoteClient.ChangePersonaFlags(1024); //BP
+                    break;
+                case 2:
+                    Infrastructure.Base.SteamRemoteClient.ChangePersonaFlags(2048); //VR
+                    break;
+                case 3:
+                    Infrastructure.Base.SteamRemoteClient.ChangePersonaFlags(512); // phone
+                    break;
+            }
         }
     }
 }
