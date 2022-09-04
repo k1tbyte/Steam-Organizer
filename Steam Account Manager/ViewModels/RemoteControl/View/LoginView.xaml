@@ -120,7 +120,7 @@
             <Grid>
                 <StackPanel>
                     <Ellipse Margin="0 15 0 5" HorizontalAlignment="Center"
-                             Width="100" Height="100" Stroke="{Binding AvatarStateOutline,UpdateSourceTrigger=PropertyChanged}" StrokeThickness="1.5">
+                             Width="100" Height="100" Stroke="{Binding AvatarStateOutline,UpdateSourceTrigger=PropertyChanged}" StrokeThickness="2">
                         <Ellipse.Fill>
                             <ImageBrush ImageSource="{Binding ImageUrl,UpdateSourceTrigger=PropertyChanged}"/>
                         </Ellipse.Fill>

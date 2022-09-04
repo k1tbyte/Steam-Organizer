@@ -119,7 +119,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
         private static Brush _avatarStateOutline;
         public static event EventHandler AvatarStateOutlineChanged;
-        public Brush AvatarStateOutline
+        public static Brush AvatarStateOutline
         {
             get => _avatarStateOutline;
             set
@@ -188,8 +188,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
         public LoginViewModel()
         {
-            IsAuthCode = true;
-
             LogOnCommand = new AsyncRelayCommand(async (o) =>
             {
                 EResult result =  await Task<EResult>.Factory.StartNew(() =>
@@ -238,7 +236,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 {
                     SteamRemoteClient.ChangeCurrentName(Nickname);
                 }
-
             });
         }
     }

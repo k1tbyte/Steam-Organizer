@@ -12,7 +12,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
         private void state_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Infrastructure.Base.SteamRemoteClient.ChaneCurrentPersonaState((SteamKit2.EPersonaState)state_box.SelectedIndex);
+            Infrastructure.Base.SteamRemoteClient.ChangeCurrentPersonaState((SteamKit2.EPersonaState)state_box.SelectedIndex);
         }
 
         private void ui_box_SelectionChanged(object sender, SelectionChangedEventArgs e)

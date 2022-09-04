@@ -215,7 +215,7 @@ namespace Steam_Account_Manager.ViewModels
 
             EditOrViewAccountCommand = new RelayCommand(o =>
             {
-                MainWindowViewModel.AccountDataViewCommand.Execute(Id);
+                MainWindowViewModel.AccountDataViewCommand.Execute(Id) ;
             });
 
             ViewAccountNoteModeCommand = new RelayCommand(o =>

@@ -9,10 +9,12 @@ using SteamKit2;
 using SteamKit2.Internal;
 using Steam_Account_Manager.ViewModels.RemoteControl;
 using Newtonsoft.Json;
+using System.Windows.Threading;
+using System.Net;
 
 namespace Steam_Account_Manager.Infrastructure.Base
 {
-    public partial class User
+    public class User
     {
         [JsonProperty("Username")]
         public string Username { get; set; }
@@ -22,8 +24,24 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         [JsonProperty("SteamID64")]
         public string SteamID64 { get; set; }
-    }
 
+        [JsonProperty("Games")]
+        public List<Games> Games { get; set; }
+    }
+    public class Games
+    {
+        [JsonProperty("Name")]
+        public string Name { get; set; }
+
+        [JsonProperty("ImageURL")]
+        public string ImageURL { get; set; }
+
+        [JsonProperty("AppID")]
+        public uint AppID { get; set; }
+
+        [JsonProperty("Playtime_Forever")]
+        public uint PlayTime_Forever { get; set; }
+    }
     public class RootObject
     {
         public User RemoteUser { get; set; }
@@ -31,19 +49,6 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
     internal static class SteamRemoteClient
     {
-        /*        #region User information
-                private static string        _steamID64;
-                private static string        _userPersonaName;
-                private static string        _userCountry;
-                private static string        _iPCountryCode;
-                private static string        _userWallet;
-                private static string        _emailAdress;
-                private static int           _userPersonaState;
-                private static bool          _isEmailValidated;
-                private static bool          _isUserPlaying;
-                private static List<SteamID> _friends;
-                #endregion*/
-
         public static string UserPersonaName { get; private set; }
 
         private static readonly CallbackManager      callbackManager;
@@ -59,11 +64,12 @@ namespace Steam_Account_Manager.Infrastructure.Base
         private static string Password;
         private static string LoginKey;
         private static EResult LastLogOnResult;
-        private static RootObject CurrentUser;
         private static EPersonaState CurrentPersonaState;
+        private static string CurrentSteamId64;
 
         public static bool IsRunning     { get; set; }
         public static bool IsLoggedIn    { get; private set; }
+        public static RootObject CurrentUser { get; set; }
 
         internal const ushort CallbackSleep = 500; //milliseconds
         private const uint LoginID = 1488; // This must be the same for all processes
@@ -155,7 +161,11 @@ namespace Steam_Account_Manager.Infrastructure.Base
             CurrentUser = new RootObject
             {
                 RemoteUser = new User()
+                {
+                    Games = new List<Games>()
+                }
             };
+
             SerializeUser();
 
             return false;
@@ -165,6 +175,15 @@ namespace Steam_Account_Manager.Infrastructure.Base
         public static void Logout()
         {
             IsLoggedIn = false;
+
+            if (LastLogOnResult == EResult.InvalidPassword && LoginKey != null)
+            {
+                CurrentUser.RemoteUser.LoginKey = null;
+                LastLogOnResult = EResult.Cancelled;
+            }
+            
+            SerializeUser();
+
             steamUser.LogOff();
 
             LastLogOnResult = EResult.NotLoggedOn;
@@ -208,8 +227,11 @@ namespace Steam_Account_Manager.Infrastructure.Base
                 return;
             }
 
-           // LoginViewModel.AvatarStateOutline = (System.Windows.Media.Brush)"#666c71";
+            Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utilities.StringToBrush("Gray"));
+
             LoginViewModel.SteamId64 = steamClient.SteamID.ConvertToUInt64().ToString();
+            CurrentSteamId64 = LoginViewModel.SteamId64;
+
             var parser = new Parsers.SteamParser(LoginViewModel.SteamId64);
             await parser.ParsePlayerSummariesAsync();
             LoginViewModel.ImageUrl = parser.GetAvatarUrlFull;
@@ -237,12 +259,6 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         private static void OnDisconnected(SteamClient.DisconnectedCallback callback)
         {
-            if(LastLogOnResult == EResult.InvalidPassword && LoginKey != null)
-            {
-                CurrentUser.RemoteUser.LoginKey = null;
-                LastLogOnResult = EResult.Cancelled;
-            }
-            SerializeUser();
             IsRunning = false;
         }
 
@@ -309,12 +325,33 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         private static void OnPersonaState(SteamFriends.PersonaStateCallback callback)
         {
-
-            if(CurrentPersonaState != callback.State)
+            if(callback.FriendID == steamClient.SteamID)
             {
+                if (CurrentPersonaState != callback.State)
+                {
+                    CurrentPersonaState = callback.State;
+                    if (CurrentPersonaState == EPersonaState.Online)
+                    {
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utilities.StringToBrush("#5da5c2"));
+                    }
+                    else if (callback.GameAppID != 0)
+                    {
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utilities.StringToBrush("#688843"));
+                    }
+                    else if (CurrentPersonaState == EPersonaState.Away || CurrentPersonaState == EPersonaState.Snooze)
+                    {
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utilities.StringToBrush("Orange"));
+                    }
+                    else
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utilities.StringToBrush("#666c71"));
+                }
 
-
+                if (LoginViewModel.Nickname != callback.Name)
+                {
+                    LoginViewModel.Nickname = callback.Name;
+                }
             }
+           
         }
 
         private static void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
@@ -331,9 +368,9 @@ namespace Steam_Account_Manager.Infrastructure.Base
         public static void ChangeCurrentName(string Name)
         {
             steamFriends.SetPersonaName(Name);
-        }
+        } 
 
-        public static void ChaneCurrentPersonaState(EPersonaState state)
+        public static void ChangeCurrentPersonaState(EPersonaState state)
         {
             steamFriends.SetPersonaState(state);
         }
@@ -354,5 +391,37 @@ namespace Steam_Account_Manager.Infrastructure.Base
             };
             steamClient.Send(uiMode);
         }
+
+        #region Games parse
+        public static async Task ParseOwnedGamesAsync()
+        {
+            string webApiKey = Keys.STEAM_API_KEY;
+            if (!String.IsNullOrEmpty(Config._config.WebApiKey))
+                webApiKey = Config._config.WebApiKey;
+
+            var webClient = new WebClient { Encoding = Encoding.UTF8 };
+            string json = await webClient.DownloadStringTaskAsync(
+                "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" +
+                webApiKey + "&steamid=" + CurrentSteamId64 + "&include_appinfo=true");
+
+            CurrentUser.RemoteUser.Games = JsonConvert.DeserializeObject<RootObjectOwnedGames>(json).Response.Games;
+
+            for (int i = 0; i < CurrentUser.RemoteUser.Games.Count; i++)
+            {
+                CurrentUser.RemoteUser.Games[i].ImageURL = $"https://cdn.akamai.steamstatic.com/steam/apps/{CurrentUser.RemoteUser.Games[i].AppID}/header.jpg";
+            }
+        }
+
+        private class RootObjectOwnedGames
+        {
+            public ResponseOwnedGames Response { get; set; }
+        }
+
+        private class ResponseOwnedGames
+        {
+            public List<Games> Games { get; set; }
+        } 
+
+        #endregion
     }
 }

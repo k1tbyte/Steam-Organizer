@@ -9,7 +9,7 @@ namespace Steam_Account_Manager
     internal class Utilities
     {
         private static HttpClient HttpClientFactory;
-
+        private static System.Windows.Media.BrushConverter BrushConverter;
         public static DateTime UnixTimeToDateTime(long unixtime)
         {
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0);
@@ -30,14 +30,16 @@ namespace Steam_Account_Manager
             return ref HttpClientFactory;
         }
 
-        /*        public static System.Windows.Media.Brush StringToBrush(string Color)
-                {
-                    if(BrushConverter == null)
-                    {
-                        BrushConverter = new System.Windows.Media.BrushConverter();
-                    }
-                    return (System.Windows.Media.Brush)BrushConverter.ConvertFromString(Color);
-                }*/
+        public static System.Windows.Media.Brush StringToBrush(string Color)
+        {
+            if(BrushConverter == null)
+            {
+                BrushConverter = new System.Windows.Media.BrushConverter();
+            }
+            var Brush = (System.Windows.Media.Brush)BrushConverter.ConvertFromString(Color);
+            Brush.Freeze();
+            return Brush;
+        }
 
         public static int GetSteamRegistryActiveUser()
         {

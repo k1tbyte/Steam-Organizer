@@ -1,28 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows.Controls;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {
-    /// <summary>
-    /// Логика взаимодействия для GamesView.xaml
-    /// </summary>
     public partial class GamesView : UserControl
     {
+        private GamesViewModel currentViewModel;
         public GamesView()
         {
             InitializeComponent();
+            currentViewModel = new GamesViewModel();
+            this.DataContext = currentViewModel;
+        }
+
+        private void games_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (games.SelectedItems.Count == 0)
+            {
+                SelectsText.Text = "Selected: 0";
+            }
+            else if (games.SelectedItems.Count == 1)
+            {
+                SelectsText.Text = "Selected\nAppID: " + currentViewModel.Games[games.SelectedIndex].AppID +
+                    "\nPlaytime: " + currentViewModel.Games[games.SelectedIndex].PlayTime_Forever / 60 + "h";
+            }
+            else
+                SelectsText.Text = "Selected: " + games.SelectedItems.Count;
         }
     }
 }

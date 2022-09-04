@@ -16,7 +16,7 @@ namespace Steam_Account_Manager.ViewModels.View
         {
             bool scrollToEnd = false;
             InitializeComponent();
-
+            
             //Если id с минусом - прокрутка вниз
             if (id < 0)
             {

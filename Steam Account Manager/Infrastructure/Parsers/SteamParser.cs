@@ -55,6 +55,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
             // Получаем инфу о уровне
             await ParseSteamLevelAsync();
+
         }
 
 
@@ -132,6 +133,11 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         }
 
 
+        #region OwnedGames
+
+
+
+        #endregion
 
         #region Player level
         private string GetSteamLevelLink() =>

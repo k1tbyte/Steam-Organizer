@@ -35,11 +35,11 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public MainRemoteControlViewModel()
         {
             LoginV = new LoginView();
-            GamesV = new GamesView();
             FriendsV = new FriendsView();
             MessagesV = new MessagesView();
+            GamesV = new GamesView();
 
-            CurrentView = LoginV;
+            CurrentView = GamesV;
 
             LoginViewCommand = new RelayCommand(o =>
             {
@@ -49,7 +49,11 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             GamesViewCommand = new RelayCommand(o =>
             {
                 if (LoginViewModel.SuccessLogOn)
+                {
+                    if (GamesV == null)
+                        GamesV = new GamesView();
                     CurrentView = GamesV;
+                }
                 else
                     (o as RadioButton).IsChecked = true;
             });

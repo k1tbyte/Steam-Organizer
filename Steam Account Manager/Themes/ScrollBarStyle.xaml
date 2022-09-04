@@ -86,4 +86,35 @@
 
     </Style>
 
+    <Style x:Key="games_listbox" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Grid>
+                        <Border 
+                        Name="Border"
+                        Padding="7"
+                        SnapsToDevicePixels="True"
+                        CornerRadius="15"
+                        Margin="2"
+                        Opacity="0.3">
+                        </Border>
+                        <ContentPresenter />
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter TargetName="Border" Property="Background"
+                                    Value="{DynamicResource ResourceKey=menu_button_background}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style> 
+    
+    
+
 </ResourceDictionary>
