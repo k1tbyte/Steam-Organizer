@@ -50,6 +50,8 @@ namespace Steam_Account_Manager.Infrastructure.Base
     internal static class SteamRemoteClient
     {
         public static string UserPersonaName { get; private set; }
+        internal static EOSType OSType { get; private set; } = EOSType.Unknown;
+
 
         private static readonly CallbackManager      callbackManager;
         private static readonly SteamClient          steamClient;
@@ -57,6 +59,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
         private static readonly SteamFriends         steamFriends;
         private static readonly GamesHandler         gamesHandler;
         private static readonly SteamUnifiedMessages steamUnified;
+        
 
         private static string SteamGuardCode;
         private static string TwoFactorCode;
@@ -205,24 +208,34 @@ namespace Steam_Account_Manager.Infrastructure.Base
                 sentryHash = CryptoHelper.SHAHash(sentryFile);
             }
 
-            steamUser.LogOn(new SteamUser.LogOnDetails
+            var logOnDetails = new SteamUser.LogOnDetails
             {
-                Username       = Username,
-                Password       = Password,
-                AuthCode       = SteamGuardCode,
-                TwoFactorCode  = TwoFactorCode,
-                LoginID        = LoginID,
+                Username = Username,
+                Password = Password,
+                AuthCode = SteamGuardCode,
+                TwoFactorCode = TwoFactorCode,
+                LoginID = LoginID,
                 ShouldRememberPassword = true,
                 LoginKey = LoginKey,
                 SentryFileHash = sentryHash,
-            });
+            };
+
+            if(OSType == EOSType.Unknown)
+            {
+                OSType = logOnDetails.ClientOSType;
+            }
+
+            steamUser.LogOn(logOnDetails);
         }
 
         private static async void OnLoggedOn(SteamUser.LoggedOnCallback callback)
         {
             LastLogOnResult = callback.Result;
 
-            if(LastLogOnResult != EResult.OK)
+            if (LastLogOnResult == EResult.InvalidPassword && CurrentUser.RemoteUser.LoginKey != null)
+                CurrentUser.RemoteUser.LoginKey = null;
+
+            if (LastLogOnResult != EResult.OK)
             {
                 return;
             }
@@ -423,5 +436,23 @@ namespace Steam_Account_Manager.Infrastructure.Base
         } 
 
         #endregion
+
+        internal static async Task IdleGame(uint? AppId,string GameName = null)
+        {
+            await gamesHandler.PlayGames(new HashSet<uint>(1) { AppId ?? 0 }, GameName).ConfigureAwait(false);
+        }
+
+        internal static async Task IdleGames(IReadOnlyCollection<uint> AppIds,string GameName = null)
+        {
+            if (AppIds == null || AppIds.Count == 0)
+                throw new ArgumentNullException(nameof(AppIds));
+
+            await gamesHandler.PlayGames(AppIds,GameName).ConfigureAwait(false);
+        }
+
+        internal static async Task StopIdle()
+        {
+            await gamesHandler.PlayGames(null).ConfigureAwait(false);
+        }
     }
 }

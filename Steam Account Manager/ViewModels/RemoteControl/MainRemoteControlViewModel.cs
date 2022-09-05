@@ -21,10 +21,21 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public FriendsView FriendsV;
         public MessagesView MessagesV;
 
+        private bool _isLoggedIn;
+        public bool IsLoggedIn
+        {
+            get => _isLoggedIn;
+            set
+            {
+                _isLoggedIn = value;
+                OnPropertyChanged(nameof(IsLoggedIn));
+            }
+        }
+
         private object _currentView;
         public object CurrentView
         {
-            get { return _currentView; }
+            get => _currentView; 
             set
             {
                 _currentView = value;
@@ -32,47 +43,54 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
+        
+
         public MainRemoteControlViewModel()
         {
             LoginV = new LoginView();
-            FriendsV = new FriendsView();
-            MessagesV = new MessagesView();
-            GamesV = new GamesView();
 
-            CurrentView = GamesV;
+            CurrentView = LoginV;
 
             LoginViewCommand = new RelayCommand(o =>
             {
                  CurrentView = LoginV;
+
+                if (CurrentView != LoginV)
+                    CurrentView = LoginV;
             });
 
             GamesViewCommand = new RelayCommand(o =>
             {
-                if (LoginViewModel.SuccessLogOn)
+                if (IsLoggedIn = LoginViewModel.SuccessLogOn && CurrentView != GamesV)
                 {
                     if (GamesV == null)
                         GamesV = new GamesView();
+
                     CurrentView = GamesV;
                 }
-                else
-                    (o as RadioButton).IsChecked = true;
             });
 
             MessagesViewCommand = new RelayCommand(o =>
             {
-                if (LoginViewModel.SuccessLogOn)
+                if (IsLoggedIn = LoginViewModel.SuccessLogOn && CurrentView != MessagesV)
+                {
+                    if (MessagesV == null)
+                        MessagesV = new MessagesView();
+
                     CurrentView = MessagesV;
-                else
-                    (o as RadioButton).IsChecked = true;
+                }
+                    
             });
 
             FriendsViewCommand = new RelayCommand(o =>
             {
-                if (LoginViewModel.SuccessLogOn)
+                if (IsLoggedIn = LoginViewModel.SuccessLogOn && CurrentView != FriendsV)
+                {
+                    if (FriendsV == null)
+                        FriendsV = new FriendsView();
+
                     CurrentView = FriendsV;
-                else
-                   (o as RadioButton).IsChecked = true;
-                
+                }
             });
         }
     }

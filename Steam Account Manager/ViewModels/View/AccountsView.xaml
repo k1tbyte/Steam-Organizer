@@ -7,10 +7,12 @@
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              D:DataContext="{D:DesignInstance Type=Vm:AccountsViewModel}"
              xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
+             xmlns:converter="clr-namespace:Steam_Account_Manager.Infrastructure.Converters"
              Mc:Ignorable="D"
              D:DesignHeight="450" D:DesignWidth="600">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="boolToVis" />
+        <converter:InverseBoolConverter x:Key="BoolInverse"/>
     </UserControl.Resources>
    
 
@@ -29,7 +31,7 @@
         <!--Search Bar-->
         <Grid Width="440" HorizontalAlignment="Left" Grid.Row="0">
             <TextBlock Margin="20,0,45,0" VerticalAlignment="Center" Foreground="#b0b9c6" IsHitTestVisible="False"
-                           Panel.ZIndex="1" Text="{DynamicResource av_searchbar_title}"
+                          Panel.ZIndex="1" Text="{DynamicResource av_searchbar_title}"
                           Visibility="{Binding ElementName=txtSearch, Path=Text.IsEmpty,Converter={StaticResource boolToVis}}"/>
             <Border x:Name="border" Background="{DynamicResource searchbox}" CornerRadius="20">
                 <Border.Effect>
@@ -38,6 +40,7 @@
             </Border>
 
             <TextBox x:Name="txtSearch" VerticalAlignment="Center"
+                     IsHitTestVisible="{Binding IsDatabaseEmpty,Converter={StaticResource BoolInverse}}"
                      Text="{Binding SearchBoxText, UpdateSourceTrigger=PropertyChanged}"
                      Margin="18,0,59,0" Background="{DynamicResource searchbox}" Foreground="#b0b9c6"
                      BorderBrush="{x:Null}" BorderThickness="0,0,0,0" MaxLength="80"/>
@@ -70,6 +73,7 @@
             
             <!-- Save account database in file -->
             <Button x:Name="saveDb" Style="{StaticResource serviceButton}" Command="{Binding StoreAccountDatabaseCommand}"
+                    IsEnabled="{Binding IsDatabaseEmpty,Converter={StaticResource BoolInverse}}"
                     MouseEnter="saveDb_MouseEnter" MouseLeave="Popup_leave">
                 <Icon:PackIconMaterial Kind="ContentSaveAll" Width="20" Height="20"
                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -92,6 +96,7 @@
 
             <!-- Refresh information about all accounts -->
             <Button x:Name="refreshDb" Style="{StaticResource serviceButton}" Command="{Binding UpdateDatabaseCommand}"
+                    IsEnabled="{Binding IsDatabaseEmpty,Converter={StaticResource BoolInverse}}"
                     MouseEnter="refreshDb_MouseEnter" MouseLeave="Popup_leave">
                 <Icon:PackIconMaterial Kind="Refresh" Width="20" Height="20"
                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -157,7 +162,13 @@
             </StackPanel>
         </Border>
 
-
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Margin="0 0 0 50"
+                   FontSize="35" FontWeight="Bold" Foreground="{DynamicResource default_foreground}"
+                   Opacity="0.7" Grid.Row="2" Visibility="{Binding IsDatabaseEmpty,Converter={StaticResource boolToVis}}" >
+            No accounts added.
+            <LineBreak/>
+             Click "add" for a new one!
+        </TextBlock>
 
     </Grid>
 </UserControl>

@@ -190,6 +190,9 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         {
             LogOnCommand = new AsyncRelayCommand(async (o) =>
             {
+                if(String.IsNullOrEmpty(Username) || String.IsNullOrEmpty(Password))
+                    return;
+
                 EResult result =  await Task<EResult>.Factory.StartNew(() =>
                 {
                     return SteamRemoteClient.Login(Username, Password, AuthCode);

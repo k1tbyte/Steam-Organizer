@@ -28,9 +28,20 @@ namespace Steam_Account_Manager.ViewModels
         private int _accountId;
         public static int TempId;
 
+        private static bool _isDatabaseEmpty;
+        public static event EventHandler IsDatabaseEmptyChanged;
+        public static bool IsDatabaseEmpty
+        {
+            get => _isDatabaseEmpty;
+            set
+            {
+                _isDatabaseEmpty = value;
+                IsDatabaseEmptyChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
         public static event EventHandler ConfirmBannerChanged;
         private static bool _confirmBanner;
-
         public static bool ConfirmBanner
         {
             get => _confirmBanner;
@@ -91,11 +102,6 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public static void SearchByNickname(string nickname)
-        {
-
-        }
-
         public static void FillAccountTabViews()
         {
             ConfirmBanner = false;
@@ -121,6 +127,7 @@ namespace Steam_Account_Manager.ViewModels
         {
             AccountTabViews.Add(new AccountTabView(id));
             MainWindowViewModel.TotalAccounts++;
+            IsDatabaseEmpty = false;
         }
 
 
@@ -228,6 +235,7 @@ namespace Steam_Account_Manager.ViewModels
                     AccountTabViews.RemoveAt(TempId);
                     MainWindowViewModel.TotalAccounts--;
                     database.SaveDatabase();
+                    IsDatabaseEmpty = AccountTabViews.Count == 0;
                 }
                 else
                 {
@@ -301,6 +309,7 @@ namespace Steam_Account_Manager.ViewModels
                             FillAccountTabViews();
                             Task.Run(() => MainWindowViewModel.NotificationView("Database restored from file"));
                             database.SaveDatabase();
+                            IsDatabaseEmpty = AccountTabViews.Count == 0;
                         }
                     }
                 }
@@ -309,6 +318,8 @@ namespace Steam_Account_Manager.ViewModels
 
 
             FillAccountTabViews();
+
+            IsDatabaseEmpty = AccountTabViews.Count == 0;
         }
 
     }

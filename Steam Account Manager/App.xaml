@@ -16,6 +16,8 @@
 
                 <ResourceDictionary Source="Themes/ComboBoxStyle.xaml"/>
 
+                <ResourceDictionary Source="Themes/ListBoxStyle.xaml"/>
+
                 <ResourceDictionary Source="Themes/ColorSchemes/Dark.xaml"/>
 
                 <ResourceDictionary Source="Locale/lang.en-US.xaml" />
@@ -161,6 +163,7 @@
                 <Setter Property="Width" Value="80"/>
                 <Setter Property="Height" Value="35"/>
                 <Setter Property="Margin" Value="10 0 0 0"/>
+                <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="FontSize" Value="14"/>
                 <Setter Property="Template">
                     <Setter.Value>
@@ -176,7 +179,6 @@
                     <Trigger Property="IsChecked" Value="true">
                         <Setter Property="Background" Value="{DynamicResource settings_buttons_isChecked}"/>
                         <Setter Property="Foreground" Value="#ffffff"/>
-                        <Setter Property="BorderBrush" Value="Transparent"/>
                         <Setter Property="Content" Value="{DynamicResource sv_on}">
                         </Setter>
                     </Trigger>
@@ -189,7 +191,23 @@
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
                         <Setter Property="Foreground" Value="White"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="idle_button" TargetType="ToggleButton" BasedOn="{StaticResource settingsButton}">
+                <Setter Property="Margin" Value="0 15 0 0"/>
+                <Style.Triggers>
+                    <Trigger Property="IsChecked" Value="true">
+                        <Setter Property="Foreground" Value="#ffffff"/>
                         <Setter Property="BorderBrush" Value="Transparent"/>
+                        <Setter Property="Content" Value="Stop">
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsChecked" Value="false">
+                        <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
+                        <Setter Property="Background" Value="{DynamicResource second_main_color}"/>
+                        <Setter Property="Content" Value="Idle"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -624,8 +642,6 @@
             </Style>
 
             
-            
-
             <Style x:Key="checkbox" TargetType="{x:Type ToggleButton}">
                 <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
                 <Setter Property="Foreground" Value="{DynamicResource main_text_color}"/>
@@ -704,8 +720,6 @@
                 <GradientStop Color="LawnGreen" Offset="0.75" />
                 <GradientStop Color="Green" Offset="1.0" />
             </LinearGradientBrush>
-
-
 
 
             <DataTemplate DataType="{x:Type viewModel:AccountsViewModel}">
