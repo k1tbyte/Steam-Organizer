@@ -1,24 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using Steam_Account_Manager.Infrastructure;
+﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Base;
 using SteamKit2;
+using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Windows.Media;
+using Newtonsoft.Json;
+using System.IO;
+using System.Collections.Generic;
+using System.Windows.Controls;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {
     internal class LoginViewModel : ObservableObject
     {
         public AsyncRelayCommand LogOnCommand { get; set; }
+        public AsyncRelayCommand RecentlyLogOnCommand { get; set; }
         public RelayCommand ChangeNicknameCommand { get; set; }
-        public static event EventHandler SuccessLogOnChanged;
+        public RelayCommand LogOutCommand { get; set; }
+
+
 
         private bool _isAuthCode;
         private string _username, _password,_authCode, _errorMsg;
-        private static bool _successLogOn;
 
         #region Callbacks receiver handlers
 
@@ -129,8 +133,8 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
-        #endregion
-
+        public static event EventHandler SuccessLogOnChanged;
+        private static bool _successLogOn;
         public static bool SuccessLogOn
         {
             get => _successLogOn;
@@ -140,6 +144,21 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 SuccessLogOnChanged?.Invoke(null, EventArgs.Empty);
             }
         }
+
+        #endregion
+
+        private static ObservableCollection<RecentlyLoggedAccount> _recentlyLoggedIn;
+        public static event EventHandler RecentlyLoggedOnChanged;
+        public static ObservableCollection<RecentlyLoggedAccount> RecentlyLoggedIn
+        {
+            get => _recentlyLoggedIn;
+            set
+            {
+                _recentlyLoggedIn = value;
+                RecentlyLoggedOnChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
         public string ErrorMsg
         {
             get => _errorMsg;
@@ -188,6 +207,16 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
         public LoginViewModel()
         {
+
+            if (File.Exists(@".\RecentlyLoggedUsers.json"))
+            {
+                RecentlyLoggedIn = new ObservableCollection<RecentlyLoggedAccount>(
+                    JsonConvert.DeserializeObject<List<RecentlyLoggedAccount>>(File.ReadAllText(@".\RecentlyLoggedUsers.json")));
+            }
+            else
+                RecentlyLoggedIn = new ObservableCollection<RecentlyLoggedAccount>(new List<RecentlyLoggedAccount>());
+
+
             LogOnCommand = new AsyncRelayCommand(async (o) =>
             {
                 if(String.IsNullOrEmpty(Username) || String.IsNullOrEmpty(Password))
@@ -239,6 +268,45 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 {
                     SteamRemoteClient.ChangeCurrentName(Nickname);
                 }
+            });
+
+            RecentlyLogOnCommand = new AsyncRelayCommand(async (o) =>
+            {
+                var element = (o as ListBox).SelectedItem as RecentlyLoggedAccount;
+                Username = element.Username;
+                EResult result = await Task<EResult>.Factory.StartNew(() =>
+                {
+                    return SteamRemoteClient.Login(Username, "using",null,element.Loginkey);
+                });
+
+                if(result == EResult.InvalidPassword)
+                {
+                    ErrorMsg = "Login key has expired...";
+                    RecentlyLoggedIn.Remove(element);
+                }
+                else
+                {
+                    switch (result)
+                    {
+                        case EResult.NoConnection:
+                            ErrorMsg = "No internet connection...";
+                            break;
+                        case EResult.ServiceUnavailable:
+                            ErrorMsg = "Service unavailable";
+                            break;
+                        case EResult.Timeout:
+                            ErrorMsg = "Timeout in work...";
+                            break;
+                        case EResult.RateLimitExceeded:
+                            ErrorMsg = "Retries exceeded. Please try again in 35 minutes";
+                            break;
+                    }
+                }
+            });
+
+            LogOutCommand = new RelayCommand(o =>
+            {
+                SteamRemoteClient.Logout();
             });
         }
     }

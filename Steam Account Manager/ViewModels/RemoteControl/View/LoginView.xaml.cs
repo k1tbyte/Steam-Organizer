@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using Newtonsoft.Json;
+using System.Windows.Controls;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {
@@ -33,6 +34,19 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
                     Infrastructure.Base.SteamRemoteClient.ChangePersonaFlags(512); // phone
                     break;
             }
+        }
+
+        private void RecentlyDelete_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            LoginViewModel.RecentlyLoggedIn.RemoveAt(Recently.SelectedIndex);
+
+            var ConvertedJson = JsonConvert.SerializeObject(LoginViewModel.RecentlyLoggedIn, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.Populate,
+                Formatting = Formatting.Indented
+            });
+
+            System.IO.File.WriteAllText(@".\RecentlyLoggedUsers.json", ConvertedJson);
         }
     }
 }

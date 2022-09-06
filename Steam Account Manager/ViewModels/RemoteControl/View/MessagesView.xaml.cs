@@ -23,6 +23,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
         public MessagesView()
         {
             InitializeComponent();
+            this.DataContext = new MessagesViewModel();
         }
     }
 }

@@ -14,6 +14,17 @@ using System.Net;
 
 namespace Steam_Account_Manager.Infrastructure.Base
 {
+    public class RecentlyLoggedAccount
+    {
+        [JsonProperty("Username")]
+        public string Username { get; set; }
+
+        [JsonProperty("Loginkey")]
+        public string Loginkey { get; set; }
+
+        [JsonProperty("ImageUrl")]
+        public string ImageUrl { get; set; }
+    }
     public class User
     {
         [JsonProperty("Username")]
@@ -46,7 +57,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
     {
         public User RemoteUser { get; set; }
     }
-
+ 
     internal static class SteamRemoteClient
     {
         public static string UserPersonaName { get; private set; }
@@ -71,7 +82,6 @@ namespace Steam_Account_Manager.Infrastructure.Base
         private static string CurrentSteamId64;
 
         public static bool IsRunning     { get; set; }
-        public static bool IsLoggedIn    { get; private set; }
         public static RootObject CurrentUser { get; set; }
 
         internal const ushort CallbackSleep = 500; //milliseconds
@@ -113,7 +123,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         }
 
-        public static EResult Login(string username, string password, string authCode)
+        public static EResult Login(string username, string password, string authCode,string loginKey = null)
         {
             Username  = username;
             Password  = password;
@@ -129,6 +139,8 @@ namespace Steam_Account_Manager.Infrastructure.Base
                 else if (LastLogOnResult == EResult.AccountLoginDeniedNeedTwoFactor || !String.IsNullOrEmpty(authCode))
                     TwoFactorCode = authCode;
             }
+            if (!String.IsNullOrEmpty(LoginKey))
+                LoginKey = loginKey;
 
             steamClient.Connect();
 
@@ -177,7 +189,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         public static void Logout()
         {
-            IsLoggedIn = false;
+            LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;
 
             if (LastLogOnResult == EResult.InvalidPassword && LoginKey != null)
             {
@@ -187,7 +199,15 @@ namespace Steam_Account_Manager.Infrastructure.Base
             
             SerializeUser();
 
+            var ConvertedJson = JsonConvert.SerializeObject(LoginViewModel.RecentlyLoggedIn, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.Populate,
+                Formatting = Formatting.Indented
+            });
+            File.WriteAllText(@".\RecentlyLoggedUsers.json", ConvertedJson);
+
             steamUser.LogOff();
+
 
             LastLogOnResult = EResult.NotLoggedOn;
         }
@@ -196,10 +216,11 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         private static void OnConnected(SteamClient.ConnectedCallback callback)
         {
-            if (DeserializeUser())
+            if(DeserializeUser() && LoginKey == null)
             {
                 LoginKey = CurrentUser.RemoteUser.LoginKey;
-            } 
+            }
+
 
             byte[] sentryHash = null;
             if(File.Exists(Username + ".bin"))
@@ -248,13 +269,14 @@ namespace Steam_Account_Manager.Infrastructure.Base
             var parser = new Parsers.SteamParser(LoginViewModel.SteamId64);
             await parser.ParsePlayerSummariesAsync();
             LoginViewModel.ImageUrl = parser.GetAvatarUrlFull;
-
+            GamesViewModel.Games = new System.Collections.ObjectModel.ObservableCollection<Games>(CurrentUser.RemoteUser.Games);
 
             if (CurrentUser.RemoteUser.SteamID64 == null)
                 CurrentUser.RemoteUser.SteamID64 = LoginViewModel.SteamId64;
 
             LoginViewModel.IPCountryCode = callback.PublicIP + " | " + callback.IPCountryCode;
-            IsLoggedIn     = true;
+
+            MainRemoteControlViewModel.IsPanelActive = true;
             LoginViewModel.SuccessLogOn = true;
         }
 
@@ -266,8 +288,6 @@ namespace Steam_Account_Manager.Infrastructure.Base
             {
                 steamClient.Disconnect();
             }
-
-            IsLoggedIn = false;
         }
 
         private static void OnDisconnected(SteamClient.DisconnectedCallback callback)
@@ -300,6 +320,29 @@ namespace Steam_Account_Manager.Infrastructure.Base
             if(CurrentUser.RemoteUser.Username == null)
                 CurrentUser.RemoteUser.Username = Username;
             CurrentUser.RemoteUser.LoginKey = callback.LoginKey;
+
+            for (int i = 0; i < LoginViewModel.RecentlyLoggedIn.Count; i++)
+            {
+                if (Username == LoginViewModel.RecentlyLoggedIn[i].Username)
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() => LoginViewModel.RecentlyLoggedIn[i] = new RecentlyLoggedAccount
+                    {
+                        Username = Username,
+                        Loginkey = callback.LoginKey,
+                        ImageUrl = LoginViewModel.ImageUrl
+                    }));
+                    return;
+                }
+            }
+
+            Application.Current.Dispatcher.Invoke(new Action(() => LoginViewModel.RecentlyLoggedIn.Add(new RecentlyLoggedAccount
+            {
+                Username = Username,
+                Loginkey = callback.LoginKey,
+                ImageUrl = LoginViewModel.ImageUrl
+            })));
+
+
         }
 
         private static void OnAccountInfo(SteamUser.AccountInfoCallback callback)

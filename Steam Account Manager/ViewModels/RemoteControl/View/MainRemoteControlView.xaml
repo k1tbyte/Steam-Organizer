@@ -21,7 +21,8 @@
                 Background="{DynamicResource second_main_color}" Width="280">
             <StackPanel Orientation="Horizontal" Margin="20 5 0 5">
 
-                <RadioButton x:Name="Login" Style="{StaticResource RemoteControlButton}" IsHitTestVisible="{Binding IsLoggedIn}"
+                <RadioButton x:Name="Login" Style="{StaticResource RemoteControlButton}" IsHitTestVisible="{Binding IsPanelActive}"
+                             Command="{Binding LoginViewCommand}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="True">
                     <Icon:PackIconMaterial Kind="Account"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
@@ -30,7 +31,7 @@
                 <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5"  Opacity="0.8" />
 
                 <RadioButton Style="{StaticResource RemoteControlButton}" 
-                             Command="{Binding GamesViewCommand}" IsHitTestVisible="{Binding IsLoggedIn}"
+                             Command="{Binding GamesViewCommand}" IsHitTestVisible="{Binding IsPanelActive}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
                     <Icon:PackIconMaterial Kind="GoogleController"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
@@ -40,7 +41,7 @@
                 <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5" Opacity="0.8"/>
 
                 <RadioButton Style="{StaticResource RemoteControlButton}" 
-                             Command="{Binding MessagesViewCommand}" IsHitTestVisible="{Binding IsLoggedIn}"
+                             Command="{Binding MessagesViewCommand}" IsHitTestVisible="{Binding IsPanelActive}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
                     <Icon:PackIconMaterial Kind="Message"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
@@ -49,7 +50,7 @@
                 <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5" Opacity="0.8"/>
 
                 <RadioButton Style="{StaticResource RemoteControlButton}" 
-                             Command="{Binding FriendsViewCommand}" IsHitTestVisible="{Binding IsLoggedIn}"
+                             Command="{Binding FriendsViewCommand}" IsHitTestVisible="{Binding IsPanelActive}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
                     <Icon:PackIconMaterial Kind="AccountGroup"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>

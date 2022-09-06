@@ -1,5 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Base;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
 
@@ -9,7 +10,19 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
     {
         public RelayCommand AddOtherIdCommand { get; set; }
         public AsyncRelayCommand ParseGamesComamnd { get; set; }
-        public ObservableCollection<Games> Games { get; private set; }
+
+        private static ObservableCollection<Games> _games;
+        public static event EventHandler GamesChanged;
+        public  static ObservableCollection<Games> Games
+        {
+            get => _games;
+            set
+            {
+                _games = value;
+                GamesChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
         private bool _isLibraryEmpty;
         public bool IsLibraryEmpty
         {
@@ -24,7 +37,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public GamesViewModel()
         {
            // SteamRemoteClient.CurrentUser = JsonConvert.DeserializeObject<RootObject>(File.ReadAllText($@".\RemoteUsers\D1lettantZz.json"));
-            Games = new ObservableCollection<Games>(SteamRemoteClient.CurrentUser.RemoteUser.Games);
             IsLibraryEmpty = Games.Count == 0;
             ParseGamesComamnd = new AsyncRelayCommand(async (o) =>
             {

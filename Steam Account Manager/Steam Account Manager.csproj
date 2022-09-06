@@ -154,6 +154,7 @@
     <Compile Include="ViewModels\RemoteControl\GamesViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\LoginViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\MainRemoteControlViewModel.cs" />
+    <Compile Include="ViewModels\RemoteControl\MessagesViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\View\FriendsView.xaml.cs">
       <DependentUpon>FriendsView.xaml</DependentUpon>
     </Compile>

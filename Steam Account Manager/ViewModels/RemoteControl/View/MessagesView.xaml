@@ -4,9 +4,32 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl.View"
+             xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl"
+             d:DataContext="{d:DesignInstance Type=vm:MessagesViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="350" d:DesignWidth="600">
     <Grid>
-            
+        <Border CornerRadius="20" Background="{DynamicResource first_main_color}">
+            <Grid>
+                <Border x:Name="communityInfo" Margin="20 20 0 20" HorizontalAlignment="Left"
+                    CornerRadius="15" Width="300"  Background="{DynamicResource adv_borders_background}" Opacity="0.7">
+                   
+                    <ListBox Background="Transparent"
+                             ItemsSource="{Binding messages,UpdateSourceTrigger=PropertyChanged}" BorderThickness="0">
+                        
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Sender,UpdateSourceTrigger=PropertyChanged}"
+                                HorizontalAlignment="Center" VerticalAlignment="Bottom" BorderThickness="0"
+                                Background="Transparent" Foreground="{DynamicResource default_foreground}" IsReadOnly="True" 
+                                CaretBrush="{DynamicResource atv_rectangles_shadow}"
+                                Grid.Row="1" Margin="3 4 3 3"/>
+
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

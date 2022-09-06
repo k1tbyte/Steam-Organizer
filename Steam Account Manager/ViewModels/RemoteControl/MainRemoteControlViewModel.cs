@@ -21,14 +21,15 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public FriendsView FriendsV;
         public MessagesView MessagesV;
 
-        private bool _isLoggedIn;
-        public bool IsLoggedIn
+        private static bool _isPanelActive;
+        public static event EventHandler IsPanelActiveChanged;
+        public static bool IsPanelActive
         {
-            get => _isLoggedIn;
+            get => _isPanelActive;
             set
             {
-                _isLoggedIn = value;
-                OnPropertyChanged(nameof(IsLoggedIn));
+                _isPanelActive = value;
+                IsPanelActiveChanged?.Invoke(null, EventArgs.Empty);
             }
         }
 
@@ -48,20 +49,18 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public MainRemoteControlViewModel()
         {
             LoginV = new LoginView();
-
-            CurrentView = LoginV;
+            MessagesV = new MessagesView();
+            CurrentView = MessagesV;
 
             LoginViewCommand = new RelayCommand(o =>
             {
-                 CurrentView = LoginV;
-
                 if (CurrentView != LoginV)
                     CurrentView = LoginV;
             });
 
             GamesViewCommand = new RelayCommand(o =>
             {
-                if (IsLoggedIn = LoginViewModel.SuccessLogOn && CurrentView != GamesV)
+                if (CurrentView != GamesV)
                 {
                     if (GamesV == null)
                         GamesV = new GamesView();
@@ -72,7 +71,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             MessagesViewCommand = new RelayCommand(o =>
             {
-                if (IsLoggedIn = LoginViewModel.SuccessLogOn && CurrentView != MessagesV)
+                if (CurrentView != MessagesV)
                 {
                     if (MessagesV == null)
                         MessagesV = new MessagesView();
@@ -84,7 +83,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             FriendsViewCommand = new RelayCommand(o =>
             {
-                if (IsLoggedIn = LoginViewModel.SuccessLogOn && CurrentView != FriendsV)
+                if (CurrentView != FriendsV)
                 {
                     if (FriendsV == null)
                         FriendsV = new FriendsView();

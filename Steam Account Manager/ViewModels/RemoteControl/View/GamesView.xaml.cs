@@ -10,15 +10,14 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {
     public partial class GamesView : UserControl
     {
-        private GamesViewModel currentViewModel;
+
         private static readonly Regex _regex = new Regex("[^0-9.-]+");
         bool Error = false;
         public GamesView()
         {
             InitializeComponent();
             add_idBox.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, PasteBlocked));
-            currentViewModel = new GamesViewModel();
-            this.DataContext = currentViewModel;
+            this.DataContext = new GamesViewModel();
         }
 
         private void PasteBlocked(object sender, ExecutedRoutedEventArgs e)
@@ -40,8 +39,8 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             }
             else if (games.SelectedItems.Count == 1)
             {
-                SelectsText.Text = "Selected\nAppID: " + currentViewModel.Games[games.SelectedIndex].AppID +
-                    "\nPlaytime: " + currentViewModel.Games[games.SelectedIndex].PlayTime_Forever / 60 + "h";
+                SelectsText.Text = "Selected\nAppID: " + GamesViewModel.Games[games.SelectedIndex].AppID +
+                    "\nPlaytime: " + GamesViewModel.Games[games.SelectedIndex].PlayTime_Forever / 60 + "h";
             }
             else
                 SelectsText.Text = "Selected: " + games.SelectedItems.Count;
