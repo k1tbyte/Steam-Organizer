@@ -61,6 +61,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
     internal static class SteamRemoteClient
     {
         public static string UserPersonaName { get; private set; }
+        public static SteamID InterlocutorID { get; set; }
         internal static EOSType OSType { get; private set; } = EOSType.Unknown;
 
 
@@ -81,6 +82,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
         private static EPersonaState CurrentPersonaState;
         private static string CurrentSteamId64;
 
+
         public static bool IsRunning     { get; set; }
         public static RootObject CurrentUser { get; set; }
 
@@ -93,6 +95,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             steamClient     = new SteamClient();
             gamesHandler    = new GamesHandler();
             callbackManager = new CallbackManager(steamClient);
+            InterlocutorID  = new SteamID();
 
             steamUser    = steamClient.GetHandler<SteamUser>();
             steamFriends = steamClient.GetHandler<SteamFriends>();
@@ -167,11 +170,13 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         private static bool DeserializeUser()
         {
-            if (File.Exists($@".\RemoteUsers\{Username}.json"))
+            if (File.Exists($@".\RemoteUsers\{Username}.json") && CurrentUser == null)
             {
                 CurrentUser = JsonConvert.DeserializeObject<RootObject>(File.ReadAllText($@".\RemoteUsers\{Username}.json"));
                 return true;
             }
+            else if (CurrentUser.RemoteUser.Username == Username)
+                return true;
 
             CurrentUser = new RootObject
             {
@@ -190,12 +195,6 @@ namespace Steam_Account_Manager.Infrastructure.Base
         public static void Logout()
         {
             LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;
-
-            if (LastLogOnResult == EResult.InvalidPassword && LoginKey != null)
-            {
-                CurrentUser.RemoteUser.LoginKey = null;
-                LastLogOnResult = EResult.Cancelled;
-            }
             
             SerializeUser();
 
@@ -231,14 +230,14 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
             var logOnDetails = new SteamUser.LogOnDetails
             {
-                Username = Username,
-                Password = Password,
-                AuthCode = SteamGuardCode,
-                TwoFactorCode = TwoFactorCode,
-                LoginID = LoginID,
+                Username               = Username,
+                Password               = Password,
+                AuthCode               = SteamGuardCode,
+                TwoFactorCode          = TwoFactorCode,
+                LoginID                = LoginID,
                 ShouldRememberPassword = true,
-                LoginKey = LoginKey,
-                SentryFileHash = sentryHash,
+                LoginKey               = LoginKey,
+                SentryFileHash         = sentryHash,
             };
 
             if(OSType == EOSType.Unknown)
@@ -249,12 +248,16 @@ namespace Steam_Account_Manager.Infrastructure.Base
             steamUser.LogOn(logOnDetails);
         }
 
-        private static async void OnLoggedOn(SteamUser.LoggedOnCallback callback)
+        private static void OnLoggedOn(SteamUser.LoggedOnCallback callback)
         {
             LastLogOnResult = callback.Result;
 
             if (LastLogOnResult == EResult.InvalidPassword && CurrentUser.RemoteUser.LoginKey != null)
+            {
                 CurrentUser.RemoteUser.LoginKey = null;
+                LastLogOnResult = EResult.Cancelled;
+            }
+                
 
             if (LastLogOnResult != EResult.OK)
             {
@@ -267,7 +270,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             CurrentSteamId64 = LoginViewModel.SteamId64;
 
             var parser = new Parsers.SteamParser(LoginViewModel.SteamId64);
-            await parser.ParsePlayerSummariesAsync();
+            parser.ParsePlayerSummaries();
             LoginViewModel.ImageUrl = parser.GetAvatarUrlFull;
             GamesViewModel.Games = new System.Collections.ObjectModel.ObservableCollection<Games>(CurrentUser.RemoteUser.Games);
 
@@ -412,10 +415,16 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
         private static void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
         {
-            if(callback.Message == "shutdown")
+           if (callback.Sender.AccountID == InterlocutorID.AccountID && callback.EntryType == EChatEntryType.ChatMsg)
             {
-                Logout();
-                Application.Current.Dispatcher.InvokeShutdown();
+                Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
+                {
+                    Msg       = callback.Message,
+                    Time      = DateTime.Now.ToString("HH:mm"),
+                    Username  = steamFriends.GetFriendPersonaName(callback.Sender),
+                    TextBrush = (System.Windows.Media.Brush)App.Current.FindResource("default_foreground"),
+                    MsgBrush  = (System.Windows.Media.Brush)App.Current.FindResource("second_main_color")
+                })));
             }
         }
 
@@ -446,6 +455,30 @@ namespace Steam_Account_Manager.Infrastructure.Base
                 Body = { uimode = x }
             };
             steamClient.Send(uiMode);
+        }
+        
+        public static void SendInterlocutorMessage(string Msg)
+        {
+            steamFriends.SendChatMessage(InterlocutorID, EChatEntryType.ChatMsg, Msg);
+
+            Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
+            {
+                Msg       = Msg,
+                Time      = DateTime.Now.ToString("HH:mm"),
+                Username  = LoginViewModel.Nickname,
+                TextBrush = Utilities.StringToBrush("White"),
+                MsgBrush  = (System.Windows.Media.Brush)App.Current.FindResource("menu_button_background")
+            })));
+        }
+
+        public static SteamID FindFriendFromSteamID(uint steamID)
+        {
+            for (int i = 0; i < steamFriends.GetFriendCount(); i++)
+            {
+                if (steamFriends.GetFriendByIndex(i).AccountID == steamID)
+                    return steamFriends.GetFriendByIndex(i);
+            }
+            return null;
         }
 
         #region Games parse

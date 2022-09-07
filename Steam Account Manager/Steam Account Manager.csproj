@@ -130,6 +130,7 @@
     <Compile Include="Infrastructure\Base\GamesHandler.cs" />
     <Compile Include="Infrastructure\Base\SteamRemoteClient.cs" />
     <Compile Include="Infrastructure\Config.cs" />
+    <Compile Include="Infrastructure\Converters\CustomBooleanToVisiblity.cs" />
     <Compile Include="Infrastructure\Converters\InverseBooleanConverter.cs" />
     <Compile Include="Infrastructure\GamesModels\CsgoStats.cs" />
     <Compile Include="Infrastructure\OvservableObject.cs" />

@@ -8,9 +8,6 @@
              d:DataContext="{d:DesignInstance Type=vm:GamesViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="600">
-    <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-    </UserControl.Resources>
     <Grid>
         <Border CornerRadius="20" Background="{DynamicResource first_main_color}">
             <ListBox x:Name="games" ItemsSource="{Binding Games,UpdateSourceTrigger=PropertyChanged}"

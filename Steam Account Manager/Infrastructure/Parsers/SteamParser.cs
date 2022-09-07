@@ -48,7 +48,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             await ParseVacsAsync();
 
             //Получаем общую инфу об аккаунте
-            await ParsePlayerSummariesAsync();
+            ParsePlayerSummaries();
 
             //Получаем инфу об количестве игр, уровне и наигранных часах
             await ParseGamesInfo();
@@ -167,10 +167,10 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         private string GetPlayerSummariesLink() =>
             "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + _apiKey + "&steamids=" + _steamId64;
 
-        public async Task ParsePlayerSummariesAsync()
+        public void ParsePlayerSummaries()
         {
             var webClient = new WebClient { Encoding = Encoding.UTF8 };
-            string json = await webClient.DownloadStringTaskAsync(GetPlayerSummariesLink());
+            string json = webClient.DownloadString(new Uri(GetPlayerSummariesLink()));
             var list = JsonConvert.DeserializeObject<RootObjectPlayerSummaries>(json);
             _nickname = list.Response.Players[0].Personaname;
             _profileVisiblity = true;

@@ -49,8 +49,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public MainRemoteControlViewModel()
         {
             LoginV = new LoginView();
-            MessagesV = new MessagesView();
-            CurrentView = MessagesV;
+            CurrentView = LoginV;
 
             LoginViewCommand = new RelayCommand(o =>
             {

@@ -17,7 +17,11 @@ namespace Steam_Account_Manager
         }
 
         public static long SteamId64ToSteamId32(long steamId64) => steamId64 - 76561197960265728;
-        public static long SteamId64ToSteamId32(string steamId64) => long.Parse(steamId64) - 76561197960265728;
+        public static uint SteamId64ToSteamId32(string steamId64)
+        {
+            var lId = ulong.Parse(steamId64) - 76561197960265728;
+            return Convert.ToUInt32(lId);
+        }
 
         public static string SteamId32ToSteamId64(int steamId32) => (steamId32 + 76561197960265728).ToString();
 

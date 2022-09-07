@@ -11,7 +11,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="600">
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
         <Style x:Key="nickname" TargetType="TextBox">
             <Setter Property="IsReadOnly" Value="True"/>
@@ -39,8 +38,7 @@
                        FontFamily="Cascadia Mono"
                        Foreground="{DynamicResource second_settings_text}"
                        Text="Sign in"
-                       FontSize="20">
-                    </TextBlock>
+                       FontSize="20"/>
 
                     <TextBlock Grid.Row="2" Text="{DynamicResource adat_login}" FontWeight="Thin"
                        Width="57" Height="20" HorizontalAlignment="Left"

@@ -162,7 +162,7 @@ namespace Steam_Account_Manager.ViewModels
                     var steamID = Utilities.GetSteamRegistryActiveUser();
                     if (steamID == 0) throw (new NullReferenceException());
                     var steamParser = new Infrastructure.Parsers.SteamParser(Utilities.SteamId32ToSteamId64(steamID));
-                    steamParser.ParsePlayerSummariesAsync().GetAwaiter().GetResult();
+                    steamParser.ParsePlayerSummaries();
                     NowLoginUserImage = steamParser.GetAvatarUrlFull;
                     NowLoginUserNickname = steamParser.GetNickname;
                     accountDetected = true;

@@ -20,10 +20,52 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
     /// </summary>
     public partial class MessagesView : UserControl
     {
+        MessagesViewModel currentContext;
+        int CurrentCollectionCount;
         public MessagesView()
         {
             InitializeComponent();
-            this.DataContext = new MessagesViewModel();
+            currentContext = new MessagesViewModel();
+            this.DataContext = currentContext;
+            
+        }
+
+
+        private void MessageBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter && Keyboard.Modifiers != ModifierKeys.Shift)
+            {
+                currentContext.SendMessageCommand.Execute(null);
+            }
+            e.Handled = true;
+
+        }
+
+        private void MessageBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && Keyboard.Modifiers != ModifierKeys.Shift)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void messanger_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (messanger.Items != null && messanger.Items.Count != 0 && messanger.Items.Count != CurrentCollectionCount)
+            {
+                messanger.ScrollIntoView(messanger.Items[messanger.Items.Count - 1]);
+                CurrentCollectionCount = messanger.Items.Count;
+            }
+            else
+            {
+                e.Handled = true;
+            }
+                
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentCollectionCount = 0;
         }
     }
 }

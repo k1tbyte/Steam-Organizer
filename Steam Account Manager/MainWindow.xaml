@@ -17,10 +17,6 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
 
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis" />
-    </Window.Resources>
-
     <Border CornerRadius="30" Background="{DynamicResource background_border_color}" MouseDown="Border_MouseDown">
         <Grid>
 

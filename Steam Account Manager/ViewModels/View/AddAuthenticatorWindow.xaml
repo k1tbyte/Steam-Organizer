@@ -12,11 +12,7 @@
         Name="AddAuthenticator" WindowStyle="None"
         AllowsTransparency="True"
         Height="170" Width="250">
-    
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis" />
-    </Window.Resources>
-
+   
     <Border CornerRadius="8" Background="{DynamicResource background_border_color}" MouseDown="Border_MouseDown"
             BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
         <Grid>

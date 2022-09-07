@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:viewModel="clr-namespace:Steam_Account_Manager.ViewModels"
-             xmlns:view="clr-namespace:Steam_Account_Manager.ViewModels.View">
+             xmlns:view="clr-namespace:Steam_Account_Manager.ViewModels.View"
+             xmlns:converters="clr-namespace:Steam_Account_Manager.Infrastructure.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -23,7 +24,12 @@
                 <ResourceDictionary Source="Locale/lang.en-US.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
-            
+
+            <converters:InverseBoolConverter x:Key="BoolInverted"/>
+            <converters:BooleanToVisibilityConverter x:Key="BoolToVis"/>
+            <converters:BooleanToVisibilityConverter x:Key="BoolToVisInverted"
+                                                     True="Collapsed"
+                                                     False="Visible"/>
             <!--#region Styles-->
             <Style x:Key="topButton" TargetType="Button">
                 <Setter Property="Background" Value="Transparent" />

@@ -6,7 +6,6 @@
              xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels"
              xmlns:style="clr-namespace:Steam_Account_Manager.Themes"
              xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.View"
               d:DataContext="{d:DesignInstance Type=vm:AccountTabViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="50" d:DesignWidth="568">
