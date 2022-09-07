@@ -279,7 +279,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     return SteamRemoteClient.Login(Username, "using",null,element.Loginkey);
                 });
 
-                if(result == EResult.InvalidPassword)
+                if(result == EResult.Cancelled)
                 {
                     ErrorMsg = "Login key has expired...";
                     RecentlyLoggedIn.Remove(element);
@@ -307,6 +307,9 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             LogOutCommand = new RelayCommand(o =>
             {
                 SteamRemoteClient.Logout();
+                Username = Password = AuthCode = "";
+                IsAuthCode = false;
+                
             });
         }
     }

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Windows;
+﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.ViewModels.RemoteControl.View;
-using Steam_Account_Manager.ViewModels.RemoteControl;
-using Steam_Account_Manager.Infrastructure;
-using System.Net;
 using Steam_Account_Manager.ViewModels.View;
-using System.Threading.Tasks;
+using System;
+using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace Steam_Account_Manager.ViewModels
 {
