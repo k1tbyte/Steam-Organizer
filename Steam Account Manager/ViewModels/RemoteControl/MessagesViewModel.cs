@@ -20,7 +20,8 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public RelayCommand SelectChatCommand { get; set; }
         public RelayCommand LeaveFromChatCommand { get; set; }
         public RelayCommand SendMessageCommand { get; set; }
-        private string TempID;
+        public RelayCommand AddAdminIdCommand { get; set; }
+        private string TempID, TempAdminID;
 
         #region Properties
         private string _message;
@@ -77,9 +78,10 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 _isChatSelected = value;
                 OnPropertyChanged(nameof(IsChatSelected));
             }
-        } 
+        }
         #endregion
 
+        #region Handlers
         private static ObservableCollection<Message> _messages;
         public static event EventHandler MessagesChanged;
         public static ObservableCollection<Message> Messages
@@ -92,15 +94,142 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
+        public static event EventHandler SaveChatLogChanged;
+        public static bool SaveChatLog
+        {
+            get => SteamRemoteClient.CurrentUser.Messenger.SaveChatLog;
+            set
+            {
+                SteamRemoteClient.CurrentUser.Messenger.SaveChatLog = value;
+                SaveChatLogChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        public static event EventHandler EnableAdminCommandsChanged;
+        public static bool EnableAdminCommands
+        {
+            get => SteamRemoteClient.CurrentUser.Messenger.EnableAdminCommands;
+            set
+            {
+                SteamRemoteClient.CurrentUser.Messenger.EnableAdminCommands = value;
+                EnableAdminCommandsChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        public static event EventHandler EnablePublicCommandsChanged;
+        public static bool EnablePublicCommands
+        {
+            get => SteamRemoteClient.CurrentUser.Messenger.EnablePublicCommands;
+            set
+            {
+                SteamRemoteClient.CurrentUser.Messenger.EnablePublicCommands = value;
+                EnablePublicCommandsChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        private static string _adminId;
+        public static event EventHandler AdminIdChanged;
+        public static string AdminId
+        {
+            get => _adminId;
+            set
+            {
+                _adminId = value;
+                AdminIdChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        private static ObservableCollection<Command> _msgCommands;
+        public static event EventHandler MsgCommandsChanged;
+        public static ObservableCollection<Command> MsgCommands
+        {
+            get => _msgCommands;
+            set
+            {
+                _msgCommands = value;
+                MsgCommandsChanged?.Invoke(null, EventArgs.Empty);
+            }
+        } 
+        #endregion
+
+
+        private static void InitDefaultCommands()
+        {
+            MsgCommands.Insert(0, new Command
+            {
+                Keyword = "/help",
+                CommandExecution = "List of available commands",
+                IsPublic = true,
+                MessageAfterExecute = "-"
+            });
+
+            MsgCommands.Insert(1, new Command
+            {
+                Keyword = "/shutdown",
+                CommandExecution = "Turns off the app",
+                IsPublic = false,
+                MessageAfterExecute = "App has been closed."
+            });
+
+            MsgCommands.Insert(2, new Command
+            {
+                Keyword = "/pcsleep",
+                CommandExecution = "Sends the PC to sleep",
+                IsPublic = false,
+                MessageAfterExecute = "Sleeping mode..."
+            });
+
+            MsgCommands.Insert(3, new Command
+            {
+                Keyword = "/pcshutdown",
+                CommandExecution = "Turns off the computer",
+                IsPublic = false,
+                MessageAfterExecute = "Shutting down..."
+            });
+
+            MsgCommands.Insert(4, new Command
+            {
+                Keyword = "/msg {id}",
+                CommandExecution = "Sends a message to a friend",
+                IsPublic = false,
+                MessageAfterExecute = "-"
+            });
+
+            MsgCommands.Insert(5, new Command
+            {
+                Keyword = "/idle [GamesIds]",
+                CommandExecution = "Launches games from the library",
+                IsPublic = false,
+                MessageAfterExecute = "Idling..."
+            });
+
+            MsgCommands.Insert(6, new Command
+            {
+                Keyword = "/customgame {title}",
+                CommandExecution = "Sets a custom title as a game",
+                IsPublic = false,
+                MessageAfterExecute = "Title setted"
+            });
+
+            MsgCommands.Insert(7, new Command
+            {
+                Keyword = "/stopgame",
+                CommandExecution = "Stops game activity",
+                IsPublic = false,
+                MessageAfterExecute = "Game activity stopped."
+            });
+        }
         public MessagesViewModel()
         {
             Messages = new ObservableCollection<Message>();
+            MsgCommands = new ObservableCollection<Command>();
+            InitDefaultCommands();
 
             SelectChatCommand = new RelayCommand(o =>
             {
                 if (!string.IsNullOrEmpty(ErrorMsg))
                     ErrorMsg = "";
-                if (!String.IsNullOrEmpty(InterlocutorId) && TempID != InterlocutorId)
+                if (TempID != InterlocutorId)
                 {
                     TempID = InterlocutorId;
                     SteamValidator steamValidator = new SteamValidator(InterlocutorId);
@@ -135,6 +264,25 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 {
                     SteamRemoteClient.SendInterlocutorMessage(Message);
                     Message = "";
+                }
+            });
+
+            AddAdminIdCommand = new RelayCommand(o =>
+            {
+                if (!string.IsNullOrEmpty(ErrorMsg))
+                    ErrorMsg = "";
+                if(TempAdminID != AdminId)
+                {
+                    TempAdminID = AdminId;
+                    SteamValidator steamValidator = new SteamValidator(TempAdminID);
+                    if (steamValidator.GetSteamLinkType() != SteamValidator.SteamLinkTypes.ErrorType)
+                    {
+                        SteamRemoteClient.CurrentUser.Messenger.AdminID = steamValidator.SteamId32;
+                    }
+                    else
+                    {
+                        ErrorMsg = "Invalid ID";
+                    }
                 }
             });
         }

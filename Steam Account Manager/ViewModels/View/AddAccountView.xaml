@@ -116,7 +116,7 @@
                     </Grid>
 
 
-                    <TextBox x:Name="SteamURL" Style="{StaticResource addTextBox}"
+                    <TextBox x:Name="SteamURL" Style="{StaticResource addTextBox}" MaxLength="60"
                              Text="{Binding SteamLink, UpdateSourceTrigger=PropertyChanged}"
                              Margin="6 7 0 0"/>
                 </StackPanel>

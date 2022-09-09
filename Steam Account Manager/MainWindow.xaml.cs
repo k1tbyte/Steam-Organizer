@@ -26,6 +26,11 @@ namespace Steam_Account_Manager
             var uriSource = new Uri("/Images/user.png", UriKind.Relative);
             steamImage.Source = new BitmapImage(uriSource);
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
     }
 
 

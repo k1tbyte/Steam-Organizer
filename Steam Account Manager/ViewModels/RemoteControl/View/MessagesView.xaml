@@ -8,135 +8,300 @@
              d:DataContext="{d:DesignInstance Type=vm:MessagesViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="600">
+    <UserControl.Resources>
+        
+        <Style x:Key="expandChatArea" TargetType="{x:Type Grid}">
+            <Setter Property="Width" Value="0"/>
+            <Setter Property="Margin" Value="-50"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChecked, ElementName=openChatButton}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Width"
+                                                 From="0" To="335" Duration="0:0:0.7"/>
+                                <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                   To="-0" Duration="0:0:1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Width"
+                                                 From="335" To="0" Duration="0:0:0.7"/>
+                                <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                   To="-50" Duration="0:0:1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="expandAreaButton" TargetType="ToggleButton">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="border"  Background="{DynamicResource second_main_color}" CornerRadius="0 5 5 0">
+                            <Icon:PackIconMaterial x:Name="arrowIcon" Kind="ArrowDownBold" Width="15" Height="12" RotationAngle="270"
+                                                   VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource top_service_buttons}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="arrowIcon" Property="RotationAngle" Value="90"/>
+                                <Setter TargetName="border" Property="CornerRadius" Value="5"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="arrowIcon" Property="Foreground" Value="#ffff"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="commandBox" TargetType="TextBox">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Opacity" Value="0.7"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource atv_rectangles_shadow}"/>
+        </Style>
+    </UserControl.Resources>
+    
     <Grid>
         <Border CornerRadius="20" Background="{DynamicResource first_main_color}">
+           
             <Grid>
-                <StackPanel VerticalAlignment="Top"
+                <StackPanel Orientation="Horizontal">
+                    
+                    <!-- Chat area -->
+                    <Grid Style="{StaticResource expandChatArea}">
+                        <StackPanel VerticalAlignment="Top"
                        HorizontalAlignment="Left" Margin="25 12 0 0" >
 
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="0 0 10 0"
-                       FontFamily="Cascadia Mono"
-                       Foreground="{DynamicResource second_settings_text}"
-                       Text="Steam chat"
-                       FontSize="20"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Margin="0 0 10 0" FontFamily="Cascadia Mono"  Foreground="{DynamicResource second_settings_text}"
+                                Text="Steam chat" FontSize="20"/>
 
-                        <TextBlock Foreground="{DynamicResource default_foreground}" FontWeight="Medium"
+                                <TextBlock Foreground="{DynamicResource default_foreground}" FontWeight="Medium"
                                     Visibility="{Binding IsChatSelected,Converter={StaticResource BoolToVis}}"
                                  Background="Transparent" Text="Сhat:" Margin="0 6 0 0"/>
-                       
-                        <TextBox Foreground="{DynamicResource default_foreground}" FontWeight="Normal" IsReadOnly="True"
+
+                                <TextBox Foreground="{DynamicResource default_foreground}" FontWeight="Normal" IsReadOnly="True"
                                 MaxWidth="120"  Visibility="{Binding IsChatSelected,Converter={StaticResource BoolToVis}}"
                                  Background="Transparent" Text="{Binding ChatId}" Margin="0 3 0 0"/>
-                        
-                        <Button  Style="{StaticResource defaultButton}" Visibility="{Binding IsChatSelected,Converter={StaticResource BoolToVis}}"
+
+                                <Button  Style="{StaticResource defaultButton}" Visibility="{Binding IsChatSelected,Converter={StaticResource BoolToVis}}"
                                  Background="{DynamicResource second_main_color}" Click="Button_Click"
                                  Command="{Binding LeaveFromChatCommand}" Width="26" Height="26" Margin="5 0 0 0">
-                            <Icon:Material Kind="Logout" RotationAngle="180"/>
-                        </Button>
-                    </StackPanel>
-                    
-                    <Rectangle Fill="{DynamicResource adv_rectangle}" 
-                               Width="290" Height="2" Margin="-5 5 0 5"/>
-                </StackPanel>
+                                    <Icon:Material Kind="Logout" RotationAngle="180"/>
+                                </Button>
+                            </StackPanel>
 
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" TextAlignment="Center"
+                            <Rectangle Fill="{DynamicResource adv_rectangle}" 
+                               Width="290" Height="2" Margin="-5 5 0 5"/>
+                        </StackPanel>
+
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" TextAlignment="Center"
                            Margin="55 30 0 50"
                    FontSize="27" FontWeight="Bold" Foreground="{DynamicResource default_foreground}"
                    Opacity="0.7" Visibility="{Binding IsChatSelected,Converter={StaticResource BoolToVisInverted}}" >
             Chat not selected
-            </TextBlock>
-                <ListBox Background="Transparent" Width="310" Margin="20 50 15 60" HorizontalAlignment="Left"
+                        </TextBlock>
+                        <ListBox Background="Transparent" Width="310" Margin="20 50 15 60" HorizontalAlignment="Left"
                              ItemsSource="{Binding Messages}" BorderThickness="0" x:Name="messanger"
                               VirtualizingPanel.IsVirtualizing="True" ScrollViewer.ScrollChanged="messanger_ScrollChanged" 
-                     VirtualizingPanel.VirtualizationMode="Recycling">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="IsHitTestVisible" Value="False" />
-                         </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0 0 0 5">
-                                <TextBlock FontSize="10" Text="{Binding Username}" Foreground="white" 
+                     VirtualizingPanel.VirtualizationMode="Recycling" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="IsHitTestVisible" Value="False" />
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0 0 0 5">
+                                        <TextBlock FontSize="10" Text="{Binding Username}" Foreground="white" 
                                            Opacity="0.7" Margin="8 0 0 2" FontWeight="Medium"/>
 
-                                <Border CornerRadius="15 15 15 0" MinHeight="30" MinWidth="100"
+                                        <Border CornerRadius="15 15 15 0" MinHeight="30" MinWidth="100"
                                         MaxWidth="290" Background="{Binding MsgBrush}">
 
-                                    <TextBox Text="{Binding Msg}" Margin="7" VerticalAlignment="Center"
+                                            <TextBox Text="{Binding Msg}" Margin="7" VerticalAlignment="Center"
                                 BorderThickness="0" Background="Transparent" Foreground="{Binding TextBrush}" IsReadOnly="True" 
                                 CaretBrush="{DynamicResource atv_rectangles_shadow}" TextWrapping="Wrap"/>
 
-                                </Border>
+                                        </Border>
 
-                                <TextBlock FontSize="9" HorizontalAlignment="Left" Text="{Binding Time}" Foreground="white" 
+                                        <TextBlock FontSize="9" HorizontalAlignment="Left" Text="{Binding Time}" Foreground="white" 
                                            Opacity="0.7" Margin="5 0 0 0" FontWeight="Thin"/>
 
-                            </StackPanel>
+                                    </StackPanel>
 
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
 
-                <Rectangle Fill="{DynamicResource menu_button_background}" Width="8"
-                   Height="241" RadiusY="3" RadiusX="3" Margin="50 0 0 15" Opacity="0.2" IsHitTestVisible="False" />
-                
-                <TextBlock Margin="29,0,0,33" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="#b0b9c6" IsHitTestVisible="False"
+                        <Rectangle Fill="{DynamicResource menu_button_background}" Width="8" Margin="0 0 5 15"
+                   Height="235" RadiusY="3" RadiusX="3" HorizontalAlignment="Right" Opacity="0.2" IsHitTestVisible="False" />
+
+                        <TextBlock Margin="29,0,0,33" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="#b0b9c6" IsHitTestVisible="False"
                           Panel.ZIndex="1" Text="Write a message..." FontSize="12"
                           Visibility="{Binding ElementName=MessageBox, Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
 
-                <StackPanel Orientation="Horizontal"  VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                        <StackPanel Orientation="Horizontal"  VerticalAlignment="Bottom" HorizontalAlignment="Left"
                              Margin="20 0 0 15" IsHitTestVisible="{Binding IsChatSelected}">
-                   
-                    <Border Height="40" Width="265" CornerRadius="10"
+
+                            <Border Height="40" Width="265" CornerRadius="10"
                         Background="{DynamicResource second_main_color}" Opacity="0.6">
-                        <TextBox  MaxLength="4000" AcceptsTab="True" Text="{Binding Message,UpdateSourceTrigger=PropertyChanged}"
+                                <TextBox  MaxLength="4000" AcceptsTab="True" Text="{Binding Message,UpdateSourceTrigger=PropertyChanged}"
                               TextWrapping="Wrap" Foreground="{DynamicResource default_foreground}"
                              AcceptsReturn="True" MaxLines="140" x:Name="MessageBox"
                               Background="Transparent" Margin="5"
                              KeyUp="MessageBox_KeyUp" PreviewKeyDown="MessageBox_PreviewKeyDown"
                              BorderThickness="0" CaretBrush="{DynamicResource atv_rectangles_shadow}"/>
-                    </Border>
+                            </Border>
 
-                    <Button  Style="{StaticResource defaultButton}" IsHitTestVisible="{Binding ElementName=MessageBox,Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
+                            <Button  Style="{StaticResource defaultButton}" IsHitTestVisible="{Binding ElementName=MessageBox,Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
                                  Background="{DynamicResource second_main_color}" 
                                  Command="{Binding SendMessageCommand}" Width="40" Height="40" Margin="5 0 0 0">
-                        <Icon:Material Kind="Send" Width="18" Height="18" />
-                    </Button>
-                    
-                </StackPanel>
+                                <Icon:Material Kind="Send" Width="18" Height="18" />
+                            </Button>
 
-                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="350 45 0 0">
-                    <TextBlock Text="Go to chat ID64/ID32/URL" Margin="4 0 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
-                    <StackPanel Orientation="Horizontal" >
+                        </StackPanel>
+                    </Grid>
 
-                        <Border Margin="0 0 -104 0" Background="{DynamicResource second_main_color}"
+                    <ToggleButton x:Name="openChatButton" Style="{StaticResource expandAreaButton}"/>
+
+                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5 40 0 0">
+                        <TextBlock Text="Go to chat ID64/ID32/URL" Margin="4 0 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                        <StackPanel Orientation="Horizontal" >
+
+                            <Border Margin="0 0 -124 0" Background="{DynamicResource second_main_color}"
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
 
-                        <TextBox x:Name="add_idBox" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
-                         IsReadOnly="False" Width="95" Margin="0 0 6 0" MaxLength="50" Text="{Binding InterlocutorId, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox x:Name="add_idBox" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
+                         IsReadOnly="False" Width="115" Margin="0 0 6 0" MaxLength="60" Text="{Binding InterlocutorId, UpdateSourceTrigger=PropertyChanged}"/>
 
 
-                        <Button Command="{Binding SelectChatCommand}" IsHitTestVisible="{Binding ElementName=add_idBox, Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
+                            <Button Command="{Binding SelectChatCommand}" IsHitTestVisible="{Binding ElementName=add_idBox, Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
                         Background="{DynamicResource second_main_color}" 
                         Style="{StaticResource defaultButton}"  Content="Select" Height="26" Width="50"/>
-                        
-                    </StackPanel>
-                    <TextBlock Text="{Binding ErrorMsg}" Margin="4 0 0 2"  
+
+                        </StackPanel>
+
+
+                        <TextBlock Text="Current administrator" Margin="4 7 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                        <StackPanel Orientation="Horizontal" >
+
+                            <Border Margin="0 0 -124 0" Background="{DynamicResource second_main_color}"
+                        Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
+
+                            <TextBox x:Name="add_admin_box"  Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
+                         IsReadOnly="False" Width="115" Margin="0 0 6 0" MaxLength="60" Text="{Binding AdminId,UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                            <Button IsHitTestVisible="{Binding ElementName=add_admin_box, Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
+                        Background="{DynamicResource second_main_color}" Command="{Binding AddAdminIdCommand}"
+                        Style="{StaticResource defaultButton}"  Content="Add" Height="26" Width="50"/>
+
+                        </StackPanel>
+
+
+                        <TextBlock Text="{Binding ErrorMsg}" Margin="4 0 0 2"  
                                FontSize="10" Foreground="PaleVioletRed">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ErrorMsg}" Value="">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ErrorMsg}" Value="">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <StackPanel Margin="0 60 0 0" Orientation="Horizontal">
+                            <TextBlock Text="Save chat log" Margin="4 3 10 2" FontSize="13" 
+                                       Foreground="{StaticResource default_foreground}"/>
+                            <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25"
+                                          Background="{DynamicResource second_main_color}" IsChecked="{Binding SaveChatLog}"/>
+                        </StackPanel>
+
+                        <StackPanel Margin="0 5 0 0" Orientation="Horizontal">
+                            <TextBlock Text="Enable admin commands" Margin="4 3 10 2" FontSize="13" 
+                                       Foreground="{StaticResource default_foreground}"/>
+
+                            <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25"
+                                          Background="{DynamicResource second_main_color}" IsChecked="{Binding EnableAdminCommands}"/>
+                        </StackPanel>
+
+                        <StackPanel Margin="0 5 0 0" Orientation="Horizontal">
+                            <TextBlock Text="Enable public commands" Margin="4 3 10 2" FontSize="13" 
+                                       Foreground="{StaticResource default_foreground}"/>
+                            <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25"
+                                          Background="{DynamicResource second_main_color}" IsChecked="{Binding EnablePublicCommands}"/>
+                        </StackPanel>
+
+                        <StackPanel Margin="0 5 0 0" Orientation="Horizontal">
+                            <TextBlock Text="Clear unread messages" Margin="4 3 10 2" FontSize="13" 
+                                       Foreground="{StaticResource default_foreground}"/>
+                            <Button Style="{StaticResource defaultButton}" Width="50" Height="25"
+                                          Background="{DynamicResource second_main_color}" Content="Clear"/>
+                        </StackPanel>
+                    </StackPanel >
+                    
+                    <!-- Commands area -->
+                    <Grid Margin="40 35 0 0">
+                        <Border Background="{DynamicResource second_main_color}" CornerRadius="0 0 15 15" 
+                                Opacity="0.6" Margin="0 25 0 0" Height="210" VerticalAlignment="Top"/>
+                        <Border Background="{DynamicResource second_main_color}" CornerRadius="15 15 0 0" 
+                                Opacity="1" Margin="0 0 0 0" Height="25" VerticalAlignment="Top"/>
+                        <StackPanel>
+                        <TextBlock Text="    Keyword          Command            Message         State"
+                                   Margin="10 5 0 2" FontWeight="Medium"
+                                   Foreground="{DynamicResource default_foreground}"/>
+                        
+                            <ListBox Background="Transparent" Width="320" Height="200"
+                             VirtualizingPanel.IsVirtualizing="True" ItemsSource="{Binding MsgCommands}"
+                             VirtualizingPanel.VirtualizationMode="Recycling" BorderThickness="0">
+
+                        <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0 3 0 0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="85"/>
+                                                <ColumnDefinition Width="90"/>
+                                                <ColumnDefinition Width="90"/>
+                                                <ColumnDefinition Width="45"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Grid.Column="0"  Text="{Binding Keyword}" MaxWidth="80" Style="{StaticResource commandBox}"/>
+
+                                            <TextBox Grid.Column="1" Text="{Binding CommandExecution}" MaxWidth="80" Style="{StaticResource commandBox}"/>
+
+                                            <TextBox Grid.Column="2" Text="{Binding MessageAfterExecute}" MaxWidth="80" Style="{StaticResource commandBox}"/>
+
+                                            <TextBox Grid.Column="3" Text="{Binding IsPublic}" MaxWidth="80" Style="{StaticResource commandBox}"/>
+
+                                        </Grid>
+
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+
+                    </ListBox>
+                    </StackPanel>
+                    </Grid>
                 </StackPanel>
+                
             </Grid>
         </Border>
     </Grid>

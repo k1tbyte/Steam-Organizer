@@ -145,8 +145,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
-        #endregion
-
         private static ObservableCollection<RecentlyLoggedAccount> _recentlyLoggedIn;
         public static event EventHandler RecentlyLoggedOnChanged;
         public static ObservableCollection<RecentlyLoggedAccount> RecentlyLoggedIn
@@ -158,7 +156,9 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 RecentlyLoggedOnChanged?.Invoke(null, EventArgs.Empty);
             }
         }
+        #endregion
 
+        #region Properties
         public string ErrorMsg
         {
             get => _errorMsg;
@@ -203,7 +203,8 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 _isAuthCode = value;
                 OnPropertyChanged(nameof(IsAuthCode));
             }
-        }
+        } 
+        #endregion
 
         public LoginViewModel()
         {
@@ -257,6 +258,9 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                         case EResult.RateLimitExceeded:
                             ErrorMsg = "Retries exceeded. Please try again in 35 minutes";
                             break;
+                        case EResult.TryAnotherCM:
+                            ErrorMsg = "Try later...";
+                            break;
                     }
                 }
                 
@@ -279,7 +283,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     return SteamRemoteClient.Login(Username, "using",null,element.Loginkey);
                 });
 
-                if(result == EResult.Cancelled)
+                if(result == EResult.Cancelled || result == EResult.Invalid)
                 {
                     ErrorMsg = "Login key has expired...";
                     RecentlyLoggedIn.Remove(element);
@@ -299,6 +303,9 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                             break;
                         case EResult.RateLimitExceeded:
                             ErrorMsg = "Retries exceeded. Please try again in 35 minutes";
+                            break;
+                        case EResult.TryAnotherCM:
+                            ErrorMsg = "Try later...";
                             break;
                     }
                 }

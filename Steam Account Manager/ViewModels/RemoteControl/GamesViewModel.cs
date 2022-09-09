@@ -41,7 +41,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             ParseGamesComamnd = new AsyncRelayCommand(async (o) =>
             {
                 await SteamRemoteClient.ParseOwnedGamesAsync();
-                Games = new ObservableCollection<Games>(SteamRemoteClient.CurrentUser.RemoteUser.Games);
+                Games = new ObservableCollection<Games>(SteamRemoteClient.CurrentUser.Games);
                 IsLibraryEmpty = Games.Count == 0;
                 OnPropertyChanged(nameof(Games));
             });
@@ -63,7 +63,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                         ImageURL = $"https://cdn.akamai.steamstatic.com/steam/apps/{id}/header.jpg"
                     };
 
-                    SteamRemoteClient.CurrentUser.RemoteUser.Games.Add(ManualGame);
+                    SteamRemoteClient.CurrentUser.Games.Add(ManualGame);
                     Games.Add(ManualGame);
                     IsLibraryEmpty = false;
                     OnPropertyChanged(nameof(Games));
