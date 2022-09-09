@@ -19,7 +19,7 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetProperty="Width"
-                                                 From="0" To="335" Duration="0:0:0.7"/>
+                                                 From="0" To="345" Duration="0:0:0.7"/>
                                 <ThicknessAnimation Storyboard.TargetProperty="Margin"
                                                    To="-0" Duration="0:0:1"/>
                             </Storyboard>
@@ -29,7 +29,7 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetProperty="Width"
-                                                 From="335" To="0" Duration="0:0:0.7"/>
+                                                 From="345" To="0" Duration="0:0:0.7"/>
                                 <ThicknessAnimation Storyboard.TargetProperty="Margin"
                                                    To="-50" Duration="0:0:1"/>
                             </Storyboard>
@@ -73,6 +73,7 @@
             <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="Opacity" Value="0.7"/>
             <Setter Property="Foreground" Value="White"/>
+            <Setter Property="IsReadOnly" Value="True"/>
             <Setter Property="CaretBrush" Value="{DynamicResource atv_rectangles_shadow}"/>
         </Style>
     </UserControl.Resources>
@@ -150,9 +151,6 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
 
-                        <Rectangle Fill="{DynamicResource menu_button_background}" Width="8" Margin="0 0 5 15"
-                   Height="235" RadiusY="3" RadiusX="3" HorizontalAlignment="Right" Opacity="0.2" IsHitTestVisible="False" />
-
                         <TextBlock Margin="29,0,0,33" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="#b0b9c6" IsHitTestVisible="False"
                           Panel.ZIndex="1" Text="Write a message..." FontSize="12"
                           Visibility="{Binding ElementName=MessageBox, Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
@@ -177,6 +175,8 @@
                             </Button>
 
                         </StackPanel>
+                        <Rectangle Fill="{DynamicResource menu_button_background}" Width="8" Margin="0 0 16 15"
+                   Height="235" RadiusY="3" RadiusX="3" HorizontalAlignment="Right" Opacity="0.2" IsHitTestVisible="False" />
                     </Grid>
 
                     <ToggleButton x:Name="openChatButton" Style="{StaticResource expandAreaButton}"/>
