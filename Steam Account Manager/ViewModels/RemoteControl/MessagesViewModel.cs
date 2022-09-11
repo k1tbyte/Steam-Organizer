@@ -23,6 +23,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public RelayCommand AddAdminIdCommand { get; set; }
         private string TempID, TempAdminID;
 
+
         #region Properties
         private string _message;
         public string Message
@@ -82,6 +83,19 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         #endregion
 
         #region Handlers
+
+        private static bool _isAdminIdValid;
+        public static event EventHandler IsAdminIdValidChanged;
+        public static bool IsAdminIdValid
+        {
+            get => _isAdminIdValid;
+            set
+            {
+                _isAdminIdValid = value;
+                IsAdminIdValidChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
         private static ObservableCollection<Message> _messages;
         public static event EventHandler MessagesChanged;
         public static ObservableCollection<Message> Messages
@@ -105,25 +119,14 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
-        public static event EventHandler EnableAdminCommandsChanged;
-        public static bool EnableAdminCommands
+        public static event EventHandler EnableCommandsChanged;
+        public static bool EnableCommands
         {
-            get => SteamRemoteClient.CurrentUser.Messenger.EnableAdminCommands;
+            get => SteamRemoteClient.CurrentUser.Messenger.EnableCommands;
             set
             {
-                SteamRemoteClient.CurrentUser.Messenger.EnableAdminCommands = value;
-                EnableAdminCommandsChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        public static event EventHandler EnablePublicCommandsChanged;
-        public static bool EnablePublicCommands
-        {
-            get => SteamRemoteClient.CurrentUser.Messenger.EnablePublicCommands;
-            set
-            {
-                SteamRemoteClient.CurrentUser.Messenger.EnablePublicCommands = value;
-                EnablePublicCommandsChanged?.Invoke(null, EventArgs.Empty);
+                SteamRemoteClient.CurrentUser.Messenger.EnableCommands = value;
+                EnableCommandsChanged?.Invoke(null, EventArgs.Empty);
             }
         }
 
@@ -153,13 +156,12 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         #endregion
 
 
-        private static void InitDefaultCommands()
+        public static void InitDefaultCommands()
         {
             MsgCommands.Insert(0, new Command
             {
                 Keyword = "/help",
                 CommandExecution = "List of available commands",
-                IsPublic = true,
                 MessageAfterExecute = "-"
             });
 
@@ -167,7 +169,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             {
                 Keyword = "/shutdown",
                 CommandExecution = "Turns off the app",
-                IsPublic = false,
                 MessageAfterExecute = "App has been closed."
             });
 
@@ -175,7 +176,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             {
                 Keyword = "/pcsleep",
                 CommandExecution = "Sends the PC to sleep",
-                IsPublic = false,
                 MessageAfterExecute = "Sleeping mode..."
             });
 
@@ -183,15 +183,13 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             {
                 Keyword = "/pcshutdown",
                 CommandExecution = "Turns off the computer",
-                IsPublic = false,
                 MessageAfterExecute = "Shutting down..."
             });
 
             MsgCommands.Insert(4, new Command
             {
-                Keyword = "/msg {id}",
+                Keyword = "/msg (ID) (Messange)",
                 CommandExecution = "Sends a message to a friend",
-                IsPublic = false,
                 MessageAfterExecute = "-"
             });
 
@@ -199,15 +197,13 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             {
                 Keyword = "/idle [GamesIds]",
                 CommandExecution = "Launches games from the library",
-                IsPublic = false,
                 MessageAfterExecute = "Idling..."
             });
 
             MsgCommands.Insert(6, new Command
             {
-                Keyword = "/customgame {title}",
+                Keyword = "/customgame (Name)",
                 CommandExecution = "Sets a custom title as a game",
-                IsPublic = false,
                 MessageAfterExecute = "Title setted"
             });
 
@@ -215,7 +211,13 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             {
                 Keyword = "/stopgame",
                 CommandExecution = "Stops game activity",
-                IsPublic = false,
+                MessageAfterExecute = "Game activity stopped."
+            });
+
+            MsgCommands.Insert(8, new Command
+            {
+                Keyword = "/state (mode)",
+                CommandExecution = "Setting the profile state",
                 MessageAfterExecute = "Game activity stopped."
             });
         }
@@ -278,10 +280,12 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     if (steamValidator.GetSteamLinkType() != SteamValidator.SteamLinkTypes.ErrorType)
                     {
                         SteamRemoteClient.CurrentUser.Messenger.AdminID = steamValidator.SteamId32;
+                        IsAdminIdValid = true;
                     }
                     else
                     {
                         ErrorMsg = "Invalid ID";
+                        IsAdminIdValid = false;
                     }
                 }
             });

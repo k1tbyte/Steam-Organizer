@@ -296,6 +296,28 @@
                 </Style.Triggers>
             </Style>
 
+            <Style x:Key="opacityBox" TargetType="TextBox">
+                <Setter Property="Background" Value="{DynamicResource second_main_color}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="CaretBrush" Value="{DynamicResource atv_rectangles_shadow}"/>
+                <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                <Setter Property="Padding" Value="5 4"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBox">
+                            <Grid>
+                                <TextBlock Text="{TemplateBinding  Property=Uid}" Margin="4 -16 0 0" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                                <Border Background="{TemplateBinding Background}" CornerRadius="5" Opacity="0.6" SnapsToDevicePixels="True" />
+                                <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                            </Grid>
+
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+            </Style>
+
             <Style x:Key="themeButton" TargetType="RadioButton">
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="Margin" Value="10 0 0 0"/>

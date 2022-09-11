@@ -237,19 +237,14 @@
                         </StackPanel>
 
                         <StackPanel Margin="0 5 0 0" Orientation="Horizontal">
-                            <TextBlock Text="Enable admin commands" Margin="4 3 10 2" FontSize="13" 
+                            <TextBlock Text="Enable commands" Margin="4 3 10 2" FontSize="13" 
                                        Foreground="{StaticResource default_foreground}"/>
 
-                            <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25"
-                                          Background="{DynamicResource second_main_color}" IsChecked="{Binding EnableAdminCommands}"/>
+                            <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25" 
+                                          IsHitTestVisible="{Binding IsAdminIdValid}"
+                                          Background="{DynamicResource second_main_color}" IsChecked="{Binding EnableCommands}"/>
                         </StackPanel>
 
-                        <StackPanel Margin="0 5 0 0" Orientation="Horizontal">
-                            <TextBlock Text="Enable public commands" Margin="4 3 10 2" FontSize="13" 
-                                       Foreground="{StaticResource default_foreground}"/>
-                            <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25"
-                                          Background="{DynamicResource second_main_color}" IsChecked="{Binding EnablePublicCommands}"/>
-                        </StackPanel>
 
                         <StackPanel Margin="0 5 0 0" Orientation="Horizontal">
                             <TextBlock Text="Clear unread messages" Margin="4 3 10 2" FontSize="13" 
@@ -260,49 +255,91 @@
                     </StackPanel >
                     
                     <!-- Commands area -->
-                    <Grid Margin="40 35 0 0">
+                    <Grid Margin="40 25 0 0">
                         <Border Background="{DynamicResource second_main_color}" CornerRadius="0 0 15 15" 
-                                Opacity="0.6" Margin="0 25 0 0" Height="210" VerticalAlignment="Top"/>
+                                Opacity="0.6" Margin="0 25 0 0" Height="190" VerticalAlignment="Top"/>
                         <Border Background="{DynamicResource second_main_color}" CornerRadius="15 15 0 0" 
                                 Opacity="1" Margin="0 0 0 0" Height="25" VerticalAlignment="Top"/>
                         <StackPanel>
-                        <TextBlock Text="    Keyword          Command            Message         State"
+                            <TextBlock Text="     Keyword                 Command                 Message   "
                                    Margin="10 5 0 2" FontWeight="Medium"
                                    Foreground="{DynamicResource default_foreground}"/>
-                        
-                            <ListBox Background="Transparent" Width="320" Height="200"
-                             VirtualizingPanel.IsVirtualizing="True" ItemsSource="{Binding MsgCommands}"
-                             VirtualizingPanel.VirtualizationMode="Recycling" BorderThickness="0">
 
-                        <ListBox.ItemTemplate>
+                            <ListBox x:Name="commandListBox" Background="Transparent" Width="320" Height="185"
+                             VirtualizingPanel.IsVirtualizing="True" ItemsSource="{Binding MsgCommands}"
+                             VirtualizingPanel.VirtualizationMode="Recycling" BorderThickness="0"
+                                     ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectionChanged="commandListBox_SelectionChanged">
+                                <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid Margin="0 3 0 0">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="85"/>
-                                                <ColumnDefinition Width="90"/>
-                                                <ColumnDefinition Width="90"/>
-                                                <ColumnDefinition Width="45"/>
+                                                <ColumnDefinition Width="105"/>
+                                                <ColumnDefinition Width="105"/>
+                                                <ColumnDefinition Width="105"/>
                                             </Grid.ColumnDefinitions>
 
-                                            <TextBox Grid.Column="0"  Text="{Binding Keyword}" MaxWidth="80" Style="{StaticResource commandBox}"/>
+                                            <TextBox Grid.Column="0"  Text="{Binding Keyword}" MaxWidth="90" Style="{StaticResource commandBox}"/>
 
-                                            <TextBox Grid.Column="1" Text="{Binding CommandExecution}" MaxWidth="80" Style="{StaticResource commandBox}"/>
+                                            <TextBox Grid.Column="1" Text="{Binding CommandExecution}" MaxWidth="90" Style="{StaticResource commandBox}"/>
 
-                                            <TextBox Grid.Column="2" Text="{Binding MessageAfterExecute}" MaxWidth="80" Style="{StaticResource commandBox}"/>
-
-                                            <TextBox Grid.Column="3" Text="{Binding IsPublic}" MaxWidth="80" Style="{StaticResource commandBox}"/>
+                                            <TextBox Grid.Column="2" Text="{Binding MessageAfterExecute}" MaxWidth="90" Style="{StaticResource commandBox}"/>
 
                                         </Grid>
 
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
+                            </ListBox>
 
-                    </ListBox>
-                    </StackPanel>
+                        </StackPanel>
+
+                        <TextBlock Text="Only console commands" Visibility="{Binding ElementName=CommandBox,Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"
+                                   VerticalAlignment="Bottom" Margin="7 0 0 26.5"
+                                   FontSize="9" Foreground="{StaticResource default_foreground}" Opacity="0.6"/>
+
+
+                        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Left">
+                            <TextBlock Text="Keyword" Margin="4 -16 0 0" FontSize="11"
+                                       Foreground="{StaticResource default_foreground}" x:Name="KeywordTitle"/>
+                            <TextBox x:Name="KeywordBox" Style="{StaticResource opacityBox}" Height="25" 
+                          Width="145"  Margin="0 0 0 20" Padding="11 4 4 6"/>
+
+                            <TextBlock Text="Command" Margin="4 -16 0 0" FontSize="11" Foreground="{StaticResource default_foreground}"
+                                       x:Name="CommandTitle"/>
+                            <TextBox x:Name="CommandBox" Style="{StaticResource opacityBox}" Height="25" 
+                          Width="145" Margin="0 0 0 20"/>
+                            
+                        </StackPanel>
+
+                        <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                                   Text="/" Margin="8 0 0 70" FontSize="11"
+                                   Foreground="{DynamicResource default_foreground}"/>
+
+                            <TextBox Style="{StaticResource opacityBox}" Height="25" x:Name="CommandMsgBox"
+                          Width="145" Uid="Message" VerticalAlignment="Bottom" Margin="170 0 0 65" HorizontalAlignment="Left"/>
+                        
+                            <Button x:Name="AddCommand" Style="{StaticResource defaultButton}" Width="60" Height="26" Click="AddCommand_Click"  VerticalAlignment="Bottom"
+                                HorizontalAlignment="Right" Margin="0 0 48 19" Background="{DynamicResource second_main_color}">
+                            <Icon:PackIconMaterial Kind="Plus"/>
+                        </Button>
                     </Grid>
                 </StackPanel>
-                
+
             </Grid>
         </Border>
+        <Button x:Name="DeleteCommand"  Background="{DynamicResource second_main_color}"
+                        Width="25" Height="25" VerticalAlignment="Top" Margin="0 50 115 0"
+                Click="DeleteCommand_Click">
+            <Icon:Material Kind="TrashCan" Width="14" Height="14"/>
+            <Button.Style>
+                <Style TargetType="Button" BasedOn="{StaticResource defaultButton}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=commandListBox,Path=SelectedIndex}" Value="-1">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
     </Grid>
 </UserControl>

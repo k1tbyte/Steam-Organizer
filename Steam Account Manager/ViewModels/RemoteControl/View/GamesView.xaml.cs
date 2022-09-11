@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Linq;
 using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {
@@ -68,7 +69,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
                 if (selectedCount > 32 || selectedCount == 0)
                 {
                     Error = true;
-                    SelectsText.Foreground = Utilities.StringToBrush("PaleVioletRed");
+                    SelectsText.Foreground = Brushes.PaleVioletRed;
 
                     if (games.SelectedItems.Count > 32)
                         SelectsText.Text = "Maximum\n32 games!";
