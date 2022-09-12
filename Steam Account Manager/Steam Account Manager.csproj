@@ -71,6 +71,7 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="protobuf-net, Version=3.0.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>..\packages\protobuf-net.3.1.17\lib\net461\protobuf-net.dll</HintPath>
     </Reference>
@@ -132,7 +133,9 @@
     <Compile Include="Infrastructure\Config.cs" />
     <Compile Include="Infrastructure\Converters\CustomBooleanToVisiblity.cs" />
     <Compile Include="Infrastructure\Converters\InverseBooleanConverter.cs" />
+    <Compile Include="Infrastructure\Converters\MsgViewToBool.cs" />
     <Compile Include="Infrastructure\GamesModels\CsgoStats.cs" />
+    <Compile Include="Infrastructure\JsonModels\RemoteUserModel.cs" />
     <Compile Include="Infrastructure\OvservableObject.cs" />
     <Compile Include="Infrastructure\Parsers\CsgoParser.cs" />
     <Compile Include="Infrastructure\Parsers\SteamParser.cs" />
@@ -152,6 +155,7 @@
     <Compile Include="ViewModels\AddAccountViewModel.cs" />
     <Compile Include="ViewModels\AddAuthenticatorViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\RemoteControl\FriendsViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\GamesViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\LoginViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\MainRemoteControlViewModel.cs" />
@@ -238,6 +242,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\ComboBoxStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\DataGridStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -19,6 +19,8 @@
 
                 <ResourceDictionary Source="Themes/ListBoxStyle.xaml"/>
 
+                <ResourceDictionary Source="Themes/DataGridStyle.xaml"/>
+
                 <ResourceDictionary Source="Themes/ColorSchemes/Dark.xaml"/>
 
                 <ResourceDictionary Source="Locale/lang.en-US.xaml" />
@@ -27,6 +29,7 @@
 
             <converters:InverseBoolConverter x:Key="BoolInverted"/>
             <converters:BooleanToVisibilityConverter x:Key="BoolToVis"/>
+            <converters:MsgViewToBool x:Key="MsgViewToBool"/>
             <converters:BooleanToVisibilityConverter x:Key="BoolToVisInverted"
                                                      True="Collapsed"
                                                      False="Visible"/>
@@ -472,7 +475,6 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-            
 
             <Style x:Key="loginButton" TargetType="Button" >
                 <Setter Property="Width" Value="40"/>
@@ -517,6 +519,17 @@
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter Property="Background" Value="#F5C803" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="MessageToFriend" TargetType="Button" BasedOn="{StaticResource gridEditButton}">
+                <Setter Property="Background" Value="#4E83D4"/>
+                <Setter Property="BorderBrush" Value="#57A5D4"/>
+
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#57A5D4" />
                     </Trigger>
                 </Style.Triggers>
             </Style>

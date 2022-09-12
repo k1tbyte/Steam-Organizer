@@ -44,6 +44,7 @@
             <Setter Property="Width" Value="20"/>
             <Setter Property="Height" Value="18"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="IsChecked" Value="True"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
@@ -52,6 +53,9 @@
                                                    VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource top_service_buttons}"/>
                         </Border>
                         <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding SelectedChatId}" Value="0">
+                                <Setter Property="IsChecked" Value="False"/>
+                            </DataTrigger>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="arrowIcon" Property="RotationAngle" Value="90"/>
                                 <Setter TargetName="border" Property="CornerRadius" Value="5"/>
@@ -93,19 +97,31 @@
                                 <TextBlock Margin="0 0 10 0" FontFamily="Cascadia Mono"  Foreground="{DynamicResource second_settings_text}"
                                 Text="Steam chat" FontSize="20"/>
 
-                                <TextBlock Foreground="{DynamicResource default_foreground}" FontWeight="Medium"
-                                    Visibility="{Binding IsChatSelected,Converter={StaticResource BoolToVis}}"
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Foreground="{DynamicResource default_foreground}" FontWeight="Medium"
                                  Background="Transparent" Text="Сhat:" Margin="0 6 0 0"/>
 
-                                <TextBox Foreground="{DynamicResource default_foreground}" FontWeight="Normal" IsReadOnly="True"
-                                MaxWidth="120"  Visibility="{Binding IsChatSelected,Converter={StaticResource BoolToVis}}"
-                                 Background="Transparent" Text="{Binding ChatId}" Margin="0 3 0 0"/>
+                                    <TextBox Foreground="{DynamicResource default_foreground}" FontWeight="Normal" IsReadOnly="True"
+                                MaxWidth="120"  FontSize="11"
+                                 Background="Transparent" Text="{Binding SelectedChatId}" Margin="0 3 0 0"/>
 
-                                <Button  Style="{StaticResource defaultButton}" Visibility="{Binding IsChatSelected,Converter={StaticResource BoolToVis}}"
+                                    <Button  Style="{StaticResource defaultButton}" Visibility="{Binding IsChatSelected,Converter={StaticResource BoolToVis}}"
                                  Background="{DynamicResource second_main_color}" Click="Button_Click"
                                  Command="{Binding LeaveFromChatCommand}" Width="26" Height="26" Margin="5 0 0 0">
-                                    <Icon:Material Kind="Logout" RotationAngle="180"/>
-                                </Button>
+                                        <Icon:Material Kind="Logout" RotationAngle="180"/>
+                                    </Button>
+
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedChatId}" Value="0">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                </StackPanel>
+
                             </StackPanel>
 
                             <Rectangle Fill="{DynamicResource adv_rectangle}" 
@@ -113,11 +129,21 @@
                         </StackPanel>
 
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" TextAlignment="Center"
-                           Margin="55 30 0 50"
+                           Margin="55 30 0 50" 
                    FontSize="27" FontWeight="Bold" Foreground="{DynamicResource default_foreground}"
-                   Opacity="0.7" Visibility="{Binding IsChatSelected,Converter={StaticResource BoolToVisInverted}}" >
-            Chat not selected
+                   Opacity="0.7" Text="Chat not selected" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedChatId}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
                         </TextBlock>
+                        
                         <ListBox Background="Transparent" Width="310" Margin="20 50 15 60" HorizontalAlignment="Left"
                              ItemsSource="{Binding Messages}" BorderThickness="0" x:Name="messanger"
                               VirtualizingPanel.IsVirtualizing="True" ScrollViewer.ScrollChanged="messanger_ScrollChanged" 
@@ -155,8 +181,10 @@
                           Panel.ZIndex="1" Text="Write a message..." FontSize="12"
                           Visibility="{Binding ElementName=MessageBox, Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
 
+
+                        <!--#region Typing chat message box -->
                         <StackPanel Orientation="Horizontal"  VerticalAlignment="Bottom" HorizontalAlignment="Left"
-                             Margin="20 0 0 15" IsHitTestVisible="{Binding IsChatSelected}">
+                             Margin="20 0 0 15" >
 
                             <Border Height="40" Width="265" CornerRadius="10"
                         Background="{DynamicResource second_main_color}" Opacity="0.6">
@@ -174,12 +202,24 @@
                                 <Icon:Material Kind="Send" Width="18" Height="18" />
                             </Button>
 
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedChatId}" Value="0">
+                                            <Setter Property="IsHitTestVisible" Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
                         </StackPanel>
+                        <!--#endregion-->
+
                         <Rectangle Fill="{DynamicResource menu_button_background}" Width="8" Margin="0 0 16 15"
                    Height="235" RadiusY="3" RadiusX="3" HorizontalAlignment="Right" Opacity="0.2" IsHitTestVisible="False" />
                     </Grid>
 
                     <ToggleButton x:Name="openChatButton" Style="{StaticResource expandAreaButton}"/>
+
 
                     <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5 40 0 0">
                         <TextBlock Text="Go to chat ID64/ID32/URL" Margin="4 0 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>

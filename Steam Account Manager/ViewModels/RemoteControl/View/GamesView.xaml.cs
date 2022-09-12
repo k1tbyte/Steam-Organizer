@@ -1,5 +1,5 @@
 ﻿using SteamRemoteClient = Steam_Account_Manager.Infrastructure.Base.SteamRemoteClient;
-using Games = Steam_Account_Manager.Infrastructure.Base.Games;
+using Games = Steam_Account_Manager.Infrastructure.JsonModels.Games;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Input;

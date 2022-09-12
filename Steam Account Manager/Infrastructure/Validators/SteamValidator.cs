@@ -142,6 +142,8 @@ namespace Steam_Account_Manager.Infrastructure.Validators
             return _steamId64;
         }
 
+        public ulong GetSteamId64Long => ulong.Parse(_steamId64);
+
         public uint SteamId32 => Utilities.SteamId64ToSteamId32(_steamId64);
 
         public SteamLinkTypes GetSteamLinkType()

@@ -225,10 +225,7 @@ namespace Steam_Account_Manager.ViewModels
 
             OpenUrlProfileCommand = new RelayCommand(o =>
             {
-                using (Process.Start(new ProcessStartInfo("https://steamcommunity.com/profiles/" + SteamId.ToString()) { UseShellExecute = true }))
-                {
-                    ;
-                }
+                using (Process.Start(new ProcessStartInfo("https://steamcommunity.com/profiles/" + SteamId.ToString()) { UseShellExecute = true })) ;
             });
 
             DeleteAccoundCommand = new RelayCommand(o =>

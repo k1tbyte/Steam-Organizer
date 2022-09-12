@@ -1,5 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Base;
+using Steam_Account_Manager.Infrastructure.JsonModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;

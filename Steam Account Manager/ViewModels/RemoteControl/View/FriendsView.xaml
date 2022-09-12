@@ -4,9 +4,62 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl.View"
+             xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             d:DataContext="{d:DesignInstance Type=vm:FriendsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="600">
-    <Grid>
-            
-    </Grid>
+
+    <Border CornerRadius="20" Background="{DynamicResource first_main_color}">
+        <Grid>
+
+            <DataGrid ItemsSource="{Binding Friends}" Width="570" Height="275"
+                      VerticalAlignment="Top" Margin="15 5 15 15" x:Name="FriendsGrid"
+                      VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="60">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Rectangle RadiusY="50" RadiusX="50" Width="24" Height="24" Cursor="Hand">
+                                    <Rectangle.Fill>
+                                        <ImageBrush ImageSource="{Binding ImageURL}"/>
+                                    </Rectangle.Fill>
+                                    <Rectangle.InputBindings >
+                                        <MouseBinding MouseAction="LeftClick"
+                                                      Command="{Binding DataContext.OpenFriendProfileCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding SteamID64}"/>
+                                    </Rectangle.InputBindings>
+                                </Rectangle>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" Width="170" />
+                    <DataGridTextColumn Header="SteamID64" Binding="{Binding SteamID64}" IsReadOnly="True" Width="150"/>
+                    <DataGridTextColumn Header="Friend since" Binding="{Binding FriendSince}" IsReadOnly="True" Width="90"/>
+                   
+                    <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Style="{StaticResource MessageToFriend}" Width="23" Height="23"
+                                            Command="{Binding DataContext.OpenFriendChatCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding SteamID64}">
+                                        <Icon:PackIconMaterial Kind="MessageText" Width="13" Height="13" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </Button>
+                                    
+                                    <Button Margin="5 0 0 0" Style="{StaticResource gridRemoveButton}" Height="23" Width="23">
+                                        <Icon:PackIconMaterial  Kind="AccountRemove" Width="13" Height="13" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+
+            </DataGrid>
+
+            <Button Style="{StaticResource defaultButton}" Background="{DynamicResource second_main_color}"
+                    VerticalAlignment="Bottom" Margin="20" Content="Parse" Command="{Binding GetFriendsInfoCommand}"/>
+        </Grid>
+    </Border>
 </UserControl>

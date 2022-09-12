@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using Steam_Account_Manager.Infrastructure;
+﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.ViewModels.RemoteControl.View;
+using System;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {
@@ -16,10 +11,10 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public RelayCommand MessagesViewCommand { get; set; }
         public RelayCommand FriendsViewCommand { get; set; }
 
-        public LoginView LoginV;
-        public GamesView GamesV;
-        public FriendsView FriendsV;
-        public MessagesView MessagesV;
+        public static LoginView LoginV;
+        public static GamesView GamesV;
+        public static FriendsView FriendsV;
+        public static MessagesView MessagesV;
 
         private static bool _isPanelActive;
         public static event EventHandler IsPanelActiveChanged;
@@ -33,14 +28,15 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
-        private object _currentView;
-        public object CurrentView
+        private static object _remoteControlCurrentView;
+        public static event EventHandler RemoteControlCurrentViewChanged;
+        public static object RemoteControlCurrentView
         {
-            get => _currentView; 
+            get => _remoteControlCurrentView; 
             set
             {
-                _currentView = value;
-                OnPropertyChanged();
+                _remoteControlCurrentView = value;
+                RemoteControlCurrentViewChanged?.Invoke(null, EventArgs.Empty);
             }
         }
 
@@ -49,48 +45,51 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public MainRemoteControlViewModel()
         {
             LoginV = new LoginView();
-          //   MessagesV = new MessagesView();
 
-          //  CurrentView = MessagesV;
-            CurrentView = LoginV;
+               MessagesV = new MessagesView();
+            //  CurrentView = MessagesV;
+
+            //  FriendsV = new FriendsView();
+            // CurrentView = FriendsV;
+            RemoteControlCurrentView = LoginV;
 
             LoginViewCommand = new RelayCommand(o =>
             {
-                if (CurrentView != LoginV)
-                    CurrentView = LoginV;
+                if (RemoteControlCurrentView != LoginV)
+                    RemoteControlCurrentView = LoginV;
             });
 
             GamesViewCommand = new RelayCommand(o =>
             {
-                if (CurrentView != GamesV)
+                if (RemoteControlCurrentView != GamesV)
                 {
                     if (GamesV == null)
                         GamesV = new GamesView();
 
-                    CurrentView = GamesV;
+                    RemoteControlCurrentView = GamesV;
                 }
             });
 
             MessagesViewCommand = new RelayCommand(o =>
             {
-                if (CurrentView != MessagesV)
+                if (RemoteControlCurrentView != MessagesV)
                 {
                     if (MessagesV == null)
                         MessagesV = new MessagesView();
 
-                    CurrentView = MessagesV;
+                    RemoteControlCurrentView = MessagesV;
                 }
                     
             });
 
             FriendsViewCommand = new RelayCommand(o =>
             {
-                if (CurrentView != FriendsV)
+                if (RemoteControlCurrentView != FriendsV)
                 {
                     if (FriendsV == null)
                         FriendsV = new FriendsView();
 
-                    CurrentView = FriendsV;
+                    RemoteControlCurrentView = FriendsV;
                 }
             });
         }

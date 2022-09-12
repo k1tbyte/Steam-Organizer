@@ -1,5 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Base;
+using Steam_Account_Manager.Infrastructure.JsonModels;
 using Steam_Account_Manager.Infrastructure.Validators;
 using System;
 using System.Collections.ObjectModel;
@@ -59,30 +60,22 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
-        private uint _chatId;
-        public uint ChatId
-        {
-            get => _chatId;
-            set
-            {
-                _chatId = value;
-                OnPropertyChanged(nameof(ChatId));
-            }
-        }
 
-        private bool _isChatSelected;
-        public bool IsChatSelected
-        {
-            get => _isChatSelected;
-            set
-            {
-                _isChatSelected = value;
-                OnPropertyChanged(nameof(IsChatSelected));
-            }
-        }
         #endregion
 
         #region Handlers
+        private static ulong _selectedChatId;
+        public static event EventHandler SelectedChatIdChanged;
+        public static ulong SelectedChatId
+        {
+            get => _selectedChatId;
+            set
+            {
+                _selectedChatId = value;
+                SelectedChatIdChanged?.Invoke(null, EventArgs.Empty);
+            }
+            
+        }
 
         private static bool _isAdminIdValid;
         public static event EventHandler IsAdminIdValidChanged;
@@ -237,9 +230,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     SteamValidator steamValidator = new SteamValidator(InterlocutorId);
                     if (steamValidator.GetSteamLinkType() != SteamValidator.SteamLinkTypes.ErrorType)
                     {
-                        ChatId = steamValidator.SteamId32;
-                        SteamRemoteClient.InterlocutorID = SteamRemoteClient.FindFriendFromSteamID(ChatId);
-                        IsChatSelected = true;
+                        SteamRemoteClient.InterlocutorID = SelectedChatId = steamValidator.GetSteamId64Long;
                         InterlocutorId = "";
                         if (Messages.Count != 0)
                             Messages.Clear();
@@ -254,7 +245,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             LeaveFromChatCommand = new RelayCommand(o =>
             {
-                IsChatSelected = false;
+                SelectedChatId = 0;
                 TempID = "";
                 if (Messages.Count != 0)
                     Messages.Clear();

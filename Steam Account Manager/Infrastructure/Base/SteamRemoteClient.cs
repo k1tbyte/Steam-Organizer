@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,93 +12,19 @@ using System.Windows.Threading;
 using System.Net;
 using System.Diagnostics;
 using Steam_Account_Manager.Infrastructure.Validators;
+using Steam_Account_Manager.Infrastructure.JsonModels;
+using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace Steam_Account_Manager.Infrastructure.Base
 {
-    public class RecentlyLoggedAccount
-    {
-        [JsonProperty("Username")]
-        public string Username { get; set; }
-
-        [JsonProperty("Loginkey")]
-        public string Loginkey { get; set; }
-
-        [JsonProperty("ImageUrl")]
-        public string ImageUrl { get; set; }
-    }
-    
-    public class User
-    {
-        [JsonProperty("Username")]
-        public string Username { get; set; }
-
-        [JsonProperty("Loginkey")]
-        public string LoginKey { get; set; }
-
-        [JsonProperty("SteamID64")]
-        public string SteamID64 { get; set; }
-
-        [JsonProperty("MessengerProperties")]
-        public Messenger Messenger { get; set; }
-
-        [JsonProperty("Games")]
-        public List<Games> Games { get; set; }
-
-    }
-
-    public class Games
-    {
-        [JsonProperty("Name")]
-        public string Name { get; set; }
-
-        [JsonProperty("ImageURL")]
-        public string ImageURL { get; set; }
-
-        [JsonProperty("AppID")]
-        public uint AppID { get; set; }
-
-        [JsonProperty("Playtime_Forever")]
-        public uint PlayTime_Forever { get; set; }
-    }
-    
-    public class Messenger
-    {
-        [JsonProperty("AdminID")]
-        public uint AdminID { get; set; }
-
-        [JsonProperty("ChatLogging")]
-        public bool SaveChatLog { get; set; }
-
-        [JsonProperty("EnableCommands")]
-        public bool EnableCommands { get; set; }
-
-        [JsonProperty("Commands")]
-        public List<Command> Commands { get; set; }
-
-    }
-
-    public class Command
-    {
-        [JsonProperty("Keyword")]
-        public string Keyword { get; set; }
-
-        [JsonProperty("CommandExecution")]
-        public string CommandExecution { get; set; }
-
-        [JsonProperty("MessageAfterExecute")]
-        public string MessageAfterExecute { get; set; }
-    }
-
-        
-    
- 
     internal static class SteamRemoteClient
     {
         [System.Runtime.InteropServices.DllImport("PowrProf.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, ExactSpelling = true)]
         public static extern bool SetSuspendState(bool hiberate, bool forceCritical, bool disableWakeEvent);
 
         public static string UserPersonaName { get; private set; }
-        public static SteamID InterlocutorID { get; set; }
+        public static ulong InterlocutorID { get; set; }
         internal static EOSType OSType { get; private set; } = EOSType.Unknown;
 
 
@@ -236,6 +161,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             CurrentUser = new User
             {
                 Games = new List<Games>(),
+                Friends = new List<Friend>(),
                 Messenger = new Messenger
                 {
                     Commands = new List<Command>()
@@ -333,6 +259,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
             MainRemoteControlViewModel.IsPanelActive = true;
             LoginViewModel.SuccessLogOn = true;
+            System.Windows.Forms.SendKeys.SendWait("{TAB}");
         }
 
         private static void OnLoggedOff(SteamUser.LoggedOffCallback callback)
@@ -608,13 +535,13 @@ namespace Steam_Account_Manager.Infrastructure.Base
                     }
                 }
 
-                if(callback.Sender.AccountID == InterlocutorID.AccountID)
+                if(callback.Sender == InterlocutorID)
                 {
                     Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
                     {
                         Msg = callback.Message,
                         Time = DateTime.Now.ToString("HH:mm"),
-                        Username = Username,
+                        Username = FriendPersonaName,
                         TextBrush = (System.Windows.Media.Brush)App.Current.FindResource("default_foreground"),
                         MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("second_main_color")
                     })));
@@ -665,16 +592,6 @@ namespace Steam_Account_Manager.Infrastructure.Base
             })));
         }
 
-        public static SteamID FindFriendFromSteamID(uint steamID)
-        {
-            for (int i = 0; i < steamFriends.GetFriendCount(); i++)
-            {
-                if (steamFriends.GetFriendByIndex(i).AccountID == steamID)
-                    return steamFriends.GetFriendByIndex(i);
-            }
-            return null;
-        }
-
         #region Games parse
         public static async Task ParseOwnedGamesAsync()
         {
@@ -703,7 +620,58 @@ namespace Steam_Account_Manager.Infrastructure.Base
         private class ResponseOwnedGames
         {
             public List<Games> Games { get; set; }
-        } 
+        }
+
+        #endregion
+
+        #region Friends parse
+        
+        public static async Task ParseUserFriends()
+        {
+            if (CurrentUser.Friends != null)
+                CurrentUser.Friends.Clear();
+
+            string webApiKey = Keys.STEAM_API_KEY;
+            if (!String.IsNullOrEmpty(Config._config.WebApiKey))
+                webApiKey = Config._config.WebApiKey;
+
+            var webClient = new WebClient { Encoding = Encoding.UTF8 };
+            string json = await webClient.DownloadStringTaskAsync(
+                "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key=" +
+                webApiKey + "&steamid=" + CurrentSteamId64);
+            JToken node = JObject.Parse(json).SelectToken("*.friends");
+            var sinces = node.SelectTokens(@"$.[?(@.friend_since)].friend_since");
+            
+            SteamID temp;
+            
+            for (int i = 0; i < steamFriends.GetFriendCount(); i++)
+            {
+                temp = steamFriends.GetFriendByIndex(i);
+                CurrentUser.Friends.Add(new Friend
+                {
+                    SteamID64 = temp.ConvertToUInt64(),
+                    Name = steamFriends.GetFriendPersonaName(temp),
+                    FriendSince = Utilities.UnixTimeToDateTime(long.Parse(sinces.ElementAt(i).ToString())).ToString("yyyy/MM/dd"),
+                    ImageURL = $"https://avatars.akamai.steamstatic.com/{BitConverter.ToString(steamFriends.GetFriendAvatar(temp)).Replace("-","")}.jpg"
+                });
+            }
+        }
+
+        public class RootObjectUserFriends
+        {
+            public ResponseFriends Friendlist;
+        }
+
+        public class ResponseFriends
+        {
+            public List<FriendSinceResponse> Games { get; set; }
+        }
+
+        public class FriendSinceResponse 
+        {
+            public long Friend_Since { get; set; }
+        }
+
 
         #endregion
 

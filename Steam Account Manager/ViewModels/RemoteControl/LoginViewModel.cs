@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Collections.Generic;
 using System.Windows.Controls;
+using Steam_Account_Manager.Infrastructure.JsonModels;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {

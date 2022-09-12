@@ -161,8 +161,7 @@
                 </Button>
 
                 <!--Page content-->
-                <ContentControl Grid.Row="1" 
-                        Content="{Binding CurrentView}"/>
+                <ContentControl Grid.Row="1"  Content="{Binding CurrentView}"/>
 
             </Grid>
 

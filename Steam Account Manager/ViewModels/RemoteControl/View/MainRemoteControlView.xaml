@@ -40,9 +40,9 @@
 
                 <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5" Opacity="0.8"/>
 
-                <RadioButton Style="{StaticResource RemoteControlButton}" 
+                <RadioButton Style="{StaticResource RemoteControlButton}"
                              Command="{Binding MessagesViewCommand}" IsHitTestVisible="{Binding IsPanelActive}"
-                             Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
+                             Margin="0 0 0 0" Width="45" Height="40" IsChecked="{Binding RemoteControlCurrentView, Converter={StaticResource MsgViewToBool}}">
                     <Icon:PackIconMaterial Kind="Message"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
                 </RadioButton>
@@ -60,7 +60,7 @@
 
         </Border>
 
-        <ContentPresenter Margin="0 25 0 0" Grid.Row="2" Content="{Binding CurrentView}"/>
+        <ContentPresenter Margin="0 25 0 0" Grid.Row="2" Content="{Binding RemoteControlCurrentView}"/>
         
     </Grid>
 </UserControl>

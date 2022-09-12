@@ -26,7 +26,7 @@
     <Grid>
         
         <!-- Login border -->
-        <Grid>
+        <Grid >
             <Border Background="{DynamicResource first_main_color}" Width="280" CornerRadius="20"  VerticalAlignment="Top">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 20 0 0">
 
@@ -111,6 +111,7 @@
                          SelectionMode="Single" Background="Transparent"
                          VirtualizingPanel.IsVirtualizing="True"
                          VirtualizingPanel.VirtualizationMode="Recycling"
+                         IsTabStop="False" KeyboardNavigation.AcceptsReturn="False"
                          ItemsSource="{Binding RecentlyLoggedIn}" Width="80" ItemContainerStyle="{StaticResource games_listbox}" BorderThickness="0">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
