@@ -300,7 +300,7 @@
             </Style>
 
             <Style x:Key="opacityBox" TargetType="TextBox">
-                <Setter Property="Background" Value="{DynamicResource second_main_color}"/>
+                <Setter Property="Background" Value="{DynamicResource adv_borders_background}"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="CaretBrush" Value="{DynamicResource atv_rectangles_shadow}"/>
                 <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
@@ -309,7 +309,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="TextBox">
                             <Grid>
-                                <TextBlock Text="{TemplateBinding  Property=Uid}" Margin="4 -16 0 0" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                                <TextBlock Text="{TemplateBinding  Property=Uid}" Margin="4 -16 0 0" FontSize="11" Foreground="{TemplateBinding Foreground}"/>
                                 <Border Background="{TemplateBinding Background}" CornerRadius="5" Opacity="0.6" SnapsToDevicePixels="True" />
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
                             </Grid>

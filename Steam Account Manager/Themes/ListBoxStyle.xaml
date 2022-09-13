@@ -24,9 +24,9 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="Border" Property="Background"
-                                    Value="{DynamicResource ResourceKey=menu_button_background}"/>
+                                    Value="{DynamicResource ResourceKey=rc_selected_item_backgound}"/>
                             <Setter TargetName="Border" Property="BorderBrush"
-                                    Value="black"/>
+                                    Value="{DynamicResource ResourceKey=adv_expand_border}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -18,7 +18,7 @@
                        Text="Friends:"
                        FontSize="15"/>
                 <TextBlock Text="{Binding Friends.Count}" FontSize="18" Margin="3 -2 0 0"
-                           FontFamily="Cascadia Mono" Foreground="{DynamicResource second_main_color}"/>
+                           FontFamily="Cascadia Mono" Foreground="{DynamicResource adv_borders_background}"/>
             </StackPanel>
 
             <DataGrid ItemsSource="{Binding Friends}" Width="570" Height="265"
@@ -69,7 +69,7 @@
 
             </DataGrid>
 
-            <Button Style="{StaticResource defaultButton}" Background="{DynamicResource second_main_color}"
+            <Button Style="{StaticResource defaultButton}" Background="{DynamicResource adv_borders_background}"
                     VerticalAlignment="Bottom" Margin="12" Content="Update" Command="{Binding GetFriendsInfoCommand}"/>
         </Grid>
     </Border>

@@ -15,7 +15,7 @@
                      Width="475" HorizontalAlignment="Left" SelectionMode="Multiple"
                      SelectionChanged="games_SelectionChanged"
                      Margin="9,10,0,10" Background="Transparent"
-                     VirtualizingPanel.IsVirtualizing="True" 
+                     VirtualizingPanel.IsVirtualizing="True"  BorderThickness="0"
                      VirtualizingPanel.VirtualizationMode="Recycling"
                      ItemContainerStyle="{StaticResource games_listbox}">
                 <ListBox.ItemsPanel>
@@ -78,7 +78,7 @@
 
             <TextBlock FontSize="11" Foreground="{DynamicResource default_foreground}"
                        Text="Custom game title" HorizontalAlignment="Center" Margin="0 40 0 3" />
-            <Border Margin="0 0 0 -30" Background="{DynamicResource second_main_color}"
+            <Border Margin="0 0 0 -30" Background="{DynamicResource adv_borders_background}"
                         Height="24" CornerRadius="5" Opacity="0.6"/>
             <TextBox  x:Name="Custom_gameTitle" Style="{StaticResource settings_data_box}" FontSize="12" Padding="2 0 0 0" 
                          IsReadOnly="False" Width="80" Margin="5 7 6 0" MaxLength="32"/>
@@ -86,13 +86,13 @@
             <TextBlock FontSize="11" Foreground="{DynamicResource default_foreground}"
                        Text="Other gameID" HorizontalAlignment="Center" Margin="-14 40 0 3" />
             <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
-                <Border Margin="0 0 -54 0" Background="{DynamicResource second_main_color}"
+                <Border Margin="0 0 -54 0" Background="{DynamicResource adv_borders_background}"
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
                 <TextBox x:Name="add_idBox" PreviewTextInput="add_idBox_PreviewTextInput"  Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
                          IsReadOnly="False" Width="45" Margin="0 0 6 0" MaxLength="7"/>
 
                 <Button Command="{Binding AddOtherIdCommand}" CommandParameter="{Binding ElementName=add_idBox}"  
-                        Background="{DynamicResource second_main_color}" 
+                        Background="{DynamicResource adv_borders_background}" 
                         Style="{StaticResource defaultButton}"   Content="Add" Height="26" Width="40"/>
 
             </StackPanel>

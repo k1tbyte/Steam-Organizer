@@ -16,7 +16,7 @@
                 <VisualStateGroup x:Name="CheckStates">
                     <VisualState x:Name="Checked">
                         <Storyboard>
-                            <ColorAnimation Storyboard.TargetName="BorderColor" Storyboard.TargetProperty="Color" To="#7B5CD6" Duration="0:0:0.125"/>
+                            <ColorAnimation Storyboard.TargetName="BorderColor" Storyboard.TargetProperty="Color" To="{DynamicResource comboBox_border}" Duration="0:0:0.125"/>
                         </Storyboard>
                     </VisualState>
                     <VisualState x:Name="Unchecked" />
@@ -29,7 +29,7 @@
                     BorderThickness="1"
                     BorderBrush="{DynamicResource second_main_color}">
                 <Border.Background>
-                    <SolidColorBrush x:Name="BorderColor" Color="#232338" />
+                    <SolidColorBrush x:Name="BorderColor" Color="{DynamicResource comboBox_border_background}" />
                 </Border.Background>
             </Border>
             <Border Grid.Column="0"
@@ -131,7 +131,7 @@
                                   MaxHeight="{TemplateBinding MaxDropDownHeight}">
                                 <Border x:Name="DropDownBorder"
                                         BorderThickness="1"
-                                        BorderBrush="{DynamicResource buttons_border_brush}"
+                                        BorderBrush="{DynamicResource second_main_color}"
                                         Background="{DynamicResource second_main_color}"/>
                                 <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
                                     <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
@@ -176,7 +176,7 @@
                                     <Storyboard>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                 Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="#7B5CD6" />
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource comboBox_border_background}" />
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -195,7 +195,7 @@
                                     <Storyboard>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                 Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="#7B5CD6" />
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource comboBox_border_background}" />
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>

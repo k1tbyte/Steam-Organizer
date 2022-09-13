@@ -48,7 +48,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
-                        <Border x:Name="border"  Background="{DynamicResource second_main_color}" CornerRadius="0 5 5 0">
+                        <Border x:Name="border"  Background="{DynamicResource adv_borders_background}" CornerRadius="0 5 5 0">
                             <Icon:PackIconMaterial x:Name="arrowIcon" Kind="ArrowDownBold" Width="15" Height="12" RotationAngle="270"
                                                    VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource top_service_buttons}"/>
                         </Border>
@@ -106,7 +106,7 @@
                                  Background="Transparent" Text="{Binding SelectedChatId}" Margin="0 3 0 0"/>
 
                                     <Button  Style="{StaticResource defaultButton}"
-                                 Background="{DynamicResource second_main_color}" Click="Button_Click"
+                                 Background="{DynamicResource adv_borders_background}" Click="Button_Click"
                                  Command="{Binding LeaveFromChatCommand}" Width="26" Height="26" Margin="5 0 0 0">
                                         <Icon:Material Kind="Logout" RotationAngle="180"/>
                                     </Button>
@@ -225,7 +225,7 @@
                         <TextBlock Text="Go to chat ID64/ID32/URL" Margin="4 0 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
                         <StackPanel Orientation="Horizontal" >
 
-                            <Border Margin="0 0 -124 0" Background="{DynamicResource second_main_color}"
+                            <Border Margin="0 0 -124 0" Background="{DynamicResource adv_borders_background}"
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
 
                             <TextBox x:Name="add_idBox" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
@@ -233,7 +233,7 @@
 
 
                             <Button Command="{Binding SelectChatCommand}" IsHitTestVisible="{Binding ElementName=add_idBox, Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
-                        Background="{DynamicResource second_main_color}" 
+                        Background="{DynamicResource adv_borders_background}" 
                         Style="{StaticResource defaultButton}"  Content="Select" Height="26" Width="50"/>
 
                         </StackPanel>
@@ -242,7 +242,7 @@
                         <TextBlock Text="Current administrator" Margin="4 7 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
                         <StackPanel Orientation="Horizontal" >
 
-                            <Border Margin="0 0 -124 0" Background="{DynamicResource second_main_color}"
+                            <Border Margin="0 0 -124 0" Background="{DynamicResource adv_borders_background}"
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
 
                             <TextBox x:Name="add_admin_box"  Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
@@ -250,7 +250,7 @@
 
 
                             <Button IsHitTestVisible="{Binding ElementName=add_admin_box, Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
-                        Background="{DynamicResource second_main_color}" Command="{Binding AddAdminIdCommand}"
+                        Background="{DynamicResource adv_borders_background}" Command="{Binding AddAdminIdCommand}"
                         Style="{StaticResource defaultButton}"  Content="Add" Height="26" Width="50"/>
 
                         </StackPanel>
@@ -273,7 +273,7 @@
                             <TextBlock Text="Save chat log" Margin="4 3 10 2" FontSize="13" 
                                        Foreground="{StaticResource default_foreground}"/>
                             <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25"
-                                          Background="{DynamicResource second_main_color}" IsChecked="{Binding SaveChatLog}"/>
+                                          Background="{DynamicResource adv_borders_background}" IsChecked="{Binding SaveChatLog}"/>
                         </StackPanel>
 
                         <StackPanel Margin="0 5 0 0" Orientation="Horizontal">
@@ -282,7 +282,7 @@
 
                             <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25" 
                                           IsHitTestVisible="{Binding IsAdminIdValid}"
-                                          Background="{DynamicResource second_main_color}" IsChecked="{Binding EnableCommands}"/>
+                                          Background="{DynamicResource adv_borders_background}" IsChecked="{Binding EnableCommands}"/>
                         </StackPanel>
 
 
@@ -290,15 +290,15 @@
                             <TextBlock Text="Clear unread messages" Margin="4 3 10 2" FontSize="13" 
                                        Foreground="{StaticResource default_foreground}"/>
                             <Button Style="{StaticResource defaultButton}" Width="50" Height="25"
-                                          Background="{DynamicResource second_main_color}" Content="Clear"/>
+                                          Background="{DynamicResource adv_borders_background}" Content="Clear"/>
                         </StackPanel>
                     </StackPanel >
                     
                     <!-- Commands area -->
                     <Grid Margin="40 25 0 0">
-                        <Border Background="{DynamicResource second_main_color}" CornerRadius="0 0 15 15" 
+                        <Border Background="{DynamicResource adv_borders_background}" CornerRadius="0 0 15 15" 
                                 Opacity="0.6" Margin="0 25 0 0" Height="190" VerticalAlignment="Top"/>
-                        <Border Background="{DynamicResource second_main_color}" CornerRadius="15 15 0 0" 
+                        <Border Background="{DynamicResource adv_borders_background}" CornerRadius="15 15 0 0" 
                                 Opacity="1" Margin="0 0 0 0" Height="25" VerticalAlignment="Top"/>
                         <StackPanel>
                             <TextBlock Text="     Keyword                 Command                 Message   "
@@ -358,7 +358,7 @@
                           Width="145" Uid="Message" VerticalAlignment="Bottom" Margin="170 0 0 65" HorizontalAlignment="Left"/>
                         
                             <Button x:Name="AddCommand" Style="{StaticResource defaultButton}" Width="60" Height="26" Click="AddCommand_Click"  VerticalAlignment="Bottom"
-                                HorizontalAlignment="Right" Margin="0 0 48 19" Background="{DynamicResource second_main_color}">
+                                HorizontalAlignment="Right" Margin="0 0 48 19" Background="{DynamicResource adv_borders_background}">
                             <Icon:PackIconMaterial Kind="Plus"/>
                         </Button>
                     </Grid>
@@ -366,7 +366,7 @@
 
             </Grid>
         </Border>
-        <Button x:Name="DeleteCommand"  Background="{DynamicResource second_main_color}"
+        <Button x:Name="DeleteCommand"  Background="{DynamicResource adv_borders_background}"
                         Width="25" Height="25" VerticalAlignment="Top" Margin="0 50 115 0"
                 Click="DeleteCommand_Click">
             <Icon:Material Kind="TrashCan" Width="14" Height="14"/>

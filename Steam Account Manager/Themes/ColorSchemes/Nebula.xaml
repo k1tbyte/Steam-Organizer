@@ -56,10 +56,21 @@
     <Brush x:Key="adv_csgo_text_foreground">#ffff</Brush>
     <Brush x:Key="adv_service_buttons_isMouseOver">#ffff</Brush>
 
+    
+    <!--#region Remote Control -->
+
+    <!-- Login view -->
+    <Brush x:Key="rc_lv_main_text">#A9D1F6</Brush>
+    <Brush x:Key="rc_selected_item_backgound">#1FAED6</Brush>
+
+    <!--#endregion-->
+
+
     <!--Colors -->
     <Color x:Key="drop_shadow">#1d2335</Color>
-
-
+    <Color x:Key="comboBox_border">#1FAED6</Color>
+    <Color x:Key="comboBox_border_background">#2F4961</Color>
+    
 </ResourceDictionary>
 
 
