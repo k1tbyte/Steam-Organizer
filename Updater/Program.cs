@@ -9,35 +9,74 @@ namespace Updater
     {
         static void Main(string[] args)
         {
-
-            if (args.Length != 0)
+            if (args.Length >= 1)
             {
+
                 try
                 {
-                    Console.SetWindowSize(40, 5);
+
+                     Console.SetWindowSize(40, 5);
                     Console.WriteLine("Donwloading...");
                     var webClient = new WebClient();
-                    webClient.DownloadFile("https://drive.google.com/uc?export=download&id=11ivjqOtmPdVgTaJP6kZL9_5bcYgwog0u", @"LastUpd.zip");
+                    webClient.DownloadFile("https://drive.google.com/uc?export=download&id=11mSIJZeTQhUHtnDVwa74iQuAQXJ8WH5Q", @"LastUpd.zip");
                     Console.WriteLine("Extract...");
 
-                    if (File.Exists(@".\Steam Account Manager.exe"))
-                        File.Delete(@".\Steam Account Manager.exe");
+                    Directory.CreateDirectory(@".\Temp");
+                    ZipFile.ExtractToDirectory(@".\LastUpd.zip", @".\Temp");
 
-                    if (File.Exists(@".\Steam Account Manager.exe.config"))
-                        File.Delete(@".\Steam Account Manager.exe.config");
+                    if (File.Exists(@".\Temp\Updater.exe"))
+                        File.Delete(@".\Temp\Updater.exe");
 
-                    ZipFile.ExtractToDirectory(@".\LastUpd.zip", @".\");
+                    var updateFiles = Directory.GetFiles(@".\Temp").Select(a => Path.GetFileName(a));
+
+                    foreach (var item in updateFiles)
+                    {
+                        File.Move($@".\Temp\{item}", $@".\{item}", true);
+                    }
+
+                    var dirs = Directory.GetDirectories(@".\Temp", "*", SearchOption.TopDirectoryOnly);
+                    foreach (var item in dirs)
+                    {
+                        var tmpDir = item.Split('\\');
+                        var clearDir = tmpDir[tmpDir.Length - 1];
+
+                        Console.WriteLine("Find overwrite dir " + clearDir);
+                        if (Directory.Exists($@".\{clearDir}"))
+                        {
+                            Directory.Delete($@".\{clearDir}", true);
+
+                            Directory.CreateDirectory($@".\{clearDir}");
+                        }
+                        else
+                        {
+                            Directory.CreateDirectory($@".\{clearDir}");
+                        }
+
+                        try
+                        {
+
+                            var files = Directory.GetFiles(item).Select(a => Path.GetFileName(a));
+                            foreach (var copied in files)
+                            {
+                                File.Copy($@".\Temp\{clearDir}\{copied}", $@".\{clearDir}\{copied}");
+                            }
+                        }
+                        catch { }
+                    }
+
+                    Directory.Delete(@".\Temp", true);
                     File.Delete(@".\LastUpd.zip");
                     Process.Start(@".\Steam Account Manager.exe");
                 }
-                catch
+                catch (Exception e)
                 {
-                    Console.WriteLine("An error occurred while updating...");
+                    Console.WriteLine("An error occurred while updating...\n\n\n");
+                    Console.WriteLine(e);
                     Thread.Sleep(1000);
                 }
             }
 
-
         }
+
     }
 }
