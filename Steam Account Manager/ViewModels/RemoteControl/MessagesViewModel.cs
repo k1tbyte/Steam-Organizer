@@ -104,7 +104,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public static event EventHandler SaveChatLogChanged;
         public static bool SaveChatLog
         {
-            get => SteamRemoteClient.CurrentUser.Messenger.SaveChatLog;
+            get =>  SteamRemoteClient.CurrentUser.Messenger.SaveChatLog;
             set
             {
                 SteamRemoteClient.CurrentUser.Messenger.SaveChatLog = value;
@@ -217,8 +217,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public MessagesViewModel()
         {
             Messages = new ObservableCollection<Message>();
-            MsgCommands = new ObservableCollection<Command>();
-            InitDefaultCommands();
 
             SelectChatCommand = new RelayCommand(o =>
             {

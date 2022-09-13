@@ -122,7 +122,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             {
                 if (App.IsShuttingDown) Logout();
                 callbackManager.RunWaitCallbacks(TimeSpan.FromMilliseconds(CallbackSleep));
-            }
+                }
 
             return LastLogOnResult;
         }
@@ -144,13 +144,22 @@ namespace Steam_Account_Manager.Infrastructure.Base
             if (File.Exists($@".\RemoteUsers\{Username}\User.json") && CurrentUser == null)
             {
                 CurrentUser = JsonConvert.DeserializeObject<User>(File.ReadAllText($@".\RemoteUsers\{Username}\User.json"));
+                if (CurrentUser.Messenger.AdminID != null)
+                    MessagesViewModel.IsAdminIdValid   = true;
                 MessagesViewModel.EnableCommands       = CurrentUser.Messenger.EnableCommands;
                 MessagesViewModel.AdminId              = CurrentUser.Messenger.AdminID.ToString();
                 MessagesViewModel.SaveChatLog          = CurrentUser.Messenger.SaveChatLog;
-                if (CurrentUser.Messenger.AdminID != 0)
-                    MessagesViewModel.IsAdminIdValid = true;
-                MessagesViewModel.MsgCommands = new System.Collections.ObjectModel.ObservableCollection<Command>(CurrentUser.Messenger.Commands);
-                MessagesViewModel.InitDefaultCommands();
+                MessagesViewModel.MsgCommands          = new System.Collections.ObjectModel.ObservableCollection<Command>(CurrentUser.Messenger.Commands);
+                FriendsViewModel.Friends               = new System.Collections.ObjectModel.ObservableCollection<Friend>(CurrentUser.Friends);
+
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    if (MainRemoteControlViewModel.MessagesV == null)
+                        MainRemoteControlViewModel.MessagesV = new ViewModels.RemoteControl.View.MessagesView();
+
+                    MessagesViewModel.InitDefaultCommands();
+                }));
+                
 
 
                 return true;
@@ -643,37 +652,39 @@ namespace Steam_Account_Manager.Infrastructure.Base
             var sinces = node.SelectTokens(@"$.[?(@.friend_since)].friend_since");
             
             SteamID temp;
+            string avatarTemp;
             
-            for (int i = 0; i < steamFriends.GetFriendCount(); i++)
+            for (int i = 0,j = 0; i < steamFriends.GetFriendCount(); i++)
             {
                 temp = steamFriends.GetFriendByIndex(i);
+
+                if (steamFriends.GetFriendRelationship(temp) != EFriendRelationship.Friend)
+                    continue;
+
+                avatarTemp = BitConverter.ToString(steamFriends.GetFriendAvatar(temp)).Replace("-", "");
+
+                if(avatarTemp == "0000000000000000000000000000000000000000")
+                {
+                    avatarTemp = "fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb";
+                }
+
                 CurrentUser.Friends.Add(new Friend
                 {
                     SteamID64 = temp.ConvertToUInt64(),
                     Name = steamFriends.GetFriendPersonaName(temp),
-                    FriendSince = Utilities.UnixTimeToDateTime(long.Parse(sinces.ElementAt(i).ToString())).ToString("yyyy/MM/dd"),
-                    ImageURL = $"https://avatars.akamai.steamstatic.com/{BitConverter.ToString(steamFriends.GetFriendAvatar(temp)).Replace("-","")}.jpg"
+                    FriendSince = Utilities.UnixTimeToDateTime(long.Parse(sinces.ElementAt(j).ToString())).ToString("yyyy/MM/dd"),
+                    ImageURL = $"https://avatars.akamai.steamstatic.com/{avatarTemp}.jpg"
                 });
+                j++;
             }
         }
 
-        public class RootObjectUserFriends
-        {
-            public ResponseFriends Friendlist;
-        }
-
-        public class ResponseFriends
-        {
-            public List<FriendSinceResponse> Games { get; set; }
-        }
-
-        public class FriendSinceResponse 
-        {
-            public long Friend_Since { get; set; }
-        }
-
-
         #endregion
+
+        internal static void RemoveFriend(ulong SteamID64)
+        {
+            steamFriends.RemoveFriend(SteamID64);
+        }
 
         internal static async Task IdleGame(uint? AppId,string GameName = null)
         {

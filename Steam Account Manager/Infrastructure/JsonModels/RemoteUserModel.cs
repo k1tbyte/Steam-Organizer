@@ -63,7 +63,7 @@ namespace Steam_Account_Manager.Infrastructure.JsonModels
     public class Messenger
     {
         [JsonProperty("AdminID")]
-        public uint AdminID { get; set; }
+        public uint? AdminID { get; set; }
 
         [JsonProperty("ChatLogging")]
         public bool SaveChatLog { get; set; }

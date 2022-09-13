@@ -46,7 +46,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         {
             LoginV = new LoginView();
 
-               MessagesV = new MessagesView();
             //  CurrentView = MessagesV;
 
             //  FriendsV = new FriendsView();

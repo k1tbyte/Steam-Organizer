@@ -105,7 +105,7 @@
                                 MaxWidth="120"  FontSize="11"
                                  Background="Transparent" Text="{Binding SelectedChatId}" Margin="0 3 0 0"/>
 
-                                    <Button  Style="{StaticResource defaultButton}" Visibility="{Binding IsChatSelected,Converter={StaticResource BoolToVis}}"
+                                    <Button  Style="{StaticResource defaultButton}"
                                  Background="{DynamicResource second_main_color}" Click="Button_Click"
                                  Command="{Binding LeaveFromChatCommand}" Width="26" Height="26" Margin="5 0 0 0">
                                         <Icon:Material Kind="Logout" RotationAngle="180"/>

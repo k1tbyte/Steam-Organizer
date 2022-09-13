@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl.View"
              xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              d:DataContext="{d:DesignInstance Type=vm:FriendsViewModel}"
@@ -12,15 +11,25 @@
 
     <Border CornerRadius="20" Background="{DynamicResource first_main_color}">
         <Grid>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="25 15 0 0" >
+                <TextBlock 
+                       FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                       Text="Friends:"
+                       FontSize="15"/>
+                <TextBlock Text="{Binding Friends.Count}" FontSize="18" Margin="3 -2 0 0"
+                           FontFamily="Cascadia Mono" Foreground="{DynamicResource second_main_color}"/>
+            </StackPanel>
 
-            <DataGrid ItemsSource="{Binding Friends}" Width="570" Height="275"
-                      VerticalAlignment="Top" Margin="15 5 15 15" x:Name="FriendsGrid"
-                      VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+            <DataGrid ItemsSource="{Binding Friends}" Width="570" Height="265"
+                      VerticalAlignment="Top" Margin="15 30 15 15" x:Name="FriendsGrid"
+                      VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                      VirtualizingPanel.CacheLength="10" VirtualizingPanel.CacheLengthUnit="Item">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Width="60">
+                    <DataGridTemplateColumn Width="60" x:Name="friendImg">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Rectangle RadiusY="50" RadiusX="50" Width="24" Height="24" Cursor="Hand">
+                                <Rectangle RadiusY="50" RadiusX="50" Width="24" Height="24" Cursor="Hand" >
                                     <Rectangle.Fill>
                                         <ImageBrush ImageSource="{Binding ImageURL}"/>
                                     </Rectangle.Fill>
@@ -47,7 +56,9 @@
                                         <Icon:PackIconMaterial Kind="MessageText" Width="13" Height="13" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                     </Button>
                                     
-                                    <Button Margin="5 0 0 0" Style="{StaticResource gridRemoveButton}" Height="23" Width="23">
+                                    <Button Margin="5 0 0 0" Style="{StaticResource gridRemoveButton}" Height="23" Width="23"
+                                            Command="{Binding DataContext.RemoveFriendCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding SteamID64}">
                                         <Icon:PackIconMaterial  Kind="AccountRemove" Width="13" Height="13" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                     </Button>
                                 </StackPanel>
@@ -59,7 +70,7 @@
             </DataGrid>
 
             <Button Style="{StaticResource defaultButton}" Background="{DynamicResource second_main_color}"
-                    VerticalAlignment="Bottom" Margin="20" Content="Parse" Command="{Binding GetFriendsInfoCommand}"/>
+                    VerticalAlignment="Bottom" Margin="12" Content="Update" Command="{Binding GetFriendsInfoCommand}"/>
         </Grid>
     </Border>
 </UserControl>
