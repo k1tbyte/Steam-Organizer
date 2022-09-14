@@ -248,7 +248,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 System.Diagnostics.Process updater = new System.Diagnostics.Process();
 
-                updater.StartInfo.FileName = @".\Updater.exe";
+                updater.StartInfo.FileName = @".\UpdateManager.exe";
                 updater.StartInfo.Arguments = "Upd";
                 updater.Start();
 
