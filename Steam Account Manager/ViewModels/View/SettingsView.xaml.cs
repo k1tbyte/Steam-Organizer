@@ -16,11 +16,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = apiKeyInfo;
             Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text =
-                (string)FindResource("sv_popup_apiKeyInfo_1") + '\n'+
-                (string)FindResource("sv_popup_apiKeyInfo_2") + '\n' +
-                (string)FindResource("sv_popup_apiKeyInfo_3") + '\n' +
-                (string)FindResource("sv_popup_apiKeyInfo_4");
+            Header.PopupText.Text = (string)FindResource("sv_popup_apiKeyInfo");
         }
 
         private void PopupLeave_MouseLeave(object sender, MouseEventArgs e)
@@ -43,9 +39,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
             Popup.IsOpen = true;
             Header.PopupText.Text =
-                (string)FindResource("sv_popup_cryptoKeyInfo_1") + '\n' +
-                (string)FindResource("sv_popup_cryptoKeyInfo_2") + '\n' +
-                (string)FindResource("sv_popup_cryptoKeyInfo_3");
+                (string)FindResource("sv_popup_cryptoKeyInfo");
         }
 
         private void GenerateKey_MouseEnter(object sender, MouseEventArgs e)
@@ -69,9 +63,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = PasswordError;
             Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text =
-                (string)FindResource("sv_popup_passwordError_1") + '\n' +
-                (string)FindResource("sv_popup_passwordError_2");
+            Header.PopupText.Text = (string)FindResource("sv_popup_passwordError");
         }
     }
 }

@@ -75,6 +75,28 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             }
         }
 
+        private void leaveChatBtn_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Popup.PlacementTarget = leaveChatBtn;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = (string)App.Current.FindResource("rc_mv_chatLeave");
+        }
+
+        private void Popup_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.Visibility = System.Windows.Visibility.Collapsed;
+            Popup.IsOpen = false;
+        }
+
+        private void addAdmin_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Popup.PlacementTarget = addAdmin;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = (string)App.Current.FindResource("rc_mv_addAdmin");
+        }
+
         private void AddCommand_Click(object sender, RoutedEventArgs e)
         {
             

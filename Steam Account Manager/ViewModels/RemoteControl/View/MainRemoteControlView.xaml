@@ -16,7 +16,8 @@
             <RowDefinition Height="55"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-
+        
+        
         <Border Grid.Row="1" HorizontalAlignment="Center" CornerRadius="15" 
                 Background="{DynamicResource second_main_color}" Width="280">
             <StackPanel Orientation="Horizontal" Margin="20 5 0 5">

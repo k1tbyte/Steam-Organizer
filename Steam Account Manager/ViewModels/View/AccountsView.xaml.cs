@@ -42,9 +42,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = restoreDb;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = 
-                (string)Application.Current.FindResource("av_popup_restoreDatabase_1")+"\n"+
-                (string)Application.Current.FindResource("av_popup_restoreDatabase_2");
+            Header.PopupText.Text = (string)Application.Current.FindResource("av_popup_restoreDatabase");
         }
 
         private void restoreAcc_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)

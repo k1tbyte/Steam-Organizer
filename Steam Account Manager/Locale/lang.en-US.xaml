@@ -19,18 +19,14 @@
     <v:String x:Key="sv_rememberPass">Remember password when logging</v:String>
     <v:String x:Key="sv_newPass">╰ Enter new password:</v:String>
 
-    <v:String x:Key="sv_popup_apiKeyInfo_1">This key allows you to use the</v:String>
-    <v:String x:Key="sv_popup_apiKeyInfo_2">Steam web API and get Steam data.</v:String>
-    <v:String x:Key="sv_popup_apiKeyInfo_3">If the main key does not work,</v:String>
-    <v:String x:Key="sv_popup_apiKeyInfo_4">you can use your own key - "Click"</v:String>
+    <v:String x:Key="sv_popup_apiKeyInfo" xml:space="preserve"
+              >This key allows you to use the&#13;Steam web API and get Steam data.&#13;If the main key does not work,&#13;you can use your own key - "Click"</v:String>
     <v:String x:Key="sv_popup_maxApiKeyLength">Key length can only be 32 characters</v:String>
-    <v:String x:Key="sv_popup_cryptoKeyInfo_1">256-bit key to encrypt data when saving accounts.</v:String>
-    <v:String x:Key="sv_popup_cryptoKeyInfo_2">ATTENTION! If you lose the key, you will not be able to recover</v:String>
-    <v:String x:Key="sv_popup_cryptoKeyInfo_3">your data. After generating a new key, write it down or save it!</v:String>
+    <v:String x:Key="sv_popup_cryptoKeyInfo" xml:space="preserve"
+              >256-bit key to encrypt data when saving accounts.&#13;ATTENTION! If you lose the key, you will not be able to recover&#13;your data. After generating a new key, write it down or save it!</v:String>
     <v:String x:Key="sv_popup_generateCryptoKey">Generate a new encryption key</v:String>
     <v:String x:Key="sv_popup_resetCrypto">Reset by default</v:String>
-    <v:String x:Key="sv_popup_passwordError_1">The password must contain at least</v:String>
-    <v:String x:Key="sv_popup_passwordError_2">5 characters and no more than 30</v:String>
+    <v:String x:Key="sv_popup_passwordError" xml:space="preserve">The password must contain at least&#13;5 characters and no more than 30</v:String>
     <!--#endregion-->
 
 
@@ -51,11 +47,11 @@
     <v:String x:Key="av_confirmation_delete">Are you sure you want to delete this account?</v:String>
     <v:String x:Key="av_popup_saveDatabase">Save accounts database to file</v:String>
 
-    <v:String x:Key="av_popup_restoreDatabase_1">Restore accounts database from file</v:String>
-    <v:String x:Key="av_popup_restoreDatabase_2">Attention! Replaces your current base.</v:String>
-
+    <v:String x:Key="av_popup_restoreDatabase" xml:space="preserve">Restore accounts database from file&#13;Attention! Replaces your current base.</v:String>
     <v:String x:Key="av_popup_restoreAccount">Restore account from file</v:String>
     <v:String x:Key="av_popup_updAccounts">Update database information</v:String>
+    <v:String x:Key="av_noAccounts" xml:space="preserve">No accounts added.&#13;Click "add" for a new one!</v:String> 
+
     <!--#endregion-->
 
 
@@ -202,4 +198,79 @@
     <v:String x:Key="aw_keyOnlyLength">Key length can only be 44 characters</v:String>
     <!--#endregion-->
     
+    
+    <!--#region Remote control -->
+
+    <!--#region Login view --> 
+    <v:String x:Key="rc_lv_signIn">Sign in</v:String>
+    <v:String x:Key="rc_lv_guardCode">Steam guard code</v:String>
+    <v:String x:Key="rc_lv_recently">Recently</v:String>
+    <v:String x:Key="rc_lv_loggedIn" xml:space="preserve">Logged in: </v:String>
+    <v:String x:Key="rc_lv_nickname" xml:space="preserve">Nickname: </v:String>
+    <v:String x:Key="rc_lv_hostedOn" xml:space="preserve">Hosted on: </v:String>
+    <v:String x:Key="rc_lv_authedDevices" xml:space="preserve">Authenticated devices: </v:String>
+    <v:String x:Key="rc_lv_emailAddress" xml:space="preserve">Email address: </v:String>
+    <v:String x:Key="rc_lv_emailVerif" xml:space="preserve">Email verification: </v:String>
+    <v:String x:Key="rc_lv_accountState">Account state</v:String>
+    <v:String x:Key="rc_lv_stateOffline">Offline</v:String>
+    <v:String x:Key="rc_lv_stateOnline">Online</v:String>
+    <v:String x:Key="rc_lv_stateBusy">Busy</v:String>
+    <v:String x:Key="rc_lv_stateAway">Away</v:String>
+    <v:String x:Key="rc_lv_stateSnooze">Snooze</v:String>
+    <v:String x:Key="rc_lv_stateLookToTrade">Looking to trade</v:String>
+    <v:String x:Key="rc_lv_stateLoogToPlay">Looking to play</v:String>
+    <v:String x:Key="rc_lv_stateInvisible">Invisible</v:String>
+    <v:String x:Key="rc_lv_recentlyLogin">Login</v:String>
+    <v:String x:Key="rc_lv_recentlyDelete">Delete</v:String>
+
+    <v:String x:Key="rc_lv_uiMode">UI Mode</v:String>
+    <v:String x:Key="rc_lv_logout">Logout</v:String>
+    <v:String x:Key="rc_lv_editNick">Edit nickname</v:String>
+    <v:String x:Key="rc_lv_noInternet">No internet connection...</v:String>
+    <v:String x:Key="rc_lv_invalidPass">Invalid password!</v:String>
+    <v:String x:Key="rc_lv_invalidTwofa">Invalid 2FA code!</v:String>
+    <v:String x:Key="rc_lv_invalidGuard">Invalid auth code!</v:String>
+    <v:String x:Key="rc_lv_servUnavailable">Service unavailable</v:String>
+    <v:String x:Key="rc_lv_workTimeout">Timeout in work...</v:String>
+    <v:String x:Key="rc_lv_retriesExceeded">Retries exceeded. Please try again in 35 minutes</v:String>
+    <v:String x:Key="rc_lv_tryLater">Try later...</v:String>
+    <v:String x:Key="rc_lv_keyExpired">Login key has expired...</v:String>
+    <!--#endregion-->
+
+    <!--#region Games view -->
+    <v:String x:Key="rc_gv_noGames" xml:space="preserve">There are no games in your&#13;library. Click "Update"!</v:String>
+    <v:String x:Key="rc_gv_selected" xml:space="preserve">Selected: </v:String>
+    <v:String x:Key="rc_gv_customGameTitle">Custom game title</v:String>
+    <v:String x:Key="rc_gv_Update">Update</v:String>
+    <v:String x:Key="rc_gv_Other_gameID">Other gameID</v:String>
+    <v:String x:Key="rc_gv_idle">Idle</v:String>
+    <v:String x:Key="rc_gv_stop">Stop</v:String>
+    <v:String x:Key="rc_gv_maximumGames" xml:space="preserve">"Maximum&#13;32 games!"</v:String>
+    <v:String x:Key="rc_gv_selectGames">Select game!</v:String>
+    <!--#endregion-->
+
+    <!--#region Messages view -->
+    <v:String x:Key="rc_mv_chat">Сhat:</v:String>
+    <v:String x:Key="rc_mv_writeMsg">Write a message...</v:String>
+    <v:String x:Key="rc_mv_goToChatId">Go to chat ID64/ID32/URL</v:String>
+    <v:String x:Key="rc_mv_currntAdm">Current administrator</v:String> 
+    <v:String x:Key="rc_mv_saveChatLog">Save chat log</v:String>
+    <v:String x:Key="rc_mv_enableCmds">Enable commands</v:String>
+    <v:String x:Key="rc_mv_chatNotSelect">Chat not selected</v:String>
+    <v:String x:Key="rc_mv_cmdsTitle" xml:space="preserve">     Keyword                 Command                 Message   </v:String>
+    <v:String x:Key="rc_mv_onlyConsoleCmds">Only console commands</v:String>
+    <v:String x:Key="rc_mv_cmd">Command</v:String>
+    <v:String x:Key="rc_mv_keyword">Keyword</v:String>
+    <v:String x:Key="rc_mv_message">Message</v:String>
+    <v:String x:Key="rc_mv_chatLeave">Leave the current chat</v:String>
+    <v:String x:Key="rc_mv_addAdmin" xml:space="preserve">User, per commands&#13;which the bot responds</v:String>
+    <!--#endregion-->
+
+    <!--#region Friends view -->
+    <v:String x:Key="rc_fv_friends">Friends:</v:String>
+    <v:String x:Key="rc_fv_Name">Nickname</v:String>
+    <v:String x:Key="rc_fv_friendSince">Friend since</v:String>
+    <!--#endregion-->
+
+    <!--#endregion-->
 </ResourceDictionary>

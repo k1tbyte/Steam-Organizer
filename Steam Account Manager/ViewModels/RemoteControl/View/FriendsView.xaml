@@ -15,7 +15,7 @@
                 <TextBlock 
                        FontFamily="Cascadia Mono"
                        Foreground="{DynamicResource second_settings_text}"
-                       Text="Friends:"
+                       Text="{DynamicResource rc_fv_friends}"
                        FontSize="15"/>
                 <TextBlock Text="{Binding Friends.Count}" FontSize="18" Margin="3 -2 0 0"
                            FontFamily="Cascadia Mono" Foreground="{DynamicResource adv_borders_background}"/>
@@ -42,9 +42,9 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" Width="170" />
+                    <DataGridTextColumn Header="{DynamicResource rc_fv_Name}" Binding="{Binding Name}" IsReadOnly="True" Width="170" />
                     <DataGridTextColumn Header="SteamID64" Binding="{Binding SteamID64}" IsReadOnly="True" Width="150"/>
-                    <DataGridTextColumn Header="Friend since" Binding="{Binding FriendSince}" IsReadOnly="True" Width="90"/>
+                    <DataGridTextColumn Header="{DynamicResource rc_fv_friendSince}" Binding="{Binding FriendSince}" IsReadOnly="True" Width="90"/>
                    
                     <DataGridTemplateColumn Width="*">
                         <DataGridTemplateColumn.CellTemplate>
@@ -70,7 +70,7 @@
             </DataGrid>
 
             <Button Style="{StaticResource defaultButton}" Background="{DynamicResource adv_borders_background}"
-                    VerticalAlignment="Bottom" Margin="12" Content="Update" Command="{Binding GetFriendsInfoCommand}"/>
+                    VerticalAlignment="Bottom" Margin="12" Content="{DynamicResource rc_gv_Update}" Command="{Binding GetFriendsInfoCommand}"/>
         </Grid>
     </Border>
 </UserControl>

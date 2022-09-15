@@ -159,11 +159,8 @@
 
         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Margin="0 0 0 50"
                    FontSize="35" FontWeight="Bold" Foreground="{DynamicResource default_foreground}"
-                   Opacity="0.7" Grid.Row="2" Visibility="{Binding IsDatabaseEmpty,Converter={StaticResource BoolToVis}}" >
-            No accounts added.
-            <LineBreak/>
-             Click "add" for a new one!
-        </TextBlock>
+                   Opacity="0.7" Grid.Row="2" Visibility="{Binding IsDatabaseEmpty,Converter={StaticResource BoolToVis}}" Text="{DynamicResource av_noAccounts}" />
+
 
     </Grid>
 </UserControl>

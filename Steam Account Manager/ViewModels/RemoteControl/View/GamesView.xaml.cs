@@ -19,6 +19,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             InitializeComponent();
             add_idBox.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, PasteBlocked));
             this.DataContext = new GamesViewModel();
+            SelectsText.Text = (string)App.Current.FindResource("rc_gv_selected") + "0";
         }
 
         private void PasteBlocked(object sender, ExecutedRoutedEventArgs e)
@@ -36,15 +37,15 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
             if (games.SelectedItems.Count == 0)
             {
-                SelectsText.Text = "Selected: 0";
+                SelectsText.Text = (string)App.Current.FindResource("rc_gv_selected") + "0";
             }
             else if (games.SelectedItems.Count == 1)
             {
-                SelectsText.Text = "Selected\nAppID: " + GamesViewModel.Games[games.SelectedIndex].AppID +
+                SelectsText.Text = (string)App.Current.FindResource("rc_gv_selected") + "\nAppID: " + GamesViewModel.Games[games.SelectedIndex].AppID +
                     "\nPlaytime: " + GamesViewModel.Games[games.SelectedIndex].PlayTime_Forever / 60 + "h";
             }
             else
-                SelectsText.Text = "Selected: " + games.SelectedItems.Count;
+                SelectsText.Text = (string)App.Current.FindResource("rc_gv_selected") + games.SelectedItems.Count;
         }
 
         private void add_idBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -72,9 +73,9 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
                     SelectsText.Foreground = Brushes.PaleVioletRed;
 
                     if (games.SelectedItems.Count > 32)
-                        SelectsText.Text = "Maximum\n32 games!";
+                        SelectsText.Text = (string)App.Current.FindResource("rc_gv_maximumGames");
                     else if (games.SelectedItems.Count == 0)
-                        SelectsText.Text = "Select game!";
+                        SelectsText.Text = (string)App.Current.FindResource("rc_gv_selectGames");
 
                     e.Handled = true;
                     Idle.IsChecked = false;

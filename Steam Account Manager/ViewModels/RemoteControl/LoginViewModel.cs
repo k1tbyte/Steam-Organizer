@@ -239,28 +239,28 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     switch (result)
                     {
                         case EResult.NoConnection:
-                            ErrorMsg = "No internet connection...";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_noInternet");
                             break;
                         case EResult.InvalidPassword:
-                            ErrorMsg = "Invalid password!";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_invalidPass");
                             break;
                         case EResult.TwoFactorCodeMismatch:
-                            ErrorMsg = "Invalid 2FA code!";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_invalidTwofa");
                             break;
                         case EResult.InvalidLoginAuthCode:
-                            ErrorMsg = "Invalid auth code!";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_invalidGuard");
                             break;
                         case EResult.ServiceUnavailable:
-                            ErrorMsg = "Service unavailable";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_servUnavailable");
                             break;
                         case EResult.Timeout:
-                            ErrorMsg = "Timeout in work...";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_workTimeout");
                             break;
                         case EResult.RateLimitExceeded:
-                            ErrorMsg = "Retries exceeded. Please try again in 35 minutes";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_retriesExceeded");
                             break;
                         case EResult.TryAnotherCM:
-                            ErrorMsg = "Try later...";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_tryLater");
                             break;
                     }
                 }
@@ -286,7 +286,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
                 if(result == EResult.Cancelled || result == EResult.Invalid)
                 {
-                    ErrorMsg = "Login key has expired...";
+                    ErrorMsg = (string)App.Current.FindResource("rc_lv_keyExpired");
                     RecentlyLoggedIn.Remove(element);
                 }
                 else
@@ -294,19 +294,19 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     switch (result)
                     {
                         case EResult.NoConnection:
-                            ErrorMsg = "No internet connection...";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_noInternet");
                             break;
                         case EResult.ServiceUnavailable:
-                            ErrorMsg = "Service unavailable";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_servUnavailable");
                             break;
                         case EResult.Timeout:
-                            ErrorMsg = "Timeout in work...";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_workTimeout");
                             break;
                         case EResult.RateLimitExceeded:
-                            ErrorMsg = "Retries exceeded. Please try again in 35 minutes";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_retriesExceeded");
                             break;
                         case EResult.TryAnotherCM:
-                            ErrorMsg = "Try later...";
+                            ErrorMsg = (string)App.Current.FindResource("rc_lv_tryLater");
                             break;
                     }
                 }

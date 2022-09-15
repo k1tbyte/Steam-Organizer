@@ -48,5 +48,43 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
             System.IO.File.WriteAllText(@".\RecentlyLoggedUsers.json", ConvertedJson);
         }
+
+        private void logoutButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.PlacementTarget = logoutButton;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = (string)App.Current.FindResource("rc_lv_logout");
+        }
+
+        private void Popup_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.Visibility = System.Windows.Visibility.Collapsed;
+            Popup.IsOpen = false;
+        }
+
+        private void editNick_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.PlacementTarget = editNick;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = (string)App.Current.FindResource("rc_lv_editNick");
+        }
+
+        private void RecentlyDelete_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.PlacementTarget = RecentlyDelete;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = (string)App.Current.FindResource("rc_lv_recentlyDelete");
+        }
+
+        private void RecentlyLogOn_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.PlacementTarget = RecentlyDelete;
+            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = (string)App.Current.FindResource("rc_lv_recentlyLogin");
+        }
     }
 }

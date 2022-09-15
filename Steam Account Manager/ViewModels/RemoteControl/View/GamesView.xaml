@@ -66,10 +66,10 @@
 
         <StackPanel  Margin="0 13 15 0" VerticalAlignment="Top" HorizontalAlignment="Right">
             <TextBlock x:Name="SelectsText" FontSize="11" Foreground="{DynamicResource default_foreground}"
-                       Text="Selected: 0" HorizontalAlignment="Center" Margin="0 0 0 5" Width="90" TextAlignment="Center"/>
+                       HorizontalAlignment="Center" Margin="0 0 0 5" Width="90" TextAlignment="Center"/>
 
-            <Button Command="{Binding ParseGamesComamnd}"  Background="{DynamicResource second_main_color}"
-                Style="{StaticResource defaultButton}"   Content="Update"/>
+            <Button Command="{Binding ParseGamesComamnd}"  Background="{DynamicResource adv_borders_background}"
+                Style="{StaticResource defaultButton}"   Content="{DynamicResource rc_gv_Update}"/>
             
           
         </StackPanel>
@@ -77,14 +77,14 @@
         <StackPanel Margin="0 0 15 20" VerticalAlignment="Bottom" HorizontalAlignment="Right">
 
             <TextBlock FontSize="11" Foreground="{DynamicResource default_foreground}"
-                       Text="Custom game title" HorizontalAlignment="Center" Margin="0 40 0 3" />
+                       Text="{DynamicResource rc_gv_customGameTitle}" HorizontalAlignment="Center" Margin="0 40 0 3" />
             <Border Margin="0 0 0 -30" Background="{DynamicResource adv_borders_background}"
                         Height="24" CornerRadius="5" Opacity="0.6"/>
             <TextBox  x:Name="Custom_gameTitle" Style="{StaticResource settings_data_box}" FontSize="12" Padding="2 0 0 0" 
                          IsReadOnly="False" Width="80" Margin="5 7 6 0" MaxLength="32"/>
 
             <TextBlock FontSize="11" Foreground="{DynamicResource default_foreground}"
-                       Text="Other gameID" HorizontalAlignment="Center" Margin="-14 40 0 3" />
+                       Text="{DynamicResource rc_gv_Other_gameID}" HorizontalAlignment="Center" Margin="-14 40 0 3" />
             <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
                 <Border Margin="0 0 -54 0" Background="{DynamicResource adv_borders_background}"
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
@@ -104,11 +104,9 @@
 
         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 130 0"
                    TextAlignment="Center" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource default_foreground}"
-                   Opacity="0.7" Visibility="{Binding IsLibraryEmpty,Converter={StaticResource BoolToVis}}">
-            There are no games in your
-            <LineBreak/>
-             library. Click "Update"!
-        </TextBlock>
+                   Opacity="0.7" Visibility="{Binding IsLibraryEmpty,Converter={StaticResource BoolToVis}}"
+                   Text="{DynamicResource rc_gv_noGames}"/>
+
 
     </Grid>
 </UserControl>

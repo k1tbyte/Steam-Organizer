@@ -19,18 +19,14 @@
     <v:String x:Key="sv_rememberPass">Запам'ятовувати пароль при вході</v:String>
     <v:String x:Key="sv_newPass">╰ Введіть новий пароль:</v:String>
 
-    <v:String x:Key="sv_popup_apiKeyInfo_1">Цей ключ дозволяє використовувати</v:String>
-    <v:String x:Key="sv_popup_apiKeyInfo_2">API Steam і отримувати дані про акаунт</v:String>
-    <v:String x:Key="sv_popup_apiKeyInfo_3">Якщо основний ключ не працює,</v:String>
-    <v:String x:Key="sv_popup_apiKeyInfo_4">можна використовувати власний - "Клік"</v:String>
+    <v:String x:Key="sv_popup_apiKeyInfo" xml:space="preserve"
+              >Цей ключ дозволяє використовувати&#13;API Steam і отримувати дані про акаунт&#13;Якщо основний ключ не працює,&#13;можна використовувати власний - "Клік"</v:String>
     <v:String x:Key="sv_popup_maxApiKeyLength">Довжина ключа може складати лише 32 символи</v:String>
-    <v:String x:Key="sv_popup_cryptoKeyInfo_1">256-бітний ключ для шифрування даних при збереженні акаунтів.</v:String>
-    <v:String x:Key="sv_popup_cryptoKeyInfo_2">УВАГА! Якщо ви втратите ключ, ви не зможете відновити свої дані</v:String>
-    <v:String x:Key="sv_popup_cryptoKeyInfo_3">Після створення нового ключа запишіть його або збережіть!</v:String>
+    <v:String x:Key="sv_popup_cryptoKeyInfo" xml:space="preserve"
+              >256-бітний ключ для шифрування даних при збереженні акаунтів.&#13;УВАГА! Якщо ви втратите ключ, ви не зможете відновити свої дані&#13;Після створення нового ключа запишіть його або збережіть!</v:String>
     <v:String x:Key="sv_popup_generateCryptoKey">Згенеруйте новий ключ шифрування</v:String>
     <v:String x:Key="sv_popup_resetCrypto">Скинути за замовчуванням</v:String>
-    <v:String x:Key="sv_popup_passwordError_1">Пароль має містити принаймні</v:String>
-    <v:String x:Key="sv_popup_passwordError_2">5 символів і не більше 30</v:String>
+    <v:String x:Key="sv_popup_passwordError" xml:space="preserve">Пароль має містити принаймні&#13;5 символів і не більше 30</v:String>
     <!--#endregion-->
 
 
@@ -50,10 +46,10 @@
     <v:String x:Key="av_addbutton_title">Додати</v:String>
     <v:String x:Key="av_confirmation_delete">Ви дійсно хочете видалити даний акаунт?</v:String>
     <v:String x:Key="av_popup_saveDatabase">Зберегти базу акаунтів у файл</v:String>
-    <v:String x:Key="av_popup_restoreDatabase_1">Відновити базу акаунтів з файлу</v:String>
-    <v:String x:Key="av_popup_restoreDatabase_2">Увага! Замінює всі поточні акаунти.</v:String>
+    <v:String x:Key="av_popup_restoreDatabase" xml:space="preserve">Відновити базу акаунтів з файлу&#13;Увага! Замінює всі поточні акаунти.</v:String>
     <v:String x:Key="av_popup_restoreAccount">Відновити акаунт з файлу</v:String>
     <v:String x:Key="av_popup_updAccounts">Оновити інформацію про акаунти</v:String>
+    <v:String x:Key="av_noAccounts" xml:space="preserve">Аккаунти не додані.&#13;Натисніть "Додати", щоб створити новий!</v:String>
     <!--#endregion-->
 
 
@@ -200,5 +196,81 @@
     <v:String x:Key="aw_invalidKey">Помилка! Неправильний ключ</v:String>
     <v:String x:Key="aw_keyOnlyLength">Довжина ключа може бути лише 44 символи</v:String>
     <!--#endregion-->
-    
+
+
+    <!--#region Remote control -->
+
+    <!--#region Login view -->
+    <v:String x:Key="rc_lv_signIn">Вхід</v:String>
+    <v:String x:Key="rc_lv_guardCode">Код Steam guard</v:String>
+    <v:String x:Key="rc_lv_recently">Недавні</v:String>
+    <v:String x:Key="rc_lv_loggedIn" xml:space="preserve">Поточний активний: </v:String>
+    <v:String x:Key="rc_lv_nickname" xml:space="preserve">Нікнейм: </v:String>
+    <v:String x:Key="rc_lv_hostedOn" xml:space="preserve">Запущений на: </v:String>
+    <v:String x:Key="rc_lv_authedDevices" xml:space="preserve">Аутентифікованих пристроїв: </v:String>
+    <v:String x:Key="rc_lv_emailAddress" xml:space="preserve">Ел. пошта: </v:String>
+    <v:String x:Key="rc_lv_emailVerif" xml:space="preserve">Підтвердження пошти: </v:String>
+    <v:String x:Key="rc_lv_accountState">Стан аккаунту</v:String>
+    <v:String x:Key="rc_lv_stateOffline">Оффлайн</v:String>
+    <v:String x:Key="rc_lv_stateOnline">Онлайн</v:String>
+    <v:String x:Key="rc_lv_stateBusy">Зайнятий</v:String>
+    <v:String x:Key="rc_lv_stateAway">Відійшов</v:String>
+    <v:String x:Key="rc_lv_stateSnooze">Спить</v:String>
+    <v:String x:Key="rc_lv_stateLookToTrade">Шукає обмін</v:String>
+    <v:String x:Key="rc_lv_stateLoogToPlay">Шукає компанію</v:String>
+    <v:String x:Key="rc_lv_stateInvisible">Невидимий</v:String>
+    <v:String x:Key="rc_lv_recentlyLogin">Увійти</v:String>
+    <v:String x:Key="rc_lv_recentlyDelete">Видалити</v:String>
+
+    <v:String x:Key="rc_lv_uiMode">Режим інтерфейсу</v:String>
+    <v:String x:Key="rc_lv_logout">Вийти</v:String>
+    <v:String x:Key="rc_lv_editNick">Редагувати нікнейм</v:String>
+    <v:String x:Key="rc_lv_noInternet">Інтернет з'єднання відсутнє...</v:String>
+    <v:String x:Key="rc_lv_invalidPass">Неправильный пароль!</v:String>
+    <v:String x:Key="rc_lv_invalidTwofa">Неправильный код 2FA!</v:String>
+    <v:String x:Key="rc_lv_invalidGuard">Неправильный код аутентифікації!</v:String>
+    <v:String x:Key="rc_lv_servUnavailable">Сервіс недоступний</v:String>
+    <v:String x:Key="rc_lv_workTimeout">Затримка в роботі...</v:String>
+    <v:String x:Key="rc_lv_retriesExceeded">Перевищено кількість спроб. Будь-ласка спробуйте знову через 35 хвилин</v:String>
+    <v:String x:Key="rc_lv_tryLater">Спробуйте пізніше...</v:String>
+    <v:String x:Key="rc_lv_keyExpired">Логін ключ застарів...</v:String>
+    <!--#endregion-->
+
+    <!--#region Games view -->
+    <v:String x:Key="rc_gv_noGames" xml:space="preserve">У вашій бібліотеці відсутні ігри. Клікніть "Оновити"!</v:String>
+    <v:String x:Key="rc_gv_selected" xml:space="preserve">Обрані: </v:String>
+    <v:String x:Key="rc_gv_customGameTitle">Тайтл гри</v:String>
+    <v:String x:Key="rc_gv_Update">Оновити</v:String>
+    <v:String x:Key="rc_gv_Other_gameID">ID іншої гри</v:String>
+    <v:String x:Key="rc_gv_idle">Запуск</v:String>
+    <v:String x:Key="rc_gv_stop">Стоп</v:String>
+    <v:String x:Key="rc_gv_maximumGames" xml:space="preserve">"Максимум&#13;32 гри!"</v:String>
+    <v:String x:Key="rc_gv_selectGames">Виберіть гру!</v:String>
+    <!--#endregion-->
+
+    <!--#region Messages view -->
+    <v:String x:Key="rc_mv_chat">Чат:</v:String>
+    <v:String x:Key="rc_mv_writeMsg">Написати повідомлення...</v:String>
+    <v:String x:Key="rc_mv_goToChatId">Перейти до чату ID64/ID32/URL</v:String>
+    <v:String x:Key="rc_mv_currntAdm">Поточний адміністратор</v:String>
+    <v:String x:Key="rc_mv_saveChatLog">Зберігати лог чата</v:String>
+    <v:String x:Key="rc_mv_enableCmds">Увімкнути команди</v:String>
+    <v:String x:Key="rc_mv_chatNotSelect">Чат не обрано</v:String>
+    <v:String x:Key="rc_mv_cmdsTitle" xml:space="preserve">  Ключове слово          Команда              Повідомлення   </v:String>
+    <v:String x:Key="rc_mv_onlyConsoleCmds">Тільки консольні команди</v:String>
+    <v:String x:Key="rc_mv_cmd">Команда</v:String>
+    <v:String x:Key="rc_mv_keyword">Ключове слово</v:String>
+    <v:String x:Key="rc_mv_message">Повідомлення</v:String>
+    <v:String x:Key="rc_mv_chatLeave">Вийти з поточного чату</v:String>
+    <v:String x:Key="rc_mv_addAdmin" xml:space="preserve">Користувач, команди&#13;якого буде виконувати бот</v:String>
+    <!--#endregion-->
+
+    <!--#region Friends view -->
+    <v:String x:Key="rc_fv_friends">Друзів:</v:String>
+    <v:String x:Key="rc_fv_Name">Нікнейм</v:String>
+    <v:String x:Key="rc_fv_friendSince">Друг з</v:String>
+    <!--#endregion-->
+
+    <!--#endregion-->
+
 </ResourceDictionary>

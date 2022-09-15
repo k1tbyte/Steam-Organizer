@@ -502,13 +502,13 @@
             <Trigger Property="IsChecked" Value="true">
                 <Setter Property="Foreground" Value="#ffffff"/>
                 <Setter Property="BorderBrush" Value="Transparent"/>
-                <Setter Property="Content" Value="Stop">
+                <Setter Property="Content" Value="{DynamicResource rc_gv_stop}">
                 </Setter>
             </Trigger>
             <Trigger Property="IsChecked" Value="false">
                 <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
-                <Setter Property="Background" Value="{DynamicResource second_main_color}"/>
-                <Setter Property="Content" Value="Idle"/>
+                <Setter Property="Background" Value="{DynamicResource adv_borders_background}"/>
+                <Setter Property="Content" Value="{DynamicResource rc_gv_idle}"/>
             </Trigger>
         </Style.Triggers>
     </Style>

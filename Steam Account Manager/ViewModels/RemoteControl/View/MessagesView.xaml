@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl"
-             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks" xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
              d:DataContext="{d:DesignInstance Type=vm:MessagesViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="600">
@@ -83,6 +83,11 @@
     </UserControl.Resources>
     
     <Grid>
+        <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
+                       HorizontalOffset="0" VerticalOffset="10">
+            <theme:MainPopup x:Name="Header" Foreground="White"/>
+        </Popup>
+        
         <Border CornerRadius="20" Background="{DynamicResource first_main_color}">
            
             <Grid>
@@ -99,13 +104,15 @@
 
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Foreground="{DynamicResource default_foreground}" FontWeight="Medium"
-                                 Background="Transparent" Text="Сhat:" Margin="0 6 0 0"/>
+                                 Background="Transparent" Text="{DynamicResource rc_mv_chat}" Margin="0 6 0 0"/>
 
                                     <TextBox Foreground="{DynamicResource default_foreground}" FontWeight="Normal" IsReadOnly="True"
                                 MaxWidth="120"  FontSize="11"
                                  Background="Transparent" Text="{Binding SelectedChatId}" Margin="0 3 0 0"/>
 
-                                    <Button  Style="{StaticResource defaultButton}"
+                                    <Button x:Name="leaveChatBtn" Style="{StaticResource defaultButton}"
+                                            MouseEnter="leaveChatBtn_MouseEnter"
+                                            MouseLeave="Popup_MouseLeave"
                                  Background="{DynamicResource adv_borders_background}" Click="Button_Click"
                                  Command="{Binding LeaveFromChatCommand}" Width="26" Height="26" Margin="5 0 0 0">
                                         <Icon:Material Kind="Logout" RotationAngle="180"/>
@@ -131,7 +138,7 @@
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" TextAlignment="Center"
                            Margin="55 30 0 50" 
                    FontSize="27" FontWeight="Bold" Foreground="{DynamicResource default_foreground}"
-                   Opacity="0.7" Text="Chat not selected" >
+                   Opacity="0.7" Text="{DynamicResource rc_mv_chatNotSelect}" >
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -178,7 +185,7 @@
                         </ListBox>
 
                         <TextBlock Margin="29,0,0,33" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="#b0b9c6" IsHitTestVisible="False"
-                          Panel.ZIndex="1" Text="Write a message..." FontSize="12"
+                          Panel.ZIndex="1" Text="{DynamicResource rc_mv_writeMsg}" FontSize="12"
                           Visibility="{Binding ElementName=MessageBox, Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
 
 
@@ -189,7 +196,7 @@
                             <Border Height="40" Width="265" CornerRadius="10"
                         Background="{DynamicResource second_main_color}" Opacity="0.6">
                                 <TextBox  MaxLength="4000" AcceptsTab="True" Text="{Binding Message,UpdateSourceTrigger=PropertyChanged}"
-                              TextWrapping="Wrap" Foreground="{DynamicResource default_foreground}"
+                              TextWrapping="Wrap" Foreground="White"
                              AcceptsReturn="True" MaxLines="140" x:Name="MessageBox"
                               Background="Transparent" Margin="5"
                              KeyUp="MessageBox_KeyUp" PreviewKeyDown="MessageBox_PreviewKeyDown"
@@ -197,7 +204,7 @@
                             </Border>
 
                             <Button  Style="{StaticResource defaultButton}" IsHitTestVisible="{Binding ElementName=MessageBox,Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
-                                 Background="{DynamicResource second_main_color}" 
+                                 Background="{DynamicResource adv_borders_background}" 
                                  Command="{Binding SendMessageCommand}" Width="40" Height="40" Margin="5 0 0 0">
                                 <Icon:Material Kind="Send" Width="18" Height="18" />
                             </Button>
@@ -222,7 +229,7 @@
 
 
                     <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5 40 0 0">
-                        <TextBlock Text="Go to chat ID64/ID32/URL" Margin="4 0 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                        <TextBlock Text="{DynamicResource rc_mv_goToChatId}" Margin="4 0 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
                         <StackPanel Orientation="Horizontal" >
 
                             <Border Margin="0 0 -124 0" Background="{DynamicResource adv_borders_background}"
@@ -239,7 +246,7 @@
                         </StackPanel>
 
 
-                        <TextBlock Text="Current administrator" Margin="4 7 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                        <TextBlock Text="{DynamicResource rc_mv_currntAdm}" Margin="4 7 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
                         <StackPanel Orientation="Horizontal" >
 
                             <Border Margin="0 0 -124 0" Background="{DynamicResource adv_borders_background}"
@@ -249,9 +256,10 @@
                          IsReadOnly="False" Width="115" Margin="0 0 6 0" MaxLength="60" Text="{Binding AdminId,UpdateSourceTrigger=PropertyChanged}"/>
 
 
-                            <Button IsHitTestVisible="{Binding ElementName=add_admin_box, Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
+                            <Button x:Name="addAdmin" IsHitTestVisible="{Binding ElementName=add_admin_box, Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
                         Background="{DynamicResource adv_borders_background}" Command="{Binding AddAdminIdCommand}"
-                        Style="{StaticResource defaultButton}"  Content="Add" Height="26" Width="50"/>
+                        Style="{StaticResource defaultButton}" MouseEnter="addAdmin_MouseEnter"
+                                    MouseLeave="Popup_MouseLeave" Content="Add" Height="26" Width="50"/>
 
                         </StackPanel>
 
@@ -270,14 +278,14 @@
                             </TextBlock.Style>
                         </TextBlock>
                         <StackPanel Margin="0 60 0 0" Orientation="Horizontal">
-                            <TextBlock Text="Save chat log" Margin="4 3 10 2" FontSize="13" 
+                            <TextBlock Text="{DynamicResource rc_mv_saveChatLog}" Margin="4 3 10 2" FontSize="13" 
                                        Foreground="{StaticResource default_foreground}"/>
                             <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25"
                                           Background="{DynamicResource adv_borders_background}" IsChecked="{Binding SaveChatLog}"/>
                         </StackPanel>
 
                         <StackPanel Margin="0 5 0 0" Orientation="Horizontal">
-                            <TextBlock Text="Enable commands" Margin="4 3 10 2" FontSize="13" 
+                            <TextBlock Text="{DynamicResource rc_mv_enableCmds}" Margin="4 3 10 2" FontSize="13" 
                                        Foreground="{StaticResource default_foreground}"/>
 
                             <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25" 
@@ -286,12 +294,12 @@
                         </StackPanel>
 
 
-                        <StackPanel Margin="0 5 0 0" Orientation="Horizontal">
+                        <!--<StackPanel Margin="0 5 0 0" Orientation="Horizontal">
                             <TextBlock Text="Clear unread messages" Margin="4 3 10 2" FontSize="13" 
                                        Foreground="{StaticResource default_foreground}"/>
                             <Button Style="{StaticResource defaultButton}" Width="50" Height="25"
                                           Background="{DynamicResource adv_borders_background}" Content="Clear"/>
-                        </StackPanel>
+                        </StackPanel>-->
                     </StackPanel >
                     
                     <!-- Commands area -->
@@ -301,7 +309,7 @@
                         <Border Background="{DynamicResource adv_borders_background}" CornerRadius="15 15 0 0" 
                                 Opacity="1" Margin="0 0 0 0" Height="25" VerticalAlignment="Top"/>
                         <StackPanel>
-                            <TextBlock Text="     Keyword                 Command                 Message   "
+                            <TextBlock Text="{DynamicResource rc_mv_cmdsTitle}"
                                    Margin="10 5 0 2" FontWeight="Medium"
                                    Foreground="{DynamicResource default_foreground}"/>
 
@@ -332,18 +340,18 @@
 
                         </StackPanel>
 
-                        <TextBlock Text="Only console commands" Visibility="{Binding ElementName=CommandBox,Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"
+                        <TextBlock Text="{DynamicResource rc_mv_onlyConsoleCmds}" Visibility="{Binding ElementName=CommandBox,Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"
                                    VerticalAlignment="Bottom" Margin="7 0 0 26.5"
                                    FontSize="9" Foreground="{StaticResource default_foreground}" Opacity="0.6"/>
 
 
                         <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Left">
-                            <TextBlock Text="Keyword" Margin="4 -16 0 0" FontSize="11"
+                            <TextBlock Text="{DynamicResource rc_mv_keyword}" Margin="4 -16 0 0" FontSize="11"
                                        Foreground="{StaticResource default_foreground}" x:Name="KeywordTitle"/>
                             <TextBox x:Name="KeywordBox" Style="{StaticResource opacityBox}" Height="25" 
                           Width="145"  Margin="0 0 0 20" Padding="11 4 4 6"/>
 
-                            <TextBlock Text="Command" Margin="4 -16 0 0" FontSize="11" Foreground="{StaticResource default_foreground}"
+                            <TextBlock Text="{DynamicResource rc_mv_cmd}" Margin="4 -16 0 0" FontSize="11" Foreground="{StaticResource default_foreground}"
                                        x:Name="CommandTitle"/>
                             <TextBox x:Name="CommandBox" Style="{StaticResource opacityBox}" Height="25" 
                           Width="145" Margin="0 0 0 20"/>
@@ -355,7 +363,7 @@
                                    Foreground="{DynamicResource default_foreground}"/>
 
                             <TextBox Style="{StaticResource opacityBox}" Height="25" x:Name="CommandMsgBox"
-                          Width="145" Uid="Message" VerticalAlignment="Bottom" Margin="170 0 0 65" HorizontalAlignment="Left"/>
+                          Width="145" Uid="{DynamicResource rc_mv_message}" VerticalAlignment="Bottom" Margin="170 0 0 65" HorizontalAlignment="Left"/>
                         
                             <Button x:Name="AddCommand" Style="{StaticResource defaultButton}" Width="60" Height="26" Click="AddCommand_Click"  VerticalAlignment="Bottom"
                                 HorizontalAlignment="Right" Margin="0 0 48 19" Background="{DynamicResource adv_borders_background}">
