@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 
 namespace Steam_Account_Manager
 {
-    internal class Utilities
+    internal static class Utilities
     {
         private static HttpClient HttpClientFactory;
         private static System.Windows.Media.BrushConverter BrushConverter;
@@ -52,8 +52,11 @@ namespace Steam_Account_Manager
         RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
             try
             {
-                registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam\\ActiveProcess", false);
-                return Convert.ToInt32(registryKey.GetValue("ActiveUser"));
+                using (registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam\\ActiveProcess", false))
+                {
+                    return Convert.ToInt32(registryKey.GetValue("ActiveUser"));
+                }
+                    
             }
             catch { throw; }
         }
@@ -65,8 +68,11 @@ namespace Steam_Account_Manager
         RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
             try
             {
-                registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam", false);
-                return (string)registryKey.GetValue("SteamExe");
+                using (registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam", false))
+                {
+                    return (string)registryKey.GetValue("SteamExe");
+                }
+                    
             }
             catch { throw; }
         }
@@ -78,8 +84,11 @@ namespace Steam_Account_Manager
         RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
             try
             {
-                registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam\\ActiveProcess", false);
-                return Convert.ToInt32(registryKey.GetValue("pid"));
+                using (registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam\\ActiveProcess", false))
+                {
+                    return Convert.ToInt32(registryKey.GetValue("pid"));
+                }
+                    
             }
             catch { throw; }
         }
@@ -91,8 +100,11 @@ namespace Steam_Account_Manager
         RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
             try
             {
-                registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam", false);
-                return (string)registryKey.GetValue("Language");
+                using (registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam", false))
+                {
+                    return (string)registryKey.GetValue("Language");
+                }
+                    
             }
             catch { throw; }
         }
@@ -106,8 +118,11 @@ namespace Steam_Account_Manager
         RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
             try
             {
-                registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam", false);
-                RememberUser = registryKey.GetValue("AutoLoginUser").ToString();
+                using (registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam", false))
+                {
+                    RememberUser = registryKey.GetValue("AutoLoginUser").ToString();
+                }
+                    
             }
             catch { throw; }
             return RememberUser;
@@ -120,8 +135,11 @@ namespace Steam_Account_Manager
                 RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
             try
             {
-                registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam", true);
-                registryKey.SetValue("AutoLoginUser", autoLoginUser, RegistryValueKind.String);
+                using (registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam", true))
+                {
+                    registryKey.SetValue("AutoLoginUser", autoLoginUser, RegistryValueKind.String);
+                }
+                    
             }
             catch { throw; }
         }

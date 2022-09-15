@@ -89,7 +89,7 @@
                                 
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="RemoteDesktop" Style="{StaticResource menuButtonIcon}"/>
-                                    <TextBlock Text="Remote control"/>
+                                    <TextBlock Text="{DynamicResource mv_remoteControl_title}"/>
                                 </StackPanel>
                             </RadioButton>
 
@@ -108,7 +108,7 @@
                                 DockPanel.Dock="Bottom" Margin="15 0 15 20" Command="{Binding LogoutCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <Icon:PackIconMaterial Kind="Logout" Style="{StaticResource menuButtonIcon}"/>
-                                <TextBlock Text="Exit from steam"/>
+                                <TextBlock Text="{DynamicResource mv_logout_title}"/>
                             </StackPanel>
                         </Button>
 
@@ -168,10 +168,10 @@
             <!--Updates detect-->
             <Border Margin="10 0 0 0" Grid.ColumnSpan="2" VerticalAlignment="Center"
                 HorizontalAlignment="Center" Visibility="{Binding UpdateDetect, Converter={StaticResource BoolToVis}}"
-                Width="400" Height="50" Background="{DynamicResource popup_border_background}" Opacity="0.9"
+                Width="435" Height="50" Background="{DynamicResource popup_border_background}" Opacity="0.9"
                 CornerRadius="15">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="New app version detected, update now?" Foreground="White"
+                    <TextBlock Text="{DynamicResource mv_newUpdate}" Foreground="White"
                        FontWeight="Normal" VerticalAlignment="Center"
                        Margin="0 0 0 0" FontSize="16"/>
                     <Button Command="{Binding NoLoadUpdateCommand}" Margin="10 0 0 0" Style="{StaticResource confirmationNoButton}"

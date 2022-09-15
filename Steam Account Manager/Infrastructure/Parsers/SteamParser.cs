@@ -9,7 +9,6 @@ using System.Net.Http;
 namespace Steam_Account_Manager.Infrastructure.Parsers
 {
 
-
     internal sealed class SteamParser
     {
 
@@ -132,23 +131,18 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             }
         }
 
-
-        #region OwnedGames
-
-
-
-        #endregion
-
         #region Player level
         private string GetSteamLevelLink() =>
      "http://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=" + _apiKey + "&steamid=" + _steamId64;
 
         private async Task ParseSteamLevelAsync()
         {
-            var webClient = new WebClient { Encoding = Encoding.UTF8 };
-            string json = await webClient.DownloadStringTaskAsync(GetSteamLevelLink());
-            var list = JsonConvert.DeserializeObject<RootObjectPlayerLevel>(json);
-            _steamLevel = list.Response.Player_level != null ? list.Response.Player_level : "-";
+            using (var webClient = new WebClient { Encoding = Encoding.UTF8 })
+            {
+                string json = await webClient.DownloadStringTaskAsync(GetSteamLevelLink());
+                var list = JsonConvert.DeserializeObject<RootObjectPlayerLevel>(json);
+                _steamLevel = list.Response.Player_level != null ? list.Response.Player_level : "-";
+            }
         }
 
         private class RootObjectPlayerLevel
@@ -169,25 +163,28 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
         public void ParsePlayerSummaries()
         {
-            var webClient = new WebClient { Encoding = Encoding.UTF8 };
-            string json = webClient.DownloadString(new Uri(GetPlayerSummariesLink()));
-            var list = JsonConvert.DeserializeObject<RootObjectPlayerSummaries>(json);
-            _nickname = list.Response.Players[0].Personaname;
-            _profileVisiblity = true;
-            _customProfileUrl = list.Response.Players[0].Profileurl;
-            _avatarUrlFull = list.Response.Players[0].AvatarFull;
-            if (list.Response.Players[0].TimeCreated != 0)
+            using (var webClient = new WebClient { Encoding = Encoding.UTF8 })
             {
-                _accountCreatedDate = Utilities.UnixTimeToDateTime(list.Response.Players[0].TimeCreated);
+                string json = webClient.DownloadString(new Uri(GetPlayerSummariesLink()));
+                var list = JsonConvert.DeserializeObject<RootObjectPlayerSummaries>(json);
+                _nickname = list.Response.Players[0].Personaname;
+                _profileVisiblity = true;
+                _customProfileUrl = list.Response.Players[0].Profileurl;
+                _avatarUrlFull = list.Response.Players[0].AvatarFull;
+                if (list.Response.Players[0].TimeCreated != 0)
+                {
+                    _accountCreatedDate = Utilities.UnixTimeToDateTime(list.Response.Players[0].TimeCreated);
 
-                //Узнаем выслугу лет
-                var differ = DateTime.Now - _accountCreatedDate;
-                _createdDateImageUrl = $"/Images/Steam_years_of_service/year{(int)differ.TotalDays / 365}.png";
+                    //Узнаем выслугу лет
+                    var differ = DateTime.Now - _accountCreatedDate;
+                    _createdDateImageUrl = $"/Images/Steam_years_of_service/year{(int)differ.TotalDays / 365}.png";
+                }
+                else
+                {
+                    _createdDateImageUrl = $"/Images/Steam_years_of_service/year0.png";
+                }
             }
-            else
-            {
-                _createdDateImageUrl = $"/Images/Steam_years_of_service/year0.png";
-            }
+            
         }
 
         public string GetNickname => _nickname;
@@ -224,13 +221,16 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
         private async Task ParseVacsAsync()
         {
-            var webClient = new WebClient { Encoding = Encoding.UTF8 };
-            string json = await webClient.DownloadStringTaskAsync(GetPlayerBansLink());
-            var list = JsonConvert.DeserializeObject<RootObjectBansInfo>(json);
-            _numberOfVacBans = int.Parse(list.Players[0].NumberOfVacBans);
-            _communityBan = list.Players[0].CommunityBanned;
-            _economyBan = list.Players[0].EconomyBan != "none";
-            _daysSinceLastBan = list.Players[0].DaysSinceLastBan;
+            using (var webClient = new WebClient { Encoding = Encoding.UTF8 })
+            {
+                string json = await webClient.DownloadStringTaskAsync(GetPlayerBansLink());
+                var list = JsonConvert.DeserializeObject<RootObjectBansInfo>(json);
+                _numberOfVacBans = int.Parse(list.Players[0].NumberOfVacBans);
+                _communityBan = list.Players[0].CommunityBanned;
+                _economyBan = list.Players[0].EconomyBan != "none";
+                _daysSinceLastBan = list.Players[0].DaysSinceLastBan;
+            }
+            
         }
 
 

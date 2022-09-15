@@ -36,7 +36,6 @@ namespace Steam_Account_Manager.Infrastructure
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-
         private enum WM : uint
         {
             KEYDOWN = 0x0100,
@@ -93,95 +92,92 @@ namespace Steam_Account_Manager.Infrastructure
         #endregion
 
 
-        public static async Task VirtualSteamLogger(string username, string password,bool savePassword = false, bool paste2fa = false)
+        public static void VirtualSteamLogger(string username, string password,bool savePassword = false, bool paste2fa = false)
         {
-            await Task.Factory.StartNew(() =>
+            Automation.RemoveAllEventHandlers();
+            if (Utilities.GetSteamRegistryLanguage() != username)
             {
-                Automation.RemoveAllEventHandlers();
-                if(Utilities.GetSteamRegistryLanguage() != username)
+                Utilities.SetSteamRegistryRememberUser(String.Empty);
+            }
+
+            Utilities.KillSteamAndConnect(Config._config.SteamDirection);
+            byte SteamAwaiter = 0;
+
+            Automation.AddAutomationEventHandler(
+                WindowPattern.WindowOpenedEvent,
+                AutomationElement.RootElement,
+                TreeScope.Children,
+                (sender, e) =>
                 {
-                    Utilities.SetSteamRegistryRememberUser(String.Empty);
-                }
+                    var element = sender as AutomationElement;
 
-                Utilities.KillSteamAndConnect(Config._config.SteamDirection);
-                byte SteamAwaiter = 0;
-
-                Automation.AddAutomationEventHandler(
-                    WindowPattern.WindowOpenedEvent,
-                    AutomationElement.RootElement,
-                    TreeScope.Children, 
-                    (sender, e) =>
+                    if (element.Current.Name.Equals("Steam"))
                     {
-                        var element = sender as AutomationElement;
-
-                        if (element.Current.Name.Equals("Steam"))
+                        if (++SteamAwaiter >= 2)
                         {
-                            if(++SteamAwaiter >= 2)
-                            {
-                                Automation.RemoveAllEventHandlers();
-                            }
+                            Automation.RemoveAllEventHandlers();
                         }
-                        if(element.Current.ClassName.Equals("vguiPopupWindow") && element.Current.Name.Contains("Steam") && element.Current.Name.Length > 5)
+                    }
+                    if (element.Current.ClassName.Equals("vguiPopupWindow") && element.Current.Name.Contains("Steam") && element.Current.Name.Length > 5)
+                    {
+                        Thread.Sleep(500);
+                        ForceWindowToForeground((IntPtr)element.Current.NativeWindowHandle);
+                        SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                        Thread.Sleep(50);
+
+                        if (Utilities.GetSteamRegistryActiveUser() == 0)
                         {
-                            Thread.Sleep(500);
-                            ForceWindowToForeground((IntPtr)element.Current.NativeWindowHandle);
-                            SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                            Thread.Sleep(50);
-
-                            if(Utilities.GetSteamRegistryActiveUser() == 0)
+                            if (String.IsNullOrEmpty(Utilities.GetSteamRegistryRememberUser()))
                             {
-                                if (String.IsNullOrEmpty(Utilities.GetSteamRegistryRememberUser()))
-                                {
-                                    foreach (char c in username)
-                                    {
-                                        SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                                        PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
-                                    }
-                                    Thread.Sleep(100);
-                                    SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.TAB);
-                                    Thread.Sleep(100);
-                                }
-
-                                foreach (char c in password)
+                                foreach (char c in username)
                                 {
                                     SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
                                     PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
                                 }
+                                Thread.Sleep(100);
+                                SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.TAB);
+                                Thread.Sleep(100);
+                            }
 
-                                if (savePassword)
-                                {
-                                    SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                                    Thread.Sleep(100);
-                                    SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.TAB);
-                                    Thread.Sleep(100);
-                                    SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.SPACE);
-                                }
-                                
+                            foreach (char c in password)
+                            {
+                                SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                                PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
+                            }
+
+                            if (savePassword)
+                            {
+                                SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                                Thread.Sleep(100);
+                                SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.TAB);
+                                Thread.Sleep(100);
+                                SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.SPACE);
+                            }
+
+                            SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                            Thread.Sleep(100);
+                            System.Windows.Forms.SendKeys.SendWait("{ENTER}");
+
+                            if (paste2fa)
+                            {
+                                Thread.Sleep(2700);
+                                SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                                Thread.Sleep(100);
+                                System.Windows.Forms.SendKeys.SendWait("^{v}");
+
                                 SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
                                 Thread.Sleep(100);
                                 System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-
-                                if (paste2fa)
-                                {
-                                    Thread.Sleep(2700);
-                                    SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                                    Thread.Sleep(100);
-                                    System.Windows.Forms.SendKeys.SendWait("^{v}");
-
-                                    SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                                    Thread.Sleep(100);
-                                    System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-                                }
-                                Automation.RemoveAllEventHandlers();
                             }
+                            Automation.RemoveAllEventHandlers();
 
+                            if(Config._config.AutoClose)
+                                App.Current.Dispatcher.InvokeShutdown();
                         }
-                        
-                    });
 
-            });
+                    }
 
+                });
         }
-
     }
 }

@@ -1,12 +1,13 @@
 ﻿<Application x:Class="Steam_Account_Manager.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:viewModel="clr-namespace:Steam_Account_Manager.ViewModels"
              xmlns:view="clr-namespace:Steam_Account_Manager.ViewModels.View"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:converters="clr-namespace:Steam_Account_Manager.Infrastructure.Converters">
     <Application.Resources>
         <ResourceDictionary>
+            
             <ResourceDictionary.MergedDictionaries>
 
                 <ResourceDictionary Source="Themes/ScrollBarStyle.xaml"/>
@@ -21,9 +22,12 @@
 
                 <ResourceDictionary Source="Themes/DataGridStyle.xaml"/>
 
+                <ResourceDictionary Source="Themes/Buttons.xaml"/>
+
                 <ResourceDictionary Source="Themes/ColorSchemes/Dark.xaml"/>
 
                 <ResourceDictionary Source="Locale/lang.en-US.xaml" />
+                
 
             </ResourceDictionary.MergedDictionaries>
 
@@ -33,126 +37,9 @@
             <converters:BooleanToVisibilityConverter x:Key="BoolToVisInverted"
                                                      True="Collapsed"
                                                      False="Visible"/>
-            <!--#region Styles-->
-            <Style x:Key="topButton" TargetType="Button">
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="#b0b9c6" />
-                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Height" Value="30" />
-                <Setter Property="Width" Value="30" />
-                <Setter Property="HorizontalAlignment" Value="Right" />
-                <Setter Property="Template" >
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="50">
-                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
 
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource second_main_color}"/>
-                        <Setter Property="Foreground" Value="White"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
 
-            <Style x:Key="menuButton" TargetType="RadioButton">
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="{DynamicResource menu_button_text}" />
-                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Height" Value="35" />
-                <Setter Property="Margin" Value="15 3" />
-                <Setter Property="FontSize" Value="13" />
-                <Setter Property="Template" >
-                    <Setter.Value>
-                        <ControlTemplate TargetType="RadioButton">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="7">
-                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsChecked" Value="True">
-                                    <Setter Property="Background" Value="{DynamicResource menu_button_background}"/>
-                                    <Setter Property="Foreground" Value="White"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="RemoteControlButton" TargetType="RadioButton" BasedOn="{StaticResource menuButton}">
-                <Setter Property="Margin" Value="0"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="RadioButton">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="7">
-                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsChecked" Value="True">
-                                    <Setter Property="Background" Value="{DynamicResource menu_button_background}"/>
-                                    <Setter Property="Foreground" Value="White"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="logoutButton" TargetType="Button">
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="{DynamicResource menu_button_text}" />
-                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Height" Value="35" />
-                <Setter Property="Margin" Value="15 3" />
-                <Setter Property="FontSize" Value="13" />
-                <Setter Property="Template" >
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="7">
-                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="{DynamicResource menu_button_background}"/>
-                                    <Setter Property="Foreground" Value="White"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="serviceButton" TargetType="Button">
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="{DynamicResource top_service_buttons}" />
-                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Height" Value="30" />
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Width" Value="30" />
-                <Setter Property="HorizontalAlignment" Value="Right" />
-                <Setter Property="Template" >
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="50">
-                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="{DynamicResource adv_service_buttons_isMouseOver}" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
+            <!--#region Styles -->
             <Style x:Key="menuButtonIcon" TargetType="Icon:PackIconMaterial">
                 <Setter Property="Margin" Value="20 2 20 0" />
                 <Setter Property="VerticalAlignment" Value="Center" />
@@ -160,91 +47,9 @@
                 <Setter Property="Height" Value="15" />
             </Style>
 
-
             <Style x:Key="TextBlockDisabled" TargetType="TextBlock">
                 <Setter Property="Text" Value="Disabled"/>
                 <Setter Property="FontSize" Value="14"/>
-            </Style>
-
-            <Style x:Key="settingsButton" TargetType="ToggleButton">
-                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Width" Value="80"/>
-                <Setter Property="Height" Value="35"/>
-                <Setter Property="Margin" Value="10 0 0 0"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ToggleButton">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}" >
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-
-                <Style.Triggers>
-                    <Trigger Property="IsChecked" Value="true">
-                        <Setter Property="Background" Value="{DynamicResource settings_buttons_isChecked}"/>
-                        <Setter Property="Foreground" Value="#ffffff"/>
-                        <Setter Property="Content" Value="{DynamicResource sv_on}">
-                        </Setter>
-                    </Trigger>
-                    <Trigger Property="IsChecked" Value="false">
-                        <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
-                        <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
-                        <Setter Property="Content" Value="{DynamicResource sv_off}"/>
-                    </Trigger>
-
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
-                        <Setter Property="Foreground" Value="White"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="idle_button" TargetType="ToggleButton" BasedOn="{StaticResource settingsButton}">
-                <Setter Property="Margin" Value="0 15 0 0"/>
-                <Style.Triggers>
-                    <Trigger Property="IsChecked" Value="true">
-                        <Setter Property="Foreground" Value="#ffffff"/>
-                        <Setter Property="BorderBrush" Value="Transparent"/>
-                        <Setter Property="Content" Value="Stop">
-                        </Setter>
-                    </Trigger>
-                    <Trigger Property="IsChecked" Value="false">
-                        <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
-                        <Setter Property="Background" Value="{DynamicResource second_main_color}"/>
-                        <Setter Property="Content" Value="Idle"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="defaultButton" TargetType="Button">
-                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
-                <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
-                <Setter Property="Width" Value="80"/>
-                <Setter Property="Height" Value="35"/>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}" >
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
-                        <Setter Property="Foreground" Value="White"/>
-                        <Setter Property="BorderBrush" Value="Transparent"/>
-                    </Trigger>
-                </Style.Triggers>
             </Style>
 
             <Style x:Key="addTextBox" TargetType="TextBox">
@@ -272,33 +77,6 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="saveAccontButton" TargetType="Button">
-                <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
-                <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
-                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Width" Value="80"/>
-                <Setter Property="Height" Value="35"/>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
-                        <Setter Property="Foreground" Value="White"/>
-                    </Trigger>
-
-                </Style.Triggers>
-            </Style>
-
             <Style x:Key="opacityBox" TargetType="TextBox">
                 <Setter Property="Background" Value="{DynamicResource adv_borders_background}"/>
                 <Setter Property="BorderThickness" Value="0"/>
@@ -313,78 +91,9 @@
                                 <Border Background="{TemplateBinding Background}" CornerRadius="5" Opacity="0.6" SnapsToDevicePixels="True" />
                                 <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
                             </Grid>
-
-
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-
-            </Style>
-
-            <Style x:Key="themeButton" TargetType="RadioButton">
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="Margin" Value="10 0 0 0"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                <Setter Property="Width" Value="80"/>
-                <Setter Property="Height" Value="35"/>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="RadioButton">
-                            <Border CornerRadius="5" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{DynamicResource theme_border_brush}" >
-                                <Border.Background>
-                                    <ImageBrush ImageSource="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"/>
-                                </Border.Background>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsChecked" Value="True">
-                                    <Setter Property="BorderThickness" Value="2"/>
-                                </Trigger>
-                                <Trigger Property="IsChecked" Value="false">
-                                    <Setter Property="Effect">
-                                        <Setter.Value>
-                                            <BlurEffect Radius="3"/>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="languageButton" TargetType="RadioButton">
-                <Setter Property="Width" Value="40"/>
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="Margin" Value="10 0 0 0"/>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="RadioButton">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}" >
-                                <Rectangle RadiusX="15" RadiusY="15" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <Rectangle.Fill>
-                                        <ImageBrush ImageSource="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"/>
-                                    </Rectangle.Fill>
-                                </Rectangle>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                
-                <Style.Triggers>
-                    <Trigger Property="IsChecked" Value="true">
-                        <Setter Property="Background" Value="{DynamicResource settings_buttons_isChecked}"/>
-                        <Setter Property="BorderBrush" Value="Transparent"/>
-                    </Trigger>
-                    <Trigger Property="IsChecked" Value="false">
-                        <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
-                    </Trigger>
-                </Style.Triggers>
             </Style>
 
             <Style x:Key="settingTextBlock" TargetType="TextBlock">
@@ -397,179 +106,11 @@
                 <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
             </Style>
 
-            <Style x:Key="addButton" TargetType="Button">
-                <Setter Property="Background" Value="{DynamicResource add_button_background}"/>
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                <Setter Property="Width" Value="150"/>
-                <Setter Property="Height" Value="35"/>
-                <Setter Property="HorizontalAlignment" Value="Right"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Margin" Value="0 0 0 0"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Setter Property="Grid.Row" Value="1"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" CornerRadius="20">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="true">
-                        <Setter Property="Background" Value="{DynamicResource add_button_isMouseOver}"/>
-                        <Setter Property="Foreground" Value="White"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="tabButton" TargetType="Button">
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="#121518" />
-                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Height" Value="45" />
-                <Setter Property="Width" Value="70" />
-                <Setter Property="BorderBrush" Value="Transparent" />
-                <Setter Property="FontSize" Value="14" />
-                <Setter Property="FontWeight" Value="SemiBold" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderThickness="0 0 0 1" BorderBrush="{TemplateBinding BorderBrush}">
-                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="BorderBrush" Value="#784FF2" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-
-            <Style x:Key="gridEditButton" TargetType="Button">
-                <Setter Property="Background" Value="#512DA8" />
-                <Setter Property="BorderBrush" Value="#4A148C" />
-                <Setter Property="Foreground" Value="#ffffff" />
-                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="VerticalAlignment" Value="Center" />
-                <Setter Property="Template" >
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" Padding="5" BorderThickness="1" CornerRadius="5">
-                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#673AB7" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="loginButton" TargetType="Button" >
-                <Setter Property="Width" Value="40"/>
-                <Setter Property="Height" Value="40"/>
-                <Setter Property="BorderThickness" Value="0 0 0 0"/>
-                <Setter Property="BorderBrush" Value="Transparent"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Foreground" Value="#71D66F"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Template" >
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
-                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="SpringGreen"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-
-            <Style x:Key="gridRemoveButton" TargetType="Button" BasedOn="{StaticResource gridEditButton}">
-                <Setter Property="Background" Value="#D32F2F" />
-                <Setter Property="BorderBrush" Value="#B71C1C" />
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#F44336" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="gridNoteButton" TargetType="Button" BasedOn="{StaticResource gridEditButton}">
-                <Setter Property="Background" Value="#EBAD03" />
-                <Setter Property="BorderBrush" Value="#CA9910" />
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#F5C803" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="MessageToFriend" TargetType="Button" BasedOn="{StaticResource gridEditButton}">
-                <Setter Property="Background" Value="#4E83D4"/>
-                <Setter Property="BorderBrush" Value="#57A5D4"/>
-
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#57A5D4" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="confirmationYesButton" TargetType="Button" BasedOn="{StaticResource gridEditButton}">
-                <Setter Property="Background" Value="#71D66F" />
-                <Setter Property="BorderBrush" Value="#82E249" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" Padding="5" BorderThickness="1" CornerRadius="100">
-                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="SpringGreen" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="confirmationNoButton" TargetType="Button" BasedOn="{StaticResource confirmationYesButton}">
-                <Setter Property="Background" Value="#D32F2F" />
-                <Setter Property="BorderBrush" Value="#B71C1C" />
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#F44336" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-
             <Style x:Key="gridButtonIcon" TargetType="Icon:PackIconMaterial">
                 <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="Width" Value="15" />
                 <Setter Property="Height" Value="15" />
             </Style>
-
 
             <Style x:Key="settings_description" TargetType="TextBlock">
                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -598,66 +139,6 @@
                 <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
             </Style>
 
-            <Style x:Key="settings_copy" TargetType="Button" BasedOn="{StaticResource gridEditButton}">
-                <Setter Property="Width" Value="18"/>
-                <Setter Property="Height" Value="18"/>
-                <Setter Property="Margin" Value="5 0 0 0"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{DynamicResource adv_copy_button}" BorderThickness="0" CornerRadius="4">
-                                <Icon:PackIconMaterial Kind="ContentCopy" Foreground="white" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                                       Width="13" Height="13"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-
-
-
-            <Style x:Key="transparent_button" TargetType="ToggleButton">
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ToggleButton">
-                            <Border Background="Transparent"/>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="steam_links" TargetType="Button">
-                <Setter Property="Margin" Value="20 5 20 0"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource adv_expand_border}"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}" BorderThickness="2" Height="32"
-                                    BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="6">
-                                <TextBlock Text="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Center"
-                                           HorizontalAlignment="Center" Foreground="{TemplateBinding Foreground}" FontWeight="Normal" FontSize="14"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="{DynamicResource adv_expand_border}"/>
-                                    <Setter Property="Foreground" Value="#FFFF"/>
-                                    <Setter Property="BorderBrush" Value="{DynamicResource sub_accounttab_text}"/>
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="BorderBrush" Value="Transparent"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
             <Style x:Key="expandNotificationBorder" TargetType="{x:Type Border}">
                 <Setter Property="Width" Value="0"/>
                 <Style.Triggers>
@@ -681,72 +162,9 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+            <!--#endregion-->
 
-            
-            <Style x:Key="checkbox" TargetType="{x:Type ToggleButton}">
-                <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
-                <Setter Property="Foreground" Value="{DynamicResource main_text_color}"/>
-                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ToggleButton">
-                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderThickness="1" BorderBrush="Transparent" CornerRadius="6">
-                                <Icon:PackIconMaterial x:Name="Icon" Foreground="{TemplateBinding Foreground}" Kind="Check" VerticalAlignment="Center"
-                                                       HorizontalAlignment="Center" Visibility="Visible" Padding="2 2 2 2"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource add_button_isMouseOver}"/>
-                                </Trigger>
-                                <Trigger Property="IsChecked" Value="True">
-                                    <Setter TargetName="Icon" Property="Visibility" Value="Visible" />
-                                    <Setter TargetName="border" Property="Background" Value="{DynamicResource add_button_isMouseOver}"/>
-                                </Trigger>
-                                <Trigger Property="IsChecked" Value="False">
-                                    <Setter TargetName="Icon" Property="Visibility" Value="Hidden"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
 
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="ErrorAlert" TargetType="Button" BasedOn="{StaticResource serviceButton}">
-                <Setter Property="Foreground" Value="#D32F2F" />
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="#F44336" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="small_button" TargetType="ToggleButton">
-                <Setter Property="Width" Value="18"/>
-                <Setter Property="Height" Value="18"/>
-                <Setter Property="Margin" Value="5 0 0 0"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ToggleButton">
-                            <Border Background="{DynamicResource adv_copy_button}" BorderThickness="0" CornerRadius="4">
-                                <Icon:PackIconMaterial x:Name="ico" Kind="Pencil" Foreground="white" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                                       Width="11" Height="11"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsChecked" Value="True">
-                                    <Setter TargetName="ico" Property="Kind" Value="Check"/>
-                                </Trigger>
-                                <Trigger Property="IsChecked" Value="False">
-                                    <Setter Property="Command" Value="{Binding Path=Tag, RelativeSource={RelativeSource Self}}"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-            
             <!-- Gradients -->
             <LinearGradientBrush x:Key="RedGrad">
                 <GradientStop Color="#A20303" Offset="0.0" />

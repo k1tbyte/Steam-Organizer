@@ -104,7 +104,7 @@ namespace Steam_Account_Manager.ViewModels
             bool success = false, update = false;
             string authPath;
 
-            await Task.Factory.StartNew(() =>
+            await Task.Factory.StartNew(async () =>
             {
                 Config.GetInstance();
                 MainWindowViewModel.IsEnabledForUser = false;
@@ -138,44 +138,44 @@ namespace Steam_Account_Manager.ViewModels
                             JsonConvert.DeserializeObject<SteamGuardAccount>(
                                 System.IO.File.ReadAllText(authPath)).GenerateSteamGuardCode());
                         }));
-                        SteamHandler.VirtualSteamLogger(_login, _password, Config._config.RememberPassword, true).GetAwaiter().GetResult();
+                        SteamHandler.VirtualSteamLogger(_login, _password, Config._config.RememberPassword, true);
                     }
                     else if (Config._config.RememberPassword)
                     {
-                        SteamHandler.VirtualSteamLogger(_login, _password, true, false).GetAwaiter().GetResult();
+                        SteamHandler.VirtualSteamLogger(_login, _password, true, false);
+                    }
+                    else if (Config._config.AutoClose)
+                    {
+                        Application.Current.Dispatcher.InvokeShutdown();
                     }
 
-                    if (Config._config.AutoClose)
-                        Application.Current.Dispatcher.InvokeShutdown();
-                    else
+                    _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_loggedInSteam"));
+                    MainWindowViewModel.IsEnabledForUser = true;
+                    if (MainWindowViewModel.NowLoginUserParse(15000).Result && Config._config.AutoGetSteamId && !database.Accounts[id].ContainParseInfo)
                     {
-                        _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_loggedInSteam"));
-                        MainWindowViewModel.IsEnabledForUser = true;
-                        if (MainWindowViewModel.NowLoginUserParse(15000).Result && Config._config.AutoGetSteamId && !database.Accounts[id].ContainParseInfo)
+                        try
                         {
-                            try
-                            {
-                                _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_getLocalAccInfo"));
-                                string steamId = Utilities.SteamId32ToSteamId64(Utilities.GetSteamRegistryActiveUser());
-                                database.Accounts[id] = new Account(
-                                    _login, _password, steamId,
-                                    database.Accounts[id].Note,
-                                    database.Accounts[id].EmailLogin,
-                                    database.Accounts[id].EmailPass,
-                                    database.Accounts[id].RockstarEmail,
-                                    database.Accounts[id].RockstarPass,
-                                    database.Accounts[id].UplayEmail,
-                                    database.Accounts[id].UplayPass, null,
-                                    database.Accounts[id].AuthenticatorPath);
-                                database.SaveDatabase();
-                                update = true;
-                            }
-                            catch
-                            {
-                                _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
-                            }
+                            _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_getLocalAccInfo"));
+                            string steamId = Utilities.SteamId32ToSteamId64(Utilities.GetSteamRegistryActiveUser());
+                            database.Accounts[id] = new Account(
+                                _login, _password, steamId,
+                                database.Accounts[id].Note,
+                                database.Accounts[id].EmailLogin,
+                                database.Accounts[id].EmailPass,
+                                database.Accounts[id].RockstarEmail,
+                                database.Accounts[id].RockstarPass,
+                                database.Accounts[id].UplayEmail,
+                                database.Accounts[id].UplayPass, null,
+                                database.Accounts[id].AuthenticatorPath);
+                            database.SaveDatabase();
+                            update = true;
+                        }
+                        catch
+                        {
+                            _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
                         }
                     }
+
                 }
             });
             if(update) AccountsViewModel.UpdateAccountTabView(id);

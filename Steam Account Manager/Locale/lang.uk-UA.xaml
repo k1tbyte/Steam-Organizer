@@ -38,8 +38,10 @@
     <v:String x:Key="mv_total_accounts">Всього акаунтів:</v:String>
     <v:String x:Key="mv_accounts_title">Акаунти</v:String>
     <v:String x:Key="mv_settings_title">Налаштування</v:String>
-    <v:String x:Key="mv_logout_title">Вийти</v:String>
+    <v:String x:Key="mv_logout_title">Вийти з Steam</v:String>
+    <v:String x:Key="mv_remoteControl_title">Віддалене управ.</v:String>
     <v:String x:Key="mv_account_added_notification">Акаунт успішно доданий!</v:String>
+    <v:String x:Key="mv_newUpdate">Виявлено нову версію, оновити зараз?</v:String>
     <!--#endregion-->
 
 
@@ -120,7 +122,7 @@
     <v:String x:Key="adat_cs_inf_updSucces">Дані про гравця оновлені!</v:String>
     <v:String x:Key="adat_cs_inf_serverError">Помилка сервера, повторіть пізніше...</v:String>
     <v:String x:Key="adat_cs_inf_updated">Інформація оновлена</v:String>
-    <v:String x:Key="adat_cs_inf_noInternet">"Помилка, нема доступу до інтернету...</v:String>
+    <v:String x:Key="adat_cs_inf_noInternet">"Помилка в мережі або APIKey...</v:String>
     
 
     <v:String x:Key="adat_notif_copiedClipoard">Скопійовано у буфер</v:String>

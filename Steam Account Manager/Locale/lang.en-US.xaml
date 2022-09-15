@@ -38,8 +38,10 @@
     <v:String x:Key="mv_total_accounts">Total accounts:</v:String>
     <v:String x:Key="mv_accounts_title">Accounts</v:String>
     <v:String x:Key="mv_settings_title">Settings</v:String>
-    <v:String x:Key="mv_logout_title">Logout</v:String>
+    <v:String x:Key="mv_logout_title">Exit from Steam</v:String>
+    <v:String x:Key="mv_remoteControl_title">Remote control</v:String>
     <v:String x:Key="mv_account_added_notification">New account added!</v:String>
+    <v:String x:Key="mv_newUpdate">New app version detected, update now?</v:String>
     <!--#endregion-->
 
 

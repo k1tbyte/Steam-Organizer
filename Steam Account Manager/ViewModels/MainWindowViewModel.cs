@@ -239,6 +239,12 @@ namespace Steam_Account_Manager.ViewModels
                 if(NowLoginUserNickname != "Username")
                 {
                     Utilities.KillSteamProcess();
+
+                    if (!String.IsNullOrEmpty(Utilities.GetSteamRegistryRememberUser()))
+                    {
+                        Utilities.SetSteamRegistryRememberUser(String.Empty);
+                    }
+                    
                     NowLoginUserImage = "/Images/user.png";
                     NowLoginUserNickname = "Username";
                 }

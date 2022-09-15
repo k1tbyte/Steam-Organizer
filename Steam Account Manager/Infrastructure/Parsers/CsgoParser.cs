@@ -62,6 +62,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             csgoStats.MatchesWon    =  items[6].ToString("#,#", CultureInfo.InvariantCulture);
             csgoStats.PlayedMatches =  items[7].ToString("#,#", CultureInfo.InvariantCulture);
 
+            webClient.Dispose();
             /// <summary>
             /// 
             /// 0. Kills
