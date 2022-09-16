@@ -1,6 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.Infrastructure.Validators;
-using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -124,7 +124,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 if (DataValidate())
                 {
-                    Config.Accounts.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword,_steamLink,true));
+                    Config.Accounts.Add(new Account(_steamLogin, _steamPassword,_steamLink,true));
                     Config.SaveAccounts();
                     MainWindowViewModel.AccountsViewCommand.Execute(null);
                     ErrorMessage = "";
@@ -148,7 +148,7 @@ namespace Steam_Account_Manager.ViewModels
                         else
                         {
                             ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
-                            Config.Accounts.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
+                            Config.Accounts.Add(new Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
                             Config.SaveAccounts();
                             MainWindowViewModel.AccountsViewCommand.Execute(null);
                             ErrorMessage = "";

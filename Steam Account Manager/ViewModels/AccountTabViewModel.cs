@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.Infrastructure.Base;
+using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using SteamAuth;
 using System;
 using System.Diagnostics;

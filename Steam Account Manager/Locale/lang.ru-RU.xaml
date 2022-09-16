@@ -49,7 +49,7 @@
     <v:String x:Key="av_popup_restoreDatabase" xml:space="preserve">Восстановить базу аккаунтов из файла&#13;Внимание! Заменяет текущие аккаунты.</v:String>
     <v:String x:Key="av_popup_restoreAccount">Восстановить аккаунт</v:String>
     <v:String x:Key="av_popup_updAccounts">Обновить информацию об аккаунтах</v:String>
-    <v:String x:Key="av_noAccounts" xml:space="preserve">Аккаунты не добавлены.&#13;Нажмите "Добавить", чтобы создать новый!</v:String>
+    <v:String x:Key="av_noAccounts" xml:space="preserve">Аккаунты не добавлены.&#13;Нажмите "Добавить"!</v:String>
     <!--#endregion-->
 
 
@@ -236,7 +236,7 @@
     <!--#endregion-->
 
     <!--#region Games view -->
-    <v:String x:Key="rc_gv_noGames" xml:space="preserve">В вашей библиотеке отсутствуют игры. Кликните "Обновить"!</v:String>
+    <v:String x:Key="rc_gv_noGames" xml:space="preserve">В библиотеке отсутствуют&#13;игры. Кликните "Обновить"!</v:String>
     <v:String x:Key="rc_gv_selected" xml:space="preserve">Выбранных: </v:String>
     <v:String x:Key="rc_gv_customGameTitle">Тайтл игры</v:String>
     <v:String x:Key="rc_gv_Update">Обновить</v:String>

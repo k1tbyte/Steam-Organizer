@@ -1,11 +1,10 @@
-﻿using SteamRemoteClient = Steam_Account_Manager.Infrastructure.Base.SteamRemoteClient;
-using Games = Steam_Account_Manager.Infrastructure.JsonModels.Games;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Linq;
-using System.Collections.Generic;
 using System.Windows.Media;
+using Games = Steam_Account_Manager.Infrastructure.Models.JsonModels.Games;
+using SteamRemoteClient = Steam_Account_Manager.Infrastructure.SteamRemoteClient.SteamRemoteClient;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {

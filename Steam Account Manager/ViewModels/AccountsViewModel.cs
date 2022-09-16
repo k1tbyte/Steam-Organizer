@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
 using System.Windows.Data;
+using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -153,7 +154,7 @@ namespace Steam_Account_Manager.ViewModels
                     {
                         if (!Config.Accounts[i].ContainParseInfo) continue;
                         MainWindowViewModel.UpdatedAccountIndex = i + 1;
-                        Config.Accounts[i] = new Infrastructure.Base.Account(
+                        Config.Accounts[i] = new Account(
                               Config.Accounts[i].Login,
                              Config.Accounts[i].Password,
                              Config.Accounts[i].SteamId64,
@@ -253,7 +254,7 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     try
                     {
-                        Config.Accounts.Add((Infrastructure.Base.Account)Config.Deserialize(fileDialog.FileName,Config.Properties.UserCryptoKey));
+                        Config.Accounts.Add((Account)Config.Deserialize(fileDialog.FileName,Config.Properties.UserCryptoKey));
                         FillAccountTabViews();
                         Task.Run(() => MainWindowViewModel.NotificationView("Account restored from file"));
                         Config.SaveAccounts();
@@ -262,7 +263,7 @@ namespace Steam_Account_Manager.ViewModels
                     {
                         if (OpenCryptoKeyWindow(fileDialog.FileName) == true)
                         {
-                            Config.Accounts.Add((Infrastructure.Base.Account)Config.Deserialize(fileDialog.FileName, Config.TempUserKey));
+                            Config.Accounts.Add((Account)Config.Deserialize(fileDialog.FileName, Config.TempUserKey));
                             FillAccountTabViews();
                             Task.Run(() => MainWindowViewModel.NotificationView("Account restored from file"));
                             Config.SaveAccounts();
@@ -294,7 +295,7 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     try
                     {
-                        Config.Accounts = (List<Infrastructure.Base.Account>)Config.Deserialize(fileDialog.FileName,Config.Properties.UserCryptoKey);
+                        Config.Accounts = (List<Account>)Config.Deserialize(fileDialog.FileName,Config.Properties.UserCryptoKey);
                         FillAccountTabViews();
                         Task.Run(() => MainWindowViewModel.NotificationView("Database restored from file"));
                         Config.SaveAccounts();
@@ -303,7 +304,7 @@ namespace Steam_Account_Manager.ViewModels
                     {
                         if(OpenCryptoKeyWindow(fileDialog.FileName) == true)
                         {
-                            Config.Accounts = (List<Infrastructure.Base.Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
+                            Config.Accounts = (List<Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
                             FillAccountTabViews();
                             Task.Run(() => MainWindowViewModel.NotificationView("Database restored from file"));
                             Config.SaveAccounts();

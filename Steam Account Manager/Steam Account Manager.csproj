@@ -128,8 +128,8 @@
     </ApplicationDefinition>
     <Compile Include="Infrastructure\AsyncRelayCommand.cs" />
     <Compile Include="Infrastructure\Models\AccountModel\Account.cs" />
-    <Compile Include="Infrastructure\Base\GamesHandler.cs" />
-    <Compile Include="Infrastructure\Base\SteamRemoteClient.cs" />
+    <Compile Include="Infrastructure\SteamRemoteClient\GamesHandler.cs" />
+    <Compile Include="Infrastructure\SteamRemoteClient\SteamRemoteClient.cs" />
     <Compile Include="Infrastructure\Config.cs" />
     <Compile Include="Infrastructure\Converters\CustomBooleanToVisiblity.cs" />
     <Compile Include="Infrastructure\Converters\InverseBooleanConverter.cs" />

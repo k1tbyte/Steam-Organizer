@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
-using Steam_Account_Manager.Infrastructure.GamesModels;
+using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;

@@ -12,11 +12,11 @@ using System.Windows.Threading;
 using System.Net;
 using System.Diagnostics;
 using Steam_Account_Manager.Infrastructure.Validators;
-using Steam_Account_Manager.Infrastructure.JsonModels;
+using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 
-namespace Steam_Account_Manager.Infrastructure.Base
+namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 {
     internal static class SteamRemoteClient
     {
@@ -43,6 +43,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
         private static EResult LastLogOnResult;
         private static EPersonaState CurrentPersonaState;
         private static string CurrentSteamId64;
+        private static string LoginKey;
 
 
         public static bool IsRunning     { get; set; }
@@ -58,7 +59,6 @@ namespace Steam_Account_Manager.Infrastructure.Base
             steamClient     = new SteamClient();
             gamesHandler    = new GamesHandler();
             callbackManager = new CallbackManager(steamClient);
-            InterlocutorID  = new SteamID();
 
             steamUser    = steamClient.GetHandler<SteamUser>();
             steamFriends = steamClient.GetHandler<SteamFriends>();
@@ -94,7 +94,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             Username  = username;
             Password  = password;
             IsRunning = true;
-
+            
             if (!Directory.Exists(@".\RemoteUsers"))
                 Directory.CreateDirectory(@".\RemoteUsers");
 
@@ -114,7 +114,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
                     TwoFactorCode = authCode;
             }
             if (!String.IsNullOrEmpty(loginKey))
-                CurrentUser.LoginKey = loginKey;
+                LoginKey = loginKey;
 
             steamClient.Connect();
 
@@ -139,18 +139,40 @@ namespace Steam_Account_Manager.Infrastructure.Base
             File.WriteAllText($@".\RemoteUsers\{Username}\User.json", ConvertedJson);
         }
 
-        private static bool DeserializeUser()
+        private static void DeserializeUser()
         {
+            bool state = false;
             if (File.Exists($@".\RemoteUsers\{Username}\User.json") && CurrentUser == null)
             {
                 CurrentUser = JsonConvert.DeserializeObject<User>(File.ReadAllText($@".\RemoteUsers\{Username}\User.json"));
+
+                state = true;
+            }
+            else if(CurrentUser == null)
+            {
+                CurrentUser = new User
+                {
+                    Games = new List<Games>(),
+                    Friends = new List<Friend>(),
+                    Messenger = new Messenger
+                    {
+                        Commands = new List<Command>()
+                    }
+                };
+
+                SerializeUser();
+                state = true;
+            }
+            
+            if(state)
+            {
                 if (CurrentUser.Messenger.AdminID != null)
-                    MessagesViewModel.IsAdminIdValid   = true;
-                MessagesViewModel.EnableCommands       = CurrentUser.Messenger.EnableCommands;
-                MessagesViewModel.AdminId              = CurrentUser.Messenger.AdminID.ToString();
-                MessagesViewModel.SaveChatLog          = CurrentUser.Messenger.SaveChatLog;
-                MessagesViewModel.MsgCommands          = new System.Collections.ObjectModel.ObservableCollection<Command>(CurrentUser.Messenger.Commands);
-                FriendsViewModel.Friends               = new System.Collections.ObjectModel.ObservableCollection<Friend>(CurrentUser.Friends);
+                    MessagesViewModel.IsAdminIdValid = true;
+                MessagesViewModel.EnableCommands = CurrentUser.Messenger.EnableCommands;
+                MessagesViewModel.AdminId = CurrentUser.Messenger.AdminID.ToString();
+                MessagesViewModel.SaveChatLog = CurrentUser.Messenger.SaveChatLog;
+                MessagesViewModel.MsgCommands = new System.Collections.ObjectModel.ObservableCollection<Command>(CurrentUser.Messenger.Commands);
+                FriendsViewModel.Friends = new System.Collections.ObjectModel.ObservableCollection<Friend>(CurrentUser.Friends);
 
                 Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
@@ -159,27 +181,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
                     MessagesViewModel.InitDefaultCommands();
                 }));
-                
-
-
-                return true;
             }
-            else if (CurrentUser != null && CurrentUser.Username == Username)
-                return true;
-
-            CurrentUser = new User
-            {
-                Games = new List<Games>(),
-                Friends = new List<Friend>(),
-                Messenger = new Messenger
-                {
-                    Commands = new List<Command>()
-                }
-            };
-
-            SerializeUser();
-
-            return false;
         } 
         #endregion
 
@@ -199,6 +201,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
 
             steamUser.LogOff();
             CurrentUser = null;
+            LoginKey = null;
 
             LastLogOnResult = EResult.NotLoggedOn;
         }
@@ -223,7 +226,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
                 TwoFactorCode          = TwoFactorCode,
                 LoginID                = LoginID,
                 ShouldRememberPassword = true,
-                LoginKey               = CurrentUser.LoginKey,
+                LoginKey               = LoginKey,
                 SentryFileHash         = sentryHash,
             };
 
@@ -239,9 +242,9 @@ namespace Steam_Account_Manager.Infrastructure.Base
         {
             LastLogOnResult = callback.Result;
 
-            if (LastLogOnResult == EResult.InvalidPassword && CurrentUser.LoginKey != null)
+            if (LastLogOnResult == EResult.InvalidPassword && LoginKey != null)
             {
-                CurrentUser.LoginKey = null;
+                LoginKey = null;
                 LastLogOnResult = EResult.Cancelled;
             }
                 
@@ -310,7 +313,6 @@ namespace Steam_Account_Manager.Infrastructure.Base
             steamUser.AcceptNewLoginKey(callback);
             if(CurrentUser.Username == null)
                 CurrentUser.Username = Username;
-            CurrentUser.LoginKey = callback.LoginKey;
 
             for (int i = 0; i < LoginViewModel.RecentlyLoggedIn.Count; i++)
             {
@@ -500,6 +502,16 @@ namespace Steam_Account_Manager.Infrastructure.Base
                                         var state = (EPersonaState)int.Parse(command[1]);
                                         ChangeCurrentPersonaState(state);
                                         steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"📣 State changed to: {state}");
+                                    }
+                                    return;
+                                case "/achievements":
+                                    if(command.Length != 2)
+                                    {
+
+                                    }
+                                    else
+                                    {
+
                                     }
                                     return;
                             }

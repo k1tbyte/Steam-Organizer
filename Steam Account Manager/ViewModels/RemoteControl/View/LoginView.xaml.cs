@@ -13,7 +13,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
         private void state_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Infrastructure.Base.SteamRemoteClient.ChangeCurrentPersonaState((SteamKit2.EPersonaState)state_box.SelectedIndex);
+            Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangeCurrentPersonaState((SteamKit2.EPersonaState)state_box.SelectedIndex);
         }
 
         private void ui_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -21,17 +21,17 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             switch (ui_box.SelectedIndex)
             {
                 case 0:
-                    Infrastructure.Base.SteamRemoteClient.UIMode(0);
-                    Infrastructure.Base.SteamRemoteClient.ChangePersonaFlags(0);
+                    Infrastructure.SteamRemoteClient.SteamRemoteClient.UIMode(0);
+                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(0);
                     break;
                 case 1:
-                    Infrastructure.Base.SteamRemoteClient.ChangePersonaFlags(1024); //BP
+                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(1024); //BP
                     break;
                 case 2:
-                    Infrastructure.Base.SteamRemoteClient.ChangePersonaFlags(2048); //VR
+                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(2048); //VR
                     break;
                 case 3:
-                    Infrastructure.Base.SteamRemoteClient.ChangePersonaFlags(512); // phone
+                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(512); // phone
                     break;
             }
         }

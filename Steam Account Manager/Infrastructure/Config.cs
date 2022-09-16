@@ -1,4 +1,4 @@
-﻿using Steam_Account_Manager.Infrastructure.Base;
+﻿using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.Infrastructure.Models;
 using System;
 using System.Collections.Generic;

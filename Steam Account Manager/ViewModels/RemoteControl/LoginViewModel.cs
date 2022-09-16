@@ -1,5 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.Infrastructure.Base;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using SteamKit2;
 using System;
 using System.Collections.ObjectModel;
@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Collections.Generic;
 using System.Windows.Controls;
-using Steam_Account_Manager.Infrastructure.JsonModels;
+using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {

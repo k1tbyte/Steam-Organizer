@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.Infrastructure.Base;
+using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.Infrastructure.Parsers;
 using Steam_Account_Manager.ViewModels.View;
 using System;

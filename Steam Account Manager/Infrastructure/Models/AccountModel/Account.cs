@@ -1,8 +1,7 @@
-﻿using Steam_Account_Manager.Infrastructure.GamesModels;
-using Steam_Account_Manager.Infrastructure.Parsers;
+﻿using Steam_Account_Manager.Infrastructure.Parsers;
 using System;
 
-namespace Steam_Account_Manager.Infrastructure.Base
+namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
 {
     [Serializable]
     internal class Account

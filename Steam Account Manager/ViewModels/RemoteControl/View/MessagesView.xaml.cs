@@ -1,10 +1,10 @@
-﻿using Steam_Account_Manager.Infrastructure.Base;
+﻿using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Command = Steam_Account_Manager.Infrastructure.JsonModels.Command;
+using Command = Steam_Account_Manager.Infrastructure.Models.JsonModels.Command;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {

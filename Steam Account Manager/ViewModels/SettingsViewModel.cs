@@ -1,6 +1,5 @@
-﻿using System;
-using System.Linq;
-using Steam_Account_Manager.Infrastructure;
+﻿using Steam_Account_Manager.Infrastructure;
+using System;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -158,9 +157,11 @@ namespace Steam_Account_Manager.ViewModels
 
         private static bool? OpenAuthWindow()
         {
-            var authenticationWindow = new View.AuthenticationWindow(false);
-            authenticationWindow.Owner = App.Current.MainWindow;
-            authenticationWindow.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+            var authenticationWindow = new View.AuthenticationWindow(false)
+            {
+                Owner = App.Current.MainWindow,
+                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner
+            };
             return authenticationWindow.ShowDialog();
         }
 
@@ -196,12 +197,12 @@ namespace Steam_Account_Manager.ViewModels
                 else
                 {
                     
-                    if ((byte)Config.Properties.Theme != (byte)(o = ((byte)Array.FindIndex(ThemeMode, theme => theme == true))))
+                    if ((byte)Config.Properties.Theme != (byte)(o = (byte)Array.FindIndex(ThemeMode, theme => theme)))
                     {
                         Config.Properties.Theme = (Infrastructure.Models.Themes)o;
                     }
 
-                    if((byte)Config.Properties.Language != (byte)(o = ((byte)Array.FindIndex(LocaleMode, locale => locale == true))))
+                    if((byte)Config.Properties.Language != (byte)(o = (byte)Array.FindIndex(LocaleMode, locale => locale)))
                     {
                         Config.Properties.Language = (Infrastructure.Models.Languages)o;
                     }

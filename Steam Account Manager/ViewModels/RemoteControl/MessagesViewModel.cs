@@ -1,6 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.Infrastructure.Base;
-using Steam_Account_Manager.Infrastructure.JsonModels;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
+using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.Validators;
 using System;
 using System.Collections.ObjectModel;

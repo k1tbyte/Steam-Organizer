@@ -5,15 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Steam_Account_Manager.Infrastructure.JsonModels
+namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
 {
     public class User
     {
         [JsonProperty("Username")]
         public string Username { get; set; }
-
-        [JsonProperty("Loginkey")]
-        public string LoginKey { get; set; }
 
         [JsonProperty("SteamID64")]
         public string SteamID64 { get; set; }

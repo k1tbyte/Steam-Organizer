@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Steam_Account_Manager.Infrastructure.GamesModels
+namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
 {
     [Serializable]
     internal sealed class CSGO

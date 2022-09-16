@@ -1,9 +1,9 @@
 ﻿using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.Infrastructure.Base;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Friend = Steam_Account_Manager.Infrastructure.JsonModels.Friend;
+using Friend = Steam_Account_Manager.Infrastructure.Models.JsonModels.Friend;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {
