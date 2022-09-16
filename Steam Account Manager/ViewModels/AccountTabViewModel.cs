@@ -24,7 +24,6 @@ namespace Steam_Account_Manager.ViewModels
         private string _steamLevel;
         private int _vacCount;
         private int _id;
-        private CryptoBase database;
         private bool _containParseInfo;
 
         #region Getters && setters
@@ -106,11 +105,11 @@ namespace Steam_Account_Manager.ViewModels
 
             await Task.Factory.StartNew(async () =>
             {
-                Config.GetInstance();
+                Config.GetPropertiesInstance();
                 MainWindowViewModel.IsEnabledForUser = false;
                 try
                 {
-                    Utilities.KillSteamAndConnect(Config._config.SteamDirection, "-login " + _login + " " + _password + " -tcp");
+                    Utilities.KillSteamAndConnect(Config.Properties.SteamDirection, "-login " + _login + " " + _password + " -tcp");
                     success = true;
                 }
                 catch
@@ -118,7 +117,7 @@ namespace Steam_Account_Manager.ViewModels
                     try
                     {
                         Utilities.KillSteamAndConnect(Utilities.GetSteamRegistryDirection(), "-login " + _login + " " + _password + " -tcp");
-                        Config._config.SaveChanges();
+                        Config.SaveProperties();
                         success = true;
                     }
                     catch
@@ -130,7 +129,7 @@ namespace Steam_Account_Manager.ViewModels
                 if(success)
                 {
                     //Copy steam auth code in clipboard
-                    if (!String.IsNullOrEmpty(authPath = database.Accounts[id].AuthenticatorPath) && System.IO.File.Exists(authPath))
+                    if (!String.IsNullOrEmpty(authPath = Config.Accounts[id].AuthenticatorPath) && System.IO.File.Exists(authPath))
                     {
                         Application.Current.Dispatcher.Invoke(new Action(() =>
                         {
@@ -138,36 +137,36 @@ namespace Steam_Account_Manager.ViewModels
                             JsonConvert.DeserializeObject<SteamGuardAccount>(
                                 System.IO.File.ReadAllText(authPath)).GenerateSteamGuardCode());
                         }));
-                        SteamHandler.VirtualSteamLogger(_login, _password, Config._config.RememberPassword, true);
+                        SteamHandler.VirtualSteamLogger(_login, _password, Config.Properties.RememberPassword, true);
                     }
-                    else if (Config._config.RememberPassword)
+                    else if (Config.Properties.RememberPassword)
                     {
                         SteamHandler.VirtualSteamLogger(_login, _password, true, false);
                     }
-                    else if (Config._config.AutoClose)
+                    else if (Config.Properties.AutoClose)
                     {
                         Application.Current.Dispatcher.InvokeShutdown();
                     }
 
                     _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_loggedInSteam"));
                     MainWindowViewModel.IsEnabledForUser = true;
-                    if (MainWindowViewModel.NowLoginUserParse(15000).Result && Config._config.AutoGetSteamId && !database.Accounts[id].ContainParseInfo)
+                    if (MainWindowViewModel.NowLoginUserParse(15000).Result && Config.Properties.AutoGetSteamId && !Config.Accounts[id].ContainParseInfo)
                     {
                         try
                         {
                             _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_getLocalAccInfo"));
                             string steamId = Utilities.SteamId32ToSteamId64(Utilities.GetSteamRegistryActiveUser());
-                            database.Accounts[id] = new Account(
+                            Config.Accounts[id] = new Account(
                                 _login, _password, steamId,
-                                database.Accounts[id].Note,
-                                database.Accounts[id].EmailLogin,
-                                database.Accounts[id].EmailPass,
-                                database.Accounts[id].RockstarEmail,
-                                database.Accounts[id].RockstarPass,
-                                database.Accounts[id].UplayEmail,
-                                database.Accounts[id].UplayPass, null,
-                                database.Accounts[id].AuthenticatorPath);
-                            database.SaveDatabase();
+                                Config.Accounts[id].Note,
+                                Config.Accounts[id].EmailLogin,
+                                Config.Accounts[id].EmailPass,
+                                Config.Accounts[id].RockstarEmail,
+                                Config.Accounts[id].RockstarPass,
+                                Config.Accounts[id].UplayEmail,
+                                Config.Accounts[id].UplayPass, null,
+                                Config.Accounts[id].AuthenticatorPath);
+                            Config.SaveAccounts();
                             update = true;
                         }
                         catch
@@ -183,8 +182,7 @@ namespace Steam_Account_Manager.ViewModels
 
         public AccountTabViewModel(int id)
         {
-            database = CryptoBase.GetInstance();
-            Account account = database.Accounts.ElementAt(id);
+            Account account = Config.Accounts.ElementAt(id);
             Id = id + 1;
             ContainParseInfo = account.ContainParseInfo;
             if (account.ContainParseInfo)
@@ -208,8 +206,8 @@ namespace Steam_Account_Manager.ViewModels
 
             DeleteAccoundCommand = new RelayCommand(o =>
             {
-                database.Accounts.RemoveAt(id);
-                database.SaveDatabase();
+                Config.Accounts.RemoveAt(id);
+                Config.SaveAccounts();
                 AccountsViewModel.FillAccountTabViews();
             });
 
@@ -230,14 +228,14 @@ namespace Steam_Account_Manager.ViewModels
 
             DeleteAccoundCommand = new RelayCommand(o =>
             {
-                if (!Config._config.NoConfirmMode)
+                if (!Config.Properties.NoConfirmMode)
                     AccountsViewModel.RemoveAccount(ref id);
                 else
                 {
-                    database.Accounts.RemoveAt(id);
+                    Config.Accounts.RemoveAt(id);
                     AccountsViewModel.AccountTabViews.RemoveAt(id);
-                    MainWindowViewModel.TotalAccounts = database.Accounts.Count;
-                    database.SaveDatabase();
+                    MainWindowViewModel.TotalAccounts = Config.Accounts.Count;
+                    Config.SaveAccounts();
                 }
             });
 

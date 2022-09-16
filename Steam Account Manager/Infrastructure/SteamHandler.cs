@@ -100,7 +100,7 @@ namespace Steam_Account_Manager.Infrastructure
                 Utilities.SetSteamRegistryRememberUser(String.Empty);
             }
 
-            Utilities.KillSteamAndConnect(Config._config.SteamDirection);
+            Utilities.KillSteamAndConnect(Config.Properties.SteamDirection);
             byte SteamAwaiter = 0;
 
             Automation.AddAutomationEventHandler(
@@ -171,7 +171,7 @@ namespace Steam_Account_Manager.Infrastructure
                             }
                             Automation.RemoveAllEventHandlers();
 
-                            if(Config._config.AutoClose)
+                            if(Config.Properties.AutoClose)
                                 App.Current.Dispatcher.InvokeShutdown();
                         }
 

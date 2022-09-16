@@ -1,5 +1,5 @@
-﻿using Steam_Account_Manager.Infrastructure.Parsers;
-using Steam_Account_Manager.Infrastructure.GamesModels;
+﻿using Steam_Account_Manager.Infrastructure.GamesModels;
+using Steam_Account_Manager.Infrastructure.Parsers;
 using System;
 
 namespace Steam_Account_Manager.Infrastructure.Base
@@ -7,7 +7,6 @@ namespace Steam_Account_Manager.Infrastructure.Base
     [Serializable]
     internal class Account
     {
-
         //Player summaries
         public string SteamId64 { get; set; }
         public string Login { get; set; }
@@ -34,7 +33,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
         public string GamesPlayed { get; set; }
         public string HoursOnPlayed { get; set; }
         public string CountGamesImageUrl { get; set; }
-        public CsgoStats CsgoStats { get; set; }
+        public CSGO CsgoStats { get; set; }
 
         //Other info
         public string Note { get; set; }
@@ -74,14 +73,14 @@ namespace Steam_Account_Manager.Infrastructure.Base
             this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
             this.ContainParseInfo = true;
 
-            this.CsgoStats = new CsgoStats();
+            this.CsgoStats = new CSGO();
 
             this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = "";
         }
 
         //Update account counstructor
         public Account( string login, string password, string steamId64, string note, string emailLogin,string emailPass,
-             string rockstarEmail, string rockstarPass, string uplayEmail,string uplayPass, CsgoStats csgoStats,string authenticatorPath)
+             string rockstarEmail, string rockstarPass, string uplayEmail,string uplayPass, CSGO csgoStats,string authenticatorPath)
         {
             this.Login = login;
             this.Password = password;
@@ -107,7 +106,7 @@ namespace Steam_Account_Manager.Infrastructure.Base
             this.CountGamesImageUrl = steamParser.GetCountGamesImageUrl;
             this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
 
-            if(csgoStats == null) this.CsgoStats = new CsgoStats();
+            if(csgoStats == null) this.CsgoStats = new CSGO();
             else this.CsgoStats = csgoStats;
 
             this.AuthenticatorPath = authenticatorPath;

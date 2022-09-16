@@ -605,8 +605,8 @@ namespace Steam_Account_Manager.Infrastructure.Base
         public static async Task ParseOwnedGamesAsync()
         {
             string webApiKey = Keys.STEAM_API_KEY;
-            if (!String.IsNullOrEmpty(Config._config.WebApiKey))
-                webApiKey = Config._config.WebApiKey;
+            if (!String.IsNullOrEmpty(Config.Properties.WebApiKey))
+                webApiKey = Config.Properties.WebApiKey;
 
             var webClient = new WebClient { Encoding = Encoding.UTF8 };
             string json = await webClient.DownloadStringTaskAsync(
@@ -641,8 +641,8 @@ namespace Steam_Account_Manager.Infrastructure.Base
                 CurrentUser.Friends.Clear();
 
             string webApiKey = Keys.STEAM_API_KEY;
-            if (!String.IsNullOrEmpty(Config._config.WebApiKey))
-                webApiKey = Config._config.WebApiKey;
+            if (!String.IsNullOrEmpty(Config.Properties.WebApiKey))
+                webApiKey = Config.Properties.WebApiKey;
 
             var webClient = new WebClient { Encoding = Encoding.UTF8 };
             string json = await webClient.DownloadStringTaskAsync(

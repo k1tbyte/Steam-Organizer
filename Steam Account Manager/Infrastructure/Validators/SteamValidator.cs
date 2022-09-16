@@ -28,9 +28,9 @@ namespace Steam_Account_Manager.Infrastructure.Validators
 
         public SteamValidator(string steamProfileLink)
         {
-            Config config = Config.GetInstance();
             _steamLink = steamProfileLink;
-            if (!String.IsNullOrEmpty(config.WebApiKey)) _apiKey = config.WebApiKey;
+            if (!String.IsNullOrEmpty(Config.Properties.WebApiKey))
+                _apiKey = Config.Properties.WebApiKey;
             CheckSteamLinkType();
             ConvertLinkToId64();
         }

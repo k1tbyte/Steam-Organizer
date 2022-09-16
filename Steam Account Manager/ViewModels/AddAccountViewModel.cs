@@ -124,9 +124,8 @@ namespace Steam_Account_Manager.ViewModels
             {
                 if (DataValidate())
                 {
-                    var database = CryptoBase.GetInstance();
-                    database.Accounts.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword,_steamLink,true));
-                    database.SaveDatabase();
+                    Config.Accounts.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword,_steamLink,true));
+                    Config.SaveAccounts();
                     MainWindowViewModel.AccountsViewCommand.Execute(null);
                     ErrorMessage = "";
                 }
@@ -149,9 +148,8 @@ namespace Steam_Account_Manager.ViewModels
                         else
                         {
                             ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
-                            var database = CryptoBase.GetInstance();
-                            database.Accounts.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
-                            database.SaveDatabase();
+                            Config.Accounts.Add(new Infrastructure.Base.Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
+                            Config.SaveAccounts();
                             MainWindowViewModel.AccountsViewCommand.Execute(null);
                             ErrorMessage = "";
                         }
@@ -168,8 +166,7 @@ namespace Steam_Account_Manager.ViewModels
 
         public AddAccountViewModel()
         {
-            var config = Config.GetInstance();
-            DontCollectInfo = config.TakeAccountInfo;
+            DontCollectInfo = Config.Properties.TakeAccountInfo;
             AddAccountAsyncCommand = new AsyncRelayCommand(async (o) =>
             {
                 await AddAccount(o);
@@ -177,7 +174,7 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     ExecuteWindow(o);
                     Task.Run(() => MainWindowViewModel.NotificationView((string)Application.Current.FindResource("mv_account_added_notification")));
-                    AccountsViewModel.AddAccountTabView(CryptoBase._database.Accounts.Count - 1);
+                    AccountsViewModel.AddAccountTabView(Config.Accounts.Count - 1);
                 }
 
             });

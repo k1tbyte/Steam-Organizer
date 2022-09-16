@@ -22,7 +22,6 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand RestoreAccountDatabaseCommand { get; set; }
         public RelayCommand StoreAccountDatabaseCommand { get; set; }
 
-        private static CryptoBase database;
         private string _accountName;
         private string _searchBoxText;
         private int _accountId;
@@ -107,11 +106,11 @@ namespace Steam_Account_Manager.ViewModels
             ConfirmBanner = false;
             if(AccountTabViews.Count == 0)
             {
-                for (int i = 0; i < database.Accounts.Count; i++)
+                for (int i = 0; i < Config.Accounts.Count; i++)
                 {
                     AccountTabViews.Add(new AccountTabView(i));
                 }
-                MainWindowViewModel.TotalAccounts = database.Accounts.Count;
+                MainWindowViewModel.TotalAccounts = Config.Accounts.Count;
             }
         }
 
@@ -145,34 +144,34 @@ namespace Steam_Account_Manager.ViewModels
                 MainWindowViewModel.IsEnabledForUser = false;
                 var ids = new List<int>()
                 {
-                    Capacity = database.Accounts.Count
+                    Capacity = Config.Accounts.Count
                 };
 
                 await Task.Factory.StartNew(() =>
                 {
-                    for (int i = 0; i < database.Accounts.Count; i++)
+                    for (int i = 0; i < Config.Accounts.Count; i++)
                     {
-                        if (!database.Accounts[i].ContainParseInfo) continue;
+                        if (!Config.Accounts[i].ContainParseInfo) continue;
                         MainWindowViewModel.UpdatedAccountIndex = i + 1;
-                        database.Accounts[i] = new Infrastructure.Base.Account(
-                              database.Accounts[i].Login,
-                             database.Accounts[i].Password,
-                             database.Accounts[i].SteamId64,
-                             database.Accounts[i].Note,
-                             database.Accounts[i].EmailLogin,
-                             database.Accounts[i].EmailPass,
-                             database.Accounts[i].RockstarEmail,
-                             database.Accounts[i].RockstarPass,
-                             database.Accounts[i].UplayEmail,
-                             database.Accounts[i].UplayPass,
-                             database.Accounts[i].CsgoStats,
-                             database.Accounts[i].AuthenticatorPath);
+                        Config.Accounts[i] = new Infrastructure.Base.Account(
+                              Config.Accounts[i].Login,
+                             Config.Accounts[i].Password,
+                             Config.Accounts[i].SteamId64,
+                             Config.Accounts[i].Note,
+                             Config.Accounts[i].EmailLogin,
+                             Config.Accounts[i].EmailPass,
+                             Config.Accounts[i].RockstarEmail,
+                             Config.Accounts[i].RockstarPass,
+                             Config.Accounts[i].UplayEmail,
+                             Config.Accounts[i].UplayPass,
+                             Config.Accounts[i].CsgoStats,
+                             Config.Accounts[i].AuthenticatorPath);
                         ids.Add(i);
                     }
                     MainWindowViewModel.UpdatedAccountIndex = 0;
                     MainWindowViewModel.IsEnabledForUser = true;
                     Task.Run(() => MainWindowViewModel.NotificationView("Database has been updated"));
-                    database.SaveDatabase();
+                    Config.SaveAccounts();
                 });
 
                 if(ids != null)
@@ -212,7 +211,7 @@ namespace Steam_Account_Manager.ViewModels
 
         public AccountsViewModel()
         {
-            database = CryptoBase._database;
+            Config.GetAccountsInstance();
 
             AccountTabViews = new ObservableCollection<AccountTabView>();
             ByNicknameSearch = CollectionViewSource.GetDefaultView(AccountTabViews);
@@ -228,13 +227,12 @@ namespace Steam_Account_Manager.ViewModels
 
             YesButtonCommand = new RelayCommand(o =>
             {
-                database = CryptoBase.GetInstance();
-                if (database.Accounts[TempId].AuthenticatorPath == null)
+                if (Config.Accounts[TempId].AuthenticatorPath == null)
                 {
-                    database.Accounts.RemoveAt(TempId);
+                    Config.Accounts.RemoveAt(TempId);
                     AccountTabViews.RemoveAt(TempId);
                     MainWindowViewModel.TotalAccounts--;
-                    database.SaveDatabase();
+                    Config.SaveAccounts();
                     IsDatabaseEmpty = AccountTabViews.Count == 0;
                 }
                 else
@@ -255,19 +253,19 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     try
                     {
-                        database.Accounts.Add((Infrastructure.Base.Account)Config.Deserialize(fileDialog.FileName,Config._config.UserCryptoKey));
+                        Config.Accounts.Add((Infrastructure.Base.Account)Config.Deserialize(fileDialog.FileName,Config.Properties.UserCryptoKey));
                         FillAccountTabViews();
                         Task.Run(() => MainWindowViewModel.NotificationView("Account restored from file"));
-                        database.SaveDatabase();
+                        Config.SaveAccounts();
                     }
                     catch
                     {
                         if (OpenCryptoKeyWindow(fileDialog.FileName) == true)
                         {
-                            database.Accounts.Add((Infrastructure.Base.Account)Config.Deserialize(fileDialog.FileName, Config.TempUserKey));
+                            Config.Accounts.Add((Infrastructure.Base.Account)Config.Deserialize(fileDialog.FileName, Config.TempUserKey));
                             FillAccountTabViews();
                             Task.Run(() => MainWindowViewModel.NotificationView("Account restored from file"));
-                            database.SaveDatabase();
+                            Config.SaveAccounts();
                         }
                     }
                 }
@@ -281,7 +279,7 @@ namespace Steam_Account_Manager.ViewModels
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    Config.Serialize(database.Accounts, fileDialog.FileName,Config._config.UserCryptoKey);
+                    Config.Serialize(Config.Accounts, fileDialog.FileName,Config.Properties.UserCryptoKey);
                     Task.Run(() => MainWindowViewModel.NotificationView("Database saved to file"));
                 }
             });
@@ -296,19 +294,19 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     try
                     {
-                        database.Accounts = (List<Infrastructure.Base.Account>)Config.Deserialize(fileDialog.FileName,Config._config.UserCryptoKey);
+                        Config.Accounts = (List<Infrastructure.Base.Account>)Config.Deserialize(fileDialog.FileName,Config.Properties.UserCryptoKey);
                         FillAccountTabViews();
                         Task.Run(() => MainWindowViewModel.NotificationView("Database restored from file"));
-                        database.SaveDatabase();
+                        Config.SaveAccounts();
                     }
                     catch
                     {
                         if(OpenCryptoKeyWindow(fileDialog.FileName) == true)
                         {
-                            database.Accounts = (List<Infrastructure.Base.Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
+                            Config.Accounts = (List<Infrastructure.Base.Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
                             FillAccountTabViews();
                             Task.Run(() => MainWindowViewModel.NotificationView("Database restored from file"));
-                            database.SaveDatabase();
+                            Config.SaveAccounts();
                             IsDatabaseEmpty = AccountTabViews.Count == 0;
                         }
                     }

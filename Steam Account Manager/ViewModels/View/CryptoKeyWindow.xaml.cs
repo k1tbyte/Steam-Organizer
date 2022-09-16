@@ -30,9 +30,9 @@ namespace Steam_Account_Manager.ViewModels.View
                 {
                     if (mainWindow)
                     {
-                        Infrastructure.Config._config.UserCryptoKey = key.Text;
-                        Infrastructure.CryptoBase.GetInstance();
-                        Infrastructure.Config._config.SaveChanges();
+                        Infrastructure.Config.Properties.UserCryptoKey = key.Text;
+                        Infrastructure.Config.GetAccountsInstance();
+                        Infrastructure.Config.SaveProperties();
                         MainWindow mainWindow = new MainWindow();
                         mainWindow.Show();
                         this.Close();
@@ -77,7 +77,7 @@ namespace Steam_Account_Manager.ViewModels.View
         {
             ResetBorder.Visibility = Visibility.Hidden;
             System.IO.File.Delete("database.dat");
-            Infrastructure.CryptoBase.GetInstance();
+            Infrastructure.Config.GetAccountsInstance();
             MainWindow mainWindow = new MainWindow();
             this.Close();
             mainWindow.Show();

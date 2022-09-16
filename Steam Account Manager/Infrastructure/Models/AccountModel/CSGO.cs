@@ -1,10 +1,9 @@
 ﻿using System;
 
-
 namespace Steam_Account_Manager.Infrastructure.GamesModels
 {
     [Serializable]
-    internal sealed class CsgoStats
+    internal sealed class CSGO
     {
         //ranks 5x5
         private string _currentRank, _bestRank;
@@ -16,126 +15,83 @@ namespace Steam_Account_Manager.Infrastructure.GamesModels
         public string Accuracy
         {
             get => _accuracy;
-            set
-            {
-                _accuracy = value;
-            }
+            set => _accuracy = value;
+            
         }
         public string HeadshotPercent
         {
             get => _headshotPercent ?? "-";
-            set
-            {
-                _headshotPercent = value;
-            }
+            set => _headshotPercent = value;
         }
         public string Winrate
         {
             get => _winrate ?? "-";
-            set
-            {
-                _winrate = value;
-            }
+            set => _winrate = value;
         }
         public string KD
         {
             get => _kd ?? "-";
-            set
-            {
-                _kd = value;
-            }
+            set => _kd = value;
         }
         public string RoundsPlayed
         {
             get => _roundsPlayed ?? "-";
-            set
-            {
-                _roundsPlayed = value;
-            }
+            set => _roundsPlayed = value;
         }
         public string PlayedMatches
         {
             get => _playedMatches ?? "-";
-            set
-            {
-                _playedMatches = value;
-            }
+            set => _playedMatches = value;
+            
         }
         public string MatchesWon
         {
             get => _matchesWon ?? "-";
-            set
-            {
-                _matchesWon = value;
-            }
+            set => _matchesWon = value;
+            
         }
         public string Headshots
         {
             get => _headshots ?? "-";
-            set
-            {
-                _headshots = value;
-            }
+            set => _headshots = value;
+            
         }
 
         public string ShotsHit
         {
             get => _shotsHit ?? "-";
-            set
-            {
-                _shotsHit = value;
-            }
+            set => _shotsHit = value;
+            
         }
 
         public string TotalShots
         {
             get => _totalShots ?? "-";
-            set
-            {
-                _totalShots = value;
-            }
+            set => _totalShots = value;
         }
         public string Kills
         {
             get => _kills ?? "-";
-            set
-            {
-                _kills = value;
-            }
+            set => _kills = value;
+            
         }
         public string Deaths
         {
             get => _deaths ?? "-";
-            set
-            {
-                _deaths = value;
-            }
+            set => _deaths = value;
         }
 
         public string CurrentRank
         {
             get => $"/Images/Ranks/CSGO/{_currentRank ?? "skillgroup_none"}.png";
-            set
-            {
-                _currentRank = value;
-            }
+            set => _currentRank = value;
         }
 
          
         public string BestRank
         {
             get => $"/Images/Ranks/CSGO/{_bestRank ?? "skillgroup_none"}.png";
-            set
-            {
-                _bestRank = value;
-            }
-        }
-
-        public CsgoStats()
-        {
-            CurrentRank = "skillgroup_none";
-            BestRank = "skillgroup_none";
-            Kills = Deaths  = PlayedMatches = MatchesWon = TotalShots = Headshots  = ShotsHit = RoundsPlayed  = "-";
+            set => _bestRank = value;
         }
 
     }

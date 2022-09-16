@@ -26,7 +26,6 @@ namespace Steam_Account_Manager.ViewModels
         public AsyncRelayCommand RefreshCommand { get; set; }
 
         private Account currentAccount;
-        private CryptoBase database;
 
         private string _avatarFull, _nickname;
         private bool _noticeView = false, _savePermission = false, _isCsgoStatsSave = false;
@@ -626,8 +625,8 @@ namespace Steam_Account_Manager.ViewModels
                         UplayPass     = currentAccount.UplayPass
                     };
 
-                    database.Accounts[id] = currentAccount;
-                    database.SaveDatabase();
+                    Config.Accounts[id] = currentAccount;
+                    Config.SaveAccounts();
                     Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_cs_inf_updated")));
                     FillSteamInfo();
                 }
@@ -653,8 +652,7 @@ namespace Steam_Account_Manager.ViewModels
 
         public AccountDataViewModel(int id)
         {
-            database = CryptoBase.GetInstance();
-            currentAccount = database.Accounts[id];
+            currentAccount = Config.Accounts[id];
             FillSteamInfo();
             if(currentAccount.ContainParseInfo) FillCsgoInfo();
             _id = id;
@@ -735,19 +733,19 @@ namespace Steam_Account_Manager.ViewModels
                     _savePermission = false;
                     if(_isCsgoStatsSave)
                     {
-                        database.Accounts[id].CsgoStats = currentAccount.CsgoStats;
+                        Config.Accounts[id].CsgoStats = currentAccount.CsgoStats;
                         _isCsgoStatsSave = false;
                     }
-                    database.Accounts[id].Password      = Password;
-                    database.Accounts[id].Login         = Login;
-                    database.Accounts[id].Note          = Note;
-                    database.Accounts[id].EmailLogin    = EmailLogin;
-                    database.Accounts[id].EmailPass     = EmailPass;
-                    database.Accounts[id].RockstarEmail = RockstarEmail;
-                    database.Accounts[id].RockstarPass  = RockstarPass;
-                    database.Accounts[id].UplayEmail    = UplayEmail;
-                    database.Accounts[id].UplayPass     = UplayPass;
-                    database.SaveDatabase();
+                    Config.Accounts[id].Password      = Password;
+                    Config.Accounts[id].Login         = Login;
+                    Config.Accounts[id].Note          = Note;
+                    Config.Accounts[id].EmailLogin    = EmailLogin;
+                    Config.Accounts[id].EmailPass     = EmailPass;
+                    Config.Accounts[id].RockstarEmail = RockstarEmail;
+                    Config.Accounts[id].RockstarPass  = RockstarPass;
+                    Config.Accounts[id].UplayEmail    = UplayEmail;
+                    Config.Accounts[id].UplayPass     = UplayPass;
+                    Config.SaveAccounts();
                     Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_changesSaved")));
 
                 }
@@ -773,16 +771,14 @@ namespace Steam_Account_Manager.ViewModels
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    Config.GetInstance();
-                    Config.Serialize(database.Accounts[id], fileDialog.FileName,Config._config.UserCryptoKey);
+                    Config.Serialize(Config.Accounts[id], fileDialog.FileName,Config.Properties.UserCryptoKey);
                     Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_accountExported")));
                 }
             });
 
             AddAuthenticatorCommand = new RelayCommand(o =>
             {
-                database = CryptoBase.GetInstance();
-                AuthenticatorPath = database.Accounts[_id].AuthenticatorPath;
+                AuthenticatorPath = Config.Accounts[_id].AuthenticatorPath;
                 if (AuthenticatorPath == null || !System.IO.File.Exists(AuthenticatorPath))
                 {
                     var border = o as Border;

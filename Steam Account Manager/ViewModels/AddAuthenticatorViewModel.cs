@@ -24,8 +24,6 @@ namespace Steam_Account_Manager.ViewModels
         private Window _window;
         private int _id;
 
-        CryptoBase database;
-
         private class RootObjectUsername
         {
             public string Account_name { get; set; }
@@ -143,7 +141,7 @@ namespace Steam_Account_Manager.ViewModels
                     string sgFile = JsonConvert.SerializeObject(linker.LinkedAccount, Formatting.Indented);
                     path += linker.LinkedAccount.AccountName + ".maFile";
                     System.IO.File.WriteAllText(path, sgFile);
-                    database.Accounts[_id].AuthenticatorPath = path;
+                    Config.Accounts[_id].AuthenticatorPath = path;
                 }
                 catch
                 {
@@ -192,8 +190,8 @@ namespace Steam_Account_Manager.ViewModels
                     }
                     else
                     {
-                        database.Accounts[_id].AuthenticatorPath = fileDialog.FileName;
-                        database.SaveDatabase();
+                        Config.Accounts[_id].AuthenticatorPath = fileDialog.FileName;
+                        Config.SaveAccounts();
                         ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
                         Thread.Sleep(2000);
                     }
@@ -203,7 +201,6 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand CloseWindowCommand { get; set; }
         public AddAuthenticatorViewModel(string login, string password,int accountId, object window)
         {
-            database = CryptoBase.GetInstance();
             _login = login;
             _password = password;
             _id = accountId;

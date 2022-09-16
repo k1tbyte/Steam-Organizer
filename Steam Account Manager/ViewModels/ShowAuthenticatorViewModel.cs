@@ -15,7 +15,6 @@ namespace Steam_Account_Manager.ViewModels
 
 
         private int _id;
-        private CryptoBase database;
         private string _authPath,_accountName = "Login", _steamGuardCode = (string)App.Current.FindResource("saw_loading"), _errorMessage;
         private SteamGuardAccount guard;
         private bool _remove;
@@ -100,9 +99,9 @@ namespace Steam_Account_Manager.ViewModels
                     ErrorMessage = success == true ? (string)App.Current.FindResource("saw_authRemoveSuccess") :
                     (string)App.Current.FindResource("saw_authRemoveError");
                     _remove = true;
-                    File.Delete(database.Accounts[_id].AuthenticatorPath);
-                    database.Accounts[_id].AuthenticatorPath = null;
-                    database.SaveDatabase();
+                    File.Delete(Config.Accounts[_id].AuthenticatorPath);
+                    Config.Accounts[_id].AuthenticatorPath = null;
+                    Config.SaveAccounts();
                     Thread.Sleep(2500);
                 }
                 catch
@@ -116,8 +115,7 @@ namespace Steam_Account_Manager.ViewModels
         public ShowAuthenticatorViewModel(int accountId)
         {
             _id = accountId;
-            database = CryptoBase.GetInstance();
-            _authPath = database.Accounts[_id].AuthenticatorPath;
+            _authPath = Config.Accounts[_id].AuthenticatorPath;
             CloseWindowCommand = new RelayCommand(o =>
             {
                 ExecuteWindow(o);

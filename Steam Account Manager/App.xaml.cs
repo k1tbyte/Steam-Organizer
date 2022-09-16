@@ -1,4 +1,5 @@
-﻿using Steam_Account_Manager.ViewModels.View;
+﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.ViewModels.View;
 using System;
 using System.IO;
 using System.Threading;
@@ -17,13 +18,12 @@ namespace Steam_Account_Manager
         {
             if (Mutex.WaitOne(TimeSpan.Zero, true))
             {
-                var config = Infrastructure.Config.GetInstance();
-                
-                if (config.Password == null)
+                Config.GetPropertiesInstance();
+                if (Config.Properties.Password == null)
                 {
                     try
                     {
-                        Infrastructure.CryptoBase.GetInstance();
+                        Config.GetAccountsInstance();
 
                         var mainWindow = new MainWindow
                         {

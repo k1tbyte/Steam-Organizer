@@ -21,14 +21,13 @@ namespace Steam_Account_Manager.ViewModels.View
                 return;
             }
 
-            if (Utilities.Sha256(Password.Password + Config.GetDefaultCryptoKey) == Config._config.Password)
+            if (Utilities.Sha256(Password.Password + Config.GetDefaultCryptoKey) == Config.Properties.Password)
             {
                 if (!mainWindow) DialogResult = true;
                 else
                 {
                     try
                     {
-                        Infrastructure.CryptoBase.GetInstance();
                         MainWindow mainWindow = new MainWindow();
                         mainWindow.Show();
                         this.Hide();
@@ -82,10 +81,10 @@ namespace Steam_Account_Manager.ViewModels.View
         {
             ResetBorder.Visibility = Visibility.Hidden;
             System.IO.File.Delete("config.dat");
-            Config._config.Clear();
+            Config.ClearProperties();
             try
             {
-                Infrastructure.CryptoBase.GetInstance();
+                Config.GetAccountsInstance();
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.Show();
                 this.Hide();

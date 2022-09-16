@@ -127,15 +127,16 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Infrastructure\AsyncRelayCommand.cs" />
-    <Compile Include="Infrastructure\Base\Account.cs" />
+    <Compile Include="Infrastructure\Models\AccountModel\Account.cs" />
     <Compile Include="Infrastructure\Base\GamesHandler.cs" />
     <Compile Include="Infrastructure\Base\SteamRemoteClient.cs" />
     <Compile Include="Infrastructure\Config.cs" />
     <Compile Include="Infrastructure\Converters\CustomBooleanToVisiblity.cs" />
     <Compile Include="Infrastructure\Converters\InverseBooleanConverter.cs" />
     <Compile Include="Infrastructure\Converters\MsgViewToBool.cs" />
-    <Compile Include="Infrastructure\GamesModels\CsgoStats.cs" />
-    <Compile Include="Infrastructure\JsonModels\RemoteUserModel.cs" />
+    <Compile Include="Infrastructure\Models\AccountModel\CSGO.cs" />
+    <Compile Include="Infrastructure\Models\ConfigModel.cs" />
+    <Compile Include="Infrastructure\Models\RemoteUserModel.cs" />
     <Compile Include="Infrastructure\OvservableObject.cs" />
     <Compile Include="Infrastructure\Parsers\CsgoParser.cs" />
     <Compile Include="Infrastructure\Parsers\SteamParser.cs" />

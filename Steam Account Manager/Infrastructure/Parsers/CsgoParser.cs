@@ -17,7 +17,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         private string _apiKey = Keys.STEAM_API_KEY;
 
         private string _steamId64;
-        private CsgoStats csgoStats = new CsgoStats();
+        private CSGO csgoStats = new CSGO();
         
         private static readonly string[] parseZones = {
             "total_kills","total_deaths","total_kills_headshot","total_shots_hit",
@@ -26,10 +26,11 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         public CsgoParser(string SteamId64)
         {
             _steamId64 = SteamId64;
-            if (!String.IsNullOrEmpty(Config._config.WebApiKey)) _apiKey = Config._config.WebApiKey;
+            if (!String.IsNullOrEmpty(Config.Properties.WebApiKey))
+                _apiKey = Config.Properties.WebApiKey;
         }
 
-        public ref CsgoStats GetCsgoStats => ref csgoStats;
+        public ref CSGO GetCsgoStats => ref csgoStats;
 
         //Global csgo statisctics parser
         public async Task GlobalStatsParse()

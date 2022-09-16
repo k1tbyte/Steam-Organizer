@@ -1,221 +1,105 @@
 ﻿using Steam_Account_Manager.Infrastructure.Base;
+using Steam_Account_Manager.Infrastructure.Models;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
-using System.Threading;
-using System.Windows;
 
 namespace Steam_Account_Manager.Infrastructure
 {
-    [Serializable]
-    internal sealed class Config
+    internal static class Config
     {
-        public static Config _config;
+       
+        public static ConfigProperties Properties { get; set; }
+        public static List<Account> Accounts { get; set; }
+        public static string TempUserKey { get; set; }
 
-        public static string TempUserKey;
-        public string SteamDirection;
-        public bool NoConfirmMode;
-        public bool TakeAccountInfo;
-        public bool AutoClose;
-        public bool AutoGetSteamId;
-        public bool RememberPassword;
-        public string WebApiKey;
-        public string UserCryptoKey;
-        public string Password;
 
-        private Config()
+        #region Config properties methods
+        private static void InitProperties()
         {
-
-            SupportedThemes = new List<Themes>
+            Properties = new ConfigProperties
             {
-                Themes.Dark,
-                Themes.Light,
-                Themes.Nebula
+                UserCryptoKey = CryptoKey,
+                Theme = Models.Themes.Dark,
+                Language = Languages.English
             };
-            SupportedLanguages = new List<CultureInfo>
-            {
-                new CultureInfo("en-US"),
-                new CultureInfo("ru-RU"),
-                new CultureInfo("uk-UA")
-            };
-
-            NoConfirmMode = TakeAccountInfo = AutoClose = RememberPassword = false;
-            WebApiKey = "";
-            UserCryptoKey = CryptoKey;
-            Theme = SupportedThemes[0];
-            
-            switch(Utilities.GetSteamRegistryLanguage()){
-
-                case "russian":
-                    Language = SupportedLanguages[1];
-                    break;
-
-                case "ukrainian":
-                    Language = SupportedLanguages[2];
-                    break;
-
-                default:
-                    Language = SupportedLanguages[0];
-                    break;
-            }
-            
             try
             {
-                SteamDirection = Utilities.GetSteamRegistryDirection();
-            }
-            catch 
-            {
-                SteamDirection = "";
-            }
-            
-        }
-
-        #region Themes
-
-        public enum Themes
-        {
-            Dark = 0,
-            Light = 1,
-            Nebula = 2
-        }
-
-        public List<Themes> SupportedThemes { get; set; }
-
-        private Themes _theme;
-        public Themes Theme
-        {
-            get
-            {
-                return _theme;
-            }
-            set
-            {
-                _theme = value;
-                ResourceDictionary dict = new ResourceDictionary();
-                switch (value)
+                Properties.SteamDirection = Utilities.GetSteamRegistryDirection();
+                switch (Utilities.GetSteamRegistryLanguage())
                 {
-                    case Themes.Light:
-                        dict.Source = new Uri("Themes/ColorSchemes/Light.xaml", UriKind.Relative);
+
+                    case "russian":
+                        Properties.Language = Languages.Russian;
                         break;
-                    case Themes.Dark:
-                        dict.Source = new Uri("Themes/ColorSchemes/Dark.xaml", UriKind.Relative);
+
+                    case "ukrainian":
+                        Properties.Language = Languages.Ukrainian;
                         break;
-                    case Themes.Nebula:
-                        dict.Source = new Uri("Themes/ColorSchemes/Nebula.xaml", UriKind.Relative);
-                        break;
-                    default:
-                        dict.Source = new Uri("Themes/ColorSchemes/Light.xaml", UriKind.Relative);
-                        break;
-                }
-                ResourceDictionary oldDict = (from d in Application.Current.Resources.MergedDictionaries
-                                              where d.Source != null && d.Source.OriginalString.StartsWith("Themes/ColorSchemes/")
-                                              select d).First();
-                if (oldDict != null)
-                {
-                    int ind = Application.Current.Resources.MergedDictionaries.IndexOf(oldDict);
-                    Application.Current.Resources.MergedDictionaries.Remove(oldDict);
-                    Application.Current.Resources.MergedDictionaries.Insert(ind, dict);
-                }
-                else
-                {
-                    Application.Current.Resources.MergedDictionaries.Add(dict);
                 }
             }
-        } 
-
-        #endregion
-
-
-        public enum Languages
-        {
-            English = 0,
-            Russian = 1,
-            Ukrainian = 2
+            catch { }
         }
-        public List<CultureInfo> SupportedLanguages { get; set; }
-        private CultureInfo _language;
-        public CultureInfo Language
+        public static void GetPropertiesInstance()
         {
-            get => _language; 
-            set
-            {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                if (value == Thread.CurrentThread.CurrentUICulture) return;
-                Thread.CurrentThread.CurrentUICulture = value;
-                ResourceDictionary dict = new ResourceDictionary();
-                switch (value.Name)
-                {
-                    case "en-US":
-                        dict.Source = new Uri($"Locale/lang.{value.Name}.xaml", UriKind.Relative);
-                        break;
-                    case "ru-RU":
-                        dict.Source = new Uri($"Locale/lang.{value.Name}.xaml", UriKind.Relative);
-                        break;
-                    case "uk-UA":
-                        dict.Source = new Uri($"Locale/lang.{value.Name}.xaml", UriKind.Relative);
-                        break;
-                    default:
-                        dict.Source = new Uri("Locale/lang.en-US.xaml", UriKind.Relative);
-                        break;
-                }
-                ResourceDictionary oldDict = (from d in Application.Current.Resources.MergedDictionaries
-                                              where d.Source != null && d.Source.OriginalString.StartsWith("Locale/lang.")
-                                              select d).First();
-                if (oldDict != null)
-                {
-                    var ind = Application.Current.Resources.MergedDictionaries.IndexOf(oldDict);
-                    Application.Current.Resources.MergedDictionaries.Remove(oldDict);
-                    Application.Current.Resources.MergedDictionaries.Insert(ind, dict);
-                }
-                else
-                {
-                    Application.Current.Resources.MergedDictionaries.Add(dict);
-                }
-
-                _language = Thread.CurrentThread.CurrentUICulture;
-            }
-        }
-
-
-
-        public void SaveChanges()
-        {
-            Serialize(_config, Environment.CurrentDirectory + @"\config.dat",CryptoKey);
-        }
-
-        public void Clear()
-        {
-            _config = new Config();
-            SaveChanges();
-        }
-
-        public static Config GetInstance()
-        {
-            if (_config == null)
+            if (Properties == null)
             {
                 if (File.Exists("config.dat"))
                 {
-                    _config = (Config)Deserialize(Environment.CurrentDirectory + @"\config.dat",CryptoKey);
-                    _config.Theme = _config.Theme;
-                    _config.Language = _config.Language;
+                    Properties = (ConfigProperties)Deserialize(Environment.CurrentDirectory + @"\config.dat", CryptoKey);
+                    Properties.Theme = Properties.Theme;
+                    Properties.Language = Properties.Language;
                 }
                 else
                 {
-                    _config = new Config();
-                    _config.SaveChanges();
-                } 
+                    InitProperties();
+                    SaveProperties();
+                }
             }
-            return _config;
         }
+        public static void SaveProperties()
+        {
+            Serialize(Properties, Environment.CurrentDirectory + @"\config.dat", CryptoKey);
+        }
+        public static void ClearProperties()
+        {
+            InitProperties();
+            SaveProperties();
+        }
+        #endregion
+
+
+        #region Config accounts methods
+        public static void GetAccountsInstance()
+        {
+            if (Accounts == null)
+            {
+                if (File.Exists("database.dat"))
+                {
+                    if (Properties == null) GetPropertiesInstance();
+                     Accounts =  (List<Account>)Deserialize(Environment.CurrentDirectory + @"\database.dat", Properties.UserCryptoKey);
+                }
+                else
+                {
+                    Accounts = new List<Account>();
+                    Serialize(Accounts, Environment.CurrentDirectory + @"\database.dat", Properties.UserCryptoKey);
+                }
+            }
+        }
+        public static void SaveAccounts()
+        {
+            if (Accounts != null)
+                Serialize(Accounts, Environment.CurrentDirectory + @"\database.dat", Properties.UserCryptoKey);
+        } 
+        #endregion
+
 
         //Encrypting
         private static readonly string CryptoKey = "EOtzannXEOSd5HGBSJvs0op1BHRuvFwlKMZcJXcOp0M=";
-        private const int KeySize = 256;
-        private const int IvSize = 16; // block size is 128-bit
+        private static readonly int KeySize = 256;
+        private static readonly int IvSize = 16; // block size is 128-bit
 
         public static string GetDefaultCryptoKey => CryptoKey;
 
@@ -225,7 +109,6 @@ namespace Steam_Account_Manager.Infrastructure
             BinaryFormatter bf = new BinaryFormatter();
             bf.Serialize(outputStream, obj);
         }
-
         private static object ReadObjectFromStream(Stream inputStream)
         {
             BinaryFormatter binForm = new BinaryFormatter();
@@ -243,7 +126,6 @@ namespace Steam_Account_Manager.Infrastructure
             CryptoStream encryptor = new CryptoStream(outputStream, rijndael.CreateEncryptor(key, iv), CryptoStreamMode.Write);
             return encryptor;
         }
-
         private static CryptoStream CreateDecryptionStream(byte[] key, Stream inputStream)
         {
             byte[] iv = new byte[IvSize];
@@ -264,7 +146,6 @@ namespace Steam_Account_Manager.Infrastructure
                 CryptoStreamMode.Read);
             return decryptor;
         }
-
         public static void Serialize(object obj, string path, string CryptoKey)
         {
             byte[] key = Convert.FromBase64String(CryptoKey);
@@ -288,35 +169,5 @@ namespace Steam_Account_Manager.Infrastructure
             }
         }
 
-    }
-
-    [Serializable]
-    internal class CryptoBase
-    {
-        public List<Account> Accounts;
-        public static CryptoBase _database;
-
-        public CryptoBase()
-        {
-            this.Accounts = new List<Account>();
-        }
-
-        public static CryptoBase GetInstance()
-        {
-            if (_database == null)
-            {
-                if (File.Exists("database.dat"))
-                {
-                    _database = (CryptoBase)Config.Deserialize(Environment.CurrentDirectory + @"\database.dat", Config._config.UserCryptoKey);
-                }
-                else _database = new CryptoBase();
-            }
-            return _database;
-        }
-
-        public void SaveDatabase()
-        {
-            Config.Serialize(_database, Environment.CurrentDirectory + @"\database.dat", Config._config.UserCryptoKey);
-        }
     }
 }
