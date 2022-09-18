@@ -19,7 +19,7 @@
         
         
         <Border Grid.Row="1" HorizontalAlignment="Center" CornerRadius="15" 
-                Background="{DynamicResource second_main_color}" Width="280">
+                Background="{DynamicResource second_main_color}" Width="340">
             <StackPanel Orientation="Horizontal" Margin="20 5 0 5">
 
                 <RadioButton x:Name="Login" Style="{StaticResource RemoteControlButton}" IsHitTestVisible="{Binding IsPanelActive}"
@@ -54,6 +54,15 @@
                              Command="{Binding FriendsViewCommand}" IsHitTestVisible="{Binding IsPanelActive}"
                              Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
                     <Icon:PackIconMaterial Kind="AccountGroup"  Width="25" Height="25" 
+                                           HorizontalAlignment="Center"/>
+                </RadioButton>
+
+                <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5" Opacity="0.8"/>
+
+                <RadioButton Style="{StaticResource RemoteControlButton}" 
+                             Command="{Binding SteamWebViewCommand}" IsHitTestVisible="{Binding IsPanelActive}"
+                             Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
+                    <Icon:PackIconMaterial Kind="Web"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
                 </RadioButton>
             </StackPanel>

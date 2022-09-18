@@ -1,20 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using HtmlAgilityPack;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Steam_Account_Manager.Infrastructure.Models.JsonModels;
+using Steam_Account_Manager.Infrastructure.Validators;
+using Steam_Account_Manager.Themes.MessageBoxes;
+using Steam_Account_Manager.ViewModels.RemoteControl;
 using SteamKit2;
 using SteamKit2.Internal;
-using Steam_Account_Manager.ViewModels.RemoteControl;
-using Newtonsoft.Json;
-using System.Windows.Threading;
-using System.Net;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
-using Steam_Account_Manager.Infrastructure.Validators;
-using Steam_Account_Manager.Infrastructure.Models.JsonModels;
-using Newtonsoft.Json.Linq;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 {
@@ -24,8 +29,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         public static extern bool SetSuspendState(bool hiberate, bool forceCritical, bool disableWakeEvent);
 
         public static string UserPersonaName { get; private set; }
-        public static ulong InterlocutorID { get; set; }
-        internal static EOSType OSType { get; private set; } = EOSType.Unknown;
+        public static ulong InterlocutorID   { get; set; }
+        internal static EOSType OSType       { get; private set; } = EOSType.Unknown;
 
 
         private static readonly CallbackManager      callbackManager;
@@ -33,8 +38,11 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static readonly SteamUser            steamUser;
         private static readonly SteamFriends         steamFriends;
         private static readonly GamesHandler         gamesHandler;
+        private static readonly WebHandler           webHandler;
+
+        private static readonly SteamUnifiedMessages.UnifiedService<IPlayer> UnifiedPlayerService;
+        private static readonly SteamUnifiedMessages.UnifiedService<IInventory> UnifiedInventory;
         private static readonly SteamUnifiedMessages steamUnified;
-        
 
         private static string SteamGuardCode;
         private static string TwoFactorCode;
@@ -42,12 +50,14 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static string Password;
         private static EResult LastLogOnResult;
         private static EPersonaState CurrentPersonaState;
-        private static string CurrentSteamId64;
+        private static ulong CurrentSteamId64;
         private static string LoginKey;
+        private static string WebApiUserNonce;
 
 
         public static bool IsRunning     { get; set; }
         public static bool IsPlaying     { get; set; }
+        public static bool IsWebLoggedIn { get; private set; }
         public static User CurrentUser   { get; set; }
 
         internal const ushort CallbackSleep = 500; //milliseconds
@@ -59,10 +69,14 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             steamClient     = new SteamClient();
             gamesHandler    = new GamesHandler();
             callbackManager = new CallbackManager(steamClient);
+            webHandler      = new WebHandler();
 
             steamUser    = steamClient.GetHandler<SteamUser>();
             steamFriends = steamClient.GetHandler<SteamFriends>();
-            steamUnified = steamClient.GetHandler<SteamUnifiedMessages>();
+
+            steamUnified         = steamClient.GetHandler<SteamUnifiedMessages>();
+            UnifiedPlayerService = steamUnified.CreateService<IPlayer>();
+       //     UnifiedInventory     = steamUnified.CreateService<IInventory>();
 
             callbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
             callbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnected);
@@ -70,6 +84,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             callbackManager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
             callbackManager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
             callbackManager.Subscribe<SteamUser.LoginKeyCallback>(OnLoginKey);
+            callbackManager.Subscribe<SteamUser.WebAPIUserNonceCallback>(OnWebApiUser);
 
             callbackManager.Subscribe<SteamUser.AccountInfoCallback>(OnAccountInfo);
             callbackManager.Subscribe<SteamUser.WalletInfoCallback>(OnWalletInfo);
@@ -152,8 +167,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             {
                 CurrentUser = new User
                 {
-                    Games = new List<Games>(),
-                    Friends = new List<Friend>(),
+                    Games = new ObservableCollection<Game>(),
+                    Friends = new ObservableCollection<Friend>(),
                     Messenger = new Messenger
                     {
                         Commands = new List<Command>()
@@ -171,8 +186,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 MessagesViewModel.EnableCommands = CurrentUser.Messenger.EnableCommands;
                 MessagesViewModel.AdminId = CurrentUser.Messenger.AdminID.ToString();
                 MessagesViewModel.SaveChatLog = CurrentUser.Messenger.SaveChatLog;
-                MessagesViewModel.MsgCommands = new System.Collections.ObjectModel.ObservableCollection<Command>(CurrentUser.Messenger.Commands);
-                FriendsViewModel.Friends = new System.Collections.ObjectModel.ObservableCollection<Friend>(CurrentUser.Friends);
+                MessagesViewModel.MsgCommands = new ObservableCollection<Command>(CurrentUser.Messenger.Commands);
 
                 Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
@@ -180,6 +194,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                         MainRemoteControlViewModel.MessagesV = new ViewModels.RemoteControl.View.MessagesView();
 
                     MessagesViewModel.InitDefaultCommands();
+
                 }));
             }
         } 
@@ -201,7 +216,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             steamUser.LogOff();
             CurrentUser = null;
-            LoginKey = null;
+            WebApiUserNonce = LoginKey = null;
 
             LastLogOnResult = EResult.NotLoggedOn;
         }
@@ -256,22 +271,27 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utilities.StringToBrush("Gray"));
 
-            LoginViewModel.SteamId64 = steamClient.SteamID.ConvertToUInt64().ToString();
-            CurrentSteamId64 = LoginViewModel.SteamId64;
+            CurrentSteamId64 = steamClient.SteamID.ConvertToUInt64();
+            LoginViewModel.SteamId64 = CurrentSteamId64.ToString();
 
             var parser = new Parsers.SteamParser(LoginViewModel.SteamId64);
             parser.ParsePlayerSummaries();
             LoginViewModel.ImageUrl = parser.GetAvatarUrlFull;
-            GamesViewModel.Games = new System.Collections.ObjectModel.ObservableCollection<Games>(CurrentUser.Games);
+            CurrentUser.Username = Username;
 
             if (CurrentUser.SteamID64 == null)
                 CurrentUser.SteamID64 = LoginViewModel.SteamId64;
+            
+            if(!String.IsNullOrEmpty(LoginKey))
+                steamUser.RequestWebAPIUserNonce();
 
             LoginViewModel.IPCountryCode = callback.PublicIP + " | " + callback.IPCountryCode;
+            WebApiUserNonce              = callback.WebAPIUserNonce;
 
             MainRemoteControlViewModel.IsPanelActive = true;
-            LoginViewModel.SuccessLogOn = true;
+            LoginViewModel.SuccessLogOn              = true;
             System.Windows.Forms.SendKeys.SendWait("{TAB}");
+            
         }
 
         private static void OnLoggedOff(SteamUser.LoggedOffCallback callback)
@@ -310,10 +330,10 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnLoginKey(SteamUser.LoginKeyCallback callback)
         {
+            CurrentUser.UniqueId = callback.UniqueID.ToString();
+            UserWebLogOn();
+            steamUser.RequestWebAPIUserNonce();
             steamUser.AcceptNewLoginKey(callback);
-            if(CurrentUser.Username == null)
-                CurrentUser.Username = Username;
-
             for (int i = 0; i < LoginViewModel.RecentlyLoggedIn.Count; i++)
             {
                 if (Username == LoginViewModel.RecentlyLoggedIn[i].Username)
@@ -335,7 +355,15 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 ImageUrl = LoginViewModel.ImageUrl
             })));
 
+        }
 
+        private static void OnWebApiUser(SteamUser.WebAPIUserNonceCallback callback)
+        {
+            if (callback.Result == EResult.OK)
+            {
+                WebApiUserNonce = callback.Nonce;
+                UserWebLogOn();
+            }
         }
 
         private static void OnAccountInfo(SteamUser.AccountInfoCallback callback)
@@ -368,7 +396,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnPersonaNameChange(SteamFriends.PersonaChangeCallback callback)
         {
-
             UserPersonaName = callback.Name;
         }
 
@@ -464,7 +491,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                                         steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/idle (AppID1 or AppID1,AppID2,AppID3...)");
                                     else
                                     {
-                                        var appIds = Array.ConvertAll(command[1].Split(','), uint.Parse);
+                                        var appIds = Array.ConvertAll(command[1].Split(','), int.Parse);
                                         if (appIds.Length == 1)
                                         {
                                             steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"⏳ Idling game: {appIds[0]}");
@@ -570,6 +597,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
         }
 
+
+
         #endregion
 
         public static void ChangeCurrentName(string Name)
@@ -612,38 +641,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 MsgBrush  = (System.Windows.Media.Brush)App.Current.FindResource("menu_button_background")
             })));
         }
-
-        #region Games parse
-        public static async Task ParseOwnedGamesAsync()
-        {
-            string webApiKey = Keys.STEAM_API_KEY;
-            if (!String.IsNullOrEmpty(Config.Properties.WebApiKey))
-                webApiKey = Config.Properties.WebApiKey;
-
-            var webClient = new WebClient { Encoding = Encoding.UTF8 };
-            string json = await webClient.DownloadStringTaskAsync(
-                "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" +
-                webApiKey + "&steamid=" + CurrentSteamId64 + "&include_appinfo=true");
-
-            CurrentUser.Games = JsonConvert.DeserializeObject<RootObjectOwnedGames>(json).Response.Games;
-
-            for (int i = 0; i < CurrentUser.Games.Count; i++)
-            {
-                CurrentUser.Games[i].ImageURL = $"https://cdn.akamai.steamstatic.com/steam/apps/{CurrentUser.Games[i].AppID}/header.jpg";
-            }
-        }
-
-        private class RootObjectOwnedGames
-        {
-            public ResponseOwnedGames Response { get; set; }
-        }
-
-        private class ResponseOwnedGames
-        {
-            public List<Games> Games { get; set; }
-        }
-
-        #endregion
 
         #region Friends parse
         
@@ -698,23 +695,62 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             steamFriends.RemoveFriend(SteamID64);
         }
 
-        internal static async Task IdleGame(uint? AppId,string GameName = null)
+
+        #region Games methods
+        internal static async Task GetOwnedGames()
         {
-            if(IsPlaying)
+            var request = new CPlayer_GetOwnedGames_Request
+            {
+                steamid = CurrentSteamId64,
+                include_appinfo = true,
+                include_free_sub = false,
+                include_played_free_games = true
+            };
+
+
+            var response = await UnifiedPlayerService.SendMessage(x => x.GetOwnedGames(request)).ToTask().ConfigureAwait(false);
+
+            var result = response.GetDeserializedResponse<CPlayer_GetOwnedGames_Response>();
+
+            if (CurrentUser.Games.Count != 0)
+            {
+                CurrentUser.Games.Clear();
+            }
+
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                foreach (var game in result.games)
+                {
+                    CurrentUser.Games.Add(new Game
+                    {
+                        AppID = game.appid,
+                        PlayTime_Forever = game.playtime_forever,
+                        Name = game.name,
+                        ImageURL = $"https://cdn.akamai.steamstatic.com/steam/apps/{game.appid}/header.jpg"
+                    });
+                }
+            }));
+
+
+        }
+
+        internal static async Task IdleGame(int? AppId, string GameName = null)
+        {
+            if (IsPlaying)
                 await gamesHandler.PlayGames(null).ConfigureAwait(false);
-            await gamesHandler.PlayGames(new HashSet<uint>(1) { AppId ?? 0 }, GameName).ConfigureAwait(false);
+            await gamesHandler.PlayGames(new HashSet<int>(1) { AppId ?? 0 }, GameName).ConfigureAwait(false);
             IsPlaying = true;
         }
 
-        internal static async Task IdleGames(IReadOnlyCollection<uint> AppIds,string GameName = null)
+        internal static async Task IdleGames(IReadOnlyCollection<int> AppIds, string GameName = null)
         {
             if (AppIds == null || AppIds.Count == 0)
                 throw new ArgumentNullException(nameof(AppIds));
 
-            if(IsPlaying)
+            if (IsPlaying)
                 await gamesHandler.PlayGames(null).ConfigureAwait(false);
 
-            await gamesHandler.PlayGames(AppIds,GameName).ConfigureAwait(false);
+            await gamesHandler.PlayGames(AppIds, GameName).ConfigureAwait(false);
             IsPlaying = true;
         }
 
@@ -722,6 +758,106 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
             await gamesHandler.PlayGames(null).ConfigureAwait(false);
             IsPlaying = false;
+        } 
+        #endregion
+
+
+        internal static async void GetProfilePrivacy()
+        {
+
+            var request = new CPlayer_GetPrivacySettings_Request { };
+
+            var response = await UnifiedPlayerService.SendMessage(x => x.GetPrivacySettings(request)).ToTask().ConfigureAwait(false);
+            var result = response.GetDeserializedResponse<CPlayer_GetPrivacySettings_Response>();
         }
+
+
+        #region Steam WEB
+        private static void UserWebLogOn()
+        {
+            IsWebLoggedIn = webHandler.Authenticate(CurrentUser.UniqueId, steamClient, WebApiUserNonce);
+        }
+
+        internal static void SetProfiilePrivacy(byte Profile,byte Inventory, byte Gifts, byte OwnedGames,byte Playtime,byte Friends, byte Comments)
+        {
+            if (!IsWebLoggedIn)
+                return;
+
+            var ProfileSettings = new NameValueCollection
+            {
+                { "sessionid", webHandler.SessionID },// Unknown,Private, FriendsOnly,Public
+                { "Privacy","{\"PrivacyProfile\":"+Profile+
+                            ",\"PrivacyInventory\":" +Inventory+
+                            ",\"PrivacyInventoryGifts\":"+Gifts+
+                            ",\"PrivacyOwnedGames\":"+OwnedGames+
+                            ",\"PrivacyPlaytime\":"+Playtime+
+                            ",\"PrivacyFriendsList\":"+Friends+"}"},
+                { "eCommentPermission" ,Comments.ToString()}//FriendsOnly,Public,Private
+            };
+
+            string response = webHandler.Fetch("https://steamcommunity.com/profiles/" + CurrentSteamId64 + "/ajaxsetprivacy/", "POST", ProfileSettings);
+            if (response != String.Empty && response.Contains("success\":1"))
+            {
+                System.Windows.Forms.MessageBox.Show("Profile settings set!");
+            }
+        } 
+
+        internal static async Task GetSteamWebApiKey()
+        {
+            if (!IsWebLoggedIn)
+                return;
+
+            var responseResult = await Task.Factory.StartNew(() =>
+            {
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(webHandler.Fetch("https://steamcommunity.com/dev/apikey?l=english", "GET"));
+                
+                if(htmlDoc?.DocumentNode == null) 
+                    return ESteamApiKeyState.Timeout;
+                
+                var TitleNode = htmlDoc.DocumentNode.SelectSingleNode("//div[@id='mainContents']/h2");
+
+                if(TitleNode == null)
+                    return ESteamApiKeyState.Error;
+               
+                var Title = TitleNode.InnerText;
+
+                if (String.IsNullOrEmpty(Title))
+                    return ESteamApiKeyState.Error;
+                else if(Title.Contains("Access Denied") || Title.Contains("Validated email address required"))
+                    return ESteamApiKeyState.AccessDenied;
+
+                var HtmlNode = htmlDoc.DocumentNode.SelectSingleNode("//div[@id='bodyContents_ex']/p");
+
+                if(HtmlNode == null)
+                    return ESteamApiKeyState.Error;
+
+                string text = HtmlNode.InnerText;
+
+                if (String.IsNullOrEmpty(text))
+                    return ESteamApiKeyState.Error;
+                else if (text.Contains("Registering for a Steam Web API Key"))
+                    return ESteamApiKeyState.NotRegisteredYet;
+
+                CurrentUser.WebApiKey = text.Replace("Key: ","");
+                return ESteamApiKeyState.Registered;
+            });
+
+            switch (responseResult)
+            {
+                case ESteamApiKeyState.Error:
+                    new FlatMessageBox("An error occurred while getting the Web-API key");
+                    return;
+                case ESteamApiKeyState.Timeout:
+                    new FlatMessageBox("Timeout exceeded...");
+                    return;
+                case ESteamApiKeyState.AccessDenied:
+                    new FlatMessageBox("Access to Web API key denied");
+                    return;
+            }
+
+        }
+
+        #endregion
     }
 }

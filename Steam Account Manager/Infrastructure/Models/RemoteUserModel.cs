@@ -1,12 +1,18 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
 {
+    enum ESteamApiKeyState : byte
+    {
+        Error,
+        Timeout,
+        Registered,
+        NotRegisteredYet,
+        AccessDenied
+    }
+
     public class User
     {
         [JsonProperty("Username")]
@@ -15,18 +21,24 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         [JsonProperty("SteamID64")]
         public string SteamID64 { get; set; }
 
+        [JsonProperty("WebAPIKey")]
+        public string WebApiKey { get; set; }
+
+        [JsonProperty("UniqueID")]
+        public string UniqueId { get; set; }
+
         [JsonProperty("MessengerProperties")]
         public Messenger Messenger { get; set; }
 
         [JsonProperty("Friends")]
-        public List<Friend> Friends { get; set; }
+        public ObservableCollection<Friend> Friends { get; set; }
 
         [JsonProperty("Games")]
-        public List<Games> Games { get; set; }
+        public ObservableCollection<Game> Games { get; set; }
 
     }
 
-    public class Games
+    public class Game
     {
         [JsonProperty("Name")]
         public string Name { get; set; }
@@ -35,10 +47,10 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         public string ImageURL { get; set; }
 
         [JsonProperty("AppID")]
-        public uint AppID { get; set; }
+        public int AppID { get; set; }
 
         [JsonProperty("Playtime_Forever")]
-        public uint PlayTime_Forever { get; set; }
+        public int PlayTime_Forever { get; set; }
     }
 
     public class Friend

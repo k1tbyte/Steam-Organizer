@@ -12,14 +12,14 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public RelayCommand AddOtherIdCommand { get; set; }
         public AsyncRelayCommand ParseGamesComamnd { get; set; }
 
-        private static ObservableCollection<Games> _games;
+
         public static event EventHandler GamesChanged;
-        public  static ObservableCollection<Games> Games
+        public  static ObservableCollection<Game> Games
         {
-            get => _games;
+            get => SteamRemoteClient.CurrentUser.Games;
             set
             {
-                _games = value;
+                SteamRemoteClient.CurrentUser.Games = value;
                 GamesChanged?.Invoke(null, EventArgs.Empty);
             }
         }
@@ -41,8 +41,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             IsLibraryEmpty = Games.Count == 0;
             ParseGamesComamnd = new AsyncRelayCommand(async (o) =>
             {
-                await SteamRemoteClient.ParseOwnedGamesAsync();
-                Games = new ObservableCollection<Games>(SteamRemoteClient.CurrentUser.Games);
+                await SteamRemoteClient.GetOwnedGames();
                 IsLibraryEmpty = Games.Count == 0;
                 OnPropertyChanged(nameof(Games));
             });
@@ -51,12 +50,12 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             {
                 var txtBox = o as TextBox;
 
-                if (uint.TryParse(txtBox.Text, out uint id) && id != 0)
+                if (int.TryParse(txtBox.Text, out int id) && id != 0)
                 {
                     for (int i = 0; i < Games.Count; i++)
                         if (Games[i].AppID == id) return;
 
-                    var ManualGame = new Games()
+                    var ManualGame = new Game()
                     {
                         AppID = id,
                         Name = "Manually added",

@@ -62,7 +62,7 @@
             </ListBox>
         </Border>
         <Rectangle Fill="{DynamicResource menu_button_background}" Width="8"
-                   Height="330" RadiusY="3" RadiusX="3" Margin="354 0 0 0" Opacity="0.2" IsHitTestVisible="False" />
+                   Height="330" RadiusY="3" RadiusX="3" Margin="357 0 0 0" Opacity="0.2" IsHitTestVisible="False" />
 
         <StackPanel  Margin="0 13 15 0" VerticalAlignment="Top" HorizontalAlignment="Right">
             <TextBlock x:Name="SelectsText" FontSize="11" Foreground="{DynamicResource default_foreground}"

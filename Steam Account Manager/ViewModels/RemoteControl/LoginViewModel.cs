@@ -19,7 +19,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public AsyncRelayCommand RecentlyLogOnCommand { get; set; }
         public RelayCommand ChangeNicknameCommand { get; set; }
         public RelayCommand LogOutCommand { get; set; }
-
+        public RelayCommand PrivacySettingsCommand { get; set; }
 
 
         private bool _isAuthCode;
@@ -317,6 +317,11 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 SteamRemoteClient.Logout();
                 Username = Password = AuthCode = "";
                 IsAuthCode = false;
+                
+            });
+
+            PrivacySettingsCommand = new RelayCommand(o =>
+            {
                 
             });
         }

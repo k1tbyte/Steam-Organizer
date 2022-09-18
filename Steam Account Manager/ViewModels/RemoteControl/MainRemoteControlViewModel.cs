@@ -10,11 +10,13 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public RelayCommand GamesViewCommand { get; set; }
         public RelayCommand MessagesViewCommand { get; set; }
         public RelayCommand FriendsViewCommand { get; set; }
+        public RelayCommand SteamWebViewCommand { get; set; }
 
-        public static LoginView LoginV;
-        public static GamesView GamesV;
-        public static FriendsView FriendsV;
-        public static MessagesView MessagesV;
+        public static LoginView LoginV { get; private set; }
+        public static GamesView GamesV { get; private set; }
+        public static FriendsView FriendsV { get; private set; }
+        public static MessagesView MessagesV { get; set; }
+        public static SteamWebView SteamWebV { get; private set; }
 
         private static bool _isPanelActive;
         public static event EventHandler IsPanelActiveChanged;
@@ -89,6 +91,17 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                         FriendsV = new FriendsView();
 
                     RemoteControlCurrentView = FriendsV;
+                }
+            });
+
+            SteamWebViewCommand = new RelayCommand(o =>
+            {
+                if(RemoteControlCurrentView != SteamWebV)
+                {
+                    if (SteamWebV == null)
+                        SteamWebV = new SteamWebView();
+
+                    RemoteControlCurrentView = SteamWebV;
                 }
             });
         }

@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Games = Steam_Account_Manager.Infrastructure.Models.JsonModels.Games;
+using Game = Steam_Account_Manager.Infrastructure.Models.JsonModels.Game;
 using SteamRemoteClient = Steam_Account_Manager.Infrastructure.SteamRemoteClient.SteamRemoteClient;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
@@ -84,11 +84,11 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
                     if(ContainCustom) 
                         await SteamRemoteClient.IdleGame(null, Custom_gameTitle.Text);
                     else
-                        await SteamRemoteClient.IdleGame(((Games)games.SelectedItem).AppID, Custom_gameTitle.Text);
+                        await SteamRemoteClient.IdleGame(((Game)games.SelectedItem).AppID, Custom_gameTitle.Text);
                 }
                 else
                 {
-                    await SteamRemoteClient.IdleGames(games.SelectedItems.Cast<Games>().Select(game => game.AppID).ToHashSet(),Custom_gameTitle.Text);
+                    await SteamRemoteClient.IdleGames(games.SelectedItems.Cast<Game>().Select(game => game.AppID).ToHashSet(),Custom_gameTitle.Text);
                 }
             }
             else

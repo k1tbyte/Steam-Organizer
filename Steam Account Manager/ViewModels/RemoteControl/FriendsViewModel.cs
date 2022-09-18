@@ -14,14 +14,14 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public RelayCommand OpenFriendChatCommand { get; set; }
         public RelayCommand RemoveFriendCommand { get; set; }
 
-        private static ObservableCollection<Friend> _friends;
+
         public static event EventHandler FriendsChanged;
         public static ObservableCollection<Friend> Friends
         {
-            get => _friends;
+            get => SteamRemoteClient.CurrentUser.Friends;
             set
             {
-                _friends = value;
+                SteamRemoteClient.CurrentUser.Friends = value;
                 FriendsChanged?.Invoke(null, EventArgs.Empty);
             }
         }
@@ -31,7 +31,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             GetFriendsInfoCommand = new AsyncRelayCommand(async (o) =>
             {
                 await SteamRemoteClient.ParseUserFriends();
-                Friends = new ObservableCollection<Friend>(SteamRemoteClient.CurrentUser.Friends);
             });
 
             OpenFriendProfileCommand = new RelayCommand(o =>
@@ -59,7 +58,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 {
                     if (Friends[i].SteamID64 == id)
                     {
-                        Friends.RemoveAt(i);
                         SteamRemoteClient.CurrentUser.Friends.RemoveAt(i);
                         break;
                     }
