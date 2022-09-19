@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Web;
 using Steam_Account_Manager.Infrastructure.Models;
+using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 {
@@ -50,14 +51,37 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
         }
 
+        internal async Task<string> AsyncFetch(string url, string method, NameValueCollection data = null, bool ajax = true, string referer = "", bool fetchError = true)
+        {
+            return await Task.Factory.StartNew(() =>
+            {
+                using (HttpWebResponse response = Request(url, method, data, ajax, referer, fetchError))
+                {
+                    if (response == null)
+                        return null;
+
+                    using (Stream responseStream = response.GetResponseStream())
+                    {
+                        if (responseStream == null)
+                        {
+                            return null;
+                        }
+                        using (StreamReader reader = new StreamReader(responseStream))
+                        {
+                            return reader.ReadToEnd();
+                        }
+                    }
+                }
+            });
+        }
+
         public HttpWebResponse Request(string url, string method, NameValueCollection data = null, bool ajax = true, string referer = "", bool fetchError = true)
         {
             // Append the data to the URL for GET-requests.
             bool isGetMethod = (method.ToLower() == "get");
-            string dataString = (data == null ? null : String.Join("&", Array.ConvertAll(data.AllKeys, key =>
-                // ReSharper disable once UseStringInterpolation
+            string dataString = data == null ? null : String.Join("&", Array.ConvertAll(data.AllKeys, key =>
                 string.Format("{0}={1}", HttpUtility.UrlEncode(key), HttpUtility.UrlEncode(data[key]))
-            )));
+            ));
 
             // Append the dataString to the url if it is a GET request.
             if (isGetMethod && !string.IsNullOrEmpty(dataString))

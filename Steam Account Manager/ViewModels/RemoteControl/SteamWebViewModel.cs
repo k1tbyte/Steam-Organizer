@@ -11,7 +11,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
     internal class SteamWebViewModel : ObservableObject
     {
         public AsyncRelayCommand GetWebApiKeyCommand { get; set; }
-        public RelayCommand GetCsgoMatchKeyCommand { get; set; }
+        public AsyncRelayCommand RevokeWebApiKeyCommand { get; set; }
 
         public string WebApiKey
         {
@@ -35,10 +35,14 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 }
             });
 
-            GetCsgoMatchKeyCommand = new RelayCommand(o =>
+            RevokeWebApiKeyCommand = new AsyncRelayCommand(async (o) =>
             {
-                SteamRemoteClient.RevokeWebApiKey();
-            }); 
+                if(await SteamRemoteClient.RevokeWebApiKey())
+                {
+                    Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
+                }
+                OnPropertyChanged(nameof(WebApiKey));
+            });
 
         }
     }

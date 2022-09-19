@@ -67,10 +67,17 @@
                 <TextBlock Text="Your steam web API key" Margin="4 0 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
                 <StackPanel Orientation="Horizontal" >
 
+                    <Button Width="20" Height="20"  Style="{StaticResource serviceButton}"
+                            IsHitTestVisible="{Binding ElementName=apiKeyText,Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
+                            Command="{Binding RevokeWebApiKeyCommand}"
+                            CommandParameter="{Binding ElementName=succesApiKeyGet}">
+                        <Icon:PackIconMaterial Kind="Minus" Width="12"/>
+                    </Button>
+                    
                     <Border Margin="0 0 -174 0" Background="{DynamicResource adv_borders_background}"
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
 
-                    <TextBox  Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
+                    <TextBox x:Name="apiKeyText" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
                           Width="165" Margin="0 0 6 0" MaxLength="60" Text="{Binding WebApiKey}" />
 
 
