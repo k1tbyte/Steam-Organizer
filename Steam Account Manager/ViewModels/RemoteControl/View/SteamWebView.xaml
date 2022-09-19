@@ -6,33 +6,89 @@
       xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl.View"
       xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl"
       d:DataContext="{d:DesignInstance Type=vm:SteamWebViewModel}"
+      xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
       mc:Ignorable="d" 
       d:DesignHeight="350" d:DesignWidth="600">
-
-    <Border CornerRadius="20" Background="{DynamicResource first_main_color}">
+    
+    <Border CornerRadius="20" Background="{DynamicResource first_main_color}" BorderThickness="0" BorderBrush="Transparent">
         <Grid>
-            <StackPanel Margin="20">
-                <TextBlock Margin="0 0 0 10"
-                       FontFamily="Cascadia Mono"
+            <StackPanel HorizontalAlignment="Left" Margin="23">
+                <TextBlock Margin="0 0 0 10" FontFamily="Cascadia Mono"
                        Foreground="{DynamicResource second_settings_text}"
-                       Text="Keys"
-                       FontSize="20"/>
+                       Text="Profile privacy" FontSize="20"/>
+
+                <TextBlock Text="Profile" FontSize="12" FontWeight="Normal"
+                           Margin="3 0 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="ProfileBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+
+                <TextBlock Text="Inventory" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="InventoryBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+
+                <TextBlock Text="Steam gifts" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="GiftsBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+
+                <TextBlock Text="Game details" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="GameDetailsBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+            </StackPanel>
+
+            <StackPanel HorizontalAlignment="Left" Margin="165 51 0 0">
+               
+                <TextBlock Text="Game playtime" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="GamePlaytimeBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+                
+                <TextBlock Text="Friends list" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="FriendsBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+                
+                <TextBlock Text="Comments" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="CommentsBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacyComment}"
+                           HorizontalAlignment="Left" SelectionChanged="CommentsBox_SelectionChanged" />
+
+                <Button Style="{StaticResource defaultButton}" x:Name="ApplyPrivacyChanges"
+                        Background="{DynamicResource adv_borders_background}" Content="Apply"
+                        Height="28" Margin="0 21 0 0" Width="100" Click="ApplyPrivacyChanges_Click"/>
+            </StackPanel>
+            
+            <StackPanel Margin="0 23 41 0" HorizontalAlignment="Right">
+                <TextBlock Margin="0 0 0 10" FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                       Text="Keys" FontSize="20"/>
                 <TextBlock Text="Your steam web API key" Margin="4 0 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
                 <StackPanel Orientation="Horizontal" >
 
-                    <Border Margin="0 0 -154 0" Background="{DynamicResource adv_borders_background}"
+                    <Border Margin="0 0 -174 0" Background="{DynamicResource adv_borders_background}"
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
 
                     <TextBox  Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
-                          Width="145" Margin="0 0 6 0" MaxLength="60" Text="{Binding WebApiKey}" />
+                          Width="165" Margin="0 0 6 0" MaxLength="60" Text="{Binding WebApiKey}" />
 
 
                     <Button Command="{Binding GetWebApiKeyCommand}" 
+                            CommandParameter="{Binding ElementName=succesApiKeyGet}"
                         Background="{DynamicResource adv_borders_background}" 
                         Style="{StaticResource defaultButton}"  Content="Get" Height="26" Width="40"/>
-
+                    
                 </StackPanel>
+                <Button Style="{StaticResource defaultButton}" Background="{DynamicResource adv_borders_background}"
+                        Content="CSGO KEY" Margin="30" Command="{Binding GetCsgoMatchKeyCommand}"/>
             </StackPanel>
+            
+            <Icon:PackIconMaterial x:Name="succesApiKeyGet" Kind="Check" VerticalAlignment="Top" Width="17" Height="17"
+                                           Opacity="0" Margin="563 78 15 0" Foreground="{DynamicResource AcidGrad}"/>
+            
+            <Icon:PackIconMaterial x:Name="succesPrivacyApply" Kind="Check" VerticalAlignment="Center" Width="17" Height="17"
+                                           Opacity="0" Margin="280 104 15 0" Foreground="{DynamicResource AcidGrad}"/>
 
         </Grid>
     </Border>

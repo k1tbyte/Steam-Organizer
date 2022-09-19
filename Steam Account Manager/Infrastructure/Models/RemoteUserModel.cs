@@ -24,9 +24,6 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         [JsonProperty("WebAPIKey")]
         public string WebApiKey { get; set; }
 
-        [JsonProperty("UniqueID")]
-        public string UniqueId { get; set; }
-
         [JsonProperty("MessengerProperties")]
         public Messenger Messenger { get; set; }
 

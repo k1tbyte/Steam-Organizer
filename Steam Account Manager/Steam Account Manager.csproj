@@ -146,13 +146,17 @@
     <Compile Include="Infrastructure\SteamRemoteClient\WebHandler.cs" />
     <Compile Include="Infrastructure\Validators\SteamValidator.cs" />
     <Compile Include="Keys.cs" />
+    <Compile Include="Themes\Animations.cs" />
     <Compile Include="Themes\MainPasswordBox.xaml.cs">
       <DependentUpon>MainPasswordBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\MainPopup.xaml.cs">
       <DependentUpon>MainPopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\MessageBoxes\FlatMessageBox.cs" />
+    <Compile Include="Themes\MessageBoxes\FlatQueryMessageBoxView.xaml.cs">
+      <DependentUpon>FlatQueryMessageBoxView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Themes\MessageBoxes\MessageBoxes.cs" />
     <Compile Include="Themes\MessageBoxes\FlatMessageBoxView.xaml.cs">
       <DependentUpon>FlatMessageBoxView.xaml</DependentUpon>
     </Compile>
@@ -278,6 +282,10 @@
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="Themes\MessageBoxes\FlatMessageBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\MessageBoxes\FlatQueryMessageBoxView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

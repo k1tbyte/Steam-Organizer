@@ -136,7 +136,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             using (dynamic userAuth = WebAPI.GetInterface("ISteamUserAuth"))
             {
 
-                // userAuth.Timeout = TimeSpan.FromSeconds(5);
                 // Generate an AES session key.
                 var sessionKey = CryptoHelper.GenerateRandomBlock(32);
 

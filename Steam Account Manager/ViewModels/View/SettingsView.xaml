@@ -177,12 +177,12 @@
                     <ToggleButton  IsChecked="{Binding PasswordEnabled,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}"
                           Style="{StaticResource settingsButton}" Command="{Binding ChangeOrAddPasswordCommand}"
                                    CommandParameter="{Binding ElementName=PasswordPanel}"/>
-                    
+
                     <Button x:Name="PasswordError" Style="{StaticResource ErrorAlert}" 
                     MouseEnter="PasswordError_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
                     Margin="8 7 0 7" Width="18" Height="18" Visibility="{Binding PasswordError,Converter={StaticResource BoolToVis},UpdateSourceTrigger=PropertyChanged}"
                     VerticalAlignment="Center" Background="Transparent" BorderThickness="0">
-                       
+
                         <Icon:PackIconMaterial Width="15" Height="15" Kind="Alert"/>
                     </Button>
                 </StackPanel>
@@ -200,6 +200,7 @@
                                                 Height="20" VerticalAlignment="Center" Password="{Binding Password}"/>
                         </StackPanel>
                     </Border>
+                   
                 </StackPanel>
 
             </StackPanel>

@@ -53,6 +53,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static ulong CurrentSteamId64;
         private static string LoginKey;
         private static string WebApiUserNonce;
+        private static string UniqueId;
 
 
         public static bool IsRunning     { get; set; }
@@ -281,9 +282,13 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             if (CurrentUser.SteamID64 == null)
                 CurrentUser.SteamID64 = LoginViewModel.SteamId64;
-            
-            if(!String.IsNullOrEmpty(LoginKey))
+
+            if (!String.IsNullOrEmpty(LoginKey))
+            {
+                UniqueId = LoginKey;
                 steamUser.RequestWebAPIUserNonce();
+            }
+                
 
             LoginViewModel.IPCountryCode = callback.PublicIP + " | " + callback.IPCountryCode;
             WebApiUserNonce              = callback.WebAPIUserNonce;
@@ -330,8 +335,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnLoginKey(SteamUser.LoginKeyCallback callback)
         {
-            CurrentUser.UniqueId = callback.UniqueID.ToString();
-            UserWebLogOn();
+            UniqueId = callback.UniqueID.ToString();
             steamUser.RequestWebAPIUserNonce();
             steamUser.AcceptNewLoginKey(callback);
             for (int i = 0; i < LoginViewModel.RecentlyLoggedIn.Count; i++)
@@ -355,6 +359,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 ImageUrl = LoginViewModel.ImageUrl
             })));
 
+
         }
 
         private static void OnWebApiUser(SteamUser.WebAPIUserNonceCallback callback)
@@ -366,6 +371,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
         }
 
+        
         private static void OnAccountInfo(SteamUser.AccountInfoCallback callback)
         {
             LoginViewModel.Nickname = UserPersonaName = callback.PersonaName;
@@ -627,7 +633,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             };
             steamClient.Send(uiMode);
         }
-        
+ 
         public static void SendInterlocutorMessage(string Msg)
         {
             steamFriends.SendChatMessage(InterlocutorID, EChatEntryType.ChatMsg, Msg);
@@ -762,50 +768,65 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         #endregion
 
 
-        internal static async void GetProfilePrivacy()
+        internal static async Task<CPrivacySettings> GetProfilePrivacy()
         {
 
             var request = new CPlayer_GetPrivacySettings_Request { };
 
             var response = await UnifiedPlayerService.SendMessage(x => x.GetPrivacySettings(request)).ToTask().ConfigureAwait(false);
-            var result = response.GetDeserializedResponse<CPlayer_GetPrivacySettings_Response>();
+            return response.GetDeserializedResponse<CPlayer_GetPrivacySettings_Response>().privacy_settings;
         }
 
 
         #region Steam WEB
         private static void UserWebLogOn()
         {
-            IsWebLoggedIn = webHandler.Authenticate(CurrentUser.UniqueId, steamClient, WebApiUserNonce);
+            IsWebLoggedIn = webHandler.Authenticate(UniqueId, steamClient, WebApiUserNonce);
         }
 
-        internal static void SetProfiilePrivacy(byte Profile,byte Inventory, byte Gifts, byte OwnedGames,byte Playtime,byte Friends, byte Comments)
+        internal static async Task<bool> SetProfilePrivacy(int Profile, int Inventory, int Gifts, int OwnedGames, int Playtime, int Friends, int Comments)
         {
             if (!IsWebLoggedIn)
-                return;
+                return false;
 
-            var ProfileSettings = new NameValueCollection
+            string response = null;
+            await Task.Factory.StartNew(() =>
             {
-                { "sessionid", webHandler.SessionID },// Unknown,Private, FriendsOnly,Public
-                { "Privacy","{\"PrivacyProfile\":"+Profile+
-                            ",\"PrivacyInventory\":" +Inventory+
-                            ",\"PrivacyInventoryGifts\":"+Gifts+
-                            ",\"PrivacyOwnedGames\":"+OwnedGames+
-                            ",\"PrivacyPlaytime\":"+Playtime+
-                            ",\"PrivacyFriendsList\":"+Friends+"}"},
-                { "eCommentPermission" ,Comments.ToString()}//FriendsOnly,Public,Private
-            };
+                var ProfileSettings = new NameValueCollection
+                {
+                  { "sessionid", webHandler.SessionID },// Unknown,Private, FriendsOnly,Public
+                    { "Privacy","{\"PrivacyProfile\":"+Profile+
+                               ",\"PrivacyInventory\":" +Inventory+
+                                ",\"PrivacyInventoryGifts\":"+Gifts+
+                                 ",\"PrivacyOwnedGames\":"+OwnedGames+
+                                ",\"PrivacyPlaytime\":"+Playtime+
+                                 ",\"PrivacyFriendsList\":"+Friends+"}"},
+                      { "eCommentPermission" ,Comments.ToString()
+                  }//FriendsOnly,Public,Private
+                };
 
-            string response = webHandler.Fetch("https://steamcommunity.com/profiles/" + CurrentSteamId64 + "/ajaxsetprivacy/", "POST", ProfileSettings);
-            if (response != String.Empty && response.Contains("success\":1"))
+                response = webHandler.Fetch("https://steamcommunity.com/profiles/" + CurrentSteamId64 + "/ajaxsetprivacy/", "POST", ProfileSettings);
+            });
+
+            if (!String.IsNullOrEmpty(response) && response.Contains("success\":1"))
             {
-                System.Windows.Forms.MessageBox.Show("Profile settings set!");
+                return true;
             }
+            else
+            {
+                MessageBoxes.InfoMessageBox("An error has occurred, the settings are not set...");
+                return false;
+            }
+            
         } 
 
-        internal static async Task GetSteamWebApiKey()
+        public static async Task GetWebApiKey()
         {
             if (!IsWebLoggedIn)
+            {
+                MessageBoxes.InfoMessageBox("Not logged into SteamWeb...");
                 return;
+            }
 
             var responseResult = await Task.Factory.StartNew(() =>
             {
@@ -846,16 +867,52 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             switch (responseResult)
             {
                 case ESteamApiKeyState.Error:
-                    new FlatMessageBox("An error occurred while getting the Web-API key");
+                    MessageBoxes.InfoMessageBox("An error occurred while getting the Web-API key");
                     return;
                 case ESteamApiKeyState.Timeout:
-                    new FlatMessageBox("Timeout exceeded...");
+                    MessageBoxes.InfoMessageBox("Timeout exceeded...");
                     return;
                 case ESteamApiKeyState.AccessDenied:
-                    new FlatMessageBox("Access to Web API key denied");
+                    MessageBoxes.InfoMessageBox("Access to Web API key denied");
                     return;
+                case ESteamApiKeyState.NotRegisteredYet:
+                    var response = MessageBoxes.QueryMessageBox("Web API key not registered, would you like to register now?");
+                    if (response == true)
+                        RegisterWebApiKey();
+                    return;
+                    
             }
 
+        }
+
+        internal static void RegisterWebApiKey()
+        {
+            var htmlDoc = new HtmlDocument();
+            var data = new NameValueCollection
+            {
+                { "sessionid", webHandler.SessionID },
+                { "agreeToTerms", "agreed" },
+                { "domain", "autogenerated.localhost" },
+                { "Submit", "Register" }
+            };
+
+            var response = webHandler.Fetch("https://steamcommunity.com/dev/registerkey", "POST", data);
+            htmlDoc.LoadHtml(response);
+            CurrentUser.WebApiKey = htmlDoc.DocumentNode.SelectSingleNode("//div[@id='bodyContents_ex']/p")?.InnerText.Replace("Key: ", "");
+        }
+
+        internal static void RevokeWebApiKey()
+        {
+            if (!IsWebLoggedIn)
+                return;
+
+            var data = new NameValueCollection
+            {
+                { "sessionid", webHandler.SessionID },
+                { "Revoke","Revoke My Steam Web API Key"}
+            };
+
+            var response = webHandler.Fetch("https://steamcommunity.com/dev/revokekey", "POST", data);
         }
 
         #endregion

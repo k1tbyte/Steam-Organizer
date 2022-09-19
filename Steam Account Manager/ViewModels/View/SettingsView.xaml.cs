@@ -1,6 +1,9 @@
-﻿using System.Windows;
+﻿using MahApps.Metro.IconPacks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
+using System.Windows.Shapes;
 
 namespace Steam_Account_Manager.ViewModels.View
 {
@@ -65,5 +68,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.IsOpen = true;
             Header.PopupText.Text = (string)FindResource("sv_popup_passwordError");
         }
+
+
     }
 }

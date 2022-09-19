@@ -249,6 +249,7 @@
     <v:String x:Key="rc_gv_selectGames">Select game!</v:String>
     <!--#endregion-->
 
+    
     <!--#region Messages view -->
     <v:String x:Key="rc_mv_chat">Сhat:</v:String>
     <v:String x:Key="rc_mv_writeMsg">Write a message...</v:String>
@@ -266,10 +267,32 @@
     <v:String x:Key="rc_mv_addAdmin" xml:space="preserve">User, per commands&#13;which the bot responds</v:String>
     <!--#endregion-->
 
+    
     <!--#region Friends view -->
     <v:String x:Key="rc_fv_friends">Friends:</v:String>
     <v:String x:Key="rc_fv_Name">Nickname</v:String>
     <v:String x:Key="rc_fv_friendSince">Friend since</v:String>
+    <!--#endregion-->
+
+    
+    <!--#region NewRegion -->
+    <x:ArrayExtension x:Key="rc_swv_privacy" Type="v:String">
+        <v:String>Unknown</v:String>
+        <v:String>Private</v:String>
+        <v:String>Friends only</v:String>
+        <v:String>Public</v:String>
+    </x:ArrayExtension>
+
+    <x:ArrayExtension x:Key="rc_swv_privacyComment" Type="v:String">
+        <v:String>Friends only</v:String>
+        <v:String>Public</v:String>
+        <v:String>Private</v:String>
+    </x:ArrayExtension>
+
+    <x:ArrayExtension x:Key="rc_swv_subPrivacy" Type="v:String">
+        <v:String>Private</v:String>
+        <v:String>Public</v:String>
+    </x:ArrayExtension>
     <!--#endregion-->
 
     <!--#endregion-->

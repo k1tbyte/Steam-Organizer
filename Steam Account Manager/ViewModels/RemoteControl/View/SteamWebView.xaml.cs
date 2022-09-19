@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {
@@ -20,10 +8,45 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
     /// </summary>
     public partial class SteamWebView : UserControl
     {
+        bool IsCommentPrivacyValid;
         public SteamWebView()
         {
             InitializeComponent();
             this.DataContext = new SteamWebViewModel();
+            GettingPrivacySettings();
+        }
+
+        private async void GettingPrivacySettings()
+        {
+            var privacy = await SteamRemoteClient.GetProfilePrivacy();
+
+            App.Current.Dispatcher.Invoke(new System.Action(() =>
+            {
+                ProfileBox.SelectedIndex = privacy.privacy_state;
+                FriendsBox.SelectedIndex = privacy.privacy_state_friendslist;
+                GiftsBox.SelectedIndex = privacy.privacy_state_gifts;
+                InventoryBox.SelectedIndex = privacy.privacy_state_inventory;
+                GameDetailsBox.SelectedIndex = privacy.privacy_state_ownedgames;
+                GamePlaytimeBox.SelectedIndex = privacy.privacy_state_playtime;
+            }));
+
+        }
+
+        private async void ApplyPrivacyChanges_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if(await SteamRemoteClient.SetProfilePrivacy(
+                ProfileBox.SelectedIndex, InventoryBox.SelectedIndex,
+                GiftsBox.SelectedIndex, GameDetailsBox.SelectedIndex,
+                GamePlaytimeBox.SelectedIndex, FriendsBox.SelectedIndex,
+                IsCommentPrivacyValid ? CommentsBox.SelectedIndex : 0))
+            {
+                Themes.Animations.ShakingAnimation(succesPrivacyApply, true);
+            }
+        }
+
+        private void CommentsBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            IsCommentPrivacyValid = true;
         }
     }
 }
