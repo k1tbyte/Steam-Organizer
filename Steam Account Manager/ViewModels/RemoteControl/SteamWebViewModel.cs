@@ -12,6 +12,8 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
     {
         public AsyncRelayCommand GetWebApiKeyCommand { get; set; }
         public AsyncRelayCommand RevokeWebApiKeyCommand { get; set; }
+        public AsyncRelayCommand GetTradeTokenCommmand { get; set; }
+        public AsyncRelayCommand RefreshTradeTokenCommmand { get; set; }
 
         public string WebApiKey
         {
@@ -19,6 +21,16 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             set
             {
                 SteamRemoteClient.CurrentUser.WebApiKey = value;
+            }
+        }
+
+        public string TradeToken
+        {
+            get => SteamRemoteClient.CurrentUser.TradeToken;
+            set
+            {
+                SteamRemoteClient.CurrentUser.TradeToken = value;
+                OnPropertyChanged(nameof(TradeToken));
             }
         }
 
@@ -42,6 +54,21 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
                 }
                 OnPropertyChanged(nameof(WebApiKey));
+            });
+
+            GetTradeTokenCommmand = new AsyncRelayCommand(async (o) =>
+            {
+                if(!String.IsNullOrEmpty(TradeToken = await SteamRemoteClient.GetTradeToken()))
+                {
+                    Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
+                }
+            });
+            RefreshTradeTokenCommmand = new AsyncRelayCommand(async (o) =>
+            {
+                if (!String.IsNullOrEmpty(TradeToken = await SteamRemoteClient.GetTradeToken(true)))
+                {
+                    Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
+                }
             });
 
         }

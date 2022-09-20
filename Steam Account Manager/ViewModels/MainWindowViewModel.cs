@@ -156,17 +156,14 @@ namespace Steam_Account_Manager.ViewModels
             await Task.Factory.StartNew(() =>
             {
                 if (awaitingMs != 0) Thread.Sleep(awaitingMs);
-                try
+                var steamID = Utilities.GetSteamRegistryActiveUser();
+                if (steamID != 0)
                 {
-                    var steamID = Utilities.GetSteamRegistryActiveUser();
-                    if (steamID == 0) throw (new NullReferenceException());
-                    var steamParser = new Infrastructure.Parsers.SteamParser(Utilities.SteamId32ToSteamId64(steamID));
-                    steamParser.ParsePlayerSummaries();
-                    NowLoginUserImage = steamParser.GetAvatarUrlFull;
-                    NowLoginUserNickname = steamParser.GetNickname;
+                    NowLoginUserImage = Utilities.GetSteamAvatarUrl((ulong)(steamID + 76561197960265728)) ?? "/Images/user.png";
+                    NowLoginUserNickname = Utilities.GetSteamNickname((ulong)(steamID + 76561197960265728)) ?? "Username";
                     accountDetected = true;
                 }
-                catch
+                else
                 {
                     NowLoginUserImage = "/Images/user.png";
                     NowLoginUserNickname = "Username";

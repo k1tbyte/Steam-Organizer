@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static readonly WebHandler           webHandler;
 
         private static readonly SteamUnifiedMessages.UnifiedService<IPlayer> UnifiedPlayerService;
-        private static readonly SteamUnifiedMessages.UnifiedService<IInventory> UnifiedInventory;
+        private static readonly SteamUnifiedMessages.UnifiedService<IEcon> UnifiedEcon;
         private static readonly SteamUnifiedMessages steamUnified;
 
         private static string SteamGuardCode;
@@ -76,6 +77,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             steamUnified         = steamClient.GetHandler<SteamUnifiedMessages>();
             UnifiedPlayerService = steamUnified.CreateService<IPlayer>();
+            UnifiedEcon = steamUnified.CreateService<IEcon>();
        //     UnifiedInventory     = steamUnified.CreateService<IInventory>();
 
             callbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
@@ -273,18 +275,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             CurrentSteamId64 = steamClient.SteamID.ConvertToUInt64();
             LoginViewModel.SteamId64 = CurrentSteamId64.ToString();
+                LoginViewModel.ImageUrl = Utilities.GetSteamAvatarUrl(CurrentSteamId64);
 
-            try
-            {
-                var parser = new Parsers.SteamParser(LoginViewModel.SteamId64);
-                parser.ParsePlayerSummaries();
-                LoginViewModel.ImageUrl = parser.GetAvatarUrlFull;
-            }
-            catch
-            {
-                LoginViewModel.ImageUrl = @"\Images\default_steam_profile.png";
-            }
-            
             CurrentUser.Username = Username;
 
             if (CurrentUser.SteamID64 == null)
@@ -295,8 +287,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 UniqueId = LoginKey;
                 steamUser.RequestWebAPIUserNonce();
             }
-                
-
             LoginViewModel.IPCountryCode = callback.PublicIP + " | " + callback.IPCountryCode;
             WebApiUserNonce              = callback.WebAPIUserNonce;
 
@@ -358,7 +348,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     return;
                 }
             }
-
+            
             Application.Current.Dispatcher.Invoke(new Action(() => LoginViewModel.RecentlyLoggedIn.Add(new RecentlyLoggedAccount
             {
                 Username = Username,
@@ -659,19 +649,25 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         
         public static async Task ParseUserFriends()
         {
-            if (CurrentUser.Friends != null)
+            if (CurrentUser.Friends.Count != 0)
                 CurrentUser.Friends.Clear();
 
             string webApiKey = Keys.STEAM_API_KEY;
+            IEnumerable<JToken> sinces = null;
             if (!String.IsNullOrEmpty(Config.Properties.WebApiKey))
                 webApiKey = Config.Properties.WebApiKey;
 
-            var webClient = new WebClient { Encoding = Encoding.UTF8 };
-            string json = await webClient.DownloadStringTaskAsync(
-                "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key=" +
-                webApiKey + "&steamid=" + CurrentSteamId64);
-            JToken node = JObject.Parse(json).SelectToken("*.friends");
-            var sinces = node.SelectTokens(@"$.[?(@.friend_since)].friend_since");
+            try
+            {
+                var webClient = new WebClient { Encoding = Encoding.UTF8 };
+                string json = await webClient.DownloadStringTaskAsync(
+                    "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key=" +
+                    webApiKey + "&steamid=" + CurrentSteamId64);
+                JToken node = JObject.Parse(json).SelectToken("*.friends");
+                sinces = node.SelectTokens(@"$.[?(@.friend_since)].friend_since");
+            }
+            catch { }
+            
             
             SteamID temp;
             string avatarTemp;
@@ -694,7 +690,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 {
                     SteamID64 = temp.ConvertToUInt64(),
                     Name = steamFriends.GetFriendPersonaName(temp),
-                    FriendSince = Utilities.UnixTimeToDateTime(long.Parse(sinces.ElementAt(j).ToString())).ToString("yyyy/MM/dd"),
+                    FriendSince = Utilities.UnixTimeToDateTime(long.TryParse(
+                        sinces?.ElementAt(j).ToString(),out long result) ? result : 0 )?.ToString("yyyy/MM/dd"),
                     ImageURL = $"https://avatars.akamai.steamstatic.com/{avatarTemp}.jpg"
                 });
                 j++;
@@ -938,6 +935,22 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
             MessageBoxes.InfoMessageBox("An error occurred while connecting to the server...");
             return false;
+        }
+
+        internal static async Task<string> GetTradeToken(bool generateNew = false)
+        {
+            var request = new CEcon_GetTradeOfferAccessToken_Request
+            {
+                generate_new_token = generateNew,
+            };
+
+            var response = await UnifiedEcon.SendMessage(x => x.GetTradeOfferAccessToken(request)).ToTask().ConfigureAwait(false);
+            if (response.Result != EResult.OK)
+            {
+                MessageBoxes.InfoMessageBox("An error occurred while getting the token...");
+                return null;
+            }
+            return response.GetDeserializedResponse<CEcon_GetTradeOfferAccessToken_Response>().trade_offer_access_token;
         }
 
         #endregion

@@ -10,20 +10,31 @@ namespace Steam_Account_Manager
     {
         private static HttpClient HttpClientFactory;
         private static System.Windows.Media.BrushConverter BrushConverter;
-        public static DateTime UnixTimeToDateTime(long unixtime)
+        private static string UserXmlProfileCache;
+        private static ulong UserXmlProfileCacheId;
+        public static DateTime? UnixTimeToDateTime(long unixtime)
         {
+            if (unixtime == 0)
+                return null;
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0);
             return origin.AddSeconds(unixtime);
         }
 
+        public static ulong GetSystemUnixTime()
+        {
+            return (ulong)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        }
+
+
         public static long SteamId64ToSteamId32(long steamId64) => steamId64 - 76561197960265728;
+        public static string SteamId32ToSteamId64(int steamId32) => (steamId32 + 76561197960265728).ToString();
         public static uint SteamId64ToSteamId32(string steamId64)
         {
             var lId = ulong.Parse(steamId64) - 76561197960265728;
             return Convert.ToUInt32(lId);
         }
 
-        public static string SteamId32ToSteamId64(int steamId32) => (steamId32 + 76561197960265728).ToString();
+        
 
         public static ref HttpClient CreateHttpClientFactory()
         {
@@ -45,6 +56,63 @@ namespace Steam_Account_Manager
             return Brush;
         }
 
+        public static string BetweenStr(string str,string leftStr, string rightStr)
+        {
+            int Pos1 = str.IndexOf(leftStr) + leftStr.Length;
+            int Pos2 = str.IndexOf(rightStr);
+            return str.Substring(Pos1, Pos2 - Pos1);
+        }
+
+        public static string GetSteamAvatarUrl(ulong steamId64,bool fromCache = true,EAvatarType type = EAvatarType.Full)
+        {
+            try
+            {
+                if(fromCache && !String.IsNullOrEmpty(UserXmlProfileCache) && steamId64 == UserXmlProfileCacheId)
+                {
+                    return BetweenStr(UserXmlProfileCache, $"<avatar{type}><![CDATA[", $"]]></avatar{type}>");
+                }
+                UserXmlProfileCacheId = steamId64;
+                using (HttpResponseMessage response = HttpClientFactory.GetAsync($"https://steamcommunity.com/profiles/{steamId64}?xml=1").Result)
+                {
+                    using (HttpContent content = response.Content)
+                    {
+                        UserXmlProfileCache = content.ReadAsStringAsync().Result;
+                        return BetweenStr(UserXmlProfileCache, $"<avatar{type}><![CDATA[", $"]]></avatar{type}>");
+                    }
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static string GetSteamNickname(ulong steamId64,bool fromCache = true)
+        {
+            try
+            {
+                if(fromCache && !String.IsNullOrEmpty(UserXmlProfileCache) && steamId64 == UserXmlProfileCacheId)
+                {
+                    return BetweenStr(UserXmlProfileCache, $"<steamID><![CDATA[", $"]]></steamID>");
+                }
+                UserXmlProfileCacheId = steamId64;
+                using (HttpResponseMessage response = HttpClientFactory.GetAsync($"https://steamcommunity.com/profiles/{steamId64}?xml=1").Result)
+                {
+                    using (HttpContent content = response.Content)
+                    {
+                        UserXmlProfileCache = content.ReadAsStringAsync().Result;
+                        return BetweenStr(UserXmlProfileCache, $"<steamID><![CDATA[", $"]]></steamID>");
+                    }
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+        #region Registry
         public static int GetSteamRegistryActiveUser()
         {
             RegistryKey registryKey = Environment.Is64BitOperatingSystem ?
@@ -56,7 +124,7 @@ namespace Steam_Account_Manager
                 {
                     return Convert.ToInt32(registryKey.GetValue("ActiveUser"));
                 }
-                    
+
             }
             catch { throw; }
         }
@@ -72,7 +140,7 @@ namespace Steam_Account_Manager
                 {
                     return (string)registryKey.GetValue("SteamExe");
                 }
-                    
+
             }
             catch { throw; }
         }
@@ -88,7 +156,7 @@ namespace Steam_Account_Manager
                 {
                     return Convert.ToInt32(registryKey.GetValue("pid"));
                 }
-                    
+
             }
             catch { throw; }
         }
@@ -104,7 +172,7 @@ namespace Steam_Account_Manager
                 {
                     return (string)registryKey.GetValue("Language");
                 }
-                    
+
             }
             catch { throw; }
         }
@@ -122,7 +190,7 @@ namespace Steam_Account_Manager
                 {
                     RememberUser = registryKey.GetValue("AutoLoginUser").ToString();
                 }
-                    
+
             }
             catch { throw; }
             return RememberUser;
@@ -139,10 +207,11 @@ namespace Steam_Account_Manager
                 {
                     registryKey.SetValue("AutoLoginUser", autoLoginUser, RegistryValueKind.String);
                 }
-                    
+
             }
             catch { throw; }
-        }
+        } 
+        #endregion
 
         public static void KillSteamProcess()
         {
@@ -200,6 +269,11 @@ namespace Steam_Account_Manager
             return Convert.ToBase64String(buff);
         }
 
-
+        public enum EAvatarType : byte
+        {
+            Icon,
+            Medium,
+            Full
+        }
     }
 }

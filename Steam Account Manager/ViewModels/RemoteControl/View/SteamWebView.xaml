@@ -87,13 +87,38 @@
                         Style="{StaticResource defaultButton}"  Content="Get" Height="26" Width="40"/>
                     
                 </StackPanel>
-                <Button Style="{StaticResource defaultButton}" Background="{DynamicResource adv_borders_background}"
-                        Content="CSGO KEY" Margin="30" Command="{Binding GetCsgoMatchKeyCommand}"/>
+
+                <TextBlock Text="Your trade token" Margin="4 5 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                <StackPanel Orientation="Horizontal" >
+
+                    <Button Width="20" Height="20"  Style="{StaticResource serviceButton}"
+                            IsHitTestVisible="{Binding ElementName=tradeTokenText,Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
+                            Command="{Binding RefreshTradeTokenCommmand}" Click="Button_Click"
+                            CommandParameter="{Binding ElementName=succesTradeTokenGet}">
+                        <Icon:PackIconMaterial x:Name="refreshTrade" Kind="Refresh" Width="12"/>
+                    </Button>
+
+                    <Border Margin="0 0 -174 0" Background="{DynamicResource adv_borders_background}"
+                        Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
+
+                    <TextBox x:Name="tradeTokenText" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
+                          Width="165" Margin="0 0 6 0" MaxLength="60" Text="{Binding TradeToken}" />
+
+
+                    <Button Command="{Binding GetTradeTokenCommmand}" 
+                            CommandParameter="{Binding ElementName=succesTradeTokenGet}"
+                        Background="{DynamicResource adv_borders_background}" 
+                        Style="{StaticResource defaultButton}"  Content="Get" Height="26" Width="40"/>
+
+                </StackPanel>
             </StackPanel>
             
             <Icon:PackIconMaterial x:Name="succesApiKeyGet" Kind="Check" VerticalAlignment="Top" Width="17" Height="17"
                                            Opacity="0" Margin="563 78 15 0" Foreground="{DynamicResource AcidGrad}"/>
-            
+
+            <Icon:PackIconMaterial x:Name="succesTradeTokenGet" Kind="Check" VerticalAlignment="Top" Width="17" Height="17"
+                                           Opacity="0" Margin="563 125 15 0" Foreground="{DynamicResource AcidGrad}"/>
+
             <Icon:PackIconMaterial x:Name="succesPrivacyApply" Kind="Check" VerticalAlignment="Center" Width="17" Height="17"
                                            Opacity="0" Margin="280 104 15 0" Foreground="{DynamicResource AcidGrad}"/>
 

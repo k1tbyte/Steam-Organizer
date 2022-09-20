@@ -19,6 +19,7 @@ namespace Steam_Account_Manager
             if (Mutex.WaitOne(TimeSpan.Zero, true))
             {
                 Config.GetPropertiesInstance();
+                Utilities.CreateHttpClientFactory();
                 if (Config.Properties.Password == null)
                 {
                     try

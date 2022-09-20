@@ -1,5 +1,7 @@
 ﻿using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {
@@ -32,7 +34,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
         }
 
-        private async void ApplyPrivacyChanges_Click(object sender, System.Windows.RoutedEventArgs e)
+        private async void ApplyPrivacyChanges_Click(object sender, RoutedEventArgs e)
         {
             if(await SteamRemoteClient.SetProfilePrivacy(
                 ProfileBox.SelectedIndex, InventoryBox.SelectedIndex,
@@ -47,6 +49,12 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
         private void CommentsBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             IsCommentPrivacyValid = true;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var angleAnim = new DoubleAnimation(360, System.TimeSpan.FromSeconds(1d));
+            refreshTrade.BeginAnimation(MahApps.Metro.IconPacks.PackIconControlBase.RotationAngleProperty, angleAnim);
         }
     }
 }
