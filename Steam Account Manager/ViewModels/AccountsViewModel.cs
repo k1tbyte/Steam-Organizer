@@ -228,18 +228,12 @@ namespace Steam_Account_Manager.ViewModels
 
             YesButtonCommand = new RelayCommand(o =>
             {
-                if (Config.Accounts[TempId].AuthenticatorPath == null)
-                {
-                    Config.Accounts.RemoveAt(TempId);
-                    AccountTabViews.RemoveAt(TempId);
-                    MainWindowViewModel.TotalAccounts--;
-                    Config.SaveAccounts();
-                    IsDatabaseEmpty = AccountTabViews.Count == 0;
-                }
-                else
-                {
-                    Task.Run(() => MainWindowViewModel.NotificationView("You cannot delete an account with 2FA"));
-                }
+
+                Config.Accounts.RemoveAt(TempId);
+                AccountTabViews.RemoveAt(TempId);
+                MainWindowViewModel.TotalAccounts--;
+                Config.SaveAccounts();
+                IsDatabaseEmpty = AccountTabViews.Count == 0;
                 ConfirmBanner = false;
 
             });

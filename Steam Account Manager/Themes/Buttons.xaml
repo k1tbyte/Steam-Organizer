@@ -283,6 +283,7 @@
         </Style.Triggers>
     </Style>
 
+
     <Style x:Key="confirmationNoButton" TargetType="Button" BasedOn="{StaticResource confirmationYesButton}">
         <Setter Property="Background" Value="#D32F2F" />
         <Setter Property="BorderBrush" Value="#B71C1C" />
@@ -457,6 +458,32 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style x:Key="showButton" TargetType="ToggleButton">
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Width" Value="14"/>
+        <Setter Property="Height" Value="14"/>
+        <Setter Property="Margin" Value="5 0 0 -1"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border Background="Transparent">
+                        <Icon:PackIconMaterial x:Name="arrowIcon" Kind="ArrowUpCircleOutline" Width="14" Height="14"
+                                                   VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource top_service_buttons}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="arrowIcon" Property="Kind" Value="ArrowDownCircleOutline"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="arrowIcon" Property="Foreground" Value="#ffff"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     <!--#endregion-->
 
 
@@ -574,6 +601,35 @@
                         <Trigger Property="IsChecked" Value="False">
                             <Setter Property="Command" Value="{Binding Path=Tag, RelativeSource={RelativeSource Self}}"/>
                         </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="animatedRefresh" TargetType="{x:Type Button}" BasedOn="{StaticResource serviceButton}">
+        <Setter Property="Width" Value="13"/>
+        <Setter Property="Height" Value="13"/>
+        <Setter Property="Template" >
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="Transparent">
+                        <Icon:PackIconMaterial x:Name="refreshConfs" Kind="Refresh" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
+                                                   VerticalAlignment="Center" HorizontalAlignment="Center">
+                        </Icon:PackIconMaterial>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="Button.Click">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard  RepeatBehavior="2x">
+                                        <DoubleAnimation Storyboard.TargetName="refreshConfs"
+                                                             Storyboard.TargetProperty="RotationAngle"
+                                                             From="0" To="360" Duration="0:0:0.7"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

@@ -57,7 +57,7 @@
                         </Border>
 
                         <!--Menu Titles-->
-                        <TextBlock Text="{Binding NowLoginUserNickname, UpdateSourceTrigger=PropertyChanged}" Foreground="White" FontSize="22" 
+                        <TextBlock x:Name="LowLoggedUsername" Text="{Binding NowLoginUserNickname, UpdateSourceTrigger=PropertyChanged}" Foreground="White" FontSize="22" 
                                    FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 5 10" TextAlignment="Center" />
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal"  HorizontalAlignment="Center">
                             <TextBlock Text="{DynamicResource mv_total_accounts}"
@@ -104,12 +104,21 @@
                             </RadioButton>
                         </StackPanel>
 
-                        <Button Style="{StaticResource logoutButton}" Cursor="Hand" VerticalAlignment="Bottom" 
+                        <Button Cursor="Hand" VerticalAlignment="Bottom" 
                                 DockPanel.Dock="Bottom" Margin="15 0 15 20" Command="{Binding LogoutCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <Icon:PackIconMaterial Kind="Logout" Style="{StaticResource menuButtonIcon}"/>
                                 <TextBlock Text="{DynamicResource mv_logout_title}"/>
                             </StackPanel>
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource logoutButton}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=LowLoggedUsername,Path=Text}" Value="Username">
+                                            <Setter Property="IsHitTestVisible" Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                         </Button>
 
                     </DockPanel>

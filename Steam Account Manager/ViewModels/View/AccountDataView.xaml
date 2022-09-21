@@ -87,31 +87,6 @@
         </Style>
         <!--#endregion-->
 
-        <Style x:Key="showButton" TargetType="ToggleButton">
-            <Setter Property="HorizontalAlignment" Value="Right"/>
-            <Setter Property="Width" Value="14"/>
-            <Setter Property="Height" Value="14"/>
-            <Setter Property="Margin" Value="5 0 0 -1"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Border Background="Transparent">
-                            <Icon:PackIconMaterial x:Name="arrowIcon" Kind="ArrowUpCircleOutline" Width="14" Height="14"
-                                                   VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource top_service_buttons}"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="arrowIcon" Property="Kind" Value="ArrowDownCircleOutline"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="arrowIcon" Property="Foreground" Value="#ffff"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
         
     </UserControl.Resources>
     

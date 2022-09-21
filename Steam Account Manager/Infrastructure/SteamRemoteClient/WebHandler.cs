@@ -90,7 +90,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
 
             // Setup the request.
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = method;
             request.Accept = "application/json, text/javascript;q=0.9, */*;q=0.5";
             request.Headers[HttpRequestHeader.AcceptLanguage] = AcceptLanguageHeader;
@@ -273,29 +273,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             httpWebRequest.GetResponse().Close();
         }
 
-        private byte[] HexToByte(string hex)
-        {
-            if (hex.Length % 2 == 1)
-            {
-                throw new Exception("The binary key cannot have an odd number of digits");
-            }
-
-            byte[] arr = new byte[hex.Length >> 1];
-            int l = hex.Length;
-
-            for (int i = 0; i < (l >> 1); ++i)
-            {
-                arr[i] = (byte)((GetHexVal(hex[i << 1]) << 4) + (GetHexVal(hex[(i << 1) + 1])));
-            }
-
-            return arr;
-        }
-
-        private int GetHexVal(char hex)
-        {
-            int val = hex;
-            return val - (val < 58 ? 48 : 55);
-        }
 
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models.AccountModel;
-using SteamAuth;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using System;
 using System.Diagnostics;
 using System.Linq;

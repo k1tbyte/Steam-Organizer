@@ -9,14 +9,12 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace Steam_Account_Manager.ViewModels.View
 {
-    /// <summary>
-    /// Логика взаимодействия для ShowAuthenticatorWindo.xaml
-    /// </summary>
     public partial class ShowAuthenticatorWindow : Window
     {
         public ShowAuthenticatorWindow(int accountId)

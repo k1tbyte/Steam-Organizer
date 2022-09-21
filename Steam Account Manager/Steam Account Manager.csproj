@@ -78,9 +78,6 @@
     <Reference Include="protobuf-net.Core, Version=3.0.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>..\packages\protobuf-net.Core.3.1.17\lib\net461\protobuf-net.Core.dll</HintPath>
     </Reference>
-    <Reference Include="SteamAuth, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SteamAuth.3.0.0\lib\net45\SteamAuth.dll</HintPath>
-    </Reference>
     <Reference Include="SteamKit2, Version=2.4.1.0, Culture=neutral, PublicKeyToken=ed3ce47ed5aad940, processorArchitecture=MSIL">
       <HintPath>..\packages\SteamKit2.2.4.1\lib\netstandard2.0\SteamKit2.dll</HintPath>
     </Reference>
@@ -130,6 +127,14 @@
     <Compile Include="Infrastructure\AsyncRelayCommand.cs" />
     <Compile Include="Infrastructure\Models\AccountModel\Account.cs" />
     <Compile Include="Infrastructure\Models\SteamWebResponse.cs" />
+    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\APIEndpoints.cs" />
+    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\AuthenticatorLinker.cs" />
+    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\Confirmation.cs" />
+    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\SessionData.cs" />
+    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\SteamGuardAccount.cs" />
+    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\SteamWeb.cs" />
+    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\TimeAligner.cs" />
+    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\UserLogin.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\GamesHandler.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\SteamRemoteClient.cs" />
     <Compile Include="Infrastructure\Config.cs" />
@@ -549,7 +554,9 @@
   <ItemGroup>
     <Resource Include="Logo.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\default_steam_profile_small.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\logo.png" />
   </ItemGroup>

@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Steam_Account_Manager.Infrastructure;
-using SteamAuth;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,6 +13,9 @@ namespace Steam_Account_Manager.ViewModels
     internal class ShowAuthenticatorViewModel : ObservableObject
     {
         public AsyncRelayCommand RemoveAuthenticatorCommand { get; set; }
+        public AsyncRelayCommand AcceptConfirmationCommand { get; set; }
+        public AsyncRelayCommand DenyConfirmationCommand { get; set; }
+        public AsyncRelayCommand RefreshConfirmationsCommand { get; set; }
         public RelayCommand CloseWindowCommand { get; set; }
 
 
@@ -18,9 +23,19 @@ namespace Steam_Account_Manager.ViewModels
         private string _authPath,_accountName = "Login", _steamGuardCode = (string)App.Current.FindResource("saw_loading"), _errorMessage;
         private SteamGuardAccount guard;
         private bool _remove;
+        private ObservableCollection<Confirmation> _confirmations;
 
         private int _timerValue=30;
 
+        public ObservableCollection<Confirmation> Confirmations
+        {
+            get => _confirmations;
+            set
+            {
+                _confirmations = value;
+                OnPropertyChanged(nameof(Confirmations));
+            }
+        }
         public string ErrorMessage
         {
             get => _errorMessage;
@@ -72,9 +87,10 @@ namespace Steam_Account_Manager.ViewModels
 
         private async Task GenerateSteamGuard()
         {
-            await Task.Factory.StartNew(() =>
+            await Task.Factory.StartNew(async()=>
             {
                 LoadSteamGuardAccountFromFilePath();
+                await guard.RefreshSessionAsync();
                 while (!_remove)
                 {
                     Thread.Sleep(1000);
@@ -84,6 +100,7 @@ namespace Steam_Account_Manager.ViewModels
                         TimerValue = 30;
                         SteamGuardCode = guard.GenerateSteamGuardCode();
                     }
+                    
                 }
             });
         }
@@ -125,6 +142,61 @@ namespace Steam_Account_Manager.ViewModels
             {
                 await RemoveAuthenticator();
                 ExecuteWindow(o);
+            });
+
+            AcceptConfirmationCommand = new AsyncRelayCommand(async (o) =>
+            {
+                foreach (var item in Confirmations)
+                {
+                    if (item.ID == (ulong)o)
+                    {
+                        if (await guard.AcceptConfirmation(item).ConfigureAwait(false))
+                        {
+                            Confirmations.Remove(item);
+                        }
+                        else
+                        {
+                            ErrorMessage = "An error occurred while confirmation...";
+                        }
+                        break;
+                    }
+                }
+            });
+
+            DenyConfirmationCommand = new AsyncRelayCommand(async (o) =>
+            {
+                foreach (var item in Confirmations)
+                {
+                    if(item.ID == (ulong)o)
+                    {
+                        if(await guard.DenyConfirmation(item).ConfigureAwait(false))
+                        {
+                            Confirmations.Remove(item);
+                        }
+                        else
+                        {
+                            ErrorMessage = "An error occurred while denying...";
+                        }
+                        break;
+                    }
+                }
+            });
+
+            RefreshConfirmationsCommand = new AsyncRelayCommand(async (o) =>
+            {
+                try
+                {
+                    Confirmations = await guard.FetchConfirmationsAsync().ConfigureAwait(false);
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
+                    });
+                }
+                catch
+                {
+                    ErrorMessage = "An error occurred while updating...";
+                }
+                
             });
 
             _ = GenerateSteamGuard();

@@ -20,9 +20,9 @@ namespace Steam_Account_Manager
             return origin.AddSeconds(unixtime);
         }
 
-        public static ulong GetSystemUnixTime()
+        public static long GetSystemUnixTime()
         {
-            return (ulong)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            return (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
 
 
@@ -58,9 +58,18 @@ namespace Steam_Account_Manager
 
         public static string BetweenStr(string str,string leftStr, string rightStr)
         {
-            int Pos1 = str.IndexOf(leftStr) + leftStr.Length;
-            int Pos2 = str.IndexOf(rightStr);
-            return str.Substring(Pos1, Pos2 - Pos1);
+            try
+            {
+                int Pos1 = str.IndexOf(leftStr) + leftStr.Length;
+                int Pos2 = str.IndexOf(rightStr);
+                return str.Substring(Pos1, Pos2 - Pos1);
+            }
+            catch
+            {
+                return null;
+            }
+            
+            
         }
 
         public static string GetSteamAvatarUrl(ulong steamId64,bool fromCache = true,EAvatarType type = EAvatarType.Full)
@@ -258,6 +267,7 @@ namespace Steam_Account_Manager
         }
 
 
+
         public static string GenerateCryptoKey()
         {
             //Generate a cryptographic random number.
@@ -267,6 +277,16 @@ namespace Steam_Account_Manager
 
             // Return a Base64 string representation of the random number.
             return Convert.ToBase64String(buff);
+        }
+        public static byte[] HexStringToByteArray(string hex)
+        {
+            int hexLen = hex.Length;
+            byte[] ret = new byte[hexLen / 2];
+            for (int i = 0; i < hexLen; i += 2)
+            {
+                ret[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
+            return ret;
         }
 
         public enum EAvatarType : byte
