@@ -172,7 +172,7 @@ namespace Steam_Account_Manager.ViewModels
                 await AddAccount(o);
                 if (ErrorMessage == "")
                 {
-                    ExecuteWindow(o);
+                    CloseWindow(o);
                     Task.Run(() => MainWindowViewModel.NotificationView((string)Application.Current.FindResource("mv_account_added_notification")));
                     AccountsViewModel.AddAccountTabView(Config.Accounts.Count - 1);
                 }

@@ -105,13 +105,13 @@ namespace Steam_Account_Manager.ViewModels
                     case LoginResult.TooManyFailedLogins:
                         ErrorMessage = (string)Application.Current.FindResource("aaw_manyAttempts");
                         Thread.Sleep(2000);
-                        _window.Dispatcher.Invoke(DispatcherPriority.Normal, new ThreadStart(_window.Close));
+                        _window.Dispatcher.Invoke(() => { _window.Close(); });
                         return;
 
                     case LoginResult.GeneralFailure:
                         ErrorMessage = (string)Application.Current.FindResource("aaw_dataIncorrect");
                         Thread.Sleep(2000);
-                        _window.Dispatcher.Invoke(DispatcherPriority.Normal, new ThreadStart(_window.Close));
+                        _window.Dispatcher.Invoke(() => { _window.Close(); });
                         return;
                 }
             }
@@ -126,7 +126,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 ErrorMessage = (string)Application.Current.FindResource("aaw_addFail") + " " + result;
                 Thread.Sleep(2000);
-                _window.Dispatcher.Invoke(DispatcherPriority.Normal, new ThreadStart(_window.Close));
+                _window.Dispatcher.Invoke(() => { _window.Close(); });
             }
 
             try
@@ -145,7 +145,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 ErrorMessage = (string)Application.Current.FindResource("aaw_errorSave");
                 Thread.Sleep(2000);
-                _window.Dispatcher.Invoke(DispatcherPriority.Normal, new ThreadStart(_window.Close));
+                _window.Dispatcher.Invoke(() => { _window.Close(); });
             }
 
             ErrorMessage = (string)Application.Current.FindResource("aaw_smsCode");
@@ -162,7 +162,7 @@ namespace Steam_Account_Manager.ViewModels
                 ErrorMessage = "Error! " + linkResult;
             }
             Thread.Sleep(2000);
-            _window.Dispatcher.Invoke(DispatcherPriority.Normal, new ThreadStart(_window.Close));
+            _window.Dispatcher.Invoke(() => { _window.Close(); });
         }
 
         private async Task LoadAuthenticator()
@@ -183,7 +183,7 @@ namespace Steam_Account_Manager.ViewModels
                     {
                         ErrorMessage = "You cannot add an authenticator from another account";
                         Thread.Sleep(2000);
-                        _window.Dispatcher.Invoke(DispatcherPriority.Normal, new ThreadStart(_window.Close));
+                        _window.Dispatcher.Invoke(() => { _window.Close(); });
                     }
                     else
                     {
@@ -207,7 +207,7 @@ namespace Steam_Account_Manager.ViewModels
             _window = (Window)window;
             CloseWindowCommand = new RelayCommand(o =>
             {
-                ExecuteWindow(window);
+                CloseWindow(window);
             });
 
             StatusChanged = new RelayCommand(o =>
@@ -229,7 +229,7 @@ namespace Steam_Account_Manager.ViewModels
             AuthenticatorLoadCommand = new AsyncRelayCommand(async (o) =>
             {
                 await LoadAuthenticator();
-                ExecuteWindow(window);
+                CloseWindow(window);
             });
 
            // _ = TryToConnect(); 

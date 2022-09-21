@@ -202,7 +202,7 @@
 
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=URL}"
-                                        Style="{StaticResource settings_copy}"/>
+                                        Style="{StaticResource animatedCopy}"/>
                             </StackPanel>
 
                             <!-- Profile ID64 count -->
@@ -212,7 +212,7 @@
                                          Text="{Binding SteamID64}"/>
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=ID64}"
-                                        Style="{StaticResource settings_copy}"/>
+                                        Style="{StaticResource animatedCopy}"/>
                             </StackPanel>
 
                             <!-- Profile ID32 -->
@@ -222,7 +222,7 @@
                                          Text="{Binding SteamID32}"/>
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=ID32}"
-                                        Style="{StaticResource settings_copy}"/>
+                                        Style="{StaticResource animatedCopy}"/>
                             </StackPanel>
 
                             <!-- Profile visiblity -->

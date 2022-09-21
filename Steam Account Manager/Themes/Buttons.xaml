@@ -294,22 +294,38 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="settings_copy" TargetType="Button" BasedOn="{StaticResource gridEditButton}">
-        <Setter Property="Width" Value="18"/>
-        <Setter Property="Height" Value="18"/>
+    <Style x:Key="animatedCopy" TargetType="Button" BasedOn="{StaticResource gridEditButton}">
+        <Setter Property="Width" Value="23"/>
+        <Setter Property="Height" Value="23"/>
         <Setter Property="Margin" Value="5 0 0 0"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border Background="{DynamicResource adv_copy_button}" BorderThickness="0" CornerRadius="4">
-                        <Icon:PackIconMaterial Kind="ContentCopy" Foreground="white" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                                       Width="13" Height="13"/>
+                        <Icon:PackIconMaterial x:Name="copyIco" Kind="ContentCopy" Foreground="white" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                       Width="15" Height="15"/>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="Button.Click">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard  RepeatBehavior="2x">
+                                        <DoubleAnimation Storyboard.TargetName="copyIco"
+                                                             Storyboard.TargetProperty="Height" AutoReverse="True"
+                                                             To="18" Duration="0:0:0.3"/>
+                                        <DoubleAnimation Storyboard.TargetName="copyIco"
+                                                             Storyboard.TargetProperty="Width" AutoReverse="True"
+                                                             To="18" Duration="0:0:0.3"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers></Style.Triggers>
     </Style>
-
     <Style x:Key="steam_links" TargetType="Button">
         <Setter Property="Margin" Value="20 5 20 0"/>
         <Setter Property="Cursor" Value="Hand"/>

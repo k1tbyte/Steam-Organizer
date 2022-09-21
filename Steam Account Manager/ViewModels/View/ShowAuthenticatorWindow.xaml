@@ -56,7 +56,7 @@
                        Text="Confirmations"
                        FontSize="15"/>
 
-                <ToggleButton  x:Name="expandConfsBttn" Style="{StaticResource showButton}" IsChecked="True"  />
+                <ToggleButton  x:Name="expandConfsBttn" Style="{StaticResource showButton}" IsChecked="False"  />
 
                 <Button Style="{StaticResource animatedRefresh}" Margin="4 1 0 0"
                         Command="{Binding RefreshConfirmationsCommand}"
@@ -65,7 +65,21 @@
 
                 </Button>
             </StackPanel>
-            
+            <TextBlock Grid.Row="1" VerticalAlignment="Bottom" FontSize="11"
+                       Margin="0 0 00 10" Padding="20 0 70 0"
+                       Foreground="PaleVioletRed" TextWrapping="Wrap"
+                       Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ErrorMessage}" Value="">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
             <Icon:PackIconMaterial x:Name="succesConfRequest" Grid.Row="2"
                                    Kind="Check" VerticalAlignment="Top" Width="17" Height="17"
                                            Opacity="0" Margin="177 -8 0 0"  Foreground="{DynamicResource AcidGrad}"/>
@@ -139,10 +153,13 @@
                        FontWeight="Medium" Text="{Binding AccountName, UpdateSourceTrigger=PropertyChanged}"/>
             <Border Grid.Row="1" Background="{DynamicResource first_main_color}" 
                     Width="150" Height="52" CornerRadius="5" Margin="0 0 0 30">
-                <TextBox  Text="{Binding SteamGuardCode,UpdateSourceTrigger=PropertyChanged}" Width="140" FontSize="30" HorizontalAlignment="Center"
+                <TextBox x:Name="guardBox"  Text="{Binding SteamGuardCode,UpdateSourceTrigger=PropertyChanged}" Width="140" FontSize="30" HorizontalAlignment="Center"
                      VerticalAlignment="Center" IsReadOnly="True" TextAlignment="Center" Background="{DynamicResource first_main_color}" BorderThickness="0"  />
             </Border>
 
+            <Button x:Name="codeCopyButton" Grid.Row="1"  Margin="195 0 0 30" Click="codeCopyButton_Click"
+                    Style="{StaticResource animatedCopy}" Width="27" Height="27"/>
+            
             <ProgressBar Grid.Row="1" Width="200" Height="5" Margin="0 40 0 0"
                          Value="{Binding TimerValue}" Maximum="30"  Style="{StaticResource noTextProgreeBar}"/>
 

@@ -27,6 +27,7 @@ namespace Steam_Account_Manager.ViewModels
 
         private int _timerValue=30;
 
+        #region Properties
         public ObservableCollection<Confirmation> Confirmations
         {
             get => _confirmations;
@@ -71,7 +72,8 @@ namespace Steam_Account_Manager.ViewModels
                 _steamGuardCode = value;
                 OnPropertyChanged(nameof(SteamGuardCode));
             }
-        }
+        } 
+        #endregion
 
         private void LoadSteamGuardAccountFromFilePath()
         {
@@ -89,8 +91,8 @@ namespace Steam_Account_Manager.ViewModels
         {
             await Task.Factory.StartNew(async()=>
             {
-                LoadSteamGuardAccountFromFilePath();
-                await guard.RefreshSessionAsync();
+               LoadSteamGuardAccountFromFilePath();
+               await guard.RefreshSessionAsync().ConfigureAwait(false);
                 while (!_remove)
                 {
                     Thread.Sleep(1000);
@@ -135,17 +137,21 @@ namespace Steam_Account_Manager.ViewModels
             _authPath = Config.Accounts[_id].AuthenticatorPath;
             CloseWindowCommand = new RelayCommand(o =>
             {
-                ExecuteWindow(o);
+                CloseWindow(o);
             });
 
             RemoveAuthenticatorCommand = new AsyncRelayCommand(async (o) =>
             {
-                await RemoveAuthenticator();
-                ExecuteWindow(o);
+                if (!String.IsNullOrEmpty(ErrorMessage))
+                    ErrorMessage = "";
+                await RemoveAuthenticator().ConfigureAwait(false);
+                CloseWindow(o);
             });
 
             AcceptConfirmationCommand = new AsyncRelayCommand(async (o) =>
             {
+                if (!String.IsNullOrEmpty(ErrorMessage))
+                    ErrorMessage = "";
                 foreach (var item in Confirmations)
                 {
                     if (item.ID == (ulong)o)
@@ -165,6 +171,8 @@ namespace Steam_Account_Manager.ViewModels
 
             DenyConfirmationCommand = new AsyncRelayCommand(async (o) =>
             {
+                if (!String.IsNullOrEmpty(ErrorMessage))
+                    ErrorMessage = "";
                 foreach (var item in Confirmations)
                 {
                     if(item.ID == (ulong)o)
@@ -184,6 +192,8 @@ namespace Steam_Account_Manager.ViewModels
 
             RefreshConfirmationsCommand = new AsyncRelayCommand(async (o) =>
             {
+                if (!String.IsNullOrEmpty(ErrorMessage))
+                    ErrorMessage = "";
                 try
                 {
                     Confirmations = await guard.FetchConfirmationsAsync().ConfigureAwait(false);

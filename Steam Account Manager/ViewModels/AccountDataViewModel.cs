@@ -670,7 +670,7 @@ namespace Steam_Account_Manager.ViewModels
                 var box = o as TextBox;
                 box.SelectAll();
                 box.Copy();
-                Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_copiedClipoard")));
+                Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_copiedClipoard"))).ConfigureAwait(false);
             });
 
             OpenUrlProfileCommand = new RelayCommand(o =>

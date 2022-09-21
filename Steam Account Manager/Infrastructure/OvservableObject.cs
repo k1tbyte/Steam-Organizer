@@ -39,7 +39,7 @@ namespace Steam_Account_Manager.Infrastructure
             window.ShowDialog();
         }
 
-        protected static void ExecuteWindow(object obj)
+        protected static void CloseWindow(object obj)
         {
             var win = obj as Window;
             win.Close();
