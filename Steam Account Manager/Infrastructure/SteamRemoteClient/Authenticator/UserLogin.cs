@@ -57,7 +57,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 
             postData.Add("donotcache", (TimeAligner.GetSteamTime() * 1000).ToString());
             postData.Add("username", this.Username);
-            response = SteamWeb.MobileLoginRequest(APIEndpoints.COMMUNITY_BASE + "/login/getrsakey", "POST", postData, cookies);
+            response = SteamWeb.MobileLoginRequest(SteamWeb.COMMUNITY_BASE + "/login/getrsakey", "POST", postData, cookies);
             if (response == null || response.Contains("<BODY>\nAn error occurred while processing your request.")) return LoginResult.GeneralFailure;
 
             var rsaResponse = JsonConvert.DeserializeObject<RSAResponse>(response);
@@ -101,7 +101,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             postData.Add("oauth_client_id", "DE45CD61");
             postData.Add("oauth_scope", "read_profile write_profile read_client write_client");
 
-            response = SteamWeb.MobileLoginRequest(APIEndpoints.COMMUNITY_BASE + "/login/dologin", "POST", postData, cookies);
+            response = SteamWeb.MobileLoginRequest(SteamWeb.COMMUNITY_BASE + "/login/dologin", "POST", postData, cookies);
             if (response == null) return LoginResult.GeneralFailure;
 
             var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(response);

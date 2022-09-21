@@ -287,7 +287,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 UniqueId = LoginKey;
                 steamUser.RequestWebAPIUserNonce();
             }
-            LoginViewModel.IPCountryCode = callback.PublicIP + " | " + callback.IPCountryCode;
+            LoginViewModel.IPCountryCode = callback.PublicIP.ToString();
+            LoginViewModel.CountryImage  = $"https://flagcdn.com/w20/{callback.IPCountryCode.ToLower()}.png";
             WebApiUserNonce              = callback.WebAPIUserNonce;
 
             MainRemoteControlViewModel.IsPanelActive = true;

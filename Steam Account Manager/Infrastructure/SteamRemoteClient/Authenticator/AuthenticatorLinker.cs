@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Specialized;
 using System.Net;
-using System.Security.Cryptography;
 using System.Threading;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
@@ -48,14 +47,16 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
                 }
             }
 
-            var postData = new NameValueCollection();
-            postData.Add("access_token", _session.OAuthToken);
-            postData.Add("steamid", _session.SteamID.ToString());
-            postData.Add("authenticator_type", "1");
-            postData.Add("device_identifier", this.DeviceID);
-            postData.Add("sms_phone_id", "1");
+            var postData = new NameValueCollection
+            {
+                { "access_token", _session.OAuthToken },
+                { "steamid", _session.SteamID.ToString() },
+                { "authenticator_type", "1" },
+                { "device_identifier", this.DeviceID },
+                { "sms_phone_id", "1" }
+            };
 
-            string response = SteamWeb.MobileLoginRequest(APIEndpoints.STEAMAPI_BASE + "/ITwoFactorService/AddAuthenticator/v0001", "POST", postData);
+            string response = SteamWeb.MobileLoginRequest(SteamWeb.STEAMAPI_BASE + "/ITwoFactorService/AddAuthenticator/v0001", "POST", postData);
             if (response == null) return LinkResult.GeneralFailure;
 
             var addAuthenticatorResponse = JsonConvert.DeserializeObject<AddAuthenticatorResponse>(response);
@@ -83,25 +84,24 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 
         public FinalizeResult FinalizeAddAuthenticator(string smsCode)
         {
-            //The act of checking the SMS code is necessary for Steam to finalize adding the phone number to the account.
-            //Of course, we only want to check it if we're adding a phone number in the first place...
-
             if (!String.IsNullOrEmpty(this.PhoneNumber) && !this._checkSMSCode(smsCode))
             {
                 return FinalizeResult.BadSMSCode;
             }
 
-            var postData = new NameValueCollection();
-            postData.Add("steamid", _session.SteamID.ToString());
-            postData.Add("access_token", _session.OAuthToken);
-            postData.Add("activation_code", smsCode);
+            var postData = new NameValueCollection
+            {
+                { "steamid", _session.SteamID.ToString() },
+                { "access_token", _session.OAuthToken },
+                { "activation_code", smsCode }
+            };
             int tries = 0;
             while (tries <= 30)
             {
                 postData.Set("authenticator_code", LinkedAccount.GenerateSteamGuardCode());
                 postData.Set("authenticator_time", TimeAligner.GetSteamTime().ToString());
 
-                string response = SteamWeb.MobileLoginRequest(APIEndpoints.STEAMAPI_BASE + "/ITwoFactorService/FinalizeAddAuthenticator/v0001", "POST", postData);
+                string response = SteamWeb.MobileLoginRequest(SteamWeb.STEAMAPI_BASE + "/ITwoFactorService/FinalizeAddAuthenticator/v0001", "POST", postData);
                 if (response == null) return FinalizeResult.GeneralFailure;
 
                 var finalizeResponse = JsonConvert.DeserializeObject<FinalizeAuthenticatorResponse>(response);
@@ -151,7 +151,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             postData.Add("skipvoip", "1");
             postData.Add("sessionid", _session.SessionID);
 
-            string response = SteamWeb.Request(APIEndpoints.COMMUNITY_BASE + "/steamguard/phoneajax", "POST", postData, _cookies);
+            string response = SteamWeb.Request(SteamWeb.COMMUNITY_BASE + "/steamguard/phoneajax", "POST", postData, _cookies);
             if (response == null) return false;
 
             var addPhoneNumberResponse = JsonConvert.DeserializeObject<AddPhoneResponse>(response);
@@ -172,7 +172,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             postData.Add("arg", PhoneNumber);
             postData.Add("sessionid", _session.SessionID);
 
-            string response = SteamWeb.Request(APIEndpoints.COMMUNITY_BASE + "/steamguard/phoneajax", "POST", postData, _cookies);
+            string response = SteamWeb.Request(SteamWeb.COMMUNITY_BASE + "/steamguard/phoneajax", "POST", postData, _cookies);
             if (response == null) return false;
 
             var addPhoneNumberResponse = JsonConvert.DeserializeObject<AddPhoneResponse>(response);
@@ -185,7 +185,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             postData.Add("arg", "");
             postData.Add("sessionid", _session.SessionID);
 
-            string response = SteamWeb.Request(APIEndpoints.COMMUNITY_BASE + "/steamguard/phoneajax", "POST", postData, _cookies);
+            string response = SteamWeb.Request(SteamWeb.COMMUNITY_BASE + "/steamguard/phoneajax", "POST", postData, _cookies);
             if (response == null) return false;
 
             var emailConfirmationResponse = JsonConvert.DeserializeObject<AddPhoneResponse>(response);
@@ -198,7 +198,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             postData.Add("arg", "null");
             postData.Add("sessionid", _session.SessionID);
 
-            string response = SteamWeb.Request(APIEndpoints.COMMUNITY_BASE + "/steamguard/phoneajax", "POST", postData, _cookies);
+            string response = SteamWeb.Request(SteamWeb.COMMUNITY_BASE + "/steamguard/phoneajax", "POST", postData, _cookies);
             if (response == null) return false;
 
             var hasPhoneResponse = JsonConvert.DeserializeObject<HasPhoneResponse>(response);

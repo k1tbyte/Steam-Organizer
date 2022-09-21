@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
@@ -85,6 +86,11 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
             Popup.IsOpen = true;
             Header.PopupText.Text = (string)App.Current.FindResource("rc_lv_recentlyLogin");
+        }
+
+        private void IdCopyButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            Clipboard.SetText(steamIDbox.Text);
         }
     }
 }

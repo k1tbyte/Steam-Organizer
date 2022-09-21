@@ -8,20 +8,20 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 {
     public class SteamWeb
     {
-        /// <summary>
-        /// Perform a mobile login request
-        /// </summary>
-        /// <param name="url">API url</param>
-        /// <param name="method">GET or POST</param>
-        /// <param name="data">Name-data pairs</param>
-        /// <param name="cookies">current cookie container</param>
-        /// <returns>response body</returns>
+        public static readonly string STEAMAPI_BASE = "https://api.steampowered.com";
+        public const string COMMUNITY_BASE = "https://steamcommunity.com";
+        public static readonly string MOBILEAUTH_BASE = STEAMAPI_BASE + "/IMobileAuthService/%s/v0001";
+        public static readonly string MOBILEAUTH_GETWGTOKEN = MOBILEAUTH_BASE.Replace("%s", "GetWGToken");
+        public static readonly string TWO_FACTOR_BASE = STEAMAPI_BASE + "/ITwoFactorService/%s/v0001";
+        public static readonly string TWO_FACTOR_TIME_QUERY = TWO_FACTOR_BASE.Replace("%s", "QueryTime");
+
+
         public static string MobileLoginRequest(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, NameValueCollection headers = null)
         {
-            return Request(url, method, data, cookies, headers, APIEndpoints.COMMUNITY_BASE + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client");
+            return Request(url, method, data, cookies, headers, COMMUNITY_BASE + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client");
         }
 
-        public static string Request(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, NameValueCollection headers = null, string referer = APIEndpoints.COMMUNITY_BASE)
+        public static string Request(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, NameValueCollection headers = null, string referer = COMMUNITY_BASE)
         {
             string query = (data == null ? string.Empty : string.Join("&", Array.ConvertAll(data.AllKeys, key => String.Format("{0}={1}", WebUtility.UrlEncode(key), WebUtility.UrlEncode(data[key])))));
             if (method == "GET")
@@ -32,7 +32,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             return Request(url, method, query, cookies, headers, referer);
         }
 
-        public static string Request(string url, string method, string dataString = null, CookieContainer cookies = null, NameValueCollection headers = null, string referer = APIEndpoints.COMMUNITY_BASE)
+        public static string Request(string url, string method, string dataString = null, CookieContainer cookies = null, NameValueCollection headers = null, string referer = COMMUNITY_BASE)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = method;
@@ -85,7 +85,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             }
         }
 
-        public static async Task<string> RequestAsync(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, NameValueCollection headers = null, string referer = APIEndpoints.COMMUNITY_BASE)
+        public static async Task<string> RequestAsync(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, NameValueCollection headers = null, string referer = COMMUNITY_BASE)
         {
             string query = (data == null ? string.Empty : string.Join("&", Array.ConvertAll(data.AllKeys, key => String.Format("{0}={1}", WebUtility.UrlEncode(key), WebUtility.UrlEncode(data[key])))));
             if (method == "GET")
@@ -143,22 +143,16 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             }
         }
 
-        /// <summary>
-        /// Raise exceptions relevant to this HttpWebResponse -- EG, to signal that our oauth token has expired.
-        /// </summary>
         private static void HandleFailedWebRequestResponse(HttpWebResponse response, string requestURL)
         {
             if (response == null) return;
 
-            //Redirecting -- likely to a steammobile:// URI
             if (response.StatusCode == HttpStatusCode.Found)
             {
                 var location = response.Headers.Get("Location");
                 if (!string.IsNullOrEmpty(location))
                 {
-                    //Our OAuth token has expired. This is given both when we must refresh our session, or the entire OAuth Token cannot be refreshed anymore.
-                    //Thus, we should only throw this exception when we're attempting to refresh our session.
-                    if (location == "steammobile://lostauth" && requestURL == APIEndpoints.MOBILEAUTH_GETWGTOKEN)
+                    if (location == "steammobile://lostauth" && requestURL == MOBILEAUTH_GETWGTOKEN)
                     {
                         throw new SteamGuardAccount.WGTokenExpiredException();
                     }

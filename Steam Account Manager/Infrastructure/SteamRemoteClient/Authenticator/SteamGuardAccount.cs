@@ -66,7 +66,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 
             try
             {
-                string response = SteamWeb.MobileLoginRequest(APIEndpoints.STEAMAPI_BASE + "/ITwoFactorService/RemoveAuthenticator/v0001", "POST", postData);
+                string response = SteamWeb.MobileLoginRequest(SteamWeb.STEAMAPI_BASE + "/ITwoFactorService/RemoveAuthenticator/v0001", "POST", postData);
                 var removeResponse = JsonConvert.DeserializeObject<RemoveAuthenticatorResponse>(response);
 
                 if (removeResponse == null || removeResponse.Response == null || !removeResponse.Response.Success) return false;
@@ -216,7 +216,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
         /// <returns></returns>
         public async Task<bool> RefreshSessionAsync()
         {
-            string url = APIEndpoints.MOBILEAUTH_GETWGTOKEN;
+            string url = SteamWeb.MOBILEAUTH_GETWGTOKEN;
             NameValueCollection postData = new NameValueCollection();
             postData.Add("access_token", this.Session.OAuthToken);
 
@@ -253,7 +253,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 
         private async Task<bool> _sendConfirmationAjax(Confirmation conf, string op)
         {
-            string url = APIEndpoints.COMMUNITY_BASE + "/mobileconf/ajaxop";
+            string url = SteamWeb.COMMUNITY_BASE + "/mobileconf/ajaxop";
             string queryString = "?op=" + op + "&";
             queryString += GenerateConfirmationQueryParams(op);
             queryString += "&cid=" + conf.ID + "&ck=" + conf.Key;
@@ -272,7 +272,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 
         private async Task<bool> _sendMultiConfirmationAjax(Confirmation[] confs, string op)
         {
-            string url = APIEndpoints.COMMUNITY_BASE + "/mobileconf/multiajaxop";
+            string url = SteamWeb.COMMUNITY_BASE + "/mobileconf/multiajaxop";
 
             string query = "op=" + op + "&" + GenerateConfirmationQueryParams(op);
             foreach (var conf in confs)
@@ -293,27 +293,27 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 
         public async Task<string> GenerateConfirmationURL(string tag = "conf")
         {
-            string endpoint = APIEndpoints.COMMUNITY_BASE + "/mobileconf/conf?";
-            string queryString = GenerateConfirmationQueryParams(tag);
+            string endpoint = SteamWeb.COMMUNITY_BASE + "/mobileconf/conf?";
+            string queryString = await GenerateConfirmationQueryParams(tag);
             return endpoint + queryString;
         }
 
-        public string GenerateConfirmationQueryParams(string tag)
+        public async Task<string> GenerateConfirmationQueryParams(string tag)
         {
             if (String.IsNullOrEmpty(DeviceID))
                 throw new ArgumentException("Device ID is not present");
 
-            var queryParams = GenerateConfirmationQueryParamsAsNVC(tag);
+            var queryParams = await GenerateConfirmationQueryParamsAsNVC(tag);
 
             return "p=" + queryParams["p"] + "&a=" + queryParams["a"] + "&k=" + queryParams["k"] + "&t=" + queryParams["t"] + "&m=android&tag=" + queryParams["tag"];
         }
 
-        public NameValueCollection GenerateConfirmationQueryParamsAsNVC(string tag)
+        public async Task<NameValueCollection> GenerateConfirmationQueryParamsAsNVC(string tag)
         {
             if (String.IsNullOrEmpty(DeviceID))
                 throw new ArgumentException("Device ID is not present");
 
-            long time = TimeAligner.GetSteamTime();
+            long time = await TimeAligner.GetSteamTimeAsync();
 
             var ret = new NameValueCollection
             {

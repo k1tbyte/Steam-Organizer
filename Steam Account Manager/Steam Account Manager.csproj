@@ -127,7 +127,6 @@
     <Compile Include="Infrastructure\AsyncRelayCommand.cs" />
     <Compile Include="Infrastructure\Models\AccountModel\Account.cs" />
     <Compile Include="Infrastructure\Models\SteamWebResponse.cs" />
-    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\APIEndpoints.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\AuthenticatorLinker.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\Confirmation.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\SessionData.cs" />

@@ -63,6 +63,18 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
+        private static string _countryImage;
+        public static event EventHandler CountryImageChanged;
+        public static string CountryImage
+        {
+            get => _countryImage;
+            set
+            {
+                _countryImage = value;
+                CountryImageChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
         private static string _nickname;
         public static event EventHandler NicknameChanged;
         public static string Nickname
