@@ -141,7 +141,7 @@
 
                 <!--Service Buttons-->
                 <Button Grid.Row="0" Style="{StaticResource serviceButton}"
-                        Click="Button_Click"
+                        Command="{Binding CloseCommand}"
                         Margin="570,-10,0,15">
                     <Icon:PackIconMaterial Kind="WindowClose"
                                            Height="20" Width="20" />

@@ -219,6 +219,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         } 
         #endregion
 
+
         public LoginViewModel()
         {
 

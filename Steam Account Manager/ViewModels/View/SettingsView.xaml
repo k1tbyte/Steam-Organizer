@@ -206,7 +206,12 @@
             </StackPanel>
         </ScrollViewer>
 
-        <Button Grid.Row="3" Width="200" Margin="0 10 0 0" Style="{StaticResource defaultButton}" Content="{DynamicResource sv_save_changes}" Cursor="Hand"
-                Command="{Binding SaveChangesCommand}"/>
+        <Button Grid.Row="2" Width="200" Margin="0 10 0 0" Style="{StaticResource defaultButton}" Content="{DynamicResource sv_save_changes}" Cursor="Hand"
+                Command="{Binding SaveChangesCommand}"
+                CommandParameter="{Binding ElementName=succesSave}"/>
+
+        <Icon:PackIconMaterial x:Name="succesSave" Grid.Row="2" Kind="Check"  Width="25" Height="25"
+                               VerticalAlignment="Center" Margin="240 10 0 0" Opacity="0" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource AcidGrad}"/>
     </Grid>
 </UserControl>

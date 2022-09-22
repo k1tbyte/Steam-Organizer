@@ -55,7 +55,7 @@ namespace Steam_Account_Manager
             }
             else
             {
-                App.Shutdown();
+                Shutdown();
             }
         }
 

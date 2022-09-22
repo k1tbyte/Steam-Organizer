@@ -196,15 +196,15 @@ namespace Steam_Account_Manager.ViewModels
                 }
                 else
                 {
-                    
-                    if ((byte)Config.Properties.Theme != (byte)(o = (byte)Array.FindIndex(ThemeMode, theme => theme)))
+                    byte index;
+                    if ((byte)Config.Properties.Theme != (index = (byte)Array.FindIndex(ThemeMode, theme => theme)))
                     {
-                        Config.Properties.Theme = (Infrastructure.Models.Themes)o;
+                        Config.Properties.Theme = (Infrastructure.Models.Themes)index;
                     }
 
-                    if((byte)Config.Properties.Language != (byte)(o = (byte)Array.FindIndex(LocaleMode, locale => locale)))
+                    if((byte)Config.Properties.Language != (index = (byte)Array.FindIndex(LocaleMode, locale => locale)))
                     {
-                        Config.Properties.Language = (Infrastructure.Models.Languages)o;
+                        Config.Properties.Language = (Infrastructure.Models.Languages)index;
                     }
 
                     Config.Properties.NoConfirmMode    = NoConfirmMode;
@@ -236,7 +236,7 @@ namespace Steam_Account_Manager.ViewModels
                     Config.SaveProperties();
 
                     ApiKeyError = PasswordError = false;
-
+                    Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
                 }
 
             });

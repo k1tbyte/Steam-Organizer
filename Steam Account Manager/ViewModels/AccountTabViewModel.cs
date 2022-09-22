@@ -16,6 +16,7 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand DeleteAccoundCommand { get; set; }
         public RelayCommand EditOrViewAccountCommand { get; set; }
         public RelayCommand OpenUrlProfileCommand { get; set; }
+        public RelayCommand ConnectToSteamRemoteCommand { get; set; }
         public RelayCommand ViewAccountNoteModeCommand { get; set; }
         public AsyncRelayCommand ConnectToSteamCommand { get; set; }
 
@@ -241,6 +242,12 @@ namespace Steam_Account_Manager.ViewModels
             });
 
             ConnectToSteamCommand = new AsyncRelayCommand(async (o) => await ConnectToSteam());
+
+            ConnectToSteamRemoteCommand = new RelayCommand(o =>
+            {
+                MainWindowViewModel.RemoteControlViewCommand.Execute(null);
+                ((MainWindowViewModel)App.Current.MainWindow.DataContext).RemoteControlVm.LoginViewCommand.Execute(id);
+            });
         }
     }
 }

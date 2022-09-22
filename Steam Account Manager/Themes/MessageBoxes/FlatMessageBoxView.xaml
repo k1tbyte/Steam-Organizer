@@ -23,17 +23,11 @@
             </Button>
             <StackPanel Orientation="Horizontal" Margin="0 6 0 0"
                         VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Icon:PackIconMaterial Kind="Information" Width="35" Height="35" Margin="0 0 10 0"/>
+                <Icon:PackIconMaterial Kind="Information" Width="35" Height="35" Margin="0 0 10 0" Foreground="White"/>
                 <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource default_foreground}"
                            FontSize="13" TextWrapping="Wrap" MaxWidth="220" x:Name="Title"/>
             </StackPanel>
         </Grid>
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="6"
-                                  ShadowDepth="2"
-                                  Color="{DynamicResource drop_shadow}"
-                                  Opacity="0.2"/>
-        </Border.Effect>
     </Border>
     
 </Window>

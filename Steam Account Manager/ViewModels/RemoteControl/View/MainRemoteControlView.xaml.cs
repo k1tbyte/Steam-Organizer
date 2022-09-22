@@ -7,7 +7,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
         public MainRemoteControlView()
         {
             InitializeComponent();
-            this.DataContext =  new MainRemoteControlViewModel();
         }
     }
 }

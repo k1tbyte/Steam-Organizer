@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:viewModel="clr-namespace:Steam_Account_Manager.ViewModels"
              xmlns:view="clr-namespace:Steam_Account_Manager.ViewModels.View"
+             xmlns:remoteVM="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl"
+             xmlns:remoteView="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl.View"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:converters="clr-namespace:Steam_Account_Manager.Infrastructure.Converters">
     <Application.Resources>
@@ -188,7 +190,15 @@
             <DataTemplate DataType="{x:Type viewModel:SettingsViewModel}">
                 <view:SettingsView/>
             </DataTemplate>
-            
+
+            <DataTemplate DataType="{x:Type remoteVM:MainRemoteControlViewModel}">
+                <remoteView:MainRemoteControlView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type remoteVM:LoginViewModel}">
+                <remoteView:LoginView/>
+            </DataTemplate>
+
 
         </ResourceDictionary>
     </Application.Resources>

@@ -1,4 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.ViewModels.RemoteControl.View;
 using System;
 
@@ -12,7 +13,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public RelayCommand FriendsViewCommand { get; set; }
         public RelayCommand SteamWebViewCommand { get; set; }
 
-        public static LoginView LoginV { get; private set; }
+        public static LoginViewModel LoginVm { get; private set; }
         public static GamesView GamesV { get; private set; }
         public static FriendsView FriendsV { get; private set; }
         public static MessagesView MessagesV { get; set; }
@@ -46,18 +47,30 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
         public MainRemoteControlViewModel()
         {
-            LoginV = new LoginView();
+            LoginVm = new LoginViewModel();
 
             //  CurrentView = MessagesV;
 
             //  FriendsV = new FriendsView();
             // CurrentView = FriendsV;
-            RemoteControlCurrentView = LoginV;
+            RemoteControlCurrentView = LoginVm;
 
             LoginViewCommand = new RelayCommand(o =>
             {
-                if (RemoteControlCurrentView != LoginV)
-                    RemoteControlCurrentView = LoginV;
+                if(o != null && o is int id)
+                {
+                    LoginVm.Username = Config.Accounts[id].Login;
+                    LoginVm.Password = Config.Accounts[id].Password;
+                    if (!String.IsNullOrEmpty(Config.Accounts[id].AuthenticatorPath))
+                    {
+                        LoginVm.AuthCode = Newtonsoft.Json.JsonConvert.DeserializeObject<SteamGuardAccount>(
+                                System.IO.File.ReadAllText(Config.Accounts[id].AuthenticatorPath)).GenerateSteamGuardCode();
+                    }
+                    LoginVm.LogOnCommand.Execute(null);
+                }
+
+                if (RemoteControlCurrentView != LoginVm)
+                    RemoteControlCurrentView = LoginVm;
             });
 
             GamesViewCommand = new RelayCommand(o =>

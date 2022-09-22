@@ -34,11 +34,6 @@ namespace Steam_Account_Manager
 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            App.Current.Shutdown();
-        }
     }
-
 
 }

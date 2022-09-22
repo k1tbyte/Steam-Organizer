@@ -1,4 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.ViewModels.RemoteControl;
 using Steam_Account_Manager.ViewModels.RemoteControl.View;
 using Steam_Account_Manager.ViewModels.View;
 using System;
@@ -23,7 +24,7 @@ namespace Steam_Account_Manager.ViewModels
 
         public AccountsViewModel AccountsVm;
         public SettingsViewModel SettingsVm;
-        public MainRemoteControlView RemoteControlV;
+        public MainRemoteControlViewModel RemoteControlVm;
         public AccountDataView AccountDataV; 
 
         public static event EventHandler TotalAccountsChanged;
@@ -186,7 +187,7 @@ namespace Steam_Account_Manager.ViewModels
         {
             AccountsVm = new AccountsViewModel();
             SettingsVm = new SettingsViewModel();
-            RemoteControlV = new MainRemoteControlView();
+            RemoteControlVm = new MainRemoteControlViewModel();
 
             CurrentView = AccountsVm;
 
@@ -215,12 +216,12 @@ namespace Steam_Account_Manager.ViewModels
 
             RemoteControlViewCommand = new RelayCommand(o =>
             {
-                CurrentView = RemoteControlV;
+                CurrentView = RemoteControlVm;
             });
 
             CloseCommand = new RelayCommand(o =>
             {
-                App.Current.Shutdown();
+                App.Shutdown();
             });
 
             MinimizeCommand = new RelayCommand(o =>

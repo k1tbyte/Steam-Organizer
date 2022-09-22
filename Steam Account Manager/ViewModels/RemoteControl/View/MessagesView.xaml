@@ -247,21 +247,30 @@
 
 
                         <TextBlock Text="{DynamicResource rc_mv_currntAdm}" Margin="4 7 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
-                        <StackPanel Orientation="Horizontal" >
+                        <Grid Width="205">
+                            <StackPanel Orientation="Horizontal" >
 
-                            <Border Margin="0 0 -124 0" Background="{DynamicResource adv_borders_background}"
+                                <Border Margin="0 0 -124 0" Background="{DynamicResource adv_borders_background}"
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
 
-                            <TextBox x:Name="add_admin_box"  Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
+                                <TextBox x:Name="add_admin_box"  Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
                          IsReadOnly="False" Width="115" Margin="0 0 6 0" MaxLength="60" Text="{Binding AdminId,UpdateSourceTrigger=PropertyChanged}"/>
 
 
-                            <Button x:Name="addAdmin" IsHitTestVisible="{Binding ElementName=add_admin_box, Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
+                                <Button x:Name="addAdmin" IsHitTestVisible="{Binding ElementName=add_admin_box, Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
                         Background="{DynamicResource adv_borders_background}" Command="{Binding AddAdminIdCommand}"
+                                    CommandParameter="{Binding ElementName=succesAddAdmin}"
                         Style="{StaticResource defaultButton}" MouseEnter="addAdmin_MouseEnter"
                                     MouseLeave="Popup_MouseLeave" Content="Add" Height="26" Width="50"/>
 
-                        </StackPanel>
+
+
+
+                            </StackPanel>
+                            <Icon:PackIconMaterial x:Name="succesAddAdmin" Kind="Check"  Width="17" Height="17"
+                               VerticalAlignment="Top" Margin="175 5 0 0" Opacity="0" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource AcidGrad}"/>
+                        </Grid>
 
 
                         <TextBlock Text="{Binding ErrorMsg}" Margin="4 0 0 2"  
@@ -301,9 +310,10 @@
                                           Background="{DynamicResource adv_borders_background}" Content="Clear"/>
                         </StackPanel>-->
                     </StackPanel >
-                    
+
+
                     <!-- Commands area -->
-                    <Grid Margin="40 25 0 0">
+                    <Grid Margin="12 25 0 0">
                         <Border Background="{DynamicResource adv_borders_background}" CornerRadius="0 0 15 15" 
                                 Opacity="0.6" Margin="0 25 0 0" Height="190" VerticalAlignment="Top"/>
                         <Border Background="{DynamicResource adv_borders_background}" CornerRadius="15 15 0 0" 

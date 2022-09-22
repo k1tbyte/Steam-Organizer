@@ -5,6 +5,7 @@ using Steam_Account_Manager.Infrastructure.Validators;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
+using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {
@@ -21,7 +22,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public RelayCommand SelectChatCommand { get; set; }
         public RelayCommand LeaveFromChatCommand { get; set; }
         public RelayCommand SendMessageCommand { get; set; }
-        public RelayCommand AddAdminIdCommand { get; set; }
+        public AsyncRelayCommand AddAdminIdCommand { get; set; }
         private string TempID, TempAdminID;
 
 
@@ -258,25 +259,32 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 }
             });
 
-            AddAdminIdCommand = new RelayCommand(o =>
+            AddAdminIdCommand = new AsyncRelayCommand(async (o) =>
             {
                 if (!string.IsNullOrEmpty(ErrorMsg))
                     ErrorMsg = "";
-                if(TempAdminID != AdminId)
+                await Task.Factory.StartNew(() =>
                 {
-                    TempAdminID = AdminId;
-                    SteamValidator steamValidator = new SteamValidator(TempAdminID);
-                    if (steamValidator.GetSteamLinkType() != SteamValidator.SteamLinkTypes.ErrorType)
+                    if (TempAdminID != AdminId)
                     {
-                        SteamRemoteClient.CurrentUser.Messenger.AdminID = steamValidator.SteamId32;
-                        IsAdminIdValid = true;
+                        TempAdminID = AdminId;
+                        SteamValidator steamValidator = new SteamValidator(TempAdminID);
+                        if (steamValidator.GetSteamLinkType() != SteamValidator.SteamLinkTypes.ErrorType)
+                        {
+                            SteamRemoteClient.CurrentUser.Messenger.AdminID = steamValidator.SteamId32;
+                            IsAdminIdValid = true;
+                            App.Current.Dispatcher.Invoke(() => { Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true); });
+                            
+                        }
+                        else
+                        {
+                            ErrorMsg = "Invalid ID";
+                            IsAdminIdValid = false;
+                        }
                     }
-                    else
-                    {
-                        ErrorMsg = "Invalid ID";
-                        IsAdminIdValid = false;
-                    }
-                }
+                });
+                
+                
             });
         }
     }

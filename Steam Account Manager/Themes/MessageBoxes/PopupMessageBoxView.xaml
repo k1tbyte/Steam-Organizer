@@ -10,7 +10,8 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         <Border Background="{StaticResource background_border_color}" 
                 CornerRadius="10 10 0 10" BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
             <Grid>
-                <Icon:PackIconMaterial x:Name="iicon" Kind="InformationOutline" Width="30" Height="30" Margin="15 23 0 0"/>
+                <Icon:PackIconMaterial x:Name="iicon" Kind="InformationOutline" Background="Transparent"
+                                       Width="30" Height="30" Margin="15 23 0 0" Foreground="White"/>
                 <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource default_foreground}"
                            FontSize="13" TextWrapping="Wrap" MaxWidth="200" x:Name="Title" Margin="15 0 0 0"/>
 

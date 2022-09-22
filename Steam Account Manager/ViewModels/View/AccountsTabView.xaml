@@ -147,12 +147,18 @@
                         <icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
                     </Button>
 
-                    <Button Style="{StaticResource loginButton}" BorderBrush="Transparent"
+                    <Button x:Name="loginBttn" Style="{StaticResource loginButton}" BorderBrush="Transparent"
                             Command="{Binding ConnectToSteamCommand}">
                         <icon:PackIconMaterial x:Name="LoginIco" Kind="PlayCircleOutline"
                                                Height="30" Width="30" VerticalAlignment="Center"
                                                HorizontalAlignment="Center"
                                                />
+                        <Button.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Login to client"  Command="{Binding ConnectToSteamCommand}"/>
+                                <MenuItem Header="Login remotely" Command="{Binding ConnectToSteamRemoteCommand}"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
                     </Button>
 
 

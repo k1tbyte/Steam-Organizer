@@ -9,7 +9,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
         public LoginView()
         {
             InitializeComponent();
-            this.DataContext = new LoginViewModel();
         }
 
         private void state_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
