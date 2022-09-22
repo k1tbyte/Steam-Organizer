@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.ComponentModel;
 using System.Windows.Data;
 using Steam_Account_Manager.Infrastructure.Models.AccountModel;
+using Steam_Account_Manager.Themes.MessageBoxes;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -171,7 +172,7 @@ namespace Steam_Account_Manager.ViewModels
                     }
                     MainWindowViewModel.UpdatedAccountIndex = 0;
                     MainWindowViewModel.IsEnabledForUser = true;
-                    Task.Run(() => MainWindowViewModel.NotificationView("Database has been updated"));
+                    MessageBoxes.PopupMessageBox("Database has been updated!");
                     Config.SaveAccounts();
                 });
 
@@ -185,7 +186,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 MainWindowViewModel.UpdatedAccountIndex = 0;
                 MainWindowViewModel.IsEnabledForUser = true;
-                await Task.Run(() => MainWindowViewModel.NotificationView("Error, no internet connection..."));
+                MessageBoxes.PopupMessageBox("Error! No Internet connection...",true);
             }
 
         }
@@ -250,7 +251,7 @@ namespace Steam_Account_Manager.ViewModels
                     {
                         Config.Accounts.Add((Account)Config.Deserialize(fileDialog.FileName,Config.Properties.UserCryptoKey));
                         FillAccountTabViews();
-                        Task.Run(() => MainWindowViewModel.NotificationView("Account restored from file"));
+                        MessageBoxes.PopupMessageBox("Account restored from file.");
                         Config.SaveAccounts();
                     }
                     catch
@@ -259,7 +260,7 @@ namespace Steam_Account_Manager.ViewModels
                         {
                             Config.Accounts.Add((Account)Config.Deserialize(fileDialog.FileName, Config.TempUserKey));
                             FillAccountTabViews();
-                            Task.Run(() => MainWindowViewModel.NotificationView("Account restored from file"));
+                            MessageBoxes.PopupMessageBox("Account restored from file.");
                             Config.SaveAccounts();
                         }
                     }
@@ -275,7 +276,7 @@ namespace Steam_Account_Manager.ViewModels
                 if (fileDialog.ShowDialog() == true)
                 {
                     Config.Serialize(Config.Accounts, fileDialog.FileName,Config.Properties.UserCryptoKey);
-                    Task.Run(() => MainWindowViewModel.NotificationView("Database saved to file"));
+                    MessageBoxes.PopupMessageBox("The database of accounts has been saved to a file.");
                 }
             });
 
@@ -291,7 +292,7 @@ namespace Steam_Account_Manager.ViewModels
                     {
                         Config.Accounts = (List<Account>)Config.Deserialize(fileDialog.FileName,Config.Properties.UserCryptoKey);
                         FillAccountTabViews();
-                        Task.Run(() => MainWindowViewModel.NotificationView("Database restored from file"));
+                        MessageBoxes.PopupMessageBox("The database of accounts was restored from a file");
                         Config.SaveAccounts();
                     }
                     catch
@@ -300,7 +301,7 @@ namespace Steam_Account_Manager.ViewModels
                         {
                             Config.Accounts = (List<Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
                             FillAccountTabViews();
-                            Task.Run(() => MainWindowViewModel.NotificationView("Database restored from file"));
+                            MessageBoxes.PopupMessageBox("The database of accounts was restored from a file");
                             Config.SaveAccounts();
                             IsDatabaseEmpty = AccountTabViews.Count == 0;
                         }

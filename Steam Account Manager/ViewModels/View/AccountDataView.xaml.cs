@@ -10,8 +10,6 @@ namespace Steam_Account_Manager.ViewModels.View
     public partial class AccountDataView : UserControl
     {
 
-        private AccountDataViewModel currentViewModel;
-
         public AccountDataView(int id)
         {
             bool scrollToEnd = false;
@@ -23,20 +21,20 @@ namespace Steam_Account_Manager.ViewModels.View
                 scrollToEnd = true;
                 id *= -1;
             }
-            currentViewModel = new AccountDataViewModel(id-1);
-            this.DataContext = currentViewModel;
+            this.DataContext = new AccountDataViewModel(id - 1);
             if (scrollToEnd) scrollViewer.ScrollToEnd();
         }
+
 
         private void VacBorder_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             Popup.PlacementTarget = VacBorder;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = (string)FindResource("adat_popup_vacCount")+ " " + currentViewModel.VacCount.ToString();
-            if (currentViewModel.DaysSinceLastBan != 0) Header.PopupText.Text += '\n' + 
+            Header.PopupText.Text = (string)FindResource("adat_popup_vacCount")+ " " + ((AccountDataViewModel)this.DataContext).VacCount.ToString();
+            if (((AccountDataViewModel)this.DataContext).DaysSinceLastBan != 0) Header.PopupText.Text += '\n' + 
                     (string)FindResource("adat_popup_daysFirstBan") + " " +
-                    currentViewModel.DaysSinceLastBan.ToString();
+                    ((AccountDataViewModel)this.DataContext).DaysSinceLastBan.ToString();
         }
 
         private void YearsLabel_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -44,8 +42,8 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = YearsLabel;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            if (currentViewModel.CreatedDate != DateTime.MinValue)
-                Header.PopupText.Text = (string)FindResource("adat_popup_regDate") + " " + currentViewModel.CreatedDate;
+            if (((AccountDataViewModel)this.DataContext).CreatedDate != DateTime.MinValue)
+                Header.PopupText.Text = (string)FindResource("adat_popup_regDate") + " " + ((AccountDataViewModel)this.DataContext).CreatedDate;
             else
                 Header.PopupText.Text = (string)FindResource("adat_popup_regDateUnknown");
 
@@ -63,16 +61,16 @@ namespace Steam_Account_Manager.ViewModels.View
            Popup.PlacementTarget = GamesCountLabel;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            if(currentViewModel.GamesTotal == "-" || currentViewModel.ProfileVisiblity == "Private")
+            if(((AccountDataViewModel)this.DataContext).GamesTotal == "-" || ((AccountDataViewModel)this.DataContext).ProfileVisiblity == "Private")
             {
                 Header.PopupText.Text = (string)FindResource("adat_popup_nullGames");
             }
             else
             {
-                Header.PopupText.Text = (string)FindResource("adat_popup_countGames") + " " + currentViewModel.GamesTotal + '\n';
-                Header.PopupText.Text += (string)FindResource("adat_popup_playedGames") + " " + currentViewModel.GamesPlayed + currentViewModel.PlayedPercent + '\n';
-                Header.PopupText.Text += (string)FindResource("adat_popup_playtime") + " " + currentViewModel.HoursOnPlayed;
-                if (currentViewModel.HoursOnPlayed != "Private") Header.PopupText.Text += "h";
+                Header.PopupText.Text = (string)FindResource("adat_popup_countGames") + " " + ((AccountDataViewModel)this.DataContext).GamesTotal + '\n';
+                Header.PopupText.Text += (string)FindResource("adat_popup_playedGames") + " " + ((AccountDataViewModel)this.DataContext).GamesPlayed + ((AccountDataViewModel)this.DataContext).PlayedPercent + '\n';
+                Header.PopupText.Text += (string)FindResource("adat_popup_playtime") + " " + ((AccountDataViewModel)this.DataContext).HoursOnPlayed;
+                if (((AccountDataViewModel)this.DataContext).HoursOnPlayed != "Private") Header.PopupText.Text += "h";
             }
 
 

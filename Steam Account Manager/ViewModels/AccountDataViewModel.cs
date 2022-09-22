@@ -12,7 +12,7 @@ using System.Windows.Controls;
 
 namespace Steam_Account_Manager.ViewModels
 {
-    internal class AccountDataViewModel : ObservableObject
+    internal sealed class AccountDataViewModel : ObservableObject
     {
         public RelayCommand CancelCommand { get; set; }
         public RelayCommand CopyCommand { get; set; }
@@ -569,11 +569,11 @@ namespace Steam_Account_Manager.ViewModels
             RoundsPlayed     = currentAccount.CsgoStats.RoundsPlayed;
         }
 
-        private async Task BorderNoticeView(string message)
+        private async void BorderNoticeView(string message)
         {
             NotifyMsg = message;
             NoticeView = true;
-            Thread.Sleep(2000);
+            await Task.Delay(2000).ConfigureAwait(false);
             NoticeView = false;
         }
 
@@ -661,7 +661,7 @@ namespace Steam_Account_Manager.ViewModels
 
             CancelCommand = new RelayCommand(o =>
             {
-                MainWindowViewModel.AccountsViewCommand.Execute(null);
+                MainWindowViewModel.AccountsViewCommand.Execute(true);
                 AccountsViewModel.UpdateAccountTabView(id);
             });
 

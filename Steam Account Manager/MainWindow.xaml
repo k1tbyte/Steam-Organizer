@@ -131,20 +131,6 @@
                      Height="25" VerticalAlignment="Top" Minimum="0" Maximum="{Binding TotalAccounts}" Value="{Binding UpdatedAccountIndex}" Style="{StaticResource accountProgressBar}">
             </ProgressBar>
 
-            <!-- Notification Grid -->
-            <Border  Grid.Column="1"  HorizontalAlignment="Center" Margin="0 30 150 0"
-                     Height="30" Style="{DynamicResource expandNotificationBorder}"
-                     VerticalAlignment="Top" CornerRadius="10" Tag="{Binding Path=NotificationVisible}"
-                     Background="{DynamicResource popup_border_background}" Opacity="0.85">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    
-                    <Icon:PackIconMaterial Kind="BellOutline" VerticalAlignment="Center" Foreground="White"/>
-                    <TextBlock Text="{Binding Path=NotificationContent}" VerticalAlignment="Center" 
-                                   FontSize="11" Padding="7 0 0 0"
-                                   FontWeight="Regular" Foreground="White"/>
-                </StackPanel>
-            </Border>
-
             <!--Main Section-->
             <Grid Grid.Column="1" Margin="30,20,30,23">
                 <Grid.RowDefinitions>
@@ -155,7 +141,7 @@
 
                 <!--Service Buttons-->
                 <Button Grid.Row="0" Style="{StaticResource serviceButton}"
-                        Command="{Binding CloseCommand}"
+                        Click="Button_Click"
                         Margin="570,-10,0,15">
                     <Icon:PackIconMaterial Kind="WindowClose"
                                            Height="20" Width="20" />

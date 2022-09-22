@@ -24,7 +24,7 @@ using System.Windows.Threading;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 {
-    internal static class SteamRemoteClient
+    internal static class SteamRemoteClient 
     {
         [System.Runtime.InteropServices.DllImport("PowrProf.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, ExactSpelling = true)]
         public static extern bool SetSuspendState(bool hiberate, bool forceCritical, bool disableWakeEvent);
@@ -77,8 +77,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             steamUnified         = steamClient.GetHandler<SteamUnifiedMessages>();
             UnifiedPlayerService = steamUnified.CreateService<IPlayer>();
-            UnifiedEcon = steamUnified.CreateService<IEcon>();
-       //     UnifiedInventory     = steamUnified.CreateService<IInventory>();
+            UnifiedEcon          = steamUnified.CreateService<IEcon>();
+
 
             callbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
             callbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnected);

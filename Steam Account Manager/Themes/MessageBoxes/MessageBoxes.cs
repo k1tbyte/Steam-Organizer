@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace Steam_Account_Manager.Themes.MessageBoxes
 {
@@ -24,6 +26,16 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
             };
             return qmbox.ShowDialog();
 
+        }
+
+        internal static void PopupMessageBox(string Text, bool isError = false)
+        {
+            App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(
+            () =>
+            {
+                var popupBox = new PopupMessageBoxView(Text,isError);
+                popupBox.Show();
+            }));
         }
     }
 }

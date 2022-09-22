@@ -141,7 +141,9 @@
 
         </StackPanel>
 
-        <ScrollViewer Grid.Row="1" x:Name="scrollViewer" CanContentScroll="True" Margin="0 40 0 20">
+        <ScrollViewer Grid.Row="1" x:Name="scrollViewer" VirtualizingPanel.IsVirtualizing="True"
+                      VirtualizingPanel.VirtualizationMode="Recycling"
+                      CanContentScroll="True" Margin="0 40 0 20">
             <Grid Width="565" HorizontalAlignment="Left" Margin="25 0 25 0">
 
                 <StackPanel HorizontalAlignment="Left" Margin="10 5 0 0">

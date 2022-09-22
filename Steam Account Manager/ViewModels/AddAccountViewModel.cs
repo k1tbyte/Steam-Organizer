@@ -1,6 +1,7 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.Infrastructure.Validators;
+using Steam_Account_Manager.Themes.MessageBoxes;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -173,7 +174,7 @@ namespace Steam_Account_Manager.ViewModels
                 if (ErrorMessage == "")
                 {
                     CloseWindow(o);
-                    Task.Run(() => MainWindowViewModel.NotificationView((string)Application.Current.FindResource("mv_account_added_notification")));
+                    MessageBoxes.PopupMessageBox((string)Application.Current.FindResource("mv_account_added_notification"));
                     AccountsViewModel.AddAccountTabView(Config.Accounts.Count - 1);
                 }
 

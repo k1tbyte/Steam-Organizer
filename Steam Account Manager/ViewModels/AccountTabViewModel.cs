@@ -2,6 +2,7 @@
 using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
+using Steam_Account_Manager.Themes.MessageBoxes;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -122,7 +123,7 @@ namespace Steam_Account_Manager.ViewModels
                     }
                     catch
                     {
-                        _ = MainWindowViewModel.NotificationView((string)Application.Current.FindResource("atv_inf_steamNotFound"));
+                        MessageBoxes.PopupMessageBox((string)Application.Current.FindResource("atv_inf_steamNotFound"));
                     }
                 }
 
@@ -148,13 +149,13 @@ namespace Steam_Account_Manager.ViewModels
                         Application.Current.Dispatcher.InvokeShutdown();
                     }
 
-                    _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_loggedInSteam"));
+                    MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_loggedInSteam"));
                     MainWindowViewModel.IsEnabledForUser = true;
                     if (MainWindowViewModel.NowLoginUserParse(15000).Result && Config.Properties.AutoGetSteamId && !Config.Accounts[id].ContainParseInfo)
                     {
                         try
                         {
-                            _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_getLocalAccInfo"));
+                            MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_getLocalAccInfo"));
                             string steamId = Utilities.SteamId32ToSteamId64(Utilities.GetSteamRegistryActiveUser());
                             Config.Accounts[id] = new Account(
                                 _login, _password, steamId,
@@ -171,7 +172,7 @@ namespace Steam_Account_Manager.ViewModels
                         }
                         catch
                         {
-                            _ = MainWindowViewModel.NotificationView((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
+                            MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
                         }
                     }
 

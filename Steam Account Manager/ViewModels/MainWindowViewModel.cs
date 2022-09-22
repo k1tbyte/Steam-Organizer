@@ -143,13 +143,6 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public static async Task NotificationView(string msg)
-        {
-            NotificationVisible = true;
-            NotificationContent = msg;
-            Thread.Sleep(2300);
-            NotificationVisible = false;
-        }
         public static async Task<bool> NowLoginUserParse(ushort awaitingMs=0)
         {
             bool accountDetected = false;
@@ -197,11 +190,15 @@ namespace Steam_Account_Manager.ViewModels
 
             CurrentView = AccountsVm;
 
-            _ = NowLoginUserParse();
-            _ = CheckingUpdates();
+            _ = NowLoginUserParse().ConfigureAwait(false);
+            _ = CheckingUpdates().ConfigureAwait(false);
 
             AccountsViewCommand = new RelayCommand(o =>
             {
+                if(o != null && (bool)o == true)
+                {
+                    AccountDataV = null;
+                }
                 CurrentView = AccountsVm;
             });
 
@@ -223,7 +220,7 @@ namespace Steam_Account_Manager.ViewModels
 
             CloseCommand = new RelayCommand(o =>
             {
-                App.Shutdown();
+                App.Current.Shutdown();
             });
 
             MinimizeCommand = new RelayCommand(o =>
