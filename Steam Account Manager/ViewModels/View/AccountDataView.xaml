@@ -133,10 +133,9 @@
                 <Icon:PackIconMaterial  Kind="FileUpload" Height="20" Width="40" />
             </Button>
 
-            <Button x:Name="RefreshButton" Style="{StaticResource serviceButton}" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"  Command="{Binding RefreshCommand}"
-                Width="35"  Grid.Row="1" Margin="5 10 0 0" MouseEnter="RefreshButton_MouseEnter" MouseLeave="Popup_MouseLeave"
-                VerticalAlignment="Top" HorizontalAlignment="Right">
-                <Icon:PackIconMaterial  Kind="Refresh" Height="20" Width="40" />
+            <Button x:Name="RefreshButton" Style="{StaticResource animatedRefresh}" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"  Command="{Binding RefreshCommand}"
+                Width="20" Height="20"  Grid.Row="1" Margin="10 15 0 0" MouseEnter="RefreshButton_MouseEnter" MouseLeave="Popup_MouseLeave"
+                 HorizontalAlignment="Right" VerticalAlignment="Top">
             </Button>
 
         </StackPanel>
@@ -699,6 +698,10 @@
                                  AcceptsReturn="True" VerticalScrollBarVisibility="Auto" MaxLength="350" MaxLines="50" AcceptsTab="True"
                                  Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}"/>
                     </Grid>
+                    
+                    <!-- Last update time -->
+                    <TextBlock Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="0 8 0 0" HorizontalAlignment="Center" 
+                               FontSize="10" Text="{Binding LastUpdateTime, StringFormat=Last updated account information: {0}}" />
 
                 </StackPanel>
             </Grid>

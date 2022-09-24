@@ -24,6 +24,16 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
+        public string FriendsInviteLink
+        {
+            get => SteamRemoteClient.CurrentUser.FriendsInvite;
+            set
+            {
+                SteamRemoteClient.CurrentUser.FriendsInvite = value;
+                OnPropertyChanged(nameof(FriendsInviteLink));
+            }
+        }
+
         public string TradeToken
         {
             get => SteamRemoteClient.CurrentUser.TradeToken;
@@ -70,6 +80,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
                 }
             });
+
 
         }
     }

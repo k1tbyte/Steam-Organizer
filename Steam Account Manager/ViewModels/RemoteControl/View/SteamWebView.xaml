@@ -111,6 +111,8 @@
                         Style="{StaticResource defaultButton}"  Content="Get" Height="26" Width="40"/>
 
                 </StackPanel>
+
+
             </StackPanel>
             
             <Icon:PackIconMaterial x:Name="succesApiKeyGet" Kind="Check" VerticalAlignment="Top" Width="17" Height="17"
@@ -118,6 +120,9 @@
 
             <Icon:PackIconMaterial x:Name="succesTradeTokenGet" Kind="Check" VerticalAlignment="Top" Width="17" Height="17"
                                            Opacity="0" Margin="563 125 15 0" Foreground="{DynamicResource AcidGrad}"/>
+
+            <Icon:PackIconMaterial x:Name="succesFriendsLinkGet" Kind="Check" VerticalAlignment="Top" Width="17" Height="17"
+                                           Opacity="0" Margin="535 178 15 0" Foreground="{DynamicResource AcidGrad}"/>
 
             <Icon:PackIconMaterial x:Name="succesPrivacyApply" Kind="Check" VerticalAlignment="Center" Width="17" Height="17"
                                            Opacity="0" Margin="280 104 15 0" Foreground="{DynamicResource AcidGrad}"/>

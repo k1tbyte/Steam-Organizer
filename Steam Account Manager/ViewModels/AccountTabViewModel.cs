@@ -27,6 +27,7 @@ namespace Steam_Account_Manager.ViewModels
         private int _vacCount;
         private int _id;
         private bool _containParseInfo;
+        public DateTime LastUpdateTime { get; set; }
 
         #region Getters && setters
         public bool ContainParseInfo
@@ -187,6 +188,7 @@ namespace Steam_Account_Manager.ViewModels
             Account account = Config.Accounts.ElementAt(id);
             Id = id + 1;
             ContainParseInfo = account.ContainParseInfo;
+            LastUpdateTime = account.LastUpdateTime;
             if (account.ContainParseInfo)
             {
                 SteamPicture = account.AvatarFull;

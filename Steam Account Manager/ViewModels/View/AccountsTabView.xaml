@@ -28,9 +28,9 @@
                 <TextBlock Text="{Binding Id}" VerticalAlignment="Center" Margin="24 0 0 0"
                                FontSize="13" FontWeight="Normal"  Foreground="{DynamicResource default_foreground}"/>
 
-                <Border Grid.Column="1" CornerRadius="25" IsHitTestVisible="{Binding ContainParseInfo}"
+                <Border x:Name="AvatarBorder" Grid.Column="1" CornerRadius="25" IsHitTestVisible="{Binding ContainParseInfo}"
                         Background="{DynamicResource account_picture_border}" Margin="3"
-                        Cursor="Hand">
+                        Cursor="Hand" MouseEnter="LastUpdateTime_MouseEnter" MouseLeave="VacIndicator_MouseLeave">
                     <Border.InputBindings>
                         <MouseBinding Command="{Binding OpenUrlProfileCommand}" MouseAction="LeftClick" />
                     </Border.InputBindings>
@@ -154,7 +154,7 @@
                                                HorizontalAlignment="Center"
                                                />
                         <Button.ContextMenu>
-                            <ContextMenu>
+                            <ContextMenu >
                                 <MenuItem Header="Login to client"  Command="{Binding ConnectToSteamCommand}"/>
                                 <MenuItem Header="Login remotely" Command="{Binding ConnectToSteamRemoteCommand}"/>
                             </ContextMenu>

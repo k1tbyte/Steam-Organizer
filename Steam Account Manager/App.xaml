@@ -24,6 +24,8 @@
 
                 <ResourceDictionary Source="Themes/DataGridStyle.xaml"/>
 
+                <ResourceDictionary Source="Themes/ContextMenuStyle.xaml"/>
+
                 <ResourceDictionary Source="Themes/Buttons.xaml"/>
 
                 <ResourceDictionary Source="Themes/ColorSchemes/Dark.xaml"/>

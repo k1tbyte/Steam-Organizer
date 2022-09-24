@@ -32,7 +32,7 @@ namespace Steam_Account_Manager.ViewModels
         private string _steamLevel, _steamURL, _steamId64;
         private ulong _steaId32;
         private string _login, _password;
-        private DateTime _createdDate;
+        private DateTime _createdDate, _lastUpdateTime;
         private string _profileVisiblity;
         private string _steamYearPicture;
         private string _gameCountPicture, _createdDatePicture;
@@ -60,7 +60,17 @@ namespace Steam_Account_Manager.ViewModels
         //other account info
         private string _note, _emailLogin, _emailPass, _rockstarEmail, _rockstarPass, _uplayEmail, _uplayPass;
 
-        #region Getters && setters
+        #region Properties
+
+        public DateTime LastUpdateTime
+        {
+            get => _lastUpdateTime;
+            set
+            {
+                _lastUpdateTime = value;
+                OnPropertyChanged(nameof(LastUpdateTime));
+            }
+        }
         public string AuthenticatorPath
         {
             get => _authenticatorPath;
@@ -505,6 +515,7 @@ namespace Steam_Account_Manager.ViewModels
             Login            = currentAccount.Login;
             Password         = currentAccount.Password;
             ContainParseInfo = currentAccount.ContainParseInfo;
+            LastUpdateTime   = currentAccount.LastUpdateTime;
 
             if (currentAccount.ContainParseInfo)
             {

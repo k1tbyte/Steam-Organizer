@@ -38,5 +38,13 @@ namespace Steam_Account_Manager.ViewModels.View
             var uriSource = new Uri("/Images/default_steam_profile.png", UriKind.Relative);
             SteamProfileImage.Source = new BitmapImage(uriSource);
         }
+
+        private void LastUpdateTime_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Popup.PlacementTarget = AvatarBorder;
+            Popup.Placement = PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = $"Last update: {_currentViewModel.LastUpdateTime}";
+        }
     }
 }

@@ -90,11 +90,9 @@
 
 
             <!-- Refresh information about all accounts -->
-            <Button x:Name="refreshDb" Style="{StaticResource serviceButton}" Command="{Binding UpdateDatabaseCommand}"
+            <Button x:Name="refreshDb" Style="{StaticResource animatedRefresh}" Width="20" Height="20" Command="{Binding UpdateDatabaseCommand}"
                     IsEnabled="{Binding IsDatabaseEmpty,Converter={StaticResource BoolInverted}}"
                     MouseEnter="refreshDb_MouseEnter" MouseLeave="Popup_leave">
-                <Icon:PackIconMaterial Kind="Refresh" Width="20" Height="20"
-                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
 
 

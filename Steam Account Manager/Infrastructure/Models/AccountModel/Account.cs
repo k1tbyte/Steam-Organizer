@@ -17,6 +17,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
         public DateTime AccCreatedDate { get; set; }
         public string CreatedDateImageUrl { get; set; }
         public bool ContainParseInfo { get; set; }
+        public DateTime LastUpdateTime { get; set; }
 
 
         //Player bans
@@ -47,30 +48,32 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
         //Default
         public Account(string login,string password,string steamId64)
         {
-            this.Login = login;
-            this.Password = password;
+            this.Login     = login;
+            this.Password  = password;
             this.SteamId64 = steamId64;
 
             SteamParser steamParser = new SteamParser(steamId64);
             steamParser.AccountParse().GetAwaiter().GetResult();
-            this.Nickname = steamParser.GetNickname;
-            this.AvatarFull = steamParser.GetAvatarUrlFull;
-            this.ProfileURL = steamParser.GetCustomProfileUrl;
-            this.ProfileVisility = steamParser.GetProfileVisiblity;
-            this.AccCreatedDate = steamParser.GetAccountCreatedDate;
 
-            this.TradeBan = steamParser.GetEconomyBanStatus;
-            this.CommunityBan = steamParser.GetCommunityBanStatus;
-            this.VacBansCount = steamParser.GetVacCount;
-            this.DaysSinceLastBan = steamParser.GetDaysSinceLastBan;
+            this.Nickname            = steamParser.GetNickname;
+            this.AvatarFull          = steamParser.GetAvatarUrlFull;
+            this.ProfileURL          = steamParser.GetCustomProfileUrl;
+            this.ProfileVisility     = steamParser.GetProfileVisiblity;
+            this.AccCreatedDate      = steamParser.GetAccountCreatedDate;
+            this.LastUpdateTime      = DateTime.Now;
 
-            this.SteamLevel = steamParser.GetSteamLevel;
-            this.TotalGames = steamParser.GetTotalGames;
-            this.GamesPlayed = steamParser.GetGamesPlayed;
-            this.HoursOnPlayed = steamParser.GetHoursOnPlayed;
-            this.CountGamesImageUrl = steamParser.GetCountGamesImageUrl;
+            this.TradeBan            = steamParser.GetEconomyBanStatus;
+            this.CommunityBan        = steamParser.GetCommunityBanStatus;
+            this.VacBansCount        = steamParser.GetVacCount;
+            this.DaysSinceLastBan    = steamParser.GetDaysSinceLastBan;
+
+            this.SteamLevel          = steamParser.GetSteamLevel;
+            this.TotalGames          = steamParser.GetTotalGames;
+            this.GamesPlayed         = steamParser.GetGamesPlayed;
+            this.HoursOnPlayed       = steamParser.GetHoursOnPlayed;
+            this.CountGamesImageUrl  = steamParser.GetCountGamesImageUrl;
             this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
-            this.ContainParseInfo = true;
+            this.ContainParseInfo    = true;
 
             this.CsgoStats = new CSGO();
 
@@ -81,52 +84,54 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
         public Account( string login, string password, string steamId64, string note, string emailLogin,string emailPass,
              string rockstarEmail, string rockstarPass, string uplayEmail,string uplayPass, CSGO csgoStats,string authenticatorPath)
         {
-            this.Login = login;
-            this.Password = password;
+            this.Login     = login;
+            this.Password  = password;
             this.SteamId64 = steamId64;
             SteamParser steamParser = new SteamParser(steamId64);
             steamParser.AccountParse().GetAwaiter().GetResult();
 
-            this.Nickname = steamParser.GetNickname;
-            this.AvatarFull = steamParser.GetAvatarUrlFull;
-            this.ProfileURL = steamParser.GetCustomProfileUrl;
-            this.ProfileVisility = steamParser.GetProfileVisiblity;
-            this.AccCreatedDate = steamParser.GetAccountCreatedDate;
+            this.Nickname            = steamParser.GetNickname;
+            this.AvatarFull          = steamParser.GetAvatarUrlFull;
+            this.ProfileURL          = steamParser.GetCustomProfileUrl;
+            this.ProfileVisility     = steamParser.GetProfileVisiblity;
+            this.AccCreatedDate      = steamParser.GetAccountCreatedDate;
+            this.LastUpdateTime      = DateTime.Now;
 
-            this.TradeBan = steamParser.GetEconomyBanStatus;
-            this.CommunityBan = steamParser.GetCommunityBanStatus;
-            this.VacBansCount = steamParser.GetVacCount;
-            this.DaysSinceLastBan = steamParser.GetDaysSinceLastBan;
+            this.TradeBan            = steamParser.GetEconomyBanStatus;
+            this.CommunityBan        = steamParser.GetCommunityBanStatus;
+            this.VacBansCount        = steamParser.GetVacCount;
+            this.DaysSinceLastBan    = steamParser.GetDaysSinceLastBan;
 
-            this.SteamLevel = steamParser.GetSteamLevel;
-            this.TotalGames = steamParser.GetTotalGames;
-            this.GamesPlayed = steamParser.GetGamesPlayed;
-            this.HoursOnPlayed = steamParser.GetHoursOnPlayed;
-            this.CountGamesImageUrl = steamParser.GetCountGamesImageUrl;
+            this.SteamLevel          = steamParser.GetSteamLevel;
+            this.TotalGames          = steamParser.GetTotalGames;
+            this.GamesPlayed         = steamParser.GetGamesPlayed;
+            this.HoursOnPlayed       = steamParser.GetHoursOnPlayed;
+            this.CountGamesImageUrl  = steamParser.GetCountGamesImageUrl;
             this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
 
             if(csgoStats == null) this.CsgoStats = new CSGO();
             else this.CsgoStats = csgoStats;
 
             this.AuthenticatorPath = authenticatorPath;
-            this.ContainParseInfo = true;
+            this.ContainParseInfo  = true;
 
-            this.Note = note;
-            this.EmailLogin = emailLogin;
-            this.EmailPass = emailPass;
+            this.Note          = note;
+            this.EmailLogin    = emailLogin;
+            this.EmailPass     = emailPass;
             this.RockstarEmail = rockstarEmail;
-            this.RockstarPass = rockstarPass;
-            this.UplayEmail = uplayEmail;
-            this.UplayPass = uplayPass;
+            this.RockstarPass  = rockstarPass;
+            this.UplayEmail    = uplayEmail;
+            this.UplayPass     = uplayPass;
         }
 
         public Account(string login,string password,string nickname,bool empty)
         {
             this.ContainParseInfo = false;
 
-            this.Login = login;
-            this.Password = password;
-            this.Nickname = nickname;
+            this.Login          = login;
+            this.Password       = password;
+            this.Nickname       = nickname;
+            this.LastUpdateTime = DateTime.Now;
 
             this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = "";
         }

@@ -30,7 +30,7 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <TextBlock Text="Updating accounts..." HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 -15 0 0"/>
+                        <TextBlock Text="Updating accounts..." HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 -15 0 0" Foreground="{DynamicResource default_foreground}"/>
                         <Grid Height="{TemplateBinding Height}">
                             <Border Background="{DynamicResource second_main_color}" CornerRadius="12" Opacity="0.7"/>
                             <Border BorderBrush="{DynamicResource second_main_color}" BorderThickness="1" CornerRadius="12" Opacity="0.1"/>
