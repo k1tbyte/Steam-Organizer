@@ -4,6 +4,7 @@ using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
+using Steam_Account_Manager.ViewModels.RemoteControl.View;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {
@@ -11,6 +12,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
     {
         public RelayCommand AddOtherIdCommand { get; set; }
         public AsyncRelayCommand ParseGamesComamnd { get; set; }
+        public RelayCommand OpenGameAchievementCommand { get; set; }
 
 
         public static event EventHandler GamesChanged;
@@ -69,6 +71,12 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     OnPropertyChanged(nameof(Games));
                 }
                 txtBox.Text = "";
+            });
+
+            OpenGameAchievementCommand = new RelayCommand(o =>
+            {
+                AchievementsView achievementsWindow = new AchievementsView();
+                ShowDialogWindow(achievementsWindow);
             });
         }
     }

@@ -181,6 +181,9 @@
     <Compile Include="ViewModels\RemoteControl\MainRemoteControlViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\MessagesViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\SteamWebViewModel.cs" />
+    <Compile Include="ViewModels\RemoteControl\View\AchievementsView.xaml.cs">
+      <DependentUpon>AchievementsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\RemoteControl\View\FriendsView.xaml.cs">
       <DependentUpon>FriendsView.xaml</DependentUpon>
     </Compile>
@@ -314,6 +317,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\ScrollBarStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewModels\RemoteControl\View\AchievementsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

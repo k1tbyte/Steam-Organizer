@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -13,6 +14,9 @@ namespace Steam_Account_Manager.Infrastructure
         [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindowAsync(HandleRef hWnd, int nCmdShow);
 
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -35,6 +39,7 @@ namespace Steam_Account_Manager.Infrastructure
 
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        public const int SW_RESTORE = 9;
 
         private enum WM : uint
         {
@@ -87,7 +92,23 @@ namespace Steam_Account_Manager.Infrastructure
                 if (threadsAttached)
                     AttachThreadInput(foreThread, appThread, false);
             }
-        } 
+        }
+
+        private static bool FocusProcess(string procName)
+        {
+            Process[] objProcesses = Process.GetProcessesByName(procName);
+            if (objProcesses.Length > 0)
+            {
+                IntPtr hWnd = IntPtr.Zero;
+                hWnd = objProcesses[0].MainWindowHandle;
+                ShowWindowAsync(new HandleRef(null, hWnd), SW_RESTORE);
+                SetForegroundWindow(hWnd);
+                return true;
+            }
+            else
+                return false;
+
+        }
 
         #endregion
 

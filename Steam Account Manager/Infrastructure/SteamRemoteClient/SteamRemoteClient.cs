@@ -183,7 +183,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             
             if(state)
             {
-                if (CurrentUser.Messenger.AdminID != null)
+                if (CurrentUser?.Messenger?.AdminID != null)
                     MessagesViewModel.IsAdminIdValid = true;
                 MessagesViewModel.EnableCommands = CurrentUser.Messenger.EnableCommands;
                 MessagesViewModel.AdminId = CurrentUser.Messenger.AdminID.ToString();

@@ -54,7 +54,6 @@
                                 Background="Transparent" Foreground="{DynamicResource default_foreground}" IsReadOnly="True" 
                                 CaretBrush="{DynamicResource atv_rectangles_shadow}"
                                 Grid.Row="1" Margin="3 4 3 3"/>
-
                             </Grid>
                         </StackPanel>
                     </DataTemplate>
