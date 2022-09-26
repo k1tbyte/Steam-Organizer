@@ -18,7 +18,7 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
 
-    <Border CornerRadius="30" Background="{DynamicResource background_border_color}" MouseDown="Border_MouseDown">
+    <Border CornerRadius="30" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="Border_MouseDown">
         <Grid>
 
             <Grid.ColumnDefinitions>

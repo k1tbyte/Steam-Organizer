@@ -5,12 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl.View"
          xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:vm="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl"
+        d:DataContext="{d:DesignInstance Type=vm:AchievementsViewModel}"
         mc:Ignorable="d"
         Background="Transparent"
         AllowsTransparency="True"
         WindowStyle="None"
-        Title="Achievements" Height="355" Width="250">
-    <Border Background="{DynamicResource background_border_color}" CornerRadius="10"
+        Title="Achievements" Height="400" Width="320">
+    <Border Background="{DynamicResource background_border_color}" CornerRadius="10" MouseLeftButtonDown="Border_MouseLeftButtonDown"
             BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
         <Grid>
             <Button Style="{StaticResource serviceButton}" Click="Close_Click"
@@ -20,11 +22,60 @@
                                        Height="15" Width="15" 
                                        VerticalAlignment="Center"/>
             </Button>
-            <StackPanel Orientation="Horizontal" Margin="0 6 0 0"
-                        VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource default_foreground}"
-                           Text="ACHIEVEMENTS" FontSize="14" TextWrapping="Wrap" MaxWidth="220" />
-            </StackPanel>
+            
+            <TextBlock Margin="15 12 0 0" FontFamily="Cascadia Mono" x:Name="Header"
+                       VerticalAlignment="Top" HorizontalAlignment="Left"
+                       Foreground="{DynamicResource second_settings_text}"
+                       FontSize="13"/>
+
+            <ListBox x:Name="games"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     Width="290" HorizontalAlignment="Left" SelectionMode="Multiple"
+                     Margin="10,35,0,10" Background="Transparent"
+                     VirtualizingPanel.IsVirtualizing="True"  BorderThickness="0"
+                     VirtualizingPanel.VirtualizationMode="Recycling" ItemsSource="{Binding Achievements}"
+                     ItemContainerStyle="{StaticResource games_listbox}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="260" Height="62" Margin="6" Background="{DynamicResource first_main_color}" CornerRadius="10">
+                            <Grid VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Border Name="Mask" Opacity="0.7"  Width="45" Height="45"
+                        Background="{DynamicResource second_main_color}" BorderBrush="Transparent"
+                        BorderThickness="1" Margin="5 -1 0 0" CornerRadius="10"/>
+                                <StackPanel  Cursor="Hand">
+                                    <Image Grid.Column="0" Width="45" Height="45" Margin="5 0 0 0">
+                                        <Image.Source>
+                                            <BitmapImage UriSource="{Binding IconHash}"
+                                                     CacheOption="OnLoad"
+                                                     DecodePixelHeight="60"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <StackPanel.OpacityMask>
+                                        <VisualBrush Visual="{Binding ElementName=Mask}"/>
+                                    </StackPanel.OpacityMask>
+                                </StackPanel>
+
+                                <TextBlock Text="{Binding Name}" Grid.Column="1" VerticalAlignment="Top"
+                                HorizontalAlignment="Left" Margin="8 -2 0 0" FontSize="12" Foreground="White" Opacity="0.9"/>
+
+                                <TextBlock Text="{Binding Description}" Grid.Column="1" VerticalAlignment="Top"
+                                HorizontalAlignment="Left" Margin="13 16 0 0" FontSize="9" TextWrapping="Wrap"
+                                Foreground="{DynamicResource default_foreground}" MaxWidth="190"
+                                LineStackingStrategy="BlockLineHeight" LineHeight="10"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Grid>
     </Border>
 </Window>

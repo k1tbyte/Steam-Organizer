@@ -127,7 +127,7 @@
     </ApplicationDefinition>
     <Compile Include="Infrastructure\AsyncRelayCommand.cs" />
     <Compile Include="Infrastructure\Models\AccountModel\Account.cs" />
-    <Compile Include="Infrastructure\Models\SteamWebResponse.cs" />
+    <Compile Include="Infrastructure\Models\GamesHandlerModel.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\AuthenticatorLinker.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\Confirmation.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\SessionData.cs" />
@@ -175,6 +175,7 @@
     <Compile Include="ViewModels\AddAccountViewModel.cs" />
     <Compile Include="ViewModels\AddAuthenticatorViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\RemoteControl\AchievementsViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\FriendsViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\GamesViewModel.cs" />
     <Compile Include="ViewModels\RemoteControl\LoginViewModel.cs" />

@@ -1,4 +1,5 @@
-﻿using SteamKit2;
+﻿using Steam_Account_Manager.Infrastructure.Models;
+using SteamKit2;
 using SteamKit2.Internal;
 using System;
 using System.Collections.Generic;
@@ -113,11 +114,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 JobID = jobID;
                 Success = eresultGetter(msg) == EResult.OK;
                 Response = msg;
-
-                if (!Success)
-                {
-                    throw new Exception();
-                }
             }
 
         }
@@ -126,30 +122,18 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             internal GetAchievementsCallback(JobID jobID, CMsgClientGetUserStatsResponse msg)
                 : base(jobID, msg, message => (EResult)msg.eresult, "GetAchievements") { }
         }
-
         internal sealed class SetAchievementsCallback : AchievementsCallback<CMsgClientStoreUserStatsResponse>
         {
             internal SetAchievementsCallback(JobID jobID, CMsgClientStoreUserStatsResponse msg)
                 : base(jobID, msg, message => (EResult)msg.eresult, "SetAchievements") { }
         }
 
-        class StatData
-        {
-            public uint StatNum { get; set; }
-            public int BitNum { get; set; }
-            public bool IsSet { get; set; }
-            public bool Restricted { get; set; }
-            public uint Dependancy { get; set; }
-            public uint DependancyValue { get; set; }
-            public string DependancyName { get; set; }
-            public string Name { get; set; }
-            public uint StatValue { get; set; }
-        }
-
-        private List<StatData> ParseResponse(CMsgClientGetUserStatsResponse Response)
+        internal List<StatData> ParseResponse(CMsgClientGetUserStatsResponse Response,ulong gameID)
         {
             List<StatData> result = new List<StatData>();
             KeyValue KeyValues = new KeyValue();
+
+            string iconUrlBase = $"https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/{gameID}/";
             if (Response.schema != null)
             {
                 using (MemoryStream ms = new MemoryStream(Response.schema))
@@ -176,7 +160,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
                                     bool restricted = Achievement.Children.Find(Child => Child.Name == "permission") != null;
 
-                                    string dependancyName = (Achievement.Children.Find(Child => Child.Name == "progress") == null) ? "" : Achievement.Children.Find(Child => Child.Name == "progress")?.Children?.Find(Child => Child.Name == "value")?.Children?.Find(Child => Child.Name == "operand1")?.Value;
+                                    string dependencyName = (Achievement.Children.Find(Child => Child.Name == "progress") == null) ? "" : Achievement.Children.Find(Child => Child.Name == "progress")?.Children?.Find(Child => Child.Name == "value")?.Children?.Find(Child => Child.Name == "operand1")?.Value;
 
                                     uint.TryParse((Achievement.Children.Find(Child => Child.Name == "progress") == null) ? "0" : Achievement.Children.Find(Child => Child.Name == "progress").Children.Find(Child => Child.Name == "max_val")?.Value, out uint dependancyValue);
                                     string lang = CultureInfo.CurrentUICulture.EnglishName.ToLower();
@@ -186,21 +170,41 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                                     }
                                     if (Achievement.Children.Find(Child => Child.Name == "display")?.Children?.Find(Child => Child.Name == "name")?.Children?.Find(Child => Child.Name == lang) == null)
                                     {
-                                        lang = "english";//fallback to english
+                                        lang = "english";
                                     }
 
-                                    string name = Achievement.Children.Find(Child => Child.Name == "display")?.Children?.Find(Child => Child.Name == "name")?.Children?.Find(Child => Child.Name == lang)?.Value;
+                                    string name = Achievement.Children.Find(
+                                        Child => Child.Name == "display")?.Children?.Find(
+                                            Child => Child.Name == "name")?.Children?.Find(
+                                                Child => Child.Name == lang)?.Value;
+                                    
+                                    string iconHash = iconUrlBase + Achievement.Children.Find(
+                                        Child => Child.Name == "display")?.Children?.Find(
+                                            Child => Child.Name == "icon")?.Value;
+                                    
+                                    string iconHashGray = iconUrlBase + Achievement.Children.Find(
+                                        Child => Child.Name == "display")?.Children?.Find(
+                                            Child => Child.Name == "icon_gray")?.Value;
+
+                                    string desc = Achievement.Children.Find(
+                                        Child => Child.Name == "display")?.Children?.Find(
+                                            Child => Child.Name == "desc")?.Children?.Find(
+                                                Child => Child.Name == lang)?.Value;
+
                                     result.Add(new StatData()
                                     {
                                         StatNum = statNum,
                                         BitNum = bitNum,
                                         IsSet = isSet,
                                         Restricted = restricted,
-                                        DependancyValue = dependancyValue,
-                                        DependancyName = dependancyName,
-                                        Dependancy = 0,
+                                        DependencyValue = dependancyValue,
+                                        DependencyName = dependencyName,
+                                        Dependency = 0,
                                         Name = name,
-                                        StatValue = stat_value ?? 0
+                                        StatValue = stat_value ?? 0,
+                                        IconHash = iconHash,
+                                        IconHashGray = iconHashGray,
+                                        Description = desc
                                     });
 
                                 }
@@ -208,7 +212,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                         }
                     }
                 }
-                //Now we update all dependancies
+                //Now we update all dependencies
                 foreach (KeyValue stat in KeyValues.Children.Find(Child => Child.Name == "stats")?.Children ?? new List<KeyValue>())
                 {
                     if (stat.Children.Find(Child => Child.Name == "type")?.Value == "1")
@@ -219,10 +223,10 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                             string name = stat.Children.Find(Child => Child.Name == "name")?.Value;
                             if (name != null)
                             {
-                                StatData ParentStat = result.Find(item => item.DependancyName == name);
+                                StatData ParentStat = result.Find(item => item.DependencyName == name);
                                 if (ParentStat != null)
                                 {
-                                    ParentStat.Dependancy = statNum;
+                                    ParentStat.Dependency = statNum;
                                     if (restricted && !ParentStat.Restricted)
                                     {
                                         ParentStat.Restricted = true;
@@ -236,12 +240,14 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             return result;
         }
 
-        internal async Task GetAchievements(ulong steamId, ulong gameID)
+        internal async Task<List<StatData>> GetAchievements(ulong steamId, ulong gameID)
         {
 
             GetAchievementsCallback response = await GetAchievementsResponse(76561199051937995, gameID);
-            List<string> responses = new List<string>();
-            List<StatData> Stats = ParseResponse(response.Response);
+            if (!response.Success)
+                return null;
+
+            return ParseResponse(response.Response,gameID);
 
         }
 

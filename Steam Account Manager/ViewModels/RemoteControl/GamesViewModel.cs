@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using Steam_Account_Manager.ViewModels.RemoteControl.View;
+using System.Diagnostics;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {
@@ -13,6 +14,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public RelayCommand AddOtherIdCommand { get; set; }
         public AsyncRelayCommand ParseGamesComamnd { get; set; }
         public RelayCommand OpenGameAchievementCommand { get; set; }
+        public RelayCommand OpenSteamStoreCommand { get; set; }
 
 
         public static event EventHandler GamesChanged;
@@ -75,8 +77,13 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             OpenGameAchievementCommand = new RelayCommand(o =>
             {
-                AchievementsView achievementsWindow = new AchievementsView();
+                AchievementsView achievementsWindow = new AchievementsView(Convert.ToUInt64(((Game)o).AppID));
                 ShowDialogWindow(achievementsWindow);
+            });
+
+            OpenSteamStoreCommand = new RelayCommand(o =>
+            {
+                using (Process.Start(new ProcessStartInfo("https://store.steampowered.com/app/" + ((Game)o).AppID) { UseShellExecute = true })) ;
             });
         }
     }

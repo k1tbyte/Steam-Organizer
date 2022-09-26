@@ -260,7 +260,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 UpdateDetect = false;
             });
-
+            
         }
     }
 }

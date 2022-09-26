@@ -190,7 +190,10 @@ namespace Steam_Account_Manager.ViewModels
                         Config.Accounts[_id].AuthenticatorPath = fileDialog.FileName;
                         if (!Directory.Exists(@".\Authenticators"))
                             Directory.CreateDirectory(@".\Authenticators");
-                        File.Copy(fileDialog.FileName, $@".\Authenticators\{list.Account_name}.maFile", true);
+                        
+                        if(!File.Exists($@".\Authenticators\{list.Account_name}.maFile"))
+                          File.Copy(fileDialog.FileName, $@".\Authenticators\{list.Account_name}.maFile", true);
+
                         Config.SaveAccounts();
                         ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
                         Thread.Sleep(2000);

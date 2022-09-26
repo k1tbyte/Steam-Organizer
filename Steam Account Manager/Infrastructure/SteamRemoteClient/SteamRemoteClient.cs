@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.Validators;
 using Steam_Account_Manager.Themes.MessageBoxes;
@@ -742,7 +743,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 }
             }));
 
-
         }
 
         internal static async Task IdleGame(int? AppId, string GameName = null)
@@ -769,7 +769,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
             await gamesHandler.PlayGames(null).ConfigureAwait(false);
             IsPlaying = false;
-        } 
+        }
+
+        internal static async Task<ObservableCollection<StatData>> GetAppAchievements(ulong gameID)
+        {
+            return new ObservableCollection<StatData>(await gamesHandler.GetAchievements(CurrentSteamId64, gameID).ConfigureAwait(false));
+        }
         #endregion
 
         internal static async Task<CPrivacySettings> GetProfilePrivacy()

@@ -8,8 +8,11 @@
         <Setter Property="ContextMenu">
             <Setter.Value>
                 <ContextMenu>
-                    <MenuItem Header="Steam store"/>
-                    <MenuItem Header="Achievements" Command="{Binding PlacementTarget.Tag.OpenGameAchievementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Steam store" 
+                              Command="{Binding PlacementTarget.Tag.OpenSteamStoreCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                              CommandParameter="{Binding}"/>
+                    <MenuItem Header="Achievements" Command="{Binding PlacementTarget.Tag.OpenGameAchievementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                              CommandParameter="{Binding}"/>
                 </ContextMenu>
             </Setter.Value>
         </Setter>

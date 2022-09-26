@@ -39,7 +39,7 @@
 
     </Window.Resources>
 
-    <Border CornerRadius="8" Background="{DynamicResource background_border_color}" MouseDown="Border_MouseDown"
+    <Border CornerRadius="8" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="Border_MouseDown"
             BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}" Style="{StaticResource expandConfsArea}">
         <Grid>
             
