@@ -17,7 +17,7 @@
                      Margin="9,10,0,10" Background="Transparent"
                      VirtualizingPanel.IsVirtualizing="True"  BorderThickness="0"
                      VirtualizingPanel.VirtualizationMode="Recycling"
-                     ItemContainerStyle="{StaticResource games_listbox}">
+                     ItemContainerStyle="{StaticResource games_listboxItem}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>

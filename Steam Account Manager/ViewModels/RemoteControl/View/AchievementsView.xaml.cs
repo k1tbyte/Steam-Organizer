@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Steam_Account_Manager.Infrastructure.Models;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
@@ -20,6 +21,36 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
         private void Border_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             this.DragMove();
+        }
+
+        private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if(this.DataContext != null && ((AchievementsViewModel)this.DataContext).Achievements != null)
+            {
+                switch (filter.SelectedIndex)
+                {
+                    case 0:
+                        ((AchievementsViewModel)this.DataContext).AchievementShowFilter.Filter = o => ((StatData)o) != null;
+                        break;
+                    case 1:
+                        ((AchievementsViewModel)this.DataContext).AchievementShowFilter.Filter = o => !((StatData)o).IsSet;
+                        break;
+                    case 2:
+                        ((AchievementsViewModel)this.DataContext).AchievementShowFilter.Filter = o => ((StatData)o).IsSet;
+                        break;
+                }
+                
+            }
+        }
+
+        private void  SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            achievements.SelectAll();
+        }
+
+        private void UnselectAll_Click(object sender, RoutedEventArgs e)
+        {
+            achievements.UnselectAll();
         }
     }
 }

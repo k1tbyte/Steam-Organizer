@@ -115,7 +115,7 @@
                          VirtualizingPanel.IsVirtualizing="True"
                          VirtualizingPanel.VirtualizationMode="Recycling"
                          IsTabStop="False" KeyboardNavigation.AcceptsReturn="False"
-                         ItemsSource="{Binding RecentlyLoggedIn}" Width="80" ItemContainerStyle="{StaticResource games_listbox}" BorderThickness="0">
+                         ItemsSource="{Binding RecentlyLoggedIn}" Width="80" ItemContainerStyle="{StaticResource base_listboxItem}" BorderThickness="0">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid MaxWidth="53" Margin="6">

@@ -204,6 +204,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                                         StatValue = stat_value ?? 0,
                                         IconHash = iconHash,
                                         IconHashGray = iconHashGray,
+                                        CurrentIconView = isSet ? iconHash : iconHashGray,
                                         Description = desc
                                     });
 
