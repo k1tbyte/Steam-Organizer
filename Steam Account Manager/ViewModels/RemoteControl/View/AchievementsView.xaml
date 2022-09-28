@@ -95,6 +95,8 @@
                     </ComboBox>
                 </StackPanel>
 
+                <Button Style="{StaticResource defaultButton}" Margin="0 10 0 0" Height="35" Width="75"
+                        Content="Change"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal"  VerticalAlignment="Bottom"

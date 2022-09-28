@@ -144,7 +144,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     };
                 }
 
-                //first we enumerate all real achievements
                 foreach (KeyValue stat in KeyValues.Children.Find(Child => Child.Name == "stats")?.Children ?? new List<KeyValue>())
                 {
                     if (stat.Children.Find(Child => Child.Name == "type")?.Value == "4")
@@ -213,7 +212,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                         }
                     }
                 }
-                //Now we update all dependencies
                 foreach (KeyValue stat in KeyValues.Children.Find(Child => Child.Name == "stats")?.Children ?? new List<KeyValue>())
                 {
                     if (stat.Children.Find(Child => Child.Name == "type")?.Value == "1")
@@ -272,5 +270,89 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             return await new AsyncJob<GetAchievementsCallback>(Client, request.SourceJobID);
         }
+
+        internal async Task<string> SetAchievements(ulong steamId, ulong appId, HashSet<uint> achievements, bool set = true)
+        {
+            if (!Client.IsConnected)
+            {
+                return null;
+            }
+
+            List<string> responses = new List<string>();
+
+            GetAchievementsCallback response = await GetAchievementsResponse(steamId, appId);
+            if (response == null || !response.Success)
+            {
+                return "Can't retrieve achievements for " + appId.ToString(); ;
+            }
+
+            List<StatData> Stats = ParseResponse(response.Response);
+            if (Stats == null)
+            {
+                responses.Add(Strings.WarningFailed);
+                return "\u200B\n" + string.Join(Environment.NewLine, responses);
+            }
+
+            List<CMsgClientStoreUserStats2.Stats> statsToSet = new List<CMsgClientStoreUserStats2.Stats>();
+
+            if (achievements.Count == 0)
+            {
+                foreach (StatData stat in Stats.Where(s => !s.Restricted))
+                {
+                    statsToSet.AddRange(GetStatsToSet(statsToSet, stat, set));
+                }
+            }
+            else
+            {
+                foreach (uint achievement in achievements)
+                {
+                    if (Stats.Count < achievement)
+                    {
+                        responses.Add("Achievement #" + achievement.ToString() + " is out of range");
+                        continue;
+                    }
+
+                    if (Stats[(int)achievement - 1].IsSet == set)
+                    {
+                        responses.Add("Achievement #" + achievement.ToString() + " is already " + (set ? "unlocked" : "locked"));
+                        continue;
+                    }
+                    if (Stats[(int)achievement - 1].Restricted)
+                    {
+                        responses.Add("Achievement #" + achievement.ToString() + " is protected and can't be switched");
+                        continue;
+                    }
+
+                    statsToSet.AddRange(GetStatsToSet(statsToSet, Stats[(int)achievement - 1], set));
+                }
+            }
+            if (statsToSet.Count == 0)
+            {
+                responses.Add(Strings.WarningFailed);
+                return "\u200B\n" + string.Join(Environment.NewLine, responses);
+            };
+            if (responses.Count > 0)
+            {
+                responses.Add("Trying to switch remaining achievements..."); //if some errors occured
+            }
+            ClientMsgProtobuf<CMsgClientStoreUserStats2> request = new ClientMsgProtobuf<CMsgClientStoreUserStats2>(EMsg.ClientStoreUserStats2)
+            {
+                SourceJobID = Client.GetNextJobID(),
+                Body = {
+                    game_id = (uint) appId,
+                    settor_steam_id = (ulong)bot.SteamID,
+                    settee_steam_id = (ulong)bot.SteamID,
+                    explicit_reset = false,
+                    crc_stats = response.Response.crc_stats
+                }
+            };
+            request.Body.stats.AddRange(statsToSet);
+            Client.Send(request);
+
+            SetAchievementsCallback setResponse = await new AsyncJob<SetAchievementsCallback>(Client, request.SourceJobID).ConfigureAwait(false);
+
+            return "\u200B\n" + string.Join(Environment.NewLine, responses);
+        }
     }
+
 }
