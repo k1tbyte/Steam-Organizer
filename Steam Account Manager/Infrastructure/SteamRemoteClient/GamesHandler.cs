@@ -3,6 +3,7 @@ using SteamKit2;
 using SteamKit2.Internal;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -271,7 +272,49 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             return await new AsyncJob<GetAchievementsCallback>(Client, request.SourceJobID);
         }
 
-        internal async Task<string> SetAchievements(ulong steamId, ulong appId, HashSet<uint> achievements, bool set = true)
+        private IEnumerable<CMsgClientStoreUserStats2.Stats> GetStatsToSet(List<CMsgClientStoreUserStats2.Stats> statsToSet, StatData statToSet, bool set = true)
+        {
+            if (statToSet == null)
+            {
+                yield break; //it should never happen
+            }
+
+            CMsgClientStoreUserStats2.Stats currentstat = statsToSet.Find(stat => stat.stat_id == statToSet.StatNum);
+            if (currentstat == null)
+            {
+                currentstat = new CMsgClientStoreUserStats2.Stats()
+                {
+                    stat_id = statToSet.StatNum,
+                    stat_value = statToSet.StatValue
+                };
+                yield return currentstat;
+            }
+
+            uint statMask = ((uint)1 << statToSet.BitNum);
+            if (set)
+            {
+                currentstat.stat_value = currentstat.stat_value | statMask;
+            }
+            else
+            {
+                currentstat.stat_value = currentstat.stat_value & ~statMask;
+            }
+            if (!string.IsNullOrEmpty(statToSet.DependencyName))
+            {
+                CMsgClientStoreUserStats2.Stats dependancystat = statsToSet.Find(stat => stat.stat_id == statToSet.Dependency);
+                if (dependancystat == null)
+                {
+                    dependancystat = new CMsgClientStoreUserStats2.Stats()
+                    {
+                        stat_id = statToSet.Dependency,
+                        stat_value = set ? statToSet.DependencyValue : 0
+                    };
+                    yield return dependancystat;
+                }
+            }
+
+        }
+        internal async Task<string> SetAchievements(ulong bot, ulong appId, List<StatData> achievementes, bool set = false)
         {
             if (!Client.IsConnected)
             {
@@ -280,23 +323,34 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             List<string> responses = new List<string>();
 
-            GetAchievementsCallback response = await GetAchievementsResponse(steamId, appId);
-            if (response == null || !response.Success)
+            GetAchievementsCallback response = await GetAchievementsResponse(bot, appId);
+            if (response == null)
             {
                 return "Can't retrieve achievements for " + appId.ToString(); ;
             }
 
-            List<StatData> Stats = ParseResponse(response.Response);
+            if (!response.Success)
+            {
+                return "Can't retrieve achievements for " + appId.ToString(); ;
+            }
+
+            if (response.Response == null)
+            {
+                return "\u200B\n" + string.Join(Environment.NewLine, responses);
+            }
+
+            List<StatData> Stats = ParseResponse(response.Response,appId);
             if (Stats == null)
             {
-                responses.Add(Strings.WarningFailed);
                 return "\u200B\n" + string.Join(Environment.NewLine, responses);
             }
 
             List<CMsgClientStoreUserStats2.Stats> statsToSet = new List<CMsgClientStoreUserStats2.Stats>();
-
+            HashSet<uint> achievements = new HashSet<uint>();
+            achievements.Add(1);
+            achievements.Add(2);
             if (achievements.Count == 0)
-            {
+            { //if no parameters provided - set/reset all. Don't kill me Archi.
                 foreach (StatData stat in Stats.Where(s => !s.Restricted))
                 {
                     statsToSet.AddRange(GetStatsToSet(statsToSet, stat, set));
@@ -311,12 +365,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                         responses.Add("Achievement #" + achievement.ToString() + " is out of range");
                         continue;
                     }
-
-                    if (Stats[(int)achievement - 1].IsSet == set)
-                    {
-                        responses.Add("Achievement #" + achievement.ToString() + " is already " + (set ? "unlocked" : "locked"));
-                        continue;
-                    }
                     if (Stats[(int)achievement - 1].Restricted)
                     {
                         responses.Add("Achievement #" + achievement.ToString() + " is protected and can't be switched");
@@ -328,7 +376,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
             if (statsToSet.Count == 0)
             {
-                responses.Add(Strings.WarningFailed);
                 return "\u200B\n" + string.Join(Environment.NewLine, responses);
             };
             if (responses.Count > 0)
@@ -340,8 +387,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 SourceJobID = Client.GetNextJobID(),
                 Body = {
                     game_id = (uint) appId,
-                    settor_steam_id = (ulong)bot.SteamID,
-                    settee_steam_id = (ulong)bot.SteamID,
+                    settor_steam_id = bot,
+                    settee_steam_id = bot,
                     explicit_reset = false,
                     crc_stats = response.Response.crc_stats
                 }
@@ -349,7 +396,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             request.Body.stats.AddRange(statsToSet);
             Client.Send(request);
 
-            SetAchievementsCallback setResponse = await new AsyncJob<SetAchievementsCallback>(Client, request.SourceJobID).ConfigureAwait(false);
+            SetAchievementsCallback setResponse = await new AsyncJob<SetAchievementsCallback>(Client, request.SourceJobID).ToTask().ConfigureAwait(false);
 
             return "\u200B\n" + string.Join(Environment.NewLine, responses);
         }

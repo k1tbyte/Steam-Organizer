@@ -775,6 +775,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
             return new ObservableCollection<StatData>(await gamesHandler.GetAchievements(CurrentSteamId64, gameID).ConfigureAwait(false));
         }
+
+        internal static async Task<bool> SetAppAchievements(ulong appID,List<StatData> achievements)
+        {
+           await  gamesHandler.SetAchievements(CurrentSteamId64, appID, achievements);
+           return true;
+        }
         #endregion
 
         internal static async Task<CPrivacySettings> GetProfilePrivacy()

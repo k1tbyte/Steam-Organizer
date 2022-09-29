@@ -1,14 +1,20 @@
 ﻿using Steam_Account_Manager.Infrastructure.Models;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using System.Windows;
 using System.Windows.Data;
+using System.Linq;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {
     public partial class AchievementsView : Window
     {
+        ulong appId;
         public AchievementsView(ulong appID)
         {
             InitializeComponent();
+            this.appId = appID;
             this.Header.Text = $"Achievements AppID: {appID}";
             this.DataContext = new AchievementsViewModel(appID);
         }
@@ -51,6 +57,12 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
         private void UnselectAll_Click(object sender, RoutedEventArgs e)
         {
             achievements.UnselectAll();
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var listSelectedItems = achievements.SelectedItems;
+            await SteamRemoteClient.SetAppAchievements(appId, listSelectedItems.Cast<StatData>().ToList());
         }
     }
 }
