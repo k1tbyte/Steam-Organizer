@@ -18,7 +18,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         private ulong AppID;
         private int _totalUnlocked;
         public ICollectionView AchievementShowFilter { get; set; }
-        public AsyncRelayCommand SetAchievementCommand { get; set; }
+        public RelayCommand SetAchievementCommand { get; set; }
 
         private ObservableCollection<StatData> _achievemets;
         public ObservableCollection<StatData> Achievements
@@ -53,9 +53,9 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         {
             AppID = appID;
             _ = GetGameAchievements();
-            SetAchievementCommand = new AsyncRelayCommand(async (o) =>
+            SetAchievementCommand = new RelayCommand(o =>
             {
-           //     await SteamRemoteClient.SetAppAchievements(appID, ((IList)o).ToList<StatData>);
+              //  Achievements = null;
             });
         }
     }

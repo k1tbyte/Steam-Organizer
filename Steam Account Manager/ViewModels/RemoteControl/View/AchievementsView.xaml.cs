@@ -5,6 +5,7 @@ using System.Windows.Data;
 using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Collections.ObjectModel;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {
@@ -61,8 +62,25 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            var listSelectedItems = achievements.SelectedItems;
-            await SteamRemoteClient.SetAppAchievements(appId, listSelectedItems.Cast<StatData>().ToList());
+            var SelectedItems = achievements.SelectedItems.Cast<StatData>().Select(o => o.BitNum);
+            if(await SteamRemoteClient.SetAppAchievements(appId, ((AchievementsViewModel)this.DataContext).Achievements, SelectedItems))
+            {
+                /*                foreach (var item in SelectedItems)
+                                {
+                                    if (newCollection[item - 1].IsSet)
+                                    {
+                                        newCollection[item - 1].IsSet = false;
+                                        newCollection[item - 1].Name = "EHFEFEFEFEFEFE";
+                                    }
+                                    else
+                                    {
+                                        newCollection[item - 1].IsSet = false;
+                                        newCollection[item - 1].Name = "EHFEFEFEFEFEFE";
+                                    }
+                                }*/
+
+            }
+            achievements.UnselectAll();
         }
     }
 }

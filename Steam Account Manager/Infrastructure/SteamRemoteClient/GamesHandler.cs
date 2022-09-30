@@ -272,13 +272,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             return await new AsyncJob<GetAchievementsCallback>(Client, request.SourceJobID);
         }
 
-        private IEnumerable<CMsgClientStoreUserStats2.Stats> GetStatsToSet(List<CMsgClientStoreUserStats2.Stats> statsToSet, StatData statToSet, bool set = true)
+        private IEnumerable<CMsgClientStoreUserStats2.Stats> GetStatsToSet(List<CMsgClientStoreUserStats2.Stats> statsToSet, StatData statToSet)
         {
-            if (statToSet == null)
-            {
-                yield break; //it should never happen
-            }
-
             CMsgClientStoreUserStats2.Stats currentstat = statsToSet.Find(stat => stat.stat_id == statToSet.StatNum);
             if (currentstat == null)
             {
@@ -291,7 +286,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
 
             uint statMask = ((uint)1 << statToSet.BitNum);
-            if (set)
+            if (!statToSet.IsSet)
             {
                 currentstat.stat_value = currentstat.stat_value | statMask;
             }
@@ -307,81 +302,37 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     dependancystat = new CMsgClientStoreUserStats2.Stats()
                     {
                         stat_id = statToSet.Dependency,
-                        stat_value = set ? statToSet.DependencyValue : 0
+                        stat_value = !statToSet.IsSet ? statToSet.DependencyValue : 0
                     };
                     yield return dependancystat;
                 }
             }
 
         }
-        internal async Task<string> SetAchievements(ulong bot, ulong appId, List<StatData> achievementes, bool set = false)
+        internal async Task<bool> SetAchievements(ulong bot, ulong appId, ObservableCollection<StatData> achievements,IEnumerable<int> achievementsToSet)
         {
             if (!Client.IsConnected)
             {
-                return null;
+                return false;
             }
-
-            List<string> responses = new List<string>();
 
             GetAchievementsCallback response = await GetAchievementsResponse(bot, appId);
-            if (response == null)
+            if (response == null || response.Response == null || !response.Success)
             {
-                return "Can't retrieve achievements for " + appId.ToString(); ;
-            }
-
-            if (!response.Success)
-            {
-                return "Can't retrieve achievements for " + appId.ToString(); ;
-            }
-
-            if (response.Response == null)
-            {
-                return "\u200B\n" + string.Join(Environment.NewLine, responses);
-            }
-
-            List<StatData> Stats = ParseResponse(response.Response,appId);
-            if (Stats == null)
-            {
-                return "\u200B\n" + string.Join(Environment.NewLine, responses);
+                return false;
             }
 
             List<CMsgClientStoreUserStats2.Stats> statsToSet = new List<CMsgClientStoreUserStats2.Stats>();
-            HashSet<uint> achievements = new HashSet<uint>();
-            achievements.Add(1);
-            achievements.Add(2);
-            if (achievements.Count == 0)
-            { //if no parameters provided - set/reset all. Don't kill me Archi.
-                foreach (StatData stat in Stats.Where(s => !s.Restricted))
-                {
-                    statsToSet.AddRange(GetStatsToSet(statsToSet, stat, set));
-                }
-            }
-            else
+            foreach (var achievement in achievementsToSet)
             {
-                foreach (uint achievement in achievements)
+                if (achievements.Count < achievement || achievements[achievement - 1].Restricted)
                 {
-                    if (Stats.Count < achievement)
-                    {
-                        responses.Add("Achievement #" + achievement.ToString() + " is out of range");
-                        continue;
-                    }
-                    if (Stats[(int)achievement - 1].Restricted)
-                    {
-                        responses.Add("Achievement #" + achievement.ToString() + " is protected and can't be switched");
-                        continue;
-                    }
+                    continue;
+                }
 
-                    statsToSet.AddRange(GetStatsToSet(statsToSet, Stats[(int)achievement - 1], set));
-                }
+                statsToSet.AddRange(GetStatsToSet(statsToSet, achievements[achievement - 1]));
             }
-            if (statsToSet.Count == 0)
-            {
-                return "\u200B\n" + string.Join(Environment.NewLine, responses);
-            };
-            if (responses.Count > 0)
-            {
-                responses.Add("Trying to switch remaining achievements..."); //if some errors occured
-            }
+
             ClientMsgProtobuf<CMsgClientStoreUserStats2> request = new ClientMsgProtobuf<CMsgClientStoreUserStats2>(EMsg.ClientStoreUserStats2)
             {
                 SourceJobID = Client.GetNextJobID(),
@@ -396,9 +347,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             request.Body.stats.AddRange(statsToSet);
             Client.Send(request);
 
-            SetAchievementsCallback setResponse = await new AsyncJob<SetAchievementsCallback>(Client, request.SourceJobID).ToTask().ConfigureAwait(false);
-
-            return "\u200B\n" + string.Join(Environment.NewLine, responses);
+            return true;
         }
     }
 
