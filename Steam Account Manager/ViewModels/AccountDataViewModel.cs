@@ -58,7 +58,7 @@ namespace Steam_Account_Manager.ViewModels
         private string _csgoParseError, _steamDataValidateError, _notifyMsg;
 
         //other account info
-        private string _note, _emailLogin, _emailPass, _rockstarEmail, _rockstarPass, _uplayEmail, _uplayPass;
+        private string _note, _emailLogin, _emailPass, _rockstarEmail, _rockstarPass, _uplayEmail, _uplayPass,_originEmail,_originPass;
 
         #region Properties
 
@@ -150,6 +150,26 @@ namespace Steam_Account_Manager.ViewModels
             {
                 _uplayPass = value;
                 OnPropertyChanged(nameof(UplayPass));
+            }
+        }
+
+        public string OriginEmail
+        {
+            get => _originEmail;
+            set
+            {
+                _originEmail = value;
+                OnPropertyChanged(nameof(OriginEmail));
+            }
+        }
+
+        public string OriginPass
+        {
+            get => _originPass;
+            set
+            {
+                _originPass = value;
+                OnPropertyChanged(nameof(OriginPass));
             }
         }
 
@@ -550,14 +570,17 @@ namespace Steam_Account_Manager.ViewModels
                 SteamLevel       = "-";
                 SteamID32        = 0;
             }
-                //Other info
-                Note          = currentAccount.Note;
-                EmailLogin    = currentAccount.EmailLogin;
-                EmailPass     = currentAccount.EmailPass;
-                RockstarEmail = currentAccount.RockstarEmail;
-                RockstarPass  = currentAccount.RockstarPass;
-                UplayEmail    = currentAccount.UplayEmail;
-                UplayPass     = currentAccount.UplayPass;
+
+            //Other info
+            Note              = currentAccount.Note;
+            EmailLogin        = currentAccount.EmailLogin;
+            EmailPass         = currentAccount.EmailPass;
+            RockstarEmail     = currentAccount.RockstarEmail;
+            RockstarPass      = currentAccount.RockstarPass;
+            UplayEmail        = currentAccount.UplayEmail;
+            UplayPass         = currentAccount.UplayPass;
+            OriginPass        = currentAccount.OriginPass;
+            OriginEmail       = currentAccount.OriginEmail;
             
 
         }
@@ -703,7 +726,8 @@ namespace Steam_Account_Manager.ViewModels
                 if (!_isCsgoStatsSave && (!_savePermission || (Password == currentAccount.Password && 
                 Login == currentAccount.Login && Note == currentAccount.Note && EmailLogin == currentAccount.EmailLogin &&
                 RockstarEmail == currentAccount.RockstarEmail &&  RockstarPass == currentAccount.RockstarPass &&
-                UplayEmail == currentAccount.UplayEmail && UplayPass == currentAccount.UplayPass))) { }
+                UplayEmail == currentAccount.UplayEmail && UplayPass == currentAccount.UplayPass &&
+                 OriginEmail == currentAccount.OriginEmail && OriginPass == currentAccount.OriginPass))) { }
 
                 else if (Login == "")
                 {
@@ -756,6 +780,8 @@ namespace Steam_Account_Manager.ViewModels
                     Config.Accounts[id].RockstarPass  = RockstarPass;
                     Config.Accounts[id].UplayEmail    = UplayEmail;
                     Config.Accounts[id].UplayPass     = UplayPass;
+                    Config.Accounts[id].OriginEmail = OriginEmail;
+                    Config.Accounts[id].OriginPass  = OriginPass;
                     Config.SaveAccounts();
                     Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_changesSaved")));
 

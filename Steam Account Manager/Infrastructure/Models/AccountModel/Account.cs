@@ -43,6 +43,8 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
         public string RockstarPass { get; set; }
         public string UplayEmail { get; set; }
         public string UplayPass { get; set; }
+        public string OriginEmail { get; set; }
+        public string OriginPass { get; set; }
         public string AuthenticatorPath { get; set; }
 
         //Default
@@ -77,12 +79,12 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
 
             this.CsgoStats = new CSGO();
 
-            this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = "";
+            this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = OriginEmail = OriginPass = "";
         }
 
         //Update account counstructor
         public Account( string login, string password, string steamId64, string note, string emailLogin,string emailPass,
-             string rockstarEmail, string rockstarPass, string uplayEmail,string uplayPass, CSGO csgoStats,string authenticatorPath)
+             string rockstarEmail, string rockstarPass, string uplayEmail,string uplayPass,string originEmail,string originPass, CSGO csgoStats,string authenticatorPath)
         {
             this.Login     = login;
             this.Password  = password;
@@ -122,6 +124,8 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
             this.RockstarPass  = rockstarPass;
             this.UplayEmail    = uplayEmail;
             this.UplayPass     = uplayPass;
+            this.OriginPass    = originPass;
+            this.OriginEmail   = originEmail;
         }
 
         public Account(string login,string password,string nickname,bool empty)
@@ -133,7 +137,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
             this.Nickname       = nickname;
             this.LastUpdateTime = DateTime.Now;
 
-            this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = "";
+            this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = OriginEmail = OriginPass = "";
         }
     }
 }

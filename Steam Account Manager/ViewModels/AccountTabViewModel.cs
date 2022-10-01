@@ -167,7 +167,9 @@ namespace Steam_Account_Manager.ViewModels
                                 Config.Accounts[id].RockstarEmail,
                                 Config.Accounts[id].RockstarPass,
                                 Config.Accounts[id].UplayEmail,
-                                Config.Accounts[id].UplayPass, null,
+                                Config.Accounts[id].UplayPass,
+                                Config.Accounts[id].OriginEmail,
+                                Config.Accounts[id].OriginPass, null,
                                 Config.Accounts[id].AuthenticatorPath);
                             Config.SaveAccounts();
                             update = true;

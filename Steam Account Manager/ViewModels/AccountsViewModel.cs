@@ -166,6 +166,8 @@ namespace Steam_Account_Manager.ViewModels
                              Config.Accounts[i].RockstarPass,
                              Config.Accounts[i].UplayEmail,
                              Config.Accounts[i].UplayPass,
+                             Config.Accounts[i].OriginEmail,
+                             Config.Accounts[i].OriginPass,
                              Config.Accounts[i].CsgoStats,
                              Config.Accounts[i].AuthenticatorPath);
                         ids.Add(i);
