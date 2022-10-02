@@ -33,7 +33,7 @@
                      Width="290" HorizontalAlignment="Left" SelectionMode="Multiple"
                      Margin="10,35,0,10" Background="Transparent"
                      VirtualizingPanel.IsVirtualizing="True"  BorderThickness="0"
-                     VirtualizingPanel.VirtualizationMode="Recycling" ItemsSource="{Binding Achievements}"
+                     VirtualizingPanel.VirtualizationMode="Recycling" ItemsSource="{Binding Achievements,UpdateSourceTrigger=PropertyChanged}"
                      ItemContainerStyle="{StaticResource base_listboxItem}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -80,8 +80,8 @@
                 </ListBox.ItemTemplate>
                 <ListBox.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Select all locked"/>
-                        <MenuItem Header="Select all unlocked"/>
+                        <MenuItem Header="Select all locked" Click="SelectLocked_Click"/>
+                        <MenuItem Header="Select all unlocked" Click="SelectUnlocked_Click"/>
                         <MenuItem Header="Select all" Click="SelectAll_Click"/>
                         <MenuItem Header="Unselect all" Click="UnselectAll_Click"/>
                     </ContextMenu>
@@ -98,11 +98,12 @@
                 </StackPanel>
 
                 <Button Margin="0 10 0 0" Height="35" Width="75"
-                        Content="Change" Click="Button_Click">
+                        Content="Change" Command="{Binding SetAchievementCommand}"
+                        CommandParameter="{Binding ElementName=achievements}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource defaultButton}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=achievements,Path=SelectedItem}" Value="null">
+                                <DataTrigger Binding="{Binding ElementName=achievements,Path=SelectedIndex}" Value="-1">
                                     <Setter Property="IsHitTestVisible" Value="False"/>
                                 </DataTrigger>
                             </Style.Triggers>

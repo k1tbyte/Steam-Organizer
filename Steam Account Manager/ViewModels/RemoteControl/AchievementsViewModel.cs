@@ -10,6 +10,8 @@ using System.Collections.ObjectModel;
 using Steam_Account_Manager.Infrastructure.Models;
 using System.ComponentModel;
 using System.Windows.Data;
+using System.Windows.Controls;
+using Steam_Account_Manager.Themes.MessageBoxes;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {
@@ -18,7 +20,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         private ulong AppID;
         private int _totalUnlocked;
         public ICollectionView AchievementShowFilter { get; set; }
-        public RelayCommand SetAchievementCommand { get; set; }
+        public AsyncRelayCommand SetAchievementCommand { get; set; }
 
         private ObservableCollection<StatData> _achievemets;
         public ObservableCollection<StatData> Achievements
@@ -53,9 +55,29 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         {
             AppID = appID;
             _ = GetGameAchievements();
-            SetAchievementCommand = new RelayCommand(o =>
+            SetAchievementCommand = new AsyncRelayCommand(async(o) =>
             {
-              //  Achievements = null;
+                var SelectedItems = ((ListBox)o).SelectedItems.Cast<StatData>();
+                if(await SteamRemoteClient.SetAppAchievements(AppID, SelectedItems))
+                {
+                    foreach (var item in SelectedItems)
+                    {
+                        if(item.IsSet)
+                        {
+                            item.IsSet = false;
+                            item.CurrentIconView = item.IconHashGray;
+                        }
+                        else
+                        {
+                            item.IsSet = true;
+                            item.CurrentIconView = item.IconHash;
+                        }
+                    }
+                    AchievementShowFilter.Refresh();
+
+                    ((ListBox)o).UnselectAll();
+                    MessageBoxes.PopupMessageBox($"{SelectedItems.Count()} achievements have been changed.") ;
+                }
             });
         }
     }

@@ -309,7 +309,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
 
         }
-        internal async Task<bool> SetAchievements(ulong bot, ulong appId, ObservableCollection<StatData> achievements,IEnumerable<int> achievementsToSet)
+        internal async Task<bool> SetAchievements(ulong bot, ulong appId,IEnumerable<StatData> achievementsToSet)
         {
             if (!Client.IsConnected)
             {
@@ -325,12 +325,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             List<CMsgClientStoreUserStats2.Stats> statsToSet = new List<CMsgClientStoreUserStats2.Stats>();
             foreach (var achievement in achievementsToSet)
             {
-                if (achievements.Count < achievement || achievements[achievement - 1].Restricted)
-                {
-                    continue;
-                }
-
-                statsToSet.AddRange(GetStatsToSet(statsToSet, achievements[achievement - 1]));
+                statsToSet.AddRange(GetStatsToSet(statsToSet, achievement));
             }
 
             ClientMsgProtobuf<CMsgClientStoreUserStats2> request = new ClientMsgProtobuf<CMsgClientStoreUserStats2>(EMsg.ClientStoreUserStats2)

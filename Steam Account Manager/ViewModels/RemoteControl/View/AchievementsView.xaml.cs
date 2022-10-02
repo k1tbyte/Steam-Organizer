@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
+using System.Windows.Controls;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {
@@ -60,27 +61,35 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             achievements.UnselectAll();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void SelectLocked_Click(object sender, RoutedEventArgs e)
         {
-            var SelectedItems = achievements.SelectedItems.Cast<StatData>().Select(o => o.BitNum);
-            if(await SteamRemoteClient.SetAppAchievements(appId, ((AchievementsViewModel)this.DataContext).Achievements, SelectedItems))
-            {
-                /*                foreach (var item in SelectedItems)
-                                {
-                                    if (newCollection[item - 1].IsSet)
-                                    {
-                                        newCollection[item - 1].IsSet = false;
-                                        newCollection[item - 1].Name = "EHFEFEFEFEFEFE";
-                                    }
-                                    else
-                                    {
-                                        newCollection[item - 1].IsSet = false;
-                                        newCollection[item - 1].Name = "EHFEFEFEFEFEFE";
-                                    }
-                                }*/
+            if (achievements.SelectedItems.Count != 0)
+                achievements.UnselectAll();
 
+            for (int i = 0; i < ((AchievementsViewModel)this.DataContext).Achievements.Count; i++)
+            {
+                if (!((AchievementsViewModel)this.DataContext).Achievements[i].IsSet)
+                {
+                    ((ListBoxItem)achievements.ItemContainerGenerator.ContainerFromIndex(i)).IsSelected = true;
+                }
             }
-            achievements.UnselectAll();
+
         }
+
+        private void SelectUnlocked_Click(object sender, RoutedEventArgs e)
+        {
+            if (achievements.SelectedItems.Count != 0)
+                achievements.UnselectAll();
+
+
+            for (int i = 0; i < ((AchievementsViewModel)this.DataContext).Achievements.Count; i++)
+            {
+                if (((AchievementsViewModel)this.DataContext).Achievements[i].IsSet)
+                {
+                    ((ListBoxItem)achievements.ItemContainerGenerator.ContainerFromIndex(i)).IsSelected = true;
+                }
+            }
+        }
+
     }
 }
