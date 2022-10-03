@@ -15,7 +15,8 @@ namespace Steam_Account_Manager.ViewModels
               _autoGetSteamId,
               _apiKeyError,
               _passwordError,
-              _rememberPassword;
+              _rememberPassword,
+              _autoStartup;
 
         string _webApiKey,
                _encryptingKey,
@@ -29,6 +30,15 @@ namespace Steam_Account_Manager.ViewModels
 
         #region Properties
 
+        public bool AutoStartup
+        {
+            get => _autoStartup;
+            set
+            {
+                _autoStartup = value;
+                OnPropertyChanged(nameof(AutoStartup));
+            }
+        }
         public bool RememberPassword
         {
             get => _rememberPassword;
@@ -173,6 +183,7 @@ namespace Steam_Account_Manager.ViewModels
             WebApiKey           = Config.Properties.WebApiKey;
             AutoGetSteamId      = Config.Properties.AutoGetSteamId;
             RememberPassword    = Config.Properties.RememberPassword;
+            AutoStartup         = Config.Properties.AutoStartup;
 
             LocaleMode[(byte)Config.Properties.Language] = true;
             ThemeMode[(byte)Config.Properties.Theme]     = true;
@@ -207,12 +218,20 @@ namespace Steam_Account_Manager.ViewModels
                         Config.Properties.Language = (Infrastructure.Models.Languages)index;
                     }
 
+                    if (AutoStartup)
+                    {
+                        Utilities.SetAutostartupRegistry();
+                    }
+                    else
+                        Utilities.RemoveAutoStartupRegistry();
+
                     Config.Properties.NoConfirmMode    = NoConfirmMode;
                     Config.Properties.AutoClose        = AutoCloseMode;
                     Config.Properties.TakeAccountInfo  = TakeAccountInfoMode;
                     Config.Properties.WebApiKey        = WebApiKey;
                     Config.Properties.AutoGetSteamId   = AutoGetSteamId;
                     Config.Properties.RememberPassword = RememberPassword;
+                    Config.Properties.AutoStartup      = AutoStartup;
 
                     if (!String.IsNullOrEmpty(Password))
                         Config.Properties.Password = Utilities.Sha256(Password + Config.GetDefaultCryptoKey);

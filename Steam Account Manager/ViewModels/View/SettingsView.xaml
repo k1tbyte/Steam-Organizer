@@ -170,6 +170,21 @@
                 </StackPanel>
 
 
+                <!-- Auto startup -->
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="Auto start when system is turning on" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding AutoStartup}"
+                          Style="{StaticResource settingsButton}"/>
+                </StackPanel>
+
+
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="{DynamicResource sv_getID}" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding AutoGetSteamId}"
+                          Style="{StaticResource settingsButton}"/>
+                </StackPanel>
+
+
 
                 <!--Set password-->
                 <StackPanel Grid.Row="8" Orientation="Horizontal" Margin="0 5 0 0">
