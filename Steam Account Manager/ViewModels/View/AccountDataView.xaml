@@ -381,7 +381,7 @@
                                            Height="22" Width="22"
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
-                                    <theme:MainPasswordBox Height="20.62" Width="175" Margin="5 0 0 0" VerticalAlignment="Center"
+                                    <theme:MainPasswordBox Height="20.62" Width="165" Margin="0 0 0 0" VerticalAlignment="Center"
                                                Style="{StaticResource PasswordboxTheme}" Password="{Binding Password, UpdateSourceTrigger=PropertyChanged}"/>
                                 </StackPanel>
                             </Border>
@@ -563,7 +563,7 @@
                                            Height="22" Width="22"
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
-                                                <theme:MainPasswordBox Margin="5 0 0 0" Height="20.62" Width="175" VerticalAlignment="Center"
+                                                <theme:MainPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
                                                Style="{StaticResource PasswordboxTheme}" Password="{Binding EmailPass}"/>
                                             </StackPanel>
                                         </Border>
@@ -606,7 +606,7 @@
                                            Height="22" Width="22"
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
-                                                <theme:MainPasswordBox Margin="5 0 0 0" Height="20.62" Width="175" VerticalAlignment="Center"
+                                                <theme:MainPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
                                                Style="{StaticResource PasswordboxTheme}" Password="{Binding RockstarPass}"/>
                                             </StackPanel>
                                         </Border>
@@ -651,7 +651,7 @@
                                            Height="22" Width="22"
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
-                                                <theme:MainPasswordBox Margin="5 0 0 0" Height="20.62" Width="175" VerticalAlignment="Center"
+                                                <theme:MainPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
                                                Style="{StaticResource PasswordboxTheme}" Password="{Binding UplayPass, UpdateSourceTrigger=PropertyChanged}"/>
                                             </StackPanel>
                                         </Border>
@@ -695,7 +695,7 @@
                                            Height="22" Width="22"
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
-                                                <theme:MainPasswordBox Margin="5 0 0 0" Height="20.62" Width="175" VerticalAlignment="Center"
+                                                <theme:MainPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
                                                Style="{StaticResource PasswordboxTheme}" Password="{Binding UplayPass, UpdateSourceTrigger=PropertyChanged}"/>
                                             </StackPanel>
                                         </Border>

@@ -55,7 +55,7 @@
                         <Icon:PackIconMaterial Kind="ShieldKeyOutline" Foreground="{DynamicResource settings_buttons_isMouseOver}"
                                            VerticalAlignment="Center" Height="20" Width="20" />
 
-                        <TextBox x:Name="key" Margin="5 0 0 0" Width="200"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
+                        <TextBox x:Name="key"  Width="195"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
                          VerticalAlignment="Center"  Background="{DynamicResource first_main_color}" MaxLength="44" BorderThickness="0" CaretBrush="White" />
                     </StackPanel>
                 </Border>

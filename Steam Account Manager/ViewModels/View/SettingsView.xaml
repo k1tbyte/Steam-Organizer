@@ -155,7 +155,7 @@
                           Style="{StaticResource settingsButton}"/>
                 </StackPanel>
 
-                <!-- Dont collect information -->
+                <!-- Remember password -->
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_rememberPass}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding RememberPassword}"
@@ -177,12 +177,6 @@
                           Style="{StaticResource settingsButton}"/>
                 </StackPanel>
 
-
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <TextBlock Text="{DynamicResource sv_getID}" Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton IsChecked="{Binding AutoGetSteamId}"
-                          Style="{StaticResource settingsButton}"/>
-                </StackPanel>
 
 
 
@@ -211,7 +205,7 @@
 
                             <Icon:PackIconMaterial Kind="Key" Foreground="{DynamicResource settings_buttons_isMouseOver}"
                                            VerticalAlignment="Center" Height="20" Width="20" />
-                            <theme:MainPasswordBox  Margin="-10 0 0 0" Width="220" Style="{StaticResource PasswordboxTheme}" 
+                            <theme:MainPasswordBox  Width="195" Style="{StaticResource PasswordboxTheme}" 
                                                 Height="20" VerticalAlignment="Center" Password="{Binding Password}"/>
                         </StackPanel>
                     </Border>

@@ -71,7 +71,7 @@
                             <Icon:PackIconMaterial Kind="Key"
                                            Height="34" Width="28"
                                            Foreground="{DynamicResource second_text_color}"/>
-                            <theme:MainPasswordBox Height="18.62"
+                            <theme:MainPasswordBox Height="18.62" Width="180"
                                            Password="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
                                                Style="{StaticResource PasswordboxTheme}"/>
                         </StackPanel>

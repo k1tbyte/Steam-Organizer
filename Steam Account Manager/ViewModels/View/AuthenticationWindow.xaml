@@ -53,7 +53,7 @@
 
                         <Icon:PackIconMaterial Kind="Key" Foreground="{DynamicResource settings_buttons_isMouseOver}"
                                            VerticalAlignment="Center" Height="20" Width="20" />
-                        <theme:MainPasswordBox x:Name="Password" Margin="-10 0 0 0" Width="220" Style="{StaticResource PasswordboxTheme}" 
+                        <theme:MainPasswordBox x:Name="Password" Width="195" Style="{StaticResource PasswordboxTheme}" 
                                                 Height="20" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
