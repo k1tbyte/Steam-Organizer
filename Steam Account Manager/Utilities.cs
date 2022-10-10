@@ -258,7 +258,7 @@ namespace Steam_Account_Manager
             };
         }
 
-        public static void KillSteamAndConnect(string steamDir,string args="")
+        public static void KillSteamAndConnect(string steamDir,string args="-noreactlogin")
         {
             using (Process processSteam = new Process())
             {
@@ -273,7 +273,7 @@ namespace Steam_Account_Manager
             {
                 processSteam.StartInfo.UseShellExecute = true;
                 processSteam.StartInfo.FileName = steamDir;
-                processSteam.StartInfo.Arguments = args;
+                processSteam.StartInfo.Arguments = "-noreactlogin";
                 processSteam.Start();
             };
         }

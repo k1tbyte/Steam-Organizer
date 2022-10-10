@@ -112,14 +112,14 @@ namespace Steam_Account_Manager.ViewModels
                 MainWindowViewModel.IsEnabledForUser = false;
                 try
                 {
-                    Utilities.KillSteamAndConnect(Config.Properties.SteamDirection, "-login " + _login + " " + _password + " -tcp");
+                    Utilities.KillSteamAndConnect(Config.Properties.SteamDirection, "-noreactlogin -login " + _login + " " + _password + " -tcp");
                     success = true;
                 }
                 catch
                 {
                     try
                     {
-                        Utilities.KillSteamAndConnect(Utilities.GetSteamRegistryDirection(), "-login " + _login + " " + _password + " -tcp");
+                        Utilities.KillSteamAndConnect(Utilities.GetSteamRegistryDirection(), "-noreactlogin -login " + _login + " " + _password + " -tcp");
                         Config.SaveProperties();
                         success = true;
                     }

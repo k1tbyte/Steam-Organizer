@@ -139,7 +139,7 @@ namespace Steam_Account_Manager.Infrastructure
                             Automation.RemoveAllEventHandlers();
                         }
                     }
-                    if (element.Current.ClassName.Equals("vguiPopupWindow") && element.Current.Name.Contains("Steam") && element.Current.Name.Length > 5)
+                    if (element.Current.Name.Contains("Steam") && element.Current.Name.Length > 5)
                     {
                         Thread.Sleep(500);
                         ForceWindowToForeground((IntPtr)element.Current.NativeWindowHandle);
