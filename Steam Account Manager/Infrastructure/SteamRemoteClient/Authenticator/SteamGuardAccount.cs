@@ -255,7 +255,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
         {
             string url = SteamWeb.COMMUNITY_BASE + "/mobileconf/ajaxop";
             string queryString = "?op=" + op + "&";
-            queryString += GenerateConfirmationQueryParams(op);
+            queryString += await GenerateConfirmationQueryParams(op).ConfigureAwait(false);
             queryString += "&cid=" + conf.ID + "&ck=" + conf.Key;
             url += queryString;
 
