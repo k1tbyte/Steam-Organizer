@@ -10,7 +10,7 @@ namespace Steam_Account_Manager
     public partial class App : Application
     {
         static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager");
-        public static readonly uint Version = 205;
+        public static readonly uint Version = 206;
         public static bool IsShuttingDown { get; set; }
 
         [STAThread]

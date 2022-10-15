@@ -660,7 +660,7 @@
 
                             </Border>
 
-                            <!-- UPlay data -->
+                            <!-- Origin data -->
                             <TextBlock Text="Origin (additionaly)" FontSize="16" Margin="0 20 0 10"
                                        Foreground="{DynamicResource second_text_color}">
                                 <ToggleButton  x:Name="expandButtonOrigin" Style="{StaticResource showButton}" IsChecked="False"/>
@@ -681,7 +681,7 @@
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                                 <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_borders_background}"
-                                         MaxLength="50" Width="173" Text="{Binding UplayEmail, UpdateSourceTrigger=PropertyChanged}"/>
+                                         MaxLength="50" Width="173" Text="{Binding OriginEmail, UpdateSourceTrigger=PropertyChanged}"/>
                                             </StackPanel>
                                         </Border>
 
@@ -696,7 +696,7 @@
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                                 <theme:MainPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
-                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding UplayPass, UpdateSourceTrigger=PropertyChanged}"/>
+                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding OriginPass, UpdateSourceTrigger=PropertyChanged}"/>
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>
