@@ -65,7 +65,7 @@
                                FontSize="12"
                                Foreground="{DynamicResource sub_accounttab_text}" FontWeight="Medium"/>
                         <TextBox Background="{DynamicResource first_main_color}" BorderThickness="0"
-                            FontSize="12" FontWeight="Normal"  Foreground="#b0b9c6"
+                            FontSize="12" FontWeight="Normal"  Foreground="{DynamicResource atv_id}"
                                  Text="{Binding SteamId}" IsReadOnly="True" />
                     </StackPanel>
                 </StackPanel>
@@ -105,7 +105,7 @@
                     <TextBlock Text="LvL:" HorizontalAlignment="Left"
                                VerticalAlignment="Center"
                                FontSize="14" Margin="20 0 0 0"
-                               Foreground="{DynamicResource default_foreground}" FontWeight="Medium"/>
+                               Foreground="{DynamicResource account_tab_nickname}" FontWeight="Medium"/>
                     <Grid>
                         <icon:PackIconMaterial Kind="CircleOutline"
                                        Grid.Column="3"

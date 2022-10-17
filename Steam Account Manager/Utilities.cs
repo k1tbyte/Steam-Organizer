@@ -223,27 +223,6 @@ namespace Steam_Account_Manager
             catch { throw; }
         } 
 
-        public static void SetAutostartupRegistry()
-        {
-            using(var registryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
-            {
-                if (String.IsNullOrEmpty((registryKey.GetValue("Steam Account Manager") as string)))
-                {
-                    registryKey.SetValue("Steam Account Manager", System.Windows.Forms.Application.ExecutablePath);
-                }
-            }
-        }
-
-        public static void RemoveAutoStartupRegistry()
-        {
-            using (var registryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
-            {
-                if (!String.IsNullOrEmpty((registryKey.GetValue("Steam Account Manager") as string)))
-                {
-                    registryKey.DeleteValue("Steam Account Manager",false);
-                }
-            }
-        }
         #endregion
 
         public static void KillSteamProcess()

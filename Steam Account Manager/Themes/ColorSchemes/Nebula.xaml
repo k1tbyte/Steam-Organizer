@@ -35,6 +35,7 @@
     <Brush x:Key="vac_border_text">#1f2b3a</Brush>
     <Brush x:Key="sub_accounttab_text">#A9D1F6</Brush>
     <Brush x:Key="atv_rectangles_shadow">#ffff</Brush>
+    <Brush x:Key="atv_id">#b0b9c6</Brush>
     
 
     <!-- Settings view -->
@@ -55,14 +56,15 @@
     <Brush x:Key="adv_borders_background">#2F4961</Brush>
     <Brush x:Key="adv_csgo_text_foreground">#ffff</Brush>
     <Brush x:Key="adv_service_buttons_isMouseOver">#ffff</Brush>
-
+    <Brush x:Key="adv_background">#1f2b3a</Brush>
+    
     
     <!--#region Remote Control -->
 
     <!-- Login view -->
     <Brush x:Key="rc_lv_main_text">#A9D1F6</Brush>
     <Brush x:Key="rc_selected_item_backgound">#1FAED6</Brush>
-
+    <Brush x:Key="rc_button_back">#2F4961</Brush>
     <!--#endregion-->
 
 

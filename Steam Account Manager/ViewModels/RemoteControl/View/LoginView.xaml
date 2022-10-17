@@ -100,8 +100,8 @@
                     <TextBlock Grid.Row="3" VerticalAlignment="Top" FontSize="11"
                        Grid.RowSpan="4" Margin="15 5 20 0" Padding="8 0 20 0" 
                        Foreground="PaleVioletRed" TextWrapping="Wrap" Text="{Binding ErrorMsg,UpdateSourceTrigger=PropertyChanged}" />
-                    <Button Margin="0 10 0 20" Style="{StaticResource defaultButton}" Content="Login" IsDefault="True"
-                        Background="{DynamicResource adv_borders_background}" Width="100" Command="{Binding LogOnCommand}">
+                    <Button Margin="0 10 0 20" Style="{StaticResource defaultButtonColored}" Content="Login" IsDefault="True"
+                         Width="100" Command="{Binding LogOnCommand}">
                     </Button>
 
                 </StackPanel>
@@ -124,7 +124,7 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Border Name="Mask"
-                        Background="{DynamicResource adv_borders_background}"
+                        Background="{DynamicResource rc_button_back}"
                         BorderBrush="{DynamicResource account_picture_border}"
                         BorderThickness="1"
                         CornerRadius="13"/>
@@ -162,12 +162,12 @@
             </TextBlock>
             
             <StackPanel Orientation="Horizontal" Margin="40 0 0 15" VerticalAlignment="Bottom" HorizontalAlignment="Left">
-                <Button x:Name="RecentlyDelete" Style="{StaticResource defaultButton}"  Background="{DynamicResource adv_borders_background}"
+                <Button x:Name="RecentlyDelete" Style="{StaticResource defaultButtonColored}"
                         Width="30" Height="30" Click="RecentlyDelete_Click"
                         MouseEnter="RecentlyDelete_MouseEnter" MouseLeave="Popup_MouseLeave">
                     <Icon:Material Kind="TrashCan"/>
                 </Button>
-                <Button x:Name="RecentlyLogOn" Style="{StaticResource defaultButton}"  Background="{DynamicResource adv_borders_background}"
+                <Button x:Name="RecentlyLogOn" Style="{StaticResource defaultButtonColored}" 
                         Command="{Binding RecentlyLogOnCommand}"  Margin="10 0 0 0" CommandParameter="{Binding ElementName=Recently}" Width="30" Height="30"
                         MouseEnter="RecentlyLogOn_MouseEnter" MouseLeave="Popup_MouseLeave">
                     <Icon:Material Kind="Login"/>
@@ -199,7 +199,7 @@
         <Border Visibility="{Binding SuccessLogOn,Converter={StaticResource BoolToVis}}" BorderThickness="0.8"
                 Background="{DynamicResource first_main_color}" CornerRadius="25" >
             <Grid>
-                <Button x:Name="logoutButton" Style="{StaticResource defaultButton}"  Background="{DynamicResource adv_borders_background}"
+                <Button x:Name="logoutButton" Style="{StaticResource defaultButtonColored}"
                         MouseEnter="logoutButton_MouseEnter" MouseLeave="Popup_MouseLeave"
                          CommandParameter="{Binding ElementName=Recently}" Command="{Binding LogOutCommand}"
                          VerticalAlignment="Top" HorizontalAlignment="Left" Width="45" Height="30" Margin="23 21 0 0">

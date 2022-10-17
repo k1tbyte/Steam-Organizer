@@ -101,7 +101,7 @@
             <theme:MainPopup  x:Name="Header" Foreground="White"/>
         </Popup>
 
-        <Border Width="580" Grid.Row="1" HorizontalAlignment="Left" CornerRadius="15" Background="{DynamicResource first_main_color}"/>
+        <Border Width="580" Grid.Row="1" HorizontalAlignment="Left" CornerRadius="15" Background="{DynamicResource adv_background}"/>
 
 
         <!-- Cancel button -->

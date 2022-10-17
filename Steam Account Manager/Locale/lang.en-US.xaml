@@ -65,7 +65,7 @@
     <v:String x:Key="adv_error_login_empty">The login field is empty!</v:String>
     <v:String x:Key="adv_error_login_contain_spaces">Login cannot contain spaces!</v:String>
     <v:String x:Key="adv_error_login_shortage">The minimum login length is 3 characters!</v:String>
-    <v:String x:Key="adv_error_login_overflow">The maximum login length is 20 characters!</v:String>
+    <v:String x:Key="adv_error_login_overflow">The maximum login length is 32 characters!</v:String>
     <v:String x:Key="adv_error_pass_empty">The password field is empty!</v:String>
     <v:String x:Key="adv_error_pass_shortage">The minimum password length is 8 characters!</v:String>
     <v:String x:Key="adv_error_pass_overflow">The maximum password length is 50 characters!</v:String>

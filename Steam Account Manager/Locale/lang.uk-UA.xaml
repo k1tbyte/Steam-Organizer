@@ -63,11 +63,11 @@
     <v:String x:Key="adv_error_login_empty">Поле з логіном пусте!</v:String>
     <v:String x:Key="adv_error_login_contain_spaces">Логін не може містити пробіли!</v:String>
     <v:String x:Key="adv_error_login_shortage">Мінімальна довжина логіну 3 символи!</v:String>
-    <v:String x:Key="adv_error_login_overflow">Максимальна довжина логіну 20 символів!</v:String>
+    <v:String x:Key="adv_error_login_overflow">Максимальна довжина логіну 32 символів!</v:String>
     <v:String x:Key="adv_error_pass_empty">Поле с паролем пусте!</v:String>
     <v:String x:Key="adv_error_pass_shortage">Мінімальна довжина пароля 8 символів!</v:String>
     <v:String x:Key="adv_error_pass_overflow">Максимальна довжина пароля 50 символів!</v:String>
-    <v:String x:Key="adv_error_nickError">Довжина ніка може бути від 2 до 32 символів</v:String>
+    <v:String x:Key="adv_error_nickError">Довжина ніку може бути від 2 до 32 символів</v:String>
     <v:String x:Key="adv_error_error403">Помилка: (403) Steam не відповідає або веб-ключ Steam API недійсний</v:String>
     <v:String x:Key="adv_info_connection_check">Виконується перевірка мережі...</v:String>
     <v:String x:Key="adv_info_collect_data">Збір інформації про обліковий запис...</v:String>
@@ -269,6 +269,26 @@
     <v:String x:Key="rc_fv_friends">Друзів:</v:String>
     <v:String x:Key="rc_fv_Name">Нікнейм</v:String>
     <v:String x:Key="rc_fv_friendSince">Друг з</v:String>
+    <!--#endregion-->
+
+    <!--#region NewRegion -->
+    <x:ArrayExtension x:Key="rc_swv_privacy" Type="v:String">
+        <v:String>Unknown</v:String>
+        <v:String>Private</v:String>
+        <v:String>Friends only</v:String>
+        <v:String>Public</v:String>
+    </x:ArrayExtension>
+
+    <x:ArrayExtension x:Key="rc_swv_privacyComment" Type="v:String">
+        <v:String>Friends only</v:String>
+        <v:String>Public</v:String>
+        <v:String>Private</v:String>
+    </x:ArrayExtension>
+
+    <x:ArrayExtension x:Key="rc_swv_subPrivacy" Type="v:String">
+        <v:String>Private</v:String>
+        <v:String>Public</v:String>
+    </x:ArrayExtension>
     <!--#endregion-->
 
     <!--#endregion-->

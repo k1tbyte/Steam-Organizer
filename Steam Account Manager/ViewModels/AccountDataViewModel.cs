@@ -744,7 +744,7 @@ namespace Steam_Account_Manager.ViewModels
                     SteamDataValidateError = (string)Application.Current.FindResource("adv_error_login_shortage");
                 }
 
-                else if (Login.Length > 20)
+                else if (Login.Length > 32)
                 {
                     SteamDataValidateError = (string)Application.Current.FindResource("adv_error_login_overflow");
                 }
@@ -779,9 +779,10 @@ namespace Steam_Account_Manager.ViewModels
                     Config.Accounts[id].RockstarEmail = RockstarEmail;
                     Config.Accounts[id].RockstarPass  = RockstarPass;
                     Config.Accounts[id].UplayEmail    = UplayEmail;
-                    Config.Accounts[id].UplayPass     = UplayPass;
-                    Config.Accounts[id].OriginEmail = OriginEmail;
-                    Config.Accounts[id].OriginPass  = OriginPass;
+                    Config.Accounts[id].UplayPass      = UplayPass;
+                    Config.Accounts[id].OriginEmail    = OriginEmail;
+                    Config.Accounts[id].OriginPass     = OriginPass;
+                    Config.Accounts[id].AccCreatedDate = DateTime.Now;
                     Config.SaveAccounts();
                     Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_changesSaved")));
 

@@ -102,6 +102,20 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="defaultButtonColored" TargetType="Button" BasedOn="{StaticResource defaultButton}">
+        <Setter Property="Background" Value="{DynamicResource rc_button_back}"/>
+        <Style.Triggers>
+            <Trigger Property="IsPressed" Value="true">
+                <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
+                <Setter Property="Foreground" Value="#ffffff"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="saveAccontButton" TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
         <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
@@ -550,7 +564,7 @@
             </Trigger>
             <Trigger Property="IsChecked" Value="false">
                 <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
-                <Setter Property="Background" Value="{DynamicResource adv_borders_background}"/>
+                <Setter Property="Background" Value="{DynamicResource rc_button_back}"/>
                 <Setter Property="Content" Value="{DynamicResource rc_gv_idle}"/>
             </Trigger>
         </Style.Triggers>

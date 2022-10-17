@@ -63,7 +63,7 @@
     <v:String x:Key="adv_error_login_empty">Поле с логином пустое!</v:String>
     <v:String x:Key="adv_error_login_contain_spaces">Логин не может содержать пробелы!</v:String>
     <v:String x:Key="adv_error_login_shortage">Минимальная длина логина 3 символа!</v:String>
-    <v:String x:Key="adv_error_login_overflow">Максимальная длина логина 20 символов!</v:String>
+    <v:String x:Key="adv_error_login_overflow">Максимальная длина логина 32 символов!</v:String>
     <v:String x:Key="adv_error_pass_empty">Поле с паролем пустое!</v:String>
     <v:String x:Key="adv_error_pass_shortage">Минимальная длина пароля 8 символов!</v:String>
     <v:String x:Key="adv_error_pass_overflow">Максимальная длина пароля 50 символов!</v:String>
@@ -271,7 +271,27 @@
     <v:String x:Key="rc_fv_Name">Имя</v:String>
     <v:String x:Key="rc_fv_friendSince">Друг с</v:String>
     <!--#endregion-->
-    
+
+    <!--#region NewRegion -->
+    <x:ArrayExtension x:Key="rc_swv_privacy" Type="v:String">
+        <v:String>Неизвестно</v:String>
+        <v:String>Приватно</v:String>
+        <v:String>Только для друзей</v:String>
+        <v:String>Публично</v:String>
+    </x:ArrayExtension>
+
+    <x:ArrayExtension x:Key="rc_swv_privacyComment" Type="v:String">
+        <v:String>Только для друзей</v:String>
+        <v:String>Публично</v:String>
+        <v:String>Приватно</v:String>
+    </x:ArrayExtension>
+
+    <x:ArrayExtension x:Key="rc_swv_subPrivacy" Type="v:String">
+        <v:String>Приватно</v:String>
+        <v:String>Публично</v:String>
+    </x:ArrayExtension>
+    <!--#endregion-->
+
     <!--#endregion-->
 
 </ResourceDictionary>
