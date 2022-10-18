@@ -9,7 +9,7 @@
              xmlns:converters="clr-namespace:Steam_Account_Manager.Infrastructure.Converters">
     <Application.Resources>
         <ResourceDictionary>
-            
+
             <ResourceDictionary.MergedDictionaries>
 
                 <ResourceDictionary Source="Themes/ScrollBarStyle.xaml"/>
@@ -31,7 +31,7 @@
                 <ResourceDictionary Source="Themes/ColorSchemes/Dark.xaml"/>
 
                 <ResourceDictionary Source="Locale/lang.en-US.xaml" />
-                
+
 
             </ResourceDictionary.MergedDictionaries>
 

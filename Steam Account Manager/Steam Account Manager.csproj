@@ -168,6 +168,9 @@
     <Compile Include="Themes\MessageBoxes\PopupMessageBoxView.xaml.cs">
       <DependentUpon>PopupMessageBoxView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Themes\TrayMenu.xaml.cs">
+      <DependentUpon>TrayMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utilities.cs" />
     <Compile Include="ViewModels\AccountDataViewModel.cs" />
     <Compile Include="ViewModels\AccountsViewModel.cs" />
@@ -318,6 +321,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\ScrollBarStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\TrayMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

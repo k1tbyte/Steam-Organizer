@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Shell;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -32,7 +33,30 @@ namespace Steam_Account_Manager.ViewModels
         public static event EventHandler NowLoginUserNicknameChanged;
         private static int _totalAccounts;
         private static string _nowLoginUserImage, _nowLoginUserNickname;
-        private bool _updateDetect;
+        private bool _updateDetect,_showInTaskbar;
+        private WindowState _windowState;
+
+        public WindowState WindowState
+        {
+            get => _windowState;
+            set
+            {
+
+                ShowInTaskbar = value == WindowState.Minimized;
+                Set(ref _windowState, value);
+
+            }
+        }
+        
+        public bool ShowInTaskbar
+        {
+            get => _showInTaskbar;
+            set
+            {
+                _showInTaskbar = value;
+                OnPropertyChanged(nameof(ShowInTaskbar));
+            }
+        }
 
         public bool UpdateDetect
         {
@@ -132,18 +156,6 @@ namespace Steam_Account_Manager.ViewModels
         }
 
 
-        private WindowState _mainWindowState;
-
-        public WindowState MainWindowState
-        {
-            get { return _mainWindowState; }
-            set
-            {
-                _mainWindowState = value;
-                base.OnPropertyChanged("MainWindowState");
-            }
-        }
-
         public static async Task<bool> NowLoginUserParse(ushort awaitingMs=0)
         {
             bool accountDetected = false;
@@ -226,7 +238,7 @@ namespace Steam_Account_Manager.ViewModels
 
             MinimizeCommand = new RelayCommand(o =>
             {
-                MainWindowState = WindowState.Minimized;
+                WindowState = WindowState.Minimized;
             });
 
             LogoutCommand = new RelayCommand(o =>
@@ -260,7 +272,8 @@ namespace Steam_Account_Manager.ViewModels
             {
                 UpdateDetect = false;
             });
-            
+
+
         }
     }
 }
