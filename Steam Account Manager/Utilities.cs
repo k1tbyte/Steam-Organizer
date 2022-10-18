@@ -56,7 +56,6 @@ namespace Steam_Account_Manager
             return Convert.ToUInt32(lId);
         }
 
-        
 
         public static ref HttpClient CreateHttpClientFactory()
         {

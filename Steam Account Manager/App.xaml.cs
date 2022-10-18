@@ -32,6 +32,7 @@ namespace Steam_Account_Manager
                         };
 
                         mainWindow.Show();
+                        
                     }
                     catch
                     {
@@ -62,6 +63,7 @@ namespace Steam_Account_Manager
         public static new void Shutdown()
         {
             IsShuttingDown = true;
+            (Application.Current.MainWindow as MainWindow).Dispose();
             Application.Current.Shutdown();
         }
     }

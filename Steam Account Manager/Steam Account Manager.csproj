@@ -168,7 +168,7 @@
     <Compile Include="Themes\MessageBoxes\PopupMessageBoxView.xaml.cs">
       <DependentUpon>PopupMessageBoxView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\TrayMenu.xaml.cs">
+    <Compile Include="TrayMenu.xaml.cs">
       <DependentUpon>TrayMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities.cs" />
@@ -324,7 +324,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\TrayMenu.xaml">
+    <Page Include="TrayMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

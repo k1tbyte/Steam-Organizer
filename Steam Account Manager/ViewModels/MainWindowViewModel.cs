@@ -1,4 +1,5 @@
-﻿using Steam_Account_Manager.Infrastructure;
+﻿using Newtonsoft.Json.Linq;
+using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.ViewModels.RemoteControl;
 using Steam_Account_Manager.ViewModels.RemoteControl.View;
 using Steam_Account_Manager.ViewModels.View;
@@ -233,6 +234,13 @@ namespace Steam_Account_Manager.ViewModels
 
             CloseCommand = new RelayCommand(o =>
             {
+                if (Config.Properties.MinimizeToTray)
+                {
+                    ShowInTaskbar = false;
+                    WindowState = WindowState.Minimized;
+                    return;
+                }
+                
                 App.Shutdown();
             });
 

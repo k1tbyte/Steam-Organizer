@@ -34,6 +34,7 @@ namespace Steam_Account_Manager.Infrastructure.Models
         public bool AutoClose { get; set; }
         public bool AutoGetSteamId { get; set; }
         public bool RememberPassword { get; set; }
+        public bool MinimizeToTray { get; set; }
         public string WebApiKey { get; set; }
         public string UserCryptoKey { get; set; }
         public string Password { get; set; }

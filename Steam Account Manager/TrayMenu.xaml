@@ -1,9 +1,10 @@
-﻿<Window x:Class="Steam_Account_Manager.Themes.TrayMenu"
+﻿<Window x:Class="Steam_Account_Manager.TrayMenu"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Steam_Account_Manager.Themes" xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:local="clr-namespace:Steam_Account_Manager" 
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
          Height="94" Width="160" ShowInTaskbar="False"
     WindowStyle="None" AllowsTransparency="True" 
@@ -38,19 +39,19 @@
     </Window.Resources>
     <Border Background="{DynamicResource background_border_color}" CornerRadius="5">
         <StackPanel Margin="0 5 0 5">
-            <Button Style="{StaticResource trayButton}">
+            <Button Style="{StaticResource trayButton}" Click="ShowOrHide_Click">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial Kind="ViewGrid" Padding="2" Margin="0 3 10 0"/>
                     <TextBlock Text="Show/Hide"/>
                 </StackPanel>
             </Button>
-            <Button Style="{StaticResource trayButton}">
+            <Button Style="{StaticResource trayButton}" Click="Options_Click">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial Kind="Cog" Padding="2" Margin="0 3 10 0"/>
                     <TextBlock Text="Options"/>
                 </StackPanel>
             </Button>
-            <Button Style="{StaticResource trayButton}">
+            <Button Style="{StaticResource trayButton}" Click="Exit_Button_Click">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial Kind="ExitToApp" Padding="2" Margin="0 3 10 0"/>
                     <TextBlock Text="Exit"/>
