@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Windows.Data;
 using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.Themes.MessageBoxes;
+using System.Linq;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -170,6 +171,7 @@ namespace Steam_Account_Manager.ViewModels
                              Config.Accounts[i].OriginPass,
                              Config.Accounts[i].CsgoStats,
                              Config.Accounts[i].AuthenticatorPath);
+
                         ids.Add(i);
                     }
                     MainWindowViewModel.UpdatedAccountIndex = 0;
@@ -231,6 +233,9 @@ namespace Steam_Account_Manager.ViewModels
 
             YesButtonCommand = new RelayCommand(o =>
             {
+                var trayAccount = Config.Properties.RecentlyLoggedUsers.Find(obj => obj.SteamID64 == Config.Accounts[TempId].SteamId64);
+                if (trayAccount != null)
+                    Config.Properties.RecentlyLoggedUsers.Remove(trayAccount);
 
                 Config.Accounts.RemoveAt(TempId);
                 AccountTabViews.RemoveAt(TempId);

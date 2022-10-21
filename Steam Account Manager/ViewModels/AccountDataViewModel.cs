@@ -647,17 +647,22 @@ namespace Steam_Account_Manager.ViewModels
             {
                 try
                 {
-                    currentAccount = new Account(currentAccount.Login, currentAccount.Password, currentAccount.SteamId64)
-                    {
-                        CsgoStats     = currentAccount.CsgoStats,
-                        Note          = currentAccount.Note,
-                        EmailLogin    = currentAccount.EmailLogin,
-                        EmailPass     = currentAccount.EmailPass,
-                        RockstarEmail = currentAccount.RockstarEmail,
-                        RockstarPass  = currentAccount.RockstarPass,
-                        UplayEmail    = currentAccount.UplayEmail,
-                        UplayPass     = currentAccount.UplayPass
-                    };
+                    currentAccount = new Account(
+                        currentAccount.Login,
+                        currentAccount.Password,
+                        currentAccount.SteamId64,
+                        currentAccount.Note,
+                        currentAccount.EmailLogin,
+                        currentAccount.EmailPass,
+                        currentAccount.RockstarEmail,
+                        currentAccount.RockstarPass,
+                        currentAccount.UplayEmail,
+                        currentAccount.UplayPass,
+                        currentAccount.OriginEmail,
+                        currentAccount.OriginPass,
+                        currentAccount.CsgoStats,
+                        currentAccount.AuthenticatorPath
+                        );
 
                     Config.Accounts[id] = currentAccount;
                     Config.SaveAccounts();

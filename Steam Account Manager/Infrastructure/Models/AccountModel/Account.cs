@@ -92,7 +92,6 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
             SteamParser steamParser = new SteamParser(steamId64);
             steamParser.AccountParse().GetAwaiter().GetResult();
 
-            this.Nickname            = steamParser.GetNickname;
             this.AvatarFull          = steamParser.GetAvatarUrlFull;
             this.ProfileURL          = steamParser.GetCustomProfileUrl;
             this.ProfileVisility     = steamParser.GetProfileVisiblity;
@@ -126,6 +125,28 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
             this.UplayPass     = uplayPass;
             this.OriginPass    = originPass;
             this.OriginEmail   = originEmail;
+
+             
+            if(this.Nickname != steamParser.GetNickname)
+            {
+                this.Nickname = steamParser.GetNickname;
+                foreach (var item in Config.Properties.RecentlyLoggedUsers)
+                {
+                    if (item.SteamID64 == this.SteamId64 && item.Nickname != this.Nickname)
+                    {
+                        Config.Properties.RecentlyLoggedUsers[Config.Properties.RecentlyLoggedUsers.IndexOf(item)] = new RecentlyLoggedUser()
+                        {
+                            SteamID64 = item.SteamID64,
+                            IsRewritable = item.IsRewritable,
+                            Nickname = this.Nickname
+
+                        };
+                        Config.SaveProperties();
+                        break;
+                    }
+                }
+            }
+
         }
 
         public Account(string login,string password,string nickname,bool empty)

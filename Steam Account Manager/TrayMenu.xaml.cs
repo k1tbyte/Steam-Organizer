@@ -1,7 +1,11 @@
-﻿using Steam_Account_Manager.ViewModels;
+﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Models;
+using Steam_Account_Manager.ViewModels;
 using System;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows;
+using System.Linq;
 using System.Windows.Input;
 using WinForms = System.Windows.Forms;
 
@@ -10,9 +14,13 @@ namespace Steam_Account_Manager
     public partial class TrayMenu : Window, IDisposable
     {
         private WinForms.NotifyIcon TrayIcon = new WinForms.NotifyIcon();
+        private double BaseHeight = 94d;
         public TrayMenu()
         {
             InitializeComponent();
+            box.ItemsSource = Config.Properties.RecentlyLoggedUsers;
+            //   this.DataContext = new TrayViewModel(); 
+            this.box.ItemsSource = Config.Properties.RecentlyLoggedUsers;
             TrayIcon = new WinForms.NotifyIcon()
             {
                 Text = "Steam Account Manager",
@@ -62,6 +70,11 @@ namespace Steam_Account_Manager
         public new void Show()
         {
             this.Topmost = true;
+            var newHeight = BaseHeight + Config.Properties.RecentlyLoggedUsers.Count * 28;
+            if (this.Height != newHeight)
+                this.Height = newHeight;
+            
+
             base.Show();
 
             this.Owner = System.Windows.Application.Current.MainWindow;
@@ -93,6 +106,15 @@ namespace Steam_Account_Manager
                 App.Current.MainWindow.WindowState = WindowState.Normal;
             }
             MainWindowViewModel.SettingsViewCommand.Execute(null);
+            this.Hide();
+        }
+
+        private void box_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            var idx = Config.Accounts.FindIndex(o => o.SteamId64 == (box.SelectedItem as RecentlyLoggedUser).SteamID64);
+
+            if(idx != -1)
+                 (AccountsViewModel.AccountTabViews[idx].DataContext as AccountTabViewModel).ConnectToSteamCommand.Execute(null);
             this.Hide();
         }
     }

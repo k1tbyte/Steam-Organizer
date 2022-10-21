@@ -172,7 +172,7 @@ namespace Steam_Account_Manager
                 }
 
             }
-            catch { throw; }
+            catch { return null; }
         }
 
         public static int GetSteamRegistryHWND()
@@ -271,7 +271,7 @@ namespace Steam_Account_Manager
             {
                 processSteam.StartInfo.UseShellExecute = true;
                 processSteam.StartInfo.FileName = steamDir;
-                processSteam.StartInfo.Arguments = "-noreactlogin";
+                processSteam.StartInfo.Arguments = args;
                 processSteam.Start();
             };
         }

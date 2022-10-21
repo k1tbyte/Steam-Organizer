@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
+using System.Collections.ObjectModel;
 
 namespace Steam_Account_Manager.Infrastructure
 {
@@ -23,7 +24,8 @@ namespace Steam_Account_Manager.Infrastructure
             {
                 UserCryptoKey = CryptoKey,
                 Theme = Models.Themes.Dark,
-                Language = Languages.English
+                Language = Languages.English,
+                RecentlyLoggedUsers = new List<RecentlyLoggedUser>()
             };
             try
             {

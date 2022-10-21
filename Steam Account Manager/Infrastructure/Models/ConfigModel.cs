@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Steam_Account_Manager.Infrastructure.Models.AccountModel;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Security;
@@ -38,6 +40,7 @@ namespace Steam_Account_Manager.Infrastructure.Models
         public string WebApiKey { get; set; }
         public string UserCryptoKey { get; set; }
         public string Password { get; set; }
+        public List<RecentlyLoggedUser> RecentlyLoggedUsers { get; set; }
 
 
         private Themes theme;
@@ -127,4 +130,17 @@ namespace Steam_Account_Manager.Infrastructure.Models
         }
     }
 
+
+    [Serializable]
+    internal sealed class RecentlyLoggedUser
+    {
+        public string Nickname;
+        public bool IsRewritable { get; set; }
+        public string SteamID64 { get; set; }
+
+        public override string ToString()
+        {
+            return Nickname;
+        }
+    }
 }

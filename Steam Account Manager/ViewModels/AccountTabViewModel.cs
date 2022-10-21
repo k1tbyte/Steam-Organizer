@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.Themes.MessageBoxes;
@@ -103,34 +104,17 @@ namespace Steam_Account_Manager.ViewModels
         private async Task ConnectToSteam()
         {
             int id = Id - 1;
-            bool success = false, update = false;
+            bool update = false;
             string authPath;
 
             await Task.Factory.StartNew(async () =>
             {
                 Config.GetPropertiesInstance();
                 MainWindowViewModel.IsEnabledForUser = false;
-                try
+                Config.Properties.SteamDirection = Utilities.GetSteamRegistryDirection();
+                if (Config.Properties.SteamDirection != null)
                 {
-                    Utilities.KillSteamAndConnect(Config.Properties.SteamDirection, "-noreactlogin -login " + _login + " " + _password + " -tcp");
-                    success = true;
-                }
-                catch
-                {
-                    try
-                    {
-                        Utilities.KillSteamAndConnect(Utilities.GetSteamRegistryDirection(), "-noreactlogin -login " + _login + " " + _password + " -tcp");
-                        Config.SaveProperties();
-                        success = true;
-                    }
-                    catch
-                    {
-                        MessageBoxes.PopupMessageBox((string)Application.Current.FindResource("atv_inf_steamNotFound"));
-                    }
-                }
 
-                if(success)
-                {
                     //Copy steam auth code in clipboard
                     if (!String.IsNullOrEmpty(authPath = Config.Accounts[id].AuthenticatorPath) && System.IO.File.Exists(authPath))
                     {
@@ -140,19 +124,69 @@ namespace Steam_Account_Manager.ViewModels
                             JsonConvert.DeserializeObject<SteamGuardAccount>(
                                 System.IO.File.ReadAllText(authPath)).GenerateSteamGuardCode());
                         }));
-                        SteamHandler.VirtualSteamLogger(_login, _password, Config.Properties.RememberPassword, true);
+                        SteamHandler.VirtualSteamLogger(Config.Accounts[id], Config.Properties.RememberPassword, true);
                     }
                     else if (Config.Properties.RememberPassword)
                     {
-                        SteamHandler.VirtualSteamLogger(_login, _password, true, false);
+                        SteamHandler.VirtualSteamLogger(Config.Accounts[id], true, false);
                     }
-                    else if (Config.Properties.AutoClose)
+                    else
+                    {
+                        Utilities.KillSteamAndConnect(Config.Properties.SteamDirection, "-noreactlogin -login " + _login + " " + _password + " -tcp");
+                    }
+
+                    //Сохраняем данные о недавно используемых аккаунтов
+                    if (SteamId != "Unknown" && !Config.Properties.RecentlyLoggedUsers.Any(o => o.SteamID64 == SteamId))
+                    {
+                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            if (Config.Properties.RecentlyLoggedUsers.Count < 5)
+                            {
+
+                                Config.Properties.RecentlyLoggedUsers.Add(new RecentlyLoggedUser
+                                {
+                                    SteamID64 = SteamId,
+                                    IsRewritable = false,
+                                    Nickname = _steamNickname
+                                });
+                                if (Config.Properties.RecentlyLoggedUsers.Count == 5)
+                                    Config.Properties.RecentlyLoggedUsers[0].IsRewritable = true;
+
+
+                            }
+                            else
+                            {
+                                var index = Config.Properties.RecentlyLoggedUsers.FindIndex(o => o.IsRewritable);
+                                Config.Properties.RecentlyLoggedUsers[index] = new RecentlyLoggedUser()
+                                {
+                                    SteamID64 = SteamId,
+                                    Nickname = _steamNickname,
+                                    IsRewritable = false
+                                };
+
+                                if (index == 4)
+                                {
+                                    Config.Properties.RecentlyLoggedUsers[0].IsRewritable = true;
+                                }
+                                else
+                                {
+                                    Config.Properties.RecentlyLoggedUsers[++index].IsRewritable = true;
+                                }
+                            }
+                            Config.SaveProperties();
+                        }));
+                    }
+
+
+                    if (Config.Properties.AutoClose)
                     {
                         Application.Current.Dispatcher.InvokeShutdown();
                     }
 
                     MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_loggedInSteam"));
                     MainWindowViewModel.IsEnabledForUser = true;
+
+                    //Если надо получить данные об аккаунте без информации
                     if (MainWindowViewModel.NowLoginUserParse(15000).Result && Config.Properties.AutoGetSteamId && !Config.Accounts[id].ContainParseInfo)
                     {
                         try
@@ -179,8 +213,13 @@ namespace Steam_Account_Manager.ViewModels
                             MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
                         }
                     }
-
                 }
+                else
+                {
+                    MessageBoxes.PopupMessageBox((string)Application.Current.FindResource("atv_inf_steamNotFound"));
+                    return;
+                }
+
             });
             if(update) AccountsViewModel.UpdateAccountTabView(id);
         }

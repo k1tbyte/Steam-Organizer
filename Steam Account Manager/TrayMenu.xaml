@@ -10,7 +10,9 @@
     WindowStyle="None" AllowsTransparency="True" 
     Background="Transparent"
         Title="TrayMenu">
+
     <Window.Resources>
+        
         <Style x:Key="trayButton" TargetType="Button">
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -23,7 +25,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="0" BorderThickness="0" Opacity="0.9">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Left" Margin="10 0 0 0" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -37,8 +39,42 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
+
     <Border Background="{DynamicResource background_border_color}" CornerRadius="5">
-        <StackPanel Margin="0 5 0 5">
+        <StackPanel Margin="0 5 0 5" VerticalAlignment="Bottom">
+            <ListBox Background="Transparent" BorderThickness="0" 
+                     SelectionMode="Single" SelectionChanged="box_SelectionChanged"
+                     Foreground="{DynamicResource default_foreground}" x:Name="box"
+                     Margin="0 0 0 0" ItemsSource="{Binding RecentlyLoggedUsers,UpdateSourceTrigger=PropertyChanged}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="FontSize" Value="14"/>
+                        <Setter Property="Height" Value="28"/>
+                        <Setter Property="FontWeight" Value="Normal"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Grid>
+                                        <Border  Name="Border" SnapsToDevicePixels="True" Background="Transparent"/>
+                                        <ContentPresenter Margin="10 0 0 0"  VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter TargetName="Border" Property="Background"
+                                    Value="{DynamicResource ResourceKey=first_main_color}"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                    </Style>
+                </ListBox.ItemContainerStyle>
+
+            </ListBox>
+            <Rectangle Margin="10 3 10 0" Fill="{DynamicResource settings_rectangle}" Height="1"/>
             <Button Style="{StaticResource trayButton}" Click="ShowOrHide_Click">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial Kind="ViewGrid" Padding="2" Margin="0 3 10 0"/>
@@ -56,8 +92,12 @@
                     <Icon:PackIconMaterial Kind="ExitToApp" Padding="2" Margin="0 3 10 0"/>
                     <TextBlock Text="Exit"/>
                 </StackPanel>
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Hello"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
             </Button>
-            
         </StackPanel>
     </Border>
 </Window>

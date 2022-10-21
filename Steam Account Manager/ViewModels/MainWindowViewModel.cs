@@ -1,14 +1,11 @@
-﻿using Newtonsoft.Json.Linq;
-using Steam_Account_Manager.Infrastructure;
+﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.ViewModels.RemoteControl;
-using Steam_Account_Manager.ViewModels.RemoteControl.View;
 using Steam_Account_Manager.ViewModels.View;
 using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Shell;
 
 namespace Steam_Account_Manager.ViewModels
 {

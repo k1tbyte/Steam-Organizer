@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Steam_Account_Manager.Infrastructure.Models.AccountModel;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -113,10 +114,10 @@ namespace Steam_Account_Manager.Infrastructure
         #endregion
 
 
-        public static void VirtualSteamLogger(string username, string password,bool savePassword = false, bool paste2fa = false)
+        public static void VirtualSteamLogger(Account account,bool savePassword = false, bool paste2fa = false)
         {
             Automation.RemoveAllEventHandlers();
-            if (Utilities.GetSteamRegistryLanguage() != username)
+            if (Utilities.GetSteamRegistryLanguage() != account.Login)
             {
                 Utilities.SetSteamRegistryRememberUser(String.Empty);
             }
@@ -150,7 +151,7 @@ namespace Steam_Account_Manager.Infrastructure
                         {
                             if (String.IsNullOrEmpty(Utilities.GetSteamRegistryRememberUser()))
                             {
-                                foreach (char c in username)
+                                foreach (char c in account.Login)
                                 {
                                     SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
                                     PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
@@ -160,7 +161,7 @@ namespace Steam_Account_Manager.Infrastructure
                                 Thread.Sleep(100);
                             }
 
-                            foreach (char c in password)
+                            foreach (char c in account.Password)
                             {
                                 SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
                                 PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
@@ -191,6 +192,8 @@ namespace Steam_Account_Manager.Infrastructure
                                 System.Windows.Forms.SendKeys.SendWait("{ENTER}");
                             }
                             Automation.RemoveAllEventHandlers();
+
+
 
                             if(Config.Properties.AutoClose)
                                 App.Current.Dispatcher.InvokeShutdown();
