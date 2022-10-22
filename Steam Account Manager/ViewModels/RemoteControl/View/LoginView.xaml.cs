@@ -46,7 +46,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
                 Formatting = Formatting.Indented
             });
 
-            System.IO.File.WriteAllText(@".\RecentlyLoggedUsers.json", ConvertedJson);
+            System.IO.File.WriteAllText($@"{App.WorkingDirectory}\RecentlyLoggedUsers.json", ConvertedJson);
         }
 
         private void logoutButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)

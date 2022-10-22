@@ -1,6 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows;
 
 namespace Steam_Account_Manager.ViewModels.View
 {
@@ -16,7 +16,7 @@ namespace Steam_Account_Manager.ViewModels.View
         private CustomPopupPlacement[] placementForPopup(Size popupSize, Size targetSize, Point offset)
         {
             CustomPopupPlacement customPlacement1 =
-               new CustomPopupPlacement(new Point(x,-33), PopupPrimaryAxis.Vertical);
+               new CustomPopupPlacement(new Point(x, -33), PopupPrimaryAxis.Vertical);
 
             CustomPopupPlacement[] customPlacements =
                     new CustomPopupPlacement[] { customPlacement1 };

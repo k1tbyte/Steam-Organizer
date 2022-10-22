@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Steam_Account_Manager.Themes
 {
@@ -25,7 +14,7 @@ namespace Steam_Account_Manager.Themes
                     PasswordPropertyChanged, null, false, UpdateSourceTrigger.PropertyChanged));
 
         public static readonly DependencyProperty PasswordCharProperty =
-        DependencyProperty.RegisterAttached("PasswordChar", typeof(char), typeof(char) , new PropertyMetadata(default(char)));
+        DependencyProperty.RegisterAttached("PasswordChar", typeof(char), typeof(char), new PropertyMetadata(default(char)));
 
         private static void PasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -38,12 +27,12 @@ namespace Steam_Account_Manager.Themes
 
         public char PasswordChar
         {
-            get 
-            { 
-                return (char)GetValue(PasswordCharProperty); 
+            get
+            {
+                return (char)GetValue(PasswordCharProperty);
             }
-            set 
-            { 
+            set
+            {
                 SetValue(PasswordCharProperty, value);
                 passwordBox.PasswordChar = value;
             }

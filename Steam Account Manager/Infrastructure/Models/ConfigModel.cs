@@ -1,14 +1,8 @@
-﻿using Steam_Account_Manager.Infrastructure.Models.AccountModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Security;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Steam_Account_Manager.Infrastructure.Models
@@ -37,6 +31,7 @@ namespace Steam_Account_Manager.Infrastructure.Models
         public bool AutoGetSteamId { get; set; }
         public bool RememberPassword { get; set; }
         public bool MinimizeToTray { get; set; }
+        public bool Autostartup { get; set; }
         public string WebApiKey { get; set; }
         public string UserCryptoKey { get; set; }
         public string Password { get; set; }
@@ -84,7 +79,7 @@ namespace Steam_Account_Manager.Infrastructure.Models
 
 
         private Languages language;
-        public Languages Language 
+        public Languages Language
         {
             get => language;
             set

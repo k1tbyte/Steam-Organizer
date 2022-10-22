@@ -5,7 +5,7 @@ namespace Steam_Account_Manager.ViewModels
 {
     internal class SettingsViewModel : ObservableObject
     {
-        private bool[] _themeMode  = { false, false, false };
+        private bool[] _themeMode = { false, false, false };
         private bool[] _localeMode = { false, false, false };
 
         bool _autoCloseMode,
@@ -16,7 +16,8 @@ namespace Steam_Account_Manager.ViewModels
               _apiKeyError,
               _passwordError,
               _rememberPassword,
-              _minimizeToTray;
+              _minimizeToTray,
+              _autostartup;
 
         string _webApiKey,
                _encryptingKey,
@@ -29,7 +30,16 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand ChangeOrAddPasswordCommand { get; set; }
 
         #region Properties
-
+        
+        public bool Autostartup
+        {
+            get => _autostartup;
+            set
+            {
+                _autostartup = value;
+                OnPropertyChanged(nameof(Autostartup));
+            }
+        }
         public bool MinimizeToTray
         {
             get => _minimizeToTray;
@@ -162,7 +172,7 @@ namespace Steam_Account_Manager.ViewModels
                 _noConfirmMode = value;
                 OnPropertyChanged(nameof(NoConfirmMode));
             }
-        } 
+        }
         #endregion
 
         private static bool? OpenAuthWindow()
@@ -184,24 +194,25 @@ namespace Steam_Account_Manager.ViewModels
             AutoGetSteamId      = Config.Properties.AutoGetSteamId;
             RememberPassword    = Config.Properties.RememberPassword;
             MinimizeToTray      = Config.Properties.MinimizeToTray;
+            Autostartup         = Config.Properties.Autostartup;
 
             LocaleMode[(byte)Config.Properties.Language] = true;
-            ThemeMode[(byte)Config.Properties.Theme]     = true;
+            ThemeMode[(byte)Config.Properties.Theme] = true;
 
             if (!String.IsNullOrEmpty(Config.Properties.Password))
                 _passwordEnabled = true;
-            
+
             EncryptingKey = Config.Properties.UserCryptoKey == Config.GetDefaultCryptoKey ? "By default" : Config.Properties.UserCryptoKey;
 
 
             SaveChangesCommand = new RelayCommand(o =>
             {
 
-                if(!String.IsNullOrEmpty(WebApiKey) && WebApiKey.Length < 32)
+                if (!String.IsNullOrEmpty(WebApiKey) && WebApiKey.Length < 32)
                 {
                     ApiKeyError = true;
                 }
-                else if(!String.IsNullOrEmpty(Password) && ( Password.Length < 5 || Password.Length > 30))
+                else if (!String.IsNullOrEmpty(Password) && (Password.Length < 5 || Password.Length > 30))
                 {
                     PasswordError = true;
                 }
@@ -213,7 +224,7 @@ namespace Steam_Account_Manager.ViewModels
                         Config.Properties.Theme = (Infrastructure.Models.Themes)index;
                     }
 
-                    if((byte)Config.Properties.Language != (index = (byte)Array.FindIndex(LocaleMode, locale => locale)))
+                    if ((byte)Config.Properties.Language != (index = (byte)Array.FindIndex(LocaleMode, locale => locale)))
                     {
                         Config.Properties.Language = (Infrastructure.Models.Languages)index;
                     }
@@ -227,21 +238,27 @@ namespace Steam_Account_Manager.ViewModels
                     Config.Properties.RememberPassword = RememberPassword;
                     Config.Properties.MinimizeToTray   = MinimizeToTray;
 
+                    if(Config.Properties.Autostartup != Autostartup)
+                    {
+                        Config.Properties.Autostartup = Autostartup;
+                        Utilities.SetRegistryAutostartup(Autostartup);
+                    }
+                    
                     if (!String.IsNullOrEmpty(Password))
                         Config.Properties.Password = Utilities.Sha256(Password + Config.GetDefaultCryptoKey);
-                    else if(_passwordEnabled == false)
+                    else if (_passwordEnabled == false)
                         Config.Properties.Password = null;
 
-                    if(EncryptingKey != "By default")
+                    if (EncryptingKey != "By default")
                     {
                         Config.Properties.UserCryptoKey = EncryptingKey;
-                        if (System.IO.File.Exists("database.dat"))
+                        if (System.IO.File.Exists(App.WorkingDirectory + "\\database.dat"))
                             Config.SaveAccounts();
                     }
                     else
                     {
                         Config.Properties.UserCryptoKey = Config.GetDefaultCryptoKey;
-                        if (System.IO.File.Exists("database.dat"))
+                        if (System.IO.File.Exists(App.WorkingDirectory + "\\database.dat"))
                             Config.SaveAccounts();
                         EncryptingKey = "By default";
                     }
@@ -253,7 +270,7 @@ namespace Steam_Account_Manager.ViewModels
                 }
 
             });
-            
+
             OpenApiKeyUrlCommand = new RelayCommand(o =>
             {
                 using (System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://steamcommunity.com/dev/apikey")
@@ -281,7 +298,7 @@ namespace Steam_Account_Manager.ViewModels
                     if (PasswordEnabled)
                     {
                         PasswordEnabled = false;
-                        stackPanel.Visibility = System.Windows.Visibility.Hidden;
+                        stackPanel.Visibility = System.Windows.Visibility.Collapsed;
                     }
                     else
                     {

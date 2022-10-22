@@ -8,10 +8,10 @@ namespace Steam_Account_Manager.ViewModels.View
     /// </summary>
     public partial class AddAuthenticatorWindow : Window
     {
-        public AddAuthenticatorWindow(string login, string password,int accountId)
+        public AddAuthenticatorWindow(string login, string password, int accountId)
         {
             InitializeComponent();
-            DataContext = new AddAuthenticatorViewModel(login, password,accountId, this);
+            DataContext = new AddAuthenticatorViewModel(login, password, accountId, this);
         }
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)

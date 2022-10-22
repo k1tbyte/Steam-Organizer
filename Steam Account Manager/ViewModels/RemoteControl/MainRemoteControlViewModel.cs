@@ -35,7 +35,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public static event EventHandler RemoteControlCurrentViewChanged;
         public static object RemoteControlCurrentView
         {
-            get => _remoteControlCurrentView; 
+            get => _remoteControlCurrentView;
             set
             {
                 _remoteControlCurrentView = value;
@@ -43,7 +43,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
-        
+
 
         public MainRemoteControlViewModel()
         {
@@ -57,7 +57,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             LoginViewCommand = new RelayCommand(o =>
             {
-                if(o != null && o is int id)
+                if (o != null && o is int id)
                 {
                     LoginVm.Username = Config.Accounts[id].Login;
                     LoginVm.Password = Config.Accounts[id].Password;
@@ -93,7 +93,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
                     RemoteControlCurrentView = MessagesV;
                 }
-                    
+
             });
 
             FriendsViewCommand = new RelayCommand(o =>
@@ -109,7 +109,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             SteamWebViewCommand = new RelayCommand(o =>
             {
-                if(RemoteControlCurrentView != SteamWebV)
+                if (RemoteControlCurrentView != SteamWebV)
                 {
                     if (SteamWebV == null)
                         SteamWebV = new SteamWebView();

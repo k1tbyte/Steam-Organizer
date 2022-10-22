@@ -3,7 +3,6 @@ using SteamKit2;
 using SteamKit2.Internal;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -34,7 +33,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         }
 
-        
+
         internal async Task PlayGames(IReadOnlyCollection<int> GameIDs, string gameName = null)
         {
             if (Client == null)
@@ -68,13 +67,13 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     });
             }
 
-            if(GameIDs != null && GameIDs.Count > 0)
+            if (GameIDs != null && GameIDs.Count > 0)
             {
                 IEnumerable<int> uniqueValidGameIDs = (GameIDs as ISet<int> ?? GameIDs.Distinct()).Where(gameID => gameID > 0);
 
                 foreach (uint gameID in uniqueValidGameIDs)
                 {
-                    if(request.Body.games_played.Count >= MaxGamesPlayed)
+                    if (request.Body.games_played.Count >= MaxGamesPlayed)
                     {
                         if (String.IsNullOrEmpty(gameName))
                             throw new ArgumentOutOfRangeException(nameof(GameIDs));
@@ -91,7 +90,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                         });
                 }
             }
-            
+
             Client.Send(request);
         }
 
@@ -129,7 +128,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 : base(jobID, msg, message => (EResult)msg.eresult, "SetAchievements") { }
         }
 
-        internal List<StatData> ParseResponse(CMsgClientGetUserStatsResponse Response,ulong gameID)
+        internal List<StatData> ParseResponse(CMsgClientGetUserStatsResponse Response, ulong gameID)
         {
             List<StatData> result = new List<StatData>();
             KeyValue KeyValues = new KeyValue();
@@ -177,11 +176,11 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                                         Child => Child.Name == "display")?.Children?.Find(
                                             Child => Child.Name == "name")?.Children?.Find(
                                                 Child => Child.Name == lang)?.Value;
-                                    
+
                                     string iconHash = iconUrlBase + Achievement.Children.Find(
                                         Child => Child.Name == "display")?.Children?.Find(
                                             Child => Child.Name == "icon")?.Value;
-                                    
+
                                     string iconHashGray = iconUrlBase + Achievement.Children.Find(
                                         Child => Child.Name == "display")?.Children?.Find(
                                             Child => Child.Name == "icon_gray")?.Value;
@@ -247,7 +246,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             if (!response.Success)
                 return null;
 
-            return ParseResponse(response.Response,gameID);
+            return ParseResponse(response.Response, gameID);
 
         }
 
@@ -309,7 +308,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
 
         }
-        internal async Task<bool> SetAchievements(ulong bot, ulong appId,IEnumerable<StatData> achievementsToSet)
+        internal async Task<bool> SetAchievements(ulong bot, ulong appId, IEnumerable<StatData> achievementsToSet)
         {
             if (!Client.IsConnected)
             {

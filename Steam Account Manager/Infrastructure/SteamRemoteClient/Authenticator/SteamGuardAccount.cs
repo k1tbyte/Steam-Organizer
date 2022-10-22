@@ -1,14 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using HtmlAgilityPack;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
-using System.Collections.ObjectModel;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 {
@@ -121,7 +120,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             }
             catch (Exception)
             {
-                return null; 
+                return null;
             }
             return Encoding.UTF8.GetString(codeArray);
         }
@@ -151,11 +150,11 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(response);
 
-            Regex confRegex = new Regex (" id=\"conf[0-9]+\" data-confid=\"(\\d+)\" data-key=\"(\\d+)\" data-type=\"(\\d+)\" data-creator=\"(\\d+)\"");
+            Regex confRegex = new Regex(" id=\"conf[0-9]+\" data-confid=\"(\\d+)\" data-key=\"(\\d+)\" data-type=\"(\\d+)\" data-creator=\"(\\d+)\"");
             Match confData;
 
             var nodes = htmlDoc.DocumentNode.SelectNodes("//*[@class=\"mobileconf_list_entry\"]");
-            
+
             var confirmations = new ObservableCollection<Confirmation>();
             foreach (var item in nodes)
             {
@@ -172,8 +171,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 
                 confirmations.Add(new Confirmation
                     (confID,
-                    confKey,confType,
-                    confCreator, 
+                    confKey, confType,
+                    confCreator,
                     item.SelectSingleNode("//div[@class='mobileconf_list_entry_icon']/div/img")?.Attributes["src"]?.Value ?? @".\Images\default_steam_profile_small.png",
                     confType == 2 ? Utilities.BetweenStr(item.InnerText, "to ", "You")?.Trim() : "-"));
 
@@ -184,7 +183,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 
         public long GetConfirmationTradeOfferID(Confirmation conf)
         {
-            if (conf.Type !=ConfirmationType.Trade)
+            if (conf.Type != ConfirmationType.Trade)
                 throw new ArgumentException("conf must be a trade confirmation.");
 
             return (long)conf.Creator;
@@ -202,7 +201,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 
         public async Task<bool> AcceptConfirmation(Confirmation conf)
         {
-            return  await _sendConfirmationAjax(conf, "allow").ConfigureAwait(false);
+            return await _sendConfirmationAjax(conf, "allow").ConfigureAwait(false);
         }
 
         public async Task<bool> DenyConfirmation(Confirmation conf)

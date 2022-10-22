@@ -48,14 +48,14 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 await SteamRemoteClient.GetWebApiKey();
                 if (!String.IsNullOrEmpty(SteamRemoteClient.CurrentUser.WebApiKey))
                 {
-                    Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement,true);
+                    Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
                     OnPropertyChanged(nameof(WebApiKey));
                 }
             });
 
             RevokeWebApiKeyCommand = new AsyncRelayCommand(async (o) =>
             {
-                if(await SteamRemoteClient.RevokeWebApiKey())
+                if (await SteamRemoteClient.RevokeWebApiKey())
                 {
                     Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
                 }
@@ -64,7 +64,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             GetTradeTokenCommmand = new AsyncRelayCommand(async (o) =>
             {
-                if(!String.IsNullOrEmpty(TradeToken = await SteamRemoteClient.GetTradeToken()))
+                if (!String.IsNullOrEmpty(TradeToken = await SteamRemoteClient.GetTradeToken()))
                 {
                     Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
                 }

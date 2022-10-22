@@ -5,9 +5,9 @@ namespace Steam_Account_Manager.ViewModels.View
     public partial class CryptoKeyWindow : Window
     {
         private bool mainWindow;
-        private int errorCounter=3;
+        private int errorCounter = 3;
         private string path;
-        public CryptoKeyWindow(bool mainWindow,string path="")
+        public CryptoKeyWindow(bool mainWindow, string path = "")
         {
             this.mainWindow = mainWindow;
             this.path = path;
@@ -24,7 +24,7 @@ namespace Steam_Account_Manager.ViewModels.View
 
         private void TryDecrypt_Click(object sender, RoutedEventArgs e)
         {
-            if(key.Text.Length == 44)
+            if (key.Text.Length == 44)
             {
                 try
                 {
@@ -33,8 +33,8 @@ namespace Steam_Account_Manager.ViewModels.View
                         Infrastructure.Config.Properties.UserCryptoKey = key.Text;
                         Infrastructure.Config.GetAccountsInstance();
                         Infrastructure.Config.SaveProperties();
-                        MainWindow mainWindow = new MainWindow();
-                        mainWindow.Show();
+                        Application.Current.MainWindow = new MainWindow();
+                        Application.Current.MainWindow.Show();
                         this.Close();
                     }
                     else
@@ -76,7 +76,7 @@ namespace Steam_Account_Manager.ViewModels.View
         private void yesConfirmButton_Click(object sender, RoutedEventArgs e)
         {
             ResetBorder.Visibility = Visibility.Hidden;
-            System.IO.File.Delete("database.dat");
+            System.IO.File.Delete(App.WorkingDirectory +  "\\database.dat");
             Infrastructure.Config.GetAccountsInstance();
             MainWindow mainWindow = new MainWindow();
             this.Close();

@@ -1,11 +1,8 @@
 ﻿using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Automation;
 
 namespace Steam_Account_Manager.Infrastructure
@@ -114,7 +111,7 @@ namespace Steam_Account_Manager.Infrastructure
         #endregion
 
 
-        public static void VirtualSteamLogger(Account account,bool savePassword = false, bool paste2fa = false)
+        public static void VirtualSteamLogger(Account account, bool savePassword = false, bool paste2fa = false)
         {
             Automation.RemoveAllEventHandlers();
             if (Utilities.GetSteamRegistryLanguage() != account.Login)
@@ -195,7 +192,7 @@ namespace Steam_Account_Manager.Infrastructure
 
 
 
-                            if(Config.Properties.AutoClose)
+                            if (Config.Properties.AutoClose)
                                 App.Current.Dispatcher.InvokeShutdown();
                         }
 

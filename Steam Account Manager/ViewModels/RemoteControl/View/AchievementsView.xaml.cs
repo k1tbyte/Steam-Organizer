@@ -1,11 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure.Models;
-using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using System.Windows;
-using System.Windows.Data;
-using System.Linq;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using System.Collections.ObjectModel;
 using System.Windows.Controls;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl.View
@@ -33,7 +27,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
         private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if(this.DataContext != null && ((AchievementsViewModel)this.DataContext).Achievements != null)
+            if (this.DataContext != null && ((AchievementsViewModel)this.DataContext).Achievements != null)
             {
                 switch (filter.SelectedIndex)
                 {
@@ -47,11 +41,11 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
                         ((AchievementsViewModel)this.DataContext).AchievementShowFilter.Filter = o => ((StatData)o).IsSet;
                         break;
                 }
-                
+
             }
         }
 
-        private void  SelectAll_Click(object sender, RoutedEventArgs e)
+        private void SelectAll_Click(object sender, RoutedEventArgs e)
         {
             achievements.SelectAll();
         }

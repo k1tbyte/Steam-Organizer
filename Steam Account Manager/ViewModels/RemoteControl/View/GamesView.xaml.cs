@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -56,7 +55,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
         private async void Idle_Click(object sender, System.Windows.RoutedEventArgs e)
         {
 
-            if(Idle.IsChecked == true)
+            if (Idle.IsChecked == true)
             {
                 var selectedCount = games.SelectedItems.Count;
                 bool ContainCustom = false;
@@ -65,7 +64,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
                     ContainCustom = true;
                     selectedCount++;
                 }
-                    
+
 
                 if (selectedCount > 32 || selectedCount == 0)
                 {
@@ -82,14 +81,14 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
                 }
                 else if (selectedCount == 1)
                 {
-                    if(ContainCustom) 
+                    if (ContainCustom)
                         await SteamRemoteClient.IdleGame(null, Custom_gameTitle.Text);
                     else
                         await SteamRemoteClient.IdleGame(((Game)games.SelectedItem).AppID, Custom_gameTitle.Text);
                 }
                 else
                 {
-                    await SteamRemoteClient.IdleGames(games.SelectedItems.Cast<Game>().Select(game => game.AppID).ToHashSet(),Custom_gameTitle.Text);
+                    await SteamRemoteClient.IdleGames(games.SelectedItems.Cast<Game>().Select(game => game.AppID).ToHashSet(), Custom_gameTitle.Text);
                 }
             }
             else
@@ -97,7 +96,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
                 await SteamRemoteClient.StopIdle();
             }
 
-                
+
         }
     }
 }

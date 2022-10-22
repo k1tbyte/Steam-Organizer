@@ -1,16 +1,11 @@
-﻿using System;
-using Steam_Account_Manager.Infrastructure;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
-using System.Windows.Threading;
-using System.Threading;
-using System.Windows;
+﻿using Microsoft.Win32;
 using Newtonsoft.Json;
-using Microsoft.Win32;
+using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -131,7 +126,7 @@ namespace Steam_Account_Manager.ViewModels
 
             try
             {
-                string path = Directory.GetCurrentDirectory() + "\\Authenticators\\";
+                string path = App.WorkingDirectory + "\\Authenticators\\";
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
@@ -173,13 +168,13 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     Filter = "Mobile authenticator File (.maFile)|*.maFile",
                     InitialDirectory = Directory.GetCurrentDirectory()
-                    
+
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
                     //Veryfication account
                     var list = JsonConvert.DeserializeObject<RootObjectUsername>(File.ReadAllText(fileDialog.FileName));
-                    if(list.Account_name != _login)
+                    if (list.Account_name != _login)
                     {
                         ErrorMessage = "You cannot add an authenticator from another account";
                         Thread.Sleep(2000);
@@ -188,11 +183,11 @@ namespace Steam_Account_Manager.ViewModels
                     else
                     {
                         Config.Accounts[_id].AuthenticatorPath = fileDialog.FileName;
-                        if (!Directory.Exists(@".\Authenticators"))
-                            Directory.CreateDirectory(@".\Authenticators");
-                        
-                        if(!File.Exists($@".\Authenticators\{list.Account_name}.maFile"))
-                          File.Copy(fileDialog.FileName, $@".\Authenticators\{list.Account_name}.maFile", true);
+                        if (!Directory.Exists($@"{App.WorkingDirectory}\Authenticators"))
+                            Directory.CreateDirectory($@"{App.WorkingDirectory}\Authenticators");
+
+                        if (!File.Exists($@"{App.WorkingDirectory}\Authenticators\{list.Account_name}.maFile"))
+                            File.Copy(fileDialog.FileName, $@"{App.WorkingDirectory}\Authenticators\{list.Account_name}.maFile", true);
 
                         Config.SaveAccounts();
                         ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
@@ -202,7 +197,7 @@ namespace Steam_Account_Manager.ViewModels
             });
         }
         public RelayCommand CloseWindowCommand { get; set; }
-        public AddAuthenticatorViewModel(string login, string password,int accountId, object window)
+        public AddAuthenticatorViewModel(string login, string password, int accountId, object window)
         {
             _login = login;
             _password = password;
@@ -235,9 +230,9 @@ namespace Steam_Account_Manager.ViewModels
                 CloseWindow(window);
             });
 
-           // _ = TryToConnect(); 
+            // _ = TryToConnect(); 
         }
 
     }
-    
+
 }

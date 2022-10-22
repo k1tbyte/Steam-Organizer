@@ -169,12 +169,6 @@
                           Style="{StaticResource settingsButton}"/>
                 </StackPanel>
 
-                <!-- Minimize to tray -->
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <TextBlock Text="Minimize program to tray" Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton IsChecked="{Binding MinimizeToTray}" VerticalAlignment="Center"
-                          Style="{StaticResource checkbox}" Margin="10 0 0 0" Width="30" Height="30"/>
-                </StackPanel>
 
 
                 <!--Set password-->
@@ -193,7 +187,7 @@
                     </Button>
                 </StackPanel>
 
-                <StackPanel x:Name="PasswordPanel" Orientation="Horizontal" Margin="20 0 0 0" Visibility="Hidden">
+                <StackPanel x:Name="PasswordPanel" Orientation="Horizontal" Margin="20 0 0 0" Visibility="Collapsed">
                     <TextBlock Text="{DynamicResource sv_newPass}" Style="{StaticResource settingTextBlock}"/>
                     <Border Margin="10 5 0 0" Background="{DynamicResource first_main_color}"
                     Width="250" CornerRadius="5" Height="35" BorderThickness="0.7" HorizontalAlignment="Left"
@@ -207,6 +201,20 @@
                         </StackPanel>
                     </Border>
                    
+                </StackPanel>
+
+                <!-- Minimize to tray -->
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="Minimize program to tray" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding MinimizeToTray}" VerticalAlignment="Center"
+                          Style="{StaticResource checkbox}" Margin="10 0 0 0" Width="27" Height="27"/>
+                </StackPanel>
+
+                <!-- Set in autostartup -->
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="Start with windows" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding Autostartup}" VerticalAlignment="Center"
+                          Style="{StaticResource checkbox}" Margin="10 0 0 0" Width="27" Height="27"/>
                 </StackPanel>
 
             </StackPanel>

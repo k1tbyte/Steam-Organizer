@@ -1,12 +1,7 @@
-﻿using Steam_Account_Manager.Themes;
-using Steam_Account_Manager.Themes.MessageBoxes;
-using System;
-using System.ComponentModel;
+﻿using System;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 namespace Steam_Account_Manager
 {
@@ -17,7 +12,7 @@ namespace Steam_Account_Manager
         {
             InitializeComponent();
             trayMenu = new TrayMenu();
-            
+
         }
 
         public void Dispose()

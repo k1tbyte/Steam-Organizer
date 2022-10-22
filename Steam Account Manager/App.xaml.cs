@@ -2,6 +2,7 @@
 using Steam_Account_Manager.ViewModels.View;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
 
@@ -11,52 +12,62 @@ namespace Steam_Account_Manager
     {
         static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager");
         public static readonly uint Version = 206;
+        public static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         public static bool IsShuttingDown { get; set; }
 
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
         {
-            if (Mutex.WaitOne(TimeSpan.Zero, true))
+            try
             {
-                Config.GetPropertiesInstance();
-                Utilities.CreateHttpClientFactory();
-                if (Config.Properties.Password == null)
+                if (Mutex.WaitOne(TimeSpan.Zero, true))
                 {
-                    try
+                    Config.GetPropertiesInstance();
+                    Utilities.CreateHttpClientFactory();
+                    if (Config.Properties.Password == null)
                     {
-                        Config.GetAccountsInstance();
+                        try
+                        {
+                            Config.GetAccountsInstance();
 
-                        var mainWindow = new MainWindow
+                            Application.Current.MainWindow = new MainWindow
+                            {
+                                WindowStartupLocation = WindowStartupLocation.CenterScreen
+                            };
+
+                            Application.Current.MainWindow.Show();
+
+                        }
+                        catch
+                        {
+                            var cryptoKeyWindow = new CryptoKeyWindow(true)
+                            {
+                                WindowStartupLocation = WindowStartupLocation.CenterScreen
+                            };
+
+                            cryptoKeyWindow.Show();
+                        }
+                    }
+                    else
+                    {
+                        var auth = new AuthenticationWindow(true)
                         {
                             WindowStartupLocation = WindowStartupLocation.CenterScreen
                         };
-
-                        mainWindow.Show();
-                        
+                        auth.Show();
                     }
-                    catch
-                    {
-                        var cryptoKeyWindow = new CryptoKeyWindow(true)
-                        {
-                            WindowStartupLocation = WindowStartupLocation.CenterScreen
-                        };
 
-                        cryptoKeyWindow.Show();
-                    }
                 }
                 else
                 {
-                    var auth = new AuthenticationWindow(true)
-                    {
-                        WindowStartupLocation = WindowStartupLocation.CenterScreen
-                    };
-                    auth.Show();
+                    Shutdown();
                 }
-
+                
             }
-            else
+
+            catch (Exception exc)
             {
-                Shutdown();
+                System.Windows.Forms.MessageBox.Show(exc.ToString());
             }
         }
 
@@ -64,6 +75,7 @@ namespace Steam_Account_Manager
         {
             IsShuttingDown = true;
             (Application.Current.MainWindow as MainWindow).Dispose();
+
             Application.Current.Shutdown();
         }
     }

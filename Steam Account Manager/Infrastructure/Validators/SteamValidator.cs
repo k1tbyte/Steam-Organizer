@@ -2,7 +2,6 @@
 using System;
 using System.Linq;
 using System.Net;
-using System.Windows;
 
 namespace Steam_Account_Manager.Infrastructure.Validators
 {
@@ -15,7 +14,7 @@ namespace Steam_Account_Manager.Infrastructure.Validators
         private readonly string _steamLink;
         private string _steamId64;
         private SteamLinkTypes _steamLinkType = SteamLinkTypes.Unknown;
-        
+
         public enum SteamLinkTypes
         {
             Unknown,

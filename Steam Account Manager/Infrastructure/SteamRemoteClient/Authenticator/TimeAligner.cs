@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+using System;
 using System.Net;
-using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 {
@@ -78,7 +78,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
                 [JsonProperty("server_time")]
                 public long ServerTime { get; set; }
             }
-            
+
         }
     }
 }

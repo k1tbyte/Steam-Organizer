@@ -2,9 +2,8 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
@@ -59,7 +58,7 @@ namespace Steam_Account_Manager
 
         public static ref HttpClient CreateHttpClientFactory()
         {
-            if(HttpClientFactory == null)
+            if (HttpClientFactory == null)
             {
                 HttpClientFactory = new HttpClient(new HttpClientHandler(), disposeHandler: false);
             }
@@ -68,7 +67,7 @@ namespace Steam_Account_Manager
 
         public static System.Windows.Media.Brush StringToBrush(string Color)
         {
-            if(BrushConverter == null)
+            if (BrushConverter == null)
             {
                 BrushConverter = new System.Windows.Media.BrushConverter();
             }
@@ -77,7 +76,7 @@ namespace Steam_Account_Manager
             return Brush;
         }
 
-        public static string BetweenStr(string str,string leftStr, string rightStr)
+        public static string BetweenStr(string str, string leftStr, string rightStr)
         {
             try
             {
@@ -89,15 +88,15 @@ namespace Steam_Account_Manager
             {
                 return null;
             }
-            
-            
+
+
         }
 
-        public static string GetSteamAvatarUrl(ulong steamId64,bool fromCache = true,EAvatarType type = EAvatarType.Full)
+        public static string GetSteamAvatarUrl(ulong steamId64, bool fromCache = true, EAvatarType type = EAvatarType.Full)
         {
             try
             {
-                if(fromCache && !String.IsNullOrEmpty(UserXmlProfileCache) && steamId64 == UserXmlProfileCacheId)
+                if (fromCache && !String.IsNullOrEmpty(UserXmlProfileCache) && steamId64 == UserXmlProfileCacheId)
                 {
                     return BetweenStr(UserXmlProfileCache, $"<avatar{type}><![CDATA[", $"]]></avatar{type}>");
                 }
@@ -117,11 +116,11 @@ namespace Steam_Account_Manager
             }
         }
 
-        public static string GetSteamNickname(ulong steamId64,bool fromCache = true)
+        public static string GetSteamNickname(ulong steamId64, bool fromCache = true)
         {
             try
             {
-                if(fromCache && !String.IsNullOrEmpty(UserXmlProfileCache) && steamId64 == UserXmlProfileCacheId)
+                if (fromCache && !String.IsNullOrEmpty(UserXmlProfileCache) && steamId64 == UserXmlProfileCacheId)
                 {
                     return BetweenStr(UserXmlProfileCache, $"<steamID><![CDATA[", $"]]></steamID>");
                 }
@@ -240,7 +239,31 @@ namespace Steam_Account_Manager
 
             }
             catch { throw; }
-        } 
+        }
+
+        public static void SetRegistryAutostartup(bool isSet)
+        {
+            RegistryKey registryKey = Environment.Is64BitOperatingSystem ?
+                RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64) :
+                RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
+            try
+            {
+                using (registryKey = registryKey.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+                {
+                    var value = registryKey.GetValue("SteamAccountManager") as string;
+                    var path = Assembly.GetExecutingAssembly().Location;
+                    if (string.IsNullOrEmpty(value) && isSet)
+                    {
+                        registryKey.SetValue("SteamAccountManager", path);
+                    }
+                    else if (!isSet)
+                    {
+                        registryKey.DeleteValue("SteamAccountManager", false);
+                    }
+                }
+            }
+            catch { throw; }
+        }
 
         #endregion
 
@@ -256,7 +279,7 @@ namespace Steam_Account_Manager
             };
         }
 
-        public static void KillSteamAndConnect(string steamDir,string args="-noreactlogin")
+        public static void KillSteamAndConnect(string steamDir, string args = "-noreactlogin")
         {
             using (Process processSteam = new Process())
             {

@@ -18,13 +18,13 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             InitializeComponent();
             currentContext = new MessagesViewModel();
             this.DataContext = currentContext;
-            
+
         }
 
 
         private void MessageBox_KeyUp(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Enter && Keyboard.Modifiers != ModifierKeys.Shift)
+            if (e.Key == Key.Enter && Keyboard.Modifiers != ModifierKeys.Shift)
             {
                 currentContext.SendMessageCommand.Execute(null);
             }
@@ -51,7 +51,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             {
                 e.Handled = true;
             }
-                
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -63,7 +63,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
         {
             MessagesViewModel.MsgCommands.RemoveAt(commandListBox.SelectedIndex);
 
-            if(SteamRemoteClient.CurrentUser != null)
+            if (SteamRemoteClient.CurrentUser != null)
                 SteamRemoteClient.CurrentUser.Messenger.Commands.RemoveAt(commandListBox.SelectedIndex);
         }
 
@@ -99,18 +99,18 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
         private void AddCommand_Click(object sender, RoutedEventArgs e)
         {
-            
-            if(!commandEmpty || !keywordEmpty)
+
+            if (!commandEmpty || !keywordEmpty)
             {
                 commandEmpty = keywordEmpty = false;
                 CommandTitle.Foreground = KeywordTitle.Foreground = Utilities.StringToBrush("#b0b9c6");
             }
-            
+
             if ((commandEmpty = String.IsNullOrEmpty(CommandBox.Text)) || (keywordEmpty = String.IsNullOrEmpty(KeywordBox.Text)))
             {
-                if(commandEmpty)
+                if (commandEmpty)
                     CommandTitle.Foreground = Brushes.PaleVioletRed;
-                if(keywordEmpty)
+                if (keywordEmpty)
                     KeywordTitle.Foreground = Brushes.PaleVioletRed;
                 e.Handled = true;
             }
@@ -126,12 +126,12 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
                 {
                     Keyword = finalKeyword,
                     CommandExecution = CommandBox.Text,
-                    MessageAfterExecute = String.IsNullOrEmpty(CommandMsgBox.Text) ?  "-" : CommandMsgBox.Text
+                    MessageAfterExecute = String.IsNullOrEmpty(CommandMsgBox.Text) ? "-" : CommandMsgBox.Text
                 });
 
                 if (SteamRemoteClient.CurrentUser != null)
-                      SteamRemoteClient.CurrentUser.Messenger.Commands.Add(MessagesViewModel.MsgCommands[MessagesViewModel.MsgCommands.Count - 1]);
-               KeywordBox.Text = CommandMsgBox.Text = CommandBox.Text = "";
+                    SteamRemoteClient.CurrentUser.Messenger.Commands.Add(MessagesViewModel.MsgCommands[MessagesViewModel.MsgCommands.Count - 1]);
+                KeywordBox.Text = CommandMsgBox.Text = CommandBox.Text = "";
             }
         }
     }

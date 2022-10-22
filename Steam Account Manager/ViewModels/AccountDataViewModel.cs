@@ -51,14 +51,14 @@ namespace Steam_Account_Manager.ViewModels
 
         //csgostats
         private string _currentRank, _bestRank,
-            _kills, _deaths, _KD , _playedMatches, _matchesWon, _winrate, _totalShots, _headshots,
-            _headshotsPercent, _shotsHit,_accuracy, _roundsPlayed;
+            _kills, _deaths, _KD, _playedMatches, _matchesWon, _winrate, _totalShots, _headshots,
+            _headshotsPercent, _shotsHit, _accuracy, _roundsPlayed;
 
         //eror and notify msgs
         private string _csgoParseError, _steamDataValidateError, _notifyMsg;
 
         //other account info
-        private string _note, _emailLogin, _emailPass, _rockstarEmail, _rockstarPass, _uplayEmail, _uplayPass,_originEmail,_originPass;
+        private string _note, _emailLogin, _emailPass, _rockstarEmail, _rockstarPass, _uplayEmail, _uplayPass, _originEmail, _originPass;
 
         #region Properties
 
@@ -397,7 +397,7 @@ namespace Steam_Account_Manager.ViewModels
                 _nickname = value;
                 OnPropertyChanged(nameof(Nickname));
             }
-        } 
+        }
         #endregion
 
         #region CsGo Statistics
@@ -526,81 +526,81 @@ namespace Steam_Account_Manager.ViewModels
                 _roundsPlayed = value;
                 OnPropertyChanged(nameof(RoundsPlayed));
             }
-        } 
+        }
         #endregion
 
         private void FillSteamInfo()
         {
-            Nickname         = currentAccount.Nickname;
-            Login            = currentAccount.Login;
-            Password         = currentAccount.Password;
+            Nickname = currentAccount.Nickname;
+            Login = currentAccount.Login;
+            Password = currentAccount.Password;
             ContainParseInfo = currentAccount.ContainParseInfo;
-            LastUpdateTime   = currentAccount.LastUpdateTime;
+            LastUpdateTime = currentAccount.LastUpdateTime;
 
             if (currentAccount.ContainParseInfo)
             {
                 //Player summaries
-                AvatarFull          = currentAccount.AvatarFull;
-                SteamID32           = ulong.Parse(currentAccount.SteamId64) - 76561197960265728;
-                SteamID64           = currentAccount.SteamId64;
-                SteamURL            = currentAccount.ProfileURL;
-                CreatedDate         = currentAccount.AccCreatedDate;
-                ProfileVisiblity    = currentAccount.ProfileVisility == true ? "Public" : "Private";
+                AvatarFull = currentAccount.AvatarFull;
+                SteamID32 = ulong.Parse(currentAccount.SteamId64) - 76561197960265728;
+                SteamID64 = currentAccount.SteamId64;
+                SteamURL = currentAccount.ProfileURL;
+                CreatedDate = currentAccount.AccCreatedDate;
+                ProfileVisiblity = currentAccount.ProfileVisility == true ? "Public" : "Private";
                 CreatedDatePicuture = currentAccount.CreatedDateImageUrl;
 
                 //Games info
-                SteamLevel          = currentAccount.SteamLevel;
-                GameCountPicture    = currentAccount.CountGamesImageUrl;
-                GamesTotal          = currentAccount.TotalGames;
-                GamesPlayed         = currentAccount.GamesPlayed;
-                HoursOnPlayed       = currentAccount.HoursOnPlayed;
-                PlayedPercent       = currentAccount.ProfileVisility == true ? " (" + (float.Parse(GamesPlayed.Replace(",", string.Empty)) / float.Parse(GamesTotal.Replace(",", String.Empty)) * 100).ToString("#.#") + "%)" : "-";
+                SteamLevel = currentAccount.SteamLevel;
+                GameCountPicture = currentAccount.CountGamesImageUrl;
+                GamesTotal = currentAccount.TotalGames;
+                GamesPlayed = currentAccount.GamesPlayed;
+                HoursOnPlayed = currentAccount.HoursOnPlayed;
+                PlayedPercent = currentAccount.ProfileVisility == true ? " (" + (float.Parse(GamesPlayed.Replace(",", string.Empty)) / float.Parse(GamesTotal.Replace(",", String.Empty)) * 100).ToString("#.#") + "%)" : "-";
 
                 //Bans info
-                VacCount            = currentAccount.VacBansCount;
-                CommunityBan        = currentAccount.CommunityBan;
-                TradeBan            = currentAccount.TradeBan;
-                DaysSinceLastBan    = currentAccount.DaysSinceLastBan;
+                VacCount = currentAccount.VacBansCount;
+                CommunityBan = currentAccount.CommunityBan;
+                TradeBan = currentAccount.TradeBan;
+                DaysSinceLastBan = currentAccount.DaysSinceLastBan;
             }
             else
             {
-                AvatarFull       = "/Images/default_steam_profile.png";
+                AvatarFull = "/Images/default_steam_profile.png";
                 ProfileVisiblity = SteamURL = SteamID64 = "Unknown";
                 GameCountPicture = CreatedDatePicuture = "/Images/Steam_years_of_service/year0.png";
-                SteamLevel       = "-";
-                SteamID32        = 0;
+                SteamLevel = "-";
+                SteamID32 = 0;
             }
 
             //Other info
-            Note              = currentAccount.Note;
-            EmailLogin        = currentAccount.EmailLogin;
-            EmailPass         = currentAccount.EmailPass;
-            RockstarEmail     = currentAccount.RockstarEmail;
-            RockstarPass      = currentAccount.RockstarPass;
-            UplayEmail        = currentAccount.UplayEmail;
-            UplayPass         = currentAccount.UplayPass;
-            OriginPass        = currentAccount.OriginPass;
-            OriginEmail       = currentAccount.OriginEmail;
-            
+            Note = currentAccount.Note;
+            EmailLogin = currentAccount.EmailLogin;
+            EmailPass = currentAccount.EmailPass;
+            RockstarEmail = currentAccount.RockstarEmail;
+            RockstarPass = currentAccount.RockstarPass;
+            UplayEmail = currentAccount.UplayEmail;
+            UplayPass = currentAccount.UplayPass;
+            OriginPass = currentAccount.OriginPass;
+            OriginEmail = currentAccount.OriginEmail;
+
 
         }
         private void FillCsgoInfo()
         {
             //csgo info
-            CurrentRank      = currentAccount.CsgoStats.CurrentRank;
-            BestRank         = currentAccount.CsgoStats.BestRank;
-            Kills            = currentAccount.CsgoStats.Kills;
-            Deaths           = currentAccount.CsgoStats.Deaths;
-            KD               = currentAccount.CsgoStats.KD;
-            PlayedMatches    = currentAccount.CsgoStats.PlayedMatches;
-            MatchesWon       = currentAccount.CsgoStats.MatchesWon;
-            Winrate          = currentAccount.CsgoStats.Winrate;
-            TotalShots       = currentAccount.CsgoStats.TotalShots;
-            Headshots        = currentAccount.CsgoStats.Headshots;
+            CurrentRank = currentAccount.CsgoStats.CurrentRank;
+            BestRank = currentAccount.CsgoStats.BestRank;
+            Kills = currentAccount.CsgoStats.Kills;
+            Deaths = currentAccount.CsgoStats.Deaths;
+            KD = currentAccount.CsgoStats.KD;
+            PlayedMatches = currentAccount.CsgoStats.PlayedMatches;
+            MatchesWon = currentAccount.CsgoStats.MatchesWon;
+            Winrate = currentAccount.CsgoStats.Winrate;
+            TotalShots = currentAccount.CsgoStats.TotalShots;
+            Headshots = currentAccount.CsgoStats.Headshots;
             HeadshotsPercent = currentAccount.CsgoStats.HeadshotPercent;
-            ShotsHit         = currentAccount.CsgoStats.ShotsHit;
-            Accuracy         = currentAccount.CsgoStats.Accuracy;
-            RoundsPlayed     = currentAccount.CsgoStats.RoundsPlayed;
+            ShotsHit = currentAccount.CsgoStats.ShotsHit;
+            Accuracy = currentAccount.CsgoStats.Accuracy;
+            RoundsPlayed = currentAccount.CsgoStats.RoundsPlayed;
         }
 
         private async void BorderNoticeView(string message)
@@ -678,7 +678,7 @@ namespace Steam_Account_Manager.ViewModels
             await task;
         }
 
-        private  void OpenAddAuthenticatorWindow()
+        private void OpenAddAuthenticatorWindow()
         {
             ShowDialogWindow(new AddAuthenticatorWindow(Login, Password, _id));
         }
@@ -693,10 +693,10 @@ namespace Steam_Account_Manager.ViewModels
         {
             currentAccount = Config.Accounts[id];
             FillSteamInfo();
-            if(currentAccount.ContainParseInfo) FillCsgoInfo();
+            if (currentAccount.ContainParseInfo) FillCsgoInfo();
             _id = id;
 
-            if(currentAccount.AuthenticatorPath != null) AuthenticatorPath = currentAccount.AuthenticatorPath;
+            if (currentAccount.AuthenticatorPath != null) AuthenticatorPath = currentAccount.AuthenticatorPath;
 
             CancelCommand = new RelayCommand(o =>
             {
@@ -722,15 +722,15 @@ namespace Steam_Account_Manager.ViewModels
 
             TakeCsgoStatsInfo = new AsyncRelayCommand(async (o) =>
             {
-               if(currentAccount.ProfileVisility)
+                if (currentAccount.ProfileVisility)
                     await CsgoStatsParse();
             });
 
             SaveChangesComamnd = new RelayCommand(o =>
             {
-                if (!_isCsgoStatsSave && (!_savePermission || (Password == currentAccount.Password && 
+                if (!_isCsgoStatsSave && (!_savePermission || (Password == currentAccount.Password &&
                 Login == currentAccount.Login && Note == currentAccount.Note && EmailLogin == currentAccount.EmailLogin &&
-                RockstarEmail == currentAccount.RockstarEmail &&  RockstarPass == currentAccount.RockstarPass &&
+                RockstarEmail == currentAccount.RockstarEmail && RockstarPass == currentAccount.RockstarPass &&
                 UplayEmail == currentAccount.UplayEmail && UplayPass == currentAccount.UplayPass &&
                  OriginEmail == currentAccount.OriginEmail && OriginPass == currentAccount.OriginPass))) { }
 
@@ -771,28 +771,28 @@ namespace Steam_Account_Manager.ViewModels
                 else
                 {
                     _savePermission = false;
-                    if(_isCsgoStatsSave)
+                    if (_isCsgoStatsSave)
                     {
                         Config.Accounts[id].CsgoStats = currentAccount.CsgoStats;
                         _isCsgoStatsSave = false;
                     }
-                    Config.Accounts[id].Password      = Password;
-                    Config.Accounts[id].Login         = Login;
-                    Config.Accounts[id].Note          = Note;
-                    Config.Accounts[id].EmailLogin    = EmailLogin;
-                    Config.Accounts[id].EmailPass     = EmailPass;
+                    Config.Accounts[id].Password = Password;
+                    Config.Accounts[id].Login = Login;
+                    Config.Accounts[id].Note = Note;
+                    Config.Accounts[id].EmailLogin = EmailLogin;
+                    Config.Accounts[id].EmailPass = EmailPass;
                     Config.Accounts[id].RockstarEmail = RockstarEmail;
-                    Config.Accounts[id].RockstarPass  = RockstarPass;
-                    Config.Accounts[id].UplayEmail    = UplayEmail;
-                    Config.Accounts[id].UplayPass      = UplayPass;
-                    Config.Accounts[id].OriginEmail    = OriginEmail;
-                    Config.Accounts[id].OriginPass     = OriginPass;
+                    Config.Accounts[id].RockstarPass = RockstarPass;
+                    Config.Accounts[id].UplayEmail = UplayEmail;
+                    Config.Accounts[id].UplayPass = UplayPass;
+                    Config.Accounts[id].OriginEmail = OriginEmail;
+                    Config.Accounts[id].OriginPass = OriginPass;
                     Config.Accounts[id].AccCreatedDate = DateTime.Now;
                     Config.SaveAccounts();
                     Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_changesSaved")));
 
                 }
-                
+
             });
 
             RefreshCommand = new AsyncRelayCommand(async (o) => await RefreshAccount(id));
@@ -814,7 +814,7 @@ namespace Steam_Account_Manager.ViewModels
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    Config.Serialize(Config.Accounts[id], fileDialog.FileName,Config.Properties.UserCryptoKey);
+                    Config.Serialize(Config.Accounts[id], fileDialog.FileName, Config.Properties.UserCryptoKey);
                     Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_accountExported")));
                 }
             });

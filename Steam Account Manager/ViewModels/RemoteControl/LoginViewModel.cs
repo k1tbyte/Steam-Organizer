@@ -1,15 +1,15 @@
-﻿using Steam_Account_Manager.Infrastructure;
+﻿using Newtonsoft.Json;
+using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using SteamKit2;
 using System;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using Newtonsoft.Json;
-using System.IO;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Controls;
-using Steam_Account_Manager.Infrastructure.Models.JsonModels;
+using System.Windows.Media;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {
@@ -23,7 +23,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
 
         private bool _isAuthCode;
-        private string _username, _password,_authCode, _errorMsg;
+        private string _username, _password, _authCode, _errorMsg;
 
         #region Callbacks receiver handlers
 
@@ -216,17 +216,17 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 _isAuthCode = value;
                 OnPropertyChanged(nameof(IsAuthCode));
             }
-        } 
+        }
         #endregion
 
 
         public LoginViewModel()
         {
 
-            if (File.Exists(@".\RecentlyLoggedUsers.json"))
+            if (File.Exists(App.WorkingDirectory + "\\RecentlyLoggedUsers.json"))
             {
                 RecentlyLoggedIn = new ObservableCollection<RecentlyLoggedAccount>(
-                    JsonConvert.DeserializeObject<List<RecentlyLoggedAccount>>(File.ReadAllText(@".\RecentlyLoggedUsers.json")));
+                    JsonConvert.DeserializeObject<List<RecentlyLoggedAccount>>(File.ReadAllText(App.WorkingDirectory + "\\RecentlyLoggedUsers.json")));
             }
             else
                 RecentlyLoggedIn = new ObservableCollection<RecentlyLoggedAccount>(new List<RecentlyLoggedAccount>());
@@ -234,13 +234,13 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             LogOnCommand = new AsyncRelayCommand(async (o) =>
             {
-                if(String.IsNullOrEmpty(Username) || String.IsNullOrEmpty(Password))
+                if (String.IsNullOrEmpty(Username) || String.IsNullOrEmpty(Password))
                     return;
 
-                EResult result =  await Task<EResult>.Factory.StartNew(() =>
+                EResult result = await Task<EResult>.Factory.StartNew(() =>
                 {
                     return SteamRemoteClient.Login(Username, Password, AuthCode);
-                }); 
+                });
 
                 if (result == EResult.AccountLoginDeniedNeedTwoFactor || result == EResult.AccountLogonDenied || result == EResult.Cancelled)
                 {
@@ -277,7 +277,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                             break;
                     }
                 }
-                
+
             });
 
             ChangeNicknameCommand = new RelayCommand(o =>
@@ -294,10 +294,10 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 Username = element.Username;
                 EResult result = await Task<EResult>.Factory.StartNew(() =>
                 {
-                    return SteamRemoteClient.Login(Username, "using",null,element.Loginkey);
+                    return SteamRemoteClient.Login(Username, "using", null, element.Loginkey);
                 });
 
-                if(result == EResult.Cancelled || result == EResult.Invalid)
+                if (result == EResult.Cancelled || result == EResult.Invalid)
                 {
                     ErrorMsg = (string)App.Current.FindResource("rc_lv_keyExpired");
                     RecentlyLoggedIn.Remove(element);
@@ -330,12 +330,12 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 SteamRemoteClient.Logout();
                 Username = Password = AuthCode = "";
                 IsAuthCode = false;
-                
+
             });
 
             PrivacySettingsCommand = new RelayCommand(o =>
             {
-                
+
             });
         }
     }

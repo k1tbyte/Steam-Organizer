@@ -7,7 +7,7 @@ namespace Steam_Account_Manager.Themes
     {
         internal static void ShakingAnimation(FrameworkElement element, bool opacity = false)
         {
-            var marginAnim = new ThicknessAnimation(element.Margin, 
+            var marginAnim = new ThicknessAnimation(element.Margin,
                 new Thickness(element.Margin.Left + 5d, element.Margin.Top, element.Margin.Right, element.Margin.Bottom), System.TimeSpan.FromSeconds(0.2d))
             {
                 RepeatBehavior = new RepeatBehavior(3d),

@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using System;
-using HtmlAgilityPack;
-using System.Net;
-using System.Text;
+﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
+using System;
+using System.Net;
 using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.Infrastructure.Parsers
 {
@@ -35,7 +35,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         public SteamParser(string steamId64)
         {
             _steamId64 = steamId64;
-            if (!String.IsNullOrEmpty(Config.Properties.WebApiKey)) 
+            if (!String.IsNullOrEmpty(Config.Properties.WebApiKey))
                 _apiKey = Config.Properties.WebApiKey;
         }
 
@@ -82,7 +82,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                 htmlDoc.LoadHtml(html);
 
                 var steam_games_info = htmlDoc.DocumentNode.SelectNodes("//span[@class='flex-grow'] | //div[@class='span3']");
-               
+
                 _totalGames = steam_games_info[0].InnerText.Split(' ', '\n')[4];
 
                 //Если спарсился мусор - выход
@@ -100,7 +100,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                     for (int i = 0; i < gameImageVariableArr.Length; i++)
                     {
                         if (i == gameImageVariableArr.Length) _countGamesImageUrl = "/Images/Games_count_badges/28000.png";
-                        else if (countGames > gameImageVariableArr[gameImageVariableArr.Length-1])
+                        else if (countGames > gameImageVariableArr[gameImageVariableArr.Length - 1])
                         {
                             _countGamesImageUrl = "/Images/Games_count_badges/28000.png";
                             break;
@@ -115,7 +115,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                 catch
                 {
                     _countGamesImageUrl = "/Images/Games_count_badges/unknown.png";
-                } 
+                }
                 #endregion
 
                 _gamesPlayed = steam_games_info[0].InnerText.Split(' ', '\n')[1];
@@ -123,7 +123,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
 
             }
-            catch 
+            catch
             {
                 _totalGames = "-";
                 _profileVisiblity = false;
@@ -184,7 +184,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                     _createdDateImageUrl = $"/Images/Steam_years_of_service/year0.png";
                 }
             }
-            
+
         }
 
         public string GetNickname => _nickname;
@@ -230,7 +230,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                 _economyBan = list.Players[0].EconomyBan != "none";
                 _daysSinceLastBan = list.Players[0].DaysSinceLastBan;
             }
-            
+
         }
 
 

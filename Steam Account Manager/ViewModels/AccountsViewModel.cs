@@ -1,16 +1,15 @@
-﻿using System;
-using Steam_Account_Manager.ViewModels.View;
+﻿using Microsoft.Win32;
 using Steam_Account_Manager.Infrastructure;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.Win32;
-using System.Runtime.CompilerServices;
-using System.ComponentModel;
-using System.Windows.Data;
 using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.Themes.MessageBoxes;
-using System.Linq;
+using Steam_Account_Manager.ViewModels.View;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -107,7 +106,7 @@ namespace Steam_Account_Manager.ViewModels
         public static void FillAccountTabViews()
         {
             ConfirmBanner = false;
-            if(AccountTabViews.Count == 0)
+            if (AccountTabViews.Count == 0)
             {
                 for (int i = 0; i < Config.Accounts.Count; i++)
                 {
@@ -142,7 +141,7 @@ namespace Steam_Account_Manager.ViewModels
 
         private async Task UpdateDatabase()
         {
-            try 
+            try
             {
                 MainWindowViewModel.IsEnabledForUser = false;
                 var ids = new List<int>()
@@ -180,7 +179,7 @@ namespace Steam_Account_Manager.ViewModels
                     Config.SaveAccounts();
                 });
 
-                if(ids != null)
+                if (ids != null)
                 {
                     for (short i = 0; i < ids.Count; i++)
                         UpdateAccountTabView(ids[i]);
@@ -190,7 +189,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 MainWindowViewModel.UpdatedAccountIndex = 0;
                 MainWindowViewModel.IsEnabledForUser = true;
-                MessageBoxes.PopupMessageBox("Error! No Internet connection...",true);
+                MessageBoxes.PopupMessageBox("Error! No Internet connection...", true);
             }
 
         }
@@ -209,7 +208,7 @@ namespace Steam_Account_Manager.ViewModels
 
         private static bool? OpenCryptoKeyWindow(string path)
         {
-            CryptoKeyWindow cryptoKeyWindow = new CryptoKeyWindow(false,path);
+            CryptoKeyWindow cryptoKeyWindow = new CryptoKeyWindow(false, path);
             cryptoKeyWindow.Owner = App.Current.MainWindow;
             cryptoKeyWindow.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
             return cryptoKeyWindow.ShowDialog();
@@ -256,7 +255,7 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     try
                     {
-                        Config.Accounts.Add((Account)Config.Deserialize(fileDialog.FileName,Config.Properties.UserCryptoKey));
+                        Config.Accounts.Add((Account)Config.Deserialize(fileDialog.FileName, Config.Properties.UserCryptoKey));
                         FillAccountTabViews();
                         MessageBoxes.PopupMessageBox("Account restored from file.");
                         Config.SaveAccounts();
@@ -282,7 +281,7 @@ namespace Steam_Account_Manager.ViewModels
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    Config.Serialize(Config.Accounts, fileDialog.FileName,Config.Properties.UserCryptoKey);
+                    Config.Serialize(Config.Accounts, fileDialog.FileName, Config.Properties.UserCryptoKey);
                     MessageBoxes.PopupMessageBox("The database of accounts has been saved to a file.");
                 }
             });
@@ -297,14 +296,14 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     try
                     {
-                        Config.Accounts = (List<Account>)Config.Deserialize(fileDialog.FileName,Config.Properties.UserCryptoKey);
+                        Config.Accounts = (List<Account>)Config.Deserialize(fileDialog.FileName, Config.Properties.UserCryptoKey);
                         FillAccountTabViews();
                         MessageBoxes.PopupMessageBox("The database of accounts was restored from a file");
                         Config.SaveAccounts();
                     }
                     catch
                     {
-                        if(OpenCryptoKeyWindow(fileDialog.FileName) == true)
+                        if (OpenCryptoKeyWindow(fileDialog.FileName) == true)
                         {
                             Config.Accounts = (List<Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
                             FillAccountTabViews();

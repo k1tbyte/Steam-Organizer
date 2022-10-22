@@ -33,7 +33,7 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
             App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(
             () =>
             {
-                var popupBox = new PopupMessageBoxView(Text,isError);
+                var popupBox = new PopupMessageBoxView(Text, isError);
                 popupBox.Show();
             }));
         }

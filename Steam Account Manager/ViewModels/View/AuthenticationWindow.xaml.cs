@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using Steam_Account_Manager.Infrastructure;
+﻿using Steam_Account_Manager.Infrastructure;
+using System.Windows;
 
 namespace Steam_Account_Manager.ViewModels.View
 {
@@ -15,7 +15,7 @@ namespace Steam_Account_Manager.ViewModels.View
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            if(Password.Password.Length > 30)
+            if (Password.Password.Length > 30)
             {
                 ErrorBlock.Text = (string)FindResource("aw_longPass");
                 return;
@@ -28,24 +28,24 @@ namespace Steam_Account_Manager.ViewModels.View
                 {
                     try
                     {
-                        MainWindow mainWindow = new MainWindow();
-                        mainWindow.Show();
+                        Application.Current.MainWindow = new MainWindow();
+                        Application.Current.MainWindow.Show();
                         this.Hide();
-                        
+
                     }
                     catch
                     {
-                        var cryptoKeyWindow = new CryptoKeyWindow(true)
+                        Application.Current.MainWindow = new CryptoKeyWindow(true)
                         {
                             WindowStartupLocation = WindowStartupLocation.CenterScreen
                         };
                         this.Close();
-                        cryptoKeyWindow.Show();
-                        
+                        Application.Current.MainWindow.Show();
+
                     }
                 }
             }
-                
+
             else
             {
                 if (errorCounter > 1)
@@ -80,13 +80,13 @@ namespace Steam_Account_Manager.ViewModels.View
         private void yesConfirmButton_Click(object sender, RoutedEventArgs e)
         {
             ResetBorder.Visibility = Visibility.Hidden;
-            System.IO.File.Delete("config.dat");
+            System.IO.File.Delete(App.WorkingDirectory + "\\config.dat");
             Config.ClearProperties();
             try
             {
                 Config.GetAccountsInstance();
-                MainWindow mainWindow = new MainWindow();
-                mainWindow.Show();
+                Application.Current.MainWindow = new MainWindow();
+                Application.Current.MainWindow.Show();
                 this.Hide();
 
             }

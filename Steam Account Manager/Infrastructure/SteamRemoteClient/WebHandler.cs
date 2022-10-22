@@ -8,9 +8,8 @@ using System.Net.Cache;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
-using System.Web;
-using Steam_Account_Manager.Infrastructure.Models;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 {
@@ -24,12 +23,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private CookieContainer _cookies = new CookieContainer();
 
         public string AcceptLanguageHeader { get { return acceptLanguageHeader; } set { acceptLanguageHeader = value; } }
-        private string acceptLanguageHeader = 
+        private string acceptLanguageHeader =
             Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName == "en" ?
             Thread.CurrentThread.CurrentCulture.ToString() + ",en;q=0.8" :
             Thread.CurrentThread.CurrentCulture.ToString() + "," + Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName + ";q=0.8,en;q=0.6";
 
-        internal string Fetch(string url,string method, NameValueCollection data = null, bool ajax = true, string referer = "", bool fetchError = true)
+        internal string Fetch(string url, string method, NameValueCollection data = null, bool ajax = true, string referer = "", bool fetchError = true)
         {
             using (HttpWebResponse response = Request(url, method, data, ajax, referer, fetchError))
             {

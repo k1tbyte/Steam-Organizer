@@ -98,7 +98,7 @@ namespace Steam_Account_Manager.ViewModels
                 _id = value;
                 OnPropertyChanged();
             }
-        } 
+        }
         #endregion
 
         private async Task ConnectToSteam()
@@ -221,7 +221,7 @@ namespace Steam_Account_Manager.ViewModels
                 }
 
             });
-            if(update) AccountsViewModel.UpdateAccountTabView(id);
+            if (update) AccountsViewModel.UpdateAccountTabView(id);
         }
 
         public AccountTabViewModel(int id)
@@ -258,12 +258,12 @@ namespace Steam_Account_Manager.ViewModels
 
             EditOrViewAccountCommand = new RelayCommand(o =>
             {
-                MainWindowViewModel.AccountDataViewCommand.Execute(Id) ;
+                MainWindowViewModel.AccountDataViewCommand.Execute(Id);
             });
 
             ViewAccountNoteModeCommand = new RelayCommand(o =>
             {
-                MainWindowViewModel.AccountDataViewCommand.Execute(Id*-1);
+                MainWindowViewModel.AccountDataViewCommand.Execute(Id * -1);
             });
 
             OpenUrlProfileCommand = new RelayCommand(o =>

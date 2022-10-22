@@ -36,7 +36,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
         private async void ApplyPrivacyChanges_Click(object sender, RoutedEventArgs e)
         {
-            if(await SteamRemoteClient.SetProfilePrivacy(
+            if (await SteamRemoteClient.SetProfilePrivacy(
                 ProfileBox.SelectedIndex, InventoryBox.SelectedIndex,
                 GiftsBox.SelectedIndex, GameDetailsBox.SelectedIndex,
                 GamePlaytimeBox.SelectedIndex, FriendsBox.SelectedIndex,

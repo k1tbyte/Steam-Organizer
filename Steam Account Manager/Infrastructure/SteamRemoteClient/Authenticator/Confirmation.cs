@@ -8,8 +8,8 @@
         public ConfirmationType Type { get; set; }
         public string ImageURL { get; set; }
         public string Nickname { get; set; }
-        
-        public Confirmation(ulong id, ulong key, int type, ulong creator,string imageURL, string nickname)
+
+        public Confirmation(ulong id, ulong key, int type, ulong creator, string imageURL, string nickname)
         {
             this.ID = id;
             this.Key = key;

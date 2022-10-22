@@ -16,31 +16,29 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 {
-    internal static class SteamRemoteClient 
+    internal static class SteamRemoteClient
     {
         [System.Runtime.InteropServices.DllImport("PowrProf.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, ExactSpelling = true)]
         public static extern bool SetSuspendState(bool hiberate, bool forceCritical, bool disableWakeEvent);
 
         public static string UserPersonaName { get; private set; }
-        public static ulong InterlocutorID   { get; set; }
-        internal static EOSType OSType       { get; private set; } = EOSType.Unknown;
+        public static ulong InterlocutorID { get; set; }
+        internal static EOSType OSType { get; private set; } = EOSType.Unknown;
 
 
-        private static readonly CallbackManager      callbackManager;
-        private static readonly SteamClient          steamClient;
-        private static readonly SteamUser            steamUser;
-        private static readonly SteamFriends         steamFriends;
-        private static readonly GamesHandler         gamesHandler;
-        private static readonly WebHandler           webHandler;
+        private static readonly CallbackManager callbackManager;
+        private static readonly SteamClient steamClient;
+        private static readonly SteamUser steamUser;
+        private static readonly SteamFriends steamFriends;
+        private static readonly GamesHandler gamesHandler;
+        private static readonly WebHandler webHandler;
 
         private static readonly SteamUnifiedMessages.UnifiedService<IPlayer> UnifiedPlayerService;
         private static readonly SteamUnifiedMessages.UnifiedService<IEcon> UnifiedEcon;
@@ -58,27 +56,27 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static string UniqueId;
 
 
-        public static bool IsRunning     { get; set; }
-        public static bool IsPlaying     { get; set; }
+        public static bool IsRunning { get; set; }
+        public static bool IsPlaying { get; set; }
         public static bool IsWebLoggedIn { get; private set; }
-        public static User CurrentUser   { get; set; }
+        public static User CurrentUser { get; set; }
 
         internal const ushort CallbackSleep = 500; //milliseconds
         private const uint LoginID = 1488; // This must be the same for all processes
 
         static SteamRemoteClient()
         {
-            steamClient     = new SteamClient();
-            gamesHandler    = new GamesHandler();
+            steamClient = new SteamClient();
+            gamesHandler = new GamesHandler();
             callbackManager = new CallbackManager(steamClient);
-            webHandler      = new WebHandler();
+            webHandler = new WebHandler();
 
-            steamUser    = steamClient.GetHandler<SteamUser>();
+            steamUser = steamClient.GetHandler<SteamUser>();
             steamFriends = steamClient.GetHandler<SteamFriends>();
 
-            steamUnified         = steamClient.GetHandler<SteamUnifiedMessages>();
+            steamUnified = steamClient.GetHandler<SteamUnifiedMessages>();
             UnifiedPlayerService = steamUnified.CreateService<IPlayer>();
-            UnifiedEcon          = steamUnified.CreateService<IEcon>();
+            UnifiedEcon = steamUnified.CreateService<IEcon>();
 
 
             callbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
@@ -98,29 +96,29 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             steamClient.AddHandler(gamesHandler);
 
-            if (!Directory.Exists(@".\Sentry"))
+            if (!Directory.Exists($@"{App.WorkingDirectory}\Sentry"))
             {
-                Directory.CreateDirectory(@".\Sentry");
+                Directory.CreateDirectory($@"{App.WorkingDirectory}\Sentry");
             }
 
             SteamGuardCode = TwoFactorCode = null;
 
         }
 
-        public static EResult Login(string username, string password, string authCode,string loginKey = null)
+        public static EResult Login(string username, string password, string authCode, string loginKey = null)
         {
-            Username  = username;
-            Password  = password;
+            Username = username;
+            Password = password;
             IsRunning = true;
-            
-            if (!Directory.Exists(@".\RemoteUsers"))
-                Directory.CreateDirectory(@".\RemoteUsers");
 
-            if (!Directory.Exists($@".\RemoteUsers\{Username}"))
-                Directory.CreateDirectory($@".\RemoteUsers\{Username}");
-            
-            if (!Directory.Exists($@".\RemoteUsers\{Username}\ChatLogs"))
-                Directory.CreateDirectory($@".\RemoteUsers\{Username}\ChatLogs");
+            if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers"))
+                Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers");
+
+            if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers\{Username}"))
+                Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers\{Username}");
+
+            if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs"))
+                Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs");
 
             DeserializeUser();
 
@@ -140,7 +138,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             {
                 if (App.IsShuttingDown) Logout();
                 callbackManager.RunWaitCallbacks(TimeSpan.FromMilliseconds(CallbackSleep));
-                }
+            }
 
             return LastLogOnResult;
         }
@@ -154,19 +152,19 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 Formatting = Formatting.Indented
             });
 
-            File.WriteAllText($@".\RemoteUsers\{Username}\User.json", ConvertedJson);
+            File.WriteAllText($@"{App.WorkingDirectory}\RemoteUsers\{Username}\User.json", ConvertedJson);
         }
 
         private static void DeserializeUser()
         {
             bool state = false;
-            if (File.Exists($@".\RemoteUsers\{Username}\User.json") && CurrentUser == null)
+            if (File.Exists($@"{App.WorkingDirectory}\RemoteUsers\{Username}\User.json") && CurrentUser == null)
             {
-                CurrentUser = JsonConvert.DeserializeObject<User>(File.ReadAllText($@".\RemoteUsers\{Username}\User.json"));
+                CurrentUser = JsonConvert.DeserializeObject<User>(File.ReadAllText($@"{App.WorkingDirectory}\RemoteUsers\{Username}\User.json"));
 
                 state = true;
             }
-            else if(CurrentUser == null)
+            else if (CurrentUser == null)
             {
                 CurrentUser = new User
                 {
@@ -181,8 +179,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 SerializeUser();
                 state = true;
             }
-            
-            if(state)
+
+            if (state)
             {
                 if (CurrentUser?.Messenger?.AdminID != null)
                     MessagesViewModel.IsAdminIdValid = true;
@@ -200,7 +198,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
                 }));
             }
-        } 
+        }
         #endregion
 
         public static void Logout()
@@ -215,7 +213,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 DefaultValueHandling = DefaultValueHandling.Populate,
                 Formatting = Formatting.Indented
             });
-            File.WriteAllText(@".\RecentlyLoggedUsers.json", ConvertedJson);
+            File.WriteAllText($@"{App.WorkingDirectory}\RecentlyLoggedUsers.json", ConvertedJson);
 
             steamUser.LogOff();
             CurrentUser = null;
@@ -230,7 +228,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
 
             byte[] sentryHash = null;
-            if(File.Exists(Username + ".bin"))
+            if (File.Exists(Username + ".bin"))
             {
                 byte[] sentryFile = File.ReadAllBytes(Username + ".bin");
                 sentryHash = CryptoHelper.SHAHash(sentryFile);
@@ -238,17 +236,17 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             var logOnDetails = new SteamUser.LogOnDetails
             {
-                Username               = Username,
-                Password               = Password,
-                AuthCode               = SteamGuardCode,
-                TwoFactorCode          = TwoFactorCode,
-                LoginID                = LoginID,
+                Username = Username,
+                Password = Password,
+                AuthCode = SteamGuardCode,
+                TwoFactorCode = TwoFactorCode,
+                LoginID = LoginID,
                 ShouldRememberPassword = true,
-                LoginKey               = LoginKey,
-                SentryFileHash         = sentryHash,
+                LoginKey = LoginKey,
+                SentryFileHash = sentryHash,
             };
 
-            if(OSType == EOSType.Unknown)
+            if (OSType == EOSType.Unknown)
             {
                 OSType = logOnDetails.ClientOSType;
             }
@@ -265,7 +263,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 LoginKey = null;
                 LastLogOnResult = EResult.Cancelled;
             }
-                
+
 
             if (LastLogOnResult != EResult.OK)
             {
@@ -276,7 +274,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             CurrentSteamId64 = steamClient.SteamID.ConvertToUInt64();
             LoginViewModel.SteamId64 = CurrentSteamId64.ToString();
-                LoginViewModel.ImageUrl = Utilities.GetSteamAvatarUrl(CurrentSteamId64);
+            LoginViewModel.ImageUrl = Utilities.GetSteamAvatarUrl(CurrentSteamId64);
 
             CurrentUser.Username = Username;
 
@@ -289,13 +287,13 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 steamUser.RequestWebAPIUserNonce();
             }
             LoginViewModel.IPCountryCode = callback.PublicIP.ToString();
-            LoginViewModel.CountryImage  = $"https://flagcdn.com/w20/{callback.IPCountryCode.ToLower()}.png";
-            WebApiUserNonce              = callback.WebAPIUserNonce;
+            LoginViewModel.CountryImage = $"https://flagcdn.com/w20/{callback.IPCountryCode.ToLower()}.png";
+            WebApiUserNonce = callback.WebAPIUserNonce;
 
             MainRemoteControlViewModel.IsPanelActive = true;
-            LoginViewModel.SuccessLogOn              = true;
+            LoginViewModel.SuccessLogOn = true;
             System.Windows.Forms.SendKeys.SendWait("{TAB}");
-            
+
         }
 
         private static void OnLoggedOff(SteamUser.LoggedOffCallback callback)
@@ -316,19 +314,19 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static void OnMachineAuth(SteamUser.UpdateMachineAuthCallback callback)
         {
             byte[] sentryHash = CryptoHelper.SHAHash(callback.Data);
-            File.WriteAllBytes($@".\Sentry\{Username}.bin", callback.Data);
+            File.WriteAllBytes($@"{App.WorkingDirectory}\Sentry\{Username}.bin", callback.Data);
 
             steamUser.SendMachineAuthResponse(new SteamUser.MachineAuthDetails
             {
-                JobID           = callback.JobID,
-                FileName        = callback.FileName,
-                BytesWritten    = callback.BytesToWrite,
-                FileSize        = callback.Data.Length,
-                Offset          = callback.Offset,
-                Result          = EResult.OK,
-                LastError       = 0,
+                JobID = callback.JobID,
+                FileName = callback.FileName,
+                BytesWritten = callback.BytesToWrite,
+                FileSize = callback.Data.Length,
+                Offset = callback.Offset,
+                Result = EResult.OK,
+                LastError = 0,
                 OneTimePassword = callback.OneTimePassword,
-                SentryFileHash  = sentryHash
+                SentryFileHash = sentryHash
             });
         }
 
@@ -350,7 +348,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     return;
                 }
             }
-            
+
             Application.Current.Dispatcher.Invoke(new Action(() => LoginViewModel.RecentlyLoggedIn.Add(new RecentlyLoggedAccount
             {
                 Username = Username,
@@ -370,7 +368,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
         }
 
-        
+
         private static void OnAccountInfo(SteamUser.AccountInfoCallback callback)
         {
             LoginViewModel.Nickname = UserPersonaName = callback.PersonaName;
@@ -379,15 +377,15 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnEmailInfo(SteamUser.EmailAddrInfoCallback callback)
         {
-          LoginViewModel.EmailAddress      = callback.EmailAddress;
-          LoginViewModel.EmailVerification =  callback.IsValidated;
+            LoginViewModel.EmailAddress = callback.EmailAddress;
+            LoginViewModel.EmailVerification = callback.IsValidated;
         }
 
         private static void OnWalletInfo(SteamUser.WalletInfoCallback callback)
         {
             if (callback.HasWallet)
             {
-                LoginViewModel.Wallet =  (float.Parse(callback.LongBalance.ToString())/100).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+                LoginViewModel.Wallet = (float.Parse(callback.LongBalance.ToString()) / 100).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
                 if (callback.Currency != ECurrencyCode.Invalid)
                     LoginViewModel.Wallet += " " + callback.Currency.ToString();
             }
@@ -396,7 +394,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 LoginViewModel.Wallet = "0.00 USD";
             }
 
-            
+
         }
 
         private static void OnPersonaNameChange(SteamFriends.PersonaChangeCallback callback)
@@ -406,7 +404,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnPersonaState(SteamFriends.PersonaStateCallback callback)
         {
-            if(callback.FriendID == steamClient.SteamID)
+            if (callback.FriendID == steamClient.SteamID)
             {
                 if (CurrentPersonaState != callback.State)
                 {
@@ -432,12 +430,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     LoginViewModel.Nickname = callback.Name;
                 }
             }
-           
+
         }
 
         private static async void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
         {
-           if (callback.EntryType == EChatEntryType.ChatMsg)
+            if (callback.EntryType == EChatEntryType.ChatMsg)
             {
                 var FriendPersonaName = steamFriends.GetFriendPersonaName(callback.Sender);
                 if (callback.Message[0] == '/')
@@ -515,7 +513,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                                         steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "❕ No games running");
                                     return;
                                 case "/customgame":
-                                    if(command.Length != 2)
+                                    if (command.Length != 2)
                                         steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/customgame (Name)");
                                     else
                                     {
@@ -537,7 +535,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                                     }
                                     return;
                                 case "/achievements":
-                                    if(command.Length != 2)
+                                    if (command.Length != 2)
                                     {
 
                                     }
@@ -547,7 +545,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                                     }
                                     return;
                             }
-                            for(int i = 0; i < CurrentUser.Messenger.Commands.Count; i++)
+                            for (int i = 0; i < CurrentUser.Messenger.Commands.Count; i++)
                             {
                                 if (command[0] == CurrentUser.Messenger.Commands[i].Keyword)
                                 {
@@ -567,7 +565,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                         }
                         catch { steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "📛 An error has occurred!"); }
                     }
-                    
+
                 }
 
 
@@ -577,7 +575,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     var CleanName = System.Text.RegularExpressions.Regex.Replace(FriendPersonaName, "\\/:*?\"<>|", "");
                     var FileName = $"[{SteamID64}] - {CleanName}.txt";
                     var Message = $"{DateTime.Now} | {FriendPersonaName}: {callback.Message}\n";
-                    var Path = $@".\RemoteUsers\{Username}\ChatLogs\{FileName}";
+                    var Path = $@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs\{FileName}";
                     if (File.Exists(Path))
                     {
                         File.AppendAllText(Path, Message);
@@ -588,7 +586,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     }
                 }
 
-                if(callback.Sender == InterlocutorID)
+                if (callback.Sender == InterlocutorID)
                 {
                     Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
                     {
@@ -609,7 +607,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         public static void ChangeCurrentName(string Name)
         {
             steamFriends.SetPersonaName(Name);
-        } 
+        }
 
         public static void ChangeCurrentPersonaState(EPersonaState state)
         {
@@ -632,23 +630,23 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             };
             steamClient.Send(uiMode);
         }
- 
+
         public static void SendInterlocutorMessage(string Msg)
         {
             steamFriends.SendChatMessage(InterlocutorID, EChatEntryType.ChatMsg, Msg);
 
             Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
             {
-                Msg       = Msg,
-                Time      = DateTime.Now.ToString("HH:mm"),
-                Username  = LoginViewModel.Nickname,
+                Msg = Msg,
+                Time = DateTime.Now.ToString("HH:mm"),
+                Username = LoginViewModel.Nickname,
                 TextBrush = Utilities.StringToBrush("White"),
-                MsgBrush  = (System.Windows.Media.Brush)App.Current.FindResource("menu_button_background")
+                MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("menu_button_background")
             })));
         }
 
         #region Friends parse
-        
+
         public static async Task ParseUserFriends()
         {
             if (CurrentUser.Friends.Count != 0)
@@ -669,12 +667,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 sinces = node.SelectTokens(@"$.[?(@.friend_since)].friend_since");
             }
             catch { }
-            
-            
+
+
             SteamID temp;
             string avatarTemp;
-            
-            for (int i = 0,j = 0; i < steamFriends.GetFriendCount(); i++)
+
+            for (int i = 0, j = 0; i < steamFriends.GetFriendCount(); i++)
             {
                 temp = steamFriends.GetFriendByIndex(i);
 
@@ -683,7 +681,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
                 avatarTemp = BitConverter.ToString(steamFriends.GetFriendAvatar(temp)).Replace("-", "");
 
-                if(avatarTemp == "0000000000000000000000000000000000000000")
+                if (avatarTemp == "0000000000000000000000000000000000000000")
                 {
                     avatarTemp = "fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb";
                 }
@@ -693,7 +691,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     SteamID64 = temp.ConvertToUInt64(),
                     Name = steamFriends.GetFriendPersonaName(temp),
                     FriendSince = Utilities.UnixTimeToDateTime(long.TryParse(
-                        sinces?.ElementAt(j).ToString(),out long result) ? result : 0 )?.ToString("yyyy/MM/dd"),
+                        sinces?.ElementAt(j).ToString(), out long result) ? result : 0)?.ToString("yyyy/MM/dd"),
                     ImageURL = $"https://avatars.akamai.steamstatic.com/{avatarTemp}.jpg"
                 });
                 j++;
@@ -776,9 +774,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             return new ObservableCollection<StatData>(await gamesHandler.GetAchievements(CurrentSteamId64, gameID).ConfigureAwait(false));
         }
 
-        internal static async Task<bool> SetAppAchievements(ulong appID,IEnumerable<StatData> achievementsToSet)
+        internal static async Task<bool> SetAppAchievements(ulong appID, IEnumerable<StatData> achievementsToSet)
         {
-           return await  gamesHandler.SetAchievements(CurrentSteamId64, appID, achievementsToSet);
+            return await gamesHandler.SetAchievements(CurrentSteamId64, appID, achievementsToSet);
         }
         #endregion
 
@@ -831,8 +829,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 MessageBoxes.InfoMessageBox("An error has occurred, the settings are not set...");
                 return false;
             }
-            
-        } 
+
+        }
 
         public static async Task GetWebApiKey()
         {
@@ -846,25 +844,25 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             {
                 var htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(webHandler.Fetch("https://steamcommunity.com/dev/apikey?l=english", "GET"));
-                
-                if(htmlDoc?.DocumentNode == null) 
+
+                if (htmlDoc?.DocumentNode == null)
                     return ESteamApiKeyState.Timeout;
-                
+
                 var TitleNode = htmlDoc.DocumentNode.SelectSingleNode("//div[@id='mainContents']/h2");
 
-                if(TitleNode == null)
+                if (TitleNode == null)
                     return ESteamApiKeyState.Error;
-               
+
                 var Title = TitleNode.InnerText;
 
                 if (String.IsNullOrEmpty(Title))
                     return ESteamApiKeyState.Error;
-                else if(Title.Contains("Access Denied") || Title.Contains("Validated email address required"))
+                else if (Title.Contains("Access Denied") || Title.Contains("Validated email address required"))
                     return ESteamApiKeyState.AccessDenied;
 
                 var HtmlNode = htmlDoc.DocumentNode.SelectSingleNode("//div[@id='bodyContents_ex']/p");
 
-                if(HtmlNode == null)
+                if (HtmlNode == null)
                     return ESteamApiKeyState.Error;
 
                 string text = HtmlNode.InnerText;
@@ -874,7 +872,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 else if (text.Contains("Registering for a Steam Web API Key"))
                     return ESteamApiKeyState.NotRegisteredYet;
 
-                CurrentUser.WebApiKey = text.Replace("Key: ","");
+                CurrentUser.WebApiKey = text.Replace("Key: ", "");
                 return ESteamApiKeyState.Registered;
             });
 
@@ -894,7 +892,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     if (response == true)
                         RegisterWebApiKey();
                     return;
-                    
+
             }
 
         }

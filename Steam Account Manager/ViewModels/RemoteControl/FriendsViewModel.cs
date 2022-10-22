@@ -42,7 +42,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             });
 
             OpenFriendChatCommand = new RelayCommand(o =>
-            {                    
+            {
                 if (MessagesViewModel.Messages.Count != 0)
                     MessagesViewModel.Messages.Clear();
 

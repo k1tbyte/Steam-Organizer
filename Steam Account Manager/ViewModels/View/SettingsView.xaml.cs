@@ -1,9 +1,6 @@
-﻿using MahApps.Metro.IconPacks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 
 namespace Steam_Account_Manager.ViewModels.View
 {

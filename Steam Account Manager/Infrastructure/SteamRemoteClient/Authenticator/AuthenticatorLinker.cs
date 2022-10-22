@@ -34,14 +34,21 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             if (!hasPhone && PhoneNumber == null)
                 return LinkResult.MustProvidePhoneNumber;
 
-            if (!hasPhone) {
-                if (confirmationEmailSent) {
-                    if (!_checkEmailConfirmation()) {
+            if (!hasPhone)
+            {
+                if (confirmationEmailSent)
+                {
+                    if (!_checkEmailConfirmation())
+                    {
+                        return LinkResult.GeneralFailure;
+                    }
+                }
+                else if (!_addPhoneNumber())
+                {
                     return LinkResult.GeneralFailure;
                 }
-                } else if (!_addPhoneNumber()) {
-                    return LinkResult.GeneralFailure;
-                } else {
+                else
+                {
                     confirmationEmailSent = true;
                     return LinkResult.MustConfirmEmail;
                 }
@@ -179,7 +186,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             return addPhoneNumberResponse.Success;
         }
 
-        private bool _checkEmailConfirmation() {
+        private bool _checkEmailConfirmation()
+        {
             var postData = new NameValueCollection();
             postData.Add("op", "email_confirmation");
             postData.Add("arg", "");
@@ -189,10 +197,11 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             if (response == null) return false;
 
             var emailConfirmationResponse = JsonConvert.DeserializeObject<AddPhoneResponse>(response);
-             return emailConfirmationResponse.Success;
+            return emailConfirmationResponse.Success;
         }
 
-        private bool _hasPhoneAttached() {
+        private bool _hasPhoneAttached()
+        {
             var postData = new NameValueCollection();
             postData.Add("op", "has_phone");
             postData.Add("arg", "null");
@@ -264,7 +273,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 
         public static string GenerateDeviceID()
         {
-          return "android:" + Guid.NewGuid().ToString();
+            return "android:" + Guid.NewGuid().ToString();
         }
     }
 }

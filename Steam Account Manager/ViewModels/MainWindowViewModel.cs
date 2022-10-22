@@ -11,27 +11,27 @@ namespace Steam_Account_Manager.ViewModels
 {
     internal class MainWindowViewModel : ObservableObject
     {
-        public static RelayCommand CloseCommand             { get; set; }
-        public static RelayCommand MinimizeCommand          { get; set; }
-        public static RelayCommand AccountsViewCommand      { get; set; }
-        public static RelayCommand SettingsViewCommand      { get; set; }
-        public static RelayCommand AccountDataViewCommand   { get; set; }
+        public static RelayCommand CloseCommand { get; set; }
+        public static RelayCommand MinimizeCommand { get; set; }
+        public static RelayCommand AccountsViewCommand { get; set; }
+        public static RelayCommand SettingsViewCommand { get; set; }
+        public static RelayCommand AccountDataViewCommand { get; set; }
         public static RelayCommand RemoteControlViewCommand { get; set; }
-        public static RelayCommand NoLoadUpdateCommand      { get; set; }
-        public static RelayCommand YesLoadUpdateCommand     { get; set; }
+        public static RelayCommand NoLoadUpdateCommand { get; set; }
+        public static RelayCommand YesLoadUpdateCommand { get; set; }
         public RelayCommand LogoutCommand { get; set; }
 
         public AccountsViewModel AccountsVm;
         public SettingsViewModel SettingsVm;
         public MainRemoteControlViewModel RemoteControlVm;
-        public AccountDataView AccountDataV; 
+        public AccountDataView AccountDataV;
 
         public static event EventHandler TotalAccountsChanged;
         public static event EventHandler NowLoginUserImageChanged;
         public static event EventHandler NowLoginUserNicknameChanged;
         private static int _totalAccounts;
         private static string _nowLoginUserImage, _nowLoginUserNickname;
-        private bool _updateDetect,_showInTaskbar;
+        private bool _updateDetect, _showInTaskbar;
         private WindowState _windowState;
 
         public WindowState WindowState
@@ -45,7 +45,7 @@ namespace Steam_Account_Manager.ViewModels
 
             }
         }
-        
+
         public bool ShowInTaskbar
         {
             get => _showInTaskbar;
@@ -154,7 +154,7 @@ namespace Steam_Account_Manager.ViewModels
         }
 
 
-        public static async Task<bool> NowLoginUserParse(ushort awaitingMs=0)
+        public static async Task<bool> NowLoginUserParse(ushort awaitingMs = 0)
         {
             bool accountDetected = false;
             await Task.Factory.StartNew(() =>
@@ -183,8 +183,8 @@ namespace Steam_Account_Manager.ViewModels
                 try
                 {
                     var webClient = new WebClient();
-                    var version = webClient.DownloadString("https://raw.githubusercontent.com/Explynex/Steam_Account_Manager/master/VERSION.md").Replace(".",String.Empty);
-                    if(uint.Parse(version) > App.Version)
+                    var version = webClient.DownloadString("https://raw.githubusercontent.com/Explynex/Steam_Account_Manager/master/VERSION.md").Replace(".", String.Empty);
+                    if (uint.Parse(version) > App.Version)
                     {
                         UpdateDetect = true;
                     }
@@ -206,7 +206,7 @@ namespace Steam_Account_Manager.ViewModels
 
             AccountsViewCommand = new RelayCommand(o =>
             {
-                if(o != null && (bool)o == true)
+                if (o != null && (bool)o == true)
                 {
                     AccountDataV = null;
                 }
@@ -237,7 +237,7 @@ namespace Steam_Account_Manager.ViewModels
                     WindowState = WindowState.Minimized;
                     return;
                 }
-                
+
                 App.Shutdown();
             });
 
@@ -248,7 +248,7 @@ namespace Steam_Account_Manager.ViewModels
 
             LogoutCommand = new RelayCommand(o =>
             {
-                if(NowLoginUserNickname != "Username")
+                if (NowLoginUserNickname != "Username")
                 {
                     Utilities.KillSteamProcess();
 
@@ -256,7 +256,7 @@ namespace Steam_Account_Manager.ViewModels
                     {
                         Utilities.SetSteamRegistryRememberUser(String.Empty);
                     }
-                    
+
                     NowLoginUserImage = "/Images/user.png";
                     NowLoginUserNickname = "Username";
                 }

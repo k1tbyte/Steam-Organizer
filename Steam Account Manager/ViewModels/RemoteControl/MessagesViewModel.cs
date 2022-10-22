@@ -1,11 +1,11 @@
 ﻿using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.Infrastructure.Validators;
 using System;
 using System.Collections.ObjectModel;
-using System.Windows.Media;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {
@@ -75,7 +75,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 _selectedChatId = value;
                 SelectedChatIdChanged?.Invoke(null, EventArgs.Empty);
             }
-            
+
         }
 
         private static bool _isAdminIdValid;
@@ -105,7 +105,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public static event EventHandler SaveChatLogChanged;
         public static bool SaveChatLog
         {
-            get =>  SteamRemoteClient.CurrentUser.Messenger.SaveChatLog;
+            get => SteamRemoteClient.CurrentUser.Messenger.SaveChatLog;
             set
             {
                 SteamRemoteClient.CurrentUser.Messenger.SaveChatLog = value;
@@ -146,7 +146,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 _msgCommands = value;
                 MsgCommandsChanged?.Invoke(null, EventArgs.Empty);
             }
-        } 
+        }
         #endregion
 
 
@@ -239,7 +239,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                         ErrorMsg = "Invalid ID";
                     }
                 }
-              
+
             });
 
             LeaveFromChatCommand = new RelayCommand(o =>
@@ -274,7 +274,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                             SteamRemoteClient.CurrentUser.Messenger.AdminID = steamValidator.SteamId32;
                             IsAdminIdValid = true;
                             App.Current.Dispatcher.Invoke(() => { Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true); });
-                            
+
                         }
                         else
                         {
@@ -283,8 +283,8 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                         }
                     }
                 });
-                
-                
+
+
             });
         }
     }

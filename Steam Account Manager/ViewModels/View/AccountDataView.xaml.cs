@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 
@@ -14,7 +14,7 @@ namespace Steam_Account_Manager.ViewModels.View
         {
             bool scrollToEnd = false;
             InitializeComponent();
-            
+
             //Если id с минусом - прокрутка вниз
             if (id < 0)
             {
@@ -31,8 +31,8 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = VacBorder;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = (string)FindResource("adat_popup_vacCount")+ " " + ((AccountDataViewModel)this.DataContext).VacCount.ToString();
-            if (((AccountDataViewModel)this.DataContext).DaysSinceLastBan != 0) Header.PopupText.Text += '\n' + 
+            Header.PopupText.Text = (string)FindResource("adat_popup_vacCount") + " " + ((AccountDataViewModel)this.DataContext).VacCount.ToString();
+            if (((AccountDataViewModel)this.DataContext).DaysSinceLastBan != 0) Header.PopupText.Text += '\n' +
                     (string)FindResource("adat_popup_daysFirstBan") + " " +
                     ((AccountDataViewModel)this.DataContext).DaysSinceLastBan.ToString();
         }
@@ -58,10 +58,10 @@ namespace Steam_Account_Manager.ViewModels.View
 
         private void GamesCountLabel_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-           Popup.PlacementTarget = GamesCountLabel;
+            Popup.PlacementTarget = GamesCountLabel;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            if(((AccountDataViewModel)this.DataContext).GamesTotal == "-" || ((AccountDataViewModel)this.DataContext).ProfileVisiblity == "Private")
+            if (((AccountDataViewModel)this.DataContext).GamesTotal == "-" || ((AccountDataViewModel)this.DataContext).ProfileVisiblity == "Private")
             {
                 Header.PopupText.Text = (string)FindResource("adat_popup_nullGames");
             }

@@ -1,11 +1,11 @@
 ﻿using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
+using Steam_Account_Manager.ViewModels.RemoteControl.View;
 using System;
 using System.Collections.ObjectModel;
-using System.Windows.Controls;
-using Steam_Account_Manager.ViewModels.RemoteControl.View;
 using System.Diagnostics;
+using System.Windows.Controls;
 
 namespace Steam_Account_Manager.ViewModels.RemoteControl
 {
@@ -18,7 +18,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
 
         public static event EventHandler GamesChanged;
-        public  static ObservableCollection<Game> Games
+        public static ObservableCollection<Game> Games
         {
             get => SteamRemoteClient.CurrentUser.Games;
             set
@@ -38,10 +38,10 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 OnPropertyChanged(nameof(IsLibraryEmpty));
             }
         }
-        
+
         public GamesViewModel()
         {
-           // SteamRemoteClient.CurrentUser = JsonConvert.DeserializeObject<RootObject>(File.ReadAllText($@".\RemoteUsers\D1lettantZz.json"));
+            // SteamRemoteClient.CurrentUser = JsonConvert.DeserializeObject<RootObject>(File.ReadAllText($@".\RemoteUsers\D1lettantZz.json"));
             IsLibraryEmpty = Games.Count == 0;
             ParseGamesComamnd = new AsyncRelayCommand(async (o) =>
             {

@@ -1,24 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace Steam_Account_Manager.Themes.MessageBoxes
 {
     public partial class PopupMessageBoxView : Window
     {
-        public PopupMessageBoxView(string Text,bool isError) : base()
+        public PopupMessageBoxView(string Text, bool isError) : base()
         {
             InitializeComponent();
             this.Title.Text = Text;
@@ -27,7 +16,7 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
                 iicon.Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.CloseThick;
                 iicon.Foreground = Brushes.PaleVioletRed;
             }
-                
+
             this.Closed += this.NotificationWindowClosed;
         }
 

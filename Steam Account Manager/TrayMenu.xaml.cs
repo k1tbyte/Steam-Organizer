@@ -2,10 +2,8 @@
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.ViewModels;
 using System;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows;
-using System.Linq;
 using System.Windows.Input;
 using WinForms = System.Windows.Forms;
 
@@ -73,15 +71,15 @@ namespace Steam_Account_Manager
             var newHeight = BaseHeight + Config.Properties.RecentlyLoggedUsers.Count * 28;
             if (this.Height != newHeight)
                 this.Height = newHeight;
-            
-
-            base.Show();
 
             this.Owner = System.Windows.Application.Current.MainWindow;
             var points = Utilities.GetMousePosition();
 
-            this.Left = points.X - this.ActualWidth+3;
-            this.Top = points.Y - this.ActualHeight+3;
+            this.Left = points.X - this.Width + 3;
+            this.Top = points.Y - this.Height + 3;
+            base.Show();
+
+
         }
 
         private void Menu_MouseLeave(object sender, MouseEventArgs e)
@@ -113,8 +111,8 @@ namespace Steam_Account_Manager
         {
             var idx = Config.Accounts.FindIndex(o => o.SteamId64 == (box.SelectedItem as RecentlyLoggedUser).SteamID64);
 
-            if(idx != -1)
-                 (AccountsViewModel.AccountTabViews[idx].DataContext as AccountTabViewModel).ConnectToSteamCommand.Execute(null);
+            if (idx != -1)
+                (AccountsViewModel.AccountTabViews[idx].DataContext as AccountTabViewModel).ConnectToSteamCommand.Execute(null);
             this.Hide();
         }
     }

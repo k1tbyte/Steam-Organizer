@@ -12,7 +12,7 @@ namespace Steam_Account_Manager.ViewModels
         public AsyncRelayCommand AddAccountAsyncCommand { get; set; }
         public RelayCommand AccountsViewCommand { get; set; }
         private string _steamLogin;
-        private string _steamLink="";
+        private string _steamLink = "";
         private string _steamPassword;
         private string _errorMessage;
         private bool _dontCollectInfo;
@@ -110,7 +110,7 @@ namespace Steam_Account_Manager.ViewModels
             }
             else if (DontCollectInfo)
             {
-                if(SteamLink.Length < 2 || SteamLink.Length > 32)
+                if (SteamLink.Length < 2 || SteamLink.Length > 32)
                 {
                     ErrorMessage = (string)Application.Current.FindResource("adv_error_nickError");
                     return false;
@@ -125,7 +125,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 if (DataValidate())
                 {
-                    Config.Accounts.Add(new Account(_steamLogin, _steamPassword,_steamLink,true));
+                    Config.Accounts.Add(new Account(_steamLogin, _steamPassword, _steamLink, true));
                     Config.SaveAccounts();
                     MainWindowViewModel.AccountsViewCommand.Execute(null);
                     ErrorMessage = "";
@@ -163,7 +163,7 @@ namespace Steam_Account_Manager.ViewModels
                 });
             }
         }
-        
+
 
         public AddAccountViewModel()
         {

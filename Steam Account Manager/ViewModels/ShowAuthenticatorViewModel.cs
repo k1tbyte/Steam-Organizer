@@ -4,7 +4,6 @@ using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,12 +19,12 @@ namespace Steam_Account_Manager.ViewModels
 
 
         private int _id;
-        private string _authPath,_accountName = "Login", _steamGuardCode = (string)App.Current.FindResource("saw_loading"), _errorMessage;
+        private string _authPath, _accountName = "Login", _steamGuardCode = (string)App.Current.FindResource("saw_loading"), _errorMessage;
         private SteamGuardAccount guard;
         private bool _remove;
         private ObservableCollection<Confirmation> _confirmations;
 
-        private int _timerValue=30;
+        private int _timerValue = 30;
 
         #region Properties
         public ObservableCollection<Confirmation> Confirmations
@@ -72,7 +71,7 @@ namespace Steam_Account_Manager.ViewModels
                 _steamGuardCode = value;
                 OnPropertyChanged(nameof(SteamGuardCode));
             }
-        } 
+        }
         #endregion
 
         private void LoadSteamGuardAccountFromFilePath()
@@ -84,15 +83,15 @@ namespace Steam_Account_Manager.ViewModels
                 SteamGuardCode = guard.GenerateSteamGuardCode();
                 AccountName = guard.AccountName;
             }
-            
+
         }
 
         private async Task GenerateSteamGuard()
         {
-            await Task.Factory.StartNew(async()=>
+            await Task.Factory.StartNew(async () =>
             {
-               LoadSteamGuardAccountFromFilePath();
-               await guard.RefreshSessionAsync().ConfigureAwait(false);
+                LoadSteamGuardAccountFromFilePath();
+                await guard.RefreshSessionAsync().ConfigureAwait(false);
                 while (!_remove)
                 {
                     Thread.Sleep(1000);
@@ -102,7 +101,7 @@ namespace Steam_Account_Manager.ViewModels
                         TimerValue = 30;
                         SteamGuardCode = guard.GenerateSteamGuardCode();
                     }
-                    
+
                 }
             });
         }
@@ -130,7 +129,7 @@ namespace Steam_Account_Manager.ViewModels
                 }
             });
         }
-            
+
         public ShowAuthenticatorViewModel(int accountId)
         {
             _id = accountId;
@@ -175,9 +174,9 @@ namespace Steam_Account_Manager.ViewModels
                     ErrorMessage = "";
                 foreach (var item in Confirmations)
                 {
-                    if(item.ID == (ulong)o)
+                    if (item.ID == (ulong)o)
                     {
-                        if(await guard.DenyConfirmation(item).ConfigureAwait(false))
+                        if (await guard.DenyConfirmation(item).ConfigureAwait(false))
                         {
                             Confirmations.Remove(item);
                         }
@@ -206,7 +205,7 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     ErrorMessage = "An error occurred while updating...";
                 }
-                
+
             });
 
             _ = GenerateSteamGuard();
