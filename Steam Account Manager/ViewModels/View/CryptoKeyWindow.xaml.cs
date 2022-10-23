@@ -78,9 +78,9 @@ namespace Steam_Account_Manager.ViewModels.View
             ResetBorder.Visibility = Visibility.Hidden;
             System.IO.File.Delete(App.WorkingDirectory +  "\\database.dat");
             Infrastructure.Config.GetAccountsInstance();
-            MainWindow mainWindow = new MainWindow();
+            Application.Current.MainWindow = new MainWindow();
             this.Close();
-            mainWindow.Show();
+            Application.Current.MainWindow.Show();
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)

@@ -41,7 +41,6 @@ namespace Steam_Account_Manager.ViewModels.View
                         };
                         this.Close();
                         Application.Current.MainWindow.Show();
-
                     }
                 }
             }

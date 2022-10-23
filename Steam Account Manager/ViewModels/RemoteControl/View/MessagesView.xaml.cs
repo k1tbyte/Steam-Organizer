@@ -10,7 +10,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 {
     public partial class MessagesView : UserControl
     {
-        MessagesViewModel currentContext;
+        readonly MessagesViewModel currentContext;
         int CurrentCollectionCount;
         bool commandEmpty, keywordEmpty;
         public MessagesView()
@@ -61,10 +61,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
         private void DeleteCommand_Click(object sender, RoutedEventArgs e)
         {
-            MessagesViewModel.MsgCommands.RemoveAt(commandListBox.SelectedIndex);
-
-            if (SteamRemoteClient.CurrentUser != null)
-                SteamRemoteClient.CurrentUser.Messenger.Commands.RemoveAt(commandListBox.SelectedIndex);
+            DeleteCommand.Visibility = Visibility.Collapsed;
         }
 
         private void commandListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -72,6 +69,10 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             if (commandListBox.SelectedIndex < 9)
             {
                 commandListBox.UnselectAll();
+            }
+            else
+            {
+                DeleteCommand.Visibility = Visibility.Visible;
             }
         }
 

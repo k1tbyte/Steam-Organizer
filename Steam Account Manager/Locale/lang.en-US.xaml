@@ -18,6 +18,9 @@
     <v:String x:Key="sv_getID">Get steam ID when logging in anonymous account</v:String>
     <v:String x:Key="sv_rememberPass">Remember password when logging</v:String>
     <v:String x:Key="sv_newPass">╰ Enter new password:</v:String>
+    <v:String x:Key="sv_autoStartup">Start with windows</v:String>
+    <v:String x:Key="sv_minimizeAtStart">Minimize app on startup</v:String>
+    <v:String x:Key="sv_minimizeOnClose">Minimize program to tray on close</v:String>
 
     <v:String x:Key="sv_popup_apiKeyInfo" xml:space="preserve"
               >This key allows you to use the&#13;Steam web API and get Steam data.&#13;If the main key does not work,&#13;you can use your own key - "Click"</v:String>

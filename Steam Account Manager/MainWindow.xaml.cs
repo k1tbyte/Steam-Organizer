@@ -36,7 +36,7 @@ namespace Steam_Account_Manager
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
+            App.Shutdown();
         }
 
     }

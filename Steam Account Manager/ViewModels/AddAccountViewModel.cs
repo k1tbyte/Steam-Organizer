@@ -141,15 +141,19 @@ namespace Steam_Account_Manager.ViewModels
                     {
                         var steamValidator = new SteamValidator(_steamLink);
 
-                        if (steamValidator.GetSteamLinkType() == SteamValidator.SteamLinkTypes.ErrorType)
+                        if (steamValidator.SteamLinkType == SteamValidator.SteamLinkTypes.ErrorType)
                         {
                             ErrorMessage = (string)Application.Current.FindResource("adv_error_invalid_link");
+                        }
+                        else if(Config.Accounts.Exists(acc => acc.SteamId64.GetHashCode() == steamValidator.SteamId64.GetHashCode()))
+                        {
+                            ErrorMessage = "The account is already in the database";
                         }
                         else if (!DataValidate()) { }
                         else
                         {
                             ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
-                            Config.Accounts.Add(new Account(_steamLogin, _steamPassword, steamValidator.GetSteamId64()));
+                            Config.Accounts.Add(new Account(_steamLogin, _steamPassword, steamValidator.SteamId64));
                             Config.SaveAccounts();
                             MainWindowViewModel.AccountsViewCommand.Execute(null);
                             ErrorMessage = "";

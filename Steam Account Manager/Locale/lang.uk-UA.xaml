@@ -18,6 +18,9 @@
     <v:String x:Key="sv_getID">Отримувати steam ID при вході в анонімний акаунт</v:String>
     <v:String x:Key="sv_rememberPass">Запам'ятовувати пароль при вході</v:String>
     <v:String x:Key="sv_newPass">╰ Введіть новий пароль:</v:String>
+    <v:String x:Key="sv_autoStartup">Вмикати під час запуску системи</v:String>
+    <v:String x:Key="sv_minimizeAtStart">Згортати під час запуску програми</v:String>
+    <v:String x:Key="sv_minimizeOnClose">Згортати у трей при закритті</v:String>
 
     <v:String x:Key="sv_popup_apiKeyInfo" xml:space="preserve"
               >Цей ключ дозволяє використовувати&#13;API Steam і отримувати дані про акаунт&#13;Якщо основний ключ не працює,&#13;можна використовувати власний - "Клік"</v:String>

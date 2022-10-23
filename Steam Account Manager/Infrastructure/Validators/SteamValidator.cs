@@ -136,19 +136,13 @@ namespace Steam_Account_Manager.Infrastructure.Validators
         }
 
 
-        public string GetSteamId64()
-        {
-            return _steamId64;
-        }
+        public string SteamId64 => _steamId64;
 
         public ulong GetSteamId64Long => ulong.Parse(_steamId64);
 
         public uint SteamId32 => Utilities.SteamId64ToSteamId32(_steamId64);
 
-        public SteamLinkTypes GetSteamLinkType()
-        {
-            return _steamLinkType;
-        }
+        public SteamLinkTypes SteamLinkType => _steamLinkType;
 
         private class Response
         {

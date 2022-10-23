@@ -204,7 +204,8 @@ namespace Steam_Account_Manager.ViewModels
                                 Config.Accounts[id].UplayPass,
                                 Config.Accounts[id].OriginEmail,
                                 Config.Accounts[id].OriginPass, null,
-                                Config.Accounts[id].AuthenticatorPath);
+                                Config.Accounts[id].AuthenticatorPath,
+                                Config.Accounts[id].Nickname);
                             Config.SaveAccounts();
                             update = true;
                         }

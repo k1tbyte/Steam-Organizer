@@ -18,6 +18,9 @@
     <v:String x:Key="sv_getID">Получать steam ID у анонимных аккаунтов при логине</v:String>
     <v:String x:Key="sv_rememberPass">Запоминать пароль при входе</v:String>
     <v:String x:Key="sv_newPass">╰ Введите новый пароль:</v:String>
+    <v:String x:Key="sv_autoStartup">Включать при запуске системы</v:String>
+    <v:String x:Key="sv_minimizeAtStart">Сворачивать при запуске приложения</v:String>
+    <v:String x:Key="sv_minimizeOnClose">Сворачивать в трей при закрытии</v:String>
 
     <v:String x:Key="sv_popup_apiKeyInfo" xml:space="preserve"
               >Этот ключ позволяет использовать&#13;API Steam и получать данные аккаунтов&#13;Если основной ключ не работает,&#13;можно использовать свой ключ - "Клик"</v:String>

@@ -661,7 +661,8 @@ namespace Steam_Account_Manager.ViewModels
                         currentAccount.OriginEmail,
                         currentAccount.OriginPass,
                         currentAccount.CsgoStats,
-                        currentAccount.AuthenticatorPath
+                        currentAccount.AuthenticatorPath,
+                        currentAccount.Nickname
                         );
 
                     Config.Accounts[id] = currentAccount;

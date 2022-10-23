@@ -200,19 +200,26 @@
                                                 Height="20" VerticalAlignment="Center" Password="{Binding Password}"/>
                         </StackPanel>
                     </Border>
-                   
+
                 </StackPanel>
 
                 <!-- Minimize to tray -->
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <TextBlock Text="Minimize program to tray" Style="{StaticResource settingTextBlock}"/>
+                    <TextBlock Text="{DynamicResource sv_minimizeOnClose}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding MinimizeToTray}" VerticalAlignment="Center"
+                          Style="{StaticResource checkbox}" Margin="10 0 0 0" Width="27" Height="27"/>
+                </StackPanel>
+
+                <!-- Minimize app on startup -->
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBlock Text="{DynamicResource sv_minimizeAtStart}" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding MinimizeOnStart}" VerticalAlignment="Center"
                           Style="{StaticResource checkbox}" Margin="10 0 0 0" Width="27" Height="27"/>
                 </StackPanel>
 
                 <!-- Set in autostartup -->
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <TextBlock Text="Start with windows" Style="{StaticResource settingTextBlock}"/>
+                    <TextBlock Text="{DynamicResource sv_autoStartup}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Autostartup}" VerticalAlignment="Center"
                           Style="{StaticResource checkbox}" Margin="10 0 0 0" Width="27" Height="27"/>
                 </StackPanel>

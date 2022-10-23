@@ -169,7 +169,8 @@ namespace Steam_Account_Manager.ViewModels
                              Config.Accounts[i].OriginEmail,
                              Config.Accounts[i].OriginPass,
                              Config.Accounts[i].CsgoStats,
-                             Config.Accounts[i].AuthenticatorPath);
+                             Config.Accounts[i].AuthenticatorPath,
+                             Config.Accounts[i].Nickname);
 
                         ids.Add(i);
                     }

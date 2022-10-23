@@ -11,7 +11,7 @@ namespace Steam_Account_Manager
     public partial class App : Application
     {
         static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager");
-        public static readonly uint Version = 206;
+        public static readonly uint Version = 207;
         public static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         public static bool IsShuttingDown { get; set; }
 
@@ -34,8 +34,7 @@ namespace Steam_Account_Manager
                             {
                                 WindowStartupLocation = WindowStartupLocation.CenterScreen
                             };
-
-                            Application.Current.MainWindow.Show();
+                            MainWindowStart();
 
                         }
                         catch
@@ -74,9 +73,19 @@ namespace Steam_Account_Manager
         public static new void Shutdown()
         {
             IsShuttingDown = true;
-            (Application.Current.MainWindow as MainWindow).Dispose();
+            (Application.Current.MainWindow as MainWindow)?.Dispose();
 
             Application.Current.Shutdown();
+        }
+
+        public static void MainWindowStart()
+        {
+            if (Config.Properties.MinimizeOnStart)
+            {
+                Current.MainWindow.WindowState = WindowState.Minimized;
+                return;
+            }
+            Current.MainWindow.Show();
         }
     }
 }

@@ -310,7 +310,7 @@
 
 
                     <!-- Commands area -->
-                    <Grid Margin="12 25 0 0">
+                    <Grid Margin="20 25 0 0">
                         <Border Background="{DynamicResource rc_button_back}" CornerRadius="0 0 15 15" 
                                 Opacity="0.6" Margin="0 25 0 0" Height="190" VerticalAlignment="Top"/>
                         <Border Background="{DynamicResource rc_button_back}" CornerRadius="15 15 0 0" 
@@ -322,7 +322,7 @@
 
                             <ListBox x:Name="commandListBox" Background="Transparent" Width="320" Height="185"
                              VirtualizingPanel.IsVirtualizing="True" ItemsSource="{Binding MsgCommands}"
-                             VirtualizingPanel.VirtualizationMode="Recycling" BorderThickness="0"
+                             VirtualizingPanel.VirtualizationMode="Recycling" BorderThickness="0" 
                                      ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectionChanged="commandListBox_SelectionChanged">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -340,7 +340,6 @@
                                             <TextBox Grid.Column="2" Text="{Binding MessageAfterExecute}" MaxWidth="90" Style="{StaticResource commandBox}" Foreground="{DynamicResource default_foreground}"/>
 
                                         </Grid>
-
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
@@ -378,23 +377,14 @@
                         </Button>
                     </Grid>
                 </StackPanel>
-
+                <Button x:Name="DeleteCommand"  Background="{DynamicResource rc_button_back}" Style="{StaticResource defaultButtonColored}"
+                        Width="25" Height="25" VerticalAlignment="Top" Margin="0 50 135 0" Visibility="Collapsed" Click="DeleteCommand_Click"
+                Command="{Binding DeleteMsgCommand}" CommandParameter="{Binding ElementName=commandListBox, Path=SelectedItem}">
+                    <Icon:Material Kind="TrashCan" Width="14" Height="14"/>
+                </Button>
             </Grid>
         </Border>
-        <Button x:Name="DeleteCommand"  Background="{DynamicResource rc_button_back}"
-                        Width="25" Height="25" VerticalAlignment="Top" Margin="0 50 115 0"
-                Click="DeleteCommand_Click">
-            <Icon:Material Kind="TrashCan" Width="14" Height="14"/>
-            <Button.Style>
-                <Style TargetType="Button" BasedOn="{StaticResource defaultButtonColored}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=commandListBox,Path=SelectedIndex}" Value="-1">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Button.Style>
-        </Button>
+
 
     </Grid>
 </UserControl>

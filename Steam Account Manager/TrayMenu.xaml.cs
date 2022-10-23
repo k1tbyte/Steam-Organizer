@@ -17,7 +17,6 @@ namespace Steam_Account_Manager
         {
             InitializeComponent();
             box.ItemsSource = Config.Properties.RecentlyLoggedUsers;
-            //   this.DataContext = new TrayViewModel(); 
             this.box.ItemsSource = Config.Properties.RecentlyLoggedUsers;
             TrayIcon = new WinForms.NotifyIcon()
             {
@@ -35,18 +34,21 @@ namespace Steam_Account_Manager
 
         public void Dispose()
         {
-            TrayIcon.Dispose();
+            TrayIcon?.Dispose();
             TrayIcon = null;
         }
 
         private void HideOrShow()
         {
-            if (App.Current.MainWindow.WindowState == WindowState.Normal)
+            if (App.Current.MainWindow.IsVisible)
             {
+                App.Current.MainWindow.Hide();
                 App.Current.MainWindow.WindowState = WindowState.Minimized;
+
             }
             else
             {
+                App.Current.MainWindow.Show();
                 App.Current.MainWindow.WindowState = WindowState.Normal;
             }
             this.Hide();
@@ -99,8 +101,9 @@ namespace Steam_Account_Manager
 
         private void Options_Click(object sender, RoutedEventArgs e)
         {
-            if (App.Current.MainWindow.WindowState != WindowState.Normal)
+            if (!App.Current.MainWindow.IsVisible)
             {
+                App.Current.MainWindow.Show();
                 App.Current.MainWindow.WindowState = WindowState.Normal;
             }
             MainWindowViewModel.SettingsViewCommand.Execute(null);

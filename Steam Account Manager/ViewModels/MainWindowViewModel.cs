@@ -37,23 +37,7 @@ namespace Steam_Account_Manager.ViewModels
         public WindowState WindowState
         {
             get => _windowState;
-            set
-            {
-
-                ShowInTaskbar = value == WindowState.Minimized;
-                Set(ref _windowState, value);
-
-            }
-        }
-
-        public bool ShowInTaskbar
-        {
-            get => _showInTaskbar;
-            set
-            {
-                _showInTaskbar = value;
-                OnPropertyChanged(nameof(ShowInTaskbar));
-            }
+            set => Set(ref _windowState, value);
         }
 
         public bool UpdateDetect
@@ -195,6 +179,13 @@ namespace Steam_Account_Manager.ViewModels
 
         public MainWindowViewModel()
         {
+            if (Config.Properties.MinimizeOnStart)
+            {
+                App.Current.MainWindow.Hide();
+                WindowState = WindowState.Minimized;
+            }
+                
+
             AccountsVm = new AccountsViewModel();
             SettingsVm = new SettingsViewModel();
             RemoteControlVm = new MainRemoteControlViewModel();
@@ -233,8 +224,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 if (Config.Properties.MinimizeToTray)
                 {
-                    ShowInTaskbar = false;
-                    WindowState = WindowState.Minimized;
+                    App.Current.MainWindow.Hide();
                     return;
                 }
 
@@ -278,7 +268,7 @@ namespace Steam_Account_Manager.ViewModels
                 UpdateDetect = false;
             });
 
-
+                
         }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using Steam_Account_Manager.Infrastructure.Parsers;
 using System;
+using System.Web.UI.WebControls;
 
 namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
 {
     [Serializable]
     internal class Account
     {
+        #region Properties
         //Player summaries
         public string SteamId64 { get; set; }
         public string Login { get; set; }
@@ -45,7 +47,8 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
         public string UplayPass { get; set; }
         public string OriginEmail { get; set; }
         public string OriginPass { get; set; }
-        public string AuthenticatorPath { get; set; }
+        public string AuthenticatorPath { get; set; } 
+        #endregion
 
         //Default
         public Account(string login, string password, string steamId64)
@@ -56,7 +59,6 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
 
             SteamParser steamParser = new SteamParser(steamId64);
             steamParser.AccountParse().GetAwaiter().GetResult();
-
             this.Nickname = steamParser.GetNickname;
             this.AvatarFull = steamParser.GetAvatarUrlFull;
             this.ProfileURL = steamParser.GetCustomProfileUrl;
@@ -84,37 +86,13 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
 
         //Update account counstructor
         public Account(string login, string password, string steamId64, string note, string emailLogin, string emailPass,
-             string rockstarEmail, string rockstarPass, string uplayEmail, string uplayPass, string originEmail, string originPass, CSGO csgoStats, string authenticatorPath)
+             string rockstarEmail, string rockstarPass, string uplayEmail, string uplayPass,
+             string originEmail, string originPass, CSGO csgoStats, string authenticatorPath,string nick = null) : this(login,password,steamId64)
         {
-            this.Login = login;
-            this.Password = password;
-            this.SteamId64 = steamId64;
-            SteamParser steamParser = new SteamParser(steamId64);
-            steamParser.AccountParse().GetAwaiter().GetResult();
-
-            this.AvatarFull = steamParser.GetAvatarUrlFull;
-            this.ProfileURL = steamParser.GetCustomProfileUrl;
-            this.ProfileVisility = steamParser.GetProfileVisiblity;
-            this.AccCreatedDate = steamParser.GetAccountCreatedDate;
-            this.LastUpdateTime = DateTime.Now;
-
-            this.TradeBan = steamParser.GetEconomyBanStatus;
-            this.CommunityBan = steamParser.GetCommunityBanStatus;
-            this.VacBansCount = steamParser.GetVacCount;
-            this.DaysSinceLastBan = steamParser.GetDaysSinceLastBan;
-
-            this.SteamLevel = steamParser.GetSteamLevel;
-            this.TotalGames = steamParser.GetTotalGames;
-            this.GamesPlayed = steamParser.GetGamesPlayed;
-            this.HoursOnPlayed = steamParser.GetHoursOnPlayed;
-            this.CountGamesImageUrl = steamParser.GetCountGamesImageUrl;
-            this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
-
-            if (csgoStats == null) this.CsgoStats = new CSGO();
-            else this.CsgoStats = csgoStats;
+            if (csgoStats != null)
+                this.CsgoStats = csgoStats;
 
             this.AuthenticatorPath = authenticatorPath;
-            this.ContainParseInfo = true;
 
             this.Note = note;
             this.EmailLogin = emailLogin;
@@ -126,10 +104,8 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
             this.OriginPass = originPass;
             this.OriginEmail = originEmail;
 
-
-            if (this.Nickname != steamParser.GetNickname)
+            if(nick.GetHashCode() != this.Nickname.GetHashCode())
             {
-                this.Nickname = steamParser.GetNickname;
                 foreach (var item in Config.Properties.RecentlyLoggedUsers)
                 {
                     if (item.SteamID64 == this.SteamId64 && item.Nickname != this.Nickname)
@@ -139,7 +115,6 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
                             SteamID64 = item.SteamID64,
                             IsRewritable = item.IsRewritable,
                             Nickname = this.Nickname
-
                         };
                         Config.SaveProperties();
                         break;
@@ -147,9 +122,10 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
                 }
             }
 
+
         }
 
-        public Account(string login, string password, string nickname, bool empty)
+        public Account(string login, string password, string nickname, bool anonymAccount)
         {
             this.ContainParseInfo = false;
 
@@ -158,7 +134,6 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
             this.Nickname = nickname;
             this.LastUpdateTime = DateTime.Now;
 
-            this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = OriginEmail = OriginPass = "";
         }
     }
 }

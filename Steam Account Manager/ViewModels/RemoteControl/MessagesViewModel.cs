@@ -23,6 +23,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public RelayCommand LeaveFromChatCommand { get; set; }
         public RelayCommand SendMessageCommand { get; set; }
         public AsyncRelayCommand AddAdminIdCommand { get; set; }
+        public RelayCommand DeleteMsgCommand { get; set; }
         private string TempID, TempAdminID;
 
 
@@ -227,7 +228,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 {
                     TempID = InterlocutorId;
                     SteamValidator steamValidator = new SteamValidator(InterlocutorId);
-                    if (steamValidator.GetSteamLinkType() != SteamValidator.SteamLinkTypes.ErrorType)
+                    if (steamValidator.SteamLinkType != SteamValidator.SteamLinkTypes.ErrorType)
                     {
                         SteamRemoteClient.InterlocutorID = SelectedChatId = steamValidator.GetSteamId64Long;
                         InterlocutorId = "";
@@ -269,7 +270,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     {
                         TempAdminID = AdminId;
                         SteamValidator steamValidator = new SteamValidator(TempAdminID);
-                        if (steamValidator.GetSteamLinkType() != SteamValidator.SteamLinkTypes.ErrorType)
+                        if (steamValidator.SteamLinkType != SteamValidator.SteamLinkTypes.ErrorType)
                         {
                             SteamRemoteClient.CurrentUser.Messenger.AdminID = steamValidator.SteamId32;
                             IsAdminIdValid = true;
@@ -285,6 +286,15 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 });
 
 
+            });
+
+            DeleteMsgCommand = new RelayCommand(o =>
+            {
+                if(o is Command command)
+                {
+                    MsgCommands.Remove(command);
+                    SteamRemoteClient.CurrentUser.Messenger.Commands.Remove(command);
+                }
             });
         }
     }

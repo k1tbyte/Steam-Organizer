@@ -478,9 +478,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                                     else
                                     {
                                         steamValidator = new SteamValidator(command[1]);
-                                        if (steamValidator.GetSteamLinkType() != SteamValidator.SteamLinkTypes.ErrorType)
+                                        if (steamValidator.SteamLinkType != SteamValidator.SteamLinkTypes.ErrorType)
                                         {
-                                            steamFriends.SendChatMessage(ulong.Parse(steamValidator.GetSteamId64()), EChatEntryType.ChatMsg, command[2]);
+                                            steamFriends.SendChatMessage(ulong.Parse(steamValidator.SteamId64), EChatEntryType.ChatMsg, command[2]);
                                             steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "💬 Message sent");
                                         }
                                         else

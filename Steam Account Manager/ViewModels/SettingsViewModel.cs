@@ -17,7 +17,8 @@ namespace Steam_Account_Manager.ViewModels
               _passwordError,
               _rememberPassword,
               _minimizeToTray,
-              _autostartup;
+              _autostartup,
+              _minimizeOnStart;
 
         string _webApiKey,
                _encryptingKey,
@@ -31,6 +32,15 @@ namespace Steam_Account_Manager.ViewModels
 
         #region Properties
         
+        public bool MinimizeOnStart
+        {
+            get => _minimizeOnStart;
+            set
+            {
+                _minimizeOnStart = value;
+                OnPropertyChanged(nameof(MinimizeOnStart));
+            }
+        }
         public bool Autostartup
         {
             get => _autostartup;
@@ -195,6 +205,7 @@ namespace Steam_Account_Manager.ViewModels
             RememberPassword    = Config.Properties.RememberPassword;
             MinimizeToTray      = Config.Properties.MinimizeToTray;
             Autostartup         = Config.Properties.Autostartup;
+            MinimizeOnStart     = Config.Properties.MinimizeOnStart;
 
             LocaleMode[(byte)Config.Properties.Language] = true;
             ThemeMode[(byte)Config.Properties.Theme] = true;
@@ -237,6 +248,7 @@ namespace Steam_Account_Manager.ViewModels
                     Config.Properties.AutoGetSteamId   = AutoGetSteamId;
                     Config.Properties.RememberPassword = RememberPassword;
                     Config.Properties.MinimizeToTray   = MinimizeToTray;
+                    Config.Properties.MinimizeOnStart  = MinimizeOnStart;
 
                     if(Config.Properties.Autostartup != Autostartup)
                     {

@@ -61,7 +61,7 @@ namespace Steam_Account_Manager.Infrastructure
             PostMessage(HWND, (int)WM.KEYUP, (IntPtr)key, IntPtr.Zero);
         }
 
-        private static void ForceWindowToForeground(IntPtr HWND)
+        public static void ForceWindowToForeground(IntPtr HWND)
         {
             const int SW_SHOW = 5;
             AttachedThreadInputAction(

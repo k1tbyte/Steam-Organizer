@@ -12,7 +12,6 @@
         Title="Steam Account Manager"
          Closing="Window_Closing"
         WindowState="{Binding WindowState}"
-        ShowInTaskbar="{Binding ShowInTaskbar,Converter={StaticResource BoolInverted}}"
         IsHitTestVisible="{Binding IsEnabledForUser}">
 
     <Window.DataContext>
