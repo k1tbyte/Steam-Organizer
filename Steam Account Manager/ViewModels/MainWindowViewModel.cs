@@ -178,13 +178,7 @@ namespace Steam_Account_Manager.ViewModels
         }
 
         public MainWindowViewModel()
-        {
-            if (Config.Properties.MinimizeOnStart)
-            {
-                App.MainWindow.Hide();
-                WindowState = WindowState.Minimized;
-            }
-                
+        {                
 
             AccountsVm = new AccountsViewModel();
             SettingsVm = new SettingsViewModel();

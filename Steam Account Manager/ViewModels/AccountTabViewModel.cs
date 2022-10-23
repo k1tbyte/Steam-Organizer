@@ -186,7 +186,8 @@ namespace Steam_Account_Manager.ViewModels
                                     Application.Current.Shutdown();
                                     break;
                                 case LoggedAction.Minimize:
-                                    App.MainWindow.Hide();
+                                    if(App.MainWindow.IsVisible)
+                                         App.MainWindow.Hide();
                                     break;
                             }
                         }

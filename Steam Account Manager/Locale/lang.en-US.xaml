@@ -6,7 +6,7 @@
     <v:String x:Key="sv_settings_title">Settings</v:String>
     <v:String x:Key="sv_theme">Theme</v:String>
     <v:String x:Key="sv_language">Language</v:String>
-    <v:String x:Key="sv_close_after_logging">Close the program after logging</v:String>
+    <v:String x:Key="sv_action_after_logging">Action after login in account</v:String>
     <v:String x:Key="sv_confirm_when_del">Delete accounts without confirmation</v:String>
     <v:String x:Key="sv_save_changes">Save changes</v:String>
     <v:String x:Key="sv_on">Enabled</v:String>
@@ -21,6 +21,12 @@
     <v:String x:Key="sv_autoStartup">Start with windows</v:String>
     <v:String x:Key="sv_minimizeAtStart">Minimize app on startup</v:String>
     <v:String x:Key="sv_minimizeOnClose">Minimize program to tray on close</v:String>
+
+    <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
+        <v:String>None</v:String>
+        <v:String>Close</v:String>
+        <v:String>Minimize to tray</v:String>
+    </x:ArrayExtension>
 
     <v:String x:Key="sv_popup_apiKeyInfo" xml:space="preserve"
               >This key allows you to use the&#13;Steam web API and get Steam data.&#13;If the main key does not work,&#13;you can use your own key - "Click"</v:String>

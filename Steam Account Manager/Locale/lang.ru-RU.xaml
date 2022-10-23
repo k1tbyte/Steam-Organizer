@@ -6,7 +6,7 @@
     <v:String x:Key="sv_settings_title">Настройки</v:String>
     <v:String x:Key="sv_theme">Тема</v:String>
     <v:String x:Key="sv_language">Язык</v:String>
-    <v:String x:Key="sv_close_after_logging">Закрывать программу после входа в аккаунт</v:String>
+    <v:String x:Key="sv_action_after_logging">Действие после входа в аккаунт</v:String>
     <v:String x:Key="sv_confirm_when_del">Удалять аккаунты без подтверждения</v:String>
     <v:String x:Key="sv_save_changes">Сохранить</v:String>
     <v:String x:Key="sv_on">Включено</v:String>
@@ -21,6 +21,12 @@
     <v:String x:Key="sv_autoStartup">Включать при запуске системы</v:String>
     <v:String x:Key="sv_minimizeAtStart">Сворачивать при запуске приложения</v:String>
     <v:String x:Key="sv_minimizeOnClose">Сворачивать в трей при закрытии</v:String>
+
+    <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
+        <v:String>Ничего</v:String>
+        <v:String>Закрыть</v:String>
+        <v:String>Свернуть в трей</v:String>
+    </x:ArrayExtension>
 
     <v:String x:Key="sv_popup_apiKeyInfo" xml:space="preserve"
               >Этот ключ позволяет использовать&#13;API Steam и получать данные аккаунтов&#13;Если основной ключ не работает,&#13;можно использовать свой ключ - "Клик"</v:String>
