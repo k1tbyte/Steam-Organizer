@@ -10,7 +10,7 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
         {
             var mbox = new FlatMessageBoxView(Text)
             {
-                Owner = Application.Current.MainWindow,
+                Owner = App.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
             mbox.Title.Text = Text;
@@ -21,7 +21,7 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
         {
             var qmbox = new FlatQueryMessageBoxView(Text)
             {
-                Owner = Application.Current.MainWindow,
+                Owner = App.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
             return qmbox.ShowDialog();

@@ -135,10 +135,13 @@
 
                 <!--Close after logging panel-->
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <TextBlock Text="{DynamicResource sv_close_after_logging}" 
+                    <TextBlock Text="Action after login in account" 
                        Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton Style="{StaticResource settingsButton}"
-                          IsChecked="{Binding AutoCloseMode}"/>
+                    <ComboBox Margin="10 0 0 0" Width="150" Height="27" SelectedIndex="{Binding ActionAfterLogin}">
+                        <ComboBoxItem Content="None"/>
+                        <ComboBoxItem Content="Close"/>
+                        <ComboBoxItem Content="Minimize to tray"/>
+                    </ComboBox>
                 </StackPanel>
 
                 <!-- Delete without confirmation -->  

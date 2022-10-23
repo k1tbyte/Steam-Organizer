@@ -135,11 +135,13 @@ namespace Steam_Account_Manager.ViewModels
                         Utilities.KillSteamAndConnect(Config.Properties.SteamDirection, "-noreactlogin -login " + _login + " " + _password + " -tcp");
                     }
 
-                    //Сохраняем данные о недавно используемых аккаунтов
-                    if (SteamId != "Unknown" && !Config.Properties.RecentlyLoggedUsers.Any(o => o.SteamID64 == SteamId))
+                    
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        //Сохраняем данные о недавно используемых аккаунтов
+                        if (SteamId != "Unknown" && !Config.Properties.RecentlyLoggedUsers.Any(o => o.SteamID64 == SteamId))
                         {
+
                             if (Config.Properties.RecentlyLoggedUsers.Count < 5)
                             {
 
@@ -174,14 +176,24 @@ namespace Steam_Account_Manager.ViewModels
                                 }
                             }
                             Config.SaveProperties();
-                        }));
-                    }
+                        }
+
+                        if (Config.Properties.ActionAfterLogin != LoggedAction.None)
+                        {
+                            switch (Config.Properties.ActionAfterLogin)
+                            {
+                                case LoggedAction.Close:
+                                    Application.Current.Shutdown();
+                                    break;
+                                case LoggedAction.Minimize:
+                                    App.MainWindow.Hide();
+                                    break;
+                            }
+                        }
+                    }));
 
 
-                    if (Config.Properties.AutoClose)
-                    {
-                        Application.Current.Dispatcher.InvokeShutdown();
-                    }
+
 
                     MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_loggedInSteam"));
                     MainWindowViewModel.IsEnabledForUser = true;
@@ -290,7 +302,7 @@ namespace Steam_Account_Manager.ViewModels
             ConnectToSteamRemoteCommand = new RelayCommand(o =>
             {
                 MainWindowViewModel.RemoteControlViewCommand.Execute(null);
-                ((MainWindowViewModel)App.Current.MainWindow.DataContext).RemoteControlVm.LoginViewCommand.Execute(id);
+                ((MainWindowViewModel)App.MainWindow.DataContext).RemoteControlVm.LoginViewCommand.Execute(id);
             });
         }
     }

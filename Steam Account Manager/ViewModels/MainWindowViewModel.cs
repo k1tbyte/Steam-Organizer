@@ -181,7 +181,7 @@ namespace Steam_Account_Manager.ViewModels
         {
             if (Config.Properties.MinimizeOnStart)
             {
-                App.Current.MainWindow.Hide();
+                App.MainWindow.Hide();
                 WindowState = WindowState.Minimized;
             }
                 
@@ -224,7 +224,7 @@ namespace Steam_Account_Manager.ViewModels
             {
                 if (Config.Properties.MinimizeToTray)
                 {
-                    App.Current.MainWindow.Hide();
+                    App.MainWindow.Hide();
                     return;
                 }
 

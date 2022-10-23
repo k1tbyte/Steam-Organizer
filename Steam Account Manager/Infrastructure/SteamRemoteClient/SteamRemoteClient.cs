@@ -588,6 +588,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
                 if (callback.Sender == InterlocutorID)
                 {
+                    
                     Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
                     {
                         Msg = callback.Message,

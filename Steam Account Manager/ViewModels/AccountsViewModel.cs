@@ -210,7 +210,7 @@ namespace Steam_Account_Manager.ViewModels
         private static bool? OpenCryptoKeyWindow(string path)
         {
             CryptoKeyWindow cryptoKeyWindow = new CryptoKeyWindow(false, path);
-            cryptoKeyWindow.Owner = App.Current.MainWindow;
+            cryptoKeyWindow.Owner = App.MainWindow;
             cryptoKeyWindow.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
             return cryptoKeyWindow.ShowDialog();
         }

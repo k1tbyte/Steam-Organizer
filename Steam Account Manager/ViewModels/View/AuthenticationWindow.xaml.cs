@@ -28,8 +28,8 @@ namespace Steam_Account_Manager.ViewModels.View
                 {
                     try
                     {
-                        Application.Current.MainWindow = new MainWindow();
-                        Application.Current.MainWindow.Show();
+                        App.MainWindow = new MainWindow();
+                        App.MainWindow.Show();
                         this.Hide();
 
                     }
@@ -40,7 +40,7 @@ namespace Steam_Account_Manager.ViewModels.View
                             WindowStartupLocation = WindowStartupLocation.CenterScreen
                         };
                         this.Close();
-                        Application.Current.MainWindow.Show();
+                        App.MainWindow.Show();
                     }
                 }
             }
@@ -84,8 +84,8 @@ namespace Steam_Account_Manager.ViewModels.View
             try
             {
                 Config.GetAccountsInstance();
-                Application.Current.MainWindow = new MainWindow();
-                Application.Current.MainWindow.Show();
+                App.MainWindow = new MainWindow();
+                App.MainWindow.Show();
                 this.Hide();
 
             }

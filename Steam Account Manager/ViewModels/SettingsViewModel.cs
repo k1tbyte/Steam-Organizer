@@ -1,4 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Models;
 using System;
 
 namespace Steam_Account_Manager.ViewModels
@@ -8,8 +9,7 @@ namespace Steam_Account_Manager.ViewModels
         private bool[] _themeMode = { false, false, false };
         private bool[] _localeMode = { false, false, false };
 
-        bool _autoCloseMode,
-              _noConfirmMode,
+        bool  _noConfirmMode,
               _takeAccountInfoMode,
               _passwordEnabled,
               _autoGetSteamId,
@@ -23,6 +23,8 @@ namespace Steam_Account_Manager.ViewModels
         string _webApiKey,
                _encryptingKey,
                _password;
+
+        LoggedAction _actionAfterLogin;
 
         public RelayCommand SaveChangesCommand { get; set; }
         public RelayCommand OpenApiKeyUrlCommand { get; set; }
@@ -164,13 +166,13 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-        public bool AutoCloseMode
+        public byte ActionAfterLogin
         {
-            get => _autoCloseMode;
+            get => (byte)_actionAfterLogin;
             set
             {
-                _autoCloseMode = value;
-                OnPropertyChanged(nameof(AutoCloseMode));
+                _actionAfterLogin = (LoggedAction)value;
+                OnPropertyChanged(nameof(ActionAfterLogin));
             }
         }
 
@@ -189,7 +191,7 @@ namespace Steam_Account_Manager.ViewModels
         {
             var authenticationWindow = new View.AuthenticationWindow(false)
             {
-                Owner = App.Current.MainWindow,
+                Owner = App.MainWindow,
                 WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner
             };
             return authenticationWindow.ShowDialog();
@@ -198,7 +200,7 @@ namespace Steam_Account_Manager.ViewModels
         public SettingsViewModel()
         {
             NoConfirmMode       = Config.Properties.NoConfirmMode;
-            AutoCloseMode       = Config.Properties.AutoClose;
+            ActionAfterLogin    = (byte)Config.Properties.ActionAfterLogin;
             TakeAccountInfoMode = Config.Properties.TakeAccountInfo;
             WebApiKey           = Config.Properties.WebApiKey;
             AutoGetSteamId      = Config.Properties.AutoGetSteamId;
@@ -242,7 +244,7 @@ namespace Steam_Account_Manager.ViewModels
 
 
                     Config.Properties.NoConfirmMode    = NoConfirmMode;
-                    Config.Properties.AutoClose        = AutoCloseMode;
+                    Config.Properties.ActionAfterLogin = (LoggedAction)ActionAfterLogin;
                     Config.Properties.TakeAccountInfo  = TakeAccountInfoMode;
                     Config.Properties.WebApiKey        = WebApiKey;
                     Config.Properties.AutoGetSteamId   = AutoGetSteamId;

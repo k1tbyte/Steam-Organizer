@@ -40,16 +40,13 @@ namespace Steam_Account_Manager
 
         private void HideOrShow()
         {
-            if (App.Current.MainWindow.IsVisible)
+            if (App.MainWindow.IsVisible)
             {
-                App.Current.MainWindow.Hide();
-                App.Current.MainWindow.WindowState = WindowState.Minimized;
-
+                App.MainWindow.Hide();
             }
             else
             {
-                App.Current.MainWindow.Show();
-                App.Current.MainWindow.WindowState = WindowState.Normal;
+                App.MainWindow.Show();
             }
             this.Hide();
         }
@@ -74,7 +71,6 @@ namespace Steam_Account_Manager
             if (this.Height != newHeight)
                 this.Height = newHeight;
 
-            this.Owner = System.Windows.Application.Current.MainWindow;
             var points = Utilities.GetMousePosition();
 
             this.Left = points.X - this.Width + 3;
@@ -101,10 +97,9 @@ namespace Steam_Account_Manager
 
         private void Options_Click(object sender, RoutedEventArgs e)
         {
-            if (!App.Current.MainWindow.IsVisible)
+            if (!App.MainWindow.IsVisible)
             {
-                App.Current.MainWindow.Show();
-                App.Current.MainWindow.WindowState = WindowState.Normal;
+                App.MainWindow.Show();
             }
             MainWindowViewModel.SettingsViewCommand.Execute(null);
             this.Hide();

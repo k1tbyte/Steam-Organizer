@@ -33,8 +33,8 @@ namespace Steam_Account_Manager.ViewModels.View
                         Infrastructure.Config.Properties.UserCryptoKey = key.Text;
                         Infrastructure.Config.GetAccountsInstance();
                         Infrastructure.Config.SaveProperties();
-                        Application.Current.MainWindow = new MainWindow();
-                        Application.Current.MainWindow.Show();
+                        App.MainWindow = new MainWindow();
+                        App.MainWindow.Show();
                         this.Close();
                     }
                     else
@@ -78,9 +78,9 @@ namespace Steam_Account_Manager.ViewModels.View
             ResetBorder.Visibility = Visibility.Hidden;
             System.IO.File.Delete(App.WorkingDirectory +  "\\database.dat");
             Infrastructure.Config.GetAccountsInstance();
-            Application.Current.MainWindow = new MainWindow();
+            App.MainWindow = new MainWindow();
             this.Close();
-            Application.Current.MainWindow.Show();
+            App.MainWindow.Show();
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)

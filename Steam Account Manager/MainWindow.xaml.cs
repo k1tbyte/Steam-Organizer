@@ -39,6 +39,17 @@ namespace Steam_Account_Manager
             App.Shutdown();
         }
 
+        public new void Hide()
+        {
+            base.Hide();
+            WindowState = WindowState.Minimized;
+        }
+
+        public new void Show()
+        {
+            base.Show();
+            WindowState = WindowState.Normal;
+        }
     }
 
 }

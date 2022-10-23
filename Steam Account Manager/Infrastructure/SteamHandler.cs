@@ -192,7 +192,7 @@ namespace Steam_Account_Manager.Infrastructure
 
 
 
-                            if (Config.Properties.AutoClose)
+                            if (Config.Properties.ActionAfterLogin == Models.LoggedAction.Close)
                                 App.Current.Dispatcher.InvokeShutdown();
                         }
 

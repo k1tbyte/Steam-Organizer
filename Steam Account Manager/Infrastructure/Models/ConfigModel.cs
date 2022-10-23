@@ -21,13 +21,20 @@ namespace Steam_Account_Manager.Infrastructure.Models
         Ukrainian = 2
     }
 
+    internal enum LoggedAction : byte
+    {
+        None = 0,
+        Close = 1,
+        Minimize = 2
+    }
+
     [Serializable]
     internal sealed class ConfigProperties
     {
         public string SteamDirection { get; set; }
         public bool NoConfirmMode { get; set; }
         public bool TakeAccountInfo { get; set; }
-        public bool AutoClose { get; set; }
+        public LoggedAction ActionAfterLogin { get; set; }
         public bool AutoGetSteamId { get; set; }
         public bool RememberPassword { get; set; }
         public bool MinimizeToTray { get; set; }
