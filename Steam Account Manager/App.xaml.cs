@@ -14,6 +14,7 @@ namespace Steam_Account_Manager
         public static readonly uint Version = 209;
         public static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         public static new MainWindow MainWindow;
+        public static TrayMenu Tray;
         public static bool IsShuttingDown { get; set; }
 
         [STAThread]

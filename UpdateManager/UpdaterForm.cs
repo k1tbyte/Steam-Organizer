@@ -27,7 +27,10 @@ namespace UpdateManager
 
         private async Task ProgrammUpdate()
         {
-            string URL = "https://drive.google.com/uc?export=download&id=11mSIJZeTQhUHtnDVwa74iQuAQXJ8WH5Q";
+            string fileName = Program.Repair ? "StableBuild.zip" : "LastUpd.zip";
+            string URL = Program.Repair ? "https://dl.dropboxusercontent.com/s/ia9gceumzwjnzu9/StableBuild.zip?dl=0" :
+                "https://dl.dropboxusercontent.com/s/fjoc5t8dwz5d6yq/LastUpd.zip?dl=0";
+
             SetProgressTitle("Downloading...");
 
             using (WebClient webClient = new WebClient())
@@ -54,7 +57,7 @@ namespace UpdateManager
                     SubtitleProgress.Left = (ClientSize.Width - SubtitleProgress.Width) / 2;
                 };
 
-                await webClient.DownloadFileTaskAsync(URL, @"LastUpd.zip");
+                await webClient.DownloadFileTaskAsync(URL, fileName);
 
                 Thread.Sleep(800);
                 SetProgressTitle("Extracting...");
@@ -71,16 +74,23 @@ namespace UpdateManager
                     Thread.Sleep(50);
                 }
 
-                Directory.CreateDirectory(@".\Temp");
-                ZipFile.ExtractToDirectory(@".\LastUpd.zip", @".\Temp");
+                if (Directory.Exists(".\\Temp"))
+                    Directory.Delete(".\\Temp", true);
 
-                if (File.Exists(@".\Temp\UpdateManager.exe"))
-                    File.Delete(@".\Temp\UpdateManager.exe");
+                Directory.CreateDirectory(@".\Temp");
+                ZipFile.ExtractToDirectory($@".\{fileName}", @".\Temp");
+
+                bool IsUpdaterUpdate = false;
 
                 var updateFiles = Directory.GetFiles(@".\Temp").Select(a => Path.GetFileName(a));
 
                 foreach (var item in updateFiles)
                 {
+                    if (item == "UpdateManager.exe")
+                    {
+                        IsUpdaterUpdate = true;
+                        continue;
+                    }
                     File.Move($@".\Temp\{item}", $@".\{item}", true);
                 }
 
@@ -119,11 +129,25 @@ namespace UpdateManager
                     Thread.Sleep(50);
                 }
 
-                Directory.Delete(@".\Temp", true);
-                File.Delete(@".\LastUpd.zip");
-
+                File.Delete($@".\{fileName}");
                 Process.Start(@".\Steam Account Manager.exe");
-                this.Close();
+
+                if (IsUpdaterUpdate)
+                {
+                    using (var process = new Process())
+                    {
+                        process.StartInfo.UseShellExecute = false;
+                        process.StartInfo.CreateNoWindow = true;
+                        process.StartInfo.FileName = "cmd";
+                        process.StartInfo.Arguments = $"/c TIMEOUT 2 > nul && MOVE /Y \"{Environment.CurrentDirectory}\"\\Temp\\UpdateManager.exe \"{Environment.CurrentDirectory}\" && RMDIR /S /Q \"{Environment.CurrentDirectory}\"\\Temp";
+                        process.Start();
+                    }
+                }
+                else
+                {
+                    Directory.Delete(@".\Temp", true);
+                }
+                Application.Exit();
             }
 
 

@@ -2,6 +2,7 @@
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.ViewModels;
 using System;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
@@ -16,8 +17,6 @@ namespace Steam_Account_Manager
         public TrayMenu()
         {
             InitializeComponent();
-            box.ItemsSource = Config.Properties.RecentlyLoggedUsers;
-            this.box.ItemsSource = Config.Properties.RecentlyLoggedUsers;
             TrayIcon = new WinForms.NotifyIcon()
             {
                 Text = "Steam Account Manager",
@@ -37,6 +36,8 @@ namespace Steam_Account_Manager
             TrayIcon?.Dispose();
             TrayIcon = null;
         }
+
+        public void TrayListUpdate() { (this.DataContext as TrayModel).RecentlyUpdate(); }
 
         private void HideOrShow()
         {
@@ -112,6 +113,29 @@ namespace Steam_Account_Manager
             if (idx != -1)
                 (AccountsViewModel.AccountTabViews[idx].DataContext as AccountTabViewModel).ConnectToSteamCommand.Execute(null);
             this.Hide();
+        }
+    }
+
+    internal class TrayModel : ObservableObject
+    {
+        private ObservableCollection<RecentlyLoggedUser> _recently;
+        public ObservableCollection<RecentlyLoggedUser> Recently
+        {
+            get => _recently;
+            set
+            {
+                _recently = value;
+            }
+        }
+
+        public void RecentlyUpdate()
+        {
+            Recently = new ObservableCollection<RecentlyLoggedUser>(Config.Properties.RecentlyLoggedUsers);
+            OnPropertyChanged(nameof(Recently));
+        }
+        public TrayModel()
+        {
+            Recently = new ObservableCollection<RecentlyLoggedUser>(Config.Properties.RecentlyLoggedUsers);
         }
     }
 }

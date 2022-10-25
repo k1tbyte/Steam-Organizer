@@ -176,16 +176,13 @@ namespace Steam_Account_Manager.Infrastructure
                             SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
                             Thread.Sleep(100);
                             System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-
+                            SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
                             if (paste2fa)
                             {
                                 Thread.Sleep(2700);
-                                SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                                Thread.Sleep(100);
-                                System.Windows.Forms.SendKeys.SendWait("^{v}");
-
-                                SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                                Thread.Sleep(100);
+                            //    System.Windows.Forms.SendKeys.SendWait("^");
+                                System.Windows.Forms.SendKeys.SendWait("^(v)");
+                                Thread.Sleep(200);
                                 System.Windows.Forms.SendKeys.SendWait("{ENTER}");
                             }
                             Automation.RemoveAllEventHandlers();

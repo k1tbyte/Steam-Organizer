@@ -10,6 +10,9 @@
     WindowStyle="None" AllowsTransparency="True" 
     Background="Transparent"
         Title="TrayMenu">
+    <Window.DataContext>
+        <local:TrayModel/>
+    </Window.DataContext>
 
     <Window.Resources>
         
@@ -42,10 +45,10 @@
 
     <Border Background="{DynamicResource background_border_color}" CornerRadius="5">
         <StackPanel Margin="0 5 0 5" VerticalAlignment="Bottom">
-            <ListBox Background="Transparent" BorderThickness="0" 
+            <ListBox Background="Transparent" BorderThickness="0"
                      SelectionMode="Single" SelectionChanged="box_SelectionChanged"
                      Foreground="{DynamicResource default_foreground}" x:Name="box"
-                     Margin="0 0 0 0" ItemsSource="{Binding RecentlyLoggedUsers,UpdateSourceTrigger=PropertyChanged}">
+                     Margin="0 0 0 0" ItemsSource="{Binding Recently,UpdateSourceTrigger=PropertyChanged}">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
                         <Setter Property="FontSize" Value="14"/>

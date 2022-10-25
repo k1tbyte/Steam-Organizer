@@ -12,7 +12,7 @@ namespace Steam_Account_Manager
         {
             InitializeComponent();
             trayMenu = new TrayMenu();
-
+            App.Tray = trayMenu;
         }
 
         public void Dispose()

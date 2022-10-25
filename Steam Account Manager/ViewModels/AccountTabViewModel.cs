@@ -104,7 +104,7 @@ namespace Steam_Account_Manager.ViewModels
         private async Task ConnectToSteam()
         {
             int id = Id - 1;
-            bool update = false;
+            bool update = false,isShuttingDown = false;
             string authPath;
 
             await Task.Factory.StartNew(async () =>
@@ -133,6 +133,7 @@ namespace Steam_Account_Manager.ViewModels
                     else
                     {
                         Utilities.KillSteamAndConnect(Config.Properties.SteamDirection, "-noreactlogin -login " + _login + " " + _password + " -tcp");
+                        isShuttingDown = Config.Properties.ActionAfterLogin == LoggedAction.Close;
                     }
 
                     
@@ -175,6 +176,7 @@ namespace Steam_Account_Manager.ViewModels
                                     Config.Properties.RecentlyLoggedUsers[++index].IsRewritable = true;
                                 }
                             }
+                            App.Tray.TrayListUpdate();
                             Config.SaveProperties();
                         }
 
@@ -183,7 +185,8 @@ namespace Steam_Account_Manager.ViewModels
                             switch (Config.Properties.ActionAfterLogin)
                             {
                                 case LoggedAction.Close:
-                                    Application.Current.Shutdown();
+                                    if (isShuttingDown)
+                                        App.Shutdown();
                                     break;
                                 case LoggedAction.Minimize:
                                     if(App.MainWindow.IsVisible)
@@ -200,7 +203,7 @@ namespace Steam_Account_Manager.ViewModels
                     MainWindowViewModel.IsEnabledForUser = true;
 
                     //Если надо получить данные об аккаунте без информации
-                    if (MainWindowViewModel.NowLoginUserParse(15000).Result && Config.Properties.AutoGetSteamId && !Config.Accounts[id].ContainParseInfo)
+                    if (Config.Properties.AutoGetSteamId && !Config.Accounts[id].ContainParseInfo && MainWindowViewModel.NowLoginUserParse(15000).Result)
                     {
                         try
                         {

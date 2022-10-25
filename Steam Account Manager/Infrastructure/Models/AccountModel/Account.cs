@@ -116,6 +116,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
                             IsRewritable = item.IsRewritable,
                             Nickname = this.Nickname
                         };
+                        App.Tray.TrayListUpdate();
                         Config.SaveProperties();
                         break;
                     }
