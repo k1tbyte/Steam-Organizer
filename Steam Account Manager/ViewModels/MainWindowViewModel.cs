@@ -248,11 +248,12 @@ namespace Steam_Account_Manager.ViewModels
 
             YesLoadUpdateCommand = new RelayCommand(o =>
             {
-                System.Diagnostics.Process updater = new System.Diagnostics.Process();
-
-                updater.StartInfo.FileName = @".\UpdateManager.exe";
-                updater.StartInfo.Arguments = "Upd";
-                updater.Start();
+                using (System.Diagnostics.Process updater = new System.Diagnostics.Process())
+                {
+                    updater.StartInfo.FileName = $"{App.WorkingDirectory}\\UpdateManager.exe";
+                    updater.StartInfo.Arguments = "/upd";
+                    updater.Start();
+                }
 
                 App.Shutdown();
             });

@@ -158,6 +158,9 @@
     <Compile Include="Themes\MainPopup.xaml.cs">
       <DependentUpon>MainPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Themes\MessageBoxes\ExceptionMessageView.xaml.cs">
+      <DependentUpon>ExceptionMessageView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Themes\MessageBoxes\FlatQueryMessageBoxView.xaml.cs">
       <DependentUpon>FlatQueryMessageBoxView.xaml</DependentUpon>
     </Compile>
@@ -299,6 +302,10 @@
     <Page Include="Themes\MainPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="Themes\MessageBoxes\ExceptionMessageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\MessageBoxes\FlatMessageBoxView.xaml">
       <SubType>Designer</SubType>

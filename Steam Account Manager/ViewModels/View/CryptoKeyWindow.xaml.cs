@@ -24,46 +24,44 @@ namespace Steam_Account_Manager.ViewModels.View
 
         private void TryDecrypt_Click(object sender, RoutedEventArgs e)
         {
-            if (key.Text.Length == 44)
-            {
-                try
-                {
-                    if (mainWindow)
-                    {
-                        Infrastructure.Config.Properties.UserCryptoKey = key.Text;
-                        Infrastructure.Config.GetAccountsInstance();
-                        Infrastructure.Config.SaveProperties();
-                        App.MainWindow = new MainWindow();
-                        App.MainWindow.Show();
-                        this.Close();
-                    }
-                    else
-                    {
-                        Infrastructure.Config.Deserialize(path, key.Text);
-                        Infrastructure.Config.TempUserKey = key.Text;
-                        DialogResult = true;
-                    }
-
-                }
-                catch
-                {
-                    if (errorCounter > 1)
-                    {
-                        ErrorBlock.Text = (string)FindResource("aw_invalidKey");
-                        errorCounter--;
-                    }
-                    else if (errorCounter == 1)
-                        ErrorBlock.Text = (string)FindResource("aw_manyAttempts");
-                    else
-                    {
-                        if (mainWindow) App.Shutdown();
-                        else DialogResult = false;
-                    }
-                }
-            }
-            else
+            if (key.Text.Length != 44)
             {
                 ErrorBlock.Text = (string)FindResource("aw_keyOnlyLength");
+                return;
+            }
+
+            Infrastructure.Config.Properties.UserCryptoKey = key.Text;
+
+            if (Infrastructure.Config.GetAccountsInstance())
+            {
+                if (mainWindow)
+                {
+
+                    Infrastructure.Config.SaveProperties();
+                    App.MainWindow = new MainWindow();
+                    App.MainWindow.Show();
+                    this.Close();
+                }
+                else
+                {
+                    Infrastructure.Config.Deserialize(path, key.Text);
+                    Infrastructure.Config.TempUserKey = key.Text;
+                    DialogResult = true;
+                }
+            }
+
+
+            if (errorCounter > 1)
+            {
+                ErrorBlock.Text = (string)FindResource("aw_invalidKey");
+                errorCounter--;
+            }
+            else if (errorCounter == 1)
+                ErrorBlock.Text = (string)FindResource("aw_manyAttempts");
+            else
+            {
+                if (mainWindow) App.Shutdown();
+                else DialogResult = false;
             }
 
         }

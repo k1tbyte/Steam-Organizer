@@ -44,13 +44,18 @@ namespace Steam_Account_Manager.Infrastructure
             }
             catch { }
         }
-        public static void GetPropertiesInstance()
+        public static bool GetPropertiesInstance()
         {
             if (Properties == null)
             {
                 if (File.Exists(App.WorkingDirectory + "\\config.dat"))
                 {
-                    Properties = (ConfigProperties)Deserialize(App.WorkingDirectory + @"\config.dat", CryptoKey);
+                    var result = (ConfigProperties)Deserialize(App.WorkingDirectory + @"\config.dat", CryptoKey);
+                    if(result == null)
+                    {
+                        return false;
+                    }
+                    Properties = result;
                     Properties.Theme = Properties.Theme;
                     Properties.Language = Properties.Language;
                 }
@@ -60,6 +65,7 @@ namespace Steam_Account_Manager.Infrastructure
                     SaveProperties();
                 }
             }
+            return true;
         }
         public static void SaveProperties()
         {
@@ -74,14 +80,19 @@ namespace Steam_Account_Manager.Infrastructure
 
 
         #region Config accounts methods
-        public static void GetAccountsInstance()
+        public static bool GetAccountsInstance()
         {
             if (Accounts == null)
             {
                 if (File.Exists(App.WorkingDirectory + "\\database.dat"))
                 {
                     if (Properties == null) GetPropertiesInstance();
-                    Accounts = (List<Account>)Deserialize(App.WorkingDirectory + @"\database.dat", Properties.UserCryptoKey);
+                    var result = (List<Account>)Deserialize(App.WorkingDirectory + @"\database.dat", Properties.UserCryptoKey);
+                    if(result == null)
+                    {
+                        return false;
+                    }
+                    Accounts = result;
                 }
                 else
                 {
@@ -89,6 +100,7 @@ namespace Steam_Account_Manager.Infrastructure
                     Serialize(Accounts, App.WorkingDirectory + @"\database.dat", Properties.UserCryptoKey);
                 }
             }
+            return true;
         }
         public static void SaveAccounts()
         {
@@ -162,13 +174,21 @@ namespace Steam_Account_Manager.Infrastructure
         }
         public static object Deserialize(string path, string CryptoKey)
         {
-            byte[] key = Convert.FromBase64String(CryptoKey);
-
-            using (FileStream file = new FileStream(path, FileMode.Open))
-            using (CryptoStream cryptoStream = CreateDecryptionStream(key, file))
+            try
             {
-                return ReadObjectFromStream(cryptoStream);
+                byte[] key = Convert.FromBase64String(CryptoKey);
+
+                using (FileStream file = new FileStream(path, FileMode.Open))
+                using (CryptoStream cryptoStream = CreateDecryptionStream(key, file))
+                {
+                    return ReadObjectFromStream(cryptoStream);
+                }
             }
+            catch
+            {
+                return null;
+            }
+
         }
 
     }
