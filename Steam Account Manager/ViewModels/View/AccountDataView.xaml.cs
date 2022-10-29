@@ -10,19 +10,20 @@ namespace Steam_Account_Manager.ViewModels.View
     public partial class AccountDataView : UserControl
     {
 
-        public AccountDataView(int id)
+        public AccountDataView()
         {
-            bool scrollToEnd = false;
             InitializeComponent();
+        }
 
-            //Если id с минусом - прокрутка вниз
-            if (id < 0)
-            {
-                scrollToEnd = true;
-                id *= -1;
-            }
-            this.DataContext = new AccountDataViewModel(id - 1);
-            if (scrollToEnd) scrollViewer.ScrollToEnd();
+        public void SetAsDefault(bool scroll = false)
+        {
+            if (scroll)
+                scrollViewer.ScrollToEnd();
+            else
+                scrollViewer.ScrollToTop();
+
+            expandCsgoButton.IsChecked = expandCommunityButton.IsChecked = expandCommunityButton.IsChecked = true;
+            expandButtonUplay.IsChecked = expandButtonRockstarGames.IsChecked = expandButtonOrigin.IsChecked = expandButtonMail.IsChecked = false;
         }
 
 

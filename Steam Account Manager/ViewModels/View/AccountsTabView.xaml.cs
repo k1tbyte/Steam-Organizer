@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -45,6 +46,18 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
             Header.PopupText.Text = $"Last update: {_currentViewModel.LastUpdateTime}";
+        }
+
+        private void NoteButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (String.IsNullOrEmpty(_currentViewModel.Note))
+                return;
+
+            var length = _currentViewModel.Note.Length;
+            Popup.PlacementTarget = NoteButton;
+            Popup.Placement = PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = length > 645 ? _currentViewModel.Note.Remove(645, length - 645) + " ..." : _currentViewModel.Note;
         }
     }
 }

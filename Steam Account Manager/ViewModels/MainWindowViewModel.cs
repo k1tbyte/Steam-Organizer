@@ -183,6 +183,7 @@ namespace Steam_Account_Manager.ViewModels
             AccountsVm = new AccountsViewModel();
             SettingsVm = new SettingsViewModel();
             RemoteControlVm = new MainRemoteControlViewModel();
+            AccountDataV = new AccountDataView();
 
             CurrentView = AccountsVm;
 
@@ -191,10 +192,6 @@ namespace Steam_Account_Manager.ViewModels
 
             AccountsViewCommand = new RelayCommand(o =>
             {
-                if (o != null && (bool)o == true)
-                {
-                    AccountDataV = null;
-                }
                 CurrentView = AccountsVm;
             });
 
@@ -205,7 +202,10 @@ namespace Steam_Account_Manager.ViewModels
 
             AccountDataViewCommand = new RelayCommand(o =>
             {
-                AccountDataV = new AccountDataView((int)o);
+                var id = (int)o;
+                AccountDataV.SetAsDefault(id < 0);
+
+                AccountDataV.DataContext = new AccountDataViewModel(id < 0 ? (id*-1)-1 : id-1);
                 CurrentView = AccountDataV;
             });
 
