@@ -1,6 +1,8 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
+using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using System;
+using System.Collections.ObjectModel;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -8,6 +10,7 @@ namespace Steam_Account_Manager.ViewModels
     {
         private bool[] _themeMode = { false, false, false };
         private bool[] _localeMode = { false, false, false };
+        private bool _isCryptoKeyReset = false;
 
         bool  _noConfirmMode,
               _takeAccountInfoMode,
@@ -263,23 +266,24 @@ namespace Steam_Account_Manager.ViewModels
                     else if (_passwordEnabled == false)
                         Config.Properties.Password = null;
 
-                    if (EncryptingKey != "By default")
+                    if ((EncryptingKey != "By default" && EncryptingKey != Config.Properties.UserCryptoKey) || _isCryptoKeyReset)
                     {
-                        Config.Properties.UserCryptoKey = EncryptingKey;
-                        if (System.IO.File.Exists(App.WorkingDirectory + "\\database.dat"))
-                            Config.SaveAccounts();
-                    }
-                    else
-                    {
-                        Config.Properties.UserCryptoKey = Config.GetDefaultCryptoKey;
-                        if (System.IO.File.Exists(App.WorkingDirectory + "\\database.dat"))
-                            Config.SaveAccounts();
-                        EncryptingKey = "By default";
-                    }
 
+                        var recentlyUsers = App.WorkingDirectory + "\\RecentlyLoggedUsers.dat";
+                        if (System.IO.File.Exists(recentlyUsers))
+                        {
+                           var users = Config.Deserialize(recentlyUsers, Config.Properties.UserCryptoKey) as ObservableCollection<RecentlyLoggedAccount>;
+                           Config.Serialize(users, recentlyUsers, _isCryptoKeyReset ? Config.GetDefaultCryptoKey : EncryptingKey);
+                        }
+
+                        Config.Properties.UserCryptoKey = _isCryptoKeyReset ? Config.GetDefaultCryptoKey : EncryptingKey;
+                        if (System.IO.File.Exists(App.WorkingDirectory + "\\database.dat"))
+                            Config.SaveAccounts();
+
+                    }
                     Config.SaveProperties();
 
-                    ApiKeyError = PasswordError = false;
+                    _isCryptoKeyReset = ApiKeyError = PasswordError = false;
                     Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
                 }
 
@@ -300,6 +304,7 @@ namespace Steam_Account_Manager.ViewModels
 
             ResetCryptoKeyCommand = new RelayCommand(o =>
             {
+                _isCryptoKeyReset = true;
                 EncryptingKey = "By default";
             });
 

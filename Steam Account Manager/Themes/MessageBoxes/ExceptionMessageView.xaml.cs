@@ -65,5 +65,10 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
 
             App.Shutdown();
         }
+
+        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
     }
 }

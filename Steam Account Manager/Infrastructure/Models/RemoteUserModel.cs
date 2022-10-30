@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -100,6 +101,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         public string MessageAfterExecute { get; set; }
     }
 
+    [Serializable]
     public class RecentlyLoggedAccount
     {
         [JsonProperty("Username")]

@@ -222,14 +222,8 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
         public LoginViewModel()
         {
-
-            if (File.Exists(App.WorkingDirectory + "\\RecentlyLoggedUsers.json"))
-            {
-                RecentlyLoggedIn = new ObservableCollection<RecentlyLoggedAccount>(
-                    JsonConvert.DeserializeObject<List<RecentlyLoggedAccount>>(File.ReadAllText(App.WorkingDirectory + "\\RecentlyLoggedUsers.json")));
-            }
-            else
-                RecentlyLoggedIn = new ObservableCollection<RecentlyLoggedAccount>(new List<RecentlyLoggedAccount>());
+            RecentlyLoggedIn = Config.Deserialize(App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey) 
+                as ObservableCollection<RecentlyLoggedAccount> ?? new ObservableCollection<RecentlyLoggedAccount>();
 
 
             LogOnCommand = new AsyncRelayCommand(async (o) =>

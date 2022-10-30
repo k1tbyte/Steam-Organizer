@@ -208,12 +208,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             SerializeUser();
 
-            var ConvertedJson = JsonConvert.SerializeObject(LoginViewModel.RecentlyLoggedIn, new JsonSerializerSettings
-            {
-                DefaultValueHandling = DefaultValueHandling.Populate,
-                Formatting = Formatting.Indented
-            });
-            File.WriteAllText($@"{App.WorkingDirectory}\RecentlyLoggedUsers.json", ConvertedJson);
+            Config.Serialize(LoginViewModel.RecentlyLoggedIn,App.WorkingDirectory + "\\RecentlyLoggedUsers.dat",Config.Properties.UserCryptoKey);
 
             steamUser.LogOff();
             CurrentUser = null;
