@@ -21,6 +21,10 @@
     <v:String x:Key="sv_autoStartup">Включать при запуске системы</v:String>
     <v:String x:Key="sv_minimizeAtStart">Сворачивать при запуске приложения</v:String>
     <v:String x:Key="sv_minimizeOnClose">Сворачивать в трей при закрытии</v:String>
+    <v:String x:Key="sv_title_interface">Интерфейс</v:String>
+    <v:String x:Key="sv_title_extended">Расширенные</v:String>
+    <v:String x:Key="sv_title_general">Общие</v:String>
+    <v:String x:Key="sv_title_system">Система и автоматизация</v:String>
 
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>Ничего</v:String>

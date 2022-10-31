@@ -174,7 +174,7 @@
             </TextBlock>
 
             <!-- Checkbox -->
-            <ToggleButton x:Name="takeInfo" Width="20" Height="20" MouseEnter="takeInfo_MouseEnter"
+            <ToggleButton x:Name="takeInfo" Width="25" Height="25" MouseEnter="takeInfo_MouseEnter"
                           MouseLeave="takeInfo_MouseLeave" Style="{StaticResource checkbox}" IsChecked="{Binding DontCollectInfo}"
                          Grid.Row="4" HorizontalAlignment="Right" Margin="0 0 55 0"/>
 

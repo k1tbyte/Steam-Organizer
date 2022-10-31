@@ -21,6 +21,10 @@
     <v:String x:Key="sv_autoStartup">Start with windows</v:String>
     <v:String x:Key="sv_minimizeAtStart">Minimize app on startup</v:String>
     <v:String x:Key="sv_minimizeOnClose">Minimize program to tray on close</v:String>
+    <v:String x:Key="sv_title_interface">Interface</v:String>
+    <v:String x:Key="sv_title_extended">Extended</v:String>
+    <v:String x:Key="sv_title_general">General</v:String>
+    <v:String x:Key="sv_title_system">System and automation</v:String>
 
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>None</v:String>

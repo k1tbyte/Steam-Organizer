@@ -107,6 +107,7 @@ namespace Steam_Account_Manager.ViewModels
             get => _passwordEnabled;
             set
             {
+                PasswordError = false;
                 _passwordEnabled = value;
                 OnPropertyChanged(nameof(PasswordEnabled));
             }

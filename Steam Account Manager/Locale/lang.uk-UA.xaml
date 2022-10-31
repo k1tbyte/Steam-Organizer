@@ -21,6 +21,10 @@
     <v:String x:Key="sv_autoStartup">Вмикати під час запуску системи</v:String>
     <v:String x:Key="sv_minimizeAtStart">Згортати під час запуску програми</v:String>
     <v:String x:Key="sv_minimizeOnClose">Згортати у трей при закритті</v:String>
+    <v:String x:Key="sv_title_interface">Інтерфейс</v:String>
+    <v:String x:Key="sv_title_extended">Розширені</v:String>
+    <v:String x:Key="sv_title_general">Загальні</v:String>
+    <v:String x:Key="sv_title_system">Система и автоматизація</v:String>
 
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>Нічого</v:String>

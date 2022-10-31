@@ -196,7 +196,7 @@
             </Grid.Style>
         </Grid>
 
-        <Border Visibility="{Binding SuccessLogOn,Converter={StaticResource BoolToVis}}" BorderThickness="0.8"
+        <Border Visibility="Hidden" BorderThickness="0.8"
                 Background="{DynamicResource first_main_color}" CornerRadius="25" >
             <Grid>
                 <Button x:Name="logoutButton" Style="{StaticResource defaultButtonColored}"

@@ -9,8 +9,11 @@
              xmlns:converters="clr-namespace:Steam_Account_Manager.Infrastructure.Converters">
     <Application.Resources>
         <ResourceDictionary>
+            
 
             <ResourceDictionary.MergedDictionaries>
+
+                <ResourceDictionary Source="Themes/Extensions.xaml"/>
 
                 <ResourceDictionary Source="Themes/ScrollBarStyle.xaml"/>
 
@@ -167,22 +170,6 @@
                 </Style.Triggers>
             </Style>
             <!--#endregion-->
-
-
-            <!-- Gradients -->
-            <LinearGradientBrush x:Key="RedGrad">
-                <GradientStop Color="#A20303" Offset="0.0" />
-                <GradientStop Color="OrangeRed" Offset="0.25" />
-                <GradientStop Color="OrangeRed" Offset="0.75" />
-                <GradientStop Color="#A20303" Offset="1.0" />
-            </LinearGradientBrush>
-
-            <LinearGradientBrush x:Key="AcidGrad">
-                <GradientStop Color="Green" Offset="0.0" />
-                <GradientStop Color="GreenYellow" Offset="0.25" />
-                <GradientStop Color="LawnGreen" Offset="0.75" />
-                <GradientStop Color="Green" Offset="1.0" />
-            </LinearGradientBrush>
 
 
             <DataTemplate DataType="{x:Type viewModel:AccountsViewModel}">
