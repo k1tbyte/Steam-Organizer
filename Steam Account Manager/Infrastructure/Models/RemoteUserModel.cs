@@ -40,6 +40,9 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         [JsonProperty("Games")]
         public ObservableCollection<Game> Games { get; set; }
 
+        [JsonProperty("RememberGames")]
+        public HashSet<int> RememberGamesIds { get; set; }
+
     }
 
     public class Game

@@ -18,6 +18,15 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             InitializeComponent();
             add_idBox.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, PasteBlocked));
             this.DataContext = new GamesViewModel();
+
+/*            if(SteamRemoteClient.CurrentUser.RememberGamesIds.Count != 0)
+            {
+                foreach (var item in games.Items)
+                {
+                    if(item)
+                }
+            }*/
+
             SelectsText.Text = (string)App.Current.FindResource("rc_gv_selected") + "0";
         }
 
@@ -97,6 +106,16 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             }
 
 
+        }
+
+        private void rememberButton_Checked(object sender, System.Windows.RoutedEventArgs e)
+        {
+            SteamRemoteClient.CurrentUser.RememberGamesIds = games.SelectedItems.Cast<Game>().Select(game => game.AppID).ToHashSet();
+        }
+
+        private void rememberButton_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+        {
+            SteamRemoteClient.CurrentUser.RememberGamesIds = null;
         }
     }
 }
