@@ -13,7 +13,7 @@ namespace Steam_Account_Manager
     public partial class App : Application
     {
         static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager");
-        public static readonly uint Version = 212;
+        public static readonly uint Version = 213;
         public static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         public static new MainWindow MainWindow;
         public static TrayMenu Tray;

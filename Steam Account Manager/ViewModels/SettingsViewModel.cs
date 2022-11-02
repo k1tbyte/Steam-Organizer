@@ -276,7 +276,7 @@ namespace Steam_Account_Manager.ViewModels
 
 
                     Config.Properties.NoConfirmMode    = NoConfirmMode;
-                    Config.Properties.ActionAfterLogin = (LoggedAction)ActionAfterLogin;
+                     Config.Properties.ActionAfterLogin = (LoggedAction)ActionAfterLogin;
                     Config.Properties.TakeAccountInfo  = TakeAccountInfoMode;
                     Config.Properties.WebApiKey        = WebApiKey;
                     Config.Properties.AutoGetSteamId   = AutoGetSteamId;

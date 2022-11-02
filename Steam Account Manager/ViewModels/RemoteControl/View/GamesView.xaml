@@ -84,7 +84,7 @@
 
             <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
                 <TextBlock FontSize="11" Foreground="{DynamicResource default_foreground}"
-                       Text="Remember " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 3 0" />
+                       Text="{DynamicResource rc_gv_rememberGames}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 3 0" />
                 <ToggleButton x:Name="rememberButton" Click="rememberButton_Click" 
                               Width="23" Height="23" Background="{DynamicResource rc_button_back}" Margin="0 0 0 0"
                               MouseEnter="rememberButton_MouseEnter"

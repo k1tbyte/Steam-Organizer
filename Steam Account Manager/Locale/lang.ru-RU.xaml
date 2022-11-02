@@ -25,6 +25,7 @@
     <v:String x:Key="sv_title_extended">Расширенные</v:String>
     <v:String x:Key="sv_title_general">Общие</v:String>
     <v:String x:Key="sv_title_system">Система и автоматизация</v:String>
+    <v:String x:Key="sv_automaticLogin">Автоматический вход в аккаунт</v:String>
 
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>Ничего</v:String>
@@ -258,6 +259,9 @@
     <v:String x:Key="rc_gv_stop">Стоп</v:String>
     <v:String x:Key="rc_gv_maximumGames" xml:space="preserve">"Максимум&#13;32 игры!"</v:String>
     <v:String x:Key="rc_gv_selectGames">Выберите игру!</v:String>
+    <v:String x:Key="rc_gv_rememberGames">Запомнить</v:String>
+    <v:String x:Key="rc_gv_saveGameListDesc" xml:space="preserve">Запоминает текущие игры и автоматически включает их,&#13;когда вы входите в свою учетную запись.</v:String>
+    <v:String x:Key="rc_gv_addGameDesc" xml:space="preserve">Вы можете добавить игру, которой нет в списке, но которая&#13;есть в вашей библиотеке. Например, Family Share</v:String>
     <!--#endregion-->
 
     <!--#region Messages view -->

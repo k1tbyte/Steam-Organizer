@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -65,99 +66,102 @@ namespace Steam_Account_Manager.ViewModels
 
         private async Task TryToConnect()
         {
-            UserLogin user = new UserLogin(_login, _password);
-            LoginResult response = LoginResult.BadCredentials;
-            ErrorMessage = (string)Application.Current.FindResource("aaw_dataWait");
-
-            while ((response = user.DoLogin()) != LoginResult.LoginOkay)
+            await Task.Run(() =>
             {
-                UserInput = "";
-                switch (response)
+                UserLogin user = new UserLogin(_login, _password);
+                LoginResult response = LoginResult.BadCredentials;
+                ErrorMessage = (string)Application.Current.FindResource("aaw_dataWait");
+
+                while ((response = user.DoLogin()) != LoginResult.LoginOkay)
                 {
-                    case LoginResult.NeedEmail:
-                        ErrorMessage = (string)Application.Current.FindResource("aaw_emailCode");
-                        while (!_isReady) Thread.Sleep(100);
-                        user.EmailCode = UserInput;
-                        ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
-                        break;
+                    switch (response)
+                    {
+                        case LoginResult.NeedEmail:
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_emailCode");
+                            while (!_isReady) Thread.Sleep(100);
+                            user.EmailCode = UserInput;
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
+                            break;
 
-                    case LoginResult.NeedCaptcha:
-                        _captchaLink = "https://api.steampowered.com/public/captcha.php?gid=" + user.CaptchaGID;
-                        ErrorMessage = (string)Application.Current.FindResource("aaw_captcha");
-                        IsCaptchaVisible = true;
-                        while (!_isReady) Thread.Sleep(100);
-                        user.CaptchaText = UserInput;
-                        ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
-                        break;
+                        case LoginResult.NeedCaptcha:
+                            _captchaLink = "https://api.steampowered.com/public/captcha.php?gid=" + user.CaptchaGID;
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_captcha");
+                            IsCaptchaVisible = true;
+                            while (!_isReady) Thread.Sleep(100);
+                            user.CaptchaText = UserInput;
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
+                            break;
 
-                    case LoginResult.Need2FA:
-                        ErrorMessage = (string)Application.Current.FindResource("aaw_2faCode");
-                        while (!_isReady) Thread.Sleep(100);
-                        user.TwoFactorCode = UserInput;
-                        ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
-                        break;
+                        case LoginResult.Need2FA:
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_2faCode");
+                            while (!_isReady) Thread.Sleep(100);
+                            user.TwoFactorCode = UserInput;
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
+                            break;
 
-                    case LoginResult.TooManyFailedLogins:
-                        ErrorMessage = (string)Application.Current.FindResource("aaw_manyAttempts");
-                        Thread.Sleep(2000);
-                        _window.Dispatcher.Invoke(() => { _window.Close(); });
-                        return;
+                        case LoginResult.TooManyFailedLogins:
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_manyAttempts");
+                            Thread.Sleep(2000);
+                            _window.Dispatcher.Invoke(() => { _window.Close(); });
+                            return;
 
-                    case LoginResult.GeneralFailure:
-                        ErrorMessage = (string)Application.Current.FindResource("aaw_dataIncorrect");
-                        Thread.Sleep(2000);
-                        _window.Dispatcher.Invoke(() => { _window.Close(); });
-                        return;
+                        case LoginResult.GeneralFailure:
+                            ErrorMessage = (string)Application.Current.FindResource("aaw_dataIncorrect");
+                            Thread.Sleep(2000);
+                            _window.Dispatcher.Invoke(() => { _window.Close(); });
+                            return;
+                    }
                 }
-            }
-            if (_captchaLink != null) IsCaptchaVisible = false;
-            var linker = new AuthenticatorLinker(user.Session)
-            {
-                PhoneNumber = null
-            };
+                if (_captchaLink != null) IsCaptchaVisible = false;
+                var linker = new AuthenticatorLinker(user.Session)
+                {
+                    PhoneNumber = null
+                };
 
-            var result = linker.AddAuthenticator();
-            if (result != AuthenticatorLinker.LinkResult.AwaitingFinalization)
-            {
-                ErrorMessage = (string)Application.Current.FindResource("aaw_addFail") + " " + result;
+                var result = linker.AddAuthenticator();
+                if (result != AuthenticatorLinker.LinkResult.AwaitingFinalization)
+                {
+                    ErrorMessage = (string)Application.Current.FindResource("aaw_addFail") + " " + result;
+                    Thread.Sleep(2000);
+                    _window.Dispatcher.Invoke(() => { _window.Close(); });
+                }
+
+                try
+                {
+                    string path = App.WorkingDirectory + "\\Authenticators\\";
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    string sgFile = JsonConvert.SerializeObject(linker.LinkedAccount, Formatting.Indented);
+                    path += linker.LinkedAccount.AccountName + ".maFile";
+                    System.IO.File.WriteAllText(path, sgFile);
+                    Config.Accounts[_id].AuthenticatorPath = path;
+                }
+                catch
+                {
+                    ErrorMessage = (string)Application.Current.FindResource("aaw_errorSave");
+                    Thread.Sleep(2000);
+                    _window.Dispatcher.Invoke(() => { _window.Close(); });
+                }
+
+                ErrorMessage = (string)Application.Current.FindResource("aaw_smsCode");
+                while (!_isReady) Thread.Sleep(100);
+
+                var linkResult = linker.FinalizeAddAuthenticator(UserInput);
+
+                if (linkResult == AuthenticatorLinker.FinalizeResult.Success)
+                {
+                    ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
+                }
+                else
+                {
+                    ErrorMessage = "Error! " + linkResult;
+                }
                 Thread.Sleep(2000);
                 _window.Dispatcher.Invoke(() => { _window.Close(); });
-            }
-
-            try
-            {
-                string path = App.WorkingDirectory + "\\Authenticators\\";
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-                string sgFile = JsonConvert.SerializeObject(linker.LinkedAccount, Formatting.Indented);
-                path += linker.LinkedAccount.AccountName + ".maFile";
-                System.IO.File.WriteAllText(path, sgFile);
-                Config.Accounts[_id].AuthenticatorPath = path;
-            }
-            catch
-            {
-                ErrorMessage = (string)Application.Current.FindResource("aaw_errorSave");
-                Thread.Sleep(2000);
-                _window.Dispatcher.Invoke(() => { _window.Close(); });
-            }
-
-            ErrorMessage = (string)Application.Current.FindResource("aaw_smsCode");
-            while (!_isReady) Thread.Sleep(100);
-
-            var linkResult = linker.FinalizeAddAuthenticator(UserInput);
-
-            if (linkResult == AuthenticatorLinker.FinalizeResult.Success)
-            {
-                ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
-            }
-            else
-            {
-                ErrorMessage = "Error! " + linkResult;
-            }
-            Thread.Sleep(2000);
-            _window.Dispatcher.Invoke(() => { _window.Close(); });
+            });
+            
         }
 
         private async Task LoadAuthenticator()

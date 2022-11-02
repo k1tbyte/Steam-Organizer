@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Steam_Account_Manager.ViewModels.View
@@ -24,6 +25,12 @@ namespace Steam_Account_Manager.ViewModels.View
         {
             buttons.Visibility = Visibility.Hidden;
             add_panel.Visibility = Visibility.Visible;
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            await Task.Delay(300);
+            Login.Text = "";
         }
     }
 }

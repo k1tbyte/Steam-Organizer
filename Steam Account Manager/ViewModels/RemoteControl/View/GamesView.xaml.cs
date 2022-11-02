@@ -120,7 +120,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             Popup.PlacementTarget = rememberButton;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "Remembers current games and automatically\nturns them on when you log into your account";
+            Header.PopupText.Text = (string)App.Current.FindResource("rc_gv_saveGameListDesc");
         }
 
         private void popup_MouseLeave(object sender, MouseEventArgs e)
@@ -134,7 +134,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             Popup.PlacementTarget = addGameId;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = "You can add a game that is not on the list,\nbut is in your library. For example Family Share";
+            Header.PopupText.Text = (string)App.Current.FindResource("rc_gv_addGameDesc");
         }
     }
 }

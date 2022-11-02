@@ -73,7 +73,7 @@
                              Text="{Binding UserInput, UpdateSourceTrigger=PropertyChanged}" 
                              Width="175" MaxLength="10" Margin="6 0 0 0"/>
                     <Button Style="{StaticResource saveAccontButton}" Width="20" Height="20"
-                            Command="{Binding StatusChanged}">
+                            Command="{Binding StatusChanged}" Click="Button_Click">
                         <Icon:PackIconMaterial Kind="Check" VerticalAlignment="Center"
                                                HorizontalAlignment="Center" Width="12" Height="12"/>
                     </Button>
