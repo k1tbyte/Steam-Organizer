@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Models.AccountModel;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -65,7 +68,6 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.IsOpen = true;
             Header.PopupText.Text = (string)FindResource("sv_popup_passwordError");
         }
-
 
     }
 }

@@ -134,8 +134,15 @@ namespace Steam_Account_Manager.ViewModels
 
         public static void RemoveAccount(ref int id)
         {
-            ConfirmBanner = true;
             TempId = id;
+            if (Config.Properties.NoConfirmMode)
+            {
+                (App.MainWindow.DataContext as MainWindowViewModel).AccountsVm.YesButtonCommand.Execute(null);
+                return;
+            }
+
+            ConfirmBanner = true;
+
         }
 
 
@@ -233,11 +240,15 @@ namespace Steam_Account_Manager.ViewModels
 
             YesButtonCommand = new RelayCommand(o =>
             {
-                var trayAccount = Config.Properties.RecentlyLoggedUsers.Find(obj => obj.SteamID64 == Config.Accounts[TempId].SteamId64);
+                var acc = Config.Accounts[TempId];
+                var trayAccount = Config.Properties.RecentlyLoggedUsers.Find(obj => obj.SteamID64 == acc.SteamId64);
                 if (trayAccount != null)
                     Config.Properties.RecentlyLoggedUsers.Remove(trayAccount);
 
-                Config.Accounts.RemoveAt(TempId);
+                if (acc.SteamId64 == Config.Properties.AutoLoginUserID)
+                    Config.Properties.AutoLoginUserID = null;
+
+                Config.Accounts.Remove(acc);
                 AccountTabViews.RemoveAt(TempId);
                 MainWindowViewModel.TotalAccounts--;
                 Config.SaveAccounts();

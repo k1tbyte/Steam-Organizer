@@ -134,7 +134,11 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
             this.Password = password;
             this.Nickname = nickname;
             this.LastUpdateTime = DateTime.Now;
+        }
 
+        public override string ToString()
+        {
+            return $"{Nickname} [{Utilities.SteamId64ToSteamId32(SteamId64)}]";
         }
     }
 }

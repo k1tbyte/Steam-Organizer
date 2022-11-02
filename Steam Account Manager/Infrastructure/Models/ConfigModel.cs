@@ -44,6 +44,7 @@ namespace Steam_Account_Manager.Infrastructure.Models
         public string UserCryptoKey { get; set; }
         public string Password { get; set; }
         public List<RecentlyLoggedUser> RecentlyLoggedUsers { get; set; }
+        public string AutoLoginUserID { get; set; } 
 
 
         private Themes theme;

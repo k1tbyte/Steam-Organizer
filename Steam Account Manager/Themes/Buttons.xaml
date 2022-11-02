@@ -81,13 +81,14 @@
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
         <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource buttons_border_brush}"/>
         <Setter Property="Width" Value="80"/>
         <Setter Property="Height" Value="35"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}" >
+                    <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{TemplateBinding BorderBrush}" >
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </ControlTemplate>
@@ -695,6 +696,29 @@
                             </BeginStoryboard>
                         </EventTrigger>
 
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="checkboxSimple" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Background" Value="{DynamicResource rc_button_back}"/>
+        <Setter Property="Foreground" Value="{DynamicResource main_text_color}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border Background="{TemplateBinding Background}" BorderThickness="1" BorderBrush="Transparent" CornerRadius="6">
+                        <Icon:PackIconMaterial x:Name="Icon" Foreground="{TemplateBinding Foreground}" Kind="Check" VerticalAlignment="Center"
+                                                       HorizontalAlignment="Center" Visibility="Hidden" Width="13"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Icon" Property="Visibility" Value="Visible" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
 
                 </ControlTemplate>

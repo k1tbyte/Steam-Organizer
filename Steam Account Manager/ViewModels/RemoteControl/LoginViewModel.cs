@@ -2,6 +2,7 @@
 using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
+using Steam_Account_Manager.Themes.MessageBoxes;
 using SteamKit2;
 using System;
 using System.Collections.Generic;
@@ -236,6 +237,11 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     return SteamRemoteClient.Login(Username, Password, AuthCode);
                 });
 
+                if (!App.MainWindow.IsVisible && result != EResult.OK && result != EResult.NotLoggedOn)
+                {
+                    MessageBoxes.PopupMessageBox("Requires user action to sign in!", true);
+                }
+
                 if (result == EResult.AccountLoginDeniedNeedTwoFactor || result == EResult.AccountLogonDenied || result == EResult.Cancelled)
                 {
                     IsAuthCode = true;
@@ -270,6 +276,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                             ErrorMsg = (string)App.Current.FindResource("rc_lv_tryLater");
                             break;
                     }
+
                 }
 
             });

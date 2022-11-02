@@ -269,13 +269,6 @@ namespace Steam_Account_Manager.ViewModels
             _login = account.Login;
             _password = account.Password;
 
-            DeleteAccoundCommand = new RelayCommand(o =>
-            {
-                Config.Accounts.RemoveAt(id);
-                Config.SaveAccounts();
-                AccountsViewModel.FillAccountTabViews();
-            });
-
             EditOrViewAccountCommand = new RelayCommand(o =>
             {
                 MainWindowViewModel.AccountDataViewCommand.Execute(Id);
@@ -293,15 +286,7 @@ namespace Steam_Account_Manager.ViewModels
 
             DeleteAccoundCommand = new RelayCommand(o =>
             {
-                if (!Config.Properties.NoConfirmMode)
-                    AccountsViewModel.RemoveAccount(ref id);
-                else
-                {
-                    Config.Accounts.RemoveAt(id);
-                    AccountsViewModel.AccountTabViews.RemoveAt(id);
-                    MainWindowViewModel.TotalAccounts = Config.Accounts.Count;
-                    Config.SaveAccounts();
-                }
+              AccountsViewModel.RemoveAccount(ref id);
             });
 
             ConnectToSteamCommand = new AsyncRelayCommand(async (o) => await ConnectToSteam());

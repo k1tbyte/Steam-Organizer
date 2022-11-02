@@ -1,8 +1,11 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
+using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.ViewModels
 {
@@ -11,6 +14,8 @@ namespace Steam_Account_Manager.ViewModels
         private bool[] _themeMode = { false, false, false };
         private bool[] _localeMode = { false, false, false };
         private bool _isCryptoKeyReset = false;
+
+        private Account _autoLoginAccount;
 
         bool  _noConfirmMode,
               _takeAccountInfoMode,
@@ -34,9 +39,26 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand GenerateCryptoKeyCommand { get; set; }
         public RelayCommand ResetCryptoKeyCommand { get; set; }
         public RelayCommand ChangeOrAddPasswordCommand { get; set; }
+        public RelayCommand ClearAutoLoginAccount { get; set; }
+
+
 
         #region Properties
-        
+        public List<Account> AutoLoginUsers { get => Config.Accounts; }
+        public Account AutoLoginAccount
+        {
+            get => _autoLoginAccount;
+            set
+            {
+                if (value is Account acc && acc != null && (acc.SteamId64 != Config.Properties.AutoLoginUserID || _autoLoginAccount == null))
+                {
+                    Config.Properties.AutoLoginUserID = acc.SteamId64;
+                    _autoLoginAccount = value;
+                    OnPropertyChanged(nameof(AutoLoginAccount));
+                }
+            }
+        }
+
         public bool MinimizeOnStart
         {
             get => _minimizeOnStart;
@@ -189,6 +211,8 @@ namespace Steam_Account_Manager.ViewModels
                 OnPropertyChanged(nameof(NoConfirmMode));
             }
         }
+
+
         #endregion
 
         private static bool? OpenAuthWindow()
@@ -200,6 +224,8 @@ namespace Steam_Account_Manager.ViewModels
             };
             return authenticationWindow.ShowDialog();
         }
+
+
 
         public SettingsViewModel()
         {
@@ -215,6 +241,8 @@ namespace Steam_Account_Manager.ViewModels
 
             LocaleMode[(byte)Config.Properties.Language] = true;
             ThemeMode[(byte)Config.Properties.Theme] = true;
+
+            
 
             if (!String.IsNullOrEmpty(Config.Properties.Password))
                 _passwordEnabled = true;
@@ -255,6 +283,7 @@ namespace Steam_Account_Manager.ViewModels
                     Config.Properties.RememberPassword = RememberPassword;
                     Config.Properties.MinimizeToTray   = MinimizeToTray;
                     Config.Properties.MinimizeOnStart  = MinimizeOnStart;
+                    Config.Properties.AutoLoginUserID  = AutoLoginAccount?.SteamId64;
 
                     if(Config.Properties.Autostartup != Autostartup)
                     {
@@ -335,6 +364,12 @@ namespace Steam_Account_Manager.ViewModels
                         stackPanel.Visibility = System.Windows.Visibility.Visible;
                     }
                 }
+            });
+
+            ClearAutoLoginAccount = new RelayCommand(o =>
+            {
+                _autoLoginAccount = null;
+                OnPropertyChanged(nameof(AutoLoginAccount));
             });
         }
     }

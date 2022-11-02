@@ -158,6 +158,9 @@
                     <ComboBox Margin="10 0 0 0" Width="150" Height="27" SelectedIndex="{Binding ActionAfterLogin}" ItemsSource="{DynamicResource sv_actions_after_logging_list}"/>
                 </StackPanel>
 
+                
+                
+                
                 <Rectangle Margin="0 12 0 15" Height="0.2" Width="570" Fill="{DynamicResource atv_rectangles_shadow}" HorizontalAlignment="Center">
                     <Rectangle.Effect>
                         <BlurEffect/>
@@ -189,14 +192,11 @@
                           Style="{StaticResource ToggleButtonStyle}"/>
                 </DockPanel>
 
-
                 <DockPanel>
                     <TextBlock Text="{DynamicResource sv_getID}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding AutoGetSteamId}"
                           Style="{StaticResource ToggleButtonStyle}"/>
                 </DockPanel>
-
-
 
                 <!--Set password-->
                 <DockPanel Grid.Row="8">
@@ -230,6 +230,9 @@
 
                 </StackPanel>
 
+                
+                
+                
                 <Rectangle Margin="0 12 0 15" Height="0.2" Width="570" Fill="{DynamicResource atv_rectangles_shadow}" HorizontalAlignment="Center">
                     <Rectangle.Effect>
                         <BlurEffect/>
@@ -259,6 +262,17 @@
                     <TextBlock Text="{DynamicResource sv_autoStartup}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Autostartup}" VerticalAlignment="Center"
                           Style="{StaticResource checkbox}"  Margin="0 0 150 0"  HorizontalAlignment="Right"  Width="27" Height="27"/>
+                </DockPanel>
+
+                <DockPanel Margin="0 5 0 0">
+                    <TextBlock Text="Login in account automatically" Style="{StaticResource settingTextBlock}"/>
+                    <ComboBox x:Name="autoLogin" Margin="65 0 0 0" ItemsSource="{Binding AutoLoginUsers}"
+                              Width="170" SelectedItem="{Binding AutoLoginAccount}" />
+
+                    <Button Style="{StaticResource defaultButton}" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Left"
+                            Background="Transparent" Margin="2 0 0 0" BorderBrush="Transparent" Command="{Binding ClearAutoLoginAccount}">
+                        <Icon:PackIconMaterial Kind="Close" Padding="3"/>
+                    </Button>
                 </DockPanel>
 
             </StackPanel>

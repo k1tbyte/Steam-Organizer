@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows;
 using Game = Steam_Account_Manager.Infrastructure.Models.JsonModels.Game;
 using SteamRemoteClient = Steam_Account_Manager.Infrastructure.SteamRemoteClient.SteamRemoteClient;
 
@@ -19,15 +21,8 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
             add_idBox.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, PasteBlocked));
             this.DataContext = new GamesViewModel();
 
-/*            if(SteamRemoteClient.CurrentUser.RememberGamesIds.Count != 0)
-            {
-                foreach (var item in games.Items)
-                {
-                    if(item)
-                }
-            }*/
-
             SelectsText.Text = (string)App.Current.FindResource("rc_gv_selected") + "0";
+            
         }
 
         private void PasteBlocked(object sender, ExecutedRoutedEventArgs e)
@@ -108,14 +103,38 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
         }
 
-        private void rememberButton_Checked(object sender, System.Windows.RoutedEventArgs e)
+
+        private void rememberButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            SteamRemoteClient.CurrentUser.RememberGamesIds = games.SelectedItems.Cast<Game>().Select(game => game.AppID).ToHashSet();
+            if(rememberButton.IsChecked == true)
+            {
+                SteamRemoteClient.CurrentUser.RememberGamesIds = games.SelectedItems.Cast<Game>().Select(game => game.AppID).ToHashSet();
+                return;
+            }
+
+            SteamRemoteClient.CurrentUser.RememberGamesIds = null;
         }
 
-        private void rememberButton_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+        private void rememberButton_MouseEnter(object sender, MouseEventArgs e)
         {
-            SteamRemoteClient.CurrentUser.RememberGamesIds = null;
+            Popup.PlacementTarget = rememberButton;
+            Popup.Placement = PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "Remembers current games and automatically\nturns them on when you log into your account";
+        }
+
+        private void popup_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Popup.Visibility = Visibility.Collapsed;
+            Popup.IsOpen = false;
+        }
+
+        private void addGameId_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Popup.PlacementTarget = addGameId;
+            Popup.Placement = PlacementMode.Top;
+            Popup.IsOpen = true;
+            Header.PopupText.Text = "You can add a game that is not on the list,\nbut is in your library. For example Family Share";
         }
     }
 }

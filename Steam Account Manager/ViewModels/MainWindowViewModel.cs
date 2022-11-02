@@ -181,9 +181,9 @@ namespace Steam_Account_Manager.ViewModels
         {                
 
             AccountsVm = new AccountsViewModel();
-            SettingsVm = new SettingsViewModel();
             RemoteControlVm = new MainRemoteControlViewModel();
             AccountDataV = new AccountDataView();
+            SettingsVm = new SettingsViewModel();
 
             CurrentView = AccountsVm;
 

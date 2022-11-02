@@ -37,6 +37,7 @@
 
 
             </ResourceDictionary.MergedDictionaries>
+            
 
             <converters:InverseBoolConverter x:Key="BoolInverted"/>
             <converters:BooleanToVisibilityConverter x:Key="BoolToVis"/>

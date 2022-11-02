@@ -14,7 +14,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         public RelayCommand SteamWebViewCommand { get; set; }
 
         public static LoginViewModel LoginVm { get; private set; }
-        public static GamesView GamesV { get; private set; }
+        public static GamesView GamesV { get; set; }
         public static FriendsView FriendsV { get; private set; }
         public static MessagesView MessagesV { get; set; }
         public static SteamWebView SteamWebV { get; private set; }
@@ -54,6 +54,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             //  FriendsV = new FriendsView();
             // CurrentView = FriendsV;
             RemoteControlCurrentView = LoginVm;
+
 
             LoginViewCommand = new RelayCommand(o =>
             {

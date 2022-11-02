@@ -5,6 +5,7 @@ using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.Validators;
 using Steam_Account_Manager.Themes.MessageBoxes;
+using Steam_Account_Manager.ViewModels;
 using Steam_Account_Manager.ViewModels.RemoteControl;
 using SteamKit2;
 using SteamKit2.Internal;
@@ -164,7 +165,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
                 state = true;
             }
-            else if (CurrentUser == null)
+            if (CurrentUser == null)
             {
                 CurrentUser = new User
                 {
@@ -288,6 +289,32 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             MainRemoteControlViewModel.IsPanelActive = true;
             LoginViewModel.SuccessLogOn = true;
             System.Windows.Forms.SendKeys.SendWait("{TAB}");
+
+            if(CurrentUser.RememberGamesIds != null && CurrentUser.RememberGamesIds.Count > 0)
+            {
+                if(CurrentUser.RememberGamesIds.Count > 32)
+                {
+                    CurrentUser.RememberGamesIds = null;
+                    return;
+                }
+
+                App.Current.Dispatcher.Invoke(new Action(async() =>
+                {
+                    if (MainRemoteControlViewModel.GamesV == null)
+                        MainRemoteControlViewModel.GamesV = new ViewModels.RemoteControl.View.GamesView();
+
+                    MainRemoteControlViewModel.GamesV.rememberButton.IsChecked = true;
+
+                    foreach (var item in CurrentUser.Games)
+                    {
+                        if (CurrentUser.RememberGamesIds.Contains(item.AppID))
+                            MainRemoteControlViewModel.GamesV.games.SelectedItems.Add(item);
+                    }
+
+                    MainRemoteControlViewModel.GamesV.Idle.IsChecked = true;
+                    await IdleGames(CurrentUser.RememberGamesIds);
+                }));
+            }
 
         }
 
