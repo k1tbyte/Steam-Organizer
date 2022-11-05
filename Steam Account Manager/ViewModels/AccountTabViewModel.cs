@@ -205,7 +205,7 @@ namespace Steam_Account_Manager.ViewModels
                     MainWindowViewModel.IsEnabledForUser = true;
 
                     //Если надо получить данные об аккаунте без информации
-                    if (Config.Properties.AutoGetSteamId && !Config.Accounts[id].ContainParseInfo && MainWindowViewModel.NowLoginUserParse(15000).Result)
+                    if (await MainWindowViewModel.NowLoginUserParse(15000) && Config.Properties.AutoGetSteamId && !Config.Accounts[id].ContainParseInfo)
                     {
                         try
                         {

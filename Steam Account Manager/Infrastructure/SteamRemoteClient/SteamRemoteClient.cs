@@ -141,6 +141,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 callbackManager.RunWaitCallbacks(TimeSpan.FromMilliseconds(CallbackSleep));
             }
 
+            CurrentUser = null;
             return LastLogOnResult;
         }
 
@@ -745,13 +746,13 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             var result = response.GetDeserializedResponse<CPlayer_GetOwnedGames_Response>();
 
-            if (CurrentUser.Games.Count != 0)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                CurrentUser.Games.Clear();
-            }
+                if (CurrentUser.Games.Count != 0)
+                {
+                    CurrentUser.Games.Clear();
+                }
 
-            Application.Current.Dispatcher.Invoke(new Action(() =>
-            {
                 foreach (var game in result.games)
                 {
                     CurrentUser.Games.Add(new Game
@@ -762,7 +763,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                         ImageURL = $"https://cdn.akamai.steamstatic.com/steam/apps/{game.appid}/header.jpg"
                     });
                 }
-            }));
+            });
 
         }
 

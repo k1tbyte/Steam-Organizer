@@ -106,18 +106,21 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
 
             if(nick.GetHashCode() != this.Nickname.GetHashCode())
             {
-                foreach (var item in Config.Properties.RecentlyLoggedUsers)
+                foreach (var item in Config.Properties.RecentlyLoggedUsers) 
                 {
                     if (item.SteamID64 == this.SteamId64 && item.Nickname != this.Nickname)
                     {
-                        Config.Properties.RecentlyLoggedUsers[Config.Properties.RecentlyLoggedUsers.IndexOf(item)] = new RecentlyLoggedUser()
+                        App.Current.Dispatcher.Invoke(() =>
                         {
-                            SteamID64 = item.SteamID64,
-                            IsRewritable = item.IsRewritable,
-                            Nickname = this.Nickname
-                        };
-                        App.Tray.TrayListUpdate();
-                        Config.SaveProperties();
+                            Config.Properties.RecentlyLoggedUsers[Config.Properties.RecentlyLoggedUsers.IndexOf(item)] = new RecentlyLoggedUser()
+                            {
+                                SteamID64 = item.SteamID64,
+                                IsRewritable = item.IsRewritable,
+                                Nickname = this.Nickname
+                            };
+                            App.Tray.TrayListUpdate();
+                            Config.SaveProperties();
+                        });
                         break;
                     }
                 }

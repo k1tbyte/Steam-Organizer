@@ -643,7 +643,7 @@ namespace Steam_Account_Manager.ViewModels
 
         private async Task RefreshAccount(int id)
         {
-            var task = Task.Factory.StartNew(() =>
+            await Task.Factory.StartNew(() =>
             {
                 try
                 {
@@ -676,7 +676,6 @@ namespace Steam_Account_Manager.ViewModels
                 }
 
             });
-            await task;
         }
 
         private void OpenAddAuthenticatorWindow()

@@ -303,6 +303,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     ErrorMsg = (string)App.Current.FindResource("rc_lv_keyExpired");
                     RecentlyLoggedIn.Remove(element);
                 }
+                EResult.LoggedInElsewhere;
                 else
                 {
                     switch (result)
