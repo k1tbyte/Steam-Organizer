@@ -5,6 +5,7 @@ using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.ViewModels
@@ -44,7 +45,8 @@ namespace Steam_Account_Manager.ViewModels
 
 
         #region Properties
-        public List<Account> AutoLoginUsers { get => Config.Accounts; }
+        public List<Account> AutoLoginUsers => Config.Accounts.Where(o => o.ContainParseInfo).ToList();
+        
         public Account AutoLoginAccount
         {
             get => _autoLoginAccount;
@@ -210,6 +212,11 @@ namespace Steam_Account_Manager.ViewModels
                 _noConfirmMode = value;
                 OnPropertyChanged(nameof(NoConfirmMode));
             }
+        }
+
+        public string Version
+        {
+            get => App.Version.ToString("# # #").Replace(' ','.');
         }
 
 

@@ -284,6 +284,11 @@
                 Command="{Binding SaveChangesCommand}"
                 CommandParameter="{Binding ElementName=succesSave}"/>
 
+            <TextBlock Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="0 0 20 0"
+                       Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                               FontSize="12" Text="{Binding Version, StringFormat=Version: {0}}" />
+
+
         <Icon:PackIconMaterial x:Name="succesSave" Grid.Row="2" Kind="Check"  Width="25" Height="25"
                                VerticalAlignment="Center" Margin="240 10 0 0" Opacity="0" HorizontalAlignment="Center"
                                Foreground="{DynamicResource AcidGrad}"/>
