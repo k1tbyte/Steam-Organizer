@@ -8,6 +8,8 @@ using Steam_Account_Manager.Themes.MessageBoxes;
 using Steam_Account_Manager.ViewModels;
 using Steam_Account_Manager.ViewModels.RemoteControl;
 using SteamKit2;
+using SteamKit2.GC;
+using SteamKit2.GC.CSGO.Internal;
 using SteamKit2.Internal;
 using System;
 using System.Collections.Generic;
@@ -18,6 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -44,6 +47,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static readonly SteamUnifiedMessages.UnifiedService<IPlayer> UnifiedPlayerService;
         private static readonly SteamUnifiedMessages.UnifiedService<IEcon> UnifiedEcon;
         private static readonly SteamUnifiedMessages steamUnified;
+        private static readonly SteamGameCoordinator gameCoordinator;
+        private static readonly SteamGameCoordinator.MessageCallback gameCoordinatorMsgs;
 
         private static string SteamGuardCode;
         private static string TwoFactorCode;
@@ -74,6 +79,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             steamUser = steamClient.GetHandler<SteamUser>();
             steamFriends = steamClient.GetHandler<SteamFriends>();
+            gameCoordinator = steamClient.GetHandler<SteamGameCoordinator>();
 
             steamUnified = steamClient.GetHandler<SteamUnifiedMessages>();
             UnifiedPlayerService = steamUnified.CreateService<IPlayer>();
@@ -94,6 +100,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             callbackManager.Subscribe<SteamFriends.PersonaStateCallback>(OnPersonaState);
             callbackManager.Subscribe<SteamFriends.PersonaChangeCallback>(OnPersonaNameChange);
             callbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnFriendMessage);
+            /*callbackManager.Subscribe<SteamGameCoordinator.MessageCallback>(OnCsgoMessage);*/
 
             steamClient.AddHandler(gamesHandler);
 
@@ -289,7 +296,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             MainRemoteControlViewModel.IsPanelActive = true;
             LoginViewModel.SuccessLogOn = true;
-            System.Windows.Forms.SendKeys.SendWait("{TAB}");
+          //  System.Windows.Forms.SendKeys.SendWait("{TAB}");
 
             if(CurrentUser.RememberGamesIds != null && CurrentUser.RememberGamesIds.Count > 0)
             {
@@ -316,6 +323,20 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     await IdleGames(CurrentUser.RememberGamesIds);
                 }));
             }
+
+            steamClient.Send((IClientMsg)new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayed)
+            {
+                Body = {
+                games_played = {
+                  new CMsgClientGamesPlayed.GamePlayed()
+                  {
+                    game_id = (ulong) new GameID(730UL)
+                  }
+                }
+              }
+            });
+            Thread.Sleep(5000);
+            gameCoordinator.Send((IClientGCMsg)new ClientGCMsgProtobuf<SteamKit2.GC.CSGO.Internal.CMsgClientHello>(4006U), 730U);
 
         }
 
@@ -406,9 +427,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnWalletInfo(SteamUser.WalletInfoCallback callback)
         {
-            if (callback.HasWallet)
+            if (callback.HasWallet && callback.LongBalance >= 0L)
             {
-                LoginViewModel.Wallet = (float.Parse(callback.LongBalance.ToString()) / 100).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+                LoginViewModel.Wallet = (float.Parse(callback.LongBalance.ToString()) / 100f).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
                 if (callback.Currency != ECurrencyCode.Invalid)
                     LoginViewModel.Wallet += " " + callback.Currency.ToString();
             }
@@ -624,7 +645,45 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
         }
 
+/*        private static void OnCsgoMessage(SteamGameCoordinator.MessageCallback callback)
+        {
+            System.Action<IPacketGCMsg> action;
+            if (!new Dictionary<uint, System.Action<IPacketGCMsg>>()
+            {
+                {
+                   4004U,
+                   new System.Action<IPacketGCMsg>(OnCSGOClientWelcome)
+                },
+                {
+                   9128U,
+                   new System.Action<IPacketGCMsg>(OnCSGODetails)
+                }
+            }.TryGetValue(callback.EMsg, out action))
+                return;
+            action(callback.Message);
+        }*/
 
+/*        private static void OnCSGOClientWelcome(IPacketGCMsg packetMsg)
+        {
+            ClientGCMsgProtobuf<SteamKit2.GC.CSGO.Internal.CMsgClientWelcome> clientGcMsgProtobuf = new ClientGCMsgProtobuf<SteamKit2.GC.CSGO.Internal.CMsgClientWelcome>(packetMsg);
+            gameCoordinator.Send((IClientGCMsg)new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_ClientRequestPlayersProfile>(9127U)
+            {
+                Body = {
+                     account_id = (uint)(CurrentSteamId64 - 76561197960265728),
+                     request_level = 32U
+                       }
+            }, 730U);
+        }*/
+
+/*        private static void OnCSGODetails(IPacketGCMsg packetMsg)
+        {
+            ClientGCMsgProtobuf<CMsgGCCStrike15_v2_PlayersProfile> clientGcMsgProtobuf = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_PlayersProfile>(packetMsg);
+            var CSGOLevel = clientGcMsgProtobuf.Body.account_profiles[0].player_level;
+            var CSGORank = clientGcMsgProtobuf.Body.account_profiles[0].ranking.rank_id.ToString();
+            var CSGOWins = clientGcMsgProtobuf.Body.account_profiles[0].ranking.wins;
+            var medals = clientGcMsgProtobuf.Body.account_profiles[0].medals;
+            
+        }*/
 
         #endregion
 
