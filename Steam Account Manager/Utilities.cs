@@ -242,6 +242,22 @@ namespace Steam_Account_Manager
             catch { throw; }
         }
 
+        public static bool IsRegistryAutoStartup()
+        {
+            RegistryKey registryKey = Environment.Is64BitOperatingSystem ?
+                RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64) :
+                RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
+            try
+            {
+                using (registryKey = registryKey.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true))
+                {
+                    var value = registryKey.GetValue("SteamAccountManager") as string;
+                    return !string.IsNullOrEmpty(value);
+                }
+            }
+            catch { throw; }
+        }
+
         public static void SetRegistryAutostartup(bool isSet)
         {
             RegistryKey registryKey = Environment.Is64BitOperatingSystem ?

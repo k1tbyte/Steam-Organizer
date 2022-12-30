@@ -148,13 +148,14 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 callbackManager.RunWaitCallbacks(TimeSpan.FromMilliseconds(CallbackSleep));
             }
 
-            CurrentUser = null;
             return LastLogOnResult;
         }
 
         #region In file save
         private static void SerializeUser()
         {
+            if (CurrentUser == null) 
+                return;
             var ConvertedJson = JsonConvert.SerializeObject(CurrentUser, new JsonSerializerSettings
             {
                 DefaultValueHandling = DefaultValueHandling.Populate,
@@ -193,13 +194,15 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             {
                 if (CurrentUser?.Messenger?.AdminID != null)
                     MessagesViewModel.IsAdminIdValid = true;
-                MessagesViewModel.EnableCommands = CurrentUser.Messenger.EnableCommands;
-                MessagesViewModel.AdminId = CurrentUser.Messenger.AdminID.ToString();
-                MessagesViewModel.SaveChatLog = CurrentUser.Messenger.SaveChatLog;
-                MessagesViewModel.MsgCommands = new ObservableCollection<Command>(CurrentUser.Messenger.Commands);
+
 
                 Application.Current.Dispatcher.Invoke(new Action(() =>
                 {
+                    MessagesViewModel.EnableCommands = CurrentUser.Messenger.EnableCommands;
+                    MessagesViewModel.AdminId = CurrentUser.Messenger.AdminID.ToString();
+                    MessagesViewModel.SaveChatLog = CurrentUser.Messenger.SaveChatLog;
+                    MessagesViewModel.MsgCommands = new ObservableCollection<Command>(CurrentUser.Messenger.Commands);
+                    GamesViewModel.Games = new ObservableCollection<Game>(CurrentUser.Games);
                     if (MainRemoteControlViewModel.MessagesV == null)
                         MainRemoteControlViewModel.MessagesV = new ViewModels.RemoteControl.View.MessagesView();
 
@@ -214,6 +217,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
             LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;
 
+            Application.Current.Dispatcher.Invoke(() => { (App.MainWindow.DataContext as MainWindowViewModel).RemoteControlVm.LoginViewCommand.Execute(null); });
+            
 
             SerializeUser();
 
@@ -324,7 +329,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 }));
             }
 
-            steamClient.Send((IClientMsg)new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayed)
+/*            steamClient.Send((IClientMsg)new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayed)
             {
                 Body = {
                 games_played = {
@@ -335,8 +340,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 }
               }
             });
-            Thread.Sleep(5000);
-            gameCoordinator.Send((IClientGCMsg)new ClientGCMsgProtobuf<SteamKit2.GC.CSGO.Internal.CMsgClientHello>(4006U), 730U);
+
+            gameCoordinator.Send((IClientGCMsg)new ClientGCMsgProtobuf<SteamKit2.GC.CSGO.Internal.CMsgClientHello>(4006U), 730U);*/
 
         }
 

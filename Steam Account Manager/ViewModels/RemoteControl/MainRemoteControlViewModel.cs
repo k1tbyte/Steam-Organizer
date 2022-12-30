@@ -43,7 +43,16 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             }
         }
 
-
+        private bool _isLoginView = true;
+        public bool IsLoginView
+        {
+            get => _isLoginView;
+            set
+            {
+                _isLoginView = value;
+                OnPropertyChanged(nameof(IsLoginView));
+            }
+        }
 
         public MainRemoteControlViewModel()
         {
@@ -58,6 +67,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             LoginViewCommand = new RelayCommand(o =>
             {
+                IsLoginView = true;
                 if (o != null && o is int id)
                 {
                     LoginVm.Username = Config.Accounts[id].Login;
@@ -76,6 +86,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             GamesViewCommand = new RelayCommand(o =>
             {
+                IsLoginView = false;
                 if (RemoteControlCurrentView != GamesV)
                 {
                     if (GamesV == null)
@@ -87,6 +98,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             MessagesViewCommand = new RelayCommand(o =>
             {
+                IsLoginView = false;
                 if (RemoteControlCurrentView != MessagesV)
                 {
                     if (MessagesV == null)
@@ -99,6 +111,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             FriendsViewCommand = new RelayCommand(o =>
             {
+                IsLoginView = false;
                 if (RemoteControlCurrentView != FriendsV)
                 {
                     if (FriendsV == null)
@@ -110,6 +123,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
 
             SteamWebViewCommand = new RelayCommand(o =>
             {
+                IsLoginView = false;
                 if (RemoteControlCurrentView != SteamWebV)
                 {
                     if (SteamWebV == null)

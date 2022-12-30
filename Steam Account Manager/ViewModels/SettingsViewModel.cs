@@ -243,7 +243,7 @@ namespace Steam_Account_Manager.ViewModels
             AutoGetSteamId      = Config.Properties.AutoGetSteamId;
             RememberPassword    = Config.Properties.RememberPassword;
             MinimizeToTray      = Config.Properties.MinimizeToTray;
-            Autostartup         = Config.Properties.Autostartup;
+            Autostartup         = Utilities.IsRegistryAutoStartup();
             MinimizeOnStart     = Config.Properties.MinimizeOnStart;
 
             LocaleMode[(byte)Config.Properties.Language] = true;
@@ -278,7 +278,7 @@ namespace Steam_Account_Manager.ViewModels
 
                     if ((byte)Config.Properties.Language != (index = (byte)Array.FindIndex(LocaleMode, locale => locale)))
                     {
-                        Config.Properties.Language = (Infrastructure.Models.Languages)index;
+                        Config.Properties.Language = (Languages)index;
                     }
 
 
@@ -292,12 +292,9 @@ namespace Steam_Account_Manager.ViewModels
                     Config.Properties.MinimizeOnStart  = MinimizeOnStart;
                     Config.Properties.AutoLoginUserID  = AutoLoginAccount?.SteamId64;
 
-                    if(Config.Properties.Autostartup != Autostartup)
-                    {
-                        Config.Properties.Autostartup = Autostartup;
-                        Utilities.SetRegistryAutostartup(Autostartup);
-                    }
-                    
+                    Utilities.SetRegistryAutostartup(Autostartup);
+
+
                     if (!String.IsNullOrEmpty(Password))
                         Config.Properties.Password = Utilities.Sha256(Password + Config.GetDefaultCryptoKey);
                     else if (_passwordEnabled == false)

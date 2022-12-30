@@ -220,6 +220,42 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         }
         #endregion
 
+        private void CheckLoginResult(EResult result)
+        {
+            if (!App.MainWindow.IsVisible && result != EResult.OK && result != EResult.NotLoggedOn)
+            {
+                    MessageBoxes.PopupMessageBox("Requires user action to sign in!", true);
+                LogOutCommand.Execute(null);
+            }
+
+            if(result == EResult.LoggedInElsewhere)
+            {
+                var nickname = SteamRemoteClient.UserPersonaName;
+                LogOutCommand.Execute(null);
+                MessageBoxes.InfoMessageBox($"{nickname} has been disconnected because the account is in use.");
+            }
+            else
+            {
+                switch (result)
+                {
+                    case EResult.NoConnection:
+                        ErrorMsg = (string)App.Current.FindResource("rc_lv_noInternet");
+                        break;
+                    case EResult.ServiceUnavailable:
+                        ErrorMsg = (string)App.Current.FindResource("rc_lv_servUnavailable");
+                        break;
+                    case EResult.Timeout:
+                        ErrorMsg = (string)App.Current.FindResource("rc_lv_workTimeout");
+                        break;
+                    case EResult.RateLimitExceeded:
+                        ErrorMsg = (string)App.Current.FindResource("rc_lv_retriesExceeded");
+                        break;
+                    case EResult.TryAnotherCM:
+                        ErrorMsg = (string)App.Current.FindResource("rc_lv_tryLater");
+                        break;
+                }
+            }
+        }
 
         public LoginViewModel()
         {
@@ -237,10 +273,6 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                     return SteamRemoteClient.Login(Username, Password, AuthCode);
                 });
 
-                if (!App.MainWindow.IsVisible && result != EResult.OK && result != EResult.NotLoggedOn)
-                {
-                    MessageBoxes.PopupMessageBox("Requires user action to sign in!", true);
-                }
 
                 if (result == EResult.AccountLoginDeniedNeedTwoFactor || result == EResult.AccountLogonDenied || result == EResult.Cancelled)
                 {
@@ -249,34 +281,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 }
                 else
                 {
-                    switch (result)
-                    {
-                        case EResult.NoConnection:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_noInternet");
-                            break;
-                        case EResult.InvalidPassword:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_invalidPass");
-                            break;
-                        case EResult.TwoFactorCodeMismatch:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_invalidTwofa");
-                            break;
-                        case EResult.InvalidLoginAuthCode:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_invalidGuard");
-                            break;
-                        case EResult.ServiceUnavailable:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_servUnavailable");
-                            break;
-                        case EResult.Timeout:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_workTimeout");
-                            break;
-                        case EResult.RateLimitExceeded:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_retriesExceeded");
-                            break;
-                        case EResult.TryAnotherCM:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_tryLater");
-                            break;
-                    }
-
+                    CheckLoginResult(result);
                 }
 
             });
@@ -302,29 +307,13 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 {
                     ErrorMsg = (string)App.Current.FindResource("rc_lv_keyExpired");
                     RecentlyLoggedIn.Remove(element);
+                    Config.Serialize(RecentlyLoggedIn, App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
                 }
-              //  EResult.LoggedInElsewhere;
                 else
                 {
-                    switch (result)
-                    {
-                        case EResult.NoConnection:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_noInternet");
-                            break;
-                        case EResult.ServiceUnavailable:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_servUnavailable");
-                            break;
-                        case EResult.Timeout:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_workTimeout");
-                            break;
-                        case EResult.RateLimitExceeded:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_retriesExceeded");
-                            break;
-                        case EResult.TryAnotherCM:
-                            ErrorMsg = (string)App.Current.FindResource("rc_lv_tryLater");
-                            break;
-                    }
+                    CheckLoginResult(result);
                 }
+                 
             });
 
             LogOutCommand = new RelayCommand(o =>

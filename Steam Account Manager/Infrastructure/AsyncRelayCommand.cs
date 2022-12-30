@@ -51,6 +51,6 @@ namespace Steam_Account_Manager.Infrastructure
                 Interlocked.Exchange(ref _isExecuting, 0);
                 RaiseCanExecuteChanged();
             }
-        }
+             }
     }
 }

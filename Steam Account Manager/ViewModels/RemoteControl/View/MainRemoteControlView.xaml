@@ -23,8 +23,8 @@
             <StackPanel Orientation="Horizontal" Margin="20 5 0 5">
 
                 <RadioButton x:Name="Login" Style="{StaticResource RemoteControlButton}" IsHitTestVisible="{Binding IsPanelActive}"
-                             Command="{Binding LoginViewCommand}"
-                             Margin="0 0 0 0" Width="45" Height="40" IsChecked="True">
+                             Command="{Binding LoginViewCommand}" IsChecked="{Binding IsLoginView}"
+                             Margin="0 0 0 0" Width="45" Height="40" >
                     <Icon:PackIconMaterial Kind="Account"  Width="25" Height="25" 
                                            HorizontalAlignment="Center"/>
                 </RadioButton>
