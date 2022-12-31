@@ -7,6 +7,7 @@
     <v:String x:Key="sv_theme">Тема</v:String>
     <v:String x:Key="sv_language">Мова</v:String>
     <v:String x:Key="sv_action_after_logging">Дія після входу в акаунт</v:String>
+    <v:String x:Key="sv_paste2fa_method">Спосіб введення 2FA-коду</v:String>
     <v:String x:Key="sv_confirm_when_del">Видаляти акаунти без підтвердження</v:String>
     <v:String x:Key="sv_save_changes">Зберегти</v:String>
     <v:String x:Key="sv_on">Увімкнено</v:String>
@@ -31,6 +32,11 @@
         <v:String>Нічого</v:String>
         <v:String>Закрити</v:String>
         <v:String>Згорнути у трей</v:String>
+    </x:ArrayExtension>
+
+    <x:ArrayExtension x:Key="sv_2fa_input_list" Type="v:String">
+        <v:String>Вставкою</v:String>
+        <v:String>Вручну</v:String>
     </x:ArrayExtension>
 
     <v:String x:Key="sv_popup_apiKeyInfo" xml:space="preserve"
@@ -162,6 +168,8 @@
     <v:String x:Key="atv_inf_errorWhileScanning">Помилка під час сканування акаунту</v:String>
     <v:String x:Key="atv_vacCount">Кількість VAC:</v:String>
     <v:String x:Key="atv_vacInfoAbsent">Інфомація відсутня</v:String>
+    <v:String x:Key="atv_loginClient">Увійти в клієнт</v:String>
+    <v:String x:Key="atv_loginRemotely">Увійти віддалено</v:String>
     <!--#endregion-->
 
 
@@ -248,6 +256,8 @@
     <v:String x:Key="rc_lv_retriesExceeded">Перевищено кількість спроб. Будь-ласка спробуйте знову через 35 хвилин</v:String>
     <v:String x:Key="rc_lv_tryLater">Спробуйте пізніше...</v:String>
     <v:String x:Key="rc_lv_keyExpired">Логін ключ застарів...</v:String>
+    <v:String x:Key="rc_lv_needUserAction">Для входу потрібна дія користувача!</v:String>
+    <v:String x:Key="rc_lv_accAlreadyUse">був відключений, оскільки обліковий запис використовується.</v:String>
     <!--#endregion-->
 
     <!--#region Games view -->

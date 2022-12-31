@@ -157,8 +157,8 @@
                                                />
                         <Button.ContextMenu>
                             <ContextMenu >
-                                <MenuItem Header="Login to client"  Command="{Binding ConnectToSteamCommand}"/>
-                                <MenuItem Header="Login remotely" Command="{Binding ConnectToSteamRemoteCommand}"/>
+                                <MenuItem Header="{DynamicResource atv_loginClient}"  Command="{Binding ConnectToSteamCommand}"/>
+                                <MenuItem Header="{DynamicResource atv_loginRemotely}" Command="{Binding ConnectToSteamRemoteCommand}"/>
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>

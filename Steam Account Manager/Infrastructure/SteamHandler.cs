@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows;
 using System.Windows.Automation;
 
 namespace Steam_Account_Manager.Infrastructure
@@ -15,6 +16,8 @@ namespace Steam_Account_Manager.Infrastructure
 
         [DllImport("user32.dll")]
         private static extern bool ShowWindowAsync(HandleRef hWnd, int nCmdShow);
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
 
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -179,9 +182,27 @@ namespace Steam_Account_Manager.Infrastructure
                             SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
                             if (paste2fa)
                             {
+                                string code = "";
+                                App.Current.Dispatcher.Invoke(() => { code = Clipboard.GetText(TextDataFormat.Text); });
                                 Thread.Sleep(2700);
-                            //    System.Windows.Forms.SendKeys.SendWait("^");
-                                System.Windows.Forms.SendKeys.SendWait("^(v)");
+                                if(Config.Properties.Input2FaMethod == Models.Input2faMethod.Manually)
+                                {
+                                    foreach (char c in code)
+                                    {
+                                        SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                                        PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
+                                    }
+                                }
+                                else
+                                {
+                                    keybd_event(0x11, 0, 0x00, 0);
+                                    keybd_event(0x56, 0, 0x00, 0);
+                                    Thread.Sleep(50);
+                                    keybd_event(0x11, 0, 0x02, 0);
+                                    keybd_event(0x56, 0, 0x02, 0);
+                                }
+
+                                
                                 Thread.Sleep(200);
                                 System.Windows.Forms.SendKeys.SendWait("{ENTER}");
                             }

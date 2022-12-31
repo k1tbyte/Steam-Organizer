@@ -33,7 +33,8 @@ namespace Steam_Account_Manager.ViewModels
                _encryptingKey,
                _password;
 
-        LoggedAction _actionAfterLogin;
+        byte _actionAfterLogin;
+        byte _twoFactorInputMethod;
 
         public RelayCommand SaveChangesCommand { get; set; }
         public RelayCommand OpenApiKeyUrlCommand { get; set; }
@@ -196,11 +197,21 @@ namespace Steam_Account_Manager.ViewModels
 
         public byte ActionAfterLogin
         {
-            get => (byte)_actionAfterLogin;
+            get => _actionAfterLogin;
             set
             {
-                _actionAfterLogin = (LoggedAction)value;
+                _actionAfterLogin = value;
                 OnPropertyChanged(nameof(ActionAfterLogin));
+            }
+        }
+
+        public byte TwoFactorInputMethod
+        {
+            get => _twoFactorInputMethod;
+            set
+            {
+                _twoFactorInputMethod = value;
+                OnPropertyChanged(nameof(TwoFactorInputMethod));
             }
         }
 
@@ -236,15 +247,16 @@ namespace Steam_Account_Manager.ViewModels
 
         public SettingsViewModel()
         {
-            NoConfirmMode       = Config.Properties.NoConfirmMode;
-            ActionAfterLogin    = (byte)Config.Properties.ActionAfterLogin;
-            TakeAccountInfoMode = Config.Properties.TakeAccountInfo;
-            WebApiKey           = Config.Properties.WebApiKey;
-            AutoGetSteamId      = Config.Properties.AutoGetSteamId;
-            RememberPassword    = Config.Properties.RememberPassword;
-            MinimizeToTray      = Config.Properties.MinimizeToTray;
-            Autostartup         = Utilities.IsRegistryAutoStartup();
-            MinimizeOnStart     = Config.Properties.MinimizeOnStart;
+            NoConfirmMode        = Config.Properties.NoConfirmMode;
+            ActionAfterLogin     = (byte)Config.Properties.ActionAfterLogin;
+            TwoFactorInputMethod = (byte)Config.Properties.Input2FaMethod;
+            TakeAccountInfoMode  = Config.Properties.TakeAccountInfo;
+            WebApiKey            = Config.Properties.WebApiKey;
+            AutoGetSteamId       = Config.Properties.AutoGetSteamId;
+            RememberPassword     = Config.Properties.RememberPassword;
+            MinimizeToTray       = Config.Properties.MinimizeToTray;
+            Autostartup          = Utilities.IsRegistryAutoStartup();
+            MinimizeOnStart      = Config.Properties.MinimizeOnStart;
 
             LocaleMode[(byte)Config.Properties.Language] = true;
             ThemeMode[(byte)Config.Properties.Theme] = true;
@@ -279,11 +291,15 @@ namespace Steam_Account_Manager.ViewModels
                     if ((byte)Config.Properties.Language != (index = (byte)Array.FindIndex(LocaleMode, locale => locale)))
                     {
                         Config.Properties.Language = (Languages)index;
+                        OnPropertyChanged(nameof(ActionAfterLogin));
+                        OnPropertyChanged(nameof(TwoFactorInputMethod));
                     }
 
 
                     Config.Properties.NoConfirmMode    = NoConfirmMode;
                      Config.Properties.ActionAfterLogin = (LoggedAction)ActionAfterLogin;
+                    Config.Properties.Input2FaMethod = (Input2faMethod)TwoFactorInputMethod;
+
                     Config.Properties.TakeAccountInfo  = TakeAccountInfoMode;
                     Config.Properties.WebApiKey        = WebApiKey;
                     Config.Properties.AutoGetSteamId   = AutoGetSteamId;

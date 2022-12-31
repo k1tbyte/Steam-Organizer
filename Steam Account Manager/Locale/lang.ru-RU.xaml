@@ -7,6 +7,7 @@
     <v:String x:Key="sv_theme">Тема</v:String>
     <v:String x:Key="sv_language">Язык</v:String>
     <v:String x:Key="sv_action_after_logging">Действие после входа в аккаунт</v:String>
+    <v:String x:Key="sv_paste2fa_method">Способ ввода 2FA-кода</v:String>
     <v:String x:Key="sv_confirm_when_del">Удалять аккаунты без подтверждения</v:String>
     <v:String x:Key="sv_save_changes">Сохранить</v:String>
     <v:String x:Key="sv_on">Включено</v:String>
@@ -31,6 +32,11 @@
         <v:String>Ничего</v:String>
         <v:String>Закрыть</v:String>
         <v:String>Свернуть в трей</v:String>
+    </x:ArrayExtension>
+
+    <x:ArrayExtension x:Key="sv_2fa_input_list" Type="v:String">
+        <v:String>Вставкой</v:String>
+        <v:String>Вручную</v:String>
     </x:ArrayExtension>
 
     <v:String x:Key="sv_popup_apiKeyInfo" xml:space="preserve"
@@ -161,6 +167,8 @@
     <v:String x:Key="atv_inf_errorWhileScanning">Ошибка при сканировании аккаунта</v:String>
     <v:String x:Key="atv_vacCount">Количество VAC:</v:String>
     <v:String x:Key="atv_vacInfoAbsent">Информация отсутствует</v:String>
+    <v:String x:Key="atv_loginClient">Войти в клиент</v:String>
+    <v:String x:Key="atv_loginRemotely">Войти удаленно</v:String>
     <!--#endregion-->
 
     
@@ -247,6 +255,8 @@
     <v:String x:Key="rc_lv_retriesExceeded">Превышено количеств попыток. Пожалуйста попытайтесь сноа через 35 минут</v:String>
     <v:String x:Key="rc_lv_tryLater">Попробуйте позже...</v:String>
     <v:String x:Key="rc_lv_keyExpired">Логин ключ устарел...</v:String>
+    <v:String x:Key="rc_lv_needUserAction">Для входа требуется действие пользователя!</v:String>
+    <v:String x:Key="rc_lv_accAlreadyUse">был отключен, так как учетная запись используется.</v:String>
     <!--#endregion-->
 
     <!--#region Games view -->

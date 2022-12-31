@@ -119,7 +119,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 }
                 catch (WebException e)
                 {
+#if DEBUG
                     System.Windows.Forms.MessageBox.Show(e.ToString());
+#endif
                     return null;
                 }
             }
@@ -143,7 +145,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 //this is thrown if response code is not 200
                 if (fetchError)
                 {
+#if DEBUG
                     System.Windows.Forms.MessageBox.Show(e.ToString());
+#endif
                 }
                 throw;
             }
@@ -196,7 +200,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     }
                     catch (Exception e)
                     {
+#if DEBUG
                         System.Windows.Forms.MessageBox.Show(e.ToString());
+#endif
                         return false;
                     }
                 }

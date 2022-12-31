@@ -7,6 +7,7 @@
     <v:String x:Key="sv_theme">Theme</v:String>
     <v:String x:Key="sv_language">Language</v:String>
     <v:String x:Key="sv_action_after_logging">Action after login in account</v:String>
+    <v:String x:Key="sv_paste2fa_method">2FA-code input method</v:String>
     <v:String x:Key="sv_confirm_when_del">Delete accounts without confirmation</v:String>
     <v:String x:Key="sv_save_changes">Save changes</v:String>
     <v:String x:Key="sv_on">Enabled</v:String>
@@ -31,6 +32,11 @@
         <v:String>None</v:String>
         <v:String>Close</v:String>
         <v:String>Minimize to tray</v:String>
+    </x:ArrayExtension>
+
+    <x:ArrayExtension x:Key="sv_2fa_input_list" Type="v:String">
+        <v:String>Paste</v:String>
+        <v:String>Manually</v:String>
     </x:ArrayExtension>
 
     <v:String x:Key="sv_popup_apiKeyInfo" xml:space="preserve"
@@ -163,6 +169,8 @@
     <v:String x:Key="atv_inf_errorWhileScanning">Error while scanning account</v:String>
     <v:String x:Key="atv_vacCount">Vac count:</v:String>
     <v:String x:Key="atv_vacInfoAbsent">Information is absent</v:String>
+    <v:String x:Key="atv_loginClient">Login to client</v:String>
+    <v:String x:Key="atv_loginRemotely">Login remotely</v:String>
     <!--#endregion-->
 
 
@@ -249,6 +257,8 @@
     <v:String x:Key="rc_lv_retriesExceeded">Retries exceeded. Please try again in 35 minutes</v:String>
     <v:String x:Key="rc_lv_tryLater">Try later...</v:String>
     <v:String x:Key="rc_lv_keyExpired">Login key has expired...</v:String>
+    <v:String x:Key="rc_lv_needUserAction">Requires user action to sign in!</v:String>
+    <v:String x:Key="rc_lv_accAlreadyUse">has been disconnected because the account is in use.</v:String>
     <!--#endregion-->
 
     <!--#region Games view -->

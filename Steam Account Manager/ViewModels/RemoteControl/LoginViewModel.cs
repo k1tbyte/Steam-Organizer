@@ -224,7 +224,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         {
             if (!App.MainWindow.IsVisible && result != EResult.OK && result != EResult.NotLoggedOn)
             {
-                    MessageBoxes.PopupMessageBox("Requires user action to sign in!", true);
+                    MessageBoxes.PopupMessageBox((string)App.Current.FindResource("rc_lv_needUserAction"), true);
                 LogOutCommand.Execute(null);
             }
 
@@ -232,7 +232,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             {
                 var nickname = SteamRemoteClient.UserPersonaName;
                 LogOutCommand.Execute(null);
-                MessageBoxes.InfoMessageBox($"{nickname} has been disconnected because the account is in use.");
+                MessageBoxes.InfoMessageBox($"{nickname} {(string)App.Current.FindResource("rc_lv_accAlreadyUse")}");
             }
             else
             {
