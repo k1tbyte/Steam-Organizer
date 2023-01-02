@@ -113,6 +113,7 @@ namespace Steam_Account_Manager.ViewModels
                     AccountTabViews.Add(new AccountTabView(i));
                 }
                 MainWindowViewModel.TotalAccounts = Config.Accounts.Count;
+                IsDatabaseEmpty = AccountTabViews.Count == 0;
             }
         }
 
@@ -222,6 +223,21 @@ namespace Steam_Account_Manager.ViewModels
             return cryptoKeyWindow.ShowDialog();
         }
 
+        private void RestoreAccountFromFile(string fileName, string crypto)
+        {
+            var acc = (Account)Config.Deserialize(fileName, crypto);
+            if(Config.Accounts.Exists(o => o.SteamId64?.GetHashCode() == acc.SteamId64?.GetHashCode()))
+            {
+                MessageBoxes.PopupMessageBox("An account with this SteamID already exists in the database...", true);
+                return;
+            }
+            Config.Accounts.Add(acc);
+            FillAccountTabViews();
+            AccountTabViews.Add(new AccountTabView(Config.Accounts.IndexOf(acc)));
+            MessageBoxes.PopupMessageBox("Account restored from file.");
+            Config.SaveAccounts();
+        }
+
         public AccountsViewModel()
         {
             Config.GetAccountsInstance();
@@ -267,19 +283,13 @@ namespace Steam_Account_Manager.ViewModels
                 {
                     try
                     {
-                        Config.Accounts.Add((Account)Config.Deserialize(fileDialog.FileName, Config.Properties.UserCryptoKey));
-                        FillAccountTabViews();
-                        MessageBoxes.PopupMessageBox("Account restored from file.");
-                        Config.SaveAccounts();
+                        RestoreAccountFromFile(fileDialog.FileName, Config.Properties.UserCryptoKey);
                     }
                     catch
                     {
                         if (OpenCryptoKeyWindow(fileDialog.FileName) == true)
                         {
-                            Config.Accounts.Add((Account)Config.Deserialize(fileDialog.FileName, Config.TempUserKey));
-                            FillAccountTabViews();
-                            MessageBoxes.PopupMessageBox("Account restored from file.");
-                            Config.SaveAccounts();
+                            RestoreAccountFromFile(fileDialog.FileName, Config.TempUserKey);
                         }
                     }
                 }

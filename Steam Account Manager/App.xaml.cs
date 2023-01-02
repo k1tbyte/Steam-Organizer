@@ -23,8 +23,8 @@ namespace Steam_Account_Manager
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
         {
-            if (!Mutex.WaitOne(TimeSpan.Zero, true))
-                Shutdown();
+/*            if (!Mutex.WaitOne(TimeSpan.Zero, true))
+                Shutdown();*/
 
             DispatcherUnhandledException += new DispatcherUnhandledExceptionEventHandler(delegate(object sender, DispatcherUnhandledExceptionEventArgs args)
             {
