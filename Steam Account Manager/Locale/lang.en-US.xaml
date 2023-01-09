@@ -171,6 +171,7 @@
     <v:String x:Key="atv_vacInfoAbsent">Information is absent</v:String>
     <v:String x:Key="atv_loginClient">Login to client</v:String>
     <v:String x:Key="atv_loginRemotely">Login remotely</v:String>
+    <v:String x:Key="atv_lastUpdate">Last update:</v:String>
     <!--#endregion-->
 
 
@@ -219,8 +220,13 @@
     <v:String x:Key="aw_invalidKey">Error! Invalid key</v:String>
     <v:String x:Key="aw_keyOnlyLength">Key length can only be 44 characters</v:String>
     <!--#endregion-->
-    
-    
+
+    <!--#region Tray view -->
+    <v:String x:Key="tv_showHide">Show/Hide</v:String>
+    <v:String x:Key="tv_exit">Exit</v:String>
+    <!--#endregion-->
+
+
     <!--#region Remote control -->
 
     <!--#region Login view --> 

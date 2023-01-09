@@ -81,19 +81,19 @@
             <Button Style="{StaticResource trayButton}" Click="ShowOrHide_Click">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial Kind="ViewGrid" Padding="2" Margin="0 3 10 0"/>
-                    <TextBlock Text="Show/Hide"/>
+                    <TextBlock Text="{DynamicResource tv_showHide}"/>
                 </StackPanel>
             </Button>
             <Button Style="{StaticResource trayButton}" Click="Options_Click">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial Kind="Cog" Padding="2" Margin="0 3 10 0"/>
-                    <TextBlock Text="Options"/>
+                    <TextBlock Text="{DynamicResource mv_settings_title}"/>
                 </StackPanel>
             </Button>
             <Button Style="{StaticResource trayButton}" Click="Exit_Button_Click">
                 <StackPanel Orientation="Horizontal">
                     <Icon:PackIconMaterial Kind="ExitToApp" Padding="2" Margin="0 3 10 0"/>
-                    <TextBlock Text="Exit"/>
+                    <TextBlock Text="{DynamicResource tv_exit}"/>
                 </StackPanel>
                 <Button.ContextMenu>
                     <ContextMenu>

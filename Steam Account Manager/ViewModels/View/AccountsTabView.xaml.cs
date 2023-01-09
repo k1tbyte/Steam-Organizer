@@ -45,7 +45,7 @@ namespace Steam_Account_Manager.ViewModels.View
             Popup.PlacementTarget = AvatarBorder;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = $"Last update: {_currentViewModel.LastUpdateTime}";
+            Header.PopupText.Text = $"{App.Current.FindResource("atv_lastUpdate")} {_currentViewModel.LastUpdateTime}";
         }
 
         private void NoteButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)

@@ -17,6 +17,7 @@ namespace Steam_Account_Manager.ViewModels
         public RelayCommand CancelCommand { get; set; }
         public RelayCommand CopyCommand { get; set; }
         public RelayCommand OpenUrlProfileCommand { get; set; }
+        public RelayCommand OpenFromIdLinkCommand { get; set; }
         public AsyncRelayCommand TakeCsgoStatsInfo { get; set; }
         public RelayCommand SaveChangesComamnd { get; set; }
         public RelayCommand OpenOtherLinksCommand { get; set; }
@@ -714,10 +715,7 @@ namespace Steam_Account_Manager.ViewModels
 
             OpenUrlProfileCommand = new RelayCommand(o =>
             {
-                using (Process.Start(new ProcessStartInfo(SteamURL) { UseShellExecute = true }))
-                {
-                    ;
-                }
+                using (Process.Start(new ProcessStartInfo(SteamURL) { UseShellExecute = true })) { };
             });
 
             TakeCsgoStatsInfo = new AsyncRelayCommand(async (o) =>
@@ -799,11 +797,12 @@ namespace Steam_Account_Manager.ViewModels
 
             OpenOtherLinksCommand = new RelayCommand(o =>
             {
-                using (Process.Start(new ProcessStartInfo(SteamURL + (string)o) { UseShellExecute = true }))
-                {
-                    ;
-                }
+                using (Process.Start(new ProcessStartInfo(SteamURL + (string)o) { UseShellExecute = true })) { };
+            });
 
+            OpenFromIdLinkCommand = new RelayCommand(o =>
+            {
+                using (Process.Start(new ProcessStartInfo((string)o + currentAccount.SteamId64) { UseShellExecute = true })) { };
             });
 
             ExportAccountCommand = new RelayCommand(o =>

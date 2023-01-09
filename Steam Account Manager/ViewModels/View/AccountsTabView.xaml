@@ -66,7 +66,7 @@
                                Foreground="{DynamicResource sub_accounttab_text}" FontWeight="Medium"/>
                         <TextBox Background="{DynamicResource first_main_color}" BorderThickness="0"
                             FontSize="12" FontWeight="Normal"  Foreground="{DynamicResource atv_id}"
-                                 Text="{Binding SteamId}" IsReadOnly="True" />
+                                 Text="{Binding SteamId}" IsReadOnly="True" SelectionBrush="{DynamicResource menu_button_background}" />
                     </StackPanel>
                 </StackPanel>
                 <Rectangle Height="35" Width="0.2" Grid.Column="3" Fill="{DynamicResource atv_rectangles_shadow}" HorizontalAlignment="Left">

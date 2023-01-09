@@ -8,6 +8,9 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
     {
         internal static bool? InfoMessageBox(string Text)
         {
+            if (App.MainWindow == null)
+                return null;
+
             var mbox = new FlatMessageBoxView(Text)
             {
                 Owner = App.MainWindow,

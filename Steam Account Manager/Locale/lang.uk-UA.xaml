@@ -170,6 +170,7 @@
     <v:String x:Key="atv_vacInfoAbsent">Інфомація відсутня</v:String>
     <v:String x:Key="atv_loginClient">Увійти в клієнт</v:String>
     <v:String x:Key="atv_loginRemotely">Увійти віддалено</v:String>
+    <v:String x:Key="atv_lastUpdate">Останнє оновлення:</v:String>
     <!--#endregion-->
 
 
@@ -217,6 +218,11 @@
     <v:String x:Key="aw_resetDataLost">Дані акаунтів будуть втрачені, ви впевнені?</v:String>
     <v:String x:Key="aw_invalidKey">Помилка! Неправильний ключ</v:String>
     <v:String x:Key="aw_keyOnlyLength">Довжина ключа може бути лише 44 символи</v:String>
+    <!--#endregion-->
+
+    <!--#region Tray view -->
+    <v:String x:Key="tv_showHide">Показати/Сховати</v:String>
+    <v:String x:Key="tv_exit">Вихід</v:String>
     <!--#endregion-->
 
 

@@ -38,6 +38,10 @@ namespace Steam_Account_Manager.Infrastructure
         [DllImport("user32.dll", SetLastError = true)]
         static extern bool BringWindowToTop(IntPtr hWnd);
 
+        [DllImport("user32.dll", EntryPoint = "BlockInput")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool BlockInput([MarshalAs(UnmanagedType.Bool)] bool fBlockIt);
+
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
         public const int SW_RESTORE = 9;
@@ -95,22 +99,6 @@ namespace Steam_Account_Manager.Infrastructure
             }
         }
 
-        private static bool FocusProcess(string procName)
-        {
-            Process[] objProcesses = Process.GetProcessesByName(procName);
-            if (objProcesses.Length > 0)
-            {
-                IntPtr hWnd = IntPtr.Zero;
-                hWnd = objProcesses[0].MainWindowHandle;
-                ShowWindowAsync(new HandleRef(null, hWnd), SW_RESTORE);
-                SetForegroundWindow(hWnd);
-                return true;
-            }
-            else
-                return false;
-
-        }
-
         #endregion
 
 
@@ -149,6 +137,7 @@ namespace Steam_Account_Manager.Infrastructure
 
                         if (Utilities.GetSteamRegistryActiveUser() == 0)
                         {
+                            BlockInput(true);
                             if (String.IsNullOrEmpty(Utilities.GetSteamRegistryRememberUser()))
                             {
                                 foreach (char c in account.Login)
@@ -207,6 +196,7 @@ namespace Steam_Account_Manager.Infrastructure
                                 System.Windows.Forms.SendKeys.SendWait("{ENTER}");
                             }
                             Automation.RemoveAllEventHandlers();
+                            BlockInput(false);
 
 
 

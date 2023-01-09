@@ -199,7 +199,7 @@
                             <StackPanel Orientation="Horizontal" Margin="18 5 0 0">
                                 <TextBlock Text="{DynamicResource adat_profile_url}" Style="{StaticResource settings_description}"/>
                                 <TextBox x:Name="URL" Style="{StaticResource settings_data_box}" Margin="5 0 0 0"  Width="230"
-                                 Text="{Binding SteamURL}"/>
+                                 Text="{Binding SteamURL}" VerticalAlignment="Center"/>
 
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=URL}"
@@ -210,7 +210,7 @@
                             <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
                                 <TextBlock Style="{StaticResource settings_description}" Text="ID64:"/>
                                 <TextBox x:Name="ID64" Style="{StaticResource settings_data_box}" 
-                                         Text="{Binding SteamID64}"/>
+                                         Text="{Binding SteamID64}" VerticalAlignment="Center"/>
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=ID64}"
                                         Style="{StaticResource animatedCopy}"/>
@@ -220,7 +220,7 @@
                             <StackPanel Orientation="Horizontal" Margin="18 3 0 0">
                                 <TextBlock Style="{StaticResource settings_description}" Text="ID32:" />
                                 <TextBox x:Name="ID32" Style="{StaticResource settings_data_box}" 
-                                         Text="{Binding SteamID32}"/>
+                                         Text="{Binding SteamID32}" VerticalAlignment="Center"/>
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=ID32}"
                                         Style="{StaticResource animatedCopy}"/>
@@ -720,6 +720,10 @@
                                      Command="{Binding OpenOtherLinksCommand}" CommandParameter="badges"/>
                                     <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_groups}"
                                      Command="{Binding OpenOtherLinksCommand}" CommandParameter="groups"/>
+                                    <Button Style="{StaticResource steam_links}" Content="Csgostats.gg"
+                                     Command="{Binding OpenFromIdLinkCommand}" CommandParameter="https://csgostats.gg/player/"/>
+                                    <Button Style="{StaticResource steam_links}" Content="Faceitfinder.com"
+                                     Command="{Binding OpenFromIdLinkCommand}" CommandParameter="https://faceitfinder.com/stats/"/>
                                 </StackPanel>
                             </Grid>
 
@@ -740,7 +744,7 @@
                         <TextBox Grid.ColumnSpan="2" Padding="12 8 22 12" Background="Transparent" BorderThickness="0" MaxWidth="501.9"
                                  Foreground="{DynamicResource second_text_color}" CaretBrush="{DynamicResource default_foreground}" TextWrapping="Wrap"
                                  AcceptsReturn="True" VerticalScrollBarVisibility="Auto" MaxLength="350" MaxLines="50" AcceptsTab="True"
-                                 Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}"/>
+                                 Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" SelectionBrush="{DynamicResource second_main_color}"/>
                     </Grid>
                     
                     <!-- Last update time -->

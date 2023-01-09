@@ -26,7 +26,7 @@
         <!--Search Bar-->
         <Grid Width="440" HorizontalAlignment="Left" Grid.Row="0">
             <TextBlock Margin="20,0,45,0" VerticalAlignment="Center" Foreground="#b0b9c6" IsHitTestVisible="False"
-                          Panel.ZIndex="1" Text="{DynamicResource av_searchbar_title}"
+                          Panel.ZIndex="1" Text="{DynamicResource av_searchbar_title}" 
                           Visibility="{Binding ElementName=txtSearch, Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
             <Border x:Name="border" Background="{DynamicResource searchbox}" CornerRadius="20">
                 <Border.Effect>
@@ -34,7 +34,7 @@
                 </Border.Effect>
             </Border>
 
-            <TextBox x:Name="txtSearch" VerticalAlignment="Center"
+            <TextBox x:Name="txtSearch" VerticalAlignment="Center" SelectionBrush="{DynamicResource second_main_color}"
                      IsHitTestVisible="{Binding IsDatabaseEmpty,Converter={StaticResource BoolToVis}}"
                      Text="{Binding SearchBoxText, UpdateSourceTrigger=PropertyChanged}"
                      Margin="18,0,59,0" Background="{DynamicResource searchbox}" Foreground="#b0b9c6"

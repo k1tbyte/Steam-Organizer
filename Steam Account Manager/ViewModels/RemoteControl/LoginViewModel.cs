@@ -238,6 +238,10 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
             {
                 switch (result)
                 {
+                    case EResult.InvalidPassword:
+                        ErrorMsg = (string)App.Current.FindResource("rc_lv_invalidPass");
+                        Password = "";
+                        break;
                     case EResult.NoConnection:
                         ErrorMsg = (string)App.Current.FindResource("rc_lv_noInternet");
                         break;

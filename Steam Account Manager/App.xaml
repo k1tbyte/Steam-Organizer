@@ -63,6 +63,7 @@
             <Style x:Key="addTextBox" TargetType="TextBox">
                 <Setter Property="Background" Value="{DynamicResource background_border_color}"/>
                 <Setter Property="Foreground" Value="{DynamicResource second_text_color}"/>
+                <Setter Property="SelectionBrush" Value="{DynamicResource second_main_color}"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="BorderThickness" Value="0 0 0 0"/>
@@ -130,6 +131,7 @@
 
             <Style x:Key="settings_data_box" TargetType="TextBox">
                 <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="SelectionBrush" Value="{DynamicResource menu_button_background}"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="FontSize" Value="14"/>
                 <Setter Property="FontWeight" Value="Normal"/>

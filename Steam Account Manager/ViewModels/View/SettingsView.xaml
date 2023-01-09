@@ -92,7 +92,7 @@
                                            VerticalAlignment="Center" Height="20" Width="20" />
 
                             <TextBox Margin="5 0 0 0" Width="205"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
-                         Text="{Binding WebApiKey, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"
+                         Text="{Binding WebApiKey, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" SelectionBrush="{DynamicResource second_main_color}"
                          Background="{DynamicResource first_main_color}" MaxLength="32" BorderThickness="0" CaretBrush="White" />
                         </StackPanel>
                     </Border>
@@ -125,7 +125,8 @@
 
                             <TextBox Margin="5 0 0 0" Width="235"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
                          Text="{Binding EncryptingKey, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" IsReadOnly="True"
-                         Background="{DynamicResource first_main_color}" MaxLength="32" BorderThickness="0" CaretBrush="White" />
+                         Background="{DynamicResource first_main_color}" MaxLength="32" BorderThickness="0" CaretBrush="White"
+                                     SelectionBrush="{DynamicResource second_main_color}"/>
                         </StackPanel>
                     </Border>
 

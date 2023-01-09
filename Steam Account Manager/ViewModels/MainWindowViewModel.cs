@@ -137,9 +137,12 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
-
+        private static bool IsParsing = false;
         public static async Task<bool> NowLoginUserParse(ushort awaitingMs = 0)
         {
+            if (IsParsing) 
+                return false;
+            IsParsing = true;
             bool accountDetected = false;
             await Task.Factory.StartNew(() =>
             {
@@ -157,6 +160,7 @@ namespace Steam_Account_Manager.ViewModels
                     NowLoginUserNickname = "Username";
                 }
             });
+            IsParsing = false;
             return accountDetected;
         }
 

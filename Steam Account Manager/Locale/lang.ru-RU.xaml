@@ -169,6 +169,7 @@
     <v:String x:Key="atv_vacInfoAbsent">Информация отсутствует</v:String>
     <v:String x:Key="atv_loginClient">Войти в клиент</v:String>
     <v:String x:Key="atv_loginRemotely">Войти удаленно</v:String>
+    <v:String x:Key="atv_lastUpdate">Последнее обновление:</v:String>
     <!--#endregion-->
 
     
@@ -218,6 +219,10 @@
     <v:String x:Key="aw_keyOnlyLength">Длина ключа может быть только 44 символа</v:String>
     <!--#endregion-->
 
+    <!--#region Tray view -->
+    <v:String x:Key="tv_showHide">Показать/Скрыть</v:String>
+    <v:String x:Key="tv_exit">Выход</v:String>
+    <!--#endregion-->
 
     <!--#region Remote control -->
 
