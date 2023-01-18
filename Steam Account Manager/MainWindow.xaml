@@ -10,7 +10,6 @@
         WindowStyle="None"
         Background="Transparent"
         Title="Steam Account Manager"
-         Closing="Window_Closing"
         WindowState="{Binding WindowState}"
         IsHitTestVisible="{Binding IsEnabledForUser}">
 

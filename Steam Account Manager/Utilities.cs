@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -56,6 +57,18 @@ namespace Steam_Account_Manager
             return Convert.ToUInt32(lId);
         }
 
+        public static bool CheckInternetConnection()
+        {
+            try
+            {
+                Dns.GetHostEntry("google.com");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         public static ref HttpClient CreateHttpClientFactory()
         {

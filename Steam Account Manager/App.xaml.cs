@@ -1,8 +1,10 @@
 ﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.Themes.MessageBoxes;
 using Steam_Account_Manager.ViewModels.View;
 using System;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
@@ -24,7 +26,11 @@ namespace Steam_Account_Manager
         protected override void OnStartup(StartupEventArgs e)
         {
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
+            {
+                System.Windows.Forms.MessageBox.Show("Mutex already defined!");
                 Shutdown();
+            }
+
 
             DispatcherUnhandledException += new DispatcherUnhandledExceptionEventHandler(delegate(object sender, DispatcherUnhandledExceptionEventArgs args)
             {
@@ -38,6 +44,9 @@ namespace Steam_Account_Manager
             });
 
             Config.GetPropertiesInstance();
+            if (!Utilities.CheckInternetConnection())
+                Thread.Sleep(15000);
+
             Utilities.CreateHttpClientFactory();
             if (Config.Properties.Password == null)
             {
@@ -72,6 +81,7 @@ namespace Steam_Account_Manager
         public static new void Shutdown()
         {
             IsShuttingDown = true;
+            SteamRemoteClient.Logout();
             MainWindow?.Dispose();
 
             Application.Current.Shutdown();

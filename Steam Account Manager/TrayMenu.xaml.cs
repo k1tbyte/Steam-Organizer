@@ -25,6 +25,7 @@ namespace Steam_Account_Manager
 
             };
 
+            this.DataContext = new TrayModel();
             this.TrayIcon.MouseDown += new WinForms.MouseEventHandler(notifier_MouseDown);
             this.TrayIcon.DoubleClick += Notifier_DoubleClick;
             this.MouseLeave += Menu_MouseLeave;
@@ -108,10 +109,12 @@ namespace Steam_Account_Manager
 
         private void box_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (box.SelectedItem == null) return;
             var idx = Config.Accounts.FindIndex(o => o.SteamId64 == (box.SelectedItem as RecentlyLoggedUser).SteamID64);
 
             if (idx != -1)
                 (AccountsViewModel.AccountTabViews[idx].DataContext as AccountTabViewModel).ConnectToSteamCommand.Execute(null);
+            box.UnselectAll();
             this.Hide();
         }
     }

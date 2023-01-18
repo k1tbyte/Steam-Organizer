@@ -103,15 +103,45 @@ namespace Steam_Account_Manager.ViewModels
         }
         #endregion
 
+        private async Task UpdateLoggedUser(int id)
+        {
+            if (await MainWindowViewModel.NowLoginUserParse(15000) && Config.Properties.AutoGetSteamId && !Config.Accounts[id].ContainParseInfo)
+            {
+                try
+                {
+                    MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_getLocalAccInfo"));
+                    string steamId = Utilities.SteamId32ToSteamId64(Utilities.GetSteamRegistryActiveUser());
+                    Config.Accounts[id] = new Account(
+                        _login, _password, steamId,
+                        Config.Accounts[id].Note,
+                        Config.Accounts[id].EmailLogin,
+                        Config.Accounts[id].EmailPass,
+                        Config.Accounts[id].RockstarEmail,
+                        Config.Accounts[id].RockstarPass,
+                        Config.Accounts[id].UplayEmail,
+                        Config.Accounts[id].UplayPass,
+                        Config.Accounts[id].OriginEmail,
+                        Config.Accounts[id].OriginPass, null,
+                        Config.Accounts[id].AuthenticatorPath,
+                        Config.Accounts[id].Nickname);
+                    Config.SaveAccounts();
+                    App.Current.Dispatcher.Invoke(() => AccountsViewModel.UpdateAccountTabView(id));
+                }
+                catch
+                {
+                    MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
+                }
+            } 
+        }
+
         private async Task ConnectToSteam()
         {
             int id = Id - 1;
-            bool update = false,isShuttingDown = false;
+            bool isShuttingDown = false;
             string authPath;
 
-            await Task.Factory.StartNew(async () =>
+            await Task.Factory.StartNew(() =>
             {
-                Config.GetPropertiesInstance();
                 MainWindowViewModel.IsEnabledForUser = false;
                 Config.Properties.SteamDirection = Utilities.GetSteamRegistryDirection();
                 if (Config.Properties.SteamDirection != null)
@@ -199,39 +229,11 @@ namespace Steam_Account_Manager.ViewModels
                     }));
 
 
-
-
                     MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_loggedInSteam"));
                     MainWindowViewModel.IsEnabledForUser = true;
 
                     //Если надо получить данные об аккаунте без информации
-                    if (await MainWindowViewModel.NowLoginUserParse(15000) && Config.Properties.AutoGetSteamId && !Config.Accounts[id].ContainParseInfo)
-                    {
-                        try
-                        {
-                            MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_getLocalAccInfo"));
-                            string steamId = Utilities.SteamId32ToSteamId64(Utilities.GetSteamRegistryActiveUser());
-                            Config.Accounts[id] = new Account(
-                                _login, _password, steamId,
-                                Config.Accounts[id].Note,
-                                Config.Accounts[id].EmailLogin,
-                                Config.Accounts[id].EmailPass,
-                                Config.Accounts[id].RockstarEmail,
-                                Config.Accounts[id].RockstarPass,
-                                Config.Accounts[id].UplayEmail,
-                                Config.Accounts[id].UplayPass,
-                                Config.Accounts[id].OriginEmail,
-                                Config.Accounts[id].OriginPass, null,
-                                Config.Accounts[id].AuthenticatorPath,
-                                Config.Accounts[id].Nickname);
-                            Config.SaveAccounts();
-                            update = true;
-                        }
-                        catch
-                        {
-                            MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
-                        }
-                    }
+                    _ = UpdateLoggedUser(id);
                 }
                 else
                 {
@@ -240,7 +242,6 @@ namespace Steam_Account_Manager.ViewModels
                 }
 
             });
-            if (update) AccountsViewModel.UpdateAccountTabView(id);
         }
 
         public AccountTabViewModel(int id)

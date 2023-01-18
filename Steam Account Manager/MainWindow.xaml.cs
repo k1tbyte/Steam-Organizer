@@ -61,10 +61,6 @@ namespace Steam_Account_Manager
             steamImage.Source = new BitmapImage(uriSource);
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            App.Shutdown();
-        }
 
         public new void Hide()
         {

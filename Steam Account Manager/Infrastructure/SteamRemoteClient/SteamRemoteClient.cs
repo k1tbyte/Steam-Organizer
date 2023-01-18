@@ -215,7 +215,10 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         public static void Logout()
         {
-            LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;
+            if (!IsRunning)
+                return;
+
+            IsRunning =  LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;
 
             Application.Current.Dispatcher.Invoke(() => { (App.MainWindow.DataContext as MainWindowViewModel).RemoteControlVm.LoginViewCommand.Execute(null); });
             
