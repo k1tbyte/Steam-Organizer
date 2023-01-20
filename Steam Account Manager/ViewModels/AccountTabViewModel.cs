@@ -152,7 +152,7 @@ namespace Steam_Account_Manager.ViewModels
                     {
                         Application.Current.Dispatcher.Invoke(new Action(() =>
                         {
-                            Clipboard.SetText(
+                            ClipboardNative.SetText(
                             JsonConvert.DeserializeObject<SteamGuardAccount>(
                                 System.IO.File.ReadAllText(authPath)).GenerateSteamGuardCode());
                         }));

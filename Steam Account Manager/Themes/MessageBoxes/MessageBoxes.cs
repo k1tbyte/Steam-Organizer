@@ -8,7 +8,7 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
     {
         internal static bool? InfoMessageBox(string Text)
         {
-            if (App.MainWindow == null)
+            if (App.MainWindow == null || !App.MainWindow.IsVisible)
                 return null;
 
             var mbox = new FlatMessageBoxView(Text)
@@ -22,6 +22,9 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
 
         internal static bool? QueryMessageBox(string Text)
         {
+            if (App.MainWindow == null || !App.MainWindow.IsVisible)
+                return null;
+
             var qmbox = new FlatQueryMessageBoxView(Text)
             {
                 Owner = App.MainWindow,
@@ -33,8 +36,7 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
 
         internal static void PopupMessageBox(string Text, bool isError = false)
         {
-            App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(
-            () =>
+            App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
             {
                 var popupBox = new PopupMessageBoxView(Text, isError);
                 popupBox.Show();

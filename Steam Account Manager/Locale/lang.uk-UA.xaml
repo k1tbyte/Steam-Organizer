@@ -85,7 +85,7 @@
     <v:String x:Key="adv_error_login_shortage">Мінімальна довжина логіну 3 символи!</v:String>
     <v:String x:Key="adv_error_login_overflow">Максимальна довжина логіну 32 символів!</v:String>
     <v:String x:Key="adv_error_pass_empty">Поле с паролем пусте!</v:String>
-    <v:String x:Key="adv_error_pass_shortage">Мінімальна довжина пароля 8 символів!</v:String>
+    <v:String x:Key="adv_error_pass_shortage">Мінімальна довжина пароля 6 символів!</v:String>
     <v:String x:Key="adv_error_pass_overflow">Максимальна довжина пароля 50 символів!</v:String>
     <v:String x:Key="adv_error_nickError">Довжина ніку може бути від 2 до 32 символів</v:String>
     <v:String x:Key="adv_error_error403">Помилка: (403) Steam не відповідає або веб-ключ Steam API недійсний</v:String>

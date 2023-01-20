@@ -215,8 +215,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         public static void Logout()
         {
-            if (!IsRunning)
-                return;
 
             IsRunning =  LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;
 
@@ -304,7 +302,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             MainRemoteControlViewModel.IsPanelActive = true;
             LoginViewModel.SuccessLogOn = true;
-          //  System.Windows.Forms.SendKeys.SendWait("{TAB}");
 
             if(CurrentUser.RememberGamesIds != null && CurrentUser.RememberGamesIds.Count > 0)
             {

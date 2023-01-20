@@ -10,6 +10,33 @@ using System.Security.Cryptography;
 
 namespace Steam_Account_Manager
 {
+    public static class ClipboardNative
+    {
+        [DllImport("user32.dll")]
+        private static extern bool OpenClipboard(IntPtr hWndNewOwner);
+
+        [DllImport("user32.dll")]
+        private static extern bool CloseClipboard();
+
+        [DllImport("user32.dll")]
+        private static extern bool SetClipboardData(uint uFormat, IntPtr data);
+        private const uint CF_UNICODETEXT = 13;
+
+        public static bool SetText(string text)
+        {
+            if (!OpenClipboard(IntPtr.Zero))
+            {
+                return false;
+            }
+
+            var global = Marshal.StringToHGlobalUni(text);
+
+            SetClipboardData(CF_UNICODETEXT, global);
+            CloseClipboard();
+            return true;
+        }
+    }
+
     internal static class Utilities
     {
         private static HttpClient HttpClientFactory;
@@ -102,8 +129,6 @@ namespace Steam_Account_Manager
             {
                 return null;
             }
-
-
         }
 
         public static string GetSteamAvatarUrl(ulong steamId64, bool fromCache = true, EAvatarType type = EAvatarType.Full)
@@ -311,15 +336,8 @@ namespace Steam_Account_Manager
 
         public static void KillSteamAndConnect(string steamDir, string args = "-noreactlogin")
         {
-            using (Process processSteam = new Process())
-            {
-                processSteam.StartInfo.UseShellExecute = false;
-                processSteam.StartInfo.CreateNoWindow = true;
-                processSteam.StartInfo.FileName = "taskkill";
-                processSteam.StartInfo.Arguments = "/F /T /IM steam.exe";
-                processSteam.Start();
-            };
-            System.Threading.Thread.Sleep(2000);
+            KillSteamProcess();
+            System.Threading.Thread.Sleep(1500);
             using (Process processSteam = new Process())
             {
                 processSteam.StartInfo.UseShellExecute = true;
@@ -340,8 +358,6 @@ namespace Steam_Account_Manager
             }
             return hash;
         }
-
-
 
         public static string GenerateCryptoKey()
         {

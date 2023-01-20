@@ -33,7 +33,7 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
 
         private void Copy_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(exception.Text);
+            ClipboardNative.SetText(exception.Text);
         }
 
         private void repair_MouseEnter(object sender, MouseEventArgs e)

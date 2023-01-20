@@ -89,7 +89,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl.View
 
         private void IdCopyButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Clipboard.SetText(steamIDbox.Text);
+            ClipboardNative.SetText(steamIDbox.Text);
         }
     }
 }

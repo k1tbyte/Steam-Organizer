@@ -224,11 +224,10 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
         {
             if (!App.MainWindow.IsVisible && result != EResult.OK && result != EResult.NotLoggedOn)
             {
-                    MessageBoxes.PopupMessageBox((string)App.Current.FindResource("rc_lv_needUserAction"), true);
+                 MessageBoxes.PopupMessageBox($"{SteamRemoteClient.UserPersonaName} {(string)App.Current.FindResource("rc_lv_accAlreadyUse")}", true);
                 LogOutCommand.Execute(null);
             }
-
-            if(result == EResult.LoggedInElsewhere)
+            else if(result == EResult.LoggedInElsewhere)
             {
                 var nickname = SteamRemoteClient.UserPersonaName;
                 LogOutCommand.Execute(null);

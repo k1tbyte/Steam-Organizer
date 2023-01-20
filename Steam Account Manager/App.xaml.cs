@@ -3,6 +3,7 @@ using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.Themes.MessageBoxes;
 using Steam_Account_Manager.ViewModels.View;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -81,8 +82,12 @@ namespace Steam_Account_Manager
         public static new void Shutdown()
         {
             IsShuttingDown = true;
-            SteamRemoteClient.Logout();
+
+            if(SteamRemoteClient.IsRunning)
+                SteamRemoteClient.Logout();
+
             MainWindow?.Dispose();
+            Mutex.Close();
 
             Application.Current.Shutdown();
         }

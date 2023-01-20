@@ -54,7 +54,7 @@
                                            Foreground="{DynamicResource second_text_color}"/>
                     <theme:MainPasswordBox Height="18.62"
                                            Password="{Binding SteamPassword, UpdateSourceTrigger=PropertyChanged}"
-                                               Style="{StaticResource PasswordboxTheme}"/>
+                                               Style="{StaticResource PasswordboxTheme}" Width="185"/>
                 </StackPanel>
             </Border>
             <TextBlock Grid.Row="2" Text="{DynamicResource adv_password}" FontWeight="Thin"

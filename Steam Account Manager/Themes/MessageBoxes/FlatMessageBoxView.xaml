@@ -10,7 +10,7 @@
         AllowsTransparency="True"
         WindowStyle="None"
         ResizeMode="NoResize"
-        Title="Message" Height="85" Width="300">
+        Title="Message" Height="95" Width="300">
     <Border Background="{DynamicResource background_border_color}" CornerRadius="10"
             BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
         <Grid>
@@ -21,7 +21,7 @@
                                        Height="15" Width="15" 
                                        VerticalAlignment="Center"/>
             </Button>
-            <StackPanel Orientation="Horizontal" Margin="0 6 0 0"
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0"
                         VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Icon:PackIconMaterial Kind="Information" Width="35" Height="35" Margin="0 0 10 0" Foreground="White"/>
                 <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource default_foreground}"

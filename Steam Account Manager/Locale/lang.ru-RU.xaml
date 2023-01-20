@@ -85,7 +85,7 @@
     <v:String x:Key="adv_error_login_shortage">Минимальная длина логина 3 символа!</v:String>
     <v:String x:Key="adv_error_login_overflow">Максимальная длина логина 32 символов!</v:String>
     <v:String x:Key="adv_error_pass_empty">Поле с паролем пустое!</v:String>
-    <v:String x:Key="adv_error_pass_shortage">Минимальная длина пароля 8 символов!</v:String>
+    <v:String x:Key="adv_error_pass_shortage">Минимальная длина пароля 6 символов!</v:String>
     <v:String x:Key="adv_error_pass_overflow">Максимальная длина пароля 50 символов!</v:String>
     <v:String x:Key="adv_error_nickError">Длина ника может быть от 2 до 32 символов</v:String>
     <v:String x:Key="adv_error_error403">Ошибка: (403) Steam не отвечает или ключ Steam Web API недействителен</v:String>

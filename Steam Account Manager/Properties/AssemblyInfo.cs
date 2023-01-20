@@ -7,11 +7,11 @@ using System.Windows;
 // набор атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("Steam Account Manager")]
-[assembly: AssemblyDescription("Steam Account Manager")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("release")]
 [assembly: AssemblyCompany("Explyne")]
-[assembly: AssemblyProduct("In process")]
-[assembly: AssemblyCopyright("Copyright © Explyne 2022")]
+[assembly: AssemblyProduct("Steam Account Manager")]
+[assembly: AssemblyCopyright("Copyright © Explyne 2023")]
 [assembly: AssemblyTrademark("None")]
 [assembly: AssemblyCulture("")]
 
@@ -50,6 +50,6 @@ using System.Windows;
 // Можно задать все значения или принять номера сборки и редакции по умолчанию 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0")]
-[assembly: AssemblyFileVersion("1.0")]
+[assembly: AssemblyVersion("1.1")]
+[assembly: AssemblyFileVersion("2.1.6")]
 [assembly: NeutralResourcesLanguage("en-US")]

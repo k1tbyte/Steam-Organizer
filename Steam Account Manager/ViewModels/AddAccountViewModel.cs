@@ -97,7 +97,7 @@ namespace Steam_Account_Manager.ViewModels
                 return false;
             }
 
-            else if (SteamPassword.Length < 8)
+            else if (SteamPassword.Length < 6)
             {
                 ErrorMessage = (string)Application.Current.FindResource("adv_error_pass_shortage");
                 return false;

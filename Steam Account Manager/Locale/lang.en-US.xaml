@@ -87,7 +87,7 @@
     <v:String x:Key="adv_error_login_shortage">The minimum login length is 3 characters!</v:String>
     <v:String x:Key="adv_error_login_overflow">The maximum login length is 32 characters!</v:String>
     <v:String x:Key="adv_error_pass_empty">The password field is empty!</v:String>
-    <v:String x:Key="adv_error_pass_shortage">The minimum password length is 8 characters!</v:String>
+    <v:String x:Key="adv_error_pass_shortage">The minimum password length is 6 characters!</v:String>
     <v:String x:Key="adv_error_pass_overflow">The maximum password length is 50 characters!</v:String>
     <v:String x:Key="adv_error_nickError">Nickname length can be from 2 to 32 characters</v:String>
     <v:String x:Key="adv_error_error403">Error: (403) Steam is not responding or steam web API key not valid</v:String>

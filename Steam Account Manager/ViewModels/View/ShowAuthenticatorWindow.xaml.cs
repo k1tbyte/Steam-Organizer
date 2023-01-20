@@ -30,7 +30,7 @@ namespace Steam_Account_Manager.ViewModels.View
 
         private void codeCopyButton_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(guardBox.Text);
+            ClipboardNative.SetText(guardBox.Text);
         }
     }
 

@@ -757,7 +757,7 @@ namespace Steam_Account_Manager.ViewModels
                     SteamDataValidateError = (string)Application.Current.FindResource("adv_error_pass_empty");
                 }
 
-                else if (Password.Length < 8)
+                else if (Password.Length < 6)
                 {
                     SteamDataValidateError = (string)Application.Current.FindResource("adv_error_pass_shortage");
                 }
