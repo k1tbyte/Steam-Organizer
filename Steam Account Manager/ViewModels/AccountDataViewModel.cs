@@ -541,7 +541,7 @@ namespace Steam_Account_Manager.ViewModels
             if (currentAccount.ContainParseInfo)
             {
                 //Player summaries
-                AvatarFull = currentAccount.AvatarFull;
+                AvatarFull = $"https://avatars.akamai.steamstatic.com/{currentAccount.AvatarHash}_full.jpg";
                 SteamID32 = ulong.Parse(currentAccount.SteamId64) - 76561197960265728;
                 SteamID64 = currentAccount.SteamId64;
                 SteamURL = currentAccount.ProfileURL;
@@ -614,32 +614,29 @@ namespace Steam_Account_Manager.ViewModels
 
         private async Task CsgoStatsParse()
         {
-            await Task.Factory.StartNew(() =>
+            try
             {
-                try
-                {
-                    var csgo_parser = new CsgoParser(_steamId64);
-                    CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_takeStats");
-                    csgo_parser.GlobalStatsParse().GetAwaiter().GetResult();
-                    CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_takeRank");
-                    csgo_parser.RankParse();
+                var csgo_parser = new CsgoParser(_steamId64);
+                CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_takeStats");
+                await csgo_parser.GlobalStatsParse();
+                CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_takeRank");
+                await csgo_parser.RankParse();
 
-                    currentAccount.CsgoStats = csgo_parser.GetCsgoStats;
-                    FillCsgoInfo();
+                currentAccount.CsgoStats = csgo_parser.GetCsgoStats;
+                FillCsgoInfo();
 
-                    _isCsgoStatsSave = true;
-                    if (!_savePermission) _savePermission = true;
-                    CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_updSucces");
-                    Thread.Sleep(2000);
-                    CsgoParseError = "";
-                }
-                catch
-                {
-                    CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_serverError");
-                    Thread.Sleep(2000);
-                    CsgoParseError = "";
-                }
-            });
+                _isCsgoStatsSave = true;
+                if (!_savePermission) _savePermission = true;
+                CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_updSucces");
+                await Task.Delay(2000);
+                CsgoParseError = "";
+            }
+            catch
+            {
+                CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_serverError");
+                await Task.Delay(2000);
+                CsgoParseError = "";
+            }
         }
 
         private async Task RefreshAccount(int id)

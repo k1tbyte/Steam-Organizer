@@ -27,6 +27,7 @@
     <v:String x:Key="sv_title_general">Загальні</v:String>
     <v:String x:Key="sv_title_system">Система и автоматизація</v:String>
     <v:String x:Key="sv_automaticLogin">Автоматичний вхід в акаунт</v:String>
+    <v:String x:Key="sv_highestQualityImages">Завантажувати зображення в максимальній якості</v:String>
 
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>Нічого</v:String>
@@ -70,6 +71,12 @@
     <v:String x:Key="av_popup_restoreAccount">Відновити акаунт з файлу</v:String>
     <v:String x:Key="av_popup_updAccounts">Оновити інформацію про акаунти</v:String>
     <v:String x:Key="av_noAccounts" xml:space="preserve">Аккаунти не додані.&#13;Натисніть "Додати"!</v:String>
+    <v:String x:Key="av_searchByTitle">Пошук за</v:String>
+    
+    <x:ArrayExtension x:Key="av_searchFilter" Type="v:String">
+        <v:String>Нікнеймом</v:String>
+        <v:String>Примітці</v:String>
+    </x:ArrayExtension>
     <!--#endregion-->
 
 

@@ -30,7 +30,7 @@ namespace Steam_Account_Manager.ViewModels
         private bool _containParseInfo;
         public DateTime LastUpdateTime { get; set; }
 
-        #region Getters && setters
+        #region Properties
 
         public string Note { get; set; }
         public bool ContainParseInfo
@@ -253,7 +253,11 @@ namespace Steam_Account_Manager.ViewModels
             Note = account.Note;
             if (account.ContainParseInfo)
             {
-                SteamPicture = account.AvatarFull;
+                if(Config.Properties.HighestQualityImages)
+                    SteamPicture = $"https://avatars.akamai.steamstatic.com/{account.AvatarHash}_full.jpg";
+                else
+                   SteamPicture = $"https://avatars.akamai.steamstatic.com/{account.AvatarHash}_medium.jpg";
+
                 VacCount = account.VacBansCount;
                 SteamId = account.SteamId64;
                 SteamLevel = account.SteamLevel;

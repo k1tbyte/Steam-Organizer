@@ -103,6 +103,22 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
+        private byte _searchModeIndex = 0;
+        public byte SearchModeIndex
+        {
+            get => _searchModeIndex;
+            set
+            {
+                if(value != _searchModeIndex)
+                {
+                    _searchModeIndex = value;
+                    SearchBoxText = "";
+                    OnPropertyChanged(nameof(SearchModeIndex));
+                }
+
+            }
+        }
+
         public static void FillAccountTabViews()
         {
             ConfirmBanner = false;
@@ -238,14 +254,31 @@ namespace Steam_Account_Manager.ViewModels
             Config.SaveAccounts();
         }
 
+        private bool FilterPredicate(object value)
+        {
+            if (String.IsNullOrEmpty(SearchBoxText))
+                return true;
+
+            if(value is AccountTabView tab)
+            {
+                if (SearchModeIndex == 0 && (tab.DataContext as AccountTabViewModel).SteamNickName?.ToLower().Contains(SearchBoxText.ToLower()) == true)
+                    return true;
+                else if (SearchModeIndex == 1 && (tab.DataContext as AccountTabViewModel).Note?.ToLower().Contains(SearchBoxText.ToLower()) == true)
+                    return true;
+            }
+
+            return false;
+        }
+
         public AccountsViewModel()
         {
             Config.GetAccountsInstance();
 
             AccountTabViews = new ObservableCollection<AccountTabView>();
             ByNicknameSearch = CollectionViewSource.GetDefaultView(AccountTabViews);
-            ByNicknameSearch.Filter = o => String.IsNullOrEmpty(SearchBoxText) ? true : ((AccountTabView)o).SteamNickname.Text.ToLower().Contains(SearchBoxText.ToLower());
+            ByNicknameSearch.Filter += FilterPredicate;
 
+            //String.IsNullOrEmpty(SearchBoxText) ? true : ((AccountTabView)o).SteamNickname.Text.ToLower().Contains(SearchBoxText.ToLower());
             AccountName = "";
             AccountId = -1;
             UpdateDatabaseCommand = new AsyncRelayCommand(async (o) => await UpdateDatabase());

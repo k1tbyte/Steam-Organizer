@@ -27,6 +27,7 @@
     <v:String x:Key="sv_title_general">General</v:String>
     <v:String x:Key="sv_title_system">System and automation</v:String>
     <v:String x:Key="sv_automaticLogin">Login in account automatically</v:String>
+    <v:String x:Key="sv_highestQualityImages">Upload images at the highest quality</v:String>
 
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>None</v:String>
@@ -70,7 +71,13 @@
     <v:String x:Key="av_popup_restoreDatabase" xml:space="preserve">Restore accounts database from file&#13;Attention! Replaces your current base.</v:String>
     <v:String x:Key="av_popup_restoreAccount">Restore account from file</v:String>
     <v:String x:Key="av_popup_updAccounts">Update database information</v:String>
-    <v:String x:Key="av_noAccounts" xml:space="preserve">No accounts added.&#13;Click "add" for a new one!</v:String> 
+    <v:String x:Key="av_noAccounts" xml:space="preserve">No accounts added.&#13;Click "add" for a new one!</v:String>
+    <v:String x:Key="av_searchByTitle">Search by</v:String>
+
+    <x:ArrayExtension x:Key="av_searchFilter" Type="v:String">
+        <v:String>Name</v:String>
+        <v:String>Note</v:String>
+    </x:ArrayExtension>
 
     <!--#endregion-->
 

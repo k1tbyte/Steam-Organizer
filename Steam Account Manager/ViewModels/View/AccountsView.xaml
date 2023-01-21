@@ -97,7 +97,15 @@
 
 
         </StackPanel>
-        
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="10 0 0 0"
+                    HorizontalAlignment="Left" VerticalAlignment="Center">
+            <TextBlock Text="{DynamicResource av_searchByTitle}"  Foreground="{DynamicResource add_button_foreground}" FontWeight="Medium" FontSize="12"
+                       VerticalAlignment="Center"/>
+            <ComboBox Margin="5 0 0 0" SelectedIndex="{Binding SearchModeIndex}" Opacity="0.9" ItemsSource="{DynamicResource av_searchFilter}" />
+
+        </StackPanel>
+
         <!--Members Data Grid-->
         <ScrollViewer VerticalScrollBarVisibility="Visible" 
                       Grid.Row="2" HorizontalAlignment="Left"
@@ -106,8 +114,15 @@
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.CanContentScroll="True"
                      IsHitTestVisible="True" Background="Transparent"
-                     VirtualizingPanel.IsVirtualizing="True"
-                     VirtualizingPanel.VirtualizationMode="Recycling">
+                      VirtualizingPanel.IsVirtualizing="True"
+                      VirtualizingPanel.CacheLengthUnit="Item"
+                        VirtualizingPanel.CacheLength="2,2"
+                        VirtualizingPanel.VirtualizationMode="Standard">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="{x:Type ListViewItem}">
                         <Setter Property="Template">

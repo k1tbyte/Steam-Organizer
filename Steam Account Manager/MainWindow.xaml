@@ -26,7 +26,6 @@
             </Grid.ColumnDefinitions>
 
 
-            
             <!--Left Menu-->
             <Grid>
                 <Grid.RowDefinitions>
@@ -37,18 +36,18 @@
                 <Border Grid.Row="1" Background="{DynamicResource second_main_color}" CornerRadius="0 50 0 30">
                     <DockPanel>
                         <!--Menu Logo-->
-                        <Border Width="99" Height="100" Padding="3" Background="{DynamicResource background_border_color}" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 -30 0 0">
+                        <Border Width="100" Height="100" Background="{DynamicResource background_border_color}" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 -30 0 0">
                             <!-- Not critical error here idk why -->
-                            <WrapPanel Name ="container" Width="93" Height="93">
-                                <Image x:Name="steamImage" 
+                            <WrapPanel Name ="container" Width="94" Height="94" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Image x:Name="steamImage" HorizontalAlignment="Center" VerticalAlignment="Center"
                                Source="{Binding NowLoginUserImage, UpdateSourceTrigger=PropertyChanged}"
-                               ImageFailed="steamImage_ImageFailed"/>
+                               ImageFailed="steamImage_ImageFailed" Stretch="UniformToFill"/>
                                 <WrapPanel.OpacityMask>
                                     <VisualBrush >
                                         <VisualBrush.Visual>
                                             <Border Height="{Binding ElementName=container, Path=ActualHeight}" 
                             Width="{Binding ElementName=container, Path=ActualWidth}"
-                            Background="White" CornerRadius="50" />
+                            Background="White" CornerRadius="100" />
                                         </VisualBrush.Visual>
                                     </VisualBrush>
                                 </WrapPanel.OpacityMask>

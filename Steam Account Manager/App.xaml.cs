@@ -2,13 +2,17 @@
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.Themes.MessageBoxes;
 using Steam_Account_Manager.ViewModels.View;
+using SteamKit2;
+using SteamKit2.CDN;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace Steam_Account_Manager
@@ -26,11 +30,11 @@ namespace Steam_Account_Manager
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
         {
-            if (!Mutex.WaitOne(TimeSpan.Zero, true))
+/*            if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
                 System.Windows.Forms.MessageBox.Show("Mutex already defined!");
                 Shutdown();
-            }
+            }*/
 
 
             DispatcherUnhandledException += new DispatcherUnhandledExceptionEventHandler(delegate(object sender, DispatcherUnhandledExceptionEventArgs args)

@@ -274,7 +274,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 EResult result = await Task<EResult>.Factory.StartNew(() =>
                 {
                     return SteamRemoteClient.Login(Username, Password, AuthCode);
-                });
+                }, TaskCreationOptions.LongRunning);
 
 
                 if (result == EResult.AccountLoginDeniedNeedTwoFactor || result == EResult.AccountLogonDenied || result == EResult.Cancelled)
@@ -304,7 +304,7 @@ namespace Steam_Account_Manager.ViewModels.RemoteControl
                 EResult result = await Task<EResult>.Factory.StartNew(() =>
                 {
                     return SteamRemoteClient.Login(Username, "using", null, element.Loginkey);
-                });
+                },TaskCreationOptions.LongRunning);
 
                 if (result == EResult.Cancelled || result == EResult.Invalid)
                 {

@@ -27,7 +27,8 @@ namespace Steam_Account_Manager.ViewModels
               _rememberPassword,
               _minimizeToTray,
               _autostartup,
-              _minimizeOnStart;
+              _minimizeOnStart,
+              _highestQualityImgs;
 
         string _webApiKey,
                _encryptingKey,
@@ -225,6 +226,16 @@ namespace Steam_Account_Manager.ViewModels
             }
         }
 
+        public bool HighestQualityImages
+        {
+            get => _highestQualityImgs;
+            set
+            {
+                _highestQualityImgs = value;
+                OnPropertyChanged(nameof(HighestQualityImages));
+            }
+        }
+
         public string Version
         {
             get => App.Version.ToString("# # #").Replace(' ','.');
@@ -257,6 +268,7 @@ namespace Steam_Account_Manager.ViewModels
             MinimizeToTray       = Config.Properties.MinimizeToTray;
             Autostartup          = Utilities.IsRegistryAutoStartup();
             MinimizeOnStart      = Config.Properties.MinimizeOnStart;
+            HighestQualityImages = Config.Properties.HighestQualityImages;
 
             LocaleMode[(byte)Config.Properties.Language] = true;
             ThemeMode[(byte)Config.Properties.Theme] = true;
@@ -296,9 +308,10 @@ namespace Steam_Account_Manager.ViewModels
                     }
 
 
-                    Config.Properties.NoConfirmMode    = NoConfirmMode;
-                     Config.Properties.ActionAfterLogin = (LoggedAction)ActionAfterLogin;
-                    Config.Properties.Input2FaMethod = (Input2faMethod)TwoFactorInputMethod;
+                    Config.Properties.NoConfirmMode        = NoConfirmMode;
+                    Config.Properties.ActionAfterLogin     = (LoggedAction)ActionAfterLogin;
+                    Config.Properties.Input2FaMethod       = (Input2faMethod)TwoFactorInputMethod;
+                    Config.Properties.HighestQualityImages = HighestQualityImages;
 
                     Config.Properties.TakeAccountInfo  = TakeAccountInfoMode;
                     Config.Properties.WebApiKey        = WebApiKey;

@@ -1,6 +1,8 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -17,12 +19,12 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         private readonly string _steamId64;
 
         //Player bans
-        private int _numberOfVacBans;
+        private int _numberOfVacBans,_numberOfGameBans;
         private uint _daysSinceLastBan;
         private bool _economyBan, _communityBan;
 
         //Player Summaries
-        private string _nickname, _customProfileUrl, _avatarUrlFull, _createdDateImageUrl;
+        private string _nickname, _customProfileUrl, _avatarHash, _createdDateImageUrl;
         private bool _profileVisiblity;
         private DateTime _accountCreatedDate;
 
@@ -67,68 +69,82 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         public string GetTotalGames => _totalGames;
 
 
+        private string GetPlayerGamesOwnedLink() =>
+    "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + _apiKey + "&steamid=" + _steamId64 + "&include_played_free_games=1&format=json";
         private async Task ParseGamesInfo()
         {
-            var client = Utilities.CreateHttpClientFactory();
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://steamdb.info/calculator/{_steamId64}/");
-            request.Headers.Add("accept", "text/javascript, text/html, application/xml, text/xml, */*");
-            request.Headers.Add("Referer", "https://steamdb.info/calculator/");
-            request.Headers.Add("user-agent", "Mozilla/5.0 (Linux; U; Android 4.1.1; en-us; Google Nexus 4 - 4.1.1 - API 16 - 768x1280 Build/JRO03S) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30");
-            try
+            if (!_profileVisiblity)
             {
-                var response = await client.SendAsync(request);
-                var html = await response.Content.ReadAsStringAsync();
-                var htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(html);
+                _totalGames = "-";
+                _countGamesImageUrl = "/Images/Games_count_badges/unknown.png";
+                return;
+            }
 
-                var steam_games_info = htmlDoc.DocumentNode.SelectNodes("//span[@class='flex-grow'] | //div[@class='span3']");
+            var webClient = new WebClient { Encoding = Encoding.UTF8 };
+            string json = await webClient.DownloadStringTaskAsync(GetPlayerGamesOwnedLink());
+            var list = JsonConvert.DeserializeObject<RootObjectOwnedGames>(json);
 
-                _totalGames = steam_games_info[0].InnerText.Split(' ', '\n')[4];
+            if (list.Response.Games == null)
+            {
+                _totalGames = "-";
+                _countGamesImageUrl = "/Images/Games_count_badges/unknown.png";
+                return;
+            }
 
-                //Если спарсился мусор - выход
-                float.Parse(_totalGames);
+            _totalGames = list.Response.Game_count.ToString();
 
-                #region Определение иконки в диапазоне количества игр
-                ushort[] gameImageVariableArr = {
+            #region Определение иконки в диапазоне количества игр
+            ushort[] gameImageVariableArr = {
                 1,5,10,25,50,100,250,500,1000,2000,3000,4000,5000,6000,7000,8000,8000,9000,10000,11000,13000,14000,15000,16000,17000,18000,20000,21000,
                 22000,23000,24000,25000,26000,27000,28000
              };
-                try
-                {
-                    int countGames = int.Parse(_totalGames.Replace(",", String.Empty));
+            int countGames = list.Response.Game_count;
 
-                    for (int i = 0; i < gameImageVariableArr.Length; i++)
-                    {
-                        if (i == gameImageVariableArr.Length) _countGamesImageUrl = "/Images/Games_count_badges/28000.png";
-                        else if (countGames > gameImageVariableArr[gameImageVariableArr.Length - 1])
-                        {
-                            _countGamesImageUrl = "/Images/Games_count_badges/28000.png";
-                            break;
-                        }
-                        else if (countGames == gameImageVariableArr[i] || countGames < gameImageVariableArr[i + 1])
-                        {
-                            _countGamesImageUrl = $"/Images/Games_count_badges/{gameImageVariableArr[i]}.png";
-                            break;
-                        }
-                    }
-                }
-                catch
-                {
-                    _countGamesImageUrl = "/Images/Games_count_badges/unknown.png";
-                }
-                #endregion
-
-                _gamesPlayed = steam_games_info[0].InnerText.Split(' ', '\n')[1];
-                _hoursOnPlayed = steam_games_info[2].InnerText.Split(' ', '\n')[4].TrimEnd('h');
-
-
-            }
-            catch
+            for (int i = 0; i < gameImageVariableArr.Length; i++)
             {
-                _totalGames = "-";
-                _profileVisiblity = false;
-                _countGamesImageUrl = "/Images/Games_count_badges/unknown.png";
+                if (i == gameImageVariableArr.Length) _countGamesImageUrl = "/Images/Games_count_badges/28000.png";
+                else if (countGames > gameImageVariableArr[gameImageVariableArr.Length - 1])
+                {
+                    _countGamesImageUrl = "/Images/Games_count_badges/28000.png";
+                    break;
+                }
+                else if (countGames == gameImageVariableArr[i] || countGames < gameImageVariableArr[i + 1])
+                {
+                    _countGamesImageUrl = $"/Images/Games_count_badges/{gameImageVariableArr[i]}.png";
+                    break;
+                }
             }
+            #endregion
+
+            ulong totalHours = 0;
+            int totalGamesPlayed = 0;
+            Array.ForEach(list.Response.Games, o =>
+            {
+                if (o.Playtime_forever != 0)
+                {
+                    totalHours += (o.Playtime_forever / 60);
+                    totalGamesPlayed++;
+                }
+            });
+
+            _gamesPlayed = totalGamesPlayed.ToString();
+            _hoursOnPlayed = totalHours.ToString("#,#", CultureInfo.InvariantCulture);
+        }
+
+        private class RootObjectOwnedGames
+        {
+            public ResponsePlayerGame Response { get; set; }
+        }
+
+        private class ResponsePlayerGame
+        {
+            public int Game_count { get; set; }
+            public PlayerGame[] Games { get; set; }
+        }
+
+        private class PlayerGame
+        {
+            public ulong Playtime_forever { get; set; }
         }
 
         #region Player level
@@ -168,9 +184,9 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                 string json = webClient.DownloadString(new Uri(GetPlayerSummariesLink()));
                 var list = JsonConvert.DeserializeObject<RootObjectPlayerSummaries>(json);
                 _nickname = list.Response.Players[0].Personaname;
-                _profileVisiblity = true;
+                _profileVisiblity = list.Response.Players[0].CommunityVisibilityState == 3;
                 _customProfileUrl = list.Response.Players[0].Profileurl;
-                _avatarUrlFull = list.Response.Players[0].AvatarFull;
+                _avatarHash = list.Response.Players[0].AvatarHash;
                 if (list.Response.Players[0].TimeCreated != 0)
                 {
                     _accountCreatedDate = (DateTime)Utilities.UnixTimeToDateTime(list.Response.Players[0].TimeCreated);
@@ -190,7 +206,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         public string GetNickname => _nickname;
         public bool GetProfileVisiblity => _profileVisiblity;
         public string GetCustomProfileUrl => _customProfileUrl;
-        public string GetAvatarUrlFull => _avatarUrlFull;
+        public string GetAvatarHash => _avatarHash;
         public DateTime GetAccountCreatedDate => _accountCreatedDate;
 
 
@@ -208,8 +224,10 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         {
             public string Personaname { get; set; }
             public string Profileurl { get; set; }
-            public string AvatarFull { get; set; }
+            public string AvatarHash { get; set; }
+            public string AvatarMedium { get; set; }
             public long TimeCreated { get; set; }
+            public int CommunityVisibilityState { get; set; }
         }
         #endregion
 
@@ -225,8 +243,9 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             {
                 string json = await webClient.DownloadStringTaskAsync(GetPlayerBansLink());
                 var list = JsonConvert.DeserializeObject<RootObjectBansInfo>(json);
-                _numberOfVacBans = int.Parse(list.Players[0].NumberOfVacBans);
+                _numberOfVacBans = list.Players[0].NumberOfVacBans;
                 _communityBan = list.Players[0].CommunityBanned;
+                _numberOfGameBans = list.Players[0].NumberOfGameBans;
                 _economyBan = list.Players[0].EconomyBan != "none";
                 _daysSinceLastBan = list.Players[0].DaysSinceLastBan;
             }
@@ -237,6 +256,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         public bool GetCommunityBanStatus => _communityBan;
         public bool GetEconomyBanStatus => _economyBan;
         public int GetVacCount => _numberOfVacBans;
+        public int GetGameBansCount => _numberOfGameBans;
         public uint GetDaysSinceLastBan => _daysSinceLastBan;
 
 
@@ -247,7 +267,8 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
         private class PlayerBans
         {
-            public string NumberOfVacBans { get; set; }
+            public int NumberOfVacBans { get; set; }
+            public int NumberOfGameBans { get; set; }
             public bool CommunityBanned { get; set; }
             public string EconomyBan { get; set; }
             public uint DaysSinceLastBan { get; set; }

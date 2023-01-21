@@ -61,11 +61,11 @@
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
-        <Setter Property="MinWidth" Value="103" />
+        <Setter Property="MinWidth" Value="70" />
         <Setter Property="MinHeight" Value="15" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontWeight" Value="Medium" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -125,7 +125,7 @@
                                AllowsTransparency="True"
                                Focusable="False"
                                PopupAnimation="Slide">
-                            <Grid x:Name="DropDown" Opacity="0.8"
+                            <Grid x:Name="DropDown" Opacity="0.9"
                                   SnapsToDevicePixels="True"
                                   MinWidth="{TemplateBinding ActualWidth}"
                                   MaxHeight="{TemplateBinding MaxDropDownHeight}">
@@ -167,6 +167,7 @@
                 <ControlTemplate TargetType="{x:Type ComboBoxItem}">
                     <Border x:Name="Border"
                             Padding="2"
+                            CornerRadius="3"
                             SnapsToDevicePixels="true"
                             Background="Transparent">
                         <VisualStateManager.VisualStateGroups>
@@ -176,7 +177,7 @@
                                     <Storyboard>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                 Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource comboBox_border_background}" />
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource comboBox_border}" />
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -195,7 +196,7 @@
                                     <Storyboard>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                 Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource comboBox_border_background}" />
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource comboBox_border}" />
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>

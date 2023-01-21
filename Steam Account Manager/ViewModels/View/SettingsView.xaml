@@ -200,9 +200,17 @@
                           Style="{StaticResource ToggleButtonStyle}"/>
                 </DockPanel>
 
+                <!-- Auto get steamid -->
                 <DockPanel>
                     <TextBlock Text="{DynamicResource sv_getID}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding AutoGetSteamId}"
+                          Style="{StaticResource ToggleButtonStyle}"/>
+                </DockPanel>
+
+                <!-- Highest quality images -->
+                <DockPanel>
+                    <TextBlock Text="{DynamicResource sv_highestQualityImages}" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding HighestQualityImages}"
                           Style="{StaticResource ToggleButtonStyle}"/>
                 </DockPanel>
 

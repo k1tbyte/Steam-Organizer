@@ -13,7 +13,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
         public string Login { get; set; }
         public string Password { get; set; }
         public string Nickname { get; set; }
-        public string AvatarFull { get; set; }
+        public string AvatarHash { get; set; }
         public string ProfileURL { get; set; }
         public bool ProfileVisility { get; set; }
         public DateTime AccCreatedDate { get; set; }
@@ -60,7 +60,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
             SteamParser steamParser = new SteamParser(steamId64);
             steamParser.AccountParse().GetAwaiter().GetResult();
             this.Nickname = steamParser.GetNickname;
-            this.AvatarFull = steamParser.GetAvatarUrlFull;
+            this.AvatarHash = steamParser.GetAvatarHash;
             this.ProfileURL = steamParser.GetCustomProfileUrl;
             this.ProfileVisility = steamParser.GetProfileVisiblity;
             this.AccCreatedDate = steamParser.GetAccountCreatedDate;
