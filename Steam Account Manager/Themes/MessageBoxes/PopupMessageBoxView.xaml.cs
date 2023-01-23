@@ -25,7 +25,7 @@ namespace Steam_Account_Manager.Themes.MessageBoxes
             this.Topmost = true;
             base.Show();
 
-            if(App.MainWindow.IsLoaded)
+            if(App.MainWindow?.IsLoaded == true)
                  this.Owner = App.MainWindow;
             this.Closed += this.NotificationWindowClosed;
             var workingArea = Screen.PrimaryScreen.WorkingArea;

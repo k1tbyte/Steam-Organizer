@@ -11,6 +11,7 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -29,7 +30,7 @@ namespace Steam_Account_Manager
         public static bool IsShuttingDown { get; set; }
 
         [STAThread]
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
 #if !DEBUG
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
@@ -52,16 +53,20 @@ namespace Steam_Account_Manager
 
             Config.GetPropertiesInstance();
 
+
+
             #region Check internet connection
             if (!Utilities.CheckInternetConnection())
             {
+                ShutdownMode = ShutdownMode.OnExplicitShutdown;
                 MessageBoxes.PopupMessageBox((string)App.Current.FindResource("mv_connectionNotify"));
-                Thread.Sleep(15000);
+                await Task.Delay(15000);
                 if (!Utilities.CheckInternetConnection())
                 {
                     MessageBoxes.PopupMessageBox((string)App.Current.FindResource("mv_autonomyModeNotify"));
                     OfflineMode = true;
                 }
+                ShutdownMode = ShutdownMode.OnMainWindowClose;
             } 
             #endregion
 
