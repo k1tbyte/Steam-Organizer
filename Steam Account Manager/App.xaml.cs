@@ -22,6 +22,7 @@ namespace Steam_Account_Manager
         static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager");
         public static readonly uint Version = 216;
         public static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static bool OfflineMode = false;
         public static new MainWindow MainWindow;
         public static TrayMenu Tray;
         private ExceptionMessageView ExceptionWnd;
@@ -30,12 +31,13 @@ namespace Steam_Account_Manager
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
         {
-/*            if (!Mutex.WaitOne(TimeSpan.Zero, true))
+#if !DEBUG
+            if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
                 System.Windows.Forms.MessageBox.Show("Mutex already defined!");
                 Shutdown();
-            }*/
-
+            }
+#endif
 
             DispatcherUnhandledException += new DispatcherUnhandledExceptionEventHandler(delegate(object sender, DispatcherUnhandledExceptionEventArgs args)
             {
@@ -49,8 +51,20 @@ namespace Steam_Account_Manager
             });
 
             Config.GetPropertiesInstance();
+
+            #region Check internet connection
             if (!Utilities.CheckInternetConnection())
+            {
+                MessageBoxes.PopupMessageBox((string)App.Current.FindResource("mv_connectionNotify"));
                 Thread.Sleep(15000);
+                if (!Utilities.CheckInternetConnection())
+                {
+                    MessageBoxes.PopupMessageBox((string)App.Current.FindResource("mv_autonomyModeNotify"));
+                    OfflineMode = true;
+                }
+            } 
+            #endregion
+
 
             Utilities.CreateHttpClientFactory();
             if (Config.Properties.Password == null)

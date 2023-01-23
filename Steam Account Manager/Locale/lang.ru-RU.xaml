@@ -59,6 +59,8 @@
     <v:String x:Key="mv_remoteControl_title">Удаленное управ.</v:String>
     <v:String x:Key="mv_account_added_notification">Аккаунт успешно добавлен!</v:String>
     <v:String x:Key="mv_newUpdate">Обнаружена новая версия, обновить сейчас?</v:String>
+    <v:String x:Key="mv_connectionNotify">Ожидание соединения с интернетом, переход в автономный режим через 15 секунд...</v:String>
+    <v:String x:Key="mv_autonomyModeNotify">Интернет соединение отсутствует, переход в автономный режим</v:String>
     <!--#endregion-->
 
 
@@ -144,8 +146,10 @@
     <v:String x:Key="adat_cs_inf_takeRank">Получение ранга...</v:String>
     <v:String x:Key="adat_cs_inf_updSucces">Данные игрока обновлены!</v:String>
     <v:String x:Key="adat_cs_inf_serverError">Ошибка, повторите попытку позже...</v:String>
+    <v:String x:Key="adat_cs_inf_errortakeStats">Ошибка получения статистики, возможно API_KEY устаревший...</v:String>
+    <v:String x:Key="adat_cs_inf_profilePrivateOrNullGames">Статистика игр скрыта или отсутствует</v:String>
     <v:String x:Key="adat_cs_inf_updated">Информация обновлена</v:String>
-    <v:String x:Key="adat_cs_inf_noInternet">"Ошибка в сети или APIKey ...</v:String>
+    <v:String x:Key="adat_cs_inf_noInternet">Ошибка в сети или APIKey ...</v:String>
 
     <v:String x:Key="adat_notif_copiedClipoard">Скопировано в буфер</v:String>
     <v:String x:Key="adat_notif_changesSaved">Изменения об аккаунте сохранены</v:String>

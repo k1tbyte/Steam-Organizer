@@ -555,7 +555,8 @@ namespace Steam_Account_Manager.ViewModels
                 GamesTotal = currentAccount.TotalGames;
                 GamesPlayed = currentAccount.GamesPlayed;
                 HoursOnPlayed = currentAccount.HoursOnPlayed;
-                PlayedPercent = currentAccount.ProfileVisility == true ? " (" + (float.Parse(GamesPlayed.Replace(",", string.Empty)) / float.Parse(GamesTotal.Replace(",", String.Empty)) * 100).ToString("#.#") + "%)" : "-";
+                PlayedPercent = currentAccount.ProfileVisility == true && float.TryParse(GamesPlayed.Replace(",", string.Empty),out float games) ?
+                    " (" + (games / float.Parse(GamesTotal.Replace(",", String.Empty)) * 100).ToString("#.#") + "%)" : "-";
 
                 //Bans info
                 VacCount = currentAccount.VacBansCount;
@@ -618,7 +619,13 @@ namespace Steam_Account_Manager.ViewModels
             {
                 var csgo_parser = new CsgoParser(_steamId64);
                 CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_takeStats");
-                await csgo_parser.GlobalStatsParse();
+                if (!await csgo_parser.GlobalStatsParse())
+                {
+                    CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_errortakeStats");
+                    await Task.Delay(2000);
+                    CsgoParseError = "";
+                    return;
+                }
                 CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_takeRank");
                 await csgo_parser.RankParse();
 
@@ -665,12 +672,12 @@ namespace Steam_Account_Manager.ViewModels
 
                     Config.Accounts[id] = currentAccount;
                     Config.SaveAccounts();
-                    Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_cs_inf_updated")));
+                    Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_cs_inf_updated"))).ConfigureAwait(false);
                     FillSteamInfo();
                 }
                 catch
                 {
-                    Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_cs_inf_noInternet")));
+                    Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_cs_inf_noInternet"))).ConfigureAwait(false);
                 }
 
             });
@@ -717,8 +724,24 @@ namespace Steam_Account_Manager.ViewModels
 
             TakeCsgoStatsInfo = new AsyncRelayCommand(async (o) =>
             {
-                if (currentAccount.ProfileVisility)
+                if(!Utilities.CheckInternetConnection())
+                {
+                    CsgoParseError = (string)App.Current.FindResource("adat_cs_inf_noInternet");
+                    await Task.Delay(2000);
+                    return;
+                }
+                else if (currentAccount.ProfileVisility && GamesPlayed != "-")
+                {
                     await CsgoStatsParse();
+                } 
+                else
+                {
+                    CsgoParseError = (string)App.Current.FindResource("adat_cs_inf_profilePrivateOrNullGames");
+                    await Task.Delay(2000);
+                    CsgoParseError = "";
+                    return;
+                }
+
             });
 
             SaveChangesComamnd = new RelayCommand(o =>

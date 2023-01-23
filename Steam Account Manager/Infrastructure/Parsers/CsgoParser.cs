@@ -43,11 +43,18 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         /// 7. Played matches
         /// 
         /// </summary>
-        public async Task GlobalStatsParse()
+        public async Task<bool> GlobalStatsParse()
         {
             var webClient = new WebClient { Encoding = Encoding.UTF8 };
-            string json = await webClient.DownloadStringTaskAsync(
-                $"http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key={_apiKey}&steamid={_steamId64}");
+            string json = "";
+            try
+            {
+                json = await webClient.DownloadStringTaskAsync(
+    $"http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key={_apiKey}&steamid={_steamId64}");
+            }
+            catch { return false; }
+
+            if (String.IsNullOrEmpty(json)) return false;
 
             JObject jo = JObject.Parse(json);
             JToken nodes = jo.SelectToken("*.stats");
@@ -74,6 +81,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             csgoStats.PlayedMatches = items[7].ToString("#,#", CultureInfo.InvariantCulture);
 
             webClient.Dispose();
+            return true;
         }
 
 

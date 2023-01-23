@@ -35,8 +35,9 @@ namespace Steam_Account_Manager
                     return;
                 }
 
-(this.DataContext as MainWindowViewModel).SettingsVm.AutoLoginAccount = desired;
-                (this.DataContext as MainWindowViewModel).RemoteControlVm.LoginViewCommand.Execute(Config.Accounts.IndexOf(desired));
+                (this.DataContext as MainWindowViewModel).SettingsVm.AutoLoginAccount = desired;
+                if (!App.OfflineMode)
+                    (this.DataContext as MainWindowViewModel).RemoteControlVm.LoginViewCommand.Execute(Config.Accounts.IndexOf(desired));
             });
         }
 

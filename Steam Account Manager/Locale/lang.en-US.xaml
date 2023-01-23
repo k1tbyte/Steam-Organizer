@@ -59,6 +59,8 @@
     <v:String x:Key="mv_remoteControl_title">Remote control</v:String>
     <v:String x:Key="mv_account_added_notification">New account added!</v:String>
     <v:String x:Key="mv_newUpdate">New app version detected, update now?</v:String>
+    <v:String x:Key="mv_connectionNotify">Waiting for internet connection, going offline after 15 seconds...</v:String>
+    <v:String x:Key="mv_autonomyModeNotify">There is no Internet connection, switching to offline mode.</v:String>
     <!--#endregion-->
 
 
@@ -146,6 +148,8 @@
     <v:String x:Key="adat_cs_inf_takeRank">Gathering rank data...</v:String>
     <v:String x:Key="adat_cs_inf_updSucces">Player data has been updated!</v:String>
     <v:String x:Key="adat_cs_inf_serverError">The server error, please try again later...</v:String>
+    <v:String x:Key="adat_cs_inf_errortakeStats">Error getting statistics, maybe API_KEY is outdated...</v:String>
+    <v:String x:Key="adat_cs_inf_profilePrivateOrNullGames">Game stats are hidden or missing</v:String>
     <v:String x:Key="adat_cs_inf_updated">Information updated</v:String>
     <v:String x:Key="adat_cs_inf_noInternet">"Error, no internet connection...</v:String>
     

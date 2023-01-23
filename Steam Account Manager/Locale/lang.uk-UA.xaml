@@ -59,6 +59,8 @@
     <v:String x:Key="mv_remoteControl_title">Віддалене управ.</v:String>
     <v:String x:Key="mv_account_added_notification">Акаунт успішно доданий!</v:String>
     <v:String x:Key="mv_newUpdate">Виявлено нову версію, оновити зараз?</v:String>
+    <v:String x:Key="mv_connectionNotify">Очікування з'єднання з інтернетом, перехід в автономний режим через 15 секунд.</v:String>
+    <v:String x:Key="mv_autonomyModeNotify">Інтернет-з'єднання відсутнє, перехід в автономний режим</v:String>
     <!--#endregion-->
 
 
@@ -143,6 +145,8 @@
     <v:String x:Key="adat_cs_inf_takeStats">Отримання статистики...</v:String>
     <v:String x:Key="adat_cs_inf_takeRank">Отримання рангу...</v:String>
     <v:String x:Key="adat_cs_inf_updSucces">Дані про гравця оновлені!</v:String>
+    <v:String x:Key="adat_cs_inf_errortakeStats">Помилка отримання статистики, можливо API_KEY застарілий...</v:String>
+    <v:String x:Key="adat_cs_inf_profilePrivateOrNullGames">Статистика ігор прихована або відсутня</v:String>
     <v:String x:Key="adat_cs_inf_serverError">Помилка сервера, повторіть пізніше...</v:String>
     <v:String x:Key="adat_cs_inf_updated">Інформація оновлена</v:String>
     <v:String x:Key="adat_cs_inf_noInternet">"Помилка в мережі або APIKey...</v:String>

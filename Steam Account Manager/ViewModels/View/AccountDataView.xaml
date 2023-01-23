@@ -403,7 +403,7 @@
                             </TextBlock>
 
 
-                            <StackPanel  Margin="3 16 0 0" Orientation="Horizontal" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}">
+                            <StackPanel  Margin="3 30 0 0" Orientation="Horizontal" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}">
                                 <TextBlock Text="{DynamicResource adat_cs_header}" FontSize="16" Style="{StaticResource settings_description}"/>
                                 <ToggleButton  x:Name="expandCsgoButton" Style="{StaticResource showButton}" IsChecked="True"/>
                                 <Button Style="{StaticResource serviceButton}" Width="16" Height="14" Margin="6 0 0 -1"
@@ -414,8 +414,8 @@
                             
                             <!--csgo parse error Message TextBlock-->
                             <TextBlock VerticalAlignment="Bottom" FontSize="11" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
-                                       Padding="10 0 20 3" Foreground="PaleVioletRed" TextWrapping="WrapWithOverflow" 
-                                       Text="{Binding CsgoParseError, UpdateSourceTrigger=PropertyChanged}">
+                                       Padding="10 0 20 3" Foreground="PaleVioletRed" TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" MaxWidth="220"
+                                       Text="{Binding CsgoParseError, UpdateSourceTrigger=PropertyChanged}" >
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Visibility" Value="Visible"/>
@@ -708,7 +708,7 @@
                             <!-- Steam links -->
                             <Grid  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}">
                                 <StackPanel>
-                                    <TextBlock Margin="0 60 0 10" Text="{DynamicResource adat_links_header}" FontSize="17" 
+                                    <TextBlock Margin="0 20 0 10" Text="{DynamicResource adat_links_header}" FontSize="17" 
                                        Style="{StaticResource settings_description}" HorizontalAlignment="Center"/>
                                     <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_games}"
                                     Command="{Binding OpenOtherLinksCommand}" CommandParameter="games"/>
