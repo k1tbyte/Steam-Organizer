@@ -8,7 +8,8 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
     internal class Account
     {
         #region Properties
-        //Player summaries
+
+        #region Player summaries
         public string SteamId64 { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
@@ -20,24 +21,25 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
         public string CreatedDateImageUrl { get; set; }
         public bool ContainParseInfo { get; set; }
         public DateTime LastUpdateTime { get; set; }
+        #endregion
 
-
-        //Player bans
+        #region Bans
         public bool TradeBan { get; set; }
         public bool CommunityBan { get; set; }
         public int VacBansCount { get; set; }
         public uint DaysSinceLastBan { get; set; }
+        #endregion
 
-
-        //Player games
+        #region Games
         public string SteamLevel { get; set; }
         public string TotalGames { get; set; }
         public string GamesPlayed { get; set; }
         public string HoursOnPlayed { get; set; }
         public string CountGamesImageUrl { get; set; }
         public CSGO CsgoStats { get; set; }
+        #endregion
 
-        //Other info
+        #region Other info
         public string Note { get; set; }
         public string EmailLogin { get; set; }
         public string EmailPass { get; set; }
@@ -47,7 +49,9 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
         public string UplayPass { get; set; }
         public string OriginEmail { get; set; }
         public string OriginPass { get; set; }
-        public string AuthenticatorPath { get; set; } 
+        public string AuthenticatorPath { get; set; }  
+        #endregion
+
         #endregion
 
         //Default
@@ -141,7 +145,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
 
         public override string ToString()
         {
-            return $"{Nickname} [{Utilities.SteamId64ToSteamId32(SteamId64)}]";
+            return $"{Nickname} [{Utils.Common.SteamId64ToSteamId32(SteamId64)}]";
         }
     }
 }

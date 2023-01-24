@@ -1,0 +1,199 @@
+﻿<Window x:Class="Steam_Account_Manager.MVVM.View.MainControl.Windows.AddAccountWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
+        xmlns:viewmodels="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.MainControl"
+        d:DataContext="{d:DesignInstance Type=viewmodels:AddAccountViewModel}"
+        Background="Transparent"
+        mc:Ignorable="d"
+        AllowsTransparency="True"
+        Title="Account Adding" Height="340" Width="270"
+        WindowStyle="None"
+        Name="AddAccountClassWnd">
+
+    
+    <Border CornerRadius="8" Background="{DynamicResource background_border_color}"  MouseDown="Border_MouseDown"
+            BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="65"/>
+                <RowDefinition Height="65"/>
+                <RowDefinition Height="65"/>
+                <RowDefinition Height="70"/>
+            </Grid.RowDefinitions>
+            <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
+                       HorizontalOffset="0" VerticalOffset="10" >
+                <theme:MainPopup  x:Name="Header" Foreground="White" Margin="0 0 10 0"/>
+            </Popup>
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left" Margin="20 20" 
+                       FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                       Text="{DynamicResource adv_header_title}"
+                       FontSize="20">
+            </TextBlock>
+
+            <Rectangle Height="1"
+                       VerticalAlignment="Bottom"
+                       Grid.Row="0" Grid.ColumnSpan="2"
+                       Margin="5"
+                       Fill="{DynamicResource add_window_rectangle}"
+                       Width="240"/>
+
+            <Border Grid.Row="2" Style="{StaticResource borderAddTextBox}">
+                <StackPanel Orientation="Horizontal">
+                    <Icon:PackIconMaterial Kind="Key"
+                                           Height="34" Width="28"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                    <theme:MainPasswordBox Height="18.62"
+                                           Password="{Binding SteamPassword, UpdateSourceTrigger=PropertyChanged}"
+                                               Style="{StaticResource PasswordboxTheme}" Width="185"/>
+                </StackPanel>
+            </Border>
+            <TextBlock Grid.Row="2" Text="{DynamicResource adv_password}" FontWeight="Thin"
+                       Width="57" Height="20" HorizontalAlignment="Left"
+                       FontSize="14"
+                       Foreground="{DynamicResource second_text_color}" Margin="20,-8,0,37" />
+
+            <Border Grid.Row="1" Style="{StaticResource borderAddTextBox}">
+                <StackPanel Orientation="Horizontal">
+                    <Icon:PackIconMaterial Kind="AccountOutline"
+                                           Height="22" Width="22"
+                                           Margin="5 8 0 0"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                    <TextBox x:Name="Login" Style="{StaticResource addTextBox}"
+                             Text="{Binding SteamLogin, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="6 0 0 0"/>
+                </StackPanel>
+            </Border>
+            <TextBlock Grid.Row="1" Text="{DynamicResource adv_login}" FontWeight="Thin"
+                       Width="57" Height="20" HorizontalAlignment="Left"
+                       FontSize="14"
+                       Foreground="{DynamicResource second_text_color}" Margin="20,-8,0,37" />
+
+            <!-- URL or Nickname -->
+            <Border Grid.Row="3" Style="{StaticResource borderAddTextBox}">
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 4">
+                    <Grid Margin="0 5 0 0">
+                        <Viewbox Margin="0 0 0 0">
+                            <Canvas Height="22" Width="22" Margin="0 0 0 0" >
+                                <Path Data="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
+                                      Fill="{DynamicResource second_text_color}"/>
+                            </Canvas>
+                            <Viewbox.Style>
+                                <Style TargetType="Viewbox" >
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DontCollectInfo}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Viewbox.Style>
+                        </Viewbox>
+                        
+                        <Viewbox Margin="0 0 0 0">
+                            <Canvas Height="22" Width="22" Margin="0 0 0 0" >
+                                <Path Data="M13.5,4A1.5,1.5 0 0,0 12,5.5A1.5,1.5 0 0,0 13.5,7A1.5,1.5 0 0,0 15,5.5A1.5,1.5 0 0,0 13.5,4M13.14,8.77C11.95,8.87 8.7,11.46 8.7,11.46C8.5,11.61 8.56,11.6 8.72,11.88C8.88,12.15 8.86,12.17 9.05,12.04C9.25,11.91 9.58,11.7 10.13,11.36C12.25,10 10.47,13.14 9.56,18.43C9.2,21.05 11.56,19.7 12.17,19.3C12.77,18.91 14.38,17.8 14.54,17.69C14.76,17.54 14.6,17.42 14.43,17.17C14.31,17 14.19,17.12 14.19,17.12C13.54,17.55 12.35,18.45 12.19,17.88C12,17.31 13.22,13.4 13.89,10.71C14,10.07 14.3,8.67 13.14,8.77Z"
+                                    Fill="{DynamicResource second_text_color}"/>
+                            </Canvas>
+                            <Viewbox.Style>
+                                <Style TargetType="Viewbox" >
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DontCollectInfo}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Viewbox.Style>
+                        </Viewbox>
+                    </Grid>
+
+
+                    <TextBox x:Name="SteamURL" Style="{StaticResource addTextBox}" MaxLength="60"
+                             Text="{Binding SteamLink, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="6 7 0 0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Optional account URL -->
+            <TextBlock Grid.Row="2" Text="{DynamicResource adv_account_URL}" FontWeight="Thin"
+                       Height="20" HorizontalAlignment="Left"
+                       FontSize="14"
+                       Foreground="{DynamicResource second_text_color}" Margin="20,65,0,45" Grid.RowSpan="2">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DontCollectInfo}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <!-- Optional nickname -->
+            <TextBlock Grid.Row="2" Text="{DynamicResource adv_nickname}" FontWeight="Thin"
+                       Height="20" HorizontalAlignment="Left"
+                       FontSize="14"
+                       Foreground="{DynamicResource second_text_color}" Margin="20,65,0,45" Grid.RowSpan="2">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DontCollectInfo}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+
+            <!--Error Message TextBlock-->
+            <TextBlock Grid.Row="3" VerticalAlignment="Top" FontSize="11"
+                       Grid.RowSpan="4" Margin="0 52 0 0" Padding="20 0 20 0"
+                       Foreground="PaleVioletRed" TextWrapping="Wrap"
+                       Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ErrorMessage}" Value="">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+
+            </TextBlock>
+
+            <!-- Checkbox -->
+            <ToggleButton x:Name="takeInfo" Width="25" Height="25" MouseEnter="takeInfo_MouseEnter"
+                          MouseLeave="takeInfo_MouseLeave" Style="{StaticResource checkbox}" IsChecked="{Binding DontCollectInfo}"
+                         Grid.Row="4" HorizontalAlignment="Right" Margin="0 0 55 0"/>
+
+
+            <Button Style="{StaticResource saveAccontButton}"
+                    Command="{Binding AddAccountAsyncCommand}"
+                    CommandParameter="{Binding ElementName=AddAccountClassWnd}"
+                    Content="{DynamicResource adv_save}" Grid.Row="4"  IsDefault="True"/>
+
+            <Button Grid.Column="1"  Style="{StaticResource serviceButton}"
+                        Click="CloseEvent" IsCancel="True"
+                        HorizontalAlignment="Right"
+                        
+                        Width="15" Margin="0,0,20,0">
+                <Icon:PackIconMaterial Kind="WindowClose"
+                                       Height="15" Width="15" 
+                                       VerticalAlignment="Center"/>
+            </Button>
+
+        </Grid>
+    </Border>
+</Window>

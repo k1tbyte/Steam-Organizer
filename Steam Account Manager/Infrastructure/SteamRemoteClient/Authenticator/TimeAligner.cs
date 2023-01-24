@@ -20,7 +20,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             {
                 TimeAligner.AlignTime();
             }
-            return Utilities.GetSystemUnixTime() + _timeDifference;
+            return Utils.Common.GetSystemUnixTime() + _timeDifference;
         }
 
         public static async Task<long> GetSteamTimeAsync()
@@ -29,12 +29,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             {
                 await TimeAligner.AlignTimeAsync();
             }
-            return Utilities.GetSystemUnixTime() + _timeDifference;
+            return Utils.Common.GetSystemUnixTime() + _timeDifference;
         }
 
         public static void AlignTime()
         {
-            long currentTime = Utilities.GetSystemUnixTime();
+            long currentTime = Utils.Common.GetSystemUnixTime();
             using (WebClient client = new WebClient())
             {
                 try
@@ -53,7 +53,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
 
         public static async Task AlignTimeAsync()
         {
-            long currentTime = Utilities.GetSystemUnixTime();
+            long currentTime = Utils.Common.GetSystemUnixTime();
             WebClient client = new WebClient();
             try
             {

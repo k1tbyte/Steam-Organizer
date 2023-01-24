@@ -125,7 +125,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Infrastructure\AsyncRelayCommand.cs" />
+    <Compile Include="Infrastructure\Converters\IndexBooleanConverter.cs" />
+    <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
+    <Compile Include="Utils\DragAdorner.cs" />
     <Compile Include="Infrastructure\Models\AccountModel\Account.cs" />
     <Compile Include="Infrastructure\Models\GamesHandlerModel.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\AuthenticatorLinker.cs" />
@@ -144,7 +146,7 @@
     <Compile Include="Infrastructure\Models\AccountModel\CSGO.cs" />
     <Compile Include="Infrastructure\Models\ConfigModel.cs" />
     <Compile Include="Infrastructure\Models\RemoteUserModel.cs" />
-    <Compile Include="Infrastructure\OvservableObject.cs" />
+    <Compile Include="MVVM\Core\OvservableObject.cs" />
     <Compile Include="Infrastructure\Parsers\CsgoParser.cs" />
     <Compile Include="Infrastructure\Parsers\SteamParser.cs" />
     <Compile Include="Infrastructure\SteamHandler.cs" />
@@ -174,70 +176,71 @@
     <Compile Include="TrayMenu.xaml.cs">
       <DependentUpon>TrayMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utilities.cs" />
-    <Compile Include="ViewModels\AccountDataViewModel.cs" />
-    <Compile Include="ViewModels\AccountsViewModel.cs" />
-    <Compile Include="ViewModels\AccountTabViewModel.cs" />
-    <Compile Include="ViewModels\AddAccountViewModel.cs" />
-    <Compile Include="ViewModels\AddAuthenticatorViewModel.cs" />
-    <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="ViewModels\RemoteControl\AchievementsViewModel.cs" />
-    <Compile Include="ViewModels\RemoteControl\FriendsViewModel.cs" />
-    <Compile Include="ViewModels\RemoteControl\GamesViewModel.cs" />
-    <Compile Include="ViewModels\RemoteControl\LoginViewModel.cs" />
-    <Compile Include="ViewModels\RemoteControl\MainRemoteControlViewModel.cs" />
-    <Compile Include="ViewModels\RemoteControl\MessagesViewModel.cs" />
-    <Compile Include="ViewModels\RemoteControl\SteamWebViewModel.cs" />
-    <Compile Include="ViewModels\RemoteControl\View\AchievementsView.xaml.cs">
+    <Compile Include="MVVM\ViewModels\MainControl\AccountDataViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\MainControl\AccountsViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\MainControl\AccountTabViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\MainControl\AddAccountViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\MainControl\AddAuthenticatorViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\MainControl\MainWindowViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\RemoteControl\AchievementsViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\RemoteControl\FriendsViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\RemoteControl\GamesViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\RemoteControl\LoginViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\RemoteControl\MainRemoteControlViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\RemoteControl\MessagesViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\RemoteControl\SteamWebViewModel.cs" />
+    <Compile Include="MVVM\View\RemoteControl\Controls\AchievementsView.xaml.cs">
       <DependentUpon>AchievementsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\RemoteControl\View\FriendsView.xaml.cs">
+    <Compile Include="MVVM\View\RemoteControl\Controls\FriendsView.xaml.cs">
       <DependentUpon>FriendsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\RemoteControl\View\GamesView.xaml.cs">
+    <Compile Include="MVVM\View\RemoteControl\Controls\GamesView.xaml.cs">
       <DependentUpon>GamesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\RemoteControl\View\LoginView.xaml.cs">
+    <Compile Include="MVVM\View\RemoteControl\Controls\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\RemoteControl\View\MainRemoteControlView.xaml.cs">
+    <Compile Include="MVVM\View\RemoteControl\Controls\MainRemoteControlView.xaml.cs">
       <DependentUpon>MainRemoteControlView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\RemoteControl\View\MessagesView.xaml.cs">
+    <Compile Include="MVVM\View\RemoteControl\Controls\MessagesView.xaml.cs">
       <DependentUpon>MessagesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\RemoteControl\View\SteamWebView.xaml.cs">
+    <Compile Include="MVVM\View\RemoteControl\Controls\SteamWebView.xaml.cs">
       <DependentUpon>SteamWebView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\SettingsViewModel.cs" />
-    <Compile Include="ViewModels\ShowAuthenticatorViewModel.cs" />
-    <Compile Include="ViewModels\View\AccountDataView.xaml.cs">
+    <Compile Include="MVVM\ViewModels\MainControl\SettingsViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\MainControl\ShowAuthenticatorViewModel.cs" />
+    <Compile Include="MVVM\View\MainControl\Controls\AccountDataView.xaml.cs">
       <DependentUpon>AccountDataView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\View\AccountsTabView.xaml.cs">
+    <Compile Include="MVVM\View\MainControl\Controls\AccountsTabView.xaml.cs">
       <DependentUpon>AccountsTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\View\AccountsView.xaml.cs">
+    <Compile Include="MVVM\View\MainControl\Controls\AccountsView.xaml.cs">
       <DependentUpon>AccountsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\View\AddAccountView.xaml.cs">
-      <DependentUpon>AddAccountView.xaml</DependentUpon>
+    <Compile Include="MVVM\View\MainControl\Windows\AddAccountWindow.xaml.cs">
+      <DependentUpon>AddAccountWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\View\AddAuthenticatorWindow.xaml.cs">
+    <Compile Include="MVVM\View\MainControl\Windows\AddAuthenticatorWindow.xaml.cs">
       <DependentUpon>AddAuthenticatorWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\View\AuthenticationWindow.xaml.cs">
+    <Compile Include="MVVM\View\MainControl\Windows\AuthenticationWindow.xaml.cs">
       <DependentUpon>AuthenticationWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\View\CryptoKeyWindow.xaml.cs">
+    <Compile Include="MVVM\View\MainControl\Windows\CryptoKeyWindow.xaml.cs">
       <DependentUpon>CryptoKeyWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\View\SettingsView.xaml.cs">
+    <Compile Include="MVVM\View\MainControl\Controls\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\View\ShowAuthenticatorWindow.xaml.cs">
+    <Compile Include="MVVM\View\MainControl\Windows\ShowAuthenticatorWindow.xaml.cs">
       <DependentUpon>ShowAuthenticatorWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Common.cs" />
+    <Compile Include="Utils\Win32.cs" />
     <Page Include="Locale\lang.en-US.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -258,7 +261,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Infrastructure\RelayCommand.cs" />
+    <Compile Include="MVVM\Core\RelayCommand.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -339,67 +342,67 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\RemoteControl\View\AchievementsView.xaml">
+    <Page Include="MVVM\View\RemoteControl\Controls\AchievementsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\RemoteControl\View\FriendsView.xaml">
+    <Page Include="MVVM\View\RemoteControl\Controls\FriendsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\RemoteControl\View\GamesView.xaml">
+    <Page Include="MVVM\View\RemoteControl\Controls\GamesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\RemoteControl\View\LoginView.xaml">
+    <Page Include="MVVM\View\RemoteControl\Controls\LoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\RemoteControl\View\MainRemoteControlView.xaml">
+    <Page Include="MVVM\View\RemoteControl\Controls\MainRemoteControlView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\RemoteControl\View\MessagesView.xaml">
+    <Page Include="MVVM\View\RemoteControl\Controls\MessagesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\RemoteControl\View\SteamWebView.xaml">
+    <Page Include="MVVM\View\RemoteControl\Controls\SteamWebView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\View\AccountDataView.xaml">
+    <Page Include="MVVM\View\MainControl\Controls\AccountDataView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\View\AccountsTabView.xaml">
+    <Page Include="MVVM\View\MainControl\Controls\AccountsTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\View\AccountsView.xaml">
+    <Page Include="MVVM\View\MainControl\Controls\AccountsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\View\AddAccountView.xaml">
+    <Page Include="MVVM\View\MainControl\Windows\AddAccountWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\View\AddAuthenticatorWindow.xaml">
+    <Page Include="MVVM\View\MainControl\Windows\AddAuthenticatorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\View\AuthenticationWindow.xaml">
+    <Page Include="MVVM\View\MainControl\Windows\AuthenticationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\View\CryptoKeyWindow.xaml">
+    <Page Include="MVVM\View\MainControl\Windows\CryptoKeyWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\View\SettingsView.xaml">
+    <Page Include="MVVM\View\MainControl\Controls\SettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewModels\View\ShowAuthenticatorWindow.xaml">
+    <Page Include="MVVM\View\MainControl\Windows\ShowAuthenticatorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -599,6 +602,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Steam_years_of_service\year19.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MVVM\View\RemoteControl\Windows\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

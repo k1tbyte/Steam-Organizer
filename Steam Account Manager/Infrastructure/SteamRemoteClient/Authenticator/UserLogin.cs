@@ -75,8 +75,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
             {
                 var passwordBytes = Encoding.ASCII.GetBytes(this.Password);
                 var rsaParameters = rsaEncryptor.ExportParameters(false);
-                rsaParameters.Exponent = Utilities.HexStringToByteArray(rsaResponse.Exponent);
-                rsaParameters.Modulus = Utilities.HexStringToByteArray(rsaResponse.Modulus);
+                rsaParameters.Exponent = Utils.Common.HexStringToByteArray(rsaResponse.Exponent);
+                rsaParameters.Modulus = Utils.Common.HexStringToByteArray(rsaResponse.Modulus);
                 rsaEncryptor.ImportParameters(rsaParameters);
                 encryptedPasswordBytes = rsaEncryptor.Encrypt(passwordBytes, false);
             }

@@ -4,12 +4,10 @@ using Newtonsoft.Json.Linq;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.Validators;
+using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
 using Steam_Account_Manager.Themes.MessageBoxes;
-using Steam_Account_Manager.ViewModels;
-using Steam_Account_Manager.ViewModels.RemoteControl;
 using SteamKit2;
-using SteamKit2.GC;
-using SteamKit2.GC.CSGO.Internal;
 using SteamKit2.Internal;
 using System;
 using System.Collections.Generic;
@@ -20,7 +18,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -204,7 +201,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     MessagesViewModel.MsgCommands = new ObservableCollection<Command>(CurrentUser.Messenger.Commands);
                     GamesViewModel.Games = new ObservableCollection<Game>(CurrentUser.Games);
                     if (MainRemoteControlViewModel.MessagesV == null)
-                        MainRemoteControlViewModel.MessagesV = new ViewModels.RemoteControl.View.MessagesView();
+                        MainRemoteControlViewModel.MessagesV = new MVVM.View.RemoteControl.Controls.MessagesView();
 
                     MessagesViewModel.InitDefaultCommands();
 
@@ -280,11 +277,11 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 return;
             }
 
-            Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utilities.StringToBrush("Gray"));
+            Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Common.StringToBrush("Gray"));
 
             CurrentSteamId64 = steamClient.SteamID.ConvertToUInt64();
             LoginViewModel.SteamId64 = CurrentSteamId64.ToString();
-            LoginViewModel.ImageUrl = Utilities.GetSteamAvatarUrl(CurrentSteamId64);
+            LoginViewModel.ImageUrl = Utils.Common.GetSteamAvatarUrl(CurrentSteamId64);
 
             CurrentUser.Username = Username;
 
@@ -314,7 +311,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 App.Current.Dispatcher.Invoke(new Action(async() =>
                 {
                     if (MainRemoteControlViewModel.GamesV == null)
-                        MainRemoteControlViewModel.GamesV = new ViewModels.RemoteControl.View.GamesView();
+                        MainRemoteControlViewModel.GamesV = new MVVM.View.RemoteControl.Controls.GamesView();
 
                     MainRemoteControlViewModel.GamesV.rememberButton.IsChecked = true;
 
@@ -460,18 +457,18 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     CurrentPersonaState = callback.State;
                     if (CurrentPersonaState == EPersonaState.Online)
                     {
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utilities.StringToBrush("#5da5c2"));
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Common.StringToBrush("#5da5c2"));
                     }
                     else if (callback.GameAppID != 0)
                     {
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utilities.StringToBrush("#688843"));
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Common.StringToBrush("#688843"));
                     }
                     else if (CurrentPersonaState == EPersonaState.Away || CurrentPersonaState == EPersonaState.Snooze)
                     {
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utilities.StringToBrush("Orange"));
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Common.StringToBrush("Orange"));
                     }
                     else
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utilities.StringToBrush("#666c71"));
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Common.StringToBrush("#666c71"));
                 }
 
                 if (LoginViewModel.Nickname != callback.Name)
@@ -728,7 +725,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 Msg = Msg,
                 Time = DateTime.Now.ToString("HH:mm"),
                 Username = LoginViewModel.Nickname,
-                TextBrush = Utilities.StringToBrush("White"),
+                TextBrush = Utils.Common.StringToBrush("White"),
                 MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("menu_button_background")
             })));
         }
@@ -778,7 +775,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 {
                     SteamID64 = temp.ConvertToUInt64(),
                     Name = steamFriends.GetFriendPersonaName(temp),
-                    FriendSince = Utilities.UnixTimeToDateTime(long.TryParse(
+                    FriendSince = Utils.Common.UnixTimeToDateTime(long.TryParse(
                         sinces?.ElementAt(j).ToString(), out long result) ? result : 0)?.ToString("yyyy/MM/dd"),
                     ImageURL = $"https://avatars.akamai.steamstatic.com/{avatarTemp}.jpg"
                 });

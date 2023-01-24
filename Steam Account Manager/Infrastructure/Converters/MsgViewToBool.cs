@@ -8,7 +8,7 @@ namespace Steam_Account_Manager.Infrastructure.Converters
         public object Convert(object value, Type targetType, object parameter,
            System.Globalization.CultureInfo culture)
         {
-            if (value is ViewModels.RemoteControl.View.MessagesView)
+            if (value is MVVM.View.RemoteControl.Controls.MessagesView)
             {
                 return true;
             }
@@ -18,7 +18,7 @@ namespace Steam_Account_Manager.Infrastructure.Converters
         public object ConvertBack(object value, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
-            if (value is ViewModels.RemoteControl.View.MessagesView)
+            if (value is MVVM.View.RemoteControl.Controls.MessagesView)
             {
                 return true;
             }

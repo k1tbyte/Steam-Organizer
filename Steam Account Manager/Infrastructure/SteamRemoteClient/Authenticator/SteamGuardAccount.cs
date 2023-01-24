@@ -174,7 +174,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator
                     confKey, confType,
                     confCreator,
                     item.SelectSingleNode("//div[@class='mobileconf_list_entry_icon']/div/img")?.Attributes["src"]?.Value ?? @".\Images\default_steam_profile_small.png",
-                    confType == 2 ? Utilities.BetweenStr(item.InnerText, "to ", "You")?.Trim() : "-"));
+                    confType == 2 ? Utils.Common.BetweenStr(item.InnerText, "to ", "You")?.Trim() : "-"));
 
             }
 

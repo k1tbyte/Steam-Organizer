@@ -1,10 +1,10 @@
 ﻿<Application x:Class="Steam_Account_Manager.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:viewModel="clr-namespace:Steam_Account_Manager.ViewModels"
-             xmlns:view="clr-namespace:Steam_Account_Manager.ViewModels.View"
-             xmlns:remoteVM="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl"
-             xmlns:remoteView="clr-namespace:Steam_Account_Manager.ViewModels.RemoteControl.View"
+             xmlns:viewModel="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.MainControl"
+             xmlns:view="clr-namespace:Steam_Account_Manager.MVVM.View.MainControl.Controls"
+             xmlns:remoteVM="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.RemoteControl"
+             xmlns:remoteView="clr-namespace:Steam_Account_Manager.MVVM.View.RemoteControl.Controls"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:converters="clr-namespace:Steam_Account_Manager.Infrastructure.Converters">
     <Application.Resources>
@@ -42,6 +42,7 @@
             <converters:InverseBoolConverter x:Key="BoolInverted"/>
             <converters:BooleanToVisibilityConverter x:Key="BoolToVis"/>
             <converters:MsgViewToBool x:Key="MsgViewToBool"/>
+            <converters:IndexByteBooleanConverter x:Key="IndexByteBooleanConverter"/>
             <converters:BooleanToVisibilityConverter x:Key="BoolToVisInverted"
                                                      True="Collapsed"
                                                      False="Visible"/>

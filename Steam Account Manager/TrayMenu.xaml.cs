@@ -1,6 +1,7 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
-using Steam_Account_Manager.ViewModels;
+using Steam_Account_Manager.MVVM.Core;
+using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -73,7 +74,7 @@ namespace Steam_Account_Manager
             if (this.Height != newHeight)
                 this.Height = newHeight;
 
-            var points = Utilities.GetMousePosition();
+            var points = Utils.Win32.GetMousePosition();
 
             this.Left = points.X - this.Width + 3;
             this.Top = points.Y - this.Height + 3;

@@ -29,8 +29,8 @@ namespace Steam_Account_Manager.Infrastructure
             };
             try
             {
-                Properties.SteamDirection = Utilities.GetSteamRegistryDirection();
-                switch (Utilities.GetSteamRegistryLanguage())
+                Properties.SteamDirection = Utils.Common.GetSteamRegistryDirection();
+                switch (Utils.Common.GetSteamRegistryLanguage())
                 {
 
                     case "russian":
@@ -44,7 +44,8 @@ namespace Steam_Account_Manager.Infrastructure
             }
             catch { }
         }
-        public static bool GetPropertiesInstance()
+
+        public static bool LoadProperties()
         {
             if (Properties == null)
             {
@@ -80,13 +81,13 @@ namespace Steam_Account_Manager.Infrastructure
 
 
         #region Config accounts methods
-        public static bool GetAccountsInstance()
+        public static bool LoadAccounts()
         {
             if (Accounts == null)
             {
                 if (File.Exists(App.WorkingDirectory + "\\database.dat"))
                 {
-                    if (Properties == null) GetPropertiesInstance();
+                    if (Properties == null) LoadProperties();
                     var result = (List<Account>)Deserialize(App.WorkingDirectory + @"\database.dat", Properties.UserCryptoKey);
                     if(result == null)
                     {

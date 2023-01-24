@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="Steam_Account_Manager.MVVM.View.RemoteControl.Controls.MainRemoteControlView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.RemoteControl"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
+             d:DataContext="{d:DesignInstance Type=vm:MainRemoteControlViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="600">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="55"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        
+        <Border Grid.Row="1" HorizontalAlignment="Center" CornerRadius="15" 
+                Background="{DynamicResource second_main_color}" Width="340">
+            <StackPanel Orientation="Horizontal" Margin="20 5 0 5">
+
+                <RadioButton x:Name="Login" Style="{StaticResource RemoteControlButton}" IsHitTestVisible="{Binding IsPanelActive}"
+                             Command="{Binding LoginViewCommand}" IsChecked="{Binding IsLoginView}"
+                             Margin="0 0 0 0" Width="45" Height="40" >
+                    <Icon:PackIconMaterial Kind="Account"  Width="25" Height="25" 
+                                           HorizontalAlignment="Center"/>
+                </RadioButton>
+
+                <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5"  Opacity="0.8" />
+
+                <RadioButton Style="{StaticResource RemoteControlButton}" 
+                             Command="{Binding GamesViewCommand}" IsHitTestVisible="{Binding IsPanelActive}"
+                             Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
+                    <Icon:PackIconMaterial Kind="GoogleController"  Width="25" Height="25" 
+                                           HorizontalAlignment="Center"/>
+                </RadioButton>
+
+
+                <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5" Opacity="0.8"/>
+
+                <RadioButton Style="{StaticResource RemoteControlButton}"
+                             Command="{Binding MessagesViewCommand}" IsHitTestVisible="{Binding IsPanelActive}"
+                             Margin="0 0 0 0" Width="45" Height="40" IsChecked="{Binding RemoteControlCurrentView, Converter={StaticResource MsgViewToBool}}">
+                    <Icon:PackIconMaterial Kind="Message"  Width="25" Height="25" 
+                                           HorizontalAlignment="Center"/>
+                </RadioButton>
+                
+                <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5" Opacity="0.8"/>
+
+                <RadioButton Style="{StaticResource RemoteControlButton}" 
+                             Command="{Binding FriendsViewCommand}" IsHitTestVisible="{Binding IsPanelActive}"
+                             Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
+                    <Icon:PackIconMaterial Kind="AccountGroup"  Width="25" Height="25" 
+                                           HorizontalAlignment="Center"/>
+                </RadioButton>
+
+                <Rectangle Fill="White" Width="0.5" Margin="10 5 10 5" Opacity="0.8"/>
+
+                <RadioButton Style="{StaticResource RemoteControlButton}" 
+                             Command="{Binding SteamWebViewCommand}" IsHitTestVisible="{Binding IsPanelActive}"
+                             Margin="0 0 0 0" Width="45" Height="40" IsChecked="False">
+                    <Icon:PackIconMaterial Kind="Web"  Width="25" Height="25" 
+                                           HorizontalAlignment="Center"/>
+                </RadioButton>
+            </StackPanel>
+            
+
+        </Border>
+
+        <ContentPresenter Margin="0 25 0 0" Grid.Row="2" Content="{Binding RemoteControlCurrentView}"/>
+        
+    </Grid>
+</UserControl>

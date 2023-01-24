@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="Steam_Account_Manager.MVVM.View.RemoteControl.Controls.SteamWebView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:vm="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.RemoteControl"
+      d:DataContext="{d:DesignInstance Type=vm:SteamWebViewModel}"
+      xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      mc:Ignorable="d" 
+      d:DesignHeight="350" d:DesignWidth="600">
+    
+    <Border CornerRadius="20" Background="{DynamicResource first_main_color}" BorderThickness="0" BorderBrush="Transparent">
+        <Grid>
+            <StackPanel HorizontalAlignment="Left" Margin="23">
+                <TextBlock Margin="0 0 0 10" FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                       Text="Profile privacy" FontSize="20"/>
+
+                <TextBlock Text="Profile" FontSize="12" FontWeight="Normal"
+                           Margin="3 0 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="ProfileBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+
+                <TextBlock Text="Inventory" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="InventoryBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+
+                <TextBlock Text="Steam gifts" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="GiftsBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+
+                <TextBlock Text="Game details" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="GameDetailsBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+            </StackPanel>
+
+            <StackPanel HorizontalAlignment="Left" Margin="165 51 0 0">
+               
+                <TextBlock Text="Game playtime" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="GamePlaytimeBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+                
+                <TextBlock Text="Friends list" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="FriendsBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" />
+                
+                <TextBlock Text="Comments" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                <ComboBox  x:Name="CommentsBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacyComment}"
+                           HorizontalAlignment="Left" SelectionChanged="CommentsBox_SelectionChanged" />
+
+                <Button Style="{StaticResource defaultButtonColored}" x:Name="ApplyPrivacyChanges"
+                        Content="Apply" Height="28" Margin="0 21 0 0" Width="100" Click="ApplyPrivacyChanges_Click"/>
+            </StackPanel>
+            
+            <StackPanel Margin="0 23 41 0" HorizontalAlignment="Right">
+                <TextBlock Margin="0 0 0 10" FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                       Text="Keys" FontSize="20"/>
+                <TextBlock Text="Your steam web API key" Margin="4 0 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                <StackPanel Orientation="Horizontal" >
+
+                    <Button Width="20" Height="20"  Style="{StaticResource serviceButton}"
+                            IsHitTestVisible="{Binding ElementName=apiKeyText,Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
+                            Command="{Binding RevokeWebApiKeyCommand}"
+                            CommandParameter="{Binding ElementName=succesApiKeyGet}">
+                        <Icon:PackIconMaterial Kind="Minus" Width="12"/>
+                    </Button>
+                    
+                    <Border Margin="0 0 -174 0" Background="{DynamicResource rc_button_back}"
+                        Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
+
+                    <TextBox x:Name="apiKeyText" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
+                          Width="165" Margin="0 0 6 0" MaxLength="60" Text="{Binding WebApiKey}" />
+
+
+                    <Button Command="{Binding GetWebApiKeyCommand}" 
+                            CommandParameter="{Binding ElementName=succesApiKeyGet}"
+                        Style="{StaticResource defaultButtonColored}"  Content="Get" Height="26" Width="40"/>
+                    
+                </StackPanel>
+
+                <TextBlock Text="Your trade token" Margin="4 5 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                <StackPanel Orientation="Horizontal" >
+
+                    <Button Width="20" Height="20"  Style="{StaticResource serviceButton}"
+                            IsHitTestVisible="{Binding ElementName=tradeTokenText,Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
+                            Command="{Binding RefreshTradeTokenCommmand}" Click="Button_Click"
+                            CommandParameter="{Binding ElementName=succesTradeTokenGet}">
+                        <Icon:PackIconMaterial x:Name="refreshTrade" Kind="Refresh" Width="12"/>
+                    </Button>
+
+                    <Border Margin="0 0 -174 0" Background="{DynamicResource rc_button_back}"
+                        Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
+
+                    <TextBox x:Name="tradeTokenText" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
+                          Width="165" Margin="0 0 6 0" MaxLength="60" Text="{Binding TradeToken}" />
+
+
+                    <Button Command="{Binding GetTradeTokenCommmand}" 
+                            CommandParameter="{Binding ElementName=succesTradeTokenGet}"
+                        Style="{StaticResource defaultButtonColored}"  Content="Get" Height="26" Width="40"/>
+
+                </StackPanel>
+
+
+            </StackPanel>
+            
+            <Icon:PackIconMaterial x:Name="succesApiKeyGet" Kind="Check" VerticalAlignment="Top" Width="17" Height="17"
+                                           Opacity="0" Margin="563 78 15 0" Foreground="{DynamicResource AcidGrad}"/>
+
+            <Icon:PackIconMaterial x:Name="succesTradeTokenGet" Kind="Check" VerticalAlignment="Top" Width="17" Height="17"
+                                           Opacity="0" Margin="563 125 15 0" Foreground="{DynamicResource AcidGrad}"/>
+
+            <Icon:PackIconMaterial x:Name="succesFriendsLinkGet" Kind="Check" VerticalAlignment="Top" Width="17" Height="17"
+                                           Opacity="0" Margin="535 178 15 0" Foreground="{DynamicResource AcidGrad}"/>
+
+            <Icon:PackIconMaterial x:Name="succesPrivacyApply" Kind="Check" VerticalAlignment="Center" Width="17" Height="17"
+                                           Opacity="0" Margin="280 104 15 0" Foreground="{DynamicResource AcidGrad}"/>
+
+        </Grid>
+    </Border>
+</UserControl>

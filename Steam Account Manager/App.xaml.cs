@@ -1,19 +1,13 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
+using Steam_Account_Manager.MVVM.View.MainControl.Windows;
 using Steam_Account_Manager.Themes.MessageBoxes;
-using Steam_Account_Manager.ViewModels.View;
-using SteamKit2;
-using SteamKit2.CDN;
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Net;
-using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace Steam_Account_Manager
@@ -51,17 +45,17 @@ namespace Steam_Account_Manager
                 ExceptionWnd.ShowDialog();
             });
 
-            Config.GetPropertiesInstance();
+            Config.LoadProperties();
 
 
 
             #region Check internet connection
-            if (!Utilities.CheckInternetConnection())
+            if (!Utils.Common.CheckInternetConnection())
             {
                 ShutdownMode = ShutdownMode.OnExplicitShutdown;
                 MessageBoxes.PopupMessageBox((string)App.Current.FindResource("mv_connectionNotify"));
                 await Task.Delay(15000);
-                if (!Utilities.CheckInternetConnection())
+                if (!Utils.Common.CheckInternetConnection())
                 {
                     MessageBoxes.PopupMessageBox((string)App.Current.FindResource("mv_autonomyModeNotify"));
                     OfflineMode = true;
@@ -71,10 +65,10 @@ namespace Steam_Account_Manager
             #endregion
 
 
-            Utilities.CreateHttpClientFactory();
+            Utils.Common.CreateHttpClientFactory();
             if (Config.Properties.Password == null)
             {
-                if (Config.GetAccountsInstance())
+                if (Config.LoadAccounts())
                 {
                     MainWindow = new MainWindow
                     {

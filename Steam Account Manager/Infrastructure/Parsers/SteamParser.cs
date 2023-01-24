@@ -189,7 +189,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                 _avatarHash = list.Response.Players[0].AvatarHash;
                 if (list.Response.Players[0].TimeCreated != 0)
                 {
-                    _accountCreatedDate = (DateTime)Utilities.UnixTimeToDateTime(list.Response.Players[0].TimeCreated);
+                    _accountCreatedDate = (DateTime)Utils.Common.UnixTimeToDateTime(list.Response.Players[0].TimeCreated);
 
                     //Узнаем выслугу лет
                     var differ = DateTime.Now - _accountCreatedDate;

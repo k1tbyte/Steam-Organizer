@@ -1,0 +1,305 @@
+﻿<UserControl x:Class="Steam_Account_Manager.MVVM.View.RemoteControl.Controls.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.RemoteControl"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
+             d:DataContext="{d:DesignInstance Type=vm:LoginViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="350" d:DesignWidth="600">
+    <UserControl.Resources>
+
+        <Style x:Key="nickname" TargetType="TextBox">
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Tag,RelativeSource={RelativeSource Self}}" Value="True">
+                    <Setter Property="IsReadOnly" Value="False"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        
+    </UserControl.Resources>
+    <Grid>
+        <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
+                       HorizontalOffset="0" VerticalOffset="10">
+            <theme:MainPopup x:Name="Header" Foreground="White"/>
+        </Popup>
+        <!-- Login border -->
+        <Grid >
+            <Border Background="{DynamicResource first_main_color}" Width="280" CornerRadius="20"  VerticalAlignment="Top">
+                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 20 0 0">
+
+                    <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center" Margin="0 0 0 15" 
+                       FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                       Text="{DynamicResource rc_lv_signIn}"
+                       FontSize="20"/>
+
+                    <TextBlock Grid.Row="2" Text="{DynamicResource adat_login}" FontWeight="Thin"
+                       Width="57" Height="20" HorizontalAlignment="Left"
+                       FontSize="14"
+                       Foreground="{DynamicResource second_text_color}" />
+
+                    <Border Grid.Row="1" Style="{StaticResource borderAddTextBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <Icon:PackIconMaterial Kind="AccountOutline"
+                                           Height="22" Width="22"
+                                           Margin="5 8 0 0"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                            <TextBox x:Name="Login" Style="{StaticResource addTextBox}" Text="{Binding Username,UpdateSourceTrigger=PropertyChanged}"
+                             Background="{DynamicResource first_main_color}"
+                             Margin="6 0 0 0"/>
+                        </StackPanel>
+                    </Border>
+
+
+                    <TextBlock Grid.Row="2" Text="{DynamicResource adv_password}" FontWeight="Thin"
+                       Width="57" Height="20" HorizontalAlignment="Left"
+                       FontSize="14" Margin="0 20 0 0"
+                       Foreground="{DynamicResource second_text_color}" />
+
+                    <Border Grid.Row="2" Style="{StaticResource borderAddTextBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <Icon:PackIconMaterial Kind="Key"
+                                           Height="34" Width="28"
+                                           Foreground="{DynamicResource second_text_color}"/>
+                            <theme:MainPasswordBox Height="18.62" Width="180"
+                                           Password="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
+                                               Style="{StaticResource PasswordboxTheme}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Visibility="{Binding IsAuthCode, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Grid.Row="2" Text="{DynamicResource rc_lv_guardCode}" FontWeight="Thin"
+                       Height="20" HorizontalAlignment="Left"
+                       FontSize="14" Margin="0 20 0 0"
+                       Foreground="{DynamicResource second_text_color}" />
+
+                        <Border Grid.Row="2" Style="{StaticResource borderAddTextBox}">
+                            <StackPanel Orientation="Horizontal">
+                                <Icon:PackIconMaterial Kind="Shield" VerticalAlignment="Center"
+                                           Height="24" Width="28"
+                                           Foreground="{DynamicResource second_text_color}"/>
+
+                                <TextBox Style="{StaticResource addTextBox}" MaxLength="5"
+                             Background="{DynamicResource first_main_color}" CaretBrush="{DynamicResource atv_rectangles_shadow}"
+                             Margin="6 0 0 0" Text="{Binding AuthCode,UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+                        </Border>
+
+
+                    </StackPanel>
+                    <TextBlock Grid.Row="3" VerticalAlignment="Top" FontSize="11"
+                       Grid.RowSpan="4" Margin="15 5 20 0" Padding="8 0 20 0" 
+                       Foreground="PaleVioletRed" TextWrapping="Wrap" Text="{Binding ErrorMsg,UpdateSourceTrigger=PropertyChanged}" />
+                    <Button Margin="0 10 0 20" Style="{StaticResource defaultButtonColored}" Content="Login" IsDefault="True"
+                         Width="100" Command="{Binding LogOnCommand}">
+                    </Button>
+
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource first_main_color}" Width="100" CornerRadius="20" 
+                    HorizontalAlignment="Left" Margin="25 0 0 0">
+                <ListBox x:Name="Recently" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ScrollViewer.VerticalScrollBarVisibility="Hidden" Margin="7 35 7 45"
+                         SelectionMode="Single" Background="Transparent"
+                         VirtualizingPanel.IsVirtualizing="True"
+                         VirtualizingPanel.VirtualizationMode="Recycling"
+                         IsTabStop="False" KeyboardNavigation.AcceptsReturn="False"
+                         ItemsSource="{Binding RecentlyLoggedIn}" Width="80" ItemContainerStyle="{StaticResource base_listboxItem}" BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid MaxWidth="53" Margin="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border Name="Mask"
+                        Background="{DynamicResource rc_button_back}"
+                        BorderBrush="{DynamicResource account_picture_border}"
+                        BorderThickness="1"
+                        CornerRadius="13"/>
+                                <StackPanel  Cursor="Hand">
+                                    <Image>
+                                        <Image.Source>
+                                            <BitmapImage UriSource="{Binding ImageUrl}"
+                                                     CacheOption="OnLoad"
+                                                     DecodePixelHeight="60"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <StackPanel.OpacityMask>
+                                        <VisualBrush Visual="{Binding ElementName=Mask}"/>
+                                    </StackPanel.OpacityMask>
+                                </StackPanel>
+
+                                <TextBox Text="{Binding Username}"
+                                HorizontalAlignment="Center" BorderThickness="0"
+                                Background="Transparent" Foreground="{DynamicResource default_foreground}" IsReadOnly="True" 
+                                CaretBrush="{DynamicResource atv_rectangles_shadow}"
+                                Grid.Row="1" Margin="-10 4 -10 3"/>
+
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+            <TextBlock 
+                       VerticalAlignment="Top"
+                       HorizontalAlignment="Left" Margin="40 15 0 0" 
+                       FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                       Text="{DynamicResource rc_lv_recently}"
+                       FontSize="15">
+            </TextBlock>
+            
+            <StackPanel Orientation="Horizontal" Margin="40 0 0 15" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+                <Button x:Name="RecentlyDelete" Style="{StaticResource defaultButtonColored}"
+                        Width="30" Height="30" Click="RecentlyDelete_Click"
+                        MouseEnter="RecentlyDelete_MouseEnter" MouseLeave="Popup_MouseLeave">
+                    <Icon:Material Kind="TrashCan"/>
+                </Button>
+                <Button x:Name="RecentlyLogOn" Style="{StaticResource defaultButtonColored}" 
+                        Command="{Binding RecentlyLogOnCommand}"  Margin="10 0 0 0" CommandParameter="{Binding ElementName=Recently}" Width="30" Height="30"
+                        MouseEnter="RecentlyLogOn_MouseEnter" MouseLeave="Popup_MouseLeave">
+                    <Icon:Material Kind="Login"/>
+                </Button>
+
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <DataTrigger  Binding="{Binding ElementName=Recently, Path=SelectedIndex}" Value="-1">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+            </StackPanel>
+            
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SuccessLogOn}" Value="True">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+        </Grid>
+
+        <Border Visibility="{Binding SuccessLogOn,Converter={StaticResource BoolToVis}}" BorderThickness="0.8"
+                Background="{DynamicResource first_main_color}" CornerRadius="25" >
+            <Grid>
+                <Button x:Name="logoutButton" Style="{StaticResource defaultButtonColored}"
+                        MouseEnter="logoutButton_MouseEnter" MouseLeave="Popup_MouseLeave"
+                         CommandParameter="{Binding ElementName=Recently}" Command="{Binding LogOutCommand}"
+                         VerticalAlignment="Top" HorizontalAlignment="Left" Width="45" Height="30" Margin="23 21 0 0">
+                    <Icon:Material Kind="Logout" RotationAngle="180"/>
+                </Button>
+                <StackPanel>
+                    <Ellipse Margin="0 15 0 5" HorizontalAlignment="Center"
+                             Width="100" Height="100" Stroke="{Binding AvatarStateOutline,UpdateSourceTrigger=PropertyChanged}" StrokeThickness="2">
+                        <Ellipse.Fill>
+                            <ImageBrush ImageSource="{Binding ImageUrl,UpdateSourceTrigger=PropertyChanged}"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Text="{DynamicResource rc_lv_loggedIn}" FontSize="16" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
+                        <TextBlock Text="{Binding Username}" FontSize="16" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                    </StackPanel>
+
+                    <Rectangle Margin="0 10 0 0" Width="530" Height="1" Fill="{DynamicResource adv_rectangle}" Opacity="1"/>
+
+                </StackPanel>
+
+                <TextBlock Text="{Binding Wallet,UpdateSourceTrigger=PropertyChanged}" FontSize="15" FontWeight="Medium" HorizontalAlignment="Right" Margin="0 20 25 0"
+                           Foreground="{DynamicResource menu_button_background}"/>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 0 12">
+                    <TextBlock Text="{DynamicResource rc_lv_nickname}" FontSize="16" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
+                    <TextBox x:Name="nickname" FontSize="15" Text="{Binding Nickname,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource nickname}"
+                             Tag="{Binding ElementName=editNick,Path=IsChecked}" Margin="-1 -2 0 -3"
+                             Background="Transparent" BorderThickness="0"
+                             FontWeight="Normal" Foreground="{DynamicResource default_foreground}"
+                             MaxLength="30">
+                    </TextBox>
+                    
+                    <ToggleButton x:Name="editNick" Style="{StaticResource small_button}"  HorizontalAlignment="Right"
+                                  MouseEnter="editNick_MouseEnter" MouseLeave="Popup_MouseLeave"
+                                   Tag="{Binding ChangeNicknameCommand}" Width="18" Height="18" Margin="3 1 0 0" >
+                        <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}" Width="1" Height="10"/>
+                    </ToggleButton>
+
+                  
+                </StackPanel>
+                
+                <!-- Left info panel -->
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70 190 0 0">
+
+
+                    <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
+                        <TextBlock Text="SteamID64: " FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
+                        <TextBox x:Name="steamIDbox" Style="{StaticResource settings_data_box}" Text="{Binding SteamId64}" Height="18.62"/>
+                        <Button Style="{StaticResource animatedCopy}" Margin="5 -2 0 0" Click="IdCopyButton_Click"/>
+                    </StackPanel>
+                    
+
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
+                        <TextBlock Text="{DynamicResource rc_lv_hostedOn}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
+                        <TextBlock Text="{Binding IPCountryCode}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                        <Image Margin="7 3 0 0" Height="10" Width="17" Source="{Binding CountryImage}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
+                        <TextBlock Text="{DynamicResource rc_lv_authedDevices}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
+                        <TextBlock Text="{Binding AuthedComputers}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
+                        <TextBlock Text="{DynamicResource rc_lv_emailAddress}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
+                        <TextBox Style="{StaticResource settings_data_box}" Text="{Binding EmailAddress}"/>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0 2 0 0">
+                        <TextBlock Text="{DynamicResource rc_lv_emailVerif}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
+                        <TextBlock Text="{Binding EmailVerification}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Combo boxes -->
+                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 190 70 0">
+                    <TextBlock Text="{DynamicResource rc_lv_accountState}" FontSize="14" FontWeight="Medium" Margin="0 0 0 5" Foreground="{DynamicResource default_foreground}" /> 
+                    <ComboBox x:Name="state_box" Width="140" Height="25" SelectionChanged="state_box_SelectionChanged" >
+                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateOffline}" />
+                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateOnline}" />
+                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateBusy}" />
+                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateAway}" />
+                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateSnooze}" />
+                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateLookToTrade}" />
+                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateLoogToPlay}" />
+                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateInvisible}" />
+                    </ComboBox>
+
+                    <TextBlock Text="{DynamicResource rc_lv_uiMode}" FontSize="14" FontWeight="Medium"
+                               Margin="0 20 0 5" Foreground="{DynamicResource default_foreground}" />
+                    <ComboBox x:Name="ui_box" Width="140" Height="25" SelectionChanged="ui_box_SelectionChanged">
+                        <ComboBoxItem Content = "Default" />
+                        <ComboBoxItem Content = "Big picture" />
+                        <ComboBoxItem Content = "Virtual reality" />
+                        <ComboBoxItem Content = "Smartphone" />
+                    </ComboBox>
+
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+    </Grid>
+</UserControl>
