@@ -1,7 +1,9 @@
 ﻿using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.AccountModel;
+using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -117,6 +119,25 @@ namespace Steam_Account_Manager.Infrastructure
         private static readonly int IvSize = 16; // block size is 128-bit
 
         public static string GetDefaultCryptoKey => CryptoKey;
+
+
+        public static void UpdateEncryption(string newKey)
+        {
+            if (string.IsNullOrEmpty(newKey)) return;
+
+            var recentlyUsers = App.WorkingDirectory + "\\RecentlyLoggedUsers.dat";
+            if (System.IO.File.Exists(recentlyUsers))
+            {
+                var users = Config.Deserialize(recentlyUsers, Config.Properties.UserCryptoKey) as ObservableCollection<RecentlyLoggedAccount>;
+                Config.Serialize(users, recentlyUsers, newKey);
+            }
+
+            Config.Properties.UserCryptoKey = newKey;
+            if (System.IO.File.Exists(App.WorkingDirectory + "\\database.dat"))
+                Config.SaveAccounts();
+
+            Config.SaveProperties();
+        }
 
         private static void WriteObjectToStream(Stream outputStream, object obj)
         {

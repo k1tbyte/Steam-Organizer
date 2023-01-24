@@ -8,7 +8,8 @@
              xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
              d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="600">
+             d:DesignHeight="450" d:DesignWidth="600"
+             Loaded="UserControl_Loaded">
     <UserControl.Resources>
 
 
@@ -19,7 +20,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
         
         <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
@@ -129,10 +130,13 @@
                             <Icon:PackIconMaterial Kind="ShieldKeyOutline" Foreground="{DynamicResource settings_buttons_isMouseOver}"
                                            VerticalAlignment="Center" Height="20" Width="20" />
 
-                            <TextBox Margin="5 0 0 0" Width="235"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
-                         Text="{Binding EncryptingKey, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" IsReadOnly="True"
-                         Background="{DynamicResource first_main_color}" MaxLength="32" BorderThickness="0" CaretBrush="White"
-                                     SelectionBrush="{DynamicResource second_main_color}"/>
+                            <Grid  Margin="5 0 0 0" VerticalAlignment="Center">
+                                <TextBox x:Name="CryptoKey" Width="235"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
+                                         IsReadOnly="True" Background="{DynamicResource first_main_color}" MaxLength="32" 
+                                         BorderThickness="0" CaretBrush="White" SelectionBrush="{DynamicResource second_main_color}"/>
+                                <TextBlock Text="{DynamicResource sv_crypto_key_default}" Foreground="{DynamicResource settings_buttons_isUncheckedText}"
+                                           Visibility="{Binding ElementName=CryptoKey,Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
+                            </Grid>
                         </StackPanel>
                     </Border>
 
@@ -145,18 +149,19 @@
                     <Button x:Name="GenerateKey" Style="{StaticResource ErrorAlert}" Foreground="{DynamicResource menu_button_background}" 
                     MouseEnter="GenerateKey_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
                     Margin="5 7 0 7" Width="18" Height="18" VerticalAlignment="Center"
-                    Command="{Binding GenerateCryptoKeyCommand}" Background="Transparent" BorderThickness="0">
+                    Background="Transparent" BorderThickness="0" Click="GenerateKey_Click">
                         <Icon:PackIconMaterial Width="15" Height="15" Kind="RefreshCircle"/>
                     </Button>
 
                     <Button x:Name="ResetKey" Style="{StaticResource ErrorAlert}" Foreground="DarkOrange" 
                     MouseEnter="ResetKey_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
                     Margin="5 7 0 7" Width="18" Height="18" VerticalAlignment="Center"
-                    Command="{Binding ResetCryptoKeyCommand}" Background="Transparent" BorderThickness="0">
+                    Background="Transparent" BorderThickness="0" Click="ResetKey_Click">
                         <Icon:PackIconMaterial Width="15" Height="15" Kind="LockReset"/>
                     </Button>
 
                 </StackPanel>
+                
 
                 <!--Close action after logging -->
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
@@ -225,14 +230,13 @@
                     <TextBlock Text="{DynamicResource sv_password}" Style="{StaticResource settingTextBlock}"/>
                     <Button x:Name="PasswordError" Style="{StaticResource ErrorAlert}" 
                     MouseEnter="PasswordError_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
-                    Margin="8 7 0 7" Width="18" Height="18" Visibility="{Binding PasswordError,Converter={StaticResource BoolToVis},UpdateSourceTrigger=PropertyChanged}"
+                    Margin="8 7 0 7" Width="18" Height="18" Visibility="{Binding PasswordError,Converter={StaticResource BoolToVis},Mode=TwoWay}"
                     VerticalAlignment="Center" Background="Transparent" BorderThickness="0">
 
                         <Icon:PackIconMaterial Width="15" Height="15" Kind="Alert"/>
                     </Button>
-                    <ToggleButton  IsChecked="{Binding PasswordEnabled,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}"
-                          Style="{StaticResource ToggleButtonStyle}" Command="{Binding ChangeOrAddPasswordCommand}"
-                                   CommandParameter="{Binding ElementName=PasswordPanel}"/>
+                    <ToggleButton x:Name="IsPassword"   IsChecked="False"
+                                  Style="{StaticResource ToggleButtonStyle}" PreviewMouseLeftButtonDown="IsPassword_PreviewMouseLeftButtonDown"/>
 
                 </DockPanel>
 
@@ -245,11 +249,19 @@
 
                             <Icon:PackIconMaterial Kind="Key" Foreground="{DynamicResource settings_buttons_isMouseOver}"
                                            VerticalAlignment="Center" Height="20" Width="20" />
-                            <theme:MainPasswordBox  Width="195" Style="{StaticResource PasswordboxTheme}" 
-                                                Height="20" VerticalAlignment="Center" Password="{Binding Password}"/>
+                            <theme:MainPasswordBox  Width="195" Style="{StaticResource PasswordboxTheme}" Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                                Height="20" VerticalAlignment="Center"/>
+
                         </StackPanel>
                     </Border>
-
+                    
+                    <Button Style="{StaticResource defaultButton}" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"
+                            IsHitTestVisible="{Binding PasswordError,Converter={StaticResource BoolInverted}}"
+                            Background="Transparent" Margin="5 1 0 0" BorderBrush="Transparent" Click="SetPassword_Click">
+                        <Icon:PackIconMaterial Kind="Check" Padding="2"  Width="20" Height="20"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Button>
+                    
                 </StackPanel>
 
                 
@@ -302,13 +314,11 @@
             </StackPanel>
         </ScrollViewer>
 
-        <Button Grid.Row="2" Width="200" Margin="0 10 0 0" Style="{StaticResource defaultButton}" Content="{DynamicResource sv_save_changes}" Cursor="Hand"
-                Command="{Binding SaveChangesCommand}"
-                CommandParameter="{Binding ElementName=succesSave}"/>
 
-            <TextBlock Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="0 0 20 0"
+
+            <TextBlock Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="0 0 20 -3"
                        Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                               FontSize="12" Text="{Binding Version, StringFormat=Version: {0}}" />
+                               FontSize="12" Text="{Binding Version, StringFormat=Version: {0},Mode=OneWay}"/>
 
 
         <Icon:PackIconMaterial x:Name="succesSave" Grid.Row="2" Kind="Check"  Width="25" Height="25"

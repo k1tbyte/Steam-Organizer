@@ -15,6 +15,7 @@
     <v:String x:Key="sv_password">Установить пароль на программу</v:String>
     <v:String x:Key="sv_info_collect">Не собирать информацию об аккаунтах</v:String>
     <v:String x:Key="sv_crypto_key">Ключ шифрования</v:String>
+    <v:String x:Key="sv_crypto_key_default">По умолчанию</v:String>
     <v:String x:Key="sv_steam_key">Пользовательский steam web API ключ</v:String>
     <v:String x:Key="sv_getID">Получать steam ID у анонимных аккаунтов при логине</v:String>
     <v:String x:Key="sv_rememberPass">Запоминать пароль при входе</v:String>

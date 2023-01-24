@@ -43,8 +43,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
             if (Utils.Common.Sha256(Password.Password + Config.GetDefaultCryptoKey) == Config.Properties.Password)
             {
                 if (!mainWindow) DialogResult = true;
-
-                CryptoKeyDetect();
+                else  CryptoKeyDetect();
                 return;
             }
 
