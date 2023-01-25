@@ -6,7 +6,7 @@
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:viewmodels="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.MainControl"
              d:DataContext="{d:DesignInstance Type=viewmodels:AccountDataViewModel}"
-             xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
+             xmlns:ui="clr-namespace:Steam_Account_Manager.UIExtensions"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="600">
 
@@ -98,7 +98,7 @@
         
         <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
                        HorizontalOffset="0" VerticalOffset="10">
-            <theme:MainPopup  x:Name="Header" Foreground="White"/>
+            <ui:ModernPopup  x:Name="Header" Foreground="White"/>
         </Popup>
 
         <Border Width="580" Grid.Row="1" HorizontalAlignment="Left" CornerRadius="15" Background="{DynamicResource adv_background}"/>
@@ -381,7 +381,7 @@
                                            Height="22" Width="22"
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
-                                    <theme:MainPasswordBox Height="20.62" Width="165" Margin="0 0 0 0" VerticalAlignment="Center"
+                                    <ui:ModernPasswordBox Height="20.62" Width="165" Margin="0 0 0 0" VerticalAlignment="Center"
                                                Style="{StaticResource PasswordboxTheme}" Password="{Binding Password, UpdateSourceTrigger=PropertyChanged}"/>
                                 </StackPanel>
                             </Border>
@@ -563,7 +563,7 @@
                                            Height="22" Width="22"
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
-                                                <theme:MainPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
+                                                <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
                                                Style="{StaticResource PasswordboxTheme}" Password="{Binding EmailPass}"/>
                                             </StackPanel>
                                         </Border>
@@ -606,7 +606,7 @@
                                            Height="22" Width="22"
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
-                                                <theme:MainPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
+                                                <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
                                                Style="{StaticResource PasswordboxTheme}" Password="{Binding RockstarPass}"/>
                                             </StackPanel>
                                         </Border>
@@ -651,7 +651,7 @@
                                            Height="22" Width="22"
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
-                                                <theme:MainPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
+                                                <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
                                                Style="{StaticResource PasswordboxTheme}" Password="{Binding UplayPass, UpdateSourceTrigger=PropertyChanged}"/>
                                             </StackPanel>
                                         </Border>
@@ -695,7 +695,7 @@
                                            Height="22" Width="22"
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
-                                                <theme:MainPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
+                                                <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
                                                Style="{StaticResource PasswordboxTheme}" Password="{Binding OriginPass, UpdateSourceTrigger=PropertyChanged}"/>
                                             </StackPanel>
                                         </Border>

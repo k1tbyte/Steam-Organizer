@@ -2,14 +2,14 @@
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Steam_Account_Manager.Themes
+namespace Steam_Account_Manager.UIExtensions
 {
-    public partial class MainPasswordBox : UserControl
+    public partial class ModernPasswordBox : UserControl
     {
         private bool _isPasswordChanging;
 
         public static readonly DependencyProperty PasswordProperty =
-            DependencyProperty.Register("Password", typeof(string), typeof(MainPasswordBox),
+            DependencyProperty.Register("Password", typeof(string), typeof(ModernPasswordBox),
                 new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     PasswordPropertyChanged, null, false, UpdateSourceTrigger.PropertyChanged));
 
@@ -18,7 +18,7 @@ namespace Steam_Account_Manager.Themes
 
         private static void PasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is MainPasswordBox passwordBox)
+            if (d is ModernPasswordBox passwordBox)
             {
                 passwordBox.UpdatePassword();
             }
@@ -44,10 +44,7 @@ namespace Steam_Account_Manager.Themes
             set { SetValue(PasswordProperty, value); }
         }
 
-        public MainPasswordBox()
-        {
-            InitializeComponent();
-        }
+        public ModernPasswordBox() => InitializeComponent();
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {

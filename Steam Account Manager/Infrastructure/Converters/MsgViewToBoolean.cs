@@ -3,30 +3,26 @@ using System.Windows.Data;
 
 namespace Steam_Account_Manager.Infrastructure.Converters
 {
-    public class InverseBoolConverter : IValueConverter
+    internal class MsgViewToBoolean : IValueConverter
     {
-        #region IValueConverter Members
-
         public object Convert(object value, Type targetType, object parameter,
-            System.Globalization.CultureInfo culture)
+           System.Globalization.CultureInfo culture)
         {
-            if (value is bool)
+            if (value is MVVM.View.RemoteControl.Controls.MessagesView)
             {
-                return !(bool)value;
+                return true;
             }
-            return value;
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
-            if (value is bool)
+            if (value is MVVM.View.RemoteControl.Controls.MessagesView)
             {
-                return !(bool)value;
+                return true;
             }
-            return value;
+            return false;
         }
-
-        #endregion
     }
 }

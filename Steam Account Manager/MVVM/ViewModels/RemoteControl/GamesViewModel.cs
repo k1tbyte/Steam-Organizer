@@ -78,7 +78,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
             OpenGameAchievementCommand = new RelayCommand(o =>
             {
                 AchievementsView achievementsWindow = new AchievementsView(Convert.ToUInt64(((Game)o).AppID));
-                Utils.Common.ShowDialogWindow(achievementsWindow);
+                Utils.Presentation.OpenDialogWindow(achievementsWindow);
             });
 
             OpenSteamStoreCommand = new RelayCommand(o =>

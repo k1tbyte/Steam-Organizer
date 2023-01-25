@@ -1,7 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.MVVM.Core;
-using Steam_Account_Manager.Themes.MessageBoxes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -71,8 +70,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
                     }
                     AchievementShowFilter.Refresh();
 
+                    Utils.Presentation.OpenPopupMessageBox($"{SelectedItems.Count()} achievements have been changed.");
                     ((ListBox)o).UnselectAll();
-                    MessageBoxes.PopupMessageBox($"{SelectedItems.Count()} achievements have been changed.");
                 }
             });
         }

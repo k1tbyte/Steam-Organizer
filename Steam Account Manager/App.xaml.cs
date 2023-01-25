@@ -1,7 +1,7 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
-using Steam_Account_Manager.Themes.MessageBoxes;
+using Steam_Account_Manager.UIExtensions;
 using System;
 using System.IO;
 using System.Reflection;
@@ -20,7 +20,7 @@ namespace Steam_Account_Manager
         public static bool OfflineMode = false;
         public static new MainWindow MainWindow;
         public static TrayMenu Tray;
-        private ExceptionMessageView ExceptionWnd;
+        private ExceptionWindow ExceptionWnd;
         public static bool IsShuttingDown { get; set; }
 
         [STAThread]
@@ -38,7 +38,7 @@ namespace Steam_Account_Manager
             {
                 
                 if (ExceptionWnd == null)
-                    ExceptionWnd = new ExceptionMessageView();
+                    ExceptionWnd = new ExceptionWindow();
 
                 ExceptionWnd.SetMessage(args.Exception.ToString());
                 ExceptionWnd.WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -53,11 +53,11 @@ namespace Steam_Account_Manager
             if (!Utils.Common.CheckInternetConnection())
             {
                 ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                MessageBoxes.PopupMessageBox((string)App.Current.FindResource("mv_connectionNotify"));
+                Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("mv_connectionNotify"));
                 await Task.Delay(15000);
                 if (!Utils.Common.CheckInternetConnection())
                 {
-                    MessageBoxes.PopupMessageBox((string)App.Current.FindResource("mv_autonomyModeNotify"));
+                    Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("mv_autonomyModeNotify"));
                     OfflineMode = true;
                 }
                 ShutdownMode = ShutdownMode.OnMainWindowClose;

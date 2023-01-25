@@ -35,7 +35,7 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
         {
             if (Error)
             {
-                SelectsText.Foreground = Utils.Common.StringToBrush("#b0b9c6");
+                SelectsText.Foreground = Utils.Presentation.StringToBrush("#b0b9c6");
                 Error = false;
             }
 

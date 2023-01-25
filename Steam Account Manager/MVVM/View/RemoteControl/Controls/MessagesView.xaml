@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.RemoteControl"
-             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks" xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              d:DataContext="{d:DesignInstance Type=vm:MessagesViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="600">

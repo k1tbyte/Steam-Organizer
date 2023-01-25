@@ -1,11 +1,10 @@
-﻿<Window x:Class="Steam_Account_Manager.Themes.MessageBoxes.ExceptionMessageView"
+﻿<Window x:Class="Steam_Account_Manager.UIExtensions.ExceptionWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Steam_Account_Manager.Themes.MessageBoxes"
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
+        xmlns:ui="clr-namespace:Steam_Account_Manager.UIExtensions"
         mc:Ignorable="d"
         Background="Transparent"
         AllowsTransparency="True"
@@ -23,7 +22,7 @@
             </Grid.RowDefinitions>
             <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
                        HorizontalOffset="0" VerticalOffset="10">
-                <theme:MainPopup  x:Name="Header" Foreground="White"/>
+                <ui:ModernPopup  x:Name="Header" Foreground="White"/>
             </Popup>
             <StackPanel Grid.Row="0"  Orientation="Horizontal" Margin="0 10 0 0"
                         VerticalAlignment="Center" HorizontalAlignment="Center">

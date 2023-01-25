@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
+         xmlns:ui="clr-namespace:Steam_Account_Manager.UIExtensions"
         mc:Ignorable="d"
         Background="Transparent"
         WindowStyle="None"
@@ -52,7 +52,7 @@
 
                         <Icon:PackIconMaterial Kind="Key" Foreground="{DynamicResource settings_buttons_isMouseOver}"
                                            VerticalAlignment="Center" Height="20" Width="20" />
-                        <theme:MainPasswordBox x:Name="Password" Width="195" Style="{StaticResource PasswordboxTheme}" 
+                        <ui:ModernPasswordBox x:Name="Password" Width="195" Style="{StaticResource PasswordboxTheme}" 
                                                 Height="20" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>

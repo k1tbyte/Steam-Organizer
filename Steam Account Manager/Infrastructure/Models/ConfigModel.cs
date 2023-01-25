@@ -65,20 +65,20 @@ namespace Steam_Account_Manager.Infrastructure.Models
                 switch (value)
                 {
                     case Themes.Light:
-                        dict.Source = new Uri("Themes/ColorSchemes/Light.xaml", UriKind.Relative);
+                        dict.Source = new Uri("ColorSchemes/Light.xaml", UriKind.Relative);
                         break;
                     case Themes.Dark:
-                        dict.Source = new Uri("Themes/ColorSchemes/Dark.xaml", UriKind.Relative);
+                        dict.Source = new Uri("ColorSchemes/Dark.xaml", UriKind.Relative);
                         break;
                     case Themes.Nebula:
-                        dict.Source = new Uri("Themes/ColorSchemes/Nebula.xaml", UriKind.Relative);
+                        dict.Source = new Uri("ColorSchemes/Nebula.xaml", UriKind.Relative);
                         break;
                     default:
-                        dict.Source = new Uri("Themes/ColorSchemes/Light.xaml", UriKind.Relative);
+                        dict.Source = new Uri("ColorSchemes/Light.xaml", UriKind.Relative);
                         break;
                 }
                 ResourceDictionary oldDict = (from d in Application.Current.Resources.MergedDictionaries
-                                              where d.Source != null && d.Source.OriginalString.StartsWith("Themes/ColorSchemes/")
+                                              where d.Source != null && d.Source.OriginalString.StartsWith("ColorSchemes/")
                                               select d).First();
                 if (oldDict != null)
                 {

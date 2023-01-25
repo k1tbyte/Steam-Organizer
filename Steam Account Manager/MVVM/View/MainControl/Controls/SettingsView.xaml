@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewmodels="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.MainControl"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
              d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
+             xmlns:ui="clr-namespace:Steam_Account_Manager.UIExtensions"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="600"
              Loaded="UserControl_Loaded">
@@ -250,7 +250,7 @@
 
                             <Icon:PackIconMaterial Kind="Key" Foreground="{DynamicResource settings_buttons_isMouseOver}"
                                            VerticalAlignment="Center" Height="20" Width="20" />
-                            <theme:MainPasswordBox  Width="195" Style="{StaticResource PasswordboxTheme}" Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                            <ui:ModernPasswordBox  Width="195" Style="{StaticResource PasswordboxTheme}" Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
                                                 Height="20" VerticalAlignment="Center"/>
 
                         </StackPanel>

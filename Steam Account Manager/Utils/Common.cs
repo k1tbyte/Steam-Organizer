@@ -24,7 +24,6 @@ namespace Steam_Account_Manager.Utils
         }
 
         private static HttpClient HttpClientFactory;
-        private static System.Windows.Media.BrushConverter BrushConverter = new System.Windows.Media.BrushConverter();
         private static string UserXmlProfileCache;
         private static ulong UserXmlProfileCacheId;
 
@@ -65,21 +64,6 @@ namespace Steam_Account_Manager.Utils
             list[indexA] = list[indexB];
             list[indexB] = tmp;
             return list;
-        }
-        public static System.Windows.Media.Brush StringToBrush(string Color)
-        {
-            var Brush = (System.Windows.Media.Brush)BrushConverter.ConvertFromString(Color);
-            Brush.Freeze();
-            return Brush;
-        }
-
-        public static bool? ShowDialogWindow(Window window)
-        {
-            if(Application.Current.MainWindow != null)
-                window.Owner = Application.Current.MainWindow;
-
-            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            return window.ShowDialog();
         }
         public static string BetweenStr(string str, string leftStr, string rightStr)
         {

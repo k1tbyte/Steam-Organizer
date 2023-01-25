@@ -4,7 +4,6 @@ using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.Core;
-using Steam_Account_Manager.Themes.MessageBoxes;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -110,7 +109,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             {
                 try
                 {
-                    MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_getLocalAccInfo"));
+                    Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("atv_inf_getLocalAccInfo"));
                     string steamId = Utils.Common.SteamId32ToSteamId64(Utils.Common.GetSteamRegistryActiveUser());
                     Config.Accounts[id] = new Account(
                         _login, _password, steamId,
@@ -130,7 +129,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 }
                 catch
                 {
-                    MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
+                    Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
                 }
             } 
         }
@@ -230,7 +229,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     }));
 
 
-                    MessageBoxes.PopupMessageBox((string)App.Current.FindResource("atv_inf_loggedInSteam"));
+                    Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("atv_inf_loggedInSteam"));
                     MainWindowViewModel.IsEnabledForUser = true;
 
                     //Если надо получить данные об аккаунте без информации
@@ -238,7 +237,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 }
                 else
                 {
-                    MessageBoxes.PopupMessageBox((string)Application.Current.FindResource("atv_inf_steamNotFound"));
+                    Utils.Presentation.OpenPopupMessageBox((string)Application.Current.FindResource("atv_inf_steamNotFound"));
                     return;
                 }
 

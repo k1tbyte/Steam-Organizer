@@ -685,12 +685,12 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         private void OpenAddAuthenticatorWindow()
         {
-            Utils.Common.ShowDialogWindow(new AddAuthenticatorWindow(Login, Password, _id));
+            Utils.Presentation.OpenDialogWindow(new AddAuthenticatorWindow(Login, Password, _id));
         }
 
         public void OpenShowAuthenticatorWindow()
         {
-            Utils.Common.ShowDialogWindow(new ShowAuthenticatorWindow(_id));
+            Utils.Presentation.OpenDialogWindow(new ShowAuthenticatorWindow(_id));
         }
 
 

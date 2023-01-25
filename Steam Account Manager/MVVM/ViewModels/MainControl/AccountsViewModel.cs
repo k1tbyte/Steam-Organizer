@@ -4,7 +4,6 @@ using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.MainControl.Controls;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
-using Steam_Account_Manager.Themes.MessageBoxes;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -202,7 +201,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     }
                     MainWindowViewModel.UpdatedAccountIndex = 0;
                     MainWindowViewModel.IsEnabledForUser = true;
-                    MessageBoxes.PopupMessageBox("Database has been updated!");
+                    Utils.Presentation.OpenPopupMessageBox("Database has been updated!");
                     Config.SaveAccounts();
                 });
 
@@ -216,7 +215,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             {
                 MainWindowViewModel.UpdatedAccountIndex = 0;
                 MainWindowViewModel.IsEnabledForUser = true;
-                MessageBoxes.PopupMessageBox("Error! No Internet connection...", true);
+                Utils.Presentation.OpenPopupMessageBox("Error! No Internet connection...", true);
             }
 
         }
@@ -230,7 +229,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         {
             AddAccountWindow addAccountWindow = new AddAccountWindow();
             ConfirmBanner = false;
-            Utils.Common.ShowDialogWindow(addAccountWindow);
+            Utils.Presentation.OpenDialogWindow(addAccountWindow);
         }
 
         private static bool? OpenCryptoKeyWindow(string path)
@@ -246,13 +245,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             var acc = (Account)Config.Deserialize(fileName, crypto);
             if(Config.Accounts.Exists(o => o.SteamId64?.GetHashCode() == acc.SteamId64?.GetHashCode()))
             {
-                MessageBoxes.PopupMessageBox("An account with this SteamID already exists in the database...", true);
+                Utils.Presentation.OpenPopupMessageBox("An account with this SteamID already exists in the database...", true);
                 return;
             }
             Config.Accounts.Add(acc);
             FillAccountTabViews();
             AccountTabViews.Add(new AccountTabView(Config.Accounts.IndexOf(acc)));
-            MessageBoxes.PopupMessageBox("Account restored from file.");
+            Utils.Presentation.OpenPopupMessageBox("Account restored from file.");
             Config.SaveAccounts();
         }
 
@@ -339,7 +338,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 if (fileDialog.ShowDialog() == true)
                 {
                     Config.Serialize(Config.Accounts, fileDialog.FileName, Config.Properties.UserCryptoKey);
-                    MessageBoxes.PopupMessageBox("The database of accounts has been saved to a file.");
+                    Utils.Presentation.OpenPopupMessageBox("The database of accounts has been saved to a file.");
                 }
             });
 
@@ -355,7 +354,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     {
                         Config.Accounts = (List<Account>)Config.Deserialize(fileDialog.FileName, Config.Properties.UserCryptoKey);
                         FillAccountTabViews();
-                        MessageBoxes.PopupMessageBox("The database of accounts was restored from a file");
+                        Utils.Presentation.OpenPopupMessageBox("The database of accounts was restored from a file");
                         Config.SaveAccounts();
                     }
                     catch
@@ -364,7 +363,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                         {
                             Config.Accounts = (List<Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
                             FillAccountTabViews();
-                            MessageBoxes.PopupMessageBox("The database of accounts was restored from a file");
+                            Utils.Presentation.OpenPopupMessageBox("The database of accounts was restored from a file");
                             Config.SaveAccounts();
                             IsDatabaseEmpty = AccountTabViews.Count == 0;
                         }

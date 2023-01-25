@@ -6,7 +6,6 @@ using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.Validators;
 using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
-using Steam_Account_Manager.Themes.MessageBoxes;
 using SteamKit2;
 using SteamKit2.Internal;
 using System;
@@ -14,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -277,7 +277,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 return;
             }
 
-            Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Common.StringToBrush("Gray"));
+            Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Presentation.StringToBrush("Gray"));
 
             CurrentSteamId64 = steamClient.SteamID.ConvertToUInt64();
             LoginViewModel.SteamId64 = CurrentSteamId64.ToString();
@@ -457,18 +457,18 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     CurrentPersonaState = callback.State;
                     if (CurrentPersonaState == EPersonaState.Online)
                     {
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Common.StringToBrush("#5da5c2"));
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Presentation.StringToBrush("#5da5c2"));
                     }
                     else if (callback.GameAppID != 0)
                     {
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Common.StringToBrush("#688843"));
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Presentation.StringToBrush("#688843"));
                     }
                     else if (CurrentPersonaState == EPersonaState.Away || CurrentPersonaState == EPersonaState.Snooze)
                     {
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Common.StringToBrush("Orange"));
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = System.Windows.Media.Brushes.Orange);
                     }
                     else
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Common.StringToBrush("#666c71"));
+                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Presentation.StringToBrush("#666c71"));
                 }
 
                 if (LoginViewModel.Nickname != callback.Name)
@@ -725,7 +725,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 Msg = Msg,
                 Time = DateTime.Now.ToString("HH:mm"),
                 Username = LoginViewModel.Nickname,
-                TextBrush = Utils.Common.StringToBrush("White"),
+                TextBrush = Utils.Presentation.StringToBrush("White"),
                 MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("menu_button_background")
             })));
         }
@@ -911,7 +911,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
             else
             {
-                MessageBoxes.InfoMessageBox("An error has occurred, the settings are not set...");
+                Utils.Presentation.OpenErrorMessageBox("An error has occurred, the settings are not set...","Web API error...");
                 return false;
             }
 
@@ -921,7 +921,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
             if (!IsWebLoggedIn)
             {
-                MessageBoxes.InfoMessageBox("Not logged into SteamWeb...");
+                Utils.Presentation.OpenMessageBox("Some help msg later...","Not logged into SteamWeb...");
                 return;
             }
 
@@ -964,16 +964,16 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             switch (responseResult)
             {
                 case ESteamApiKeyState.Error:
-                    MessageBoxes.InfoMessageBox("An error occurred while getting the Web-API key");
+                    Utils.Presentation.OpenErrorMessageBox("An error occurred while getting the Web-API key","Error");
                     return;
                 case ESteamApiKeyState.Timeout:
-                    MessageBoxes.InfoMessageBox("Timeout exceeded...");
+                    Utils.Presentation.OpenErrorMessageBox("some help msg later","Timeout exceeded...");
                     return;
                 case ESteamApiKeyState.AccessDenied:
-                    MessageBoxes.InfoMessageBox("Access to Web API key denied");
+                    Utils.Presentation.OpenErrorMessageBox("some help msg later","Access to Web API key denied");
                     return;
                 case ESteamApiKeyState.NotRegisteredYet:
-                    var response = MessageBoxes.QueryMessageBox("Web API key not registered, would you like to register now?");
+                    var response = Utils.Presentation.OpenQueryMessageBox("Web API key not registered, would you like to register now?", "Web API key not registered!");
                     if (response == true)
                         RegisterWebApiKey();
                     return;
@@ -1002,7 +1002,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
             if (!IsWebLoggedIn)
             {
-                MessageBoxes.InfoMessageBox("Not logged into SteamWeb...");
+                Utils.Presentation.OpenMessageBox("some help msg later","Not logged into SteamWeb...");
                 return false;
             }
 
@@ -1022,12 +1022,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 var HtmlNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"message\"]/h3");
                 if (HtmlNode != null && HtmlNode.InnerText.Contains("Unable to revoke API Key."))
                 {
-                    MessageBoxes.InfoMessageBox("Error! Steam Web Api key not registered...");
+                    Utils.Presentation.OpenErrorMessageBox("some help msg later","Error! Steam Web Api key not registered...");
                     return false;
                 }
                 return true;
             }
-            MessageBoxes.InfoMessageBox("An error occurred while connecting to the server...");
+            Utils.Presentation.OpenErrorMessageBox("some help msg later","An error occurred while connecting to the server...");
             return false;
         }
 
@@ -1041,7 +1041,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             var response = await UnifiedEcon.SendMessage(x => x.GetTradeOfferAccessToken(request)).ToTask().ConfigureAwait(false);
             if (response.Result != EResult.OK)
             {
-                MessageBoxes.InfoMessageBox("An error occurred while getting the token...");
+                Utils.Presentation.OpenErrorMessageBox("some help msg later","An error occurred while getting the token...");
                 return null;
             }
             return response.GetDeserializedResponse<CEcon_GetTradeOfferAccessToken_Response>().trade_offer_access_token;

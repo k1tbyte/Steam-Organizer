@@ -3,11 +3,11 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 
-namespace Steam_Account_Manager.Themes.MessageBoxes
+namespace Steam_Account_Manager.UIExtensions
 {
-    public partial class PopupMessageBoxView : Window
+    public partial class PopupMessageWindow : Window
     {
-        public PopupMessageBoxView(string Text, bool isError) : base()
+        public PopupMessageWindow(string Text, bool isError) : base()
         {
             InitializeComponent();
             this.Title.Text = Text;

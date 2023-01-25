@@ -1,7 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
 using Steam_Account_Manager.MVVM.ViewModels.MainControl;
-using Steam_Account_Manager.Themes;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -76,7 +75,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             }
             else
             {
-                var result = Utils.Common.ShowDialogWindow(new AuthenticationWindow(false));
+                var result = Utils.Presentation.OpenDialogWindow(new AuthenticationWindow(false));
 
                 if (result == null || result == false)
                     return;

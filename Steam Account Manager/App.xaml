@@ -9,29 +9,29 @@
              xmlns:converters="clr-namespace:Steam_Account_Manager.Infrastructure.Converters">
     <Application.Resources>
         <ResourceDictionary>
-            
+
 
             <ResourceDictionary.MergedDictionaries>
 
-                <ResourceDictionary Source="Themes/Extensions.xaml"/>
+                <ResourceDictionary Source="Styles/MiscStyles.xaml"/>
+                
+                <ResourceDictionary Source="Styles/ScrollBarStyle.xaml"/>
 
-                <ResourceDictionary Source="Themes/ScrollBarStyle.xaml"/>
+                <ResourceDictionary Source="Styles/ProgressBarStyle.xaml"/>
 
-                <ResourceDictionary Source="Themes/ProgressBarStyle.xaml"/>
+                <ResourceDictionary Source="Styles/PasswordboxStyle.xaml"/>
 
-                <ResourceDictionary Source="Themes/PasswordboxTheme.xaml"/>
+                <ResourceDictionary Source="Styles/ComboBoxStyle.xaml"/>
 
-                <ResourceDictionary Source="Themes/ComboBoxStyle.xaml"/>
+                <ResourceDictionary Source="Styles/ListBoxStyle.xaml"/>
 
-                <ResourceDictionary Source="Themes/ListBoxStyle.xaml"/>
+                <ResourceDictionary Source="Styles/DataGridStyle.xaml"/>
 
-                <ResourceDictionary Source="Themes/DataGridStyle.xaml"/>
+                <ResourceDictionary Source="Styles/ContextMenuStyle.xaml"/>
 
-                <ResourceDictionary Source="Themes/ContextMenuStyle.xaml"/>
+                <ResourceDictionary Source="Styles/ButtonStyle.xaml"/>
 
-                <ResourceDictionary Source="Themes/Buttons.xaml"/>
-
-                <ResourceDictionary Source="Themes/ColorSchemes/Dark.xaml"/>
+                <ResourceDictionary Source="ColorSchemes/Dark.xaml"/>
 
                 <ResourceDictionary Source="Locale/lang.en-US.xaml" />
 
@@ -39,16 +39,16 @@
             </ResourceDictionary.MergedDictionaries>
             
 
-            <converters:InverseBoolConverter x:Key="BoolInverted"/>
+            <converters:InvertedBoolConverter x:Key="BoolInverted"/>
             <converters:BooleanToVisibilityConverter x:Key="BoolToVis"/>
-            <converters:MsgViewToBool x:Key="MsgViewToBool"/>
+            <converters:MsgViewToBoolean x:Key="MsgViewToBool"/>
             <converters:IndexByteBooleanConverter x:Key="IndexByteBooleanConverter"/>
             <converters:BooleanToVisibilityConverter x:Key="BoolToVisInverted"
                                                      True="Collapsed"
                                                      False="Visible"/>
 
 
-            <!--#region Styles -->
+
             <Style x:Key="menuButtonIcon" TargetType="Icon:PackIconMaterial">
                 <Setter Property="Margin" Value="20 2 20 0" />
                 <Setter Property="VerticalAlignment" Value="Center" />

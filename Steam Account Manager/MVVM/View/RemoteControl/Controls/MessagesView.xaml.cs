@@ -76,7 +76,7 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
             if (!commandEmpty || !keywordEmpty)
             {
                 commandEmpty = keywordEmpty = false;
-                CommandTitle.Foreground = KeywordTitle.Foreground = Utils.Common.StringToBrush("#b0b9c6");
+                CommandTitle.Foreground = KeywordTitle.Foreground = Utils.Presentation.StringToBrush("#b0b9c6");
             }
 
             if ((commandEmpty = String.IsNullOrEmpty(CommandBox.Text)) || (keywordEmpty = String.IsNullOrEmpty(KeywordBox.Text)))

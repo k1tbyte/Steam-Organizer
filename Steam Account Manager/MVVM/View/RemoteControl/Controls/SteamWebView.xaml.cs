@@ -39,7 +39,7 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
                 GamePlaytimeBox.SelectedIndex, FriendsBox.SelectedIndex,
                 IsCommentPrivacyValid ? CommentsBox.SelectedIndex : 0))
             {
-                Themes.Animations.ShakingAnimation(succesPrivacyApply, true);
+                Utils.Presentation.ShakingAnimation(succesPrivacyApply, true);
             }
         }
 

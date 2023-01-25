@@ -127,7 +127,6 @@
     </ApplicationDefinition>
     <Compile Include="Infrastructure\Converters\IndexBooleanConverter.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
-    <Compile Include="Utils\DragAdorner.cs" />
     <Compile Include="Infrastructure\Models\AccountModel\Account.cs" />
     <Compile Include="Infrastructure\Models\GamesHandlerModel.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\AuthenticatorLinker.cs" />
@@ -140,9 +139,9 @@
     <Compile Include="Infrastructure\SteamRemoteClient\GamesHandler.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\SteamRemoteClient.cs" />
     <Compile Include="Infrastructure\Config.cs" />
-    <Compile Include="Infrastructure\Converters\CustomBooleanToVisiblity.cs" />
-    <Compile Include="Infrastructure\Converters\InverseBooleanConverter.cs" />
-    <Compile Include="Infrastructure\Converters\MsgViewToBool.cs" />
+    <Compile Include="Infrastructure\Converters\BooleanConverter.cs" />
+    <Compile Include="Infrastructure\Converters\InvertedBooleanConverter.cs" />
+    <Compile Include="Infrastructure\Converters\MsgViewToBoolean.cs" />
     <Compile Include="Infrastructure\Models\AccountModel\CSGO.cs" />
     <Compile Include="Infrastructure\Models\ConfigModel.cs" />
     <Compile Include="Infrastructure\Models\RemoteUserModel.cs" />
@@ -153,25 +152,20 @@
     <Compile Include="Infrastructure\SteamRemoteClient\WebHandler.cs" />
     <Compile Include="Infrastructure\Validators\SteamValidator.cs" />
     <Compile Include="Keys.cs" />
-    <Compile Include="Themes\Animations.cs" />
-    <Compile Include="Themes\MainPasswordBox.xaml.cs">
-      <DependentUpon>MainPasswordBox.xaml</DependentUpon>
+    <Compile Include="UIExtensions\MessageWindow.xaml.cs">
+      <DependentUpon>MessageWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\MainPopup.xaml.cs">
-      <DependentUpon>MainPopup.xaml</DependentUpon>
+    <Compile Include="UIExtensions\ModernPasswordBox.xaml.cs">
+      <DependentUpon>ModernPasswordBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\MessageBoxes\ExceptionMessageView.xaml.cs">
-      <DependentUpon>ExceptionMessageView.xaml</DependentUpon>
+    <Compile Include="UIExtensions\ModernPopup.xaml.cs">
+      <DependentUpon>ModernPopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\MessageBoxes\FlatQueryMessageBoxView.xaml.cs">
-      <DependentUpon>FlatQueryMessageBoxView.xaml</DependentUpon>
+    <Compile Include="UIExtensions\ExceptionWindow.xaml.cs">
+      <DependentUpon>ExceptionWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\MessageBoxes\MessageBoxes.cs" />
-    <Compile Include="Themes\MessageBoxes\FlatMessageBoxView.xaml.cs">
-      <DependentUpon>FlatMessageBoxView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Themes\MessageBoxes\PopupMessageBoxView.xaml.cs">
-      <DependentUpon>PopupMessageBoxView.xaml</DependentUpon>
+    <Compile Include="UIExtensions\PopupMessageWindow.xaml.cs">
+      <DependentUpon>PopupMessageWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="TrayMenu.xaml.cs">
       <DependentUpon>TrayMenu.xaml</DependentUpon>
@@ -240,6 +234,7 @@
       <DependentUpon>ShowAuthenticatorWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\Common.cs" />
+    <Compile Include="Utils\Presentation.cs" />
     <Compile Include="Utils\Win32.cs" />
     <Page Include="Locale\lang.en-US.xaml">
       <SubType>Designer</SubType>
@@ -266,75 +261,71 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Themes\Buttons.xaml">
+    <Page Include="Styles\ButtonStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ColorSchemes\Dark.xaml">
+    <Page Include="ColorSchemes\Dark.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ColorSchemes\Light.xaml">
+    <Page Include="ColorSchemes\Light.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ColorSchemes\Nebula.xaml">
+    <Page Include="ColorSchemes\Nebula.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ComboBoxStyle.xaml">
+    <Page Include="Styles\ComboBoxStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ContextMenuStyle.xaml">
+    <Page Include="Styles\ContextMenuStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\DataGridStyle.xaml">
+    <Page Include="Styles\DataGridStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\Extensions.xaml">
+    <Page Include="Styles\ListBoxStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ListBoxStyle.xaml">
+    <Page Include="Styles\MiscStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\MainPasswordBox.xaml">
+    <Page Include="UIExtensions\MessageWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIExtensions\ModernPasswordBox.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
-    <Page Include="Themes\MainPopup.xaml">
+    <Page Include="UIExtensions\ModernPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
-    <Page Include="Themes\MessageBoxes\ExceptionMessageView.xaml">
+    <Page Include="UIExtensions\ExceptionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\MessageBoxes\FlatMessageBoxView.xaml">
+    <Page Include="UIExtensions\PopupMessageWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\MessageBoxes\FlatQueryMessageBoxView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\MessageBoxes\PopupMessageBoxView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\PasswordboxTheme.xaml">
+    <Page Include="Styles\PasswordBoxStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
-    <Page Include="Themes\ProgressBarStyle.xaml">
+    <Page Include="Styles\ProgressBarStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ScrollBarStyle.xaml">
+    <Page Include="Styles\ScrollBarStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

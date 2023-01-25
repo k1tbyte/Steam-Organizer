@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewmodels="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.MainControl"
-             xmlns:style="clr-namespace:Steam_Account_Manager.Themes"
+             xmlns:ui="clr-namespace:Steam_Account_Manager.UIExtensions"
              xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              d:DataContext="{d:DesignInstance Type=viewmodels:AccountTabViewModel}"
              mc:Ignorable="d" 
@@ -124,7 +124,7 @@
 
                 <Popup x:Name="Popup" Grid.Column="3" AllowsTransparency="True"
                        HorizontalOffset="0" VerticalOffset="5">
-                    <style:MainPopup  x:Name="Header" Foreground="White"/>
+                    <ui:ModernPopup  x:Name="Header" Foreground="White"/>
                 </Popup>
 
                 <Rectangle Height="35" Width="0.2" Grid.Column="3" Fill="{DynamicResource atv_rectangles_shadow}" HorizontalAlignment="Right">

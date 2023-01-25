@@ -1,14 +1,10 @@
-﻿using Newtonsoft.Json;
-using Steam_Account_Manager.Infrastructure;
+﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.MVVM.Core;
-using Steam_Account_Manager.Themes.MessageBoxes;
 using SteamKit2;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -225,14 +221,14 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
         {
             if (!App.MainWindow.IsVisible && result != EResult.OK && result != EResult.NotLoggedOn)
             {
-                 MessageBoxes.PopupMessageBox($"{SteamRemoteClient.UserPersonaName} {(string)App.Current.FindResource("rc_lv_accAlreadyUse")}", true);
+                Utils.Presentation.OpenPopupMessageBox($"{SteamRemoteClient.UserPersonaName} {(string)App.Current.FindResource("rc_lv_accAlreadyUse")}", true);
                 LogOutCommand.Execute(null);
             }
             else if(result == EResult.LoggedInElsewhere)
             {
                 var nickname = SteamRemoteClient.UserPersonaName;
                 LogOutCommand.Execute(null);
-                MessageBoxes.InfoMessageBox($"{nickname} {(string)App.Current.FindResource("rc_lv_accAlreadyUse")}");
+                Utils.Presentation.OpenMessageBox($"{nickname} {(string)App.Current.FindResource("rc_lv_accAlreadyUse")}","some title later");
             }
             else
             {

@@ -199,7 +199,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     Confirmations = await guard.FetchConfirmationsAsync().ConfigureAwait(false);
                     App.Current.Dispatcher.Invoke(() =>
                     {
-                        Themes.Animations.ShakingAnimation(o as System.Windows.FrameworkElement, true);
+                        Utils.Presentation.ShakingAnimation(o as System.Windows.FrameworkElement, true);
                     });
                 }
                 catch

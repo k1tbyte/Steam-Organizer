@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
+        xmlns:ui="clr-namespace:Steam_Account_Manager.UIExtensions"
         xmlns:viewmodels="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.MainControl"
         d:DataContext="{d:DesignInstance Type=viewmodels:AddAccountViewModel}"
         Background="Transparent"
@@ -48,7 +48,7 @@
                     <Icon:PackIconMaterial Kind="Key"
                                            Height="34" Width="28"
                                            Foreground="{DynamicResource second_text_color}"/>
-                    <theme:MainPasswordBox Height="18.62"
+                    <ui:ModernPasswordBox Height="18.62"
                                            Password="{Binding SteamPassword, UpdateSourceTrigger=PropertyChanged}"
                                                Style="{StaticResource PasswordboxTheme}" Width="185"/>
                 </StackPanel>
