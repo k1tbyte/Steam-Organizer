@@ -10,12 +10,12 @@
         Background="Transparent"
         mc:Ignorable="d"
         AllowsTransparency="True"
-        Title="Account Adding" Height="340" Width="270"
+        Title="Adding an account" Height="340" Width="270"
         WindowStyle="None"
         Name="AddAccountClassWnd">
 
     
-    <Border CornerRadius="8" Background="{DynamicResource background_border_color}"  MouseDown="Border_MouseDown"
+    <Border CornerRadius="8" Background="{DynamicResource background_border_color}"  MouseLeftButtonDown="BorderDragMove"
             BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
         <Grid>
             <Grid.RowDefinitions>
@@ -25,13 +25,9 @@
                 <RowDefinition Height="65"/>
                 <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
-            <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
-                       HorizontalOffset="0" VerticalOffset="10" >
-                <theme:MainPopup  x:Name="Header" Foreground="White" Margin="0 0 10 0"/>
-            </Popup>
-            <TextBlock Grid.Row="0"
-                       Grid.Column="0"
-                       Grid.ColumnSpan="2"
+           
+            
+            <TextBlock Grid.ColumnSpan="2"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left" Margin="20 20" 
                        FontFamily="Cascadia Mono"
@@ -42,7 +38,7 @@
 
             <Rectangle Height="1"
                        VerticalAlignment="Bottom"
-                       Grid.Row="0" Grid.ColumnSpan="2"
+                       Grid.ColumnSpan="2"
                        Margin="5"
                        Fill="{DynamicResource add_window_rectangle}"
                        Width="240"/>
@@ -174,9 +170,12 @@
             </TextBlock>
 
             <!-- Checkbox -->
-            <ToggleButton x:Name="takeInfo" Width="25" Height="25" MouseEnter="takeInfo_MouseEnter"
-                          MouseLeave="takeInfo_MouseLeave" Style="{StaticResource checkbox}" IsChecked="{Binding DontCollectInfo}"
-                         Grid.Row="4" HorizontalAlignment="Right" Margin="0 0 55 0"/>
+            <ToggleButton Width="25" Height="25" Style="{StaticResource checkbox}" IsChecked="{Binding DontCollectInfo}"
+                         Grid.Row="4" HorizontalAlignment="Right" Margin="0 0 55 0">
+                <ToggleButton.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource adv_dontCollectInfo}"/>
+                </ToggleButton.ToolTip>
+            </ToggleButton>
 
 
             <Button Style="{StaticResource saveAccontButton}"

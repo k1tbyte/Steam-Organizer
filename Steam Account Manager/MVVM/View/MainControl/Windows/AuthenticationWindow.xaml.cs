@@ -6,7 +6,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
     public partial class AuthenticationWindow : Window
     {
         private int errorCounter = 3;
-        private bool mainWindow;
+        private readonly bool mainWindow;
         public AuthenticationWindow(bool mainWindow)
         {
             InitializeComponent();

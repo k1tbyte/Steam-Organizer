@@ -104,9 +104,8 @@
     <v:String x:Key="adv_info_connection_check">Network check in progress...</v:String>
     <v:String x:Key="adv_info_collect_data">Gathering account information...</v:String>
     <v:String x:Key="adv_nickname">Nickname</v:String>
-    
-    <v:String x:Key="adv_dontCollectInfo_1">Don't collect information</v:String>
-    <v:String x:Key="adv_dontCollectInfo_2">about this account</v:String>
+
+    <v:String x:Key="adv_dontCollectInfo">Don't collect information&#13;about this account</v:String>
     <!--#endregion-->
 
 
@@ -252,18 +251,29 @@
     <v:String x:Key="rc_lv_emailAddress" xml:space="preserve">Email address: </v:String>
     <v:String x:Key="rc_lv_emailVerif" xml:space="preserve">Email verification: </v:String>
     <v:String x:Key="rc_lv_accountState">Account state</v:String>
-    <v:String x:Key="rc_lv_stateOffline">Offline</v:String>
-    <v:String x:Key="rc_lv_stateOnline">Online</v:String>
-    <v:String x:Key="rc_lv_stateBusy">Busy</v:String>
-    <v:String x:Key="rc_lv_stateAway">Away</v:String>
-    <v:String x:Key="rc_lv_stateSnooze">Snooze</v:String>
-    <v:String x:Key="rc_lv_stateLookToTrade">Looking to trade</v:String>
-    <v:String x:Key="rc_lv_stateLoogToPlay">Looking to play</v:String>
-    <v:String x:Key="rc_lv_stateInvisible">Invisible</v:String>
+
+    <x:ArrayExtension x:Key="rc_lv_accountStates" Type="v:String">
+        <v:String>Offline</v:String>
+        <v:String>Online</v:String>
+        <v:String>Busy</v:String>
+        <v:String>Away</v:String>
+        <v:String>Snooze</v:String>
+        <v:String>Looking to trade</v:String>
+        <v:String>Looking to play</v:String>
+        <v:String>Invisible</v:String>
+    </x:ArrayExtension>
+
     <v:String x:Key="rc_lv_recentlyLogin">Login</v:String>
     <v:String x:Key="rc_lv_recentlyDelete">Delete</v:String>
-
     <v:String x:Key="rc_lv_uiMode">UI Mode</v:String>
+
+    <x:ArrayExtension x:Key="rc_lv_uiModes" Type="v:String">
+        <v:String>Default</v:String>
+        <v:String>Big picture</v:String>
+        <v:String>Virtual reality</v:String>
+        <v:String>Smartphone</v:String>
+    </x:ArrayExtension>
+
     <v:String x:Key="rc_lv_logout">Logout</v:String>
     <v:String x:Key="rc_lv_editNick">Edit nickname</v:String>
     <v:String x:Key="rc_lv_noInternet">No internet connection...</v:String>

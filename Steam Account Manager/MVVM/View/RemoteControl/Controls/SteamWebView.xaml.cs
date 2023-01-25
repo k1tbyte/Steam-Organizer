@@ -29,7 +29,6 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
                 GameDetailsBox.SelectedIndex = privacy.privacy_state_ownedgames;
                 GamePlaytimeBox.SelectedIndex = privacy.privacy_state_playtime;
             }));
-
         }
 
         private async void ApplyPrivacyChanges_Click(object sender, RoutedEventArgs e)
@@ -44,10 +43,7 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
             }
         }
 
-        private void CommentsBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            IsCommentPrivacyValid = true;
-        }
+        private void CommentsBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => IsCommentPrivacyValid = true;
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

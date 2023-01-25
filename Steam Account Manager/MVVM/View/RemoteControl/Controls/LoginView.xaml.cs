@@ -7,15 +7,13 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
 {
     public partial class LoginView : UserControl
     {
-        public LoginView()
-        {
-            InitializeComponent();
-        }
+        public LoginView() => InitializeComponent();
+        
 
-        private void state_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        private void state_box_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
             Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangeCurrentPersonaState((SteamKit2.EPersonaState)state_box.SelectedIndex);
-        }
+        private void IdCopyButton_Click(object sender, RoutedEventArgs e) => Utils.Win32.Clipboard.SetText(steamIDbox.Text);
+
 
         private void ui_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -48,49 +46,6 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
             });
 
             System.IO.File.WriteAllText($@"{App.WorkingDirectory}\RecentlyLoggedUsers.json", ConvertedJson);
-        }
-
-        private void logoutButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Popup.PlacementTarget = logoutButton;
-            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)App.Current.FindResource("rc_lv_logout");
-        }
-
-        private void Popup_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Popup.Visibility = System.Windows.Visibility.Collapsed;
-            Popup.IsOpen = false;
-        }
-
-        private void editNick_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Popup.PlacementTarget = editNick;
-            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)App.Current.FindResource("rc_lv_editNick");
-        }
-
-        private void RecentlyDelete_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Popup.PlacementTarget = RecentlyDelete;
-            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)App.Current.FindResource("rc_lv_recentlyDelete");
-        }
-
-        private void RecentlyLogOn_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Popup.PlacementTarget = RecentlyDelete;
-            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)App.Current.FindResource("rc_lv_recentlyLogin");
-        }
-
-        private void IdCopyButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            Utils.Win32.Clipboard.SetText(steamIDbox.Text);
         }
     }
 }

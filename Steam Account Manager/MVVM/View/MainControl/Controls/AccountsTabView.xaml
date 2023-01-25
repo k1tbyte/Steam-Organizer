@@ -123,7 +123,7 @@
                 </StackPanel>
 
                 <Popup x:Name="Popup" Grid.Column="3" AllowsTransparency="True"
-                       HorizontalOffset="0" VerticalOffset="10">
+                       HorizontalOffset="0" VerticalOffset="5">
                     <style:MainPopup  x:Name="Header" Foreground="White"/>
                 </Popup>
 

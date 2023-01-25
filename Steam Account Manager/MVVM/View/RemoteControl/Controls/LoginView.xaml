@@ -23,10 +23,6 @@
         
     </UserControl.Resources>
     <Grid>
-        <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
-                       HorizontalOffset="0" VerticalOffset="10">
-            <theme:MainPopup x:Name="Header" Foreground="White"/>
-        </Popup>
         <!-- Login border -->
         <Grid >
             <Border Background="{DynamicResource first_main_color}" Width="280" CornerRadius="20"  VerticalAlignment="Top">
@@ -162,14 +158,18 @@
             
             <StackPanel Orientation="Horizontal" Margin="40 0 0 15" VerticalAlignment="Bottom" HorizontalAlignment="Left">
                 <Button x:Name="RecentlyDelete" Style="{StaticResource defaultButtonColored}"
-                        Width="30" Height="30" Click="RecentlyDelete_Click"
-                        MouseEnter="RecentlyDelete_MouseEnter" MouseLeave="Popup_MouseLeave">
+                        Width="30" Height="30" Click="RecentlyDelete_Click">
                     <Icon:Material Kind="TrashCan"/>
+                    <Button.ToolTip>
+                        <ToolTip ContentStringFormat="{DynamicResource rc_lv_recentlyDelete}"/>
+                    </Button.ToolTip>
                 </Button>
-                <Button x:Name="RecentlyLogOn" Style="{StaticResource defaultButtonColored}" 
-                        Command="{Binding RecentlyLogOnCommand}"  Margin="10 0 0 0" CommandParameter="{Binding ElementName=Recently}" Width="30" Height="30"
-                        MouseEnter="RecentlyLogOn_MouseEnter" MouseLeave="Popup_MouseLeave">
+                <Button Style="{StaticResource defaultButtonColored}" 
+                        Command="{Binding RecentlyLogOnCommand}"  Margin="10 0 0 0" CommandParameter="{Binding ElementName=Recently}" Width="30" Height="30">
                     <Icon:Material Kind="Login"/>
+                    <Button.ToolTip>
+                        <ToolTip ContentStringFormat="{DynamicResource rc_lv_recentlyLogin}"/>
+                    </Button.ToolTip>
                 </Button>
 
                 <StackPanel.Style>
@@ -198,11 +198,13 @@
         <Border Visibility="{Binding SuccessLogOn,Converter={StaticResource BoolToVis}}" BorderThickness="0.8"
                 Background="{DynamicResource first_main_color}" CornerRadius="25" >
             <Grid>
-                <Button x:Name="logoutButton" Style="{StaticResource defaultButtonColored}"
-                        MouseEnter="logoutButton_MouseEnter" MouseLeave="Popup_MouseLeave"
+                <Button  Style="{StaticResource defaultButtonColored}"
                          CommandParameter="{Binding ElementName=Recently}" Command="{Binding LogOutCommand}"
                          VerticalAlignment="Top" HorizontalAlignment="Left" Width="45" Height="30" Margin="23 21 0 0">
                     <Icon:Material Kind="Logout" RotationAngle="180"/>
+                    <Button.ToolTip>
+                        <ToolTip ContentStringFormat="{DynamicResource rc_lv_logout}"/>
+                    </Button.ToolTip>
                 </Button>
                 <StackPanel>
                     <Ellipse Margin="0 15 0 5" HorizontalAlignment="Center"
@@ -231,14 +233,14 @@
                              FontWeight="Normal" Foreground="{DynamicResource default_foreground}"
                              MaxLength="30">
                     </TextBox>
-                    
+
                     <ToggleButton x:Name="editNick" Style="{StaticResource small_button}"  HorizontalAlignment="Right"
-                                  MouseEnter="editNick_MouseEnter" MouseLeave="Popup_MouseLeave"
                                    Tag="{Binding ChangeNicknameCommand}" Width="18" Height="18" Margin="3 1 0 0" >
                         <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}" Width="1" Height="10"/>
+                        <ToggleButton.ToolTip>
+                            <ToolTip ContentStringFormat="{DynamicResource rc_lv_editNick}"/>
+                        </ToggleButton.ToolTip>
                     </ToggleButton>
-
-                  
                 </StackPanel>
                 
                 <!-- Left info panel -->
@@ -276,26 +278,14 @@
 
                 <!-- Combo boxes -->
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 190 70 0">
-                    <TextBlock Text="{DynamicResource rc_lv_accountState}" FontSize="14" FontWeight="Medium" Margin="0 0 0 5" Foreground="{DynamicResource default_foreground}" /> 
-                    <ComboBox x:Name="state_box" Width="140" Height="25" SelectionChanged="state_box_SelectionChanged" >
-                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateOffline}" />
-                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateOnline}" />
-                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateBusy}" />
-                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateAway}" />
-                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateSnooze}" />
-                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateLookToTrade}" />
-                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateLoogToPlay}" />
-                        <ComboBoxItem Content = "{DynamicResource rc_lv_stateInvisible}" />
-                    </ComboBox>
+                    <TextBlock Text="{DynamicResource rc_lv_accountState}" FontSize="14" FontWeight="Medium" Margin="0 0 0 5" Foreground="{DynamicResource default_foreground}" />
+                    <ComboBox x:Name="state_box" Width="140" Height="25" SelectionChanged="state_box_SelectionChanged" ItemsSource="{DynamicResource rc_lv_accountStates}" />
+
 
                     <TextBlock Text="{DynamicResource rc_lv_uiMode}" FontSize="14" FontWeight="Medium"
                                Margin="0 20 0 5" Foreground="{DynamicResource default_foreground}" />
-                    <ComboBox x:Name="ui_box" Width="140" Height="25" SelectionChanged="ui_box_SelectionChanged">
-                        <ComboBoxItem Content = "Default" />
-                        <ComboBoxItem Content = "Big picture" />
-                        <ComboBoxItem Content = "Virtual reality" />
-                        <ComboBoxItem Content = "Smartphone" />
-                    </ComboBox>
+                    <ComboBox x:Name="ui_box" Width="140" Height="25" SelectionChanged="ui_box_SelectionChanged" ItemsSource="{DynamicResource rc_lv_uiModes}"/>
+
 
                 </StackPanel>
             </Grid>

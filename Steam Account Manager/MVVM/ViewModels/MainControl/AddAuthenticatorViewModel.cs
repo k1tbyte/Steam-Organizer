@@ -13,9 +13,14 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 {
     internal class AddAuthenticatorViewModel : ObservableObject
     {
+        #region Commands
         public RelayCommand StatusChanged { get; set; }
+        public RelayCommand CloseWindowCommand { get; set; }
         public AsyncRelayCommand AuthenticatorLoadCommand { get; set; }
-        public AsyncRelayCommand AddNewCommand { get; set; }
+        public AsyncRelayCommand AddNewCommand { get; set; } 
+        #endregion
+
+
         private string _login, _password, _errorMessage, _userInput, _captchaLink;
         private bool _isReady, _isCaptchaVisible;
         private Window _window;
@@ -30,38 +35,22 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public bool IsCaptchaVisible
         {
             get => _isCaptchaVisible;
-            set
-            {
-                _isCaptchaVisible = value;
-                OnPropertyChanged(nameof(IsCaptchaVisible));
-            }
+            set => SetProperty(ref _isCaptchaVisible, value);
         }
         public string CaptchaLink
         {
             get => _captchaLink;
-            set
-            {
-                _captchaLink = value;
-                OnPropertyChanged(nameof(CaptchaLink));
-            }
+            set => SetProperty(ref _captchaLink, value);
         }
         public string UserInput
         {
             get => _userInput;
-            set
-            {
-                _userInput = value;
-                OnPropertyChanged(nameof(UserInput));
-            }
+            set => SetProperty(ref _userInput, value);
         }
         public string ErrorMessage
         {
             get => _errorMessage;
-            set
-            {
-                _errorMessage = value;
-                OnPropertyChanged(nameof(ErrorMessage));
-            }
+            set => SetProperty(ref _errorMessage, value);
         }
 
 
@@ -69,9 +58,9 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         {
             await Task.Run(() =>
             {
-                UserLogin user = new UserLogin(_login, _password);
+                UserLogin user       = new UserLogin(_login, _password);
                 LoginResult response = LoginResult.BadCredentials;
-                ErrorMessage = (string)Application.Current.FindResource("aaw_dataWait");
+                ErrorMessage         = (string)Application.Current.FindResource("aaw_dataWait");
 
                 while ((response = user.DoLogin()) != LoginResult.LoginOkay)
                 {
@@ -173,8 +162,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 {
                     Filter = "Mobile authenticator File (.maFile)|*.maFile",
                     InitialDirectory = Directory.GetCurrentDirectory()
-
                 };
+
                 if (fileDialog.ShowDialog() == true)
                 {
                     //Veryfication account
@@ -201,7 +190,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 }
             });
         }
-        public RelayCommand CloseWindowCommand { get; set; }
+
         public AddAuthenticatorViewModel(string login, string password, int accountId, object window)
         {
             _login = login;
@@ -235,7 +224,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 (window as Window).Close();
             });
 
-            // _ = TryToConnect(); 
         }
 
     }

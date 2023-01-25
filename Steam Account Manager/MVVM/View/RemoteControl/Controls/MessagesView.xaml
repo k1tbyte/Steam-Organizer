@@ -82,13 +82,8 @@
             <Setter Property="CaretBrush" Value="{DynamicResource atv_rectangles_shadow}"/>
         </Style>
     </UserControl.Resources>
-    
+
     <Grid>
-        <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
-                       HorizontalOffset="0" VerticalOffset="10">
-            <theme:MainPopup x:Name="Header" Foreground="White"/>
-        </Popup>
-        
         <Border CornerRadius="20" Background="{DynamicResource first_main_color}">
            
             <Grid>
@@ -108,14 +103,15 @@
                                  Background="Transparent" Text="{DynamicResource rc_mv_chat}" Margin="0 6 0 0"/>
 
                                     <TextBox Foreground="{DynamicResource default_foreground}" FontWeight="Normal" IsReadOnly="True"
-                                MaxWidth="120"  FontSize="11"
+                                MaxWidth="120"  FontSize="11" VerticalAlignment="Center" BorderThickness="0"
                                  Background="Transparent" Text="{Binding SelectedChatId}" Margin="0 3 0 0"/>
 
-                                    <Button x:Name="leaveChatBtn" Style="{StaticResource defaultButtonColored}"
-                                            MouseEnter="leaveChatBtn_MouseEnter"
-                                            MouseLeave="Popup_MouseLeave"  Click="Button_Click"
+                                    <Button x:Name="leaveChatBtn" Style="{StaticResource defaultButtonColored}"  Click="Button_Click"
                                  Command="{Binding LeaveFromChatCommand}" Width="26" Height="26" Margin="5 0 0 0">
                                         <Icon:Material Kind="Logout" RotationAngle="180"/>
+                                        <Button.ToolTip>
+                                            <ToolTip ContentStringFormat="{DynamicResource rc_mv_chatLeave}"/>
+                                        </Button.ToolTip>
                                     </Button>
 
                                     <StackPanel.Style>
@@ -136,8 +132,7 @@
                         </StackPanel>
 
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" TextAlignment="Center"
-                           Margin="55 30 0 50" 
-                   FontSize="27" FontWeight="Bold" Foreground="{DynamicResource default_foreground}"
+                           Margin="55 30 0 50" FontSize="27" FontWeight="Bold" Foreground="{DynamicResource default_foreground}"
                    Opacity="0.7" Text="{DynamicResource rc_mv_chatNotSelect}" >
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
@@ -255,10 +250,13 @@
                          IsReadOnly="False" Width="115" Margin="0 0 6 0" MaxLength="60" Text="{Binding AdminId,UpdateSourceTrigger=PropertyChanged}"/>
 
 
-                                <Button x:Name="addAdmin" IsHitTestVisible="{Binding ElementName=add_admin_box, Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"  Command="{Binding AddAdminIdCommand}"
+                                <Button IsHitTestVisible="{Binding ElementName=add_admin_box, Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"  Command="{Binding AddAdminIdCommand}"
                                     CommandParameter="{Binding ElementName=succesAddAdmin}"
-                        Style="{StaticResource defaultButtonColored}" MouseEnter="addAdmin_MouseEnter"
-                                    MouseLeave="Popup_MouseLeave" Content="Add" Height="26" Width="50"/>
+                        Style="{StaticResource defaultButtonColored}" Content="Add" Height="26" Width="50">
+                                    <Button.ToolTip>
+                                        <ToolTip ContentStringFormat="{DynamicResource rc_mv_addAdmin}"/>
+                                    </Button.ToolTip>
+                                </Button>
 
 
 

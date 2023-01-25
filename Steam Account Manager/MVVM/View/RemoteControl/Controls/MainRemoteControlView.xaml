@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.RemoteControl"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
              d:DataContext="{d:DesignInstance Type=vm:MainRemoteControlViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="600">

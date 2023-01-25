@@ -6,7 +6,6 @@
              xmlns:viewmodels="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.MainControl"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              D:DataContext="{D:DesignInstance Type=viewmodels:AccountsViewModel}"
-             xmlns:theme="clr-namespace:Steam_Account_Manager.Themes"
              Mc:Ignorable="D"
              D:DesignHeight="450" D:DesignWidth="600">
    
@@ -17,11 +16,6 @@
             <RowDefinition Height="48"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        
-        <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
-                       HorizontalOffset="0" VerticalOffset="10" >
-            <theme:MainPopup  x:Name="Header" Foreground="White" Margin="0 0 10 0"/>
-        </Popup>
 
         <!--Search Bar-->
         <Grid Width="440" HorizontalAlignment="Left" Grid.Row="0">
@@ -67,32 +61,40 @@
                     HorizontalAlignment="Right" VerticalAlignment="Center">
             
             <!-- Save account database in file -->
-            <Button x:Name="saveDb" Style="{StaticResource serviceButton}" Command="{Binding StoreAccountDatabaseCommand}"
-                    IsEnabled="{Binding IsDatabaseEmpty,Converter={StaticResource BoolInverted}}"
-                    MouseEnter="saveDb_MouseEnter" MouseLeave="Popup_leave">
+            <Button Style="{StaticResource serviceButton}" Command="{Binding StoreAccountDatabaseCommand}"
+                    IsEnabled="{Binding IsDatabaseEmpty,Converter={StaticResource BoolInverted}}">
                 <Icon:PackIconMaterial Kind="ContentSaveAll" Width="20" Height="20"
                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Button.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource av_popup_saveDatabase}"/>
+                </Button.ToolTip>
             </Button>
 
             <!-- Restore account database from file -->
-            <Button x:Name="restoreDb" Style="{StaticResource serviceButton}" Command="{Binding RestoreAccountDatabaseCommand}"
-                    MouseEnter="restoreDb_MouseEnter" MouseLeave="Popup_leave">
+            <Button  Style="{StaticResource serviceButton}" Command="{Binding RestoreAccountDatabaseCommand}">
                 <Icon:PackIconMaterial Kind="UploadMultiple" RotationAngle="180" Width="20" Height="20"
                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Button.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource av_popup_restoreDatabase}"/>
+                </Button.ToolTip>
             </Button>
 
             <!-- Restore account from file -->
-            <Button x:Name="restoreAcc" Style="{StaticResource serviceButton}" Command="{Binding RestoreAccountCommand}"
-                    MouseEnter="restoreAcc_MouseEnter" MouseLeave="Popup_leave">
+            <Button Style="{StaticResource serviceButton}" Command="{Binding RestoreAccountCommand}" >
                 <Icon:PackIconMaterial Kind="FileRestore"  Width="20" Height="20"
                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Button.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource av_popup_saveDatabase}"/>
+                </Button.ToolTip>
             </Button>
 
 
             <!-- Refresh information about all accounts -->
-            <Button x:Name="refreshDb" Style="{StaticResource animatedRefresh}" Width="20" Height="20" Command="{Binding UpdateDatabaseCommand}"
-                    IsEnabled="{Binding IsDatabaseEmpty,Converter={StaticResource BoolInverted}}"
-                    MouseEnter="refreshDb_MouseEnter" MouseLeave="Popup_leave">
+            <Button Style="{StaticResource animatedRefresh}" Width="20" Height="20" Command="{Binding UpdateDatabaseCommand}"
+                    IsEnabled="{Binding IsDatabaseEmpty,Converter={StaticResource BoolInverted}}">
+                <Button.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource av_popup_updAccounts}"/>
+                </Button.ToolTip>
             </Button>
 
 

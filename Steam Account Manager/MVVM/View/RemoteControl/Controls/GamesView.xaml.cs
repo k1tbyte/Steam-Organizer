@@ -116,26 +116,10 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
             SteamRemoteClient.CurrentUser.RememberGamesIds = null;
         }
 
-        private void rememberButton_MouseEnter(object sender, MouseEventArgs e)
-        {
-            Popup.PlacementTarget = rememberButton;
-            Popup.Placement = PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)App.Current.FindResource("rc_gv_saveGameListDesc");
-        }
-
         private void popup_MouseLeave(object sender, MouseEventArgs e)
         {
             Popup.Visibility = Visibility.Collapsed;
             Popup.IsOpen = false;
-        }
-
-        private void addGameId_MouseEnter(object sender, MouseEventArgs e)
-        {
-            Popup.PlacementTarget = addGameId;
-            Popup.Placement = PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)App.Current.FindResource("rc_gv_addGameDesc");
         }
     }
 }

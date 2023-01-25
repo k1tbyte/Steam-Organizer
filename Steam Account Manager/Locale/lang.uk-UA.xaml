@@ -103,8 +103,7 @@
     <v:String x:Key="adv_info_collect_data">Збір інформації про обліковий запис...</v:String>
     <v:String x:Key="adv_nickname">Нікнейм</v:String>
 
-    <v:String x:Key="adv_dontCollectInfo_1">Не збирати інформацію</v:String>
-    <v:String x:Key="adv_dontCollectInfo_2">про цей акаунт</v:String>
+    <v:String x:Key="adv_dontCollectInfo">Не збирати інформацію&#13;про цей акаунт</v:String>
     <!--#endregion-->
 
 
@@ -251,18 +250,29 @@
     <v:String x:Key="rc_lv_emailAddress" xml:space="preserve">Ел. пошта: </v:String>
     <v:String x:Key="rc_lv_emailVerif" xml:space="preserve">Підтвердження пошти: </v:String>
     <v:String x:Key="rc_lv_accountState">Стан аккаунту</v:String>
-    <v:String x:Key="rc_lv_stateOffline">Оффлайн</v:String>
-    <v:String x:Key="rc_lv_stateOnline">Онлайн</v:String>
-    <v:String x:Key="rc_lv_stateBusy">Зайнятий</v:String>
-    <v:String x:Key="rc_lv_stateAway">Відійшов</v:String>
-    <v:String x:Key="rc_lv_stateSnooze">Спить</v:String>
-    <v:String x:Key="rc_lv_stateLookToTrade">Шукає обмін</v:String>
-    <v:String x:Key="rc_lv_stateLoogToPlay">Шукає компанію</v:String>
-    <v:String x:Key="rc_lv_stateInvisible">Невидимий</v:String>
+
+    <x:ArrayExtension x:Key="rc_lv_accountStates" Type="v:String">
+        <v:String>Оффлайн</v:String>
+        <v:String>Онлайн</v:String>
+        <v:String>Зайнятий</v:String>
+        <v:String>Відійшов</v:String>
+        <v:String>Спить</v:String>
+        <v:String>Шукає трейд</v:String>
+        <v:String>Шукає компанію</v:String>
+        <v:String>Невидимий</v:String>
+    </x:ArrayExtension>
+    
     <v:String x:Key="rc_lv_recentlyLogin">Увійти</v:String>
     <v:String x:Key="rc_lv_recentlyDelete">Видалити</v:String>
-
     <v:String x:Key="rc_lv_uiMode">Режим інтерфейсу</v:String>
+
+    <x:ArrayExtension x:Key="rc_lv_uiModes" Type="v:String">
+        <v:String>Звичайний</v:String>
+        <v:String>Big picture</v:String>
+        <v:String>Віртуальна реальність</v:String>
+        <v:String>Смартфон</v:String>
+    </x:ArrayExtension>
+
     <v:String x:Key="rc_lv_logout">Вийти</v:String>
     <v:String x:Key="rc_lv_editNick">Редагувати нікнейм</v:String>
     <v:String x:Key="rc_lv_noInternet">Інтернет з'єднання відсутнє...</v:String>

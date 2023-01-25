@@ -19,7 +19,6 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
             InitializeComponent();
             currentContext = new MessagesViewModel();
             this.DataContext = currentContext;
-
         }
 
 
@@ -55,15 +54,9 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            CurrentCollectionCount = 0;
-        }
-
-        private void DeleteCommand_Click(object sender, RoutedEventArgs e)
-        {
-            DeleteCommand.Visibility = Visibility.Collapsed;
-        }
+        private void Button_Click(object sender, RoutedEventArgs e)        => CurrentCollectionCount = 0;
+        private void DeleteCommand_Click(object sender, RoutedEventArgs e) => DeleteCommand.Visibility = Visibility.Collapsed;
+        
 
         private void commandListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -75,28 +68,6 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
             {
                 DeleteCommand.Visibility = Visibility.Visible;
             }
-        }
-
-        private void leaveChatBtn_MouseEnter(object sender, MouseEventArgs e)
-        {
-            Popup.PlacementTarget = leaveChatBtn;
-            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)App.Current.FindResource("rc_mv_chatLeave");
-        }
-
-        private void Popup_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Popup.Visibility = System.Windows.Visibility.Collapsed;
-            Popup.IsOpen = false;
-        }
-
-        private void addAdmin_MouseEnter(object sender, MouseEventArgs e)
-        {
-            Popup.PlacementTarget = addAdmin;
-            Popup.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)App.Current.FindResource("rc_mv_addAdmin");
         }
 
         private void AddCommand_Click(object sender, RoutedEventArgs e)

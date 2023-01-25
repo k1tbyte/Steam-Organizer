@@ -103,8 +103,7 @@
     <v:String x:Key="adv_info_collect_data">Сбор информации об учетной записи...</v:String>
     <v:String x:Key="adv_nickname">Никнейм</v:String>
 
-    <v:String x:Key="adv_dontCollectInfo_1">Не собирать информацию</v:String>
-    <v:String x:Key="adv_dontCollectInfo_2">об этом аккаунте</v:String>
+    <v:String x:Key="adv_dontCollectInfo">Не собирать информацию&#13;об этом аккаунте</v:String>
     <!--#endregion-->
 
 
@@ -249,18 +248,29 @@
     <v:String x:Key="rc_lv_emailAddress" xml:space="preserve">Ел. почта: </v:String>
     <v:String x:Key="rc_lv_emailVerif" xml:space="preserve">Подтверждение почты: </v:String>
     <v:String x:Key="rc_lv_accountState">Состояние аккаунта</v:String>
-    <v:String x:Key="rc_lv_stateOffline">Оффлайн</v:String>
-    <v:String x:Key="rc_lv_stateOnline">Онлайн</v:String>
-    <v:String x:Key="rc_lv_stateBusy">Занят</v:String>
-    <v:String x:Key="rc_lv_stateAway">Отошел</v:String>
-    <v:String x:Key="rc_lv_stateSnooze">Спит</v:String>
-    <v:String x:Key="rc_lv_stateLookToTrade">Ищет обмен</v:String>
-    <v:String x:Key="rc_lv_stateLoogToPlay">Ищет компанию</v:String>
-    <v:String x:Key="rc_lv_stateInvisible">Невидимый</v:String>
+    
+    <x:ArrayExtension x:Key="rc_lv_accountStates" Type="v:String">
+        <v:String>Оффлайн</v:String>
+        <v:String>Онлайн</v:String>
+        <v:String>Занят</v:String>
+        <v:String>Отошел</v:String>
+        <v:String>Спит</v:String>
+        <v:String>Ищет трейд</v:String>
+        <v:String>Ищет компанию</v:String>
+        <v:String>Невидимый</v:String>
+    </x:ArrayExtension>
+    
     <v:String x:Key="rc_lv_recentlyLogin">Войти</v:String>
     <v:String x:Key="rc_lv_recentlyDelete">Удалить</v:String>
-
     <v:String x:Key="rc_lv_uiMode">Режим интерфейса</v:String>
+
+    <x:ArrayExtension x:Key="rc_lv_uiModes" Type="v:String">
+        <v:String>Обычный</v:String>
+        <v:String>Big picture</v:String>
+        <v:String>Виртуальная реальность</v:String>
+        <v:String>Смартфон</v:String>
+    </x:ArrayExtension>
+
     <v:String x:Key="rc_lv_logout">Выйти</v:String>
     <v:String x:Key="rc_lv_editNick">Редактировать имя</v:String>
     <v:String x:Key="rc_lv_noInternet">Интернет соединение отсутствует...</v:String>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:viewmodels="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.MainControl"
-        d:DataContext="{d:DesignInstance Type=viewmodels:AddAccountViewModel}"
+        d:DataContext="{d:DesignInstance Type=viewmodels:AddAuthenticatorViewModel}"
         mc:Ignorable="d"
         Background="Transparent"
         Title="2FA Adding"

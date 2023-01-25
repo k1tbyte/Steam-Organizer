@@ -10,23 +10,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="600"
              Loaded="UserControl_Loaded">
-    <UserControl.Resources>
-
-
-
-    </UserControl.Resources>
     <Grid>
-        
+
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
-        
-        <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
-                       HorizontalOffset="0" VerticalOffset="10">
-            <theme:MainPopup  x:Name="Header" Foreground="White"/>
-        </Popup>
 
         <!--Header-->
         <TextBlock Grid.Row="0" Text="{DynamicResource sv_settings_title}" FontSize="30"  Foreground="{DynamicResource second_settings_text}"
@@ -104,18 +94,22 @@
                         </StackPanel>
                     </Border>
 
-                    <Button x:Name="apiKeyInfo" Style="{StaticResource serviceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
+                    <Button Style="{StaticResource serviceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
                     VerticalAlignment="Center" Background="Transparent" BorderThickness="0"
-                    Command="{Binding OpenApiKeyUrlCommand}"
-                    MouseEnter="apiKeyInfo_MouseEnter" MouseLeave="PopupLeave_MouseLeave">
+                    Command="{Binding OpenApiKeyUrlCommand}">
                         <Icon:PackIconMaterial Width="20" Height="20" Kind="Information"/>
+                        <Button.ToolTip>
+                            <ToolTip ContentStringFormat="{DynamicResource sv_popup_apiKeyInfo}"/>
+                        </Button.ToolTip>
                     </Button>
 
                     <Button x:Name="ErrorApiKey" Style="{StaticResource ErrorAlert}" 
-                    MouseEnter="ErrorApiKey_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
                     Margin="5 7 0 7" Width="18" Height="18" Visibility="Collapsed"
                     VerticalAlignment="Center" Background="Transparent" BorderThickness="0">
                         <Icon:PackIconMaterial Width="15" Height="15" Kind="Alert"/>
+                        <Button.ToolTip>
+                            <ToolTip ContentStringFormat="{DynamicResource sv_popup_maxApiKeyLength}"/>
+                        </Button.ToolTip>
                     </Button>
 
                 </StackPanel>
@@ -140,24 +134,30 @@
                         </StackPanel>
                     </Border>
 
-                    <Button x:Name="CryptoKeyInfo" Style="{StaticResource serviceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
-                    VerticalAlignment="Center" Background="Transparent" BorderThickness="0"
-                    MouseEnter="CryptoKeyInfo_MouseEnter" MouseLeave="PopupLeave_MouseLeave">
+                    <Button Style="{StaticResource serviceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
+                    VerticalAlignment="Center" Background="Transparent" BorderThickness="0">
                         <Icon:PackIconMaterial Width="20" Height="20" Kind="Information"/>
+                        <Button.ToolTip>
+                            <ToolTip ContentStringFormat="{DynamicResource sv_popup_cryptoKeyInfo}"/>
+                        </Button.ToolTip>
                     </Button>
 
-                    <Button x:Name="GenerateKey" Style="{StaticResource ErrorAlert}" Foreground="{DynamicResource menu_button_background}" 
-                    MouseEnter="GenerateKey_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
+                    <Button Style="{StaticResource ErrorAlert}" Foreground="{DynamicResource menu_button_background}" 
                     Margin="5 7 0 7" Width="18" Height="18" VerticalAlignment="Center"
                     Background="Transparent" BorderThickness="0" Click="GenerateKey_Click">
                         <Icon:PackIconMaterial Width="15" Height="15" Kind="RefreshCircle"/>
+                        <Button.ToolTip>
+                            <ToolTip ContentStringFormat="{DynamicResource sv_popup_generateCryptoKey}"/>
+                        </Button.ToolTip>
                     </Button>
 
-                    <Button x:Name="ResetKey" Style="{StaticResource ErrorAlert}" Foreground="DarkOrange" 
-                    MouseEnter="ResetKey_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
+                    <Button Style="{StaticResource ErrorAlert}" Foreground="DarkOrange" 
                     Margin="5 7 0 7" Width="18" Height="18" VerticalAlignment="Center"
                     Background="Transparent" BorderThickness="0" Click="ResetKey_Click">
                         <Icon:PackIconMaterial Width="15" Height="15" Kind="LockReset"/>
+                        <Button.ToolTip>
+                            <ToolTip ContentStringFormat="{DynamicResource sv_popup_resetCrypto}"/>
+                        </Button.ToolTip>
                     </Button>
 
                 </StackPanel>
@@ -229,11 +229,12 @@
                 <DockPanel Grid.Row="8">
                     <TextBlock Text="{DynamicResource sv_password}" Style="{StaticResource settingTextBlock}"/>
                     <Button x:Name="PasswordError" Style="{StaticResource ErrorAlert}" 
-                    MouseEnter="PasswordError_MouseEnter" MouseLeave="PopupLeave_MouseLeave"
                     Margin="8 7 0 7" Width="18" Height="18" Visibility="{Binding PasswordError,Converter={StaticResource BoolToVis},Mode=TwoWay}"
                     VerticalAlignment="Center" Background="Transparent" BorderThickness="0">
-
                         <Icon:PackIconMaterial Width="15" Height="15" Kind="Alert"/>
+                        <Button.ToolTip>
+                            <ToolTip ContentStringFormat="{DynamicResource sv_popup_passwordError}"/>
+                        </Button.ToolTip>
                     </Button>
                     <ToggleButton x:Name="IsPassword"   IsChecked="False"
                                   Style="{StaticResource ToggleButtonStyle}" PreviewMouseLeftButtonDown="IsPassword_PreviewMouseLeftButtonDown"/>
@@ -315,14 +316,9 @@
         </ScrollViewer>
 
 
-
             <TextBlock Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="0 0 20 -3"
                        Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom"
                                FontSize="12" Text="{Binding Version, StringFormat=Version: {0},Mode=OneWay}"/>
 
-
-        <Icon:PackIconMaterial x:Name="succesSave" Grid.Row="2" Kind="Check"  Width="25" Height="25"
-                               VerticalAlignment="Center" Margin="240 10 0 0" Opacity="0" HorizontalAlignment="Center"
-                               Foreground="{DynamicResource AcidGrad}"/>
     </Grid>
 </UserControl>
