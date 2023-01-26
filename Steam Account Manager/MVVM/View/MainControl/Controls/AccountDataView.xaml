@@ -121,21 +121,28 @@
         <!-- Right service panel -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 50 0" Grid.Row="1">
 
-            <Button x:Name="SaveButton" Style="{StaticResource serviceButton}" Command="{Binding SaveChangesComamnd}"
+            <Button Style="{StaticResource serviceButton}" Command="{Binding SaveChangesComamnd}"
                 Width="35"  Grid.Row="1" Margin="5 10 0 0"
-                VerticalAlignment="Top" HorizontalAlignment="Right" MouseEnter="SaveButton_MouseEnter" MouseLeave="Popup_MouseLeave" >
+                VerticalAlignment="Top" HorizontalAlignment="Right">
                 <Icon:PackIconMaterial  Kind="ContentSave" Height="20" Width="40" />
+                <Button.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource adat_popup_save_chanes}"/>
+                </Button.ToolTip>
             </Button>
 
-            <Button x:Name="ExportButton" Style="{StaticResource serviceButton}" Command="{Binding ExportAccountCommand}"
-                Width="35"  Grid.Row="1" Margin="5 10 0 0" MouseEnter="ExportButton_MouseEnter" MouseLeave="Popup_MouseLeave"
-                VerticalAlignment="Top" HorizontalAlignment="Right" >
+            <Button Style="{StaticResource serviceButton}" Command="{Binding ExportAccountCommand}"
+                Width="35"  Grid.Row="1" Margin="5 10 0 0" VerticalAlignment="Top" HorizontalAlignment="Right" >
                 <Icon:PackIconMaterial  Kind="FileUpload" Height="20" Width="40" />
+                <Button.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource adat_popup_account_export}"/>
+                </Button.ToolTip>
             </Button>
 
-            <Button x:Name="RefreshButton" Style="{StaticResource animatedRefresh}" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"  Command="{Binding RefreshCommand}"
-                Width="20" Height="20"  Grid.Row="1" Margin="10 15 0 0" MouseEnter="RefreshButton_MouseEnter" MouseLeave="Popup_MouseLeave"
-                 HorizontalAlignment="Right" VerticalAlignment="Top">
+            <Button  Style="{StaticResource animatedRefresh}" Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"  Command="{Binding RefreshCommand}"
+                Width="20" Height="20"  Grid.Row="1" Margin="10 15 0 0" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource adat_popup_update_info}"/>
+                </Button.ToolTip>
             </Button>
 
         </StackPanel>
@@ -158,7 +165,7 @@
                             </Border.InputBindings>
                             <WrapPanel Name ="container" Width="138" Height="138">
                                 <Image x:Name="steamImage" 
-                               Source="{Binding AvatarFull, UpdateSourceTrigger=PropertyChanged}"
+                               Source="{Binding CurrentAccount.AvatarFull,Mode=OneWay}"
                                ImageFailed="steamImage_ImageFailed"
                                VerticalAlignment="Center" 
                                HorizontalAlignment="Center" Stretch="UniformToFill"/>
@@ -179,7 +186,7 @@
 
                             <!-- Nickname -->
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Nickname}" Style="{StaticResource settingTextBlock}"
+                                <TextBlock Text="{Binding CurrentAccount.Nickname,Mode=OneWay}" Style="{StaticResource settingTextBlock}"
                                            Foreground="{DynamicResource account_tab_nickname}"
                                    FontSize="25" Margin="15 5 0 0" VerticalAlignment="Top"/>
                                 <Grid Margin="10 7">
@@ -187,7 +194,7 @@
                                              Stroke="Cyan" Width="35" Height="35"/>
 
                                     <!-- Steam Level -->
-                                    <TextBlock Text="{Binding SteamLevel}" FontSize="12" VerticalAlignment="Center"
+                                    <TextBlock Text="{Binding CurrentAccount.SteamLevel,TargetNullValue=-,Mode=OneWay}" FontSize="12" VerticalAlignment="Center"
                                    Foreground="{DynamicResource first_settings_text}"
                                    HorizontalAlignment="Center" FontFamily="Cascadia Mono" />
                                 </Grid>
@@ -199,7 +206,7 @@
                             <StackPanel Orientation="Horizontal" Margin="18 5 0 0">
                                 <TextBlock Text="{DynamicResource adat_profile_url}" Style="{StaticResource settings_description}"/>
                                 <TextBox x:Name="URL" Style="{StaticResource settings_data_box}" Margin="5 0 0 0"  Width="230"
-                                 Text="{Binding SteamURL}" VerticalAlignment="Center"/>
+                                 Text="{Binding CurrentAccount.ProfileURL,Mode=OneWay,TargetNullValue=-}" VerticalAlignment="Center"/>
 
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=URL}"
@@ -210,7 +217,7 @@
                             <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
                                 <TextBlock Style="{StaticResource settings_description}" Text="ID64:"/>
                                 <TextBox x:Name="ID64" Style="{StaticResource settings_data_box}" 
-                                         Text="{Binding SteamID64}" VerticalAlignment="Center"/>
+                                         Text="{Binding CurrentAccount.SteamId64,Mode=OneWay,TargetNullValue=-}" VerticalAlignment="Center"/>
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=ID64}"
                                         Style="{StaticResource animatedCopy}"/>
@@ -220,7 +227,7 @@
                             <StackPanel Orientation="Horizontal" Margin="18 3 0 0">
                                 <TextBlock Style="{StaticResource settings_description}" Text="ID32:" />
                                 <TextBox x:Name="ID32" Style="{StaticResource settings_data_box}" 
-                                         Text="{Binding SteamID32}" VerticalAlignment="Center"/>
+                                         Text="{Binding CurrentAccount.SteamId32,Mode=OneWay,TargetNullValue=-}" VerticalAlignment="Center"/>
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=ID32}"
                                         Style="{StaticResource animatedCopy}"/>
@@ -229,7 +236,7 @@
                             <!-- Profile visiblity -->
                             <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
                                 <TextBlock Style="{StaticResource settings_description}" Text="{DynamicResource adat_visiblity}"/>
-                                <TextBlock Style="{StaticResource data_description}" Text="{Binding ProfileVisiblity}"/>
+                                <TextBlock Style="{StaticResource data_description}" Text="{Binding CurrentAccount.IsProfilePublic}"/>
                             </StackPanel>
 
 
@@ -256,7 +263,7 @@
                                 <Rectangle x:Name="YearsLabel" Width="50" Height="50" RadiusY="6" RadiusX="6" Cursor="Hand"
                                            MouseEnter="YearsLabel_MouseEnter" MouseLeave="Popup_MouseLeave">
                                     <Rectangle.Fill>
-                                        <ImageBrush ImageSource="{Binding CreatedDatePicuture}">
+                                        <ImageBrush ImageSource="{Binding CurrentAccount.CreatedDateImageUrl,Mode=OneWay}">
                                         </ImageBrush>
                                     </Rectangle.Fill>
                                     <Rectangle.Effect>
@@ -267,7 +274,7 @@
                                 <!-- Purchased games Label  -->
                                 <Image x:Name="GamesCountLabel"  Margin="30 0 0 0" Height="55" VerticalAlignment="Center"
                                        MouseLeave="Popup_MouseLeave"  MouseEnter="GamesCountLabel_MouseEnter"
-                                       Source="{Binding GameCountPicture}" Cursor="Hand">
+                                       Source="{Binding CurrentAccount.CountGamesImageUrl,Mode=OneWay}" Cursor="Hand">
                                     <Image.Effect>
                                         <DropShadowEffect Color="{DynamicResource drop_shadow}" BlurRadius="15"/>
                                     </Image.Effect>
@@ -281,7 +288,7 @@
                                         <Style TargetType="{x:Type Border}">
                                             <Setter Property="Background" Value="{StaticResource RedGrad}"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding VacCount, UpdateSourceTrigger=PropertyChanged}" Value="0">
+                                                <DataTrigger Binding="{Binding CurrentAccount.VacBansCount,Mode=OneWay}" Value="0">
                                                     <Setter Property="Background" Value="{StaticResource AcidGrad}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -303,7 +310,7 @@
                                             <Setter Property="Background" Value="{StaticResource AcidGrad}"/>
 
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding TradeBan, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                <DataTrigger Binding="{Binding CurrentAccount.EconomyBanned,Mode=OneWay}" Value="True">
                                                     <Setter Property="Background" Value="{StaticResource RedGrad}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -325,7 +332,7 @@
                                             <Setter Property="Background" Value="{StaticResource AcidGrad}"/>
 
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding CommunityBan, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                <DataTrigger Binding="{Binding CurrentAccount.CommunityBanned,Mode=OneWay}" Value="True">
                                                     <Setter Property="Background" Value="{StaticResource RedGrad}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -366,7 +373,7 @@
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                     <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_borders_background}"
-                                         MaxLength="50" Width="173" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"/>
+                                         MaxLength="50" Width="173" Text="{Binding CurrentAccount.Login,Mode=TwoWay}"/>
                                 </StackPanel>
 
                             </Border>
@@ -376,13 +383,12 @@
                             <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
                                 Opacity="0.9" Height="35" Width="220" CornerRadius="8">
                                 <StackPanel Orientation="Horizontal">
-                                    <Icon:PackIconMaterial Kind="Key"
-                                                       VerticalAlignment="Center"
+                                    <Icon:PackIconMaterial Kind="Key" VerticalAlignment="Center"
                                            Height="22" Width="22"
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                     <ui:ModernPasswordBox Height="20.62" Width="165" Margin="0 0 0 0" VerticalAlignment="Center"
-                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding Password, UpdateSourceTrigger=PropertyChanged}"/>
+                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding CurrentAccount.Password, Mode=TwoWay}"/>
                                 </StackPanel>
                             </Border>
                             
@@ -438,12 +444,18 @@
                                         
                                         <!-- Ranks -->
                                         <StackPanel Orientation="Horizontal" Margin="18 10 0 0" VerticalAlignment="Top">
-                                            <Image x:Name="CurrentRank" Width="80" Cursor="Hand"
-                                                   Source="{Binding CurrentRank, UpdateSourceTrigger=PropertyChanged}"
-                                                   MouseEnter="CurrentRank_MouseEnter" MouseLeave="Popup_MouseLeave"/>
-                                            <Image x:Name="BestRank" Margin="27 0 0 0" Width="80" Cursor="Hand"
-                                                   Source="{Binding BestRank, UpdateSourceTrigger=PropertyChanged}"
-                                                   MouseEnter="BestRank_MouseEnter" MouseLeave="Popup_MouseLeave"/>
+                                            <Image Width="80" Cursor="Hand"
+                                                   Source="{Binding CurrentRank, UpdateSourceTrigger=PropertyChanged}">
+                                                <Image.ToolTip>
+                                                    <ToolTip ContentStringFormat="{DynamicResource adat_popup_current_rank}"/>
+                                                </Image.ToolTip>
+                                            </Image>
+                                            <Image Margin="27 0 0 0" Width="80" Cursor="Hand"
+                                                   Source="{Binding BestRank, UpdateSourceTrigger=PropertyChanged}">
+                                                <Image.ToolTip>
+                                                    <ToolTip ContentStringFormat="{DynamicResource adat_popup_best_rank}"/>
+                                                </Image.ToolTip>
+                                            </Image>
                                         </StackPanel>
                                         <TextBlock Text="{DynamicResource adat_cs_general}" FontSize="16" Margin="0 7 0 0" HorizontalAlignment="Center"
                                        Foreground="{DynamicResource second_text_color}" FontWeight="Medium"/>
@@ -549,7 +561,7 @@
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                                 <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_borders_background}"
-                                         MaxLength="50" Width="173" Text="{Binding EmailLogin}"/>
+                                         MaxLength="50" Width="173" Text="{Binding CurrentAccount.EmailLogin,Mode=TwoWay}"/>
                                             </StackPanel>
                                         </Border>
 
@@ -564,7 +576,7 @@
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                                 <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
-                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding EmailPass}"/>
+                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding CurrentAccount.EmailPass,Mode=TwoWay}"/>
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>
@@ -592,7 +604,7 @@
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                                 <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_borders_background}"
-                                         MaxLength="50" Width="173" Text="{Binding RockstarEmail}"/>
+                                         MaxLength="50" Width="173" Text="{Binding CurrentAccount.RockstarEmail,Mode=TwoWay}"/>
                                             </StackPanel>
                                         </Border>
 
@@ -607,7 +619,7 @@
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                                 <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
-                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding RockstarPass}"/>
+                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding CurrentAccount.RockstarPass,Mode=TwoWay}"/>
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>
@@ -637,7 +649,7 @@
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                                 <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_borders_background}"
-                                         MaxLength="50" Width="173" Text="{Binding UplayEmail, UpdateSourceTrigger=PropertyChanged}"/>
+                                         MaxLength="50" Width="173" Text="{Binding CurrentAccount.UplayEmail,Mode=TwoWay}"/>
                                             </StackPanel>
                                         </Border>
 
@@ -652,7 +664,7 @@
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                                 <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
-                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding UplayPass, UpdateSourceTrigger=PropertyChanged}"/>
+                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding CurrentAccount.UplayPass,Mode=TwoWay}"/>
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>
@@ -681,7 +693,7 @@
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                                 <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_borders_background}"
-                                         MaxLength="50" Width="173" Text="{Binding OriginEmail, UpdateSourceTrigger=PropertyChanged}"/>
+                                         MaxLength="50" Width="173" Text="{Binding CurrentAccount.OriginEmail,Mode=TwoWay}"/>
                                             </StackPanel>
                                         </Border>
 
@@ -696,7 +708,7 @@
                                            Margin="8 0 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                                                 <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
-                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding OriginPass, UpdateSourceTrigger=PropertyChanged}"/>
+                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding CurrentAccount.OriginPass,Mode=TwoWay}"/>
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>
@@ -744,12 +756,12 @@
                         <TextBox Grid.ColumnSpan="2" Padding="12 8 22 12" Background="Transparent" BorderThickness="0" MaxWidth="501.9"
                                  Foreground="{DynamicResource second_text_color}" CaretBrush="{DynamicResource default_foreground}" TextWrapping="Wrap"
                                  AcceptsReturn="True" VerticalScrollBarVisibility="Auto" MaxLength="350" MaxLines="50" AcceptsTab="True"
-                                 Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" SelectionBrush="{DynamicResource second_main_color}"/>
+                                 Text="{Binding CurrentAccount.Note,Mode=TwoWay}" SelectionBrush="{DynamicResource second_main_color}"/>
                     </Grid>
                     
                     <!-- Last update time -->
                     <TextBlock Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="0 8 0 0" HorizontalAlignment="Center" 
-                               FontSize="10" Text="{Binding LastUpdateTime, StringFormat=Last updated account information: {0}}" />
+                               FontSize="10" Text="{Binding CurrentAccount.LastUpdateTime,Mode=OneWay, StringFormat=Last updated account information: {0}}" />
 
                 </StackPanel>
             </Grid>
@@ -763,6 +775,9 @@
                 Command="{Binding AddAuthenticatorCommand}" CommandParameter="{Binding ElementName=TwoFaAuthAddConfirm}"
                 VerticalAlignment="Top" HorizontalAlignment="Left">
             <Icon:PackIconMaterial  Kind="TwoFactorAuthentication" Height="18" Width="40" />
+            <Button.ToolTip>
+                <ToolTip ContentStringFormat="{DynamicResource adat_2fa_toolTip}"/>
+            </Button.ToolTip>
         </Button>
 
         <!--Confirmation 2FA-->

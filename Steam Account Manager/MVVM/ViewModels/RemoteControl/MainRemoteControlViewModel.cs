@@ -48,11 +48,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
         public bool IsLoginView
         {
             get => _isLoginView;
-            set
-            {
-                _isLoginView = value;
-                OnPropertyChanged(nameof(IsLoginView));
-            }
+            set => SetProperty(ref _isLoginView, value);
         }
 
         public MainRemoteControlViewModel()

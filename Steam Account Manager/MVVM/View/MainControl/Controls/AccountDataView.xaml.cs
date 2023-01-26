@@ -11,10 +11,8 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
     public partial class AccountDataView : UserControl
     {
 
-        public AccountDataView()
-        {
-            InitializeComponent();
-        }
+        public AccountDataView() => InitializeComponent();
+        
 
         public void SetAsDefault(bool scroll = false)
         {
@@ -33,9 +31,9 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             Popup.PlacementTarget = VacBorder;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = (string)FindResource("adat_popup_vacCount") + " " + ((AccountDataViewModel)this.DataContext).VacCount.ToString();
+            Header.PopupText.Text = App.FindString("adat_popup_vacCount") + " " + ((AccountDataViewModel)this.DataContext).VacCount.ToString();
             if (((AccountDataViewModel)this.DataContext).DaysSinceLastBan != 0) Header.PopupText.Text += '\n' +
-                    (string)FindResource("adat_popup_daysFirstBan") + " " +
+                    App.FindString("adat_popup_daysFirstBan") + " " +
                     ((AccountDataViewModel)this.DataContext).DaysSinceLastBan.ToString();
         }
 
@@ -45,11 +43,9 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
             if (((AccountDataViewModel)this.DataContext).CreatedDate != DateTime.MinValue)
-                Header.PopupText.Text = (string)FindResource("adat_popup_regDate") + " " + ((AccountDataViewModel)this.DataContext).CreatedDate;
+                Header.PopupText.Text = App.FindString("adat_popup_regDate") + " " + ((AccountDataViewModel)this.DataContext).CreatedDate;
             else
-                Header.PopupText.Text = (string)FindResource("adat_popup_regDateUnknown");
-
-
+                Header.PopupText.Text = App.FindString("adat_popup_regDateUnknown");
         }
 
         private void Popup_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
@@ -65,58 +61,17 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             Popup.IsOpen = true;
             if (((AccountDataViewModel)this.DataContext).GamesTotal == "-" || ((AccountDataViewModel)this.DataContext).ProfileVisiblity == "Private")
             {
-                Header.PopupText.Text = (string)FindResource("adat_popup_nullGames");
+                Header.PopupText.Text = App.FindString("adat_popup_nullGames");
             }
             else
             {
-                Header.PopupText.Text = (string)FindResource("adat_popup_countGames") + " " + ((AccountDataViewModel)this.DataContext).GamesTotal + '\n';
-                Header.PopupText.Text += (string)FindResource("adat_popup_playedGames") + " " + ((AccountDataViewModel)this.DataContext).GamesPlayed + ((AccountDataViewModel)this.DataContext).PlayedPercent + '\n';
-                Header.PopupText.Text += (string)FindResource("adat_popup_playtime") + " " + ((AccountDataViewModel)this.DataContext).HoursOnPlayed;
+                Header.PopupText.Text = App.FindString("adat_popup_countGames") + " " + ((AccountDataViewModel)this.DataContext).GamesTotal + '\n';
+                Header.PopupText.Text += App.FindString("adat_popup_playedGames") + " " + ((AccountDataViewModel)this.DataContext).GamesPlayed + ((AccountDataViewModel)this.DataContext).PlayedPercent + '\n';
+                Header.PopupText.Text += App.FindString("adat_popup_playtime") + " " + ((AccountDataViewModel)this.DataContext).HoursOnPlayed;
                 if (((AccountDataViewModel)this.DataContext).HoursOnPlayed != "Private") Header.PopupText.Text += "h";
             }
-
-
         }
 
-        private void SaveButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Popup.PlacementTarget = SaveButton;
-            Popup.Placement = PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)FindResource("adat_popup_save_chanes");
-        }
-
-        private void ExportButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Popup.PlacementTarget = ExportButton;
-            Popup.Placement = PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)FindResource("adat_popup_account_export");
-        }
-
-        private void RefreshButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Popup.PlacementTarget = RefreshButton;
-            Popup.Placement = PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)FindResource("adat_popup_update_info");
-        }
-
-        private void CurrentRank_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Popup.PlacementTarget = CurrentRank;
-            Popup.Placement = PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)FindResource("adat_popup_current_rank");
-        }
-
-        private void BestRank_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Popup.PlacementTarget = BestRank;
-            Popup.Placement = PlacementMode.Top;
-            Popup.IsOpen = true;
-            Header.PopupText.Text = (string)FindResource("adat_popup_best_rank");
-        }
 
         private void steamImage_ImageFailed(object sender, ExceptionRoutedEventArgs e)
         {

@@ -123,6 +123,7 @@
     <v:String x:Key="adat_email_address">Email адресс</v:String>
     <v:String x:Key="adat_noteAbout">• Заметка об акаунте</v:String>
     <v:String x:Key="adat_2fa_confirm">Вы уверены, что хотите привязать 2FA к аккаунту?</v:String>
+    <v:String x:Key="adat_2fa_toolTip">Двухфакторная аутентификация</v:String>
 
     <v:String x:Key="adat_links_header">Steam ссылки</v:String>
     <v:String x:Key="adat_links_games">Игры</v:String>

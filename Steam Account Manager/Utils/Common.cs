@@ -29,7 +29,7 @@ namespace Steam_Account_Manager.Utils
 
 
         public static long GetSystemUnixTime() => (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-        public static DateTime? UnixTimeToDateTime(long unixtime)
+        public static DateTime? UnixTimeToDateTime(ulong unixtime)
         {
             if (unixtime == 0)
                 return null;
@@ -115,7 +115,7 @@ namespace Steam_Account_Manager.Utils
         #endregion
 
         #region Steam
-        public static long SteamId64ToSteamId32(long steamId64) => steamId64 - 76561197960265728;
+        public static UInt32? SteamId64ToSteamId32(ulong? steamId64) => steamId64.HasValue ? (UInt32?)(steamId64.Value - 76561197960265728) : null;
         public static string SteamId32ToSteamId64(int steamId32) => (steamId32 + 76561197960265728).ToString();
         public static uint SteamId64ToSteamId32(string steamId64)
         {

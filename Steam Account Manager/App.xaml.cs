@@ -99,6 +99,7 @@ namespace Steam_Account_Manager
         public static new void Shutdown()
         {
             IsShuttingDown = true;
+            Config.SaveProperties();
 
             if(SteamRemoteClient.IsRunning)
                 SteamRemoteClient.Logout();

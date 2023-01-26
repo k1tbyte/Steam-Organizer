@@ -173,47 +173,27 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
         public string ErrorMsg
         {
             get => _errorMsg;
-            set
-            {
-                _errorMsg = value;
-                OnPropertyChanged(nameof(ErrorMsg));
-            }
+            set => SetProperty(ref _errorMsg, value);
         }
         public string AuthCode
         {
             get => _authCode;
-            set
-            {
-                _authCode = value;
-                OnPropertyChanged(nameof(AuthCode));
-            }
+            set => SetProperty(ref _authCode, value);
         }
         public string Password
         {
             get => _password;
-            set
-            {
-                _password = value;
-                OnPropertyChanged(nameof(Password));
-            }
+            set => SetProperty(ref _password, value);
         }
         public string Username
         {
             get => _username;
-            set
-            {
-                _username = value;
-                OnPropertyChanged(nameof(Username));
-            }
+            set => SetProperty(ref _username, value);
         }
         public bool IsAuthCode
         {
             get => _isAuthCode;
-            set
-            {
-                _isAuthCode = value;
-                OnPropertyChanged(nameof(IsAuthCode));
-            }
+            set => SetProperty(ref _isAuthCode, value);
         }
         #endregion
 
@@ -221,37 +201,37 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
         {
             if (!App.MainWindow.IsVisible && result != EResult.OK && result != EResult.NotLoggedOn)
             {
-                Utils.Presentation.OpenPopupMessageBox($"{SteamRemoteClient.UserPersonaName} {(string)App.Current.FindResource("rc_lv_accAlreadyUse")}", true);
+                Utils.Presentation.OpenPopupMessageBox($"{SteamRemoteClient.UserPersonaName} {App.FindString("rc_lv_accAlreadyUse")}", true);
                 LogOutCommand.Execute(null);
             }
             else if(result == EResult.LoggedInElsewhere)
             {
                 var nickname = SteamRemoteClient.UserPersonaName;
                 LogOutCommand.Execute(null);
-                Utils.Presentation.OpenMessageBox($"{nickname} {(string)App.Current.FindResource("rc_lv_accAlreadyUse")}","some title later");
+                Utils.Presentation.OpenMessageBox($"{nickname} {App.FindString("rc_lv_accAlreadyUse")}","some title later");
             }
             else
             {
                 switch (result)
                 {
                     case EResult.InvalidPassword:
-                        ErrorMsg = (string)App.Current.FindResource("rc_lv_invalidPass");
+                        ErrorMsg = App.FindString("rc_lv_invalidPass");
                         Password = "";
                         break;
                     case EResult.NoConnection:
-                        ErrorMsg = (string)App.Current.FindResource("rc_lv_noInternet");
+                        ErrorMsg = App.FindString("rc_lv_noInternet");
                         break;
                     case EResult.ServiceUnavailable:
-                        ErrorMsg = (string)App.Current.FindResource("rc_lv_servUnavailable");
+                        ErrorMsg = App.FindString("rc_lv_servUnavailable");
                         break;
                     case EResult.Timeout:
-                        ErrorMsg = (string)App.Current.FindResource("rc_lv_workTimeout");
+                        ErrorMsg = App.FindString("rc_lv_workTimeout");
                         break;
                     case EResult.RateLimitExceeded:
-                        ErrorMsg = (string)App.Current.FindResource("rc_lv_retriesExceeded");
+                        ErrorMsg = App.FindString("rc_lv_retriesExceeded");
                         break;
                     case EResult.TryAnotherCM:
-                        ErrorMsg = (string)App.Current.FindResource("rc_lv_tryLater");
+                        ErrorMsg = App.FindString("rc_lv_tryLater");
                         break;
                 }
             }
@@ -305,7 +285,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
 
                 if (result == EResult.Cancelled || result == EResult.Invalid)
                 {
-                    ErrorMsg = (string)App.Current.FindResource("rc_lv_keyExpired");
+                    ErrorMsg = App.FindString("rc_lv_keyExpired");
                     RecentlyLoggedIn.Remove(element);
                     Config.Serialize(RecentlyLoggedIn, App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
                 }

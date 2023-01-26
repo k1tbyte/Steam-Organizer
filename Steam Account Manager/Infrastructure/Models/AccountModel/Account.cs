@@ -5,41 +5,46 @@ using System.Web.UI.WebControls;
 namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
 {
     [Serializable]
-    internal class Account
+    internal sealed class Account
     {
         #region Properties
 
-        #region Player summaries
-        public string SteamId64 { get; set; }
+        #region Summaries properties
+        public ulong? SteamId64 { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
         public string Nickname { get; set; }
         public string AvatarHash { get; set; }
         public string ProfileURL { get; set; }
-        public bool ProfileVisility { get; set; }
+        public bool IsProfilePublic { get; set; }
         public DateTime AccCreatedDate { get; set; }
         public string CreatedDateImageUrl { get; set; }
         public bool ContainParseInfo { get; set; }
         public DateTime LastUpdateTime { get; set; }
+
+        public UInt32? SteamId32   => Utils.Common.SteamId64ToSteamId32(SteamId64);
+        public string AvatarFull   => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_full.jpg" : "/Images/default_steam_profile.png";
+        public string AvatarMedium => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_medium.jpg" : "/Images/default_steam_profile.png";
         #endregion
 
-        #region Bans
-        public bool TradeBan { get; set; }
-        public bool CommunityBan { get; set; }
+        #region Bans properties
+        public bool EconomyBanned { get; set; }
+        public bool CommunityBanned { get; set; }
         public int VacBansCount { get; set; }
-        public uint DaysSinceLastBan { get; set; }
+        public int GameBansCount { get; set; }
+        public int DaysSinceLastBan { get; set; }
         #endregion
 
-        #region Games
-        public string SteamLevel { get; set; }
-        public string TotalGames { get; set; }
-        public string GamesPlayed { get; set; }
-        public string HoursOnPlayed { get; set; }
+        #region Games properties
+        public int? SteamLevel { get; set; }
+        public int? TotalGamesCount { get; set; }
+        public int? GamesPlayedCount { get; set; }
+        public int? HoursOnPlayed { get; set; }
         public string CountGamesImageUrl { get; set; }
         public CSGO CsgoStats { get; set; }
         #endregion
 
-        #region Other info
+        #region Other info properties
         public string Note { get; set; }
         public string EmailLogin { get; set; }
         public string EmailPass { get; set; }
@@ -55,41 +60,41 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
         #endregion
 
         //Default
-        public Account(string login, string password, string steamId64)
+        public Account(string login, string password, ulong steamId64)
         {
-            this.Login = login;
-            this.Password = password;
+            this.Login     = login;
+            this.Password  = password;
             this.SteamId64 = steamId64;
 
-            SteamParser steamParser = new SteamParser(steamId64);
+            SteamParser steamParser  = new SteamParser(steamId64);
             steamParser.AccountParse().GetAwaiter().GetResult();
-            this.Nickname = steamParser.GetNickname;
-            this.AvatarHash = steamParser.GetAvatarHash;
-            this.ProfileURL = steamParser.GetCustomProfileUrl;
-            this.ProfileVisility = steamParser.GetProfileVisiblity;
-            this.AccCreatedDate = steamParser.GetAccountCreatedDate;
-            this.LastUpdateTime = DateTime.Now;
 
-            this.TradeBan = steamParser.GetEconomyBanStatus;
-            this.CommunityBan = steamParser.GetCommunityBanStatus;
-            this.VacBansCount = steamParser.GetVacCount;
-            this.DaysSinceLastBan = steamParser.GetDaysSinceLastBan;
+            this.Nickname            = steamParser.Nickname;
+            this.AvatarHash          = steamParser.AvatarHash;
+            this.ProfileURL          = steamParser.ProfileURL;
+            this.IsProfilePublic     = steamParser.IsProfilePublic;
+            this.AccCreatedDate      = steamParser.CreatedDateTime;
+            this.CreatedDateImageUrl = steamParser.CreatedDateImageUrl;
+            this.LastUpdateTime      = DateTime.Now;
 
-            this.SteamLevel = steamParser.GetSteamLevel;
-            this.TotalGames = steamParser.GetTotalGames;
-            this.GamesPlayed = steamParser.GetGamesPlayed;
-            this.HoursOnPlayed = steamParser.GetHoursOnPlayed;
-            this.CountGamesImageUrl = steamParser.GetCountGamesImageUrl;
-            this.CreatedDateImageUrl = steamParser.GetCreatedDateImageUrl;
-            this.ContainParseInfo = true;
+            this.EconomyBanned    = steamParser.EconomyBanned;
+            this.CommunityBanned  = steamParser.CommunityBanned;
+            this.VacBansCount     = steamParser.VacBansCount;
+            this.GameBansCount    = steamParser.GameBansCount;
+            this.DaysSinceLastBan = steamParser.DaysSinceLastBan;
+
+            this.SteamLevel         = steamParser.SteamLevel;
+            this.TotalGamesCount    = steamParser.TotalGamesCount;
+            this.GamesPlayedCount   = steamParser.GamesPlayedCount;
+            this.HoursOnPlayed      = steamParser.HoursOnPlayed;
+            this.CountGamesImageUrl = steamParser.CountGamesImageUrl;
+            this.ContainParseInfo   = true;
 
             this.CsgoStats = new CSGO();
-
-         //   this.Note = EmailLogin = EmailPass = RockstarEmail = RockstarPass = UplayEmail = UplayPass = OriginEmail = OriginPass = "";
         }
 
         //Update account counstructor
-        public Account(string login, string password, string steamId64, string note, string emailLogin, string emailPass,
+        public Account(string login, string password, ulong steamId64, string note, string emailLogin, string emailPass,
              string rockstarEmail, string rockstarPass, string uplayEmail, string uplayPass,
              string originEmail, string originPass, CSGO csgoStats, string authenticatorPath,string nick = null) : this(login,password,steamId64)
         {
@@ -108,6 +113,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
             this.OriginPass = originPass;
             this.OriginEmail = originEmail;
 
+#if !DEBUG
             if(nick.GetHashCode() != this.Nickname.GetHashCode())
             {
                 foreach (var item in Config.Properties.RecentlyLoggedUsers) 
@@ -129,6 +135,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
                     }
                 }
             }
+#endif
 
 
         }
@@ -145,7 +152,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
 
         public override string ToString()
         {
-            return $"{Nickname} [{Utils.Common.SteamId64ToSteamId32(SteamId64)}]";
+            return $"{Nickname} [{SteamId32}]";
         }
     }
 }

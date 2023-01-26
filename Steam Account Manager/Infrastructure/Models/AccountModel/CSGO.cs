@@ -16,7 +16,6 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
         {
             get => _accuracy;
             set => _accuracy = value;
-
         }
         public string HeadshotPercent
         {

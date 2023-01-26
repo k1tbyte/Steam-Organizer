@@ -36,17 +36,17 @@
                     <TextBlock Text="{DynamicResource sv_theme}" Style="{StaticResource settingTextBlock}"/>
                     <RadioButton Style="{StaticResource themeButton}"
                          Content="/Images/dark_preview.png"
-                         IsChecked="{Binding SelectedThemeIndex,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=0,Mode=OneWay}"
+                         IsChecked="{Binding Properties.Theme,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=0,Mode=OneWay}"
                          Command="{Binding ChangeThemeCommand}" CommandParameter="0"/>
 
                     <RadioButton Style="{StaticResource themeButton}"
                          Content="/Images/light_preview.png"
-                         IsChecked="{Binding SelectedThemeIndex,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=1,Mode=OneWay}"
+                         IsChecked="{Binding Properties.Theme,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=1,Mode=OneWay}"
                          Command="{Binding ChangeThemeCommand}" CommandParameter="1"/>
 
                     <RadioButton Style="{StaticResource themeButton}"
                          Content="/Images/nebula_preview.png"
-                         IsChecked="{Binding SelectedThemeIndex,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=2,Mode=OneWay}"
+                         IsChecked="{Binding Properties.Theme,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=2,Mode=OneWay}"
                          Command="{Binding ChangeThemeCommand}" CommandParameter="2">
                     </RadioButton>
                 </StackPanel>
@@ -55,15 +55,15 @@
                 <StackPanel  Orientation="Horizontal" Margin="0 8 0 2">
                     <TextBlock Text="{DynamicResource sv_language}" Style="{StaticResource settingTextBlock}"/>
                     <RadioButton Style="{StaticResource languageButton}"          
-                         IsChecked="{Binding SelectedLanguageIndex,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=0,Mode=OneWay}"
+                         IsChecked="{Binding Properties.Language,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=0,Mode=OneWay}"
                          Content="/Images/Countries_flags/United_Kingdom.png"
                          Command="{Binding ChangeLanguageCommand}" CommandParameter="0"/>
                     <RadioButton Style="{StaticResource languageButton}"
-                         IsChecked="{Binding SelectedLanguageIndex,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=1,Mode=OneWay}"
+                         IsChecked="{Binding Properties.Language,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=1,Mode=OneWay}"
                          Content="/Images/Countries_flags/Russia.png"
                          Command="{Binding ChangeLanguageCommand}" CommandParameter="1"/>
                     <RadioButton Style="{StaticResource languageButton}"
-                         IsChecked="{Binding SelectedLanguageIndex,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=2,Mode=OneWay}"
+                         IsChecked="{Binding Properties.Language,Converter={StaticResource IndexByteBooleanConverter},ConverterParameter=2,Mode=OneWay}"
                          Content="/Images/Countries_flags/Ukraine.png"
                          Command="{Binding ChangeLanguageCommand}" CommandParameter="2"/>
                 </StackPanel>
@@ -88,7 +88,7 @@
                                            VerticalAlignment="Center" Height="20" Width="20" />
 
                             <TextBox Margin="5 0 0 0" Width="205"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
-                         Text="{Binding WebApiKey,Mode=OneWay}" VerticalAlignment="Center" SelectionBrush="{DynamicResource second_main_color}"
+                         Text="{Binding Properties.WebApiKey,Mode=OneWay}" VerticalAlignment="Center" SelectionBrush="{DynamicResource second_main_color}"
                          Background="{DynamicResource first_main_color}" MaxLength="32" BorderThickness="0" CaretBrush="White"
                          TextChanged="ApiKey_TextChanged"/>
                         </StackPanel>
@@ -193,35 +193,35 @@
                 <!-- Delete without confirmation -->  
                 <DockPanel  Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_confirm_when_del}" Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton IsChecked="{Binding NoConfirmMode}"
+                    <ToggleButton IsChecked="{Binding Properties.NoConfirmMode}"
                           Style="{StaticResource ToggleButtonStyle}"/>
                 </DockPanel>
 
                 <!-- Dont collect information -->
                 <DockPanel>
                     <TextBlock Text="{DynamicResource sv_info_collect}" Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton IsChecked="{Binding TakeAccountInfoMode}"
+                    <ToggleButton IsChecked="{Binding Properties.TakeAccountInfo}"
                           Style="{StaticResource ToggleButtonStyle}"/>
                 </DockPanel>
 
                 <!-- Remember password -->
                 <DockPanel>
                     <TextBlock Text="{DynamicResource sv_rememberPass}" Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton IsChecked="{Binding RememberPassword}"
+                    <ToggleButton IsChecked="{Binding Properties.RememberPassword}"
                           Style="{StaticResource ToggleButtonStyle}"/>
                 </DockPanel>
 
                 <!-- Auto get steamid -->
                 <DockPanel>
                     <TextBlock Text="{DynamicResource sv_getID}" Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton IsChecked="{Binding AutoGetSteamId}"
+                    <ToggleButton IsChecked="{Binding Properties.AutoGetSteamId}"
                           Style="{StaticResource ToggleButtonStyle}"/>
                 </DockPanel>
 
                 <!-- Highest quality images -->
                 <DockPanel>
                     <TextBlock Text="{DynamicResource sv_highestQualityImages}" Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton IsChecked="{Binding HighestQualityImages}"
+                    <ToggleButton IsChecked="{Binding Properties.HighestQualityImages}"
                           Style="{StaticResource ToggleButtonStyle}"/>
                 </DockPanel>
 
@@ -284,14 +284,14 @@
                 <!-- Minimize to tray -->
                 <DockPanel  Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_minimizeOnClose}" Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton IsChecked="{Binding MinimizeToTray}" VerticalAlignment="Center"
+                    <ToggleButton IsChecked="{Binding Properties.MinimizeToTray}" VerticalAlignment="Center"
                           Style="{StaticResource checkbox}" Margin="0 0 150 0"  HorizontalAlignment="Right" Width="27" Height="27"/>
                 </DockPanel>
 
                 <!-- Minimize app on startup -->
                 <DockPanel Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_minimizeAtStart}" Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton IsChecked="{Binding MinimizeOnStart}" VerticalAlignment="Center"
+                    <ToggleButton IsChecked="{Binding Properties.MinimizeOnStart}" VerticalAlignment="Center"
                           Style="{StaticResource checkbox}" Margin="0 0 150 0"  HorizontalAlignment="Right"  Width="27" Height="27"/>
                 </DockPanel>
 

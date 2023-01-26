@@ -20,7 +20,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         #region Properties
         public List<Account> AutoLoginUsers => Config.Accounts.Where(o => o.ContainParseInfo).ToList();
-        
+        public ConfigProperties Properties  => Config.Properties;
         public Account AutoLoginAccount
         {
             get => _autoLoginAccount;
@@ -34,41 +34,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             }
         }
 
-        public bool MinimizeOnStart
-        {
-            get => Config.Properties.MinimizeOnStart;
-            set => Config.Properties.MinimizeOnStart = value;
-        }
 
         public bool Autostartup
         {
             get => Utils.Common.IsRegistryAutoStartup();
             set => Utils.Common.SetRegistryAutostartup(Autostartup);
-        }
-
-        public bool MinimizeToTray
-        {
-            get => Config.Properties.MinimizeToTray;
-            set => Config.Properties.MinimizeToTray = value;
-        }
-
-        public bool RememberPassword
-        {
-            get => Config.Properties.RememberPassword;
-            set => Config.Properties.RememberPassword = value;
-
-        }
-
-        public bool AutoGetSteamId
-        {
-            get => Config.Properties.AutoGetSteamId; 
-            set => Config.Properties.AutoGetSteamId = value;
-        }
-
-        public bool TakeAccountInfoMode
-        {
-            get => Config.Properties.TakeAccountInfo;
-            set => Config.Properties.TakeAccountInfo = value;
         }
 
         private bool _passwordError;
@@ -101,22 +71,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             set => Config.Properties.Input2FaMethod = (Input2faMethod)value;
         }
 
-        public bool NoConfirmMode
-        {
-            get => Config.Properties.NoConfirmMode;
-            set => Config.Properties.NoConfirmMode = value;
-        }
-
-        public bool HighestQualityImages
-        {
-            get => Config.Properties.HighestQualityImages;
-            set => Config.Properties.HighestQualityImages = value;
-        }
-
         public string Version             => App.Version.ToString("# # #").Replace(' ', '.');
-        public string WebApiKey           => Config.Properties.WebApiKey;
-        public byte SelectedThemeIndex    => (byte)Config.Properties.Theme;
-        public byte SelectedLanguageIndex => (byte)Config.Properties.Language;
         #endregion
 
         public SettingsViewModel()
@@ -128,14 +83,14 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             ChangeThemeCommand = new RelayCommand(o =>
             {
-                var attachedTheme = (Infrastructure.Models.Themes)Convert.ToByte(o);
+                var attachedTheme = (Themes)Convert.ToByte(o);
                 if (Config.Properties.Theme != attachedTheme)
                     Config.Properties.Theme = attachedTheme;
             });
 
             ChangeLanguageCommand = new RelayCommand(o =>
             {
-                var attachedLocale = (Infrastructure.Models.Languages)Convert.ToByte(o);
+                var attachedLocale = (Languages)Convert.ToByte(o);
                 if (Config.Properties.Language == attachedLocale)
                     return;
 

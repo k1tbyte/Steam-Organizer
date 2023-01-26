@@ -125,6 +125,7 @@
     <v:String x:Key="adat_email_address">Email address</v:String>
     <v:String x:Key="adat_noteAbout">• Note about account</v:String>
     <v:String x:Key="adat_2fa_confirm">Are you sure you want to link 2FA to your account?</v:String>
+    <v:String x:Key="adat_2fa_toolTip">Two-factor authentication</v:String>
 
     <v:String x:Key="adat_links_header">Steam links</v:String>
     <v:String x:Key="adat_links_games">Games</v:String>

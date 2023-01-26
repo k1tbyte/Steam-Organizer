@@ -28,40 +28,27 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
 
 
         #region Properties
+
         private string _message;
         public string Message
         {
             get => _message;
-            set
-            {
-                _message = value;
-                OnPropertyChanged(nameof(Message));
-            }
+            set => SetProperty(ref _message, value);
         }
 
         private string _errorMsg;
         public string ErrorMsg
         {
             get => _errorMsg;
-            set
-            {
-                _errorMsg = value;
-                OnPropertyChanged(nameof(ErrorMsg));
-            }
+            set => SetProperty(ref _errorMsg, value);
         }
 
         private string _interlocutorId;
         public string InterlocutorId
         {
             get => _interlocutorId;
-            set
-            {
-                _interlocutorId = value;
-                OnPropertyChanged(nameof(InterlocutorId));
-
-            }
+            set => SetProperty(ref _interlocutorId, value);
         }
-
 
         #endregion
 
@@ -149,7 +136,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
             }
         }
         #endregion
-
 
         public static void InitDefaultCommands()
         {

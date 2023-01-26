@@ -48,7 +48,7 @@
     <v:String x:Key="sv_popup_maxApiKeyLength">Довжина ключа може складати лише 32 символи</v:String>
     <v:String x:Key="sv_popup_cryptoKeyInfo" xml:space="preserve"
               >256-бітний ключ для шифрування даних при збереженні акаунтів.&#13;УВАГА! Якщо ви втратите ключ, ви не зможете відновити свої дані&#13;Після створення нового ключа запишіть його або збережіть!</v:String>
-    <v:String x:Key="sv_popup_generateCryptoKey">Згенеруйте новий ключ шифрування</v:String>
+    <v:String x:Key="sv_popup_generateCryptoKey">Згенерувати новий ключ шифрування</v:String>
     <v:String x:Key="sv_popup_resetCrypto">Скинути за замовчуванням</v:String>
     <v:String x:Key="sv_popup_passwordError" xml:space="preserve">Пароль має містити принаймні&#13;5 символів і не більше 30</v:String>
     <!--#endregion-->
@@ -123,6 +123,7 @@
     <v:String x:Key="adat_email_address">Email адреса</v:String>
     <v:String x:Key="adat_noteAbout">• Нотатка про акаунт</v:String>
     <v:String x:Key="adat_2fa_confirm">Ви впевнені, що хочете прив'язати 2FA до акаунту?</v:String>
+    <v:String x:Key="adat_2fa_toolTip">Двофакторна аутентифікація</v:String>
 
     <v:String x:Key="adat_links_header">Steam посилання</v:String>
     <v:String x:Key="adat_links_games">Ігри</v:String>

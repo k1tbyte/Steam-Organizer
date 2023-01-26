@@ -17,7 +17,7 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
 
-    <Border CornerRadius="30" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="Border_MouseDown">
+    <Border CornerRadius="25" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="Border_MouseDown">
         <Grid>
 
             <Grid.ColumnDefinitions>
@@ -33,7 +33,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Border Grid.Row="1" Background="{DynamicResource second_main_color}" CornerRadius="0 50 0 30">
+                <Border Grid.Row="1" Background="{DynamicResource second_main_color}" CornerRadius="0 45 0 25">
                     <DockPanel>
                         <!--Menu Logo-->
                         <Border Width="100" Height="100" Background="{DynamicResource background_border_color}" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0 -30 0 0">

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 
@@ -25,7 +24,7 @@ namespace Steam_Account_Manager.Infrastructure
             Properties = new ConfigProperties
             {
                 UserCryptoKey = CryptoKey,
-                Theme = Models.Themes.Dark,
+                Theme = Themes.Dark,
                 Language = Languages.English,
                 RecentlyLoggedUsers = new List<RecentlyLoggedUser>()
             };
@@ -53,12 +52,12 @@ namespace Steam_Account_Manager.Infrastructure
             {
                 if (File.Exists(App.WorkingDirectory + "\\config.dat"))
                 {
-                    var result = (ConfigProperties)Deserialize(App.WorkingDirectory + @"\config.dat", CryptoKey);
-                    if(result == null)
+                    Properties = (ConfigProperties)Deserialize(App.WorkingDirectory + @"\config.dat", CryptoKey);
+                    if(Properties == null)
                     {
                         return false;
                     }
-                    Properties = result;
+
                     Properties.Theme = Properties.Theme;
                     Properties.Language = Properties.Language;
                 }

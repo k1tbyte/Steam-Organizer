@@ -14,10 +14,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
         public string WebApiKey
         {
             get => SteamRemoteClient.CurrentUser.WebApiKey;
-            set
-            {
-                SteamRemoteClient.CurrentUser.WebApiKey = value;
-            }
+            set => SteamRemoteClient.CurrentUser.WebApiKey = value;
         }
 
         public string FriendsInviteLink

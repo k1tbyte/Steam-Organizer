@@ -27,8 +27,9 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public AsyncRelayCommand RefreshCommand { get; set; }
 
         private Account currentAccount;
+        public Account CurrentAccount => currentAccount;
 
-        private string _avatarFull, _nickname;
+        private string  _nickname;
         private bool _noticeView = false, _savePermission = false, _isCsgoStatsSave = false;
         private string _steamLevel, _steamURL, _steamId64;
         private ulong _steaId32;
@@ -66,140 +67,80 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public DateTime LastUpdateTime
         {
             get => _lastUpdateTime;
-            set
-            {
-                _lastUpdateTime = value;
-                OnPropertyChanged(nameof(LastUpdateTime));
-            }
+            set => SetProperty(ref _lastUpdateTime, value);
         }
         public string AuthenticatorPath
         {
             get => _authenticatorPath;
-            set
-            {
-                _authenticatorPath = value;
-                OnPropertyChanged(nameof(AuthenticatorPath));
-            }
+            set => SetProperty(ref _authenticatorPath, value);
         }
         public bool ContainParseInfo
         {
             get => _containParseInfo;
-            set
-            {
-                _containParseInfo = value;
-                OnPropertyChanged(nameof(ContainParseInfo));
-            }
+            set => SetProperty(ref _containParseInfo, value);
         }
         public string Note
         {
             get => _note;
-            set
-            {
-                _note = value;
-                OnPropertyChanged(nameof(Note));
-            }
+            set => SetProperty(ref _note, value);
         }
         public string EmailLogin
         {
             get => _emailLogin;
-            set
-            {
-                _emailLogin = value;
-                OnPropertyChanged(nameof(EmailLogin));
-            }
+            set => SetProperty(ref _emailLogin, value);
         }
         public string EmailPass
         {
             get => _emailPass;
-            set
-            {
-                _emailPass = value;
-                OnPropertyChanged(nameof(EmailPass));
-            }
+            set => SetProperty(ref _emailPass, value);
         }
         public string RockstarEmail
         {
             get => _rockstarEmail;
-            set
-            {
-                _rockstarEmail = value;
-                OnPropertyChanged(nameof(RockstarEmail));
-            }
+            set => SetProperty(ref _rockstarEmail, value);
         }
         public string RockstarPass
         {
             get => _rockstarPass;
-            set
-            {
-                _rockstarPass = value;
-                OnPropertyChanged(nameof(RockstarPass));
-            }
+            set => SetProperty(ref _rockstarPass, value);
         }
         public string UplayEmail
         {
             get => _uplayEmail;
-            set
-            {
-                _uplayEmail = value;
-                OnPropertyChanged(nameof(UplayEmail));
-            }
+            set => SetProperty(ref _uplayEmail, value);
         }
         public string UplayPass
         {
             get => _uplayPass;
-            set
-            {
-                _uplayPass = value;
-                OnPropertyChanged(nameof(UplayPass));
-            }
+            set => SetProperty(ref _uplayPass, value);
         }
 
         public string OriginEmail
         {
             get => _originEmail;
-            set
-            {
-                _originEmail = value;
-                OnPropertyChanged(nameof(OriginEmail));
-            }
+            set => SetProperty(ref _originEmail, value);
         }
 
         public string OriginPass
         {
             get => _originPass;
-            set
-            {
-                _originPass = value;
-                OnPropertyChanged(nameof(OriginPass));
-            }
+            set => SetProperty(ref _originPass, value);   
         }
 
         public string NotifyMsg
         {
             get => _notifyMsg;
-            set
-            {
-                _notifyMsg = value;
-                OnPropertyChanged(nameof(NotifyMsg));
-            }
+            set => SetProperty(ref _notifyMsg, value);
         }
         public string SteamDataValidateError
         {
             get => _steamDataValidateError;
-            set
-            {
-                _steamDataValidateError = value;
-                OnPropertyChanged(nameof(SteamDataValidateError));
-            }
+            set => SetProperty(ref _steamDataValidateError, value);
         }
         public string CsgoParseError
         {
             get => _csgoParseError;
-            set
-            {
-                _csgoParseError = value;
-                OnPropertyChanged(nameof(CsgoParseError));
-            }
+            set => SetProperty(ref _csgoParseError, value);
         }
         public string PlayedPercent
         {
@@ -245,87 +186,51 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public bool TradeBan
         {
             get => _tradeBan;
-            set
-            {
-                _tradeBan = value;
-                OnPropertyChanged(nameof(TradeBan));
-            }
+            set => SetProperty(ref _tradeBan, value);
         }
         public bool CommunityBan
         {
             get => _communityBan;
-            set
-            {
-                _communityBan = value;
-                OnPropertyChanged(nameof(CommunityBan));
-            }
+            set => SetProperty(ref _communityBan, value);
         }
 
         public int VacCount
         {
             get => _vacCount;
-            set
-            {
-                _vacCount = value;
-                OnPropertyChanged(nameof(VacCount));
-            }
+            set => SetProperty(ref _vacCount, value);
         }
 
         public string GameCountPicture
         {
             get => _gameCountPicture;
-            set
-            {
-                _gameCountPicture = value;
-                OnPropertyChanged(nameof(GameCountPicture));
-            }
+            set => SetProperty(ref _gameCountPicture, value);
         }
 
         public string CreatedDatePicuture
         {
             get => _createdDatePicture;
-            set
-            {
-                _createdDatePicture = value;
-                OnPropertyChanged(nameof(CreatedDatePicuture));
-            }
+            set => SetProperty(ref _createdDatePicture, value);
         }
         public string ProfileVisiblity
         {
             get => _profileVisiblity;
-            set
-            {
-                _profileVisiblity = value;
-                OnPropertyChanged(nameof(ProfileVisiblity));
-            }
+            set => SetProperty(ref _profileVisiblity, value);
         }
         public string SteamYearPicture
         {
             get => _steamYearPicture;
-            set
-            {
-                _steamYearPicture = value;
-                OnPropertyChanged(nameof(SteamYearPicture));
-            }
+            set => SetProperty(ref _steamYearPicture, value);
         }
 
         public DateTime CreatedDate
         {
             get => _createdDate;
-            set
-            {
-                _createdDate = value;
-                OnPropertyChanged(nameof(CreatedDate));
-            }
+            set => SetProperty(ref _createdDate, value);
         }
         public string Login
         {
             get => _login;
-            set
-            {
-                _login = value;
-                OnPropertyChanged(nameof(Login));
-            }
+            set => SetProperty(ref _login, value);
         }
         public string Password
         {
@@ -339,65 +244,32 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public ulong SteamID32
         {
             get => _steaId32;
-            set
-            {
-                _steaId32 = value;
-                OnPropertyChanged(nameof(SteamID32));
-            }
+            set => SetProperty(ref _steaId32, value);
         }
         public string SteamID64
         {
             get => _steamId64;
-            set
-            {
-                _steamId64 = value;
-                OnPropertyChanged(nameof(SteamID64));
-            }
+            set => SetProperty(ref _steamId64, value);
         }
         public string SteamURL
         {
             get => _steamURL;
-            set
-            {
-                _steamURL = value;
-                OnPropertyChanged(nameof(SteamURL));
-            }
+            set => SetProperty(ref _steamURL, value);
         }
         public string SteamLevel
         {
             get => _steamLevel;
-            set
-            {
-                _steamLevel = value;
-                OnPropertyChanged(nameof(SteamLevel));
-            }
+            set => SetProperty(ref _steamLevel, value);
         }
         public bool NoticeView
         {
             get => _noticeView;
-            set
-            {
-                _noticeView = value;
-                OnPropertyChanged(nameof(NoticeView));
-            }
-        }
-        public string AvatarFull
-        {
-            get => _avatarFull;
-            set
-            {
-                _avatarFull = value;
-                OnPropertyChanged(nameof(AvatarFull));
-            }
+            set => SetProperty(ref _noticeView, value);
         }
         public string Nickname
         {
             get => _nickname;
-            set
-            {
-                _nickname = value;
-                OnPropertyChanged(nameof(Nickname));
-            }
+            set => SetProperty(ref _nickname, value);
         }
         #endregion
 
@@ -541,7 +413,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             if (currentAccount.ContainParseInfo)
             {
                 //Player summaries
-                AvatarFull = $"https://avatars.akamai.steamstatic.com/{currentAccount.AvatarHash}_full.jpg";
                 SteamID32 = ulong.Parse(currentAccount.SteamId64) - 76561197960265728;
                 SteamID64 = currentAccount.SteamId64;
                 SteamURL = currentAccount.ProfileURL;
@@ -566,7 +437,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             }
             else
             {
-                AvatarFull = "/Images/default_steam_profile.png";
                 ProfileVisiblity = SteamURL = SteamID64 = "Unknown";
                 GameCountPicture = CreatedDatePicuture = "/Images/Steam_years_of_service/year0.png";
                 SteamLevel = "-";
@@ -618,15 +488,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             try
             {
                 var csgo_parser = new CsgoParser(_steamId64);
-                CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_takeStats");
+                CsgoParseError = App.FindString("adat_cs_inf_takeStats");
                 if (!await csgo_parser.GlobalStatsParse())
                 {
-                    CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_errortakeStats");
+                    CsgoParseError = App.FindString("adat_cs_inf_errortakeStats");
                     await Task.Delay(2000);
                     CsgoParseError = "";
                     return;
                 }
-                CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_takeRank");
+                CsgoParseError = App.FindString("adat_cs_inf_takeRank");
                 await csgo_parser.RankParse();
 
                 currentAccount.CsgoStats = csgo_parser.GetCsgoStats;
@@ -634,13 +504,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
                 _isCsgoStatsSave = true;
                 if (!_savePermission) _savePermission = true;
-                CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_updSucces");
+                CsgoParseError = App.FindString("adat_cs_inf_updSucces");
                 await Task.Delay(2000);
                 CsgoParseError = "";
             }
             catch
             {
-                CsgoParseError = (string)Application.Current.FindResource("adat_cs_inf_serverError");
+                CsgoParseError = App.FindString("adat_cs_inf_serverError");
                 await Task.Delay(2000);
                 CsgoParseError = "";
             }
@@ -672,12 +542,12 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
                     Config.Accounts[id] = currentAccount;
                     Config.SaveAccounts();
-                    Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_cs_inf_updated"))).ConfigureAwait(false);
+                    Task.Run(() => BorderNoticeView(App.FindString("adat_cs_inf_updated"))).ConfigureAwait(false);
                     FillSteamInfo();
                 }
                 catch
                 {
-                    Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_cs_inf_noInternet"))).ConfigureAwait(false);
+                    Task.Run(() => BorderNoticeView(App.FindString("adat_cs_inf_noInternet"))).ConfigureAwait(false);
                 }
 
             });
@@ -714,7 +584,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 var box = o as TextBox;
                 box.SelectAll();
                 box.Copy();
-                Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_copiedClipoard"))).ConfigureAwait(false);
+                Task.Run(() => BorderNoticeView(App.FindString("adat_notif_copiedClipoard"))).ConfigureAwait(false);
             });
 
             OpenUrlProfileCommand = new RelayCommand(o =>
@@ -726,7 +596,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             {
                 if(!Utils.Common.CheckInternetConnection())
                 {
-                    CsgoParseError = (string)App.Current.FindResource("adat_cs_inf_noInternet");
+                    CsgoParseError = App.FindString("adat_cs_inf_noInternet");
                     await Task.Delay(2000);
                     return;
                 }
@@ -736,7 +606,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 } 
                 else
                 {
-                    CsgoParseError = (string)App.Current.FindResource("adat_cs_inf_profilePrivateOrNullGames");
+                    CsgoParseError = App.FindString("adat_cs_inf_profilePrivateOrNullGames");
                     await Task.Delay(2000);
                     CsgoParseError = "";
                     return;
@@ -754,37 +624,37 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
                 else if (Login == "")
                 {
-                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_login_empty");
+                    SteamDataValidateError = App.FindString("adv_error_login_empty");
                 }
 
                 else if (Login.Contains(" "))
                 {
-                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_login_contain_spaces");
+                    SteamDataValidateError = App.FindString("adv_error_login_contain_spaces");
                 }
 
                 else if (Login.Length < 3)
                 {
-                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_login_shortage");
+                    SteamDataValidateError = App.FindString("adv_error_login_shortage");
                 }
 
                 else if (Login.Length > 32)
                 {
-                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_login_overflow");
+                    SteamDataValidateError = App.FindString("adv_error_login_overflow");
                 }
 
                 else if (Password == "")
                 {
-                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_pass_empty");
+                    SteamDataValidateError = App.FindString("adv_error_pass_empty");
                 }
 
                 else if (Password.Length < 6)
                 {
-                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_pass_shortage");
+                    SteamDataValidateError = App.FindString("adv_error_pass_shortage");
                 }
 
                 else if (Password.Length > 50)
                 {
-                    SteamDataValidateError = (string)Application.Current.FindResource("adv_error_pass_overflow");
+                    SteamDataValidateError = App.FindString("adv_error_pass_overflow");
                 }
                 else
                 {
@@ -807,7 +677,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     Config.Accounts[id].OriginPass = OriginPass;
                     Config.Accounts[id].AccCreatedDate = DateTime.Now;
                     Config.SaveAccounts();
-                    Task.Run(() => BorderNoticeView((string)Application.Current.FindResource("adat_notif_changesSaved")));
+                    Task.Run(() => BorderNoticeView(App.FindString("adat_notif_changesSaved")));
 
                 }
 
