@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
-using Steam_Account_Manager.Infrastructure.Models.AccountModel;
+using Steam_Account_Manager.Infrastructure.Models;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -16,7 +16,6 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         private string _apiKey = Keys.STEAM_API_KEY;
 
         private string _steamId64;
-        private CSGO csgoStats = new CSGO();
 
         private static readonly string[] parseZones = {
             "total_kills","total_deaths","total_kills_headshot","total_shots_hit",
@@ -29,7 +28,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                 _apiKey = Config.Properties.WebApiKey;
         }
 
-        public ref CSGO GetCsgoStats => ref csgoStats;
+        public CSGOStats CSGOStats { get; private set; } = new CSGOStats();
 
         /// <summary>
         /// 
@@ -60,25 +59,29 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             JToken nodes = jo.SelectToken("*.stats");
 
 
-            float[] items = new float[8];
+            int?[] items = new int?[8];
 
             for (int i = 0; i < 8; i++)
-                items[i] = float.Parse(nodes.SelectToken($@"$.[?(@.name == '{parseZones[i]}')]['value']").ToString());
+            {
+                if(int.TryParse(nodes.SelectToken($@"$.[?(@.name == '{parseZones[i]}')]['value']").ToString(),out int result))
+                  items[i] = result;
+            }
 
 
-            csgoStats.Winrate         = items[7] != 0 ? (items[6] / items[7] * 100).ToString("0.00") + "%" : "-";
-            csgoStats.KD              = items[1] != 0 ? (items[0] / items[1]).ToString("0.00") : "-";
-            csgoStats.HeadshotPercent = items[0] != 0 ? (items[2] / items[0] * 100).ToString("0.0") + "%" : "-";
-            csgoStats.Accuracy        = items[4] != 0 ? (items[3] / items[4] * 100).ToString("0.0") + "%" : "-";
 
-            csgoStats.Kills         = items[0].ToString("#,#", CultureInfo.InvariantCulture);
-            csgoStats.Deaths        = items[1].ToString("#,#", CultureInfo.InvariantCulture);
-            csgoStats.Headshots     = items[2].ToString("#,#", CultureInfo.InvariantCulture);
-            csgoStats.ShotsHit      = items[3].ToString("#,#", CultureInfo.InvariantCulture);
-            csgoStats.TotalShots    = items[4].ToString("#,#", CultureInfo.InvariantCulture);
-            csgoStats.RoundsPlayed  = items[5].ToString("#,#", CultureInfo.InvariantCulture);
-            csgoStats.MatchesWon    = items[6].ToString("#,#", CultureInfo.InvariantCulture);
-            csgoStats.PlayedMatches = items[7].ToString("#,#", CultureInfo.InvariantCulture);
+            CSGOStats.Winrate         = items[7] != 0 ? (items[6] / items[7] * 100) : null;
+            CSGOStats.KD              = items[1] != 0 ? (items[0] / items[1]) : null;
+            CSGOStats.HeadshotPercent = items[0] != 0 ? (items[2] / items[0]) : null;
+            CSGOStats.Accuracy        = items[4] != 0 ? (items[3] / items[4] * 100) : null;
+
+            CSGOStats.Kills         = items[0];
+            CSGOStats.Deaths        = items[1];
+            CSGOStats.Headshots     = items[2];
+            CSGOStats.ShotsHit      = items[3];
+            CSGOStats.TotalShots    = items[4];
+            CSGOStats.RoundsPlayed  = items[5];
+            CSGOStats.MatchesWon    = items[6];
+            CSGOStats.PlayedMatches = items[7];
 
             webClient.Dispose();
             return true;
@@ -103,7 +106,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
                 if(browser.Document == null)
                 {
-                    csgoStats.BestRank = csgoStats.CurrentRank = "skillgroup_none";
+                    CSGOStats.BestRank = CSGOStats.CurrentRank = "skillgroup_none";
                     return;
                 }
 
@@ -115,9 +118,9 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                     {
                         var best = imgs[i + 1];
                         if (best.OuterHtml.StartsWith("<IMG src=\"https://static.csgostats.gg/images/ranks/") && best.OuterHtml.EndsWith("height=24>"))
-                            csgoStats.BestRank = "skillgroup" + best.GetAttribute("src").Split('/').Last().Replace(".png", "");
+                            CSGOStats.BestRank = "skillgroup" + best.GetAttribute("src").Split('/').Last().Replace(".png", "");
 
-                        csgoStats.CurrentRank = "skillgroup"+ imgs[i].GetAttribute("src").Split('/').Last().Replace(".png","");
+                        CSGOStats.CurrentRank = "skillgroup"+ imgs[i].GetAttribute("src").Split('/').Last().Replace(".png","");
                         break;
                     }
                 }

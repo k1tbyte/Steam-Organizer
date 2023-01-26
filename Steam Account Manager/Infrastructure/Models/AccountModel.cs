@@ -1,9 +1,39 @@
 ﻿using Steam_Account_Manager.Infrastructure.Parsers;
 using System;
-using System.Web.UI.WebControls;
 
-namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
+namespace Steam_Account_Manager.Infrastructure.Models
 {
+    [Serializable]
+    internal sealed class CSGOStats
+    {
+        //ranks 5x5
+        private string _currentRank, _bestRank;
+        public float? Accuracy { get; set; }
+        public float? HeadshotPercent { get; set; }
+        public float? Winrate { get; set; }
+        public float? KD { get; set; }
+        public int? RoundsPlayed { get; set; }
+        public int? PlayedMatches { get; set; }
+        public int? MatchesWon { get; set; }
+        public int? Headshots { get; set; }
+        public int? ShotsHit { get; set; }
+        public int? TotalShots { get; set; }
+        public int? Kills { get; set; }
+        public int? Deaths { get; set; }
+
+        public string CurrentRank
+        {
+            get => $"/Images/Ranks/CSGO/{_currentRank ?? "skillgroup_none"}.png";
+            set => _currentRank = value;
+        }
+
+        public string BestRank
+        {
+            get => $"/Images/Ranks/CSGO/{_bestRank ?? "skillgroup_none"}.png";
+            set => _bestRank = value;
+        }
+    }
+
     [Serializable]
     internal sealed class Account
     {
@@ -41,7 +71,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
         public int? GamesPlayedCount { get; set; }
         public int? HoursOnPlayed { get; set; }
         public string CountGamesImageUrl { get; set; }
-        public CSGO CsgoStats { get; set; }
+        public CSGOStats CSGOStats { get; set; }
         #endregion
 
         #region Other info properties
@@ -90,16 +120,16 @@ namespace Steam_Account_Manager.Infrastructure.Models.AccountModel
             this.CountGamesImageUrl = steamParser.CountGamesImageUrl;
             this.ContainParseInfo   = true;
 
-            this.CsgoStats = new CSGO();
+            this.CSGOStats = new CSGOStats();
         }
 
         //Update account counstructor
         public Account(string login, string password, ulong steamId64, string note, string emailLogin, string emailPass,
              string rockstarEmail, string rockstarPass, string uplayEmail, string uplayPass,
-             string originEmail, string originPass, CSGO csgoStats, string authenticatorPath,string nick = null) : this(login,password,steamId64)
+             string originEmail, string originPass, CSGOStats csgoStats, string authenticatorPath,string nick = null) : this(login,password,steamId64)
         {
             if (csgoStats != null)
-                this.CsgoStats = csgoStats;
+                this.CSGOStats = csgoStats;
 
             this.AuthenticatorPath = authenticatorPath;
 
