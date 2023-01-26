@@ -6,12 +6,13 @@
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
         Background="Transparent"
-        ShowInTaskbar="True"
+        ShowInTaskbar="False"
         AllowsTransparency="True"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
-        SizeToContent="WidthAndHeight">
-    <Border x:Name="mainBorder"  Background="{DynamicResource background_border_color}" CornerRadius="2"  BorderThickness="0 1.5 0 1.5"
+        SizeToContent="WidthAndHeight"
+        Topmost="True">
+    <Border x:Name="mainBorder"  Background="{DynamicResource background_border_color}" CornerRadius="2"  BorderThickness="0 2 0 2"
              Padding="10 5" MouseLeftButtonDown="DragMoveEvent" BorderBrush="{DynamicResource second_main_color}">
         <Grid>
             <Grid.RowDefinitions>
@@ -21,10 +22,10 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
-            
-            <StackPanel Orientation="Horizontal"  Margin="0 0 0 0">
+
+            <StackPanel Orientation="Horizontal"  >
                
                 <Grid>
                     <Icon:PackIconMaterial x:Name="errorIcon" Visibility="Collapsed" Kind="CloseOutline" Foreground="PaleVioletRed" 
@@ -35,15 +36,15 @@
                                          Width="26" Height="26"/>
                 </Grid>
 
-                <TextBlock x:Name="Title" Text="Some default title" VerticalAlignment="Center"
-                       FontSize="20" FontFamily="Cascadia Mono"
+                <TextBlock x:Name="Title" Text="Title" VerticalAlignment="Center"
+                       FontSize="20" FontFamily="Cascadia Mono" 
                        Foreground="{DynamicResource second_settings_text}"
                            Opacity="0.95" />
             </StackPanel>
 
             <Button Style="{StaticResource serviceButton}" Grid.Column="1"
                     VerticalAlignment="Center" HorizontalAlignment="Right" IsDefault="True"
-                        Width="20" Margin="10 0 0 0" Click="no_Click">
+                        Width="20" Click="no_Click">
                 <Icon:PackIconMaterial Kind="WindowClose"
                                        Height="15" Width="15" 
                                        VerticalAlignment="Center"/>
@@ -66,10 +67,10 @@
 
             <StackPanel x:Name="ActionPanel" Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Height="35">
                 <Button x:Name="no" Click="no_Click"
-                                Width="60" Height="25" Style="{StaticResource defaultButton}" Content="No" />
+                                Width="60" Height="25" Style="{StaticResource defaultButton}" Content="{DynamicResource mv_confirmNo}" />
 
                 <Button x:Name="yes" Margin="20 0 0 0" Click="yes_Click"
-                                Width="60" Height="25" Style="{StaticResource defaultButton}" Content="Yes"/>
+                                Width="60" Height="25" Style="{StaticResource defaultButton}" Content="{DynamicResource mv_confirmYes}"/>
             </StackPanel>
         </Grid>
     </Border>

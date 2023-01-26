@@ -3,6 +3,24 @@
                     xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks">
 
     <!--#region Buttons -->
+
+    <Style x:Key="TemplateGlowRadioButton" TargetType="RadioButton">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="true">
+                <Setter Property="Background" Value="{DynamicResource settings_buttons_isChecked}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Effect" Value="{StaticResource glow}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    
+    
     <Style x:Key="topButton" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="#b0b9c6" />
@@ -428,14 +446,10 @@
         </Setter>
     </Style>
 
-    <Style x:Key="themeButton" TargetType="RadioButton">
-        <Setter Property="Foreground" Value="White"/>
+    <Style x:Key="themeButton" TargetType="RadioButton" BasedOn="{StaticResource TemplateGlowRadioButton}">
         <Setter Property="Margin" Value="10 0 0 0"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Width" Value="80"/>
         <Setter Property="Height" Value="35"/>
-        <Setter Property="FontSize" Value="14"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
@@ -446,7 +460,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="BorderThickness" Value="1.5"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="false">
                             <Setter Property="Effect">
@@ -461,18 +475,14 @@
         </Setter>
     </Style>
 
-    <Style x:Key="languageButton" TargetType="RadioButton">
+    <Style x:Key="languageButton" TargetType="RadioButton" BasedOn="{StaticResource TemplateGlowRadioButton}">
         <Setter Property="Width" Value="40"/>
         <Setter Property="Height" Value="30"/>
         <Setter Property="Margin" Value="10 0 0 0"/>
-        <Setter Property="FontSize" Value="14"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
-        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}" >
+                    <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}" Effect="{TemplateBinding Effect}" >
                         <Rectangle RadiusX="15" RadiusY="15" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center">
                             <Rectangle.Fill>
                                 <ImageBrush ImageSource="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"/>
@@ -482,12 +492,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsChecked" Value="true">
-                <Setter Property="Background" Value="{DynamicResource settings_buttons_isChecked}"/>
-                <Setter Property="BorderBrush" Value="Transparent"/>
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
     <Style x:Key="showButton" TargetType="ToggleButton">

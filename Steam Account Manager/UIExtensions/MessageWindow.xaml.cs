@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using Steam_Account_Manager.Utils;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 
 namespace Steam_Account_Manager.UIExtensions
@@ -44,7 +46,7 @@ namespace Steam_Account_Manager.UIExtensions
         {
             set
             {
-                no.Content = "No";
+                no.Content = App.FindString("mv_confirmNo");
                 if (value == MboxStyle.None)
                 {
                     ActionPanel.Visibility = Visibility.Collapsed;
@@ -89,7 +91,17 @@ namespace Steam_Account_Manager.UIExtensions
             set => Title.Text = value;
         }
 
-        public MessageWindow()                                            =>InitializeComponent();
+        public MessageWindow() 
+        {
+            InitializeComponent();
+            Loaded += (sender,e) => Win32.HideWindow(new WindowInteropHelper(this).Handle);
+            if(App.MainWindow != null)
+            {
+                Owner = App.MainWindow;
+                WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            }
+        }
+
         private void DragMoveEvent(object sender, MouseButtonEventArgs e) => this.DragMove();
         private void no_Click(object sender, RoutedEventArgs e)           => DialogResult = false;
         private void yes_Click(object sender, RoutedEventArgs e)          => DialogResult = true;

@@ -261,6 +261,9 @@
                             Background="Transparent" Margin="5 1 0 0" BorderBrush="Transparent" Click="SetPassword_Click">
                         <Icon:PackIconMaterial Kind="Check" Padding="2"  Width="20" Height="20"
                                                VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <Button.ToolTip>
+                            <ToolTip ContentStringFormat="{DynamicResource sv_toolTipSetPass}"/>
+                        </Button.ToolTip>
                     </Button>
                     
                 </StackPanel>

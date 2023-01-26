@@ -41,8 +41,12 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
         }
         private void GenerateKey_Click(object sender, RoutedEventArgs e)
         {
-            Config.UpdateEncryption(Utils.Common.GenerateCryptoKey());
-            CryptoKey.Text = Config.Properties.UserCryptoKey;
+            if(Utils.Presentation.OpenQueryMessageBox(App.FindString("sv_cryptoKeyConfirm"), App.FindString("mv_confirmAction")))
+            {
+                Config.UpdateEncryption(Utils.Common.GenerateCryptoKey());
+                CryptoKey.Text = Config.Properties.UserCryptoKey;
+            }
+
         }
         private void ResetKey_Click(object sender, RoutedEventArgs e)
         {

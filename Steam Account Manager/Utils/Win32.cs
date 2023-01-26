@@ -78,6 +78,12 @@ namespace Steam_Account_Manager.Utils
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
+        [DllImport("user32.dll")]
+        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
         #endregion
 
         #region Structs
@@ -104,6 +110,8 @@ namespace Steam_Account_Manager.Utils
         }
 
         public const int SW_RESTORE = 9;
+        private const int GWL_EX_STYLE = -20;
+        private const int WS_EX_APPWINDOW = 0x00040000, WS_EX_TOOLWINDOW = 0x00000080;
         #endregion
 
         public static Point GetMousePosition()
@@ -150,6 +158,12 @@ namespace Steam_Account_Manager.Utils
                     AttachThreadInput(foreThread, appThread, false);
             }
         }
+
+        /// <summary>
+        /// Hides the window from alt-tab
+        /// </summary>
+        public static void HideWindow(IntPtr HWND) => SetWindowLong(HWND, GWL_EX_STYLE, (Win32.GetWindowLong(HWND, GWL_EX_STYLE) | WS_EX_TOOLWINDOW) & ~WS_EX_APPWINDOW);
+        
 
     }
 }

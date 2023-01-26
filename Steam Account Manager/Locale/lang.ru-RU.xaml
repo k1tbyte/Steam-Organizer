@@ -29,7 +29,9 @@
     <v:String x:Key="sv_title_system">Система и автоматизация</v:String>
     <v:String x:Key="sv_automaticLogin">Автоматический вход в аккаунт</v:String>
     <v:String x:Key="sv_highestQualityImages">Загружать изображения в максимальном качестве</v:String>
-
+    <v:String x:Key="sv_cryptoKeyConfirm">Все ваши данные будут перезаписаны и зашифованы с новым ключом. Если вы потеряете ключ - данные аккаунтов будут утрачены, продолжить?</v:String>
+    <v:String x:Key="sv_toolTipSetPass">Подтвердить установку пароля</v:String>
+    
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>Ничего</v:String>
         <v:String>Закрыть</v:String>
@@ -62,6 +64,9 @@
     <v:String x:Key="mv_newUpdate">Обнаружена новая версия, обновить сейчас?</v:String>
     <v:String x:Key="mv_connectionNotify">Ожидание соединения с интернетом, переход в автономный режим через 15 секунд...</v:String>
     <v:String x:Key="mv_autonomyModeNotify">Интернет соединение отсутствует, переход в автономный режим</v:String>
+    <v:String x:Key="mv_confirmAction">Подтвердите действие</v:String>
+    <v:String x:Key="mv_confirmYes">Да</v:String>
+    <v:String x:Key="mv_confirmNo">Нет</v:String>
     <!--#endregion-->
 
 

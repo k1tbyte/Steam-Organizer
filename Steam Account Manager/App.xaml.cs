@@ -109,6 +109,8 @@ namespace Steam_Account_Manager
             Application.Current.Shutdown();
         }
 
+        public static string FindString(string resourceKey) => (string)App.Current.FindResource(resourceKey);
+
         public static void MainWindowStart()
         {
             if (Config.Properties.MinimizeOnStart)
