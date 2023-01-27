@@ -518,13 +518,13 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                                     Process.Start(new ProcessStartInfo("shutdown", "/s /t 0") { CreateNoWindow = true, UseShellExecute = false });
                                     return;
                                 case "/msg":
-                                    SteamValidator steamValidator;
+                                    SteamLinkValidator steamValidator;
                                     if (command.Length < 3)
                                         steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/msg (CustomID,SteamID64,ID32,URL) (message)");
                                     else
                                     {
-                                        steamValidator = new SteamValidator(command[1]);
-                                        if (steamValidator.SteamLinkType != SteamValidator.SteamLinkTypes.ErrorType)
+                                        steamValidator = new SteamLinkValidator(command[1]);
+                                        if (steamValidator.SteamLinkType != SteamLinkValidator.SteamLinkTypes.ErrorType)
                                         {
                                             steamFriends.SendChatMessage(ulong.Parse(steamValidator.SteamId64), EChatEntryType.ChatMsg, command[2]);
                                             steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "💬 Message sent");

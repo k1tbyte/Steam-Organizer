@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using Steam_Account_Manager.Infrastructure;
+﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Parsers;
 using Steam_Account_Manager.MVVM.Core;
@@ -14,6 +13,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 {
     internal sealed class AccountDataViewModel : ObservableObject
     {
+        #region Commands
         public RelayCommand CancelCommand { get; set; }
         public RelayCommand CopyCommand { get; set; }
         public RelayCommand OpenUrlProfileCommand { get; set; }
@@ -24,16 +24,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public RelayCommand ExportAccountCommand { get; set; }
         public RelayCommand AddAuthenticatorCommand { get; set; }
         public RelayCommand YesAuthenticatorCommand { get; set; }
-        public AsyncRelayCommand RefreshCommand { get; set; }
+        public AsyncRelayCommand RefreshCommand { get; set; } 
+        #endregion
 
         private Account currentAccount;
         public Account CurrentAccount => currentAccount;
 
         private bool _noticeView = false;
-        private int _id;
-
-
-        //eror and notify msgs
         private string _csgoParseError, _steamDataValidateError, _notifyMsg;
 
         #region Properties
@@ -82,6 +79,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         }
         #endregion
 
+        #region Helpers
         private async void ShowNotificationAsync(string message)
         {
             NotifyMsg = message;
@@ -95,7 +93,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             await Task.Delay(2000);
             CsgoParseError = "";
         }
-
         private void ValidateData()
         {
             if (_loginTemp == "")
@@ -114,13 +111,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 SteamDataValidateError = App.FindString("adv_error_pass_overflow");
             else
             {
-                if(!String.IsNullOrEmpty(_steamDataValidateError))
+                if (!String.IsNullOrEmpty(_steamDataValidateError))
                     SteamDataValidateError = "";
                 CurrentAccount.Password = _passwordTemp;
                 CurrentAccount.Login = _loginTemp;
             }
         }
+        #endregion
 
+        #region Parsers
         private async Task CsgoStatsParse()
         {
             try
@@ -146,7 +145,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 await ShowCsgoErrorAsync(App.FindString("adat_cs_inf_serverError")).ConfigureAwait(false);
             }
         }
-
         private async Task RefreshAccount(int id)
         {
             await Task.Factory.StartNew(() =>
@@ -182,15 +180,14 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 }
 
             });
-        }
-
+        } 
+        #endregion
 
         public AccountDataViewModel(int id)
         {
             currentAccount = Config.Accounts[id];
             _passwordTemp = currentAccount.Password;
             _loginTemp = currentAccount.Login;
-            _id = id;
 
             CancelCommand = new RelayCommand(o =>
             {
@@ -250,7 +247,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             ExportAccountCommand = new RelayCommand(o =>
             {
-                var fileDialog = new SaveFileDialog
+                var fileDialog = new Microsoft.Win32.SaveFileDialog
                 {
                     Filter = "Steam Account (.sa)|*.sa"
                 };
@@ -270,13 +267,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 }
                 else
                 {
-                    Utils.Presentation.OpenDialogWindow(new ShowAuthenticatorWindow(_id));
+                    Utils.Presentation.OpenDialogWindow(new ShowAuthenticatorWindow(id));
                 }
             });
 
             YesAuthenticatorCommand = new RelayCommand(o =>
             {
-                Utils.Presentation.OpenDialogWindow(new AddAuthenticatorWindow(CurrentAccount.Login, CurrentAccount.Password, _id));
+                Utils.Presentation.OpenDialogWindow(new AddAuthenticatorWindow(CurrentAccount.Login, CurrentAccount.Password, id));
             });
 
         }

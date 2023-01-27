@@ -213,10 +213,10 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
                 if (TempID != InterlocutorId)
                 {
                     TempID = InterlocutorId;
-                    SteamValidator steamValidator = new SteamValidator(InterlocutorId);
-                    if (steamValidator.SteamLinkType != SteamValidator.SteamLinkTypes.ErrorType)
+                    var steamValidator = new SteamLinkValidator(InterlocutorId);
+                    if (steamValidator.SteamLinkType != SteamLinkValidator.SteamLinkTypes.ErrorType)
                     {
-                        SteamRemoteClient.InterlocutorID = SelectedChatId = steamValidator.GetSteamId64Long;
+                        SteamRemoteClient.InterlocutorID = SelectedChatId = steamValidator.SteamId64Ulong;
                         InterlocutorId = "";
                         if (Messages.Count != 0)
                             Messages.Clear();
@@ -255,8 +255,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
                     if (TempAdminID != AdminId)
                     {
                         TempAdminID = AdminId;
-                        SteamValidator steamValidator = new SteamValidator(TempAdminID);
-                        if (steamValidator.SteamLinkType != SteamValidator.SteamLinkTypes.ErrorType)
+                        var steamValidator = new SteamLinkValidator(TempAdminID);
+                        if (steamValidator.SteamLinkType != SteamLinkValidator.SteamLinkTypes.ErrorType)
                         {
                             SteamRemoteClient.CurrentUser.Messenger.AdminID = steamValidator.SteamId32;
                             IsAdminIdValid = true;

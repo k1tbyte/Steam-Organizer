@@ -11,7 +11,6 @@ namespace Steam_Account_Manager.Infrastructure
 {
     internal static class Config
     {
-
         public static ConfigProperties Properties { get; set; }
         public static List<Account> Accounts { get; set; }
         public static string TempUserKey { get; set; }
@@ -210,6 +209,5 @@ namespace Steam_Account_Manager.Infrastructure
             }
 
         }
-
     }
 }

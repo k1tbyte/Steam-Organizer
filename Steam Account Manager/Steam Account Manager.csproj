@@ -149,7 +149,7 @@
     <Compile Include="Infrastructure\Parsers\SteamParser.cs" />
     <Compile Include="Infrastructure\SteamHandler.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\WebHandler.cs" />
-    <Compile Include="Infrastructure\Validators\SteamValidator.cs" />
+    <Compile Include="Infrastructure\Validators\SteamLinkValidator.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="UIExtensions\MessageWindow.xaml.cs">
       <DependentUpon>MessageWindow.xaml</DependentUpon>

@@ -5,33 +5,38 @@ using System.Net;
 
 namespace Steam_Account_Manager.Infrastructure.Validators
 {
-    internal sealed class SteamValidator
+    internal sealed class SteamLinkValidator
     {
 
         private string _apiKey = Keys.STEAM_API_KEY;
 
         private const byte MaxSteamId64Len = 17;
         private readonly string _steamLink;
-        private string _steamId64;
-        private SteamLinkTypes _steamLinkType = SteamLinkTypes.Unknown;
+        public ulong SteamId64Ulong => ulong.Parse(SteamId64);
+        public uint SteamId32 => Utils.Common.SteamId64ToSteamId32(SteamId64);
+        public string SteamId64 { get; private set; }
+        public SteamLinkTypes SteamLinkType { get; private set; } = SteamLinkTypes.ErrorType;
 
         public enum SteamLinkTypes
         {
-            Unknown,
+            ErrorType,
             SteamId64Link,
             SteamId64,
             CustomIdLink,
             CustomId,
-            ErrorType
         }
 
-        public SteamValidator(string steamProfileLink)
+        public SteamLinkValidator(string steamProfileLink)
         {
             _steamLink = steamProfileLink;
             if (!String.IsNullOrEmpty(Config.Properties.WebApiKey))
                 _apiKey = Config.Properties.WebApiKey;
+        }
+        public bool Validate()
+        {
             CheckSteamLinkType();
             ConvertLinkToId64();
+            return SteamLinkType != SteamLinkTypes.ErrorType;
         }
 
 
@@ -69,32 +74,32 @@ namespace Steam_Account_Manager.Infrastructure.Validators
 
         private void ConvertLinkToId64()
         {
-            if (_steamLinkType != SteamLinkTypes.Unknown && _steamLinkType != SteamLinkTypes.ErrorType)
+            if (SteamLinkType != SteamLinkTypes.ErrorType)
             {
-                if (_steamLinkType == SteamLinkTypes.SteamId64Link)
+                if (SteamLinkType == SteamLinkTypes.SteamId64Link)
                 {
                     string[] steamLinkArr = _steamLink.Split('/');
                     string steamId = steamLinkArr.Last(l => l != "");
-                    _steamId64 = steamId;
+                    SteamId64 = steamId;
                 }
-                else if (_steamLinkType == SteamLinkTypes.SteamId64)
+                else if (SteamLinkType == SteamLinkTypes.SteamId64)
                 {
-                    _steamId64 = _steamLink;
+                    SteamId64 = _steamLink;
                 }
-                else if (_steamLinkType == SteamLinkTypes.CustomIdLink)
+                else if (SteamLinkType == SteamLinkTypes.CustomIdLink)
                 {
                     string[] steamLinkArr = _steamLink.Split('/');
                     string steamId = steamLinkArr.Last(l => l != "");
-                    _steamId64 = ConvertCustomToId64(steamId);
+                    SteamId64 = ConvertCustomToId64(steamId);
                 }
-                else if (_steamLinkType == SteamLinkTypes.CustomId)
+                else if (SteamLinkType == SteamLinkTypes.CustomId)
                 {
-                    _steamId64 = ConvertCustomToId64(_steamLink);
+                    SteamId64 = ConvertCustomToId64(_steamLink);
                 }
             }
             else
             {
-                _steamId64 = "";
+                SteamId64 = "";
             }
         }
 
@@ -109,12 +114,12 @@ namespace Steam_Account_Manager.Infrastructure.Validators
                 if (_steamLink.Contains("/profiles/"))
                 {
                     if (IsSteamId64Correct(steamId))
-                        _steamLinkType = SteamLinkTypes.SteamId64Link;
+                        SteamLinkType = SteamLinkTypes.SteamId64Link;
                 }
                 else
                 {
                     if (IsCustomIdCorrect(steamId))
-                        _steamLinkType = SteamLinkTypes.CustomIdLink;
+                        SteamLinkType = SteamLinkTypes.CustomIdLink;
                 }
             }
             else
@@ -123,26 +128,16 @@ namespace Steam_Account_Manager.Infrastructure.Validators
                 if (steamId.All(char.IsDigit))
                 {
                     if (IsSteamId64Correct(steamId))
-                        _steamLinkType = SteamLinkTypes.SteamId64;
+                        SteamLinkType = SteamLinkTypes.SteamId64;
                 }
                 else
                 {
                     if (IsCustomIdCorrect(steamId))
-                        _steamLinkType = SteamLinkTypes.CustomId;
+                        SteamLinkType = SteamLinkTypes.CustomId;
                 }
             }
-            if (_steamLinkType == SteamLinkTypes.Unknown)
-                _steamLinkType = SteamLinkTypes.ErrorType;
         }
 
-
-        public string SteamId64 => _steamId64;
-
-        public ulong GetSteamId64Long => ulong.Parse(_steamId64);
-
-        public uint SteamId32 => Utils.Common.SteamId64ToSteamId32(_steamId64);
-
-        public SteamLinkTypes SteamLinkType => _steamLinkType;
 
         private class Response
         {
