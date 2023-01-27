@@ -1,4 +1,4 @@
-﻿using Steam_Account_Manager.Infrastructure.Models.AccountModel;
+﻿using Steam_Account_Manager.Infrastructure.Models;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;

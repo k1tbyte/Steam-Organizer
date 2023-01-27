@@ -1,5 +1,6 @@
 ﻿using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -10,8 +11,13 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
 
     public partial class AccountDataView : UserControl
     {
-
-        public AccountDataView() => InitializeComponent();
+        AccountDataViewModel thisVM;
+        DateTime timeStamp;
+        public AccountDataView()
+        {
+            InitializeComponent();
+            Loaded += (sender, e) => thisVM = this.DataContext as AccountDataViewModel;
+        }
         
 
         public void SetAsDefault(bool scroll = false)
@@ -31,10 +37,9 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             Popup.PlacementTarget = VacBorder;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            Header.PopupText.Text = App.FindString("adat_popup_vacCount") + " " + ((AccountDataViewModel)this.DataContext).VacCount.ToString();
-            if (((AccountDataViewModel)this.DataContext).DaysSinceLastBan != 0) Header.PopupText.Text += '\n' +
-                    App.FindString("adat_popup_daysFirstBan") + " " +
-                    ((AccountDataViewModel)this.DataContext).DaysSinceLastBan.ToString();
+            Header.PopupText.Text = $"{App.FindString("adat_popup_vacCount")} {thisVM.CurrentAccount.VacBansCount}";
+            if (thisVM.CurrentAccount.DaysSinceLastBan != 0)
+                Header.PopupText.Text += $"\n{App.FindString("adat_popup_daysFirstBan")} {thisVM.CurrentAccount.DaysSinceLastBan}";
         }
 
         private void YearsLabel_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -42,8 +47,8 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             Popup.PlacementTarget = YearsLabel;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            if (((AccountDataViewModel)this.DataContext).CreatedDate != DateTime.MinValue)
-                Header.PopupText.Text = App.FindString("adat_popup_regDate") + " " + ((AccountDataViewModel)this.DataContext).CreatedDate;
+            if (thisVM.CurrentAccount.AccCreatedDate != DateTime.MinValue)
+                Header.PopupText.Text = $"{App.FindString("adat_popup_regDate")} {thisVM.CurrentAccount.AccCreatedDate}";
             else
                 Header.PopupText.Text = App.FindString("adat_popup_regDateUnknown");
         }
@@ -59,16 +64,16 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             Popup.PlacementTarget = GamesCountLabel;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
-            if (((AccountDataViewModel)this.DataContext).GamesTotal == "-" || ((AccountDataViewModel)this.DataContext).ProfileVisiblity == "Private")
+            if (!thisVM.CurrentAccount.TotalGamesCount.HasValue || !thisVM.CurrentAccount.IsProfilePublic)
             {
                 Header.PopupText.Text = App.FindString("adat_popup_nullGames");
             }
             else
             {
-                Header.PopupText.Text = App.FindString("adat_popup_countGames") + " " + ((AccountDataViewModel)this.DataContext).GamesTotal + '\n';
-                Header.PopupText.Text += App.FindString("adat_popup_playedGames") + " " + ((AccountDataViewModel)this.DataContext).GamesPlayed + ((AccountDataViewModel)this.DataContext).PlayedPercent + '\n';
-                Header.PopupText.Text += App.FindString("adat_popup_playtime") + " " + ((AccountDataViewModel)this.DataContext).HoursOnPlayed;
-                if (((AccountDataViewModel)this.DataContext).HoursOnPlayed != "Private") Header.PopupText.Text += "h";
+                var playedPercent = ((float)thisVM.CurrentAccount.GamesPlayedCount.Value / thisVM.CurrentAccount.TotalGamesCount.Value).ToString("P1");
+                Header.PopupText.Text = $"{App.FindString("adat_popup_countGames")} {thisVM.CurrentAccount.TotalGamesCount}\n{App.FindString("adat_popup_playedGames")} " +
+                    $"{thisVM.CurrentAccount.GamesPlayedCount} ({playedPercent})\n" +
+                    $"{App.FindString("adat_popup_playtime")} {thisVM.CurrentAccount.HoursOnPlayed.Value.ToString("#,#",CultureInfo.InvariantCulture)}h";
             }
         }
 
@@ -83,6 +88,18 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
         private void CloseConfirm_Click(object sender, RoutedEventArgs e)
         {
             TwoFaAuthAddConfirm.Visibility = Visibility.Hidden;
+        }
+
+
+        private void AntiSpamClicks(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if ((DateTime.Now - timeStamp).Ticks < 50000000)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            timeStamp = DateTime.Now;
         }
     }
 }

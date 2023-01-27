@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
-using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.Core;
 using System;
@@ -112,7 +111,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("atv_inf_getLocalAccInfo"));
                     string steamId = Utils.Common.SteamId32ToSteamId64(Utils.Common.GetSteamRegistryActiveUser());
                     Config.Accounts[id] = new Account(
-                        _login, _password, steamId,
+                        _login, _password, ulong.Parse(steamId), //REFACTOR STEAMID64
                         Config.Accounts[id].Note,
                         Config.Accounts[id].EmailLogin,
                         Config.Accounts[id].EmailPass,
@@ -259,8 +258,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                    SteamPicture = $"https://avatars.akamai.steamstatic.com/{account.AvatarHash}_medium.jpg";
 
                 VacCount = account.VacBansCount;
-                SteamId = account.SteamId64;
-                SteamLevel = account.SteamLevel;
+                SteamId = account.SteamId64.ToString(); //REFACTOR 
+                SteamLevel = account.SteamLevel.ToString();
             }
             else
             {

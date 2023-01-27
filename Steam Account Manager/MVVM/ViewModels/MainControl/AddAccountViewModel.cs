@@ -1,5 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.Infrastructure.Models.AccountModel;
+using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Validators;
 using Steam_Account_Manager.MVVM.Core;
 using System.Threading.Tasks;
@@ -153,7 +153,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                         else
                         {
                             ErrorMessage = (string)App.Current.FindResource("adv_info_collect_data");
-                            Config.Accounts.Add(new Account(_steamLogin, _steamPassword, steamValidator.SteamId64));
+                            Config.Accounts.Add(new Account(_steamLogin, _steamPassword, ulong.Parse(steamValidator.SteamId64))); //REFACTOR STEAMID64
                             Config.SaveAccounts();
                             MainWindowViewModel.AccountsViewCommand.Execute(null);
                             ErrorMessage = "";

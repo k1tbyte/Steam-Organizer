@@ -1,6 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
-using Steam_Account_Manager.Infrastructure.Models.AccountModel;
 using Steam_Account_Manager.MVVM.Core;
 using System;
 using System.Collections.Generic;
@@ -26,11 +25,12 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             get => _autoLoginAccount;
             set
             {
-                if (value is Account acc && acc != null && (acc.SteamId64 != Config.Properties.AutoLoginUserID || _autoLoginAccount == null))
+                if (value is Account acc && acc != null && (acc.SteamId64.ToString() != Config.Properties.AutoLoginUserID || _autoLoginAccount == null))
                 {
-                    Config.Properties.AutoLoginUserID = acc.SteamId64;
+                    Config.Properties.AutoLoginUserID = acc.SteamId64.ToString();
                     SetProperty(ref _autoLoginAccount, value);
                 }
+                //REFACTOR STEAMID64
             }
         }
 

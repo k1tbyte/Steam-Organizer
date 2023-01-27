@@ -13,15 +13,15 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
     internal sealed class CsgoParser
     {
 
-        private string _apiKey = Keys.STEAM_API_KEY;
+        private readonly string _apiKey = Keys.STEAM_API_KEY;
 
-        private string _steamId64;
+        private readonly ulong _steamId64;
 
         private static readonly string[] parseZones = {
             "total_kills","total_deaths","total_kills_headshot","total_shots_hit",
             "total_shots_fired","total_rounds_played","total_matches_won","total_matches_played" };
 
-        public CsgoParser(string SteamId64)
+        public CsgoParser(ulong SteamId64)
         {
             _steamId64 = SteamId64;
             if (!String.IsNullOrEmpty(Config.Properties.WebApiKey))
@@ -59,7 +59,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             JToken nodes = jo.SelectToken("*.stats");
 
 
-            int?[] items = new int?[8];
+            float?[] items = new float?[8];
 
             for (int i = 0; i < 8; i++)
             {
@@ -69,19 +69,19 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
 
 
-            CSGOStats.Winrate         = items[7] != 0 ? (items[6] / items[7] * 100) : null;
+            CSGOStats.Winrate         = items[7] != 0 ? (items[6] / items[7]) : null;
             CSGOStats.KD              = items[1] != 0 ? (items[0] / items[1]) : null;
             CSGOStats.HeadshotPercent = items[0] != 0 ? (items[2] / items[0]) : null;
-            CSGOStats.Accuracy        = items[4] != 0 ? (items[3] / items[4] * 100) : null;
+            CSGOStats.Accuracy        = items[4] != 0 ? (items[3] / items[4]) : null;
 
-            CSGOStats.Kills         = items[0];
-            CSGOStats.Deaths        = items[1];
-            CSGOStats.Headshots     = items[2];
-            CSGOStats.ShotsHit      = items[3];
-            CSGOStats.TotalShots    = items[4];
-            CSGOStats.RoundsPlayed  = items[5];
-            CSGOStats.MatchesWon    = items[6];
-            CSGOStats.PlayedMatches = items[7];
+            CSGOStats.Kills         = (int?)items[0];
+            CSGOStats.Deaths        = (int?)items[1];
+            CSGOStats.Headshots     = (int?)items[2];
+            CSGOStats.ShotsHit      = (int?)items[3];
+            CSGOStats.TotalShots    = (int?)items[4];
+            CSGOStats.RoundsPlayed  = (int?)items[5];
+            CSGOStats.MatchesWon    = (int?)items[6];
+            CSGOStats.PlayedMatches = (int?)items[7];
 
             webClient.Dispose();
             return true;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.Infrastructure.Models.AccountModel;
+using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.MainControl.Controls;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
@@ -183,7 +183,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                         Config.Accounts[i] = new Account(
                               Config.Accounts[i].Login,
                              Config.Accounts[i].Password,
-                             Config.Accounts[i].SteamId64,
+                             Config.Accounts[i].SteamId64.Value, //REFACTOR STEAMID64
                              Config.Accounts[i].Note,
                              Config.Accounts[i].EmailLogin,
                              Config.Accounts[i].EmailPass,
@@ -193,7 +193,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                              Config.Accounts[i].UplayPass,
                              Config.Accounts[i].OriginEmail,
                              Config.Accounts[i].OriginPass,
-                             Config.Accounts[i].CsgoStats,
+                             Config.Accounts[i].CSGOStats,
                              Config.Accounts[i].AuthenticatorPath,
                              Config.Accounts[i].Nickname);
 
@@ -291,11 +291,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             YesButtonCommand = new RelayCommand(o =>
             {
                 var acc = Config.Accounts[TempId];
-                var trayAccount = Config.Properties.RecentlyLoggedUsers.Find(obj => obj.SteamID64 == acc.SteamId64);
+                var trayAccount = Config.Properties.RecentlyLoggedUsers.Find(obj => obj.SteamID64 == acc.SteamId64.ToString()); //REFACTOR STEAMID64
                 if (trayAccount != null)
                     Config.Properties.RecentlyLoggedUsers.Remove(trayAccount);
 
-                if (acc.SteamId64 == Config.Properties.AutoLoginUserID)
+                if (acc.SteamId64.ToString() == Config.Properties.AutoLoginUserID) //REFACTOR STEAMID64
                     Config.Properties.AutoLoginUserID = null;
 
                 Config.Accounts.Remove(acc);

@@ -775,8 +775,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 {
                     SteamID64 = temp.ConvertToUInt64(),
                     Name = steamFriends.GetFriendPersonaName(temp),
-                    FriendSince = Utils.Common.UnixTimeToDateTime(long.TryParse(
-                        sinces?.ElementAt(j).ToString(), out long result) ? result : 0)?.ToString("yyyy/MM/dd"),
+                    FriendSince = Utils.Common.UnixTimeToDateTime(ulong.TryParse(
+                        sinces?.ElementAt(j).ToString(), out ulong result) ? result : 0)?.ToString("yyyy/MM/dd"), //REFACTOR STEAMID64
                     ImageURL = $"https://avatars.akamai.steamstatic.com/{avatarTemp}.jpg"
                 });
                 j++;

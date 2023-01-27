@@ -111,7 +111,7 @@ namespace Steam_Account_Manager
         private void box_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (box.SelectedItem == null) return;
-            var idx = Config.Accounts.FindIndex(o => o.SteamId64 == (box.SelectedItem as RecentlyLoggedUser).SteamID64);
+            var idx = Config.Accounts.FindIndex(o => o.SteamId64.ToString() == (box.SelectedItem as RecentlyLoggedUser).SteamID64); //REFACTOR STEAMID64
 
             if (idx != -1)
                 (AccountsViewModel.AccountTabViews[idx].DataContext as AccountTabViewModel).ConnectToSteamCommand.Execute(null);
