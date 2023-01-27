@@ -1,5 +1,7 @@
 ﻿using Steam_Account_Manager.Infrastructure.Parsers;
+using SteamKit2;
 using System;
+using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.Infrastructure.Models
 {
@@ -75,7 +77,7 @@ namespace Steam_Account_Manager.Infrastructure.Models
         #endregion
 
         #region Other info properties
-        public string Note { get; set; }
+        public string Note { get; set; } = "";
         public string EmailLogin { get; set; }
         public string EmailPass { get; set; }
         public string RockstarEmail { get; set; }
@@ -95,9 +97,16 @@ namespace Steam_Account_Manager.Infrastructure.Models
             this.Login     = login;
             this.Password  = password;
             this.SteamId64 = steamId64;
+            this.CSGOStats = new CSGOStats();            
+        }
 
-            SteamParser steamParser  = new SteamParser(steamId64);
-            steamParser.AccountParse().GetAwaiter().GetResult();
+        public async Task<bool> ParseInfo()
+        {
+            if (!SteamId64.HasValue)
+                return false;
+
+            SteamParser steamParser = new SteamParser(SteamId64.Value);
+            await steamParser.Parse().ConfigureAwait(false);
 
             this.Nickname            = steamParser.Nickname;
             this.AvatarHash          = steamParser.AvatarHash;
@@ -119,8 +128,7 @@ namespace Steam_Account_Manager.Infrastructure.Models
             this.HoursOnPlayed      = steamParser.HoursOnPlayed;
             this.CountGamesImageUrl = steamParser.CountGamesImageUrl;
             this.ContainParseInfo   = true;
-
-            this.CSGOStats = new CSGOStats();
+            return true;
         }
 
         //Update account counstructor
@@ -170,7 +178,7 @@ namespace Steam_Account_Manager.Infrastructure.Models
 
         }
 
-        public Account(string login, string password, string nickname, bool anonymAccount)
+        public Account(string login, string password, string nickname)
         {
             this.ContainParseInfo = false;
 

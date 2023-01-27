@@ -8,11 +8,7 @@ namespace Steam_Account_Manager.MVVM.Core
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            AccountsViewModel.ConfirmBanner = false;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
+        protected void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         protected virtual bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {

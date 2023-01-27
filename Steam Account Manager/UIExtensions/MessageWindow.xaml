@@ -58,6 +58,7 @@
                             <Setter Property="TextWrapping" Value="Wrap"/>
                             <Setter Property="FontWeight" Value="Medium"/>
                             <Setter Property="MaxWidth" Value="330"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
                             <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
                         </Style>
                     </ContentPresenter.Resources>

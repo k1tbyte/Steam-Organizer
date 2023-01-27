@@ -19,6 +19,9 @@ namespace Steam_Account_Manager.Infrastructure.Converters
 
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value == null || (value is string str && String.IsNullOrEmpty(str)))
+                return False;
+
             return value is bool && ((bool)value) ? True : False;
         }
 

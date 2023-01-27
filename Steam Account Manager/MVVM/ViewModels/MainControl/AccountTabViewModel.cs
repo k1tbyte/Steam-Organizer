@@ -290,7 +290,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             DeleteAccoundCommand = new RelayCommand(o =>
             {
-              AccountsViewModel.RemoveAccount(ref id);
+
             });
 
             ConnectToSteamCommand = new AsyncRelayCommand(async (o) => await ConnectToSteam());

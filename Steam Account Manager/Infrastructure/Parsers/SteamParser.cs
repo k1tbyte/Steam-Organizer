@@ -48,7 +48,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         }
 
 
-        public async Task AccountParse()
+        public async Task Parse()
         {
 
             //Получаем инфу о банах

@@ -73,7 +73,8 @@
     <!--#region Accounts View -->
     <v:String x:Key="av_searchbar_title">Пошук акаунтів  .  .  .</v:String>
     <v:String x:Key="av_addbutton_title">Додати</v:String>
-    <v:String x:Key="av_confirmation_delete">Ви дійсно хочете видалити даний акаунт?</v:String>
+    <v:String x:Key="av_confirmation_delete1">Ви впевнені, що хочете видалити обліковий запис</v:String>
+    <v:String x:Key="av_confirmation_delete2">Після підтвердження відновити дані буде неможливо.</v:String>
     <v:String x:Key="av_popup_saveDatabase">Зберегти базу акаунтів у файл</v:String>
     <v:String x:Key="av_popup_restoreDatabase" xml:space="preserve">Відновити базу акаунтів з файлу&#13;Увага! Замінює всі поточні акаунти.</v:String>
     <v:String x:Key="av_popup_restoreAccount">Відновити акаунт з файлу</v:String>

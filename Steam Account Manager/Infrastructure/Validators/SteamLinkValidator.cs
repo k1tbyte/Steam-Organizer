@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.Infrastructure.Validators
 {
@@ -32,9 +33,9 @@ namespace Steam_Account_Manager.Infrastructure.Validators
             if (!String.IsNullOrEmpty(Config.Properties.WebApiKey))
                 _apiKey = Config.Properties.WebApiKey;
         }
-        public bool Validate()
+        public async Task<bool> Validate()
         {
-            CheckSteamLinkType();
+            await CheckSteamLinkType();
             ConvertLinkToId64();
             return SteamLinkType != SteamLinkTypes.ErrorType;
         }
@@ -42,23 +43,30 @@ namespace Steam_Account_Manager.Infrastructure.Validators
 
         #region SteamID Correct Checkers
 
-        private bool IsSteamId64Correct(string steamId64)
+        private async Task<bool> IsSteamId64Correct(string steamId64)
         {
             string apiString = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + _apiKey +
                                "&steamids=" + steamId64;
-            string json = new WebClient().DownloadString(apiString);
-            return steamId64.Length == MaxSteamId64Len && steamId64.All(char.IsDigit) &&
-                   json != "{\"response\":{\"players\":[]}}";
+            using(var wc = new WebClient())
+            {
+                string json = await wc.DownloadStringTaskAsync(apiString);
+                return steamId64.Length == MaxSteamId64Len && steamId64.All(char.IsDigit) &&
+                       json != "{\"response\":{\"players\":[]}}";
+            }
         }
 
-        private bool IsCustomIdCorrect(string customId)
+        private async Task<bool> IsCustomIdCorrect(string customId)
         {
             string apiString = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=" + _apiKey +
                                "&vanityurl=" + customId;
-            string json = new WebClient().DownloadString(apiString);
-            Root list = JsonConvert.DeserializeObject<Root>(json);
-            if (list.Response.Success == 1) return true;
-            return false;
+            using (var wc = new WebClient())
+            {
+                string json = await wc.DownloadStringTaskAsync(apiString);
+                Root list = JsonConvert.DeserializeObject<Root>(json);
+                if (list.Response.Success == 1) return true;
+                return false;
+            }
+
         }
 
         #endregion
@@ -103,7 +111,7 @@ namespace Steam_Account_Manager.Infrastructure.Validators
             }
         }
 
-        private void CheckSteamLinkType()
+        private async Task CheckSteamLinkType()
         {
             if (Uri.IsWellFormedUriString(_steamLink, UriKind.RelativeOrAbsolute)
                 && (_steamLink.Contains("https://steamcommunity.com/") || _steamLink.Contains("steamcommunity.com/"))
@@ -113,12 +121,12 @@ namespace Steam_Account_Manager.Infrastructure.Validators
                 string steamId = steamLinkArr.Last(l => { return l != ""; });
                 if (_steamLink.Contains("/profiles/"))
                 {
-                    if (IsSteamId64Correct(steamId))
+                    if (await IsSteamId64Correct(steamId))
                         SteamLinkType = SteamLinkTypes.SteamId64Link;
                 }
                 else
                 {
-                    if (IsCustomIdCorrect(steamId))
+                    if (await IsCustomIdCorrect(steamId))
                         SteamLinkType = SteamLinkTypes.CustomIdLink;
                 }
             }
@@ -127,12 +135,12 @@ namespace Steam_Account_Manager.Infrastructure.Validators
                 string steamId = _steamLink;
                 if (steamId.All(char.IsDigit))
                 {
-                    if (IsSteamId64Correct(steamId))
+                    if (await IsSteamId64Correct(steamId))
                         SteamLinkType = SteamLinkTypes.SteamId64;
                 }
                 else
                 {
-                    if (IsCustomIdCorrect(steamId))
+                    if (await IsCustomIdCorrect(steamId))
                         SteamLinkType = SteamLinkTypes.CustomId;
                 }
             }

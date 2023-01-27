@@ -61,7 +61,7 @@ namespace Steam_Account_Manager
                     OfflineMode = true;
                 }
                 ShutdownMode = ShutdownMode.OnMainWindowClose;
-            } 
+            }
             #endregion
 
 

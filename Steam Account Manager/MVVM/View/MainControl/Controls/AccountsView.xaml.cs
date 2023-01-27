@@ -1,11 +1,13 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using Steam_Account_Manager.Utils;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using static Steam_Account_Manager.Utils.Presentation;
 
 namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
@@ -66,5 +68,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             Config.SaveAccounts();
 
         }
+
+        private void AvatarImageFailed(object sender, ExceptionRoutedEventArgs e) => (sender as Image).Source = new BitmapImage(new Uri("/Images/default_steam_profile.png", UriKind.Relative));
     }
 }

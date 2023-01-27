@@ -43,7 +43,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
 
         private void LastUpdateTime_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            Popup.PlacementTarget = AvatarBorder;
+           // Popup.PlacementTarget = AvatarBorder;
             Popup.Placement = PlacementMode.Top;
             Popup.IsOpen = true;
             Header.PopupText.Text = $"{App.Current.FindResource("atv_lastUpdate")} {_currentViewModel.LastUpdateTime}";

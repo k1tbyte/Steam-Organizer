@@ -12,7 +12,7 @@ namespace Steam_Account_Manager.Infrastructure
     internal static class Config
     {
         public static ConfigProperties Properties { get; set; }
-        public static List<Account> Accounts { get; set; }
+        public static ObservableCollection<Account> Accounts { get; set; }
         public static string TempUserKey { get; set; }
 
 
@@ -87,7 +87,7 @@ namespace Steam_Account_Manager.Infrastructure
                 if (File.Exists(App.WorkingDirectory + "\\database.dat"))
                 {
                     if (Properties == null) LoadProperties();
-                    var result = (List<Account>)Deserialize(App.WorkingDirectory + @"\database.dat", Properties.UserCryptoKey);
+                    var result = (ObservableCollection<Account>)Deserialize(App.WorkingDirectory + @"\database.dat", Properties.UserCryptoKey);
                     if(result == null)
                     {
                         return false;
@@ -96,7 +96,7 @@ namespace Steam_Account_Manager.Infrastructure
                 }
                 else
                 {
-                    Accounts = new List<Account>();
+                    Accounts = new ObservableCollection<Account>();
                     Serialize(Accounts, App.WorkingDirectory + @"\database.dat", Properties.UserCryptoKey);
                 }
             }

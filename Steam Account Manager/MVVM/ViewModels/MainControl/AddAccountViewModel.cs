@@ -4,6 +4,7 @@ using Steam_Account_Manager.Infrastructure.Validators;
 using Steam_Account_Manager.MVVM.Core;
 using System.Threading.Tasks;
 using System.Windows;
+using Steam_Account_Manager.Utils;
 
 namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 {
@@ -53,44 +54,46 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             if (DontCollectInfo)
             {
-                Config.Accounts.Add(new Account(SteamLogin, SteamPassword, SteamLink, true));
+                Config.Accounts.Add(new Account(SteamLogin, SteamPassword, SteamLink));
                 Config.SaveAccounts();
             }
             else
             {
-                await Task.Factory.StartNew(() =>
+                if (!Utils.Common.CheckInternetConnection())
                 {
-                    if(!Utils.Common.CheckInternetConnection())
-                    {
-                        ErrorMessage = App.FindString("adat_cs_inf_noInternet");
-                        return;
-                    }
+                    ErrorMessage = App.FindString("adat_cs_inf_noInternet");
+                    return;
+                }
 
-                    try
-                    {
-                        var steamValidator = new SteamLinkValidator(SteamLink);
+                ErrorMessage = App.FindString("adv_info_collect_data");
 
-                        if (!steamValidator.Validate())
-                        {
-                            ErrorMessage = App.FindString("adv_error_invalid_link");
-                        }
-                        else if (Config.Accounts.Exists(acc => acc.SteamId64.HasValue && acc.SteamId64.Value == steamValidator.SteamId64Ulong))
-                        {
-                            ErrorMessage = "The account is already in the database";
-                        }
-                        else
-                        {
-                            ErrorMessage = App.FindString("adv_info_collect_data");
-                            Config.Accounts.Add(new Account(SteamLink, SteamPassword, steamValidator.SteamId64Ulong)); 
-                            Config.SaveAccounts();
-                            ErrorMessage = "";
-                        }
-                    }
-                    catch
+                try
+                {
+                    var steamValidator = new SteamLinkValidator(SteamLink);
+
+                    if (!await steamValidator.Validate())
                     {
-                        ErrorMessage = App.FindString("adv_error_error403");
+                        ErrorMessage = App.FindString("adv_error_invalid_link");
                     }
-                });
+                    else if (Config.Accounts.Exists(acc => acc.SteamId64.HasValue && acc.SteamId64.Value == steamValidator.SteamId64Ulong))
+                    {
+                        ErrorMessage = "The account is already in the database";
+                    }
+                    else
+                    {
+                        ErrorMessage = App.FindString("adv_info_collect_data");
+                        var account = new Account(SteamLink, SteamPassword, steamValidator.SteamId64Ulong);
+                        if(await account.ParseInfo() == false)
+                            System.Windows.Forms.MessageBox.Show("NOT IMPLEMENTED EXCEPTION");  //REFACTOR
+                        Config.Accounts.Add(account);
+                        Config.SaveAccounts();
+                        ErrorMessage = "";
+                    }
+                }
+                catch
+                {
+                    ErrorMessage = App.FindString("adv_error_error403");
+                }
             }
         }
 
@@ -103,8 +106,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 if (string.IsNullOrEmpty(ErrorMessage))
                 {
                     (o as Window).Close();
+                    (App.MainWindow.DataContext as MainWindowViewModel).TotalAccounts = -1;
                     Utils.Presentation.OpenPopupMessageBox(App.FindString("mv_account_added_notification"));
-                    AccountsViewModel.AddAccountTabView(Config.Accounts.Count - 1);
                 }
             });
         }

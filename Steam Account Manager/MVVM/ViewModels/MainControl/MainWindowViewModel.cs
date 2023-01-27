@@ -1,4 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.MainControl.Controls;
 using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
@@ -30,7 +31,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public static event EventHandler TotalAccountsChanged;
         public static event EventHandler NowLoginUserImageChanged;
         public static event EventHandler NowLoginUserNicknameChanged;
-        private static int _totalAccounts;
         private static string _nowLoginUserImage, _nowLoginUserNickname;
         private bool _updateDetect, _showInTaskbar;
         private WindowState _windowState;
@@ -69,14 +69,10 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 NowLoginUserImageChanged?.Invoke(null, EventArgs.Empty);
             }
         }
-        public static int TotalAccounts
+        public int TotalAccounts
         {
-            get { return _totalAccounts; }
-            set
-            {
-                _totalAccounts = value;
-                TotalAccountsChanged?.Invoke(null, EventArgs.Empty);
-            }
+            get => Config.Accounts.Count;
+            set => OnPropertyChanged(nameof(TotalAccounts));
         }
 
         public static event EventHandler NotificationVisibleChanged;
@@ -207,10 +203,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             AccountDataViewCommand = new RelayCommand(o =>
             {
-                var id = (int)o;
-                AccountDataV.SetAsDefault(id < 0);
-
-                AccountDataV.DataContext = new AccountDataViewModel(id < 0 ? (id*-1)-1 : id-1);
+                AccountDataV.DataContext = new AccountDataViewModel((Account)o);
                 CurrentView = AccountDataV;
             });
 

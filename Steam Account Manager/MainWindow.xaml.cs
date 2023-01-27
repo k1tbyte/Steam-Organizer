@@ -22,10 +22,10 @@ namespace Steam_Account_Manager
         {
             await App.Current.Dispatcher.InvokeAsync(() =>
             {
-                if (Config.Properties.AutoLoginUserID == null)
+             /*   if (Config.Properties.AutoLoginUserID == null)
                     return;
 
-                var desired = Config.Accounts.Find(o => o.SteamId64.GetHashCode() == Config.Properties.AutoLoginUserID.GetHashCode());
+                var desired = Config.Accounts.Find(o => o.SteamId64.GetHashCode() == Config.Properties.AutoLoginUserID.GetHashCode()); //REFACTOR
 
                 if (desired == null)
                 {
@@ -36,7 +36,7 @@ namespace Steam_Account_Manager
 
                 (this.DataContext as MainWindowViewModel).SettingsVm.AutoLoginAccount = desired;
                 if (!App.OfflineMode)
-                    (this.DataContext as MainWindowViewModel).RemoteControlVm.LoginViewCommand.Execute(Config.Accounts.IndexOf(desired));
+                    (this.DataContext as MainWindowViewModel).RemoteControlVm.LoginViewCommand.Execute(Config.Accounts.IndexOf(desired));*/
             });
         }
 

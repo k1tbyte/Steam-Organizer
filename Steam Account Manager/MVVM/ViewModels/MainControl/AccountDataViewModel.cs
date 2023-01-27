@@ -2,7 +2,6 @@
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Parsers;
 using Steam_Account_Manager.MVVM.Core;
-using Steam_Account_Manager.MVVM.View.MainControl.Windows;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -183,16 +182,16 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         } 
         #endregion
 
-        public AccountDataViewModel(int id)
+        public AccountDataViewModel(Account account)
         {
-            currentAccount = Config.Accounts[id];
-            _passwordTemp = currentAccount.Password;
-            _loginTemp = currentAccount.Login;
+            currentAccount = account;
+            _passwordTemp  = currentAccount.Password;
+            _loginTemp     = currentAccount.Login;
 
             CancelCommand = new RelayCommand(o =>
             {
                 MainWindowViewModel.AccountsViewCommand.Execute(true);
-                AccountsViewModel.UpdateAccountTabView(id);
+             //   AccountsViewModel.UpdateAccountTabView(id);
             });
 
             CopyCommand = new RelayCommand(o =>
@@ -233,7 +232,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 ShowNotificationAsync(App.FindString("adat_notif_changesSaved"));
             });
 
-            RefreshCommand = new AsyncRelayCommand(async (o) => await RefreshAccount(id));
+          //  RefreshCommand = new AsyncRelayCommand(async (o) => await RefreshAccount(id));
 
             OpenOtherLinksCommand = new RelayCommand(o =>
             {
@@ -253,7 +252,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    Config.Serialize(Config.Accounts[id], fileDialog.FileName, Config.Properties.UserCryptoKey);
+                    Config.Serialize(currentAccount, fileDialog.FileName, Config.Properties.UserCryptoKey);
                     ShowNotificationAsync(App.FindString("adat_notif_accountExported"));
                 }
             });
@@ -267,13 +266,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 }
                 else
                 {
-                    Utils.Presentation.OpenDialogWindow(new ShowAuthenticatorWindow(id));
+                    //Utils.Presentation.OpenDialogWindow(new ShowAuthenticatorWindow(id));
                 }
             });
 
             YesAuthenticatorCommand = new RelayCommand(o =>
             {
-                Utils.Presentation.OpenDialogWindow(new AddAuthenticatorWindow(CurrentAccount.Login, CurrentAccount.Password, id));
+               // Utils.Presentation.OpenDialogWindow(new AddAuthenticatorWindow(CurrentAccount.Login, CurrentAccount.Password, id));
             });
 
         }

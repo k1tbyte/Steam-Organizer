@@ -4,13 +4,17 @@ using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.MainControl.Controls;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
+using Steam_Account_Manager.Utils;
+using SteamKit2;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using static SteamKit2.GC.Underlords.Internal.CMsgClientToGCCanPurchaseItemResponse;
 
 namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 {
@@ -18,12 +22,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
     internal class AccountsViewModel : ObservableObject
     {
         public AsyncRelayCommand UpdateDatabaseCommand { get; set; }
-        private RelayCommand _addAccountWindowCommand;
-        public RelayCommand NoButtonCommand { get; set; }
+        public RelayCommand AddAccountCommand { get; set; }
         public RelayCommand YesButtonCommand { get; set; }
         public RelayCommand RestoreAccountCommand { get; set; }
         public RelayCommand RestoreAccountDatabaseCommand { get; set; }
         public RelayCommand StoreAccountDatabaseCommand { get; set; }
+        public RelayCommand OpenProfileLinkCommand { get; set; }
+        public RelayCommand OpenAccountDataCommand { get; set; }
+        public RelayCommand OpenAccountNoteCommand { get; set; }
+        public RelayCommand RemoveAccountCommand { get; set; }
 
         private string _accountName;
         private string _searchBoxText;
@@ -39,18 +46,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             {
                 _isDatabaseEmpty = value;
                 IsDatabaseEmptyChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        public static event EventHandler ConfirmBannerChanged;
-        private static bool _confirmBanner;
-        public static bool ConfirmBanner
-        {
-            get => _confirmBanner;
-            set
-            {
-                _confirmBanner = value;
-                ConfirmBannerChanged?.Invoke(null, EventArgs.Empty);
             }
         }
 
@@ -73,6 +68,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 OnPropertyChanged();
             }
         }
+
+        public ObservableCollection<Account> Accounts => Config.Accounts;
 
         private ICollectionView ByNicknameSearch;
 
@@ -122,14 +119,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         public static void FillAccountTabViews()
         {
-            ConfirmBanner = false;
             if (AccountTabViews.Count == 0)
             {
                 for (int i = 0; i < Config.Accounts.Count; i++)
                 {
                     AccountTabViews.Add(new AccountTabView(i));
                 }
-                MainWindowViewModel.TotalAccounts = Config.Accounts.Count;
+              //  MainWindowViewModel.TotalAccounts = Config.Accounts.Count;
                 IsDatabaseEmpty = AccountTabViews.Count == 0;
             }
         }
@@ -145,22 +141,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public static void AddAccountTabView(int id)
         {
             AccountTabViews.Add(new AccountTabView(id));
-            MainWindowViewModel.TotalAccounts++;
+           // MainWindowViewModel.TotalAccounts++;
             IsDatabaseEmpty = false;
-        }
-
-
-        public static void RemoveAccount(ref int id)
-        {
-            TempId = id;
-            if (Config.Properties.NoConfirmMode)
-            {
-                (App.MainWindow.DataContext as MainWindowViewModel).AccountsVm.YesButtonCommand.Execute(null);
-                return;
-            }
-
-            ConfirmBanner = true;
-
         }
 
 
@@ -220,17 +202,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         }
 
-        public RelayCommand AddAccountWindowCommand
-        {
-            get { return _addAccountWindowCommand ?? new RelayCommand(o => { OpenAddAccountWindow(); }); }
-        }
-
-        private static void OpenAddAccountWindow()
-        {
-            AddAccountWindow addAccountWindow = new AddAccountWindow();
-            ConfirmBanner = false;
-            Utils.Presentation.OpenDialogWindow(addAccountWindow);
-        }
 
         private static bool? OpenCryptoKeyWindow(string path)
         {
@@ -283,10 +254,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             AccountName = "";
             AccountId = -1;
             UpdateDatabaseCommand = new AsyncRelayCommand(async (o) => await UpdateDatabase());
-            NoButtonCommand = new RelayCommand(o =>
-            {
-                ConfirmBanner = false;
-            });
 
             YesButtonCommand = new RelayCommand(o =>
             {
@@ -300,11 +267,9 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
                 Config.Accounts.Remove(acc);
                 AccountTabViews.RemoveAt(TempId);
-                MainWindowViewModel.TotalAccounts--;
+              //  MainWindowViewModel.TotalAccounts--;
                 Config.SaveAccounts();
                 IsDatabaseEmpty = AccountTabViews.Count == 0;
-                ConfirmBanner = false;
-
             });
 
             RestoreAccountCommand = new RelayCommand(o =>
@@ -352,7 +317,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 {
                     try
                     {
-                        Config.Accounts = (List<Account>)Config.Deserialize(fileDialog.FileName, Config.Properties.UserCryptoKey);
+                        Config.Accounts = (ObservableCollection<Account>)Config.Deserialize(fileDialog.FileName, Config.Properties.UserCryptoKey);
                         FillAccountTabViews();
                         Utils.Presentation.OpenPopupMessageBox("The database of accounts was restored from a file");
                         Config.SaveAccounts();
@@ -361,7 +326,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     {
                         if (OpenCryptoKeyWindow(fileDialog.FileName) == true)
                         {
-                            Config.Accounts = (List<Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
+                            Config.Accounts = (ObservableCollection<Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
                             FillAccountTabViews();
                             Utils.Presentation.OpenPopupMessageBox("The database of accounts was restored from a file");
                             Config.SaveAccounts();
@@ -371,6 +336,36 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 }
 
             });
+
+
+            OpenProfileLinkCommand = new RelayCommand(o =>
+            {
+                using (Process.Start(new ProcessStartInfo((o as Account).ProfileURL) { UseShellExecute = true })) { };
+            });
+
+            OpenAccountDataCommand = new RelayCommand(o =>
+            {
+                (App.MainWindow.DataContext as MainWindowViewModel).AccountDataV.SetAsDefault();
+                MainWindowViewModel.AccountDataViewCommand.Execute(o);
+            });
+
+            OpenAccountNoteCommand = new RelayCommand(o =>
+            {
+                (App.MainWindow.DataContext as MainWindowViewModel).AccountDataV.SetAsDefault(true);
+                MainWindowViewModel.AccountDataViewCommand.Execute(o);
+            });
+           
+            RemoveAccountCommand = new RelayCommand(o =>
+            {
+                if(Config.Properties.NoConfirmMode || Presentation.OpenQueryMessageBox($"{App.FindString("av_confirmation_delete1")} \"{(o as Account).Nickname}\" ? {App.FindString("av_confirmation_delete2")}", App.FindString("mv_confirmAction")))
+                {
+                    Config.Accounts.Remove(o as Account);
+                    (App.MainWindow.DataContext as MainWindowViewModel).TotalAccounts = -1;
+                    Config.SaveAccounts();
+                }
+            });
+
+            AddAccountCommand = new RelayCommand(o => Presentation.OpenDialogWindow(new AddAccountWindow()));
 
 
             FillAccountTabViews();

@@ -73,7 +73,8 @@
     <!--#region Accounts View -->
     <v:String x:Key="av_searchbar_title">Search for accounts  .  .  .</v:String>
     <v:String x:Key="av_addbutton_title">Add</v:String>
-    <v:String x:Key="av_confirmation_delete">Are you sure you want to delete this account?</v:String>
+    <v:String x:Key="av_confirmation_delete1">Are you sure you want to delete the account</v:String>
+    <v:String x:Key="av_confirmation_delete2">After confirmation, it will be impossible to restore the data.</v:String>
     <v:String x:Key="av_popup_saveDatabase">Save accounts database to file</v:String>
 
     <v:String x:Key="av_popup_restoreDatabase" xml:space="preserve">Restore accounts database from file&#13;Attention! Replaces your current base.</v:String>

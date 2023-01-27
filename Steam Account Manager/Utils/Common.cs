@@ -1,7 +1,9 @@
 ﻿using Microsoft.Win32;
+using Steam_Account_Manager.Infrastructure;
 using SteamKit2;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -77,6 +79,12 @@ namespace Steam_Account_Manager.Utils
             {
                 return null;
             }
+        }
+
+        public static bool Exists<T>(this ObservableCollection<T> collection, Func<T,bool> match)
+        {
+            var tmp = collection.Where(match);
+            return tmp.Any();
         }
 
 

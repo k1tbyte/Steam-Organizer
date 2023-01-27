@@ -46,6 +46,8 @@
             <converters:BooleanToVisibilityConverter x:Key="BoolToVisInverted"
                                                      True="Collapsed"
                                                      False="Visible"/>
+            <converters:IncrementConverter x:Key="IncrementConverter"/>
+            <converters:ResourceConverter x:Key="ResourceConverter"/>
 
 
 
@@ -59,6 +61,7 @@
             <Style TargetType="{x:Type ToolTip}">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="Placement" Value="Top"/>
+                <Setter Property="OverridesDefaultStyle" Value="True"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ToolTip">
