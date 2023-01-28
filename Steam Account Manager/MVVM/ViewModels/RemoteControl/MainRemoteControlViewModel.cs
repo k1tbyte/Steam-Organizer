@@ -1,4 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.RemoteControl.Controls;
@@ -65,14 +66,14 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
             LoginViewCommand = new RelayCommand(o =>
             {
                 IsLoginView = true;
-                if (o != null && o is int id)
+                if (o != null && o is Account acc)
                 {
-                    LoginVm.Username = Config.Accounts[id].Login;
-                    LoginVm.Password = Config.Accounts[id].Password;
-                    if (!String.IsNullOrEmpty(Config.Accounts[id].AuthenticatorPath))
+                    LoginVm.Username = acc.Login;
+                    LoginVm.Password = acc.Password;
+                    if (!String.IsNullOrEmpty(acc.AuthenticatorPath))
                     {
                         LoginVm.AuthCode = Newtonsoft.Json.JsonConvert.DeserializeObject<SteamGuardAccount>(
-                                System.IO.File.ReadAllText(Config.Accounts[id].AuthenticatorPath)).GenerateSteamGuardCode();
+                                System.IO.File.ReadAllText(acc.AuthenticatorPath)).GenerateSteamGuardCode();
                     }
                     LoginVm.LogOnCommand.Execute(null);
                 }

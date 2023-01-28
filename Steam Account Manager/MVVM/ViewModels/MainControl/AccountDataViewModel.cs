@@ -26,7 +26,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public AsyncRelayCommand RefreshCommand { get; set; } 
         #endregion
 
-        private Account currentAccount;
+        private readonly Account currentAccount;
         public Account CurrentAccount => currentAccount;
 
         private bool _noticeView = false;
@@ -144,41 +144,19 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 await ShowCsgoErrorAsync(App.FindString("adat_cs_inf_serverError")).ConfigureAwait(false);
             }
         }
-        private async Task RefreshAccount(int id)
+        private async Task RefreshAccount()
         {
-            await Task.Factory.StartNew(() =>
+            try
             {
-                try
-                {
-                    currentAccount = new Account(
-                        currentAccount.Login,
-                        currentAccount.Password,
-                        currentAccount.SteamId64.Value,
-                        currentAccount.Note,
-                        currentAccount.EmailLogin,
-                        currentAccount.EmailPass,
-                        currentAccount.RockstarEmail,
-                        currentAccount.RockstarPass,
-                        currentAccount.UplayEmail,
-                        currentAccount.UplayPass,
-                        currentAccount.OriginEmail,
-                        currentAccount.OriginPass,
-                        currentAccount.CSGOStats,
-                        currentAccount.AuthenticatorPath,
-                        currentAccount.Nickname
-                        );
-
-                    Config.Accounts[id] = currentAccount;
-                    OnPropertyChanged(nameof(CurrentAccount));
-                    Config.SaveAccounts();
-                    ShowNotificationAsync(App.FindString("adat_cs_inf_updated"));
-                }
-                catch
-                {
-                    ShowNotificationAsync(App.FindString("adat_cs_inf_noInternet"));
-                }
-
-            });
+                await currentAccount.ParseInfo();
+                OnPropertyChanged(nameof(CurrentAccount));
+                Config.SaveAccounts();
+                ShowNotificationAsync(App.FindString("adat_cs_inf_updated"));
+            }
+            catch
+            {
+                ShowNotificationAsync(App.FindString("adat_cs_inf_noInternet"));
+            }
         } 
         #endregion
 
@@ -188,11 +166,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             _passwordTemp  = currentAccount.Password;
             _loginTemp     = currentAccount.Login;
 
-            CancelCommand = new RelayCommand(o =>
-            {
-                MainWindowViewModel.AccountsViewCommand.Execute(true);
-             //   AccountsViewModel.UpdateAccountTabView(id);
-            });
+            CancelCommand         = new RelayCommand(o => MainWindowViewModel.AccountsViewCommand.Execute(true));
+
+            OpenUrlProfileCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo(currentAccount.ProfileURL)).Dispose());
+
+            RefreshCommand        = new AsyncRelayCommand(async (o) => await RefreshAccount());
+
+            OpenOtherLinksCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo(currentAccount.ProfileURL + (string)o)).Dispose());
+
+            OpenFromIdLinkCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo((string)o + currentAccount.SteamId64)).Dispose());
 
             CopyCommand = new RelayCommand(o =>
             {
@@ -200,11 +182,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 box.SelectAll();
                 box.Copy();
                 ShowNotificationAsync(App.FindString("adat_notif_copiedClipoard"));
-            });
-
-            OpenUrlProfileCommand = new RelayCommand(o =>
-            {
-                using (Process.Start(new ProcessStartInfo(currentAccount.ProfileURL) { UseShellExecute = true })) { };
             });
 
             ParseCsgoStatsInfo = new AsyncRelayCommand(async (o) =>
@@ -230,18 +207,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 currentAccount.LastUpdateTime = DateTime.Now;
                 Config.SaveAccounts();
                 ShowNotificationAsync(App.FindString("adat_notif_changesSaved"));
-            });
-
-          //  RefreshCommand = new AsyncRelayCommand(async (o) => await RefreshAccount(id));
-
-            OpenOtherLinksCommand = new RelayCommand(o =>
-            {
-                using (Process.Start(new ProcessStartInfo(currentAccount.ProfileURL + (string)o) { UseShellExecute = true })) { };
-            });
-
-            OpenFromIdLinkCommand = new RelayCommand(o =>
-            {
-                using (Process.Start(new ProcessStartInfo((string)o + currentAccount.SteamId64) { UseShellExecute = true })) { };
             });
 
             ExportAccountCommand = new RelayCommand(o =>

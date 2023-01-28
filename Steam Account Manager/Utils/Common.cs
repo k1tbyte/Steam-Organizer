@@ -124,7 +124,7 @@ namespace Steam_Account_Manager.Utils
 
         #region Steam
         public static UInt32? SteamId64ToSteamId32(ulong? steamId64) => steamId64.HasValue ? (UInt32?)(steamId64.Value - 76561197960265728) : null;
-        public static string SteamId32ToSteamId64(int steamId32) => (steamId32 + 76561197960265728).ToString();
+        public static ulong SteamId32ToSteamId64(UInt32 steamId32)   => steamId32 + 76561197960265728UL;
         public static uint SteamId64ToSteamId32(string steamId64)
         {
             if (String.IsNullOrEmpty(steamId64)) return 0;
@@ -203,7 +203,7 @@ namespace Steam_Account_Manager.Utils
         #endregion
 
         #region Registry
-        public static int GetSteamRegistryActiveUser()
+        public static uint GetSteamRegistryActiveUser()
         {
             RegistryKey registryKey = Environment.Is64BitOperatingSystem ?
         RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64) :
@@ -212,7 +212,7 @@ namespace Steam_Account_Manager.Utils
             {
                 using (registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam\\ActiveProcess", false))
                 {
-                    return Convert.ToInt32(registryKey.GetValue("ActiveUser"));
+                    return Convert.ToUInt32(registryKey.GetValue("ActiveUser"));
                 }
 
             }

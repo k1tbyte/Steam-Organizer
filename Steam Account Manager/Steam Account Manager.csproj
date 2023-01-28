@@ -127,6 +127,7 @@
     </ApplicationDefinition>
     <Compile Include="Infrastructure\Converters\IncrementConverter.cs" />
     <Compile Include="Infrastructure\Converters\IndexBooleanConverter.cs" />
+    <Compile Include="Infrastructure\Converters\IntegerToBooleanConverter.cs" />
     <Compile Include="Infrastructure\Converters\ResourceConverter.cs" />
     <Compile Include="Infrastructure\Models\AccountModel.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
@@ -173,7 +174,6 @@
     </Compile>
     <Compile Include="MVVM\ViewModels\MainControl\AccountDataViewModel.cs" />
     <Compile Include="MVVM\ViewModels\MainControl\AccountsViewModel.cs" />
-    <Compile Include="MVVM\ViewModels\MainControl\AccountTabViewModel.cs" />
     <Compile Include="MVVM\ViewModels\MainControl\AddAccountViewModel.cs" />
     <Compile Include="MVVM\ViewModels\MainControl\AddAuthenticatorViewModel.cs" />
     <Compile Include="MVVM\ViewModels\MainControl\MainWindowViewModel.cs" />
@@ -209,9 +209,6 @@
     <Compile Include="MVVM\ViewModels\MainControl\ShowAuthenticatorViewModel.cs" />
     <Compile Include="MVVM\View\MainControl\Controls\AccountDataView.xaml.cs">
       <DependentUpon>AccountDataView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MVVM\View\MainControl\Controls\AccountsTabView.xaml.cs">
-      <DependentUpon>AccountsTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\MainControl\Controls\AccountsView.xaml.cs">
       <DependentUpon>AccountsView.xaml</DependentUpon>
@@ -363,10 +360,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\MainControl\Controls\AccountDataView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MVVM\View\MainControl\Controls\AccountsTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

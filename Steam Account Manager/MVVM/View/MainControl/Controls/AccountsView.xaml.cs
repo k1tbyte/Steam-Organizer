@@ -14,7 +14,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
 {
     public partial class AccountsView : UserControl
     {
-        private AccountTabView _draggedItemView;
+        private ListBoxItem _draggedItemView;
         private AdornerLayer _adornerLayer;
         private DragAdorner _dragAdorner;
         private int _targetIndex = -1;
@@ -25,7 +25,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
         private void ListViewItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             ListBoxItem draggedItem = sender as ListBoxItem;
-            _draggedItemView = ((ListBoxItem)(sender)).DataContext as AccountTabView;
+            _draggedItemView = (ListBoxItem)sender; 
             _adornerLayer = AdornerLayer.GetAdornerLayer(accountsListView);
             _dragAdorner = new DragAdorner(accountsListView, _draggedItemView, 0.5, e.GetPosition(draggedItem));
             _adornerLayer.Add(_dragAdorner);
@@ -33,7 +33,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
 
         private void accountsListView_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (_dragAdorner == null) return;
+/*            if (_dragAdorner == null) return;
 
             _dragAdorner.PointOffset = e.GetPosition(accountsListView);
             _targetIndex = (int)(e.GetPosition(accountsListView).Y / 60);
@@ -48,12 +48,12 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
                 AccountsViewModel.AccountTabViews[_targetIndex - 1].borderLayer.Visibility = Visibility.Collapsed;
             }
 
-            AccountsViewModel.AccountTabViews[_targetIndex].borderLayer.Visibility = Visibility.Visible;
+            AccountsViewModel.AccountTabViews[_targetIndex].borderLayer.Visibility = Visibility.Visible;*/
         }
 
         private void accountsListView_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (_draggedItemView == null || _dragAdorner == null || _targetIndex == -1)
+/*            if (_draggedItemView == null || _dragAdorner == null || _targetIndex == -1)
                 return;
 
             var droppedData = _draggedItemView;
@@ -65,7 +65,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
 
             var selectedIndex = AccountsViewModel.AccountTabViews.IndexOf(droppedData);
             Config.Accounts.Swap(selectedIndex, _targetIndex);
-            Config.SaveAccounts();
+            Config.SaveAccounts();*/
 
         }
 

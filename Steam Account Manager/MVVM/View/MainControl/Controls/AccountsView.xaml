@@ -29,7 +29,7 @@
             </Border>
 
             <TextBox x:Name="txtSearch" VerticalAlignment="Center" SelectionBrush="{DynamicResource second_main_color}"
-                     IsHitTestVisible="{Binding IsDatabaseEmpty,Converter={StaticResource BoolToVis}}"
+                     IsHitTestVisible="{Binding Accounts.Count,Converter={StaticResource IntToBool}}"
                      Text="{Binding SearchBoxText, UpdateSourceTrigger=PropertyChanged}"
                      Margin="18,0,59,0" Background="{DynamicResource searchbox}" Foreground="#b0b9c6"
                      BorderBrush="{x:Null}" BorderThickness="0,0,0,0" MaxLength="80"/>
@@ -60,7 +60,7 @@
             
             <!-- Save account database in file -->
             <Button Style="{StaticResource serviceButton}" Command="{Binding StoreAccountDatabaseCommand}"
-                    IsEnabled="{Binding IsDatabaseEmpty,Converter={StaticResource BoolInverted}}">
+                    IsEnabled="{Binding Accounts.Count,Converter={StaticResource IntToBool}}">
                 <Icon:PackIconMaterial Kind="ContentSaveAll" Width="20" Height="20"
                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <Button.ToolTip>
@@ -89,7 +89,7 @@
 
             <!-- Refresh information about all accounts -->
             <Button Style="{StaticResource animatedRefresh}" Width="20" Height="20" Command="{Binding UpdateDatabaseCommand}"
-                    IsEnabled="{Binding IsDatabaseEmpty,Converter={StaticResource BoolInverted}}">
+                    IsEnabled="{Binding Accounts.Count,Converter={StaticResource IntToBool}}">
                 <Button.ToolTip>
                     <ToolTip ContentStringFormat="{DynamicResource av_popup_updAccounts}"/>
                 </Button.ToolTip>
@@ -106,7 +106,7 @@
 
         </StackPanel>
 
-        <!--Members Data Grid-->
+        <!--Accounts-->
         <ScrollViewer VerticalScrollBarVisibility="Visible" 
                       Grid.Row="2" HorizontalAlignment="Left" x:Name="scrollViewer" >
             <ListBox ItemsSource="{Binding Accounts}"
@@ -177,7 +177,7 @@
                                         <ToolTip ContentStringFormat="{Binding LastUpdateTime,Converter={StaticResource ResourceConverter},ConverterParameter=atv_lastUpdate}"/>
                                     </Border.ToolTip>
 
-                                    <WrapPanel Name ="container" Width="42" Height="42">
+                                    <WrapPanel Width="42" Height="42">
                                         <Image  ImageFailed="AvatarImageFailed"
                                Source="{Binding AvatarMedium, Mode=OneWay}"
                                VerticalAlignment="Center" 
@@ -185,8 +185,7 @@
                                         <WrapPanel.OpacityMask>
                                             <VisualBrush >
                                                 <VisualBrush.Visual>
-                                                    <Border Height="{Binding ElementName=container, Path=ActualHeight}" 
-                            Width="{Binding ElementName=container, Path=ActualWidth}" Background="White" CornerRadius="28"  />
+                                                    <Border Height="42" Width="42" Background="White" CornerRadius="28"  />
                                                 </VisualBrush.Visual>
                                             </VisualBrush>
                                         </WrapPanel.OpacityMask>
@@ -315,14 +314,20 @@
                                     </Button>
 
                                     <Button Style="{StaticResource loginButton}" BorderBrush="Transparent"
-                            Command="{Binding ConnectToSteamCommand}">
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.ConnectToSteamCommand}"
+                                            CommandParameter="{Binding}"
+                                            Tag="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}">
                                         <Icon:PackIconMaterial  Kind="PlayCircleOutline"
                                                Height="30" Width="30" VerticalAlignment="Center"
                                                HorizontalAlignment="Center"/>
                                         <Button.ContextMenu>
                                             <ContextMenu >
-                                                <MenuItem Header="{DynamicResource atv_loginClient}"  Command="{Binding ConnectToSteamCommand}"/>
-                                                <MenuItem Header="{DynamicResource atv_loginRemotely}" Command="{Binding ConnectToSteamRemoteCommand}"/>
+                                                <MenuItem Header="{DynamicResource atv_loginClient}"  
+                                                          Command="{Binding PlacementTarget.Tag.ConnectToSteamCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                          CommandParameter="{Binding}"/>
+                                                <MenuItem Header="{DynamicResource atv_loginRemotely}"
+                                                          Command="{Binding PlacementTarget.Tag.ConnectToSteamRemotelyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                          CommandParameter="{Binding}"/>
                                             </ContextMenu>
                                         </Button.ContextMenu>
                                     </Button>
@@ -340,8 +345,8 @@
         </ScrollViewer>
 
         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Margin="0 0 0 50"
-                   FontSize="35" FontWeight="Bold" Foreground="{DynamicResource default_foreground}"
-                   Opacity="0.7" Grid.Row="2" Visibility="{Binding IsDatabaseEmpty,Converter={StaticResource BoolToVis}}" Text="{DynamicResource av_noAccounts}" />
+                   FontSize="35" FontWeight="Bold" Foreground="{DynamicResource default_foreground}" Visibility="{Binding Accounts.Count,Converter={StaticResource BoolToVisInverted}}"
+                   Opacity="0.7" Grid.Row="2" Text="{DynamicResource av_noAccounts}"/>
 
 
     </Grid>

@@ -31,7 +31,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public static event EventHandler TotalAccountsChanged;
         public static event EventHandler NowLoginUserImageChanged;
         public static event EventHandler NowLoginUserNicknameChanged;
-        private static string _nowLoginUserImage, _nowLoginUserNickname;
+        private static string _nowLoginUserImage = "/Images/user.png", _nowLoginUserNickname = "Username";
         private bool _updateDetect, _showInTaskbar;
         private WindowState _windowState;
 
@@ -44,11 +44,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public bool UpdateDetect
         {
             get => _updateDetect;
-            set
-            {
-                _updateDetect = value;
-                OnPropertyChanged(nameof(UpdateDetect));
-            }
+            set => SetProperty(ref _updateDetect, value);
         }
 
         public static string NowLoginUserNickname
@@ -87,17 +83,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             }
         }
 
-        public static event EventHandler NotificationContentChanged;
-        private static string _notificationContent;
-        public static string NotificationContent
-        {
-            get { return _notificationContent; }
-            set
-            {
-                _notificationContent = value;
-                NotificationContentChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
         public static event EventHandler UpdatedAccountIndexChanged;
         private static int _updatedAccountIndex;
         public static int UpdatedAccountIndex
@@ -110,28 +95,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             }
         }
 
-        public static event EventHandler IsEnabledForUserChanged;
-        private static bool _isEnabledForUser = true;
-        public static bool IsEnabledForUser
-        {
-            get => _isEnabledForUser;
-            set
-            {
-                _isEnabledForUser = value;
-                IsEnabledForUserChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-
         private object _currentView;
         public object CurrentView
         {
-            get { return _currentView; }
-            set
-            {
-                _currentView = value;
-                OnPropertyChanged();
-            }
+            get => _currentView;
+            set => SetProperty(ref _currentView, value);
         }
 
         private static bool IsParsing = false;
@@ -143,15 +111,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             bool accountDetected = false;
             await Task.Factory.StartNew(() =>
             {
-                if (awaitingMs != 0) Thread.Sleep(awaitingMs);
+                Thread.Sleep(awaitingMs);
                 var steamID = Utils.Common.GetSteamRegistryActiveUser();
                 if (steamID != 0)
                 {
-                    NowLoginUserImage = Utils.Common.GetSteamAvatarUrl((ulong)(steamID + 76561197960265728)) ?? "/Images/user.png";
-                    NowLoginUserNickname = Utils.Common.GetSteamNickname((ulong)(steamID + 76561197960265728)) ?? "Username";
+                    NowLoginUserImage = Utils.Common.GetSteamAvatarUrl(steamID + 76561197960265728UL) ?? "/Images/user.png";
+                    NowLoginUserNickname = Utils.Common.GetSteamNickname(steamID + 76561197960265728UL) ?? "Username";
                     accountDetected = true;
                 }
-                else
+                else if(awaitingMs != 0)
                 {
                     NowLoginUserImage = "/Images/user.png";
                     NowLoginUserNickname = "Username";
@@ -188,18 +156,16 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             CurrentView = AccountsVm;
 
-            _ = NowLoginUserParse().ConfigureAwait(false);
+           // _ = NowLoginUserParse().ConfigureAwait(false);
             _ = CheckingUpdates().ConfigureAwait(false);
 
-            AccountsViewCommand = new RelayCommand(o =>
-            {
-                CurrentView = AccountsVm;
-            });
+            AccountsViewCommand = new RelayCommand(o =>  CurrentView = AccountsVm);
 
-            SettingsViewCommand = new RelayCommand(o =>
-            {
-                CurrentView = SettingsVm;
-            });
+            SettingsViewCommand = new RelayCommand(o => CurrentView = SettingsVm);
+
+            MinimizeCommand     = new RelayCommand(o => WindowState = WindowState.Minimized);
+
+            NoLoadUpdateCommand = new RelayCommand(o => UpdateDetect = false);
 
             AccountDataViewCommand = new RelayCommand(o =>
             {
@@ -209,6 +175,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             RemoteControlViewCommand = new RelayCommand(o =>
             {
+                App.MainWindow.RemoteControlMenu.IsChecked = true;
                 CurrentView = RemoteControlVm;
             });
 
@@ -221,11 +188,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 }
 
                 App.Shutdown();
-            });
-
-            MinimizeCommand = new RelayCommand(o =>
-            {
-                WindowState = WindowState.Minimized;
             });
 
             LogoutCommand = new RelayCommand(o =>
@@ -255,13 +217,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
                 App.Shutdown();
             });
-
-            NoLoadUpdateCommand = new RelayCommand(o =>
-            {
-                UpdateDetect = false;
-            });
-
-                
         }
     }
 }

@@ -1,17 +1,145 @@
-﻿using Steam_Account_Manager.Infrastructure.Models;
+﻿using Newtonsoft.Json;
+using Steam_Account_Manager.Infrastructure.Models;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
+using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using static Steam_Account_Manager.Utils.Win32;
 
 namespace Steam_Account_Manager.Infrastructure
 {
-    internal class SteamHandler
+    internal static class SteamHandler
     {
-        public static void VirtualSteamLogger(Account account, bool savePassword = false, bool paste2fa = false)
+        private static async Task UpdateLoggedUser(Account acc)
+        {
+            if (await MainWindowViewModel.NowLoginUserParse(15000) && Config.Properties.AutoGetSteamId && !acc.ContainParseInfo)
+            {
+                try
+                {
+                    Utils.Presentation.OpenPopupMessageBox(App.FindString("atv_inf_getLocalAccInfo"));
+                    acc.SteamId64 = Utils.Common.SteamId32ToSteamId64(Utils.Common.GetSteamRegistryActiveUser());
+                    await acc.ParseInfo();
+                    Config.SaveAccounts();
+                }
+                catch
+                {
+                    Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
+                }
+            }
+        }
+
+        public static async Task ConnectToSteam(Account acc)
+        {
+            bool isShuttingDown = false;
+
+            App.MainWindow.IsHitTestVisible = false;
+            await Task.Factory.StartNew(() =>
+            {
+                Config.Properties.SteamDirection = Utils.Common.GetSteamRegistryDirection();
+                if (Config.Properties.SteamDirection != null)
+                {
+
+                    //Copy steam auth code in clipboard
+                    if (!String.IsNullOrEmpty(acc.AuthenticatorPath) && System.IO.File.Exists(acc.AuthenticatorPath))
+                    {
+                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            Utils.Win32.Clipboard.SetText(
+                            JsonConvert.DeserializeObject<SteamGuardAccount>(
+                                System.IO.File.ReadAllText(acc.AuthenticatorPath)).GenerateSteamGuardCode());
+                        }));
+                        VirtualSteamLogger(acc, Config.Properties.RememberPassword, true);
+                    }
+                    else if (Config.Properties.RememberPassword)
+                    {
+                        VirtualSteamLogger(acc, true, false);
+                    }
+                    else
+                    {
+                        Utils.Common.KillSteamAndConnect(Config.Properties.SteamDirection, $"-noreactlogin -login {acc.Login} {acc.Password} -tcp");
+                        isShuttingDown = Config.Properties.ActionAfterLogin == LoggedAction.Close;
+                    }
+
+
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        //Сохраняем данные о недавно используемых аккаунтов
+                        /*if (SteamId != "Unknown" && !Config.Properties.RecentlyLoggedUsers.Any(o => o.SteamID64 == SteamId))
+                        {
+
+                            if (Config.Properties.RecentlyLoggedUsers.Count < 5)
+                            {
+
+                                Config.Properties.RecentlyLoggedUsers.Add(new RecentlyLoggedUser
+                                {
+                                    SteamID64 = SteamId,
+                                    IsRewritable = false,
+                                    Nickname = _steamNickname
+                                });
+                                if (Config.Properties.RecentlyLoggedUsers.Count == 5)
+                                    Config.Properties.RecentlyLoggedUsers[0].IsRewritable = true;
+
+
+                            }
+                            else
+                            {
+                                var index = Config.Properties.RecentlyLoggedUsers.FindIndex(o => o.IsRewritable);
+                                Config.Properties.RecentlyLoggedUsers[index] = new RecentlyLoggedUser()
+                                {
+                                    SteamID64 = SteamId,
+                                    Nickname = _steamNickname,
+                                    IsRewritable = false
+                                };
+
+                                if (index == 4)
+                                {
+                                    Config.Properties.RecentlyLoggedUsers[0].IsRewritable = true;
+                                }
+                                else
+                                {
+                                    Config.Properties.RecentlyLoggedUsers[++index].IsRewritable = true;
+                                }
+                            }
+                            App.Tray.TrayListUpdate();
+                            Config.SaveProperties();
+                        }*/
+
+                        if (Config.Properties.ActionAfterLogin != LoggedAction.None)
+                        {
+                            switch (Config.Properties.ActionAfterLogin)
+                            {
+                                case LoggedAction.Close:
+                                    if (isShuttingDown)
+                                        App.Shutdown();
+                                    break;
+                                case LoggedAction.Minimize:
+                                    if (App.MainWindow.IsVisible)
+                                        App.MainWindow.Hide();
+                                    break;
+                            }
+                        }
+                    }));
+
+
+                    Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("atv_inf_loggedInSteam"));
+
+                    //Если надо получить данные об аккаунте без информации
+                    _ = UpdateLoggedUser(acc);
+                }
+                else
+                {
+                    Utils.Presentation.OpenPopupMessageBox((string)Application.Current.FindResource("atv_inf_steamNotFound"));
+                    return;
+                }
+            });
+
+            App.MainWindow.IsHitTestVisible = true;
+        }
+
+        private static void VirtualSteamLogger(Account account, bool savePassword = false, bool paste2fa = false)
         {
             Automation.RemoveAllEventHandlers();
             if (Utils.Common.GetSteamRegistryLanguage() != account.Login)

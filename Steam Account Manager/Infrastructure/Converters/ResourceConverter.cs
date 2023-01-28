@@ -19,8 +19,6 @@ namespace Steam_Account_Manager.Infrastructure.Converters
                 return (value as string).Remove(645, (value as string).Length - 645) + " ...";
             
             return value;
-
-            
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotSupportedException();
     }

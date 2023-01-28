@@ -48,6 +48,7 @@
                                                      False="Visible"/>
             <converters:IncrementConverter x:Key="IncrementConverter"/>
             <converters:ResourceConverter x:Key="ResourceConverter"/>
+            <converters:IntegerToBooleanConverter x:Key="IntToBool"/>
 
 
 

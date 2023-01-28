@@ -19,10 +19,10 @@ namespace Steam_Account_Manager.Infrastructure.Converters
 
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null || (value is string str && String.IsNullOrEmpty(str)))
-                return False;
+            if (value is bool @bool)
+                return @bool ? True : False;
+            return System.Convert.ToInt32(value) > 0 ? True : False;
 
-            return value is bool && ((bool)value) ? True : False;
         }
 
         public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

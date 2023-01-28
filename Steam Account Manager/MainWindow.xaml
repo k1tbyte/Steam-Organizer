@@ -11,7 +11,7 @@
         Background="Transparent"
         Title="Steam Account Manager"
         WindowState="{Binding WindowState}"
-        IsHitTestVisible="{Binding IsEnabledForUser}">
+        IsHitTestVisible="True">
 
     <Window.DataContext>
         <vm:MainWindowViewModel/>
@@ -40,7 +40,7 @@
                             
                             <WrapPanel Name ="container" Width="94" Height="94" VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <Image x:Name="steamImage" HorizontalAlignment="Center" VerticalAlignment="Center"
-                               Source="{Binding NowLoginUserImage, UpdateSourceTrigger=PropertyChanged}"
+                               Source="{Binding NowLoginUserImage}"
                                ImageFailed="steamImage_ImageFailed" Stretch="UniformToFill"/>
                                 <WrapPanel.OpacityMask>
                                     <VisualBrush >
@@ -81,10 +81,9 @@
                                 </StackPanel>
                             </RadioButton>
 
-                            
-                            <RadioButton Style="{StaticResource menuButton}"
+
+                            <RadioButton x:Name="RemoteControlMenu" Style="{StaticResource menuButton}"
                                          Command="{Binding RemoteControlViewCommand}" Cursor="Hand">
-                                
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="RemoteDesktop" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="{DynamicResource mv_remoteControl_title}"/>
