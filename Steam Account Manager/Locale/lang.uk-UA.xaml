@@ -81,7 +81,8 @@
     <v:String x:Key="av_popup_updAccounts">Оновити інформацію про акаунти</v:String>
     <v:String x:Key="av_noAccounts" xml:space="preserve">Аккаунти не додані.&#13;Натисніть "Додати"!</v:String>
     <v:String x:Key="av_searchByTitle">Пошук за</v:String>
-    
+    <v:String x:Key="av_accountsEditing">Редагування акаунтів</v:String>
+
     <x:ArrayExtension x:Key="av_searchFilter" Type="v:String">
         <v:String>Нікнеймом</v:String>
         <v:String>Примітці</v:String>

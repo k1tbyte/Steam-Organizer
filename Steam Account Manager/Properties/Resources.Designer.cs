@@ -59,5 +59,25 @@ namespace Steam_Account_Manager.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] grab {
+            get {
+                object obj = ResourceManager.GetObject("grab", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] grabbing {
+            get {
+                object obj = ResourceManager.GetObject("grabbing", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

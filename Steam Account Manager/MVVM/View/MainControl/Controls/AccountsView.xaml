@@ -104,6 +104,14 @@
                        VerticalAlignment="Center"/>
             <ComboBox Margin="5 0 0 0" SelectedIndex="{Binding SearchModeIndex}" Opacity="0.9" ItemsSource="{DynamicResource av_searchFilter}" />
 
+            <ToggleButton Style="{StaticResource idle_button}" Margin="7 0 0 0" Width="25" Height="25"
+                          IsChecked="{Binding ChangesAviable,Mode=OneWayToSource}" VerticalAlignment="Center">
+                <Icon:PackIconMaterial Kind="AccountEdit" Width="17" Height="17" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <ToggleButton.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource av_accountsEditing}"/>
+                </ToggleButton.ToolTip>
+            </ToggleButton>
+
         </StackPanel>
 
         <!--Accounts-->
@@ -115,8 +123,6 @@
                      IsHitTestVisible="True" Background="Transparent" VirtualizingPanel.IsVirtualizing="True"
                      VirtualizingPanel.CacheLengthUnit="Item" VirtualizingPanel.CacheLength="2,2"
                      VirtualizingPanel.VirtualizationMode="Standard" AlternationCount="100">
-                <!--PreviewMouseMove="accountsListView_PreviewMouseMove"
-                      PreviewMouseLeftButtonUp="accountsListView_PreviewMouseLeftButtonUp"-->
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True" />
@@ -127,12 +133,10 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                    <ContentPresenter Margin="0 0 0 10" />
+                                    <ContentPresenter Margin="0 0 0 5" Width="575" HorizontalAlignment="Center" />
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
-                        <!-- <Setter Property="AllowDrop" Value="True"/>
-                        <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListViewItem_PreviewMouseLeftButtonDown"/>-->
                     </Style>
                 </ListBox.ItemContainerStyle>
                 <ListBox.Template>
@@ -145,7 +149,7 @@
 
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="{DynamicResource first_main_color}" CornerRadius="20" Height="50" Width="568">
+                        <Border Background="{DynamicResource first_main_color}" CornerRadius="20" Height="50" Width="568" Margin="0 5 0 0">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="40"/>
@@ -313,24 +317,38 @@
                                         <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
                                     </Button>
 
-                                    <Button Style="{StaticResource loginButton}" BorderBrush="Transparent"
+                                    <Grid Height="40" Width="40">
+                                        <Button Style="{StaticResource loginButton}" BorderBrush="Transparent"
                                             Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.ConnectToSteamCommand}"
                                             CommandParameter="{Binding}"
+                                            Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.ChangesAviable,Converter={StaticResource BoolToVisInverted},Mode=OneWay}"
                                             Tag="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}">
-                                        <Icon:PackIconMaterial  Kind="PlayCircleOutline"
+                                            <Icon:PackIconMaterial  Kind="PlayCircleOutline"
                                                Height="30" Width="30" VerticalAlignment="Center"
                                                HorizontalAlignment="Center"/>
-                                        <Button.ContextMenu>
-                                            <ContextMenu >
-                                                <MenuItem Header="{DynamicResource atv_loginClient}"  
+                                            <Button.ContextMenu>
+                                                <ContextMenu >
+                                                    <MenuItem Header="{DynamicResource atv_loginClient}"  
                                                           Command="{Binding PlacementTarget.Tag.ConnectToSteamCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                                           CommandParameter="{Binding}"/>
-                                                <MenuItem Header="{DynamicResource atv_loginRemotely}"
+                                                    <MenuItem Header="{DynamicResource atv_loginRemotely}"
                                                           Command="{Binding PlacementTarget.Tag.ConnectToSteamRemotelyCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                                           CommandParameter="{Binding}"/>
-                                            </ContextMenu>
-                                        </Button.ContextMenu>
-                                    </Button>
+                                                </ContextMenu>
+                                            </Button.ContextMenu>
+                                        </Button>
+
+                                        <Button Style="{StaticResource serviceButton}" Width="35" Height="35"  Cursor="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.GrabCursor,Mode=OneTime}" AllowDrop="True" 
+                                                 Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.ChangesAviable,Converter={StaticResource BoolToVis},Mode=OneWay}"
+                                                 PreviewMouseLeftButtonDown="AccountItemGrab"
+                                                PreviewMouseLeftButtonUp="AccountItemDrop">
+                                            <Icon:PackIconMaterial  Kind="DotsGrid"
+                                                                Height="23" Width="23" />
+                                        </Button>
+                                      
+
+                                    </Grid>
+
 
 
                                 </StackPanel>

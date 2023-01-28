@@ -2,17 +2,15 @@
 using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
-using Steam_Account_Manager.MVVM.View.MainControl.Controls;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
 using Steam_Account_Manager.Utils;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 {
@@ -35,7 +33,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         #region Properties
         public ObservableCollection<Account> Accounts => Config.Accounts;
-        private readonly ICollectionView SearchFilter;
+        public ICollectionView SearchFilter { get; }
+        public Cursor GrabCursor => App.GrabCursor;
 
         private string _searchBoxText;
         public string SearchBoxText
@@ -63,7 +62,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 _searchModeIndex = value;
                 SearchBoxText = "";
             }
-        } 
+        }
+
+        private bool _changesAviable;
+        public bool ChangesAviable
+        {
+            get => _changesAviable;
+            set => SetProperty(ref _changesAviable, value);
+        }
+
         #endregion
 
         #region Helpers
@@ -118,7 +125,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             }
 
             return false;
-        } 
+        }
         #endregion
 
         public AccountsViewModel()

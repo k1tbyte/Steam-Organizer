@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace Steam_Account_Manager
@@ -21,6 +22,11 @@ namespace Steam_Account_Manager
         public static new MainWindow MainWindow;
         public static TrayMenu Tray;
         private ExceptionWindow ExceptionWnd;
+
+        public static Cursor GrabCursor { get; }     = new Cursor(new MemoryStream(Steam_Account_Manager.Properties.Resources.grab));
+        public static Cursor GrabbingCursor { get; } = new Cursor(new MemoryStream(Steam_Account_Manager.Properties.Resources.grabbing));
+
+
         public static bool IsShuttingDown { get; set; }
 
         [STAThread]
@@ -105,6 +111,8 @@ namespace Steam_Account_Manager
                 SteamRemoteClient.Logout();
 
             MainWindow?.Dispose();
+            GrabCursor.Dispose();
+            GrabbingCursor.Dispose();
             Mutex.Close();
 
             Application.Current.Shutdown();

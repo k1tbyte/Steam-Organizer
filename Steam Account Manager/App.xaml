@@ -50,8 +50,6 @@
             <converters:ResourceConverter x:Key="ResourceConverter"/>
             <converters:IntegerToBooleanConverter x:Key="IntToBool"/>
 
-
-
             <Style x:Key="menuButtonIcon" TargetType="Icon:PackIconMaterial">
                 <Setter Property="Margin" Value="20 2 20 0" />
                 <Setter Property="VerticalAlignment" Value="Center" />

@@ -591,6 +591,10 @@
   <ItemGroup>
     <Folder Include="MVVM\View\RemoteControl\Windows\" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\grab.cur" />
+    <Resource Include="Images\grabbing.cur" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

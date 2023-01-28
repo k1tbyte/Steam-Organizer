@@ -82,6 +82,7 @@
     <v:String x:Key="av_popup_updAccounts">Update database information</v:String>
     <v:String x:Key="av_noAccounts" xml:space="preserve">No accounts added.&#13;Click "add" for a new one!</v:String>
     <v:String x:Key="av_searchByTitle">Search by</v:String>
+    <v:String x:Key="av_accountsEditing">Editing accounts</v:String>
 
     <x:ArrayExtension x:Key="av_searchFilter" Type="v:String">
         <v:String>Name</v:String>

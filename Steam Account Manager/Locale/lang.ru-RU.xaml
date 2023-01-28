@@ -81,6 +81,7 @@
     <v:String x:Key="av_popup_updAccounts">Обновить информацию об аккаунтах</v:String>
     <v:String x:Key="av_noAccounts" xml:space="preserve">Аккаунты не добавлены.&#13;Нажмите "Добавить"!</v:String>
     <v:String x:Key="av_searchByTitle">Поиск по</v:String>
+    <v:String x:Key="av_accountsEditing">Редактирование аккаунтов</v:String>
 
     <x:ArrayExtension x:Key="av_searchFilter" Type="v:String">
         <v:String>Никнейму</v:String>

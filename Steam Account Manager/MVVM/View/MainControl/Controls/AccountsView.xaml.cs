@@ -1,12 +1,12 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.MVVM.ViewModels.MainControl;
-using Steam_Account_Manager.Utils;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using static Steam_Account_Manager.Utils.Presentation;
 
@@ -14,60 +14,84 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
 {
     public partial class AccountsView : UserControl
     {
-        private ListBoxItem _draggedItemView;
+        private ListBoxItem draggedItem;
         private AdornerLayer _adornerLayer;
         private DragAdorner _dragAdorner;
-        private int _targetIndex = -1;
+        private int _targetIndex = -1, _draggedItemIndex = -1;
+        private Effect _glow;
+        private FrameworkElement _sender;
 
-        public AccountsView() => InitializeComponent();
-        
-
-        private void ListViewItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        public AccountsView()
         {
-            ListBoxItem draggedItem = sender as ListBoxItem;
-            _draggedItemView = (ListBoxItem)sender; 
-            _adornerLayer = AdornerLayer.GetAdornerLayer(accountsListView);
-            _dragAdorner = new DragAdorner(accountsListView, _draggedItemView, 0.5, e.GetPosition(draggedItem));
+            InitializeComponent();
+        }
+
+
+        private void AccountItemGrab(object sender, MouseButtonEventArgs e)
+        {
+            _sender                             = (sender as FrameworkElement);
+            _sender.Cursor                      = App.GrabbingCursor;
+            accountsListView.PreviewMouseMove += AccountItemDragMove;
+            var pointOffset                     = e.GetPosition(accountsListView);
+            _draggedItemIndex                   = (int)(pointOffset.Y / 60);
+            draggedItem                         = accountsListView.ItemContainerGenerator.ContainerFromIndex(_draggedItemIndex) as ListBoxItem;
+            _glow                               = App.Current.FindResource("glow") as Effect;
+            _adornerLayer                       = AdornerLayer.GetAdornerLayer(accountsListView);
+            _dragAdorner                        = new DragAdorner(accountsListView, draggedItem, 0.4, e.GetPosition(draggedItem)) { PointOffset = pointOffset };
             _adornerLayer.Add(_dragAdorner);
         }
 
-        private void accountsListView_PreviewMouseMove(object sender, MouseEventArgs e)
+        private void AccountItemDragMove(object sender, MouseEventArgs e)
         {
-/*            if (_dragAdorner == null) return;
+            if (_dragAdorner == null) return;
 
-            _dragAdorner.PointOffset = e.GetPosition(accountsListView);
-            _targetIndex = (int)(e.GetPosition(accountsListView).Y / 60);
+            var pos = e.GetPosition(accountsListView);
+            _dragAdorner.PointOffset = pos;
+            _targetIndex = (int)(pos.Y / 60);
+
+            if (_targetIndex >= Config.Accounts.Count || _targetIndex < 0) return;
 
             if (_targetIndex == 0)
-                AccountsViewModel.AccountTabViews[_targetIndex + 1].borderLayer.Visibility = Visibility.Collapsed;
-            else if (_targetIndex == AccountsViewModel.AccountTabViews.Count - 1)
-                AccountsViewModel.AccountTabViews[_targetIndex - 1].borderLayer.Visibility = Visibility.Collapsed;
+                (accountsListView.ItemContainerGenerator.ContainerFromIndex(_targetIndex + 1) as ListBoxItem).Effect = null;
+            else if (_targetIndex == Config.Accounts.Count - 1)
+                (accountsListView.ItemContainerGenerator.ContainerFromIndex(_targetIndex - 1) as ListBoxItem).Effect = null;
             else
             {
-                AccountsViewModel.AccountTabViews[_targetIndex + 1].borderLayer.Visibility = Visibility.Collapsed;
-                AccountsViewModel.AccountTabViews[_targetIndex - 1].borderLayer.Visibility = Visibility.Collapsed;
+                (accountsListView.ItemContainerGenerator.ContainerFromIndex(_targetIndex + 1) as ListBoxItem).Effect = null;
+                (accountsListView.ItemContainerGenerator.ContainerFromIndex(_targetIndex - 1) as ListBoxItem).Effect = null;
             }
 
-            AccountsViewModel.AccountTabViews[_targetIndex].borderLayer.Visibility = Visibility.Visible;*/
+            if (_targetIndex != _draggedItemIndex && pos.X >= 520 && pos.X <= 560 && pos.Y > 0)
+                (accountsListView.ItemContainerGenerator.ContainerFromIndex(_targetIndex) as ListBoxItem).Effect = _glow;
+            else
+            {
+                (accountsListView.ItemContainerGenerator.ContainerFromIndex(_targetIndex) as ListBoxItem).Effect = null;
+                _targetIndex = -1;
+            }
         }
 
-        private void accountsListView_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void AccountItemDrop(object sender, MouseButtonEventArgs e)
         {
-/*            if (_draggedItemView == null || _dragAdorner == null || _targetIndex == -1)
+            accountsListView.PreviewMouseMove -= AccountItemDragMove;
+            if (draggedItem == null || _dragAdorner == null)
                 return;
 
-            var droppedData = _draggedItemView;
+            if(_targetIndex != -1)
+            {
+                (accountsListView.ItemContainerGenerator.ContainerFromIndex(_targetIndex) as ListBoxItem).Effect = null;
+                Config.Accounts.Move(_draggedItemIndex, _targetIndex);
+                (this.DataContext as AccountsViewModel).SearchFilter.Refresh();
+            }
 
+            if(_sender != null)
+                _sender.Cursor = App.GrabCursor;
+
+            _targetIndex = -1;
             _adornerLayer.Remove(_dragAdorner);
-            _draggedItemView = null;
-            _dragAdorner = null;
-            AccountsViewModel.AccountTabViews[_targetIndex].borderLayer.Visibility = Visibility.Collapsed;
-
-            var selectedIndex = AccountsViewModel.AccountTabViews.IndexOf(droppedData);
-            Config.Accounts.Swap(selectedIndex, _targetIndex);
-            Config.SaveAccounts();*/
-
+            _sender = _dragAdorner = null;
+            draggedItem = null;
         }
+
 
         private void AvatarImageFailed(object sender, ExceptionRoutedEventArgs e) => (sender as Image).Source = new BitmapImage(new Uri("/Images/default_steam_profile.png", UriKind.Relative));
     }
