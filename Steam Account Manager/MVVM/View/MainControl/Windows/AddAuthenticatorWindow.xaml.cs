@@ -1,4 +1,5 @@
-﻿using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+﻿using Steam_Account_Manager.Infrastructure.Models;
+using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -7,17 +8,14 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
 {
     public partial class AddAuthenticatorWindow : Window
     {
-        public AddAuthenticatorWindow(string login, string password, int accountId)
+        internal AddAuthenticatorWindow(Account acc)
         {
             InitializeComponent();
-            DataContext = new AddAuthenticatorViewModel(login, password, accountId, this);
+            DataContext = new AddAuthenticatorViewModel(acc, this);
         }
 
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            this.DragMove();
-
-        }
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e) => this.DragMove();
+        
 
         private void buttons_Click(object sender, RoutedEventArgs e)
         {

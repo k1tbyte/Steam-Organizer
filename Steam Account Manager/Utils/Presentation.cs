@@ -183,6 +183,7 @@ namespace Steam_Account_Manager.Utils
                 AutoReverse = true
             };
 
+            marginAnim.Freeze();
             element.BeginAnimation(FrameworkElement.MarginProperty, marginAnim);
 
             if (!opacity) return;
@@ -191,6 +192,7 @@ namespace Steam_Account_Manager.Utils
             {
                 AutoReverse = true
             };
+            opacityAnim.Freeze();
 
             element.BeginAnimation(FrameworkElement.OpacityProperty, opacityAnim);
         } 

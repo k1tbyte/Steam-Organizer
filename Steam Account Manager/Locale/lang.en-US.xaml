@@ -71,7 +71,7 @@
 
 
     <!--#region Accounts View -->
-    <v:String x:Key="av_searchbar_title">Search for accounts  .  .  .</v:String>
+    <v:String x:Key="av_searchbar_title">Search for accounts . . .</v:String>
     <v:String x:Key="av_addbutton_title">Add</v:String>
     <v:String x:Key="av_confirmation_delete1">Are you sure you want to delete the account</v:String>
     <v:String x:Key="av_confirmation_delete2">After confirmation, it will be impossible to restore the data.</v:String>
@@ -210,6 +210,7 @@
     <v:String x:Key="aaw_errorSave">Error saving authenticator file, authenticator not added</v:String>
     <v:String x:Key="aaw_smsCode">Please enter SMS-code</v:String>
     <v:String x:Key="aaw_successAdd">Authenticator successfully added</v:String>
+    <v:String x:Key="aaw_linkFromAnotherAcc">You cannot link an authenticator to an account that it does not own</v:String>
     <!--#endregion-->
 
 

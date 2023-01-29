@@ -14,7 +14,7 @@
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
                     <Border x:Name="Border"
                 Background="{DynamicResource background_border_color}" CornerRadius="5"
-                BorderThickness="1" BorderBrush="{DynamicResource second_main_color}">
+                BorderThickness="1" BorderBrush="{DynamicResource second_main_brush}">
                         <StackPanel IsItemsHost="True"
                       KeyboardNavigation.DirectionalNavigation="Cycle" />
                     </Border>
@@ -48,7 +48,7 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Root" Property="Background" Value="{DynamicResource second_main_color}"/>
+                            <Setter TargetName="Root" Property="Background" Value="{DynamicResource second_main_brush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -7,7 +7,7 @@
     <Style x:Key="TemplateGlowRadioButton" TargetType="RadioButton">
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
+        <Setter Property="Background" Value="{DynamicResource first_main_brush}"/>
         <Setter Property="FontSize" Value="14"/>
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="true">
@@ -40,7 +40,7 @@
 
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource second_main_color}"/>
+                <Setter Property="Background" Value="{DynamicResource second_main_brush}"/>
                 <Setter Property="Foreground" Value="White"/>
             </Trigger>
         </Style.Triggers>
@@ -98,7 +98,7 @@
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
-        <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
+        <Setter Property="Background" Value="{DynamicResource first_main_brush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource buttons_border_brush}"/>
         <Setter Property="Width" Value="80"/>
         <Setter Property="Height" Value="35"/>
@@ -136,7 +136,7 @@
     </Style>
 
     <Style x:Key="saveAccontButton" TargetType="Button">
-        <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
+        <Setter Property="Background" Value="{DynamicResource first_main_brush}"/>
         <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -159,35 +159,6 @@
                 <Setter Property="Foreground" Value="White"/>
             </Trigger>
 
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="addButton" TargetType="Button">
-        <Setter Property="Background" Value="{DynamicResource add_button_background}"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Width" Value="150"/>
-        <Setter Property="Height" Value="35"/>
-        <Setter Property="HorizontalAlignment" Value="Right"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Margin" Value="0 0 0 0"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Grid.Row" Value="1"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="20">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="true">
-                <Setter Property="Background" Value="{DynamicResource add_button_isMouseOver}"/>
-                <Setter Property="Foreground" Value="White"/>
-            </Trigger>
         </Style.Triggers>
     </Style>
 
@@ -525,8 +496,8 @@
     <!--#region Toggle Buttons -->
 
     <Style x:Key="ToggleButtonStyle" TargetType="{x:Type ToggleButton}">
-        <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource first_main_color}"/>
+        <Setter Property="Background" Value="{DynamicResource first_main_brush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource first_main_brush}"/>
         <Setter Property="Height" Value="35"/>
         <Setter Property="Width" Value="85"/>
         <Setter Property="Margin" Value="0 0 100 0"/>
@@ -589,13 +560,13 @@
                                         Value="White"/>
                             <Setter TargetName="Ellipse"
                                         Property="Stroke"
-                                        Value="{DynamicResource second_main_color}"/>
+                                        Value="{DynamicResource second_main_brush}"/>
                             <Setter TargetName="Text"
                                         Property="Text"
                                         Value="ON"/>
                             <Setter TargetName="Border"
                                         Property="Background"
-                                        Value="{DynamicResource second_main_color}"/>
+                                        Value="{DynamicResource second_main_brush}"/>
                         </Trigger>
 
                         <Trigger Property="IsMouseOver" Value="True">
@@ -657,7 +628,7 @@
     </Style>
 
     <Style x:Key="checkbox" TargetType="{x:Type ToggleButton}">
-        <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
+        <Setter Property="Background" Value="{DynamicResource first_main_brush}"/>
         <Setter Property="Foreground" Value="{DynamicResource main_text_color}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Cursor" Value="Hand"/>

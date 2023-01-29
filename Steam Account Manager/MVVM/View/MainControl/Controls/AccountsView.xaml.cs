@@ -24,6 +24,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
         public AccountsView()
         {
             InitializeComponent();
+            this.DataContext = new AccountsViewModel();
         }
 
 

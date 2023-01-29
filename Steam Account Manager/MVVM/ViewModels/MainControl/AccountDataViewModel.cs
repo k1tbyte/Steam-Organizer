@@ -2,6 +2,7 @@
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Parsers;
 using Steam_Account_Manager.MVVM.Core;
+using Steam_Account_Manager.MVVM.View.MainControl.Windows;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -22,7 +23,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public RelayCommand OpenOtherLinksCommand { get; set; }
         public RelayCommand ExportAccountCommand { get; set; }
         public RelayCommand AddAuthenticatorCommand { get; set; }
-        public RelayCommand YesAuthenticatorCommand { get; set; }
         public AsyncRelayCommand RefreshCommand { get; set; } 
         #endregion
 
@@ -225,20 +225,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             AddAuthenticatorCommand = new RelayCommand(o =>
             {
                 if (currentAccount.AuthenticatorPath == null || !System.IO.File.Exists(currentAccount.AuthenticatorPath))
-                {
-                    var border = o as Border;
-                    border.Visibility = Visibility.Visible;
-                }
+                    Utils.Presentation.OpenDialogWindow(new AddAuthenticatorWindow(currentAccount));
                 else
-                {
-                    //Utils.Presentation.OpenDialogWindow(new ShowAuthenticatorWindow(id));
-                }
+                    Utils.Presentation.OpenDialogWindow(new ShowAuthenticatorWindow(currentAccount));
             });
 
-            YesAuthenticatorCommand = new RelayCommand(o =>
-            {
-               // Utils.Presentation.OpenDialogWindow(new AddAuthenticatorWindow(CurrentAccount.Login, CurrentAccount.Password, id));
-            });
 
         }
     }

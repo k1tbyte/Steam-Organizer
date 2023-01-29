@@ -8,49 +8,41 @@
              D:DataContext="{D:DesignInstance Type=viewmodels:AccountsViewModel}"
              Mc:Ignorable="D"
              D:DesignHeight="450" D:DesignWidth="600">
-   
-
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" MaxHeight="44"/>
-            <RowDefinition Height="48"/>
+            <RowDefinition Height="Auto" MaxHeight="48"/>
+            <RowDefinition Height="45"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
         <!--Search Bar-->
         <Grid Width="440" HorizontalAlignment="Left" Grid.Row="0">
-            <TextBlock Margin="20,0,45,0" VerticalAlignment="Center" Foreground="#b0b9c6" IsHitTestVisible="False"
-                          Panel.ZIndex="1" Text="{DynamicResource av_searchbar_title}" 
-                          Visibility="{Binding ElementName=txtSearch, Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
-            <Border x:Name="border" Background="{DynamicResource searchbox}" CornerRadius="20">
-                <Border.Effect>
-                    <DropShadowEffect Color="{DynamicResource drop_shadow}"/>
-                </Border.Effect>
-            </Border>
-
-            <TextBox x:Name="txtSearch" VerticalAlignment="Center" SelectionBrush="{DynamicResource second_main_color}"
+            <TextBox x:Name="txtSearch"  
+                     Style="{StaticResource ModernSearchBox}"
+                     Tag="{DynamicResource av_searchbar_title}"
                      IsHitTestVisible="{Binding Accounts.Count,Converter={StaticResource IntToBool}}"
                      Text="{Binding SearchBoxText, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="18,0,59,0" Background="{DynamicResource searchbox}" Foreground="#b0b9c6"
-                     BorderBrush="{x:Null}" BorderThickness="0,0,0,0" MaxLength="80"/>
-
-
-            <Icon:PackIconMaterial Kind="Magnify" Width="20" 
-                                   Height="20" Foreground="#b0b9c6" 
-                                   VerticalAlignment="Center" HorizontalAlignment="Right"
-                                   Margin="0 0 20 0"/>
+                     Margin="5,0,0,0" MaxLength="80">
+            </TextBox>
         </Grid>
 
         <!--Add Button-->
-        <Button Style="{StaticResource addButton}" Grid.Row="0" Width="130" Height="44" Command="{Binding AddAccountCommand}">
-            <Button.Effect>
-                <DropShadowEffect Color="{DynamicResource drop_shadow}"/>
-            </Button.Effect>
+        <Button Style="{StaticResource ModernButton}" HorizontalAlignment="Right"
+                Height="44" Command="{Binding AddAccountCommand}" Margin="0 0 85 0">
             <StackPanel Orientation="Horizontal">
                 <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center"
                                                Margin="0 1 8 0" Width="11"
                                                Height="11" Foreground="{DynamicResource add_button_foreground}"/>
                 <TextBlock Text="{DynamicResource av_addbutton_title}"  Foreground="{DynamicResource add_button_foreground}"/>
+            </StackPanel>
+        </Button>
+
+        <!--Check account Button-->
+        <Button Style="{StaticResource ModernButton}" HorizontalAlignment="Right"
+                Height="44" Width="70" Margin="0 0 10 0">
+            <StackPanel Orientation="Horizontal">
+                <Icon:PackIconMaterial Kind="AccountConvert" VerticalAlignment="Center"
+                                                Width="25" Height="25" Foreground="{DynamicResource add_button_foreground}"/>
             </StackPanel>
         </Button>
 
@@ -89,7 +81,7 @@
 
             <!-- Refresh information about all accounts -->
             <Button Style="{StaticResource animatedRefresh}" Width="20" Height="20" Command="{Binding UpdateDatabaseCommand}"
-                    IsEnabled="{Binding Accounts.Count,Converter={StaticResource IntToBool}}">
+                    IsEnabled="{Binding Accounts.Count,Converter={StaticResource IntToBool}}" >
                 <Button.ToolTip>
                     <ToolTip ContentStringFormat="{DynamicResource av_popup_updAccounts}"/>
                 </Button.ToolTip>
@@ -117,17 +109,16 @@
         <!--Accounts-->
         <ScrollViewer VerticalScrollBarVisibility="Visible" 
                       Grid.Row="2" HorizontalAlignment="Left" x:Name="scrollViewer" >
-            <ListBox ItemsSource="{Binding Accounts}"
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     ScrollViewer.CanContentScroll="True" x:Name="accountsListView"
-                     IsHitTestVisible="True" Background="Transparent" VirtualizingPanel.IsVirtualizing="True"
+            <ListBox ItemsSource="{Binding Accounts}" x:Name="accountsListView"
+                     Background="Transparent" VirtualizingPanel.IsVirtualizing="True"
                      VirtualizingPanel.CacheLengthUnit="Item" VirtualizingPanel.CacheLength="2,2"
-                     VirtualizingPanel.VirtualizationMode="Standard" AlternationCount="100">
+                     VirtualizingPanel.VirtualizationMode="Recycling" AlternationCount="100">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True" />
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
+                
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
                         <Setter Property="Template">
@@ -139,6 +130,7 @@
                         </Setter>
                     </Style>
                 </ListBox.ItemContainerStyle>
+                
                 <ListBox.Template>
                     <ControlTemplate TargetType="ItemsControl">
                         <Border>
@@ -149,7 +141,7 @@
 
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="{DynamicResource first_main_color}" CornerRadius="20" Height="50" Width="568" Margin="0 5 0 0">
+                        <Border Background="{DynamicResource first_main_brush}" CornerRadius="20" Height="50" Width="568" Margin="0 5 0 0">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="40"/>
@@ -184,7 +176,7 @@
                                     <WrapPanel Width="42" Height="42">
                                         <Image  ImageFailed="AvatarImageFailed"
                                Source="{Binding AvatarMedium, Mode=OneWay}"
-                               VerticalAlignment="Center" 
+                               VerticalAlignment="Center"
                                HorizontalAlignment="Center" Stretch="UniformToFill"/>
                                         <WrapPanel.OpacityMask>
                                             <VisualBrush >
@@ -208,7 +200,7 @@
                                Width="15" VerticalAlignment="Center"
                                FontSize="12"
                                Foreground="{DynamicResource sub_accounttab_text}" FontWeight="Medium"/>
-                                        <TextBox Background="{DynamicResource first_main_color}" BorderThickness="0"
+                                        <TextBox Background="{DynamicResource first_main_brush}" BorderThickness="0"
                             FontSize="12" FontWeight="Normal"  Foreground="{DynamicResource atv_id}" IsHitTestVisible="{Binding ContainParseInfo}"
                                  Text="{Binding SteamId64,Mode=OneWay,TargetNullValue=⠀————————}" IsReadOnly="True" SelectionBrush="{DynamicResource menu_button_background}" />
                                     </StackPanel>

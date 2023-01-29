@@ -81,15 +81,15 @@
                 <!-- Custom steam web api key -->
                 <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
                     <TextBlock Text="{DynamicResource sv_steam_key}" Style="{StaticResource settingTextBlock}"/>
-                    <Border Background="{DynamicResource first_main_color}" Height="35"
+                    <Border Background="{DynamicResource first_main_brush}" Height="35"
                     Width="250" CornerRadius="5" Margin="6 5 0 5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}">
                         <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
                             <Icon:PackIconMaterial x:Name="apiIcon" Kind="Api" Foreground="{DynamicResource settings_buttons_isMouseOver}"
                                            VerticalAlignment="Center" Height="20" Width="20" />
 
                             <TextBox Margin="5 0 0 0" Width="205"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
-                         Text="{Binding Properties.WebApiKey,Mode=OneWay}" VerticalAlignment="Center" SelectionBrush="{DynamicResource second_main_color}"
-                         Background="{DynamicResource first_main_color}" MaxLength="32" BorderThickness="0" CaretBrush="White"
+                         Text="{Binding Properties.WebApiKey,Mode=OneWay}" VerticalAlignment="Center" SelectionBrush="{DynamicResource second_main_brush}"
+                         Background="{DynamicResource first_main_brush}" MaxLength="32" BorderThickness="0" CaretBrush="White"
                          TextChanged="ApiKey_TextChanged"/>
                         </StackPanel>
                     </Border>
@@ -117,7 +117,7 @@
                 <!-- Custom steam web api key -->
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{DynamicResource sv_crypto_key}" Style="{StaticResource settingTextBlock}"/>
-                    <Border Background="{DynamicResource first_main_color}" Height="35"
+                    <Border Background="{DynamicResource first_main_brush}" Height="35"
                     Width="275" CornerRadius="5" Margin="6 5 0 5" BorderThickness="0.7" BorderBrush="{DynamicResource buttons_border_brush}">
                         <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
 
@@ -126,8 +126,8 @@
 
                             <Grid  Margin="5 0 0 0" VerticalAlignment="Center">
                                 <TextBox x:Name="CryptoKey" Width="235"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
-                                         IsReadOnly="True" Background="{DynamicResource first_main_color}" MaxLength="32" 
-                                         BorderThickness="0" CaretBrush="White" SelectionBrush="{DynamicResource second_main_color}"/>
+                                         IsReadOnly="True" Background="{DynamicResource first_main_brush}" MaxLength="32" 
+                                         BorderThickness="0" CaretBrush="White" SelectionBrush="{DynamicResource second_main_brush}"/>
                                 <TextBlock Text="{DynamicResource sv_crypto_key_default}" Foreground="{DynamicResource settings_buttons_isUncheckedText}"
                                            Visibility="{Binding ElementName=CryptoKey,Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
                             </Grid>
@@ -243,7 +243,7 @@
 
                 <StackPanel x:Name="PasswordPanel" Orientation="Horizontal" Margin="20 0 0 0" Visibility="Collapsed">
                     <TextBlock Text="{DynamicResource sv_newPass}" Style="{StaticResource settingTextBlock}"/>
-                    <Border Margin="10 5 0 0" Background="{DynamicResource first_main_color}"
+                    <Border Margin="10 5 0 0" Background="{DynamicResource first_main_brush}"
                     Width="250" CornerRadius="5" Height="35" BorderThickness="0.7" HorizontalAlignment="Left"
                     BorderBrush="{DynamicResource buttons_border_brush}">
                         <StackPanel Orientation="Horizontal" Margin="10 5 10 5">

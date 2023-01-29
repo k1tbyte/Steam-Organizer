@@ -1,13 +1,13 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.Core;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 {
@@ -21,16 +21,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         #endregion
 
 
-        private string _login, _password, _errorMessage, _userInput, _captchaLink;
+        private string _errorMessage, _userInput, _captchaLink;
         private bool _isReady, _isCaptchaVisible;
-        private Window _window;
-        private int _id;
+        private readonly Window _window;
+        private readonly Account currentAccount;
 
         private class RootObjectUsername
         {
             public string Account_name { get; set; }
         }
-
 
         public bool IsCaptchaVisible
         {
@@ -58,7 +57,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         {
             await Task.Run(() =>
             {
-                UserLogin user       = new UserLogin(_login, _password);
+                UserLogin user       = new UserLogin(currentAccount.Login, currentAccount.Password);
                 LoginResult response = LoginResult.BadCredentials;
                 ErrorMessage         = (string)Application.Current.FindResource("aaw_dataWait");
 
@@ -125,8 +124,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     }
                     string sgFile = JsonConvert.SerializeObject(linker.LinkedAccount, Formatting.Indented);
                     path += linker.LinkedAccount.AccountName + ".maFile";
-                    System.IO.File.WriteAllText(path, sgFile);
-                    Config.Accounts[_id].AuthenticatorPath = path;
+                    File.WriteAllText(path, sgFile);
+                    currentAccount.AuthenticatorPath = path;
                 }
                 catch
                 {
@@ -156,50 +155,53 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         private async Task LoadAuthenticator()
         {
-            await Task.Factory.StartNew(() =>
+            var fileDialog = new OpenFileDialog
             {
-                var fileDialog = new OpenFileDialog
+                Filter = "Mobile authenticator File (.maFile)|*.maFile",
+                InitialDirectory = Directory.GetCurrentDirectory()
+            };
+
+            if (fileDialog.ShowDialog() == true)
+            {
+                //Veryfication account
+                var list = JsonConvert.DeserializeObject<RootObjectUsername>(File.ReadAllText(fileDialog.FileName));
+                if (list.Account_name != currentAccount.Login)
                 {
-                    Filter = "Mobile authenticator File (.maFile)|*.maFile",
-                    InitialDirectory = Directory.GetCurrentDirectory()
-                };
-
-                if (fileDialog.ShowDialog() == true)
-                {
-                    //Veryfication account
-                    var list = JsonConvert.DeserializeObject<RootObjectUsername>(File.ReadAllText(fileDialog.FileName));
-                    if (list.Account_name != _login)
-                    {
-                        ErrorMessage = "You cannot add an authenticator from another account";
-                        Thread.Sleep(2000);
-                        _window.Dispatcher.Invoke(() => { _window.Close(); });
-                    }
-                    else
-                    {
-                        Config.Accounts[_id].AuthenticatorPath = fileDialog.FileName;
-                        if (!Directory.Exists($@"{App.WorkingDirectory}\Authenticators"))
-                            Directory.CreateDirectory($@"{App.WorkingDirectory}\Authenticators");
-
-                        if (!File.Exists($@"{App.WorkingDirectory}\Authenticators\{list.Account_name}.maFile"))
-                            File.Copy(fileDialog.FileName, $@"{App.WorkingDirectory}\Authenticators\{list.Account_name}.maFile", true);
-
-                        Config.SaveAccounts();
-                        ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
-                        Thread.Sleep(2000);
-                    }
+                    ErrorMessage = App.FindString("aaw_linkFromAnotherAcc");
+                    await Task.Delay(2500);
+                    _window.Dispatcher.Invoke(() => { _window.Close(); });
                 }
-            });
+                else
+                {
+
+                    if (!Directory.Exists($@"{App.WorkingDirectory}\Authenticators"))
+                        Directory.CreateDirectory($@"{App.WorkingDirectory}\Authenticators");
+
+                    var authenticatorName = $@"{App.WorkingDirectory}\Authenticators\{list.Account_name}.maFile";
+
+                    if (!File.Exists(authenticatorName))
+                    {
+                        File.Delete(authenticatorName);
+                    }
+
+                    File.Copy(fileDialog.FileName, authenticatorName, true);
+
+                    currentAccount.AuthenticatorPath = authenticatorName;
+
+                    Config.SaveAccounts();
+                    ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
+                    await Task.Delay(2000);
+                }
+            }
         }
 
-        public AddAuthenticatorViewModel(string login, string password, int accountId, object window)
+        public AddAuthenticatorViewModel(Account acc, object ownerWindow)
         {
-            _login = login;
-            _password = password;
-            _id = accountId;
-            _window = (Window)window;
+            currentAccount = acc;
+            _window = (Window)ownerWindow;
             CloseWindowCommand = new RelayCommand(o =>
             {
-                (window as Window).Close();
+                (ownerWindow as Window).Close();
             });
 
             StatusChanged = new RelayCommand(o =>
@@ -221,7 +223,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             AuthenticatorLoadCommand = new AsyncRelayCommand(async (o) =>
             {
                 await LoadAuthenticator();
-                (window as Window).Close();
+                (ownerWindow as Window).Close();
             });
 
         }

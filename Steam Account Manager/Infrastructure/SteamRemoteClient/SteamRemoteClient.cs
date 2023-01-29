@@ -215,7 +215,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             IsRunning =  LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;
 
-            Application.Current.Dispatcher.Invoke(() => { (App.MainWindow.DataContext as MainWindowViewModel).RemoteControlVm.LoginViewCommand.Execute(null); });
+            Application.Current.Dispatcher.Invoke(() => { (((MainWindowViewModel)App.MainWindow.DataContext).RemoteControlV.DataContext as MainRemoteControlViewModel).LoginViewCommand.Execute(null); });
             
 
             SerializeUser();
@@ -641,7 +641,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                         Time = DateTime.Now.ToString("HH:mm"),
                         Username = FriendPersonaName,
                         TextBrush = (System.Windows.Media.Brush)App.Current.FindResource("default_foreground"),
-                        MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("second_main_color")
+                        MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("second_main_brush")
                     })));
                 }
             }

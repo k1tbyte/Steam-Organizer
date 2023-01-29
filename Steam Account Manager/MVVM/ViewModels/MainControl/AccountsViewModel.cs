@@ -3,6 +3,7 @@ using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
+using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
 using Steam_Account_Manager.Utils;
 using System;
 using System.Collections.ObjectModel;
@@ -231,7 +232,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             ConnectToSteamRemotelyCommand = new RelayCommand(o =>
             {
                 MainWindowViewModel.RemoteControlViewCommand.Execute(null);
-                ((MainWindowViewModel)App.MainWindow.DataContext).RemoteControlVm.LoginViewCommand.Execute(o as Account);
+                (((MainWindowViewModel)App.MainWindow.DataContext).RemoteControlV.DataContext as MainRemoteControlViewModel).LoginViewCommand.Execute(o as Account);
             });
 
         }

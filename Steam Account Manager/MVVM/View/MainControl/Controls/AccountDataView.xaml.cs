@@ -85,12 +85,6 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
         }
 
 
-        private void CloseConfirm_Click(object sender, RoutedEventArgs e)
-        {
-            TwoFaAuthAddConfirm.Visibility = Visibility.Hidden;
-        }
-
-
         private void AntiSpamClicks(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if ((DateTime.Now - timeStamp).Ticks < 50000000)

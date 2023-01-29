@@ -1,0 +1,95 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks">
+    
+    <Style x:Key="ModernSearchBox" TargetType="{x:Type TextBox}">
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Width" Value="380"/>
+        <Setter Property="Height" Value="45"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+        <Setter Property="Background" Value="{DynamicResource searchbox}"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource second_main_brush}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource default_foreground}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Cursor" Value="IBeam"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Grid>
+                        <Border x:Name="border" CornerRadius="15" Background="{TemplateBinding Background}" Width="{TemplateBinding Width}"
+                                Height="{TemplateBinding Height}" Padding="10 5 10 5" BorderThickness="1.25">
+                            <Decorator x:Name="PART_ContentHost" VerticalAlignment="Center"
+                            Focusable="false"/>
+                        </Border>
+                        <TextBlock x:Name="hint" Foreground="{TemplateBinding Foreground}" 
+                                       FontSize="{TemplateBinding FontSize}" Padding="13 5 10 5"
+                                       FontWeight="Medium" Visibility="Collapsed"
+                                       Text="{TemplateBinding Tag}" VerticalAlignment="Center">
+                        </TextBlock>
+                        <Icon:PackIconMaterial x:Name="icon" Kind="Magnify" HorizontalAlignment="Right"
+                                                   VerticalAlignment="Center" Margin="0 0 15 0" RotationAngle="0"
+                                                   Width="20" Height="20" Background="Transparent" 
+                                                   Cursor="Arrow"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="border" Property="Effect" Value="{StaticResource glow}"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource second_main_brush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                            <Setter TargetName="hint" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+
+                        <EventTrigger RoutedEvent="GotFocus">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" 
+                                                             Storyboard.TargetName="hint"
+                                                             From="1" To="0" Duration="0:0:0.3"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+
+                        <EventTrigger RoutedEvent="TextChanged">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="RotationAngle" 
+                                                             Storyboard.TargetName="icon">
+                                            <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="20"/>
+                                            <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="0"/>
+                                            <EasingDoubleKeyFrame KeyTime="0:0:0.9" Value="20"/>
+                                            <EasingDoubleKeyFrame KeyTime="0:0:1.2" Value="0"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+
+                        <EventTrigger RoutedEvent="LostFocus">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" 
+                                                             Storyboard.TargetName="hint"
+                                                             From="0" To="1" Duration="0:0:0.5">
+                                            <DoubleAnimation.EasingFunction>
+                                                <ExponentialEase EasingMode="EaseInOut"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

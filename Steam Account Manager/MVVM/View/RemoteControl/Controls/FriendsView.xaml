@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="600">
 
-    <Border CornerRadius="20" Background="{DynamicResource first_main_color}">
+    <Border CornerRadius="20" Background="{DynamicResource first_main_brush}">
         <Grid>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="25 15 0 0" >
                 <TextBlock 

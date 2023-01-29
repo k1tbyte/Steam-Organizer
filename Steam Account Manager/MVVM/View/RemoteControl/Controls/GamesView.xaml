@@ -14,7 +14,7 @@
             <ui:ModernPopup  x:Name="Header" Foreground="White"/>
         </Popup>
         
-        <Border CornerRadius="20" Background="{DynamicResource first_main_color}">
+        <Border CornerRadius="20" Background="{DynamicResource first_main_brush}">
             <ListBox x:Name="games" ItemsSource="{Binding Games,UpdateSourceTrigger=PropertyChanged}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      Width="475" HorizontalAlignment="Left" SelectionMode="Multiple"
@@ -37,7 +37,7 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Border Name="Mask"
-                        Background="{DynamicResource second_main_color}"
+                        Background="{DynamicResource second_main_brush}"
                         BorderBrush="{DynamicResource account_picture_border}"
                         BorderThickness="1"
                         CornerRadius="13"/>

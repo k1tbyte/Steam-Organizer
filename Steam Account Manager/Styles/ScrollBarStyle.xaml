@@ -60,7 +60,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollBar}">
                     <Grid>
-                        <Border x:Name="ThumbBorder" Grid.RowSpan="2" CornerRadius="5" Background="{DynamicResource first_main_color}" />
+                        <Border x:Name="ThumbBorder" Grid.RowSpan="2" CornerRadius="5" Background="{DynamicResource first_main_brush}" />
                         <Track x:Name="PART_Track" IsDirectionReversed="true">
                             <Track.DecreaseRepeatButton>
                                 <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageUpCommand" />

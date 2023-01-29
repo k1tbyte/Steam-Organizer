@@ -9,7 +9,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="350" d:DesignWidth="600">
     
-    <Border CornerRadius="20" Background="{DynamicResource first_main_color}" BorderThickness="0" BorderBrush="Transparent">
+    <Border CornerRadius="20" Background="{DynamicResource first_main_brush}" BorderThickness="0" BorderBrush="Transparent">
         <Grid>
             <StackPanel HorizontalAlignment="Left" Margin="23">
                 <TextBlock Margin="0 0 0 10" FontFamily="Cascadia Mono"

@@ -71,7 +71,7 @@
 
 
     <!--#region Accounts View -->
-    <v:String x:Key="av_searchbar_title">Пошук акаунтів  .  .  .</v:String>
+    <v:String x:Key="av_searchbar_title">Пошук акаунтів . . .</v:String>
     <v:String x:Key="av_addbutton_title">Додати</v:String>
     <v:String x:Key="av_confirmation_delete1">Ви впевнені, що хочете видалити обліковий запис</v:String>
     <v:String x:Key="av_confirmation_delete2">Після підтвердження відновити дані буде неможливо.</v:String>
@@ -209,6 +209,7 @@
     <v:String x:Key="aaw_errorSave">Помилка збереження файлу аутентифітора, аутентифікатор не додано</v:String>
     <v:String x:Key="aaw_smsCode">Будь ласка, введіть SMS-код</v:String>
     <v:String x:Key="aaw_successAdd">Аутентифікатор успішно доданий</v:String>
+    <v:String x:Key="aaw_linkFromAnotherAcc">Ви не можете зв'язати аутентифікатор з обліковим записом, яким він не володіє</v:String>
     <!--#endregion-->
 
 

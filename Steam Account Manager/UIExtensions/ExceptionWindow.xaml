@@ -12,7 +12,7 @@
         Title="Error message" Height="Auto" MaxHeight="400" Width="Auto" MaxWidth="360">
 
     <Border Background="{DynamicResource background_border_color}" CornerRadius="10" MouseLeftButtonDown="Border_MouseLeftButtonDown"
-            BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
+            BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_brush}">
         <Grid>
 
             <Grid.RowDefinitions>

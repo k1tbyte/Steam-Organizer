@@ -1,4 +1,5 @@
-﻿using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+﻿using Steam_Account_Manager.Infrastructure.Models;
+using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using System.Windows;
 using System.Windows.Input;
 
@@ -6,10 +7,10 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
 {
     public partial class ShowAuthenticatorWindow : Window
     {
-        public ShowAuthenticatorWindow(int accountId)
+        internal ShowAuthenticatorWindow(Account account)
         {
             InitializeComponent();
-            DataContext = new ShowAuthenticatorViewModel(accountId);
+            DataContext = new ShowAuthenticatorViewModel(account);
         }
 
         private void deleteAuth_Click(object sender, RoutedEventArgs e)          => confirmDeleteNo.Visibility = confirmDeleteYes.Visibility = Visibility.Visible;

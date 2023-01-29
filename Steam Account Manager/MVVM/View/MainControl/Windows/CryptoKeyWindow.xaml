@@ -12,7 +12,7 @@
         Title="Data Decryption">
     
     <Border CornerRadius="8" Background="{DynamicResource background_border_color}"
-            BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
+            BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_brush}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="70"/>
@@ -46,7 +46,7 @@
             <TextBlock Margin="15 0 0 95" VerticalAlignment="Center" Grid.Row="1" Text="{DynamicResource aw_enterCryptoKey}" Style="{StaticResource settingTextBlock}"/>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1"  Margin="15 0 0 35" VerticalAlignment="Center">
-                <Border Background="{DynamicResource first_main_color}"
+                <Border Background="{DynamicResource first_main_brush}"
                     Width="250" CornerRadius="5" Height="35" BorderThickness="0.7" HorizontalAlignment="Left"
                     BorderBrush="{DynamicResource buttons_border_brush}">
                     <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
@@ -55,7 +55,7 @@
                                            VerticalAlignment="Center" Height="20" Width="20" />
 
                         <TextBox x:Name="key"  Width="195"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
-                         VerticalAlignment="Center"  Background="{DynamicResource first_main_color}" MaxLength="44" BorderThickness="0" CaretBrush="White" />
+                         VerticalAlignment="Center"  Background="{DynamicResource first_main_brush}" MaxLength="44" BorderThickness="0" CaretBrush="White" />
                     </StackPanel>
                 </Border>
 

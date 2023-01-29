@@ -13,7 +13,7 @@
         SizeToContent="WidthAndHeight"
         Topmost="True">
     <Border x:Name="mainBorder"  Background="{DynamicResource background_border_color}" CornerRadius="2"  BorderThickness="0 2 0 2"
-             Padding="10 5" MouseLeftButtonDown="DragMoveEvent" BorderBrush="{DynamicResource second_main_color}">
+             Padding="10 5" MouseLeftButtonDown="DragMoveEvent" BorderBrush="{DynamicResource second_main_brush}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"/>

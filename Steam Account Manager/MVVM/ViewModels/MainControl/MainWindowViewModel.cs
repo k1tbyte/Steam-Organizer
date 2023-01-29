@@ -2,6 +2,7 @@
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.MainControl.Controls;
+using Steam_Account_Manager.MVVM.View.RemoteControl.Controls;
 using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
 using System;
 using System.Net;
@@ -23,16 +24,16 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public static RelayCommand YesLoadUpdateCommand { get; set; }
         public RelayCommand LogoutCommand { get; set; }
 
-        public AccountsViewModel AccountsVm;
+        public AccountsView AccountsV;
         public SettingsViewModel SettingsVm;
-        public MainRemoteControlViewModel RemoteControlVm;
+        public MainRemoteControlView RemoteControlV;
         public AccountDataView AccountDataV;
 
         public static event EventHandler TotalAccountsChanged;
         public static event EventHandler NowLoginUserImageChanged;
         public static event EventHandler NowLoginUserNicknameChanged;
         private static string _nowLoginUserImage = "/Images/user.png", _nowLoginUserNickname = "Username";
-        private bool _updateDetect, _showInTaskbar;
+        private bool _updateDetect;
         private WindowState _windowState;
 
         public WindowState WindowState
@@ -147,19 +148,19 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         }
 
         public MainWindowViewModel()
-        {                
+        {
 
-            AccountsVm = new AccountsViewModel();
-            RemoteControlVm = new MainRemoteControlViewModel();
-            AccountDataV = new AccountDataView();
-            SettingsVm = new SettingsViewModel();
+            AccountsV      = new AccountsView();
+            AccountDataV   = new AccountDataView();
+            RemoteControlV = new MainRemoteControlView();
+            SettingsVm     = new SettingsViewModel();
 
-            CurrentView = AccountsVm;
+            CurrentView = AccountsV;
 
-           // _ = NowLoginUserParse().ConfigureAwait(false);
+            _ = NowLoginUserParse().ConfigureAwait(false);
             _ = CheckingUpdates().ConfigureAwait(false);
 
-            AccountsViewCommand = new RelayCommand(o =>  CurrentView = AccountsVm);
+            AccountsViewCommand = new RelayCommand(o =>  CurrentView = AccountsV);
 
             SettingsViewCommand = new RelayCommand(o => CurrentView = SettingsVm);
 
@@ -176,7 +177,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             RemoteControlViewCommand = new RelayCommand(o =>
             {
                 App.MainWindow.RemoteControlMenu.IsChecked = true;
-                CurrentView = RemoteControlVm;
+                CurrentView = RemoteControlV;
             });
 
             CloseCommand = new RelayCommand(o =>

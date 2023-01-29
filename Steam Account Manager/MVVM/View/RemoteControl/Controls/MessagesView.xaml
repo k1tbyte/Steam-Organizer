@@ -84,7 +84,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <Border CornerRadius="20" Background="{DynamicResource first_main_color}">
+        <Border CornerRadius="20" Background="{DynamicResource first_main_brush}">
            
             <Grid>
                 <StackPanel Orientation="Horizontal">
@@ -189,7 +189,7 @@
                              Margin="20 0 0 15" >
 
                             <Border Height="40" Width="265" CornerRadius="10"
-                        Background="{DynamicResource second_main_color}" Opacity="0.6">
+                        Background="{DynamicResource second_main_brush}" Opacity="0.6">
                                 <TextBox  MaxLength="4000" AcceptsTab="True" Text="{Binding Message,UpdateSourceTrigger=PropertyChanged}"
                               TextWrapping="Wrap" Foreground="White"
                              AcceptsReturn="True" MaxLines="140" x:Name="MessageBox"

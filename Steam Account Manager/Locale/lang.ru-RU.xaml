@@ -71,7 +71,7 @@
 
 
     <!--#region Accounts View -->
-    <v:String x:Key="av_searchbar_title">Поиск аккаунтов  .  .  .</v:String>
+    <v:String x:Key="av_searchbar_title">Поиск аккаунтов . . .</v:String>
     <v:String x:Key="av_addbutton_title">Добавить</v:String>
     <v:String x:Key="av_confirmation_delete1">Вы уверены что хотите удалить аккаунт</v:String>
     <v:String x:Key="av_confirmation_delete2">После подтверждения восстановить данные будет невозможно.</v:String>
@@ -208,6 +208,7 @@
     <v:String x:Key="aaw_errorSave">Ошибка при сохранениии файла аутентификатора, аутентификатор не добавлен</v:String>
     <v:String x:Key="aaw_smsCode">Пожалуйста, введите SMS-код</v:String>
     <v:String x:Key="aaw_successAdd">Аутентификатор успешно добавлен</v:String>
+    <v:String x:Key="aaw_linkFromAnotherAcc">Вы не можете связать аутентификатор с учетной записью, которой он не владеет</v:String>
     <!--#endregion-->
 
 

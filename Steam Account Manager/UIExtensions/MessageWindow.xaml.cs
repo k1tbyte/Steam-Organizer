@@ -70,7 +70,7 @@ namespace Steam_Account_Manager.UIExtensions
                 errorIcon.Visibility = Visibility.Collapsed;
                 if (value == MboxType.Default)
                 {
-                    mainBorder.BorderBrush = Title.Foreground = (Brush)App.Current.FindResource("second_main_color");
+                    mainBorder.BorderBrush = Title.Foreground = (Brush)App.Current.FindResource("second_main_brush");
                 }
                 else if (value == MboxType.Error)
                 {

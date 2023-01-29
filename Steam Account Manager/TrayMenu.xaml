@@ -35,7 +35,7 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource first_main_color}"/>
+                    <Setter Property="Background" Value="{DynamicResource first_main_brush}"/>
                     <Setter Property="Foreground" Value="White"/>
                     <Setter Property="BorderBrush" Value="Transparent"/>
                 </Trigger>
@@ -65,7 +65,7 @@
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="true">
                                             <Setter TargetName="Border" Property="Background"
-                                    Value="{DynamicResource ResourceKey=first_main_color}"/>
+                                    Value="{DynamicResource ResourceKey=first_main_brush}"/>
                                             <Setter Property="Foreground" Value="White"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>

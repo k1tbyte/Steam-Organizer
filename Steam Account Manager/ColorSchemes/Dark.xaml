@@ -5,8 +5,8 @@
 
     <!-- Main window colors -->
     <Brush x:Key="background_border_color">#232338</Brush>
-    <Brush x:Key="first_main_color">#FF181B28</Brush>
-    <Brush x:Key="second_main_color">#433793</Brush>
+    <Brush x:Key="first_main_brush">#FF181B28</Brush>
+    <Brush x:Key="second_main_brush">#433793</Brush>
     <Brush x:Key="top_service_buttons">#b0b9c6</Brush>
     <Brush x:Key="main_text_color">#b0b9c6</Brush>
     <Brush x:Key="second_text_color">#b0b9c6</Brush>
@@ -68,5 +68,6 @@
         <!--Colors -->
     <Color x:Key="drop_shadow">black</Color>
     <Color x:Key="comboBox_border">#7B5CD6</Color>
+    <Color x:Key="second_main_color">#433793</Color>
     <Color x:Key="comboBox_border_background">#232338</Color>
 </ResourceDictionary>

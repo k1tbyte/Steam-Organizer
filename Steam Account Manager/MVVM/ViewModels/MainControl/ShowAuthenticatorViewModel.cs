@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.Core;
 using System;
@@ -19,8 +20,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public RelayCommand CloseWindowCommand { get; set; }
 
 
-        private int _id;
-        private string _authPath, _accountName = "Login", _steamGuardCode = (string)App.Current.FindResource("saw_loading"), _errorMessage;
+        private readonly Account currentAccount;
+        private string _accountName = "Login", _steamGuardCode = (string)App.Current.FindResource("saw_loading"), _errorMessage;
         private SteamGuardAccount guard;
         private bool _remove;
         private ObservableCollection<Confirmation> _confirmations;
@@ -31,60 +32,39 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public ObservableCollection<Confirmation> Confirmations
         {
             get => _confirmations;
-            set
-            {
-                _confirmations = value;
-                OnPropertyChanged(nameof(Confirmations));
-            }
+            set => SetProperty(ref _confirmations, value);
         }
         public string ErrorMessage
         {
             get => _errorMessage;
-            set
-            {
-                _errorMessage = value;
-                OnPropertyChanged(nameof(ErrorMessage));
-            }
+            set => SetProperty(ref _errorMessage, value);
         }
         public string AccountName
         {
             get => _accountName;
-            set
-            {
-                _accountName = value;
-                OnPropertyChanged(nameof(AccountName));
-            }
+            set => SetProperty(ref _accountName, value);
         }
         public int TimerValue
         {
             get => _timerValue;
-            set
-            {
-                _timerValue = value;
-                OnPropertyChanged(nameof(TimerValue));
-            }
+            set => SetProperty(ref _timerValue, value);
         }
         public string SteamGuardCode
         {
             get => _steamGuardCode;
-            set
-            {
-                _steamGuardCode = value;
-                OnPropertyChanged(nameof(SteamGuardCode));
-            }
+            set => SetProperty(ref _steamGuardCode, value);
         }
         #endregion
 
         private void LoadSteamGuardAccountFromFilePath()
         {
             guard = null;
-            if (!String.IsNullOrEmpty(_authPath) && File.Exists(_authPath))
+            if (!String.IsNullOrEmpty(currentAccount.AuthenticatorPath) && File.Exists(currentAccount.AuthenticatorPath))
             {
-                guard = JsonConvert.DeserializeObject<SteamGuardAccount>(File.ReadAllText(_authPath));
+                guard = JsonConvert.DeserializeObject<SteamGuardAccount>(File.ReadAllText(currentAccount.AuthenticatorPath));
                 SteamGuardCode = guard.GenerateSteamGuardCode();
                 AccountName = guard.AccountName;
             }
-
         }
 
         private async Task GenerateSteamGuard()
@@ -118,8 +98,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     ErrorMessage = success == true ? (string)App.Current.FindResource("saw_authRemoveSuccess") :
                     (string)App.Current.FindResource("saw_authRemoveError");
                     _remove = true;
-                    File.Delete(Config.Accounts[_id].AuthenticatorPath);
-                    Config.Accounts[_id].AuthenticatorPath = null;
+                    File.Delete(currentAccount.AuthenticatorPath);
+                    currentAccount.AuthenticatorPath = null;
                     Config.SaveAccounts();
                     Thread.Sleep(2500);
                 }
@@ -131,10 +111,10 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             });
         }
 
-        public ShowAuthenticatorViewModel(int accountId)
+        public ShowAuthenticatorViewModel(Account acc)
         {
-            _id = accountId;
-            _authPath = Config.Accounts[_id].AuthenticatorPath;
+            currentAccount = acc;
+
             CloseWindowCommand = new RelayCommand(o =>
             {
                 (o as System.Windows.Window).Close();

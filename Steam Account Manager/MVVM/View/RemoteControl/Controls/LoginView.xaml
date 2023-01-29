@@ -25,7 +25,7 @@
     <Grid>
         <!-- Login border -->
         <Grid >
-            <Border Background="{DynamicResource first_main_color}" Width="280" CornerRadius="20"  VerticalAlignment="Top">
+            <Border Background="{DynamicResource first_main_brush}" Width="280" CornerRadius="20"  VerticalAlignment="Top">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 20 0 0">
 
                     <TextBlock Grid.Row="0"
@@ -50,7 +50,7 @@
                                            Margin="5 8 0 0"
                                            Foreground="{DynamicResource second_text_color}"/>
                             <TextBox x:Name="Login" Style="{StaticResource addTextBox}" Text="{Binding Username,UpdateSourceTrigger=PropertyChanged}"
-                             Background="{DynamicResource first_main_color}"
+                             Background="{DynamicResource first_main_brush}"
                              Margin="6 0 0 0"/>
                         </StackPanel>
                     </Border>
@@ -85,7 +85,7 @@
                                            Foreground="{DynamicResource second_text_color}"/>
 
                                 <TextBox Style="{StaticResource addTextBox}" MaxLength="5"
-                             Background="{DynamicResource first_main_color}" CaretBrush="{DynamicResource atv_rectangles_shadow}"
+                             Background="{DynamicResource first_main_brush}" CaretBrush="{DynamicResource atv_rectangles_shadow}"
                              Margin="6 0 0 0" Text="{Binding AuthCode,UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
                         </Border>
@@ -102,7 +102,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Background="{DynamicResource first_main_color}" Width="100" CornerRadius="20" 
+            <Border Background="{DynamicResource first_main_brush}" Width="100" CornerRadius="20" 
                     HorizontalAlignment="Left" Margin="25 0 0 0">
                 <ListBox x:Name="Recently" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                          ScrollViewer.VerticalScrollBarVisibility="Hidden" Margin="7 35 7 45"
@@ -196,7 +196,7 @@
         </Grid>
 
         <Border Visibility="{Binding SuccessLogOn,Converter={StaticResource BoolToVis}}" BorderThickness="0.8"
-                Background="{DynamicResource first_main_color}" CornerRadius="25" >
+                Background="{DynamicResource first_main_brush}" CornerRadius="25" >
             <Grid>
                 <Button  Style="{StaticResource defaultButtonColored}"
                          CommandParameter="{Binding ElementName=Recently}" Command="{Binding LogOutCommand}"

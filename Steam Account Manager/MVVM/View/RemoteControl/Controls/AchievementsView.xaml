@@ -12,7 +12,7 @@
         WindowStyle="None"
         Title="Achievements" Height="450" Width="320">
     <Border Background="{DynamicResource background_border_color}" CornerRadius="10" MouseLeftButtonDown="Border_MouseLeftButtonDown"
-            BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_color}">
+            BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_brush}">
         <Grid>
             <Button Style="{StaticResource serviceButton}" Click="Close_Click"
                     VerticalAlignment="Top" HorizontalAlignment="Right" IsDefault="True"
@@ -41,14 +41,14 @@
                 </ListBox.ItemsPanel>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Width="260" Height="62" Margin="6" Background="{DynamicResource first_main_color}" CornerRadius="10">
+                        <Border Width="260" Height="62" Margin="6" Background="{DynamicResource first_main_brush}" CornerRadius="10">
                             <Grid VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="50"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <Border Name="Mask" Opacity="0.9"  Width="45" Height="45"
-                        Background="{DynamicResource second_main_color}" BorderBrush="Transparent"
+                        Background="{DynamicResource second_main_brush}" BorderBrush="Transparent"
                         BorderThickness="1" Margin="5 -1 0 0" CornerRadius="10"/>
                                 <StackPanel>
                                     <Image Grid.Column="0" Width="45" Height="45" Margin="5 0 0 0">

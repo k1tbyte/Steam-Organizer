@@ -14,7 +14,11 @@
             <ResourceDictionary.MergedDictionaries>
 
                 <ResourceDictionary Source="Styles/MiscStyles.xaml"/>
-                
+
+                <ResourceDictionary Source="Styles/ModernButtonStyle.xaml"/>
+
+                <ResourceDictionary Source="Styles/ModernTextBoxStyle.xaml"/>
+
                 <ResourceDictionary Source="Styles/ScrollBarStyle.xaml"/>
 
                 <ResourceDictionary Source="Styles/ProgressBarStyle.xaml"/>
@@ -82,7 +86,7 @@
             <Style x:Key="addTextBox" TargetType="TextBox">
                 <Setter Property="Background" Value="{DynamicResource background_border_color}"/>
                 <Setter Property="Foreground" Value="{DynamicResource second_text_color}"/>
-                <Setter Property="SelectionBrush" Value="{DynamicResource second_main_color}"/>
+                <Setter Property="SelectionBrush" Value="{DynamicResource second_main_brush}"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="BorderThickness" Value="0 0 0 0"/>
@@ -194,16 +198,8 @@
             <!--#endregion-->
 
 
-            <DataTemplate DataType="{x:Type viewModel:AccountsViewModel}">
-                <view:AccountsView/>
-            </DataTemplate>
-
             <DataTemplate DataType="{x:Type viewModel:SettingsViewModel}">
                 <view:SettingsView/>
-            </DataTemplate>
-
-            <DataTemplate DataType="{x:Type remoteVM:MainRemoteControlViewModel}">
-                <remoteView:MainRemoteControlView/>
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type remoteVM:LoginViewModel}">

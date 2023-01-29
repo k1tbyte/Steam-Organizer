@@ -758,7 +758,7 @@
                         <TextBox Grid.ColumnSpan="2" Padding="12 8 22 12" Background="Transparent" BorderThickness="0" MaxWidth="501.9"
                                  Foreground="{DynamicResource second_text_color}" CaretBrush="{DynamicResource default_foreground}" TextWrapping="Wrap"
                                  AcceptsReturn="True" VerticalScrollBarVisibility="Auto" MaxLength="350" MaxLines="50" AcceptsTab="True"
-                                 Text="{Binding CurrentAccount.Note,Mode=TwoWay}" SelectionBrush="{DynamicResource second_main_color}"/>
+                                 Text="{Binding CurrentAccount.Note,Mode=TwoWay}" SelectionBrush="{DynamicResource second_main_brush}"/>
                     </Grid>
                     
                     <!-- Last update time -->
@@ -774,7 +774,7 @@
         <!-- 2fa activate button -->
         <Button x:Name="TwoFaActivate" Style="{StaticResource serviceButton}"
                 Width="45"  Grid.Row="1" Margin="60 10 0 0"
-                Command="{Binding AddAuthenticatorCommand}" CommandParameter="{Binding ElementName=TwoFaAuthAddConfirm}"
+                Command="{Binding AddAuthenticatorCommand}"
                 VerticalAlignment="Top" HorizontalAlignment="Left">
             <Icon:PackIconMaterial  Kind="TwoFactorAuthentication" Height="18" Width="40" />
             <Button.ToolTip>
@@ -782,30 +782,6 @@
             </Button.ToolTip>
         </Button>
 
-        <!--Confirmation 2FA-->
-        <Border x:Name="TwoFaAuthAddConfirm" Margin="10 0 0 0" Grid.Row="1" VerticalAlignment="Bottom"
-                HorizontalAlignment="Left"
-                Width="355" Height="40" Background="{DynamicResource popup_border_background}" Opacity="0.8"
-                CornerRadius="15" Visibility="Hidden">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{DynamicResource adat_2fa_confirm}" Foreground="White"
-                       FontWeight="Normal" VerticalAlignment="Center"
-                       Margin="15 0 0 0" FontSize="11"/>
-                
-                <!-- No button -->
-                <Button x:Name="noConfirmButton" Click="CloseConfirm_Click" Margin="10 0 0 0" Style="{StaticResource confirmationNoButton}"
-                        Width="25" Height="25">
-                    <Icon:PackIconMaterial Kind="Close" Foreground="White" VerticalAlignment="Center" Width="12" Height="12"/>
-                </Button>
-
-                <!-- Yes button -->
-                <Button x:Name="yesConfirmButton" Command="{Binding YesAuthenticatorCommand}" Margin="10 0 0 0" Style="{StaticResource confirmationYesButton}"
-                        Width="25" Height="25" Click="CloseConfirm_Click">
-                    <Icon:PackIconMaterial Kind="Check" Foreground="White" VerticalAlignment="Center"/>
-                </Button>
-            </StackPanel>
-        </Border>
-        
         <!--#endregion-->
 
     </Grid>

@@ -27,7 +27,7 @@
                     Grid.ColumnSpan="2"
                     CornerRadius="4.5"
                     BorderThickness="1"
-                    BorderBrush="{DynamicResource second_main_color}">
+                    BorderBrush="{DynamicResource second_main_brush}">
                 <Border.Background>
                     <SolidColorBrush x:Name="BorderColor" Color="{DynamicResource comboBox_border_background}" />
                 </Border.Background>
@@ -35,7 +35,7 @@
             <Border Grid.Column="0"
                     CornerRadius="4,0,0,4"
                     Margin="1"
-                    Background="{DynamicResource second_main_color}">
+                    Background="{DynamicResource second_main_brush}">
             </Border>
             <Path x:Name="Arrow"
                   Grid.Column="1"
@@ -131,8 +131,8 @@
                                   MaxHeight="{TemplateBinding MaxDropDownHeight}">
                                 <Border x:Name="DropDownBorder"
                                         BorderThickness="1"
-                                        BorderBrush="{DynamicResource second_main_color}"
-                                        Background="{DynamicResource second_main_color}"/>
+                                        BorderBrush="{DynamicResource second_main_brush}"
+                                        Background="{DynamicResource second_main_brush}"/>
                                 <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
                                     <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
                                 </ScrollViewer>

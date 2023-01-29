@@ -18,7 +18,7 @@
         
         
         <Border Grid.Row="1" HorizontalAlignment="Center" CornerRadius="15" 
-                Background="{DynamicResource second_main_color}" Width="340">
+                Background="{DynamicResource second_main_brush}" Width="340">
             <StackPanel Orientation="Horizontal" Margin="20 5 0 5">
 
                 <RadioButton x:Name="Login" Style="{StaticResource RemoteControlButton}" IsHitTestVisible="{Binding IsPanelActive}"

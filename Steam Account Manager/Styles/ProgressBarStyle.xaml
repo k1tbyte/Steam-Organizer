@@ -32,8 +32,8 @@
                         </VisualStateManager.VisualStateGroups>
                         <TextBlock Text="Updating accounts..." HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 -15 0 0" Foreground="{DynamicResource default_foreground}"/>
                         <Grid Height="{TemplateBinding Height}">
-                            <Border Background="{DynamicResource second_main_color}" CornerRadius="12" Opacity="0.7"/>
-                            <Border BorderBrush="{DynamicResource second_main_color}" BorderThickness="1" CornerRadius="12" Opacity="0.1"/>
+                            <Border Background="{DynamicResource second_main_brush}" CornerRadius="12" Opacity="0.7"/>
+                            <Border BorderBrush="{DynamicResource second_main_brush}" BorderThickness="1" CornerRadius="12" Opacity="0.1"/>
                             <Grid Margin="{TemplateBinding BorderThickness}">
                                 <Border x:Name="PART_Track"/>
                                 <Grid x:Name="PART_Indicator" ClipToBounds="True" HorizontalAlignment="Left" >
@@ -131,8 +131,8 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid Height="{TemplateBinding Height}">
-                            <Border Background="{DynamicResource second_main_color}" CornerRadius="5" Opacity="0.7"/>
-                            <Border BorderBrush="{DynamicResource second_main_color}" BorderThickness="1" CornerRadius="5" Opacity="0.1"/>
+                            <Border Background="{DynamicResource second_main_brush}" CornerRadius="5" Opacity="0.7"/>
+                            <Border BorderBrush="{DynamicResource second_main_brush}" BorderThickness="1" CornerRadius="5" Opacity="0.1"/>
                             <Grid Margin="{TemplateBinding BorderThickness}">
                                 <Border x:Name="PART_Track"/>
                                 <Grid x:Name="PART_Indicator" ClipToBounds="True" HorizontalAlignment="Left" >
