@@ -32,6 +32,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public static event EventHandler TotalAccountsChanged;
         public static event EventHandler NowLoginUserImageChanged;
         public static event EventHandler NowLoginUserNicknameChanged;
+        public static bool CancellationFlag = false;
         private static string _nowLoginUserImage = "/Images/user.png", _nowLoginUserNickname = "Username";
         private bool _updateDetect;
         private WindowState _windowState;
@@ -81,18 +82,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             {
                 _notificationVisible = value;
                 NotificationVisibleChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        public static event EventHandler UpdatedAccountIndexChanged;
-        private static int _updatedAccountIndex;
-        public static int UpdatedAccountIndex
-        {
-            get => _updatedAccountIndex;
-            set
-            {
-                _updatedAccountIndex = value;
-                UpdatedAccountIndexChanged?.Invoke(null, EventArgs.Empty);
             }
         }
 

@@ -77,28 +77,32 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         #region Helpers
         private async Task UpdateDatabase()
         {
+            App.MainWindow.UpdArea.Visibility = System.Windows.Visibility.Visible;
             try
             {
-                App.MainWindow.IsHitTestVisible = false;
 
                 for (int i = 0; i < Config.Accounts.Count; i++)
                 {
+                    if (MainWindowViewModel.CancellationFlag)
+                        break;
+
+                    App.MainWindow.UpdCounterTitle.Text = $"{i + 1}/{Config.Accounts.Count}";
+                    App.MainWindow.UpdProgressBar.Percentage = (i + 1) * 100 / Config.Accounts.Count;
                     if (!Config.Accounts[i].ContainParseInfo) continue;
-                    MainWindowViewModel.UpdatedAccountIndex = i + 1;
                     await Config.Accounts[i].ParseInfo();
                 }
-                MainWindowViewModel.UpdatedAccountIndex = 0;
-                Presentation.OpenPopupMessageBox("Database has been updated!");
+                if(!MainWindowViewModel.CancellationFlag)
+                  Presentation.OpenPopupMessageBox(App.FindString("av_dbSuccessUpdated"));
+
                 Config.SaveAccounts();
                 SearchFilter.Refresh();
-                App.MainWindow.IsHitTestVisible = true;
             }
             catch
             {
-                MainWindowViewModel.UpdatedAccountIndex = 0;
-                App.MainWindow.IsHitTestVisible = true;
                 Presentation.OpenPopupMessageBox("Error! No Internet connection...", true);
             }
+            App.MainWindow.UpdArea.Visibility = System.Windows.Visibility.Collapsed;
+            MainWindowViewModel.CancellationFlag = false;
         }
         private void RestoreAccountFromFile(string fileName, string crypto)
         {

@@ -154,6 +154,9 @@
     <Compile Include="Infrastructure\SteamRemoteClient\WebHandler.cs" />
     <Compile Include="Infrastructure\Validators\SteamLinkValidator.cs" />
     <Compile Include="Keys.cs" />
+    <Compile Include="UIExtensions\CircularProgressBar.xaml.cs">
+      <DependentUpon>CircularProgressBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UIExtensions\MessageWindow.xaml.cs">
       <DependentUpon>MessageWindow.xaml</DependentUpon>
     </Compile>
@@ -300,6 +303,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\ModernButtonStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UIExtensions\CircularProgressBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

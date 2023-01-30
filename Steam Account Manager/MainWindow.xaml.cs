@@ -67,6 +67,8 @@ namespace Steam_Account_Manager
             base.Show();
             WindowState = WindowState.Normal;
         }
+
+        private void CancellationUpdateEvent(object sender, RoutedEventArgs e) => MainWindowViewModel.CancellationFlag = true;
     }
 
 }

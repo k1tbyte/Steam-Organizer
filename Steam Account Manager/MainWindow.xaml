@@ -2,8 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:vm="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.MainControl"
-        Height="550"
+        xmlns:vm="clr-namespace:Steam_Account_Manager.MVVM.ViewModels.MainControl" xmlns:ui="clr-namespace:Steam_Account_Manager.UIExtensions"
+         Height="550"
         Width="860"
         WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
@@ -126,9 +126,6 @@
 
             </Grid>
 
-            <ProgressBar Grid.Column="1" HorizontalAlignment="Center" Margin="0 35 150 0" Width="160" Tag="{Binding UpdatedAccountIndex, UpdateSourceTrigger=PropertyChanged}"
-                     Height="25" VerticalAlignment="Top" Minimum="0" Maximum="{Binding TotalAccounts}" Value="{Binding UpdatedAccountIndex}" Style="{StaticResource accountProgressBar}">
-            </ProgressBar>
 
             <!--Main Section-->
             <Grid Grid.Column="1" Margin="30,20,30,23">
@@ -179,6 +176,34 @@
                 </StackPanel>
             </Border>
 
+            <Border CornerRadius="25" Grid.ColumnSpan="3" Background="Black"
+                    Opacity="0.6" Visibility="{Binding ElementName=UpdArea,Path=Visibility}"/>
+
+            
+            <Grid x:Name="UpdArea" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed">
+
+                <StackPanel  VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 0 200" >
+                    <TextBlock x:Name="UpdTitle" Text="{DynamicResource av_dbAccsUpdate}"
+                           Foreground="White" FontWeight="Medium" FontFamily="Cascadia Mono"
+                           FontSize="20"/>
+                    <TextBlock x:Name="UpdCounterTitle"  Text="1/36" FontSize="20" FontWeight="Medium" FontFamily="Cascadia Mono" Margin="0 5 0 0"
+                               Foreground="{DynamicResource second_main_brush}" TextAlignment="Center" />
+                </StackPanel>
+              
+                <Ellipse 
+    Width="328"  Opacity="0.55" Height="328" 
+    Stroke="{DynamicResource default_foreground}" Margin="0 0 0 60"
+    StrokeThickness="28" Canvas.Left="135" Canvas.Top="100" />
+
+                <ui:CircularProgressBar x:Name="UpdProgressBar"  VerticalAlignment="Center" HorizontalAlignment="Center" Radius="150"
+                                    Margin="0 0 0 60"
+                                   StrokeThickness="30"  SegmentColor="{DynamicResource second_main_brush}" Percentage="20"/>
+
+                <Button Style="{StaticResource defaultButton}" VerticalAlignment="Bottom" Background="{DynamicResource second_main_brush}"
+                        FontWeight="Medium" Click="CancellationUpdateEvent">
+                    Cancel
+                </Button>
+            </Grid>
         </Grid>
     </Border>
 </Window>

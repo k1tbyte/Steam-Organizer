@@ -59,11 +59,11 @@ namespace Steam_Account_Manager
             if (!Utils.Common.CheckInternetConnection())
             {
                 ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("mv_connectionNotify"));
+                Utils.Presentation.OpenPopupMessageBox(FindString("mv_connectionNotify"));
                 await Task.Delay(15000);
                 if (!Utils.Common.CheckInternetConnection())
                 {
-                    Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("mv_autonomyModeNotify"));
+                    Utils.Presentation.OpenPopupMessageBox(FindString("mv_autonomyModeNotify"));
                     OfflineMode = true;
                 }
                 ShutdownMode = ShutdownMode.OnMainWindowClose;
