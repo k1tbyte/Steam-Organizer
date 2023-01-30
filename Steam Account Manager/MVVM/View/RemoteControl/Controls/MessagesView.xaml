@@ -284,7 +284,7 @@
                         <StackPanel Margin="0 60 0 0" Orientation="Horizontal">
                             <TextBlock Text="{DynamicResource rc_mv_saveChatLog}" Margin="4 3 10 2" FontSize="13" 
                                        Foreground="{DynamicResource default_foreground}"/>
-                            <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25"
+                            <ToggleButton Style="{StaticResource ModernCheckbox}" Width="25" Height="25"
                                           Background="{DynamicResource rc_button_back}" IsChecked="{Binding SaveChatLog}"/>
                         </StackPanel>
 
@@ -292,7 +292,7 @@
                             <TextBlock Text="{DynamicResource rc_mv_enableCmds}" Margin="4 3 10 2" FontSize="13" 
                                        Foreground="{DynamicResource default_foreground}"/>
 
-                            <ToggleButton Style="{StaticResource checkbox}" Width="25" Height="25" 
+                            <ToggleButton Style="{StaticResource ModernCheckbox}" Width="25" Height="25" 
                                           IsHitTestVisible="{Binding IsAdminIdValid}"
                                           Background="{DynamicResource rc_button_back}" IsChecked="{Binding EnableCommands}"/>
                         </StackPanel>

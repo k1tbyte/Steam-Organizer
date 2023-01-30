@@ -19,7 +19,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
 
         private void buttons_Click(object sender, RoutedEventArgs e)
         {
-            buttons.Visibility = Visibility.Hidden;
+            buttons.Visibility = Visibility.Collapsed;
             add_panel.Visibility = Visibility.Visible;
         }
 

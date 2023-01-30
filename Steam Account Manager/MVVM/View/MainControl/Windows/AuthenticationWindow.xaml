@@ -57,7 +57,7 @@
                     </StackPanel>
                 </Border>
 
-                <Button Margin="10 0 0 0" x:Name="Login" Style="{StaticResource defaultButton}" 
+                <Button Margin="10 0 0 0" x:Name="Login" Style="{StaticResource ModernDefaultButton}" 
                         Width="35" Height="35" Click="Login_Click" IsDefault="True">
                     <Icon:Material Kind="Login"/>
                 </Button>
@@ -97,9 +97,9 @@
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0 0 0 15"
                         VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                <Button x:Name="Cancel" Style="{StaticResource defaultButton}" Height="30"  IsCancel="True" Content="{DynamicResource aw_cancel}" Click="Cancel_Click"/>
+                <Button x:Name="Cancel" Style="{StaticResource ModernDefaultButton}" Height="30"  IsCancel="True" Content="{DynamicResource aw_cancel}" Click="Cancel_Click"/>
                 <Button x:Name="Reset" IsHitTestVisible="True" Click="Reset_Click"
-                        Style="{StaticResource defaultButton}" Height="30" Margin="20 0 0 0" Content="{DynamicResource aw_reset}"/>
+                        Style="{StaticResource ModernDefaultButton}" Height="30" Margin="20 0 0 0" Content="{DynamicResource aw_reset}"/>
             </StackPanel>
 
         </Grid>

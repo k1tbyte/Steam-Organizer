@@ -603,6 +603,9 @@
     <Resource Include="Images\grab.cur" />
     <Resource Include="Images\grabbing.cur" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\test.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

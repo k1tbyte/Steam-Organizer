@@ -42,7 +42,7 @@
                            Opacity="0.95" />
             </StackPanel>
 
-            <Button Style="{StaticResource serviceButton}" Grid.Column="1"
+            <Button Style="{StaticResource ModernSpinButton}" Grid.Column="1"
                     VerticalAlignment="Center" HorizontalAlignment="Right" IsDefault="True"
                         Width="20" Click="no_Click">
                 <Icon:PackIconMaterial Kind="WindowClose"
@@ -68,10 +68,10 @@
 
             <StackPanel x:Name="ActionPanel" Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Height="35">
                 <Button x:Name="no" Click="no_Click"
-                                Width="60" Height="25" Style="{StaticResource defaultButton}" Content="{DynamicResource mv_confirmNo}" />
+                                Width="60" Height="25" Style="{StaticResource ModernDefaultButton}" Content="{DynamicResource mv_confirmNo}" />
 
                 <Button x:Name="yes" Margin="20 0 0 0" Click="yes_Click"
-                                Width="60" Height="25" Style="{StaticResource defaultButton}" Content="{DynamicResource mv_confirmYes}"/>
+                                Width="60" Height="25" Style="{StaticResource ModernDefaultButton}" Content="{DynamicResource mv_confirmYes}"/>
             </StackPanel>
         </Grid>
     </Border>

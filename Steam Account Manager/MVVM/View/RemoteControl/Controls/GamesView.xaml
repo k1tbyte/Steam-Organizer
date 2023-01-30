@@ -88,7 +88,7 @@
                 <ToggleButton x:Name="rememberButton" Click="rememberButton_Click" Width="23" Height="23"
                               Background="{DynamicResource rc_button_back}" Margin="0">
                     <ToggleButton.Style>
-                        <Style TargetType="ToggleButton" BasedOn="{StaticResource checkboxSimple}">
+                        <Style TargetType="ToggleButton" BasedOn="{StaticResource ModernCheckbox}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=games,Path=SelectedIndex}" Value="-1">
                                     <Setter Property="IsHitTestVisible" Value="False"/>

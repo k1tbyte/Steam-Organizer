@@ -11,7 +11,11 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
     public partial class SettingsView : UserControl
     {
         private readonly Regex CharsDigitsRegex = new Regex("^[a-zA-Z0-9]+\\z");
-        public SettingsView() => InitializeComponent();
+        public SettingsView()
+        {
+            InitializeComponent();
+            this.DataContext = new SettingsViewModel();
+        }
         
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {

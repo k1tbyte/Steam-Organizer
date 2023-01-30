@@ -38,7 +38,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public bool Autostartup
         {
             get => Utils.Common.IsRegistryAutoStartup();
-            set => Utils.Common.SetRegistryAutostartup(Autostartup);
+            set => Utils.Common.SetRegistryAutostartup(value);
         }
 
         private bool _passwordError;

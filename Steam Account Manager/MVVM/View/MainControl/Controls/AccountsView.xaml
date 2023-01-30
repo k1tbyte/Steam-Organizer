@@ -27,7 +27,7 @@
         </Grid>
 
         <!--Add Button-->
-        <Button Style="{StaticResource ModernButton}" HorizontalAlignment="Right"
+        <Button Style="{StaticResource ModernOutlineButton}" HorizontalAlignment="Right"
                 Height="44" Command="{Binding AddAccountCommand}" Margin="0 0 85 0">
             <StackPanel Orientation="Horizontal">
                 <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center"
@@ -38,7 +38,7 @@
         </Button>
 
         <!--Check account Button-->
-        <Button Style="{StaticResource ModernButton}" HorizontalAlignment="Right"
+        <Button Style="{StaticResource ModernOutlineButton}" HorizontalAlignment="Right"
                 Height="44" Width="70" Margin="0 0 10 0">
             <StackPanel Orientation="Horizontal">
                 <Icon:PackIconMaterial Kind="AccountConvert" VerticalAlignment="Center"
@@ -51,8 +51,8 @@
                     HorizontalAlignment="Right" VerticalAlignment="Center">
             
             <!-- Save account database in file -->
-            <Button Style="{StaticResource serviceButton}" Command="{Binding StoreAccountDatabaseCommand}"
-                    IsEnabled="{Binding Accounts.Count,Converter={StaticResource IntToBool}}">
+            <Button Style="{StaticResource ModernServiceButton}" Command="{Binding StoreAccountDatabaseCommand}"
+                    IsEnabled="{Binding Accounts.Count,Converter={StaticResource IntToBool}}"  Margin="0 0 5 0">
                 <Icon:PackIconMaterial Kind="ContentSaveAll" Width="20" Height="20"
                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <Button.ToolTip>
@@ -61,7 +61,7 @@
             </Button>
 
             <!-- Restore account database from file -->
-            <Button  Style="{StaticResource serviceButton}" Command="{Binding RestoreAccountDatabaseCommand}">
+            <Button  Style="{StaticResource ModernServiceButton}" Command="{Binding RestoreAccountDatabaseCommand}"  Margin="0 0 5 0">
                 <Icon:PackIconMaterial Kind="UploadMultiple" RotationAngle="180" Width="20" Height="20"
                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <Button.ToolTip>
@@ -70,7 +70,7 @@
             </Button>
 
             <!-- Restore account from file -->
-            <Button Style="{StaticResource serviceButton}" Command="{Binding RestoreAccountCommand}" >
+            <Button Style="{StaticResource ModernServiceButton}" Command="{Binding RestoreAccountCommand}"  Margin="0 0 5 0">
                 <Icon:PackIconMaterial Kind="FileRestore"  Width="20" Height="20"
                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <Button.ToolTip>
@@ -302,7 +302,7 @@
                                         <Icon:PackIconMaterial Kind="NoteEditOutline" Style="{StaticResource gridButtonIcon}"/>
                                     </Button>
 
-                                    <Button Style="{StaticResource gridEditButton}"
+                                    <Button Style="{StaticResource TemplateBorderButton}"
                                             Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.OpenAccountDataCommand}"
                                             CommandParameter="{Binding}"
                                             HorizontalAlignment="Right" Margin="0 0 5 0">
@@ -330,7 +330,7 @@
                                             </Button.ContextMenu>
                                         </Button>
 
-                                        <Button Style="{StaticResource serviceButton}" Width="35" Height="35"  Cursor="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.GrabCursor,Mode=OneTime}" AllowDrop="True" 
+                                        <Button Style="{StaticResource ModernServiceButton}" Width="35" Height="35"  Cursor="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.GrabCursor,Mode=OneTime}" AllowDrop="True" 
                                                  Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.ChangesAviable,Converter={StaticResource BoolToVis},Mode=OneWay}"
                                                  PreviewMouseLeftButtonDown="AccountItemGrab"
                                                 PreviewMouseLeftButtonUp="AccountItemDrop">

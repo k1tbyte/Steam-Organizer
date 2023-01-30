@@ -36,9 +36,9 @@
                            FontSize="20" Margin="3 7 0 0"
                            Text="An error has occurred"  FontFamily="Cascadia Code"/>
 
-                <Button Style="{StaticResource serviceButton}" Click="Button_Click"
+                <Button Style="{StaticResource ModernSpinButton}" Click="Button_Click"
                     VerticalAlignment="Top" HorizontalAlignment="Right" IsDefault="True"
-                        Width="20" Margin="17,-2,12,0">
+                        Width="20" Margin="17,7,12,0">
                     <Icon:PackIconMaterial Kind="WindowClose"
                                        Height="20" Width="20" 
                                        VerticalAlignment="Center"/>
@@ -59,7 +59,7 @@
                         Style="{StaticResource defaultButton}" Content="Repair"/>
             </StackPanel>
             <Button Grid.Row="2" HorizontalAlignment="Left" Width="25" Height="25"
-                    Style="{StaticResource animatedCopy}" Margin="20 5 0 0" Click="Copy_Click"/>
+                    Style="{StaticResource ModernCopyButton}" Margin="20 5 0 0" Click="Copy_Click"/>
         </Grid>
     </Border>
 </Window>

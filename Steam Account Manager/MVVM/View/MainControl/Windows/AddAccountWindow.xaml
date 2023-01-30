@@ -15,8 +15,8 @@
         Name="AddAccountClassWnd">
 
     
-    <Border CornerRadius="8" Background="{DynamicResource background_border_color}"  MouseLeftButtonDown="BorderDragMove"
-            BorderThickness="1.5" BorderBrush="{DynamicResource second_main_brush}">
+    <Border CornerRadius="3" Background="{DynamicResource background_border_color}"  MouseLeftButtonDown="BorderDragMove"
+            BorderThickness="0 3 0 3" BorderBrush="{DynamicResource second_main_brush}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
@@ -25,16 +25,16 @@
                 <RowDefinition Height="65"/>
                 <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
-           
-            
+
+
             <TextBlock Grid.ColumnSpan="2"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left" Margin="20 20" 
                        FontFamily="Cascadia Mono"
                        Foreground="{DynamicResource second_settings_text}"
                        Text="{DynamicResource adv_header_title}"
-                       FontSize="20">
-            </TextBlock>
+                       FontSize="20"/>
+
 
             <Rectangle Height="1"
                        VerticalAlignment="Bottom"
@@ -53,6 +53,7 @@
                                                Style="{StaticResource PasswordboxTheme}" Width="185"/>
                 </StackPanel>
             </Border>
+            
             <TextBlock Grid.Row="2" Text="{DynamicResource adv_password}" FontWeight="Thin"
                        Width="57" Height="20" HorizontalAlignment="Left"
                        FontSize="14"
@@ -116,25 +117,15 @@
 
 
             <!--Error Message TextBlock-->
-            <TextBlock Grid.Row="3" VerticalAlignment="Top" FontSize="11" 
-                       Grid.RowSpan="4" Margin="0 52 0 0" Padding="20 0 20 0"
-                       Foreground="PaleVioletRed" TextWrapping="Wrap"
-                       Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}">
-                <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Visibility" Value="Visible"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ErrorMessage}" Value="">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
+            <TextBlock Grid.Row="3" VerticalAlignment="Top"
+                       Style="{StaticResource ModernErrorTextBlock}"
+                       Grid.RowSpan="4" Margin="0 53 0 0" Padding="20 0 20 0"
+                       Text="{Binding ErrorMessage}">
 
             </TextBlock>
 
             <!-- Checkbox -->
-            <ToggleButton x:Name="noInfoCheck" Width="25" Height="25" Style="{StaticResource checkbox}" IsChecked="{Binding DontCollectInfo}"
+            <ToggleButton x:Name="noInfoCheck" Width="25" Height="25" Style="{StaticResource ModernCheckbox}" IsChecked="{Binding DontCollectInfo}"
                          Grid.Row="4" HorizontalAlignment="Right" Margin="0 0 55 0">
                 <ToggleButton.ToolTip>
                     <ToolTip ContentStringFormat="{DynamicResource adv_dontCollectInfo}"/>
@@ -142,15 +133,14 @@
             </ToggleButton>
 
 
-            <Button Style="{StaticResource saveAccontButton}"
+            <Button Style="{StaticResource ModernDefaultButton}"
                     Command="{Binding AddAccountAsyncCommand}"
                     CommandParameter="{Binding ElementName=AddAccountClassWnd}"
                     Content="{DynamicResource adv_save}" Grid.Row="4"  IsDefault="True"/>
 
-            <Button Grid.Column="1"  Style="{StaticResource serviceButton}"
+            <Button Grid.Column="1"  Style="{StaticResource ModernSpinButton}"
                         Click="CloseEvent" IsCancel="True"
                         HorizontalAlignment="Right"
-                        
                         Width="15" Margin="0,0,20,0">
                 <Icon:PackIconMaterial Kind="WindowClose"
                                        Height="15" Width="15" 

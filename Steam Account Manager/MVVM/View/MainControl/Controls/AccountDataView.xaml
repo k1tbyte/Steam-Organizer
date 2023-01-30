@@ -105,7 +105,7 @@
 
 
         <!-- Cancel button -->
-        <Button Style="{StaticResource serviceButton}" IsCancel="True"
+        <Button Style="{StaticResource ModernServiceButton}" IsCancel="True"
                 Width="35"  Grid.Row="1" Margin="5 10 0 0"
                 Command="{Binding CancelCommand}"
                 VerticalAlignment="Top" HorizontalAlignment="Left">
@@ -121,8 +121,8 @@
         <!-- Right service panel -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 50 0" Grid.Row="1">
 
-            <Button Style="{StaticResource serviceButton}" Command="{Binding SaveChangesComamnd}"
-                Width="35"  Grid.Row="1" Margin="5 10 0 0" PreviewMouseLeftButtonDown="AntiSpamClicks"
+            <Button Style="{StaticResource ModernServiceButton}" Command="{Binding SaveChangesComamnd}"
+                Width="35" Height="30"  Grid.Row="1" Margin="5 10 0 0" PreviewMouseLeftButtonDown="AntiSpamClicks"
                 VerticalAlignment="Top" HorizontalAlignment="Right">
                 <Icon:PackIconMaterial  Kind="ContentSave" Height="20" Width="40" />
                 <Button.ToolTip>
@@ -130,8 +130,8 @@
                 </Button.ToolTip>
             </Button>
 
-            <Button Style="{StaticResource serviceButton}" Command="{Binding ExportAccountCommand}"
-                Width="35"  Grid.Row="1" Margin="5 10 0 0" VerticalAlignment="Top" HorizontalAlignment="Right" >
+            <Button Style="{StaticResource ModernServiceButton}" Command="{Binding ExportAccountCommand}"
+                Width="35"  Height="30" Grid.Row="1" Margin="5 10 0 0" VerticalAlignment="Top" HorizontalAlignment="Right" >
                 <Icon:PackIconMaterial  Kind="FileUpload" Height="20" Width="40" />
                 <Button.ToolTip>
                     <ToolTip ContentStringFormat="{DynamicResource adat_popup_account_export}"/>
@@ -210,7 +210,7 @@
 
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=URL}"
-                                        Style="{StaticResource animatedCopy}"/>
+                                        Style="{StaticResource ModernCopyButton}"/>
                             </StackPanel>
 
                             <!-- Profile ID64 count -->
@@ -220,7 +220,7 @@
                                          Text="{Binding CurrentAccount.SteamId64,Mode=OneWay,TargetNullValue=⠀—}" VerticalAlignment="Center"/>
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=ID64}"
-                                        Style="{StaticResource animatedCopy}"/>
+                                        Style="{StaticResource ModernCopyButton}"/>
                             </StackPanel>
 
                             <!-- Profile ID32 -->
@@ -230,7 +230,7 @@
                                          Text="{Binding CurrentAccount.SteamId32,Mode=OneWay,TargetNullValue=⠀—}" VerticalAlignment="Center"/>
                                 <Button Command="{Binding CopyCommand}"  Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}"
                                         CommandParameter="{Binding ElementName=ID32}"
-                                        Style="{StaticResource animatedCopy}"/>
+                                        Style="{StaticResource ModernCopyButton}"/>
                             </StackPanel>
 
                             <!-- Profile visiblity -->
@@ -412,7 +412,7 @@
                             <StackPanel  Margin="3 30 0 0" Orientation="Horizontal" Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}">
                                 <TextBlock Text="{DynamicResource adat_cs_header}" FontSize="16" Style="{StaticResource settings_description}"/>
                                 <ToggleButton  x:Name="expandCsgoButton" Style="{StaticResource showButton}" IsChecked="True"/>
-                                <Button Style="{StaticResource serviceButton}" Width="16" Height="14" Margin="6 0 0 -1"
+                                <Button Style="{StaticResource ModernServiceButton}" Width="16" Height="14" Margin="6 0 0 -1"
                                            Command="{Binding ParseCsgoStatsInfo}">
                                     <Icon:PackIconMaterial Kind="Reload" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                 </Button>
@@ -772,7 +772,7 @@
         <!--#region 2FA -->
         
         <!-- 2fa activate button -->
-        <Button x:Name="TwoFaActivate" Style="{StaticResource serviceButton}"
+        <Button x:Name="TwoFaActivate" Style="{StaticResource ModernServiceButton}"
                 Width="45"  Grid.Row="1" Margin="60 10 0 0"
                 Command="{Binding AddAuthenticatorCommand}"
                 VerticalAlignment="Top" HorizontalAlignment="Left">

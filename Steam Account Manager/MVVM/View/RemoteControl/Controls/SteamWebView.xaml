@@ -65,7 +65,7 @@
                 <TextBlock Text="Your steam web API key" Margin="4 0 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
                 <StackPanel Orientation="Horizontal" >
 
-                    <Button Width="20" Height="20"  Style="{StaticResource serviceButton}"
+                    <Button Width="20" Height="20"  Style="{StaticResource ModernServiceButton}"
                             IsHitTestVisible="{Binding ElementName=apiKeyText,Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
                             Command="{Binding RevokeWebApiKeyCommand}"
                             CommandParameter="{Binding ElementName=succesApiKeyGet}">
@@ -88,7 +88,7 @@
                 <TextBlock Text="Your trade token" Margin="4 5 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
                 <StackPanel Orientation="Horizontal" >
 
-                    <Button Width="20" Height="20"  Style="{StaticResource serviceButton}"
+                    <Button Width="20" Height="20"  Style="{StaticResource ModernServiceButton}"
                             IsHitTestVisible="{Binding ElementName=tradeTokenText,Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
                             Command="{Binding RefreshTradeTokenCommmand}" Click="Button_Click"
                             CommandParameter="{Binding ElementName=succesTradeTokenGet}">

@@ -94,7 +94,7 @@
                         </StackPanel>
                     </Border>
 
-                    <Button Style="{StaticResource serviceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
+                    <Button Style="{StaticResource ModernServiceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
                     VerticalAlignment="Center" Background="Transparent" BorderThickness="0"
                     Command="{Binding OpenApiKeyUrlCommand}">
                         <Icon:PackIconMaterial Width="20" Height="20" Kind="Information"/>
@@ -134,7 +134,7 @@
                         </StackPanel>
                     </Border>
 
-                    <Button Style="{StaticResource serviceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
+                    <Button Style="{StaticResource ModernServiceButton}"  Margin="8 7 0 7" Width="22" Height="22" 
                     VerticalAlignment="Center" Background="Transparent" BorderThickness="0">
                         <Icon:PackIconMaterial Width="20" Height="20" Kind="Information"/>
                         <Button.ToolTip>
@@ -194,35 +194,35 @@
                 <DockPanel  Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_confirm_when_del}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Properties.NoConfirmMode}"
-                          Style="{StaticResource ToggleButtonStyle}"/>
+                          Style="{StaticResource ModernSwitchToggleButton}"/>
                 </DockPanel>
 
                 <!-- Dont collect information -->
                 <DockPanel>
                     <TextBlock Text="{DynamicResource sv_info_collect}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Properties.TakeAccountInfo}"
-                          Style="{StaticResource ToggleButtonStyle}"/>
+                          Style="{StaticResource ModernSwitchToggleButton}"/>
                 </DockPanel>
 
                 <!-- Remember password -->
                 <DockPanel>
                     <TextBlock Text="{DynamicResource sv_rememberPass}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Properties.RememberPassword}"
-                          Style="{StaticResource ToggleButtonStyle}"/>
+                          Style="{StaticResource ModernSwitchToggleButton}"/>
                 </DockPanel>
 
                 <!-- Auto get steamid -->
                 <DockPanel>
                     <TextBlock Text="{DynamicResource sv_getID}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Properties.AutoGetSteamId}"
-                          Style="{StaticResource ToggleButtonStyle}"/>
+                          Style="{StaticResource ModernSwitchToggleButton}"/>
                 </DockPanel>
 
                 <!-- Highest quality images -->
                 <DockPanel>
                     <TextBlock Text="{DynamicResource sv_highestQualityImages}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Properties.HighestQualityImages}"
-                          Style="{StaticResource ToggleButtonStyle}"/>
+                          Style="{StaticResource ModernSwitchToggleButton}"/>
                 </DockPanel>
 
                 <!--Set password-->
@@ -237,7 +237,7 @@
                         </Button.ToolTip>
                     </Button>
                     <ToggleButton x:Name="IsPassword"   IsChecked="False"
-                                  Style="{StaticResource ToggleButtonStyle}" PreviewMouseLeftButtonDown="IsPassword_PreviewMouseLeftButtonDown"/>
+                                  Style="{StaticResource ModernSwitchToggleButton}" PreviewMouseLeftButtonDown="IsPassword_PreviewMouseLeftButtonDown"/>
 
                 </DockPanel>
 
@@ -285,21 +285,21 @@
                 <DockPanel  Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_minimizeOnClose}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Properties.MinimizeToTray}" VerticalAlignment="Center"
-                          Style="{StaticResource checkbox}" Margin="0 0 150 0"  HorizontalAlignment="Right" Width="27" Height="27"/>
+                          Style="{StaticResource ModernCheckbox}" Margin="0 0 150 0"  HorizontalAlignment="Right" Width="27" Height="27"/>
                 </DockPanel>
 
                 <!-- Minimize app on startup -->
                 <DockPanel Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_minimizeAtStart}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Properties.MinimizeOnStart}" VerticalAlignment="Center"
-                          Style="{StaticResource checkbox}" Margin="0 0 150 0"  HorizontalAlignment="Right"  Width="27" Height="27"/>
+                          Style="{StaticResource ModernCheckbox}" Margin="0 0 150 0"  HorizontalAlignment="Right"  Width="27" Height="27"/>
                 </DockPanel>
 
                 <!-- Set in autostartup -->
                 <DockPanel Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_autoStartup}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Autostartup}" VerticalAlignment="Center"
-                          Style="{StaticResource checkbox}"  Margin="0 0 150 0"  HorizontalAlignment="Right"  Width="27" Height="27"/>
+                          Style="{StaticResource ModernCheckbox}"  Margin="0 0 150 0"  HorizontalAlignment="Right"  Width="27" Height="27"/>
                 </DockPanel>
 
                 <DockPanel Margin="0 5 0 0">

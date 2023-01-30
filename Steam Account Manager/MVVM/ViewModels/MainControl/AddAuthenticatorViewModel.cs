@@ -22,7 +22,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
 
         private string _errorMessage, _userInput, _captchaLink;
-        private bool _isReady, _isCaptchaVisible;
+        private bool _isReady;
         private readonly Window _window;
         private readonly Account currentAccount;
 
@@ -31,11 +31,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             public string Account_name { get; set; }
         }
 
-        public bool IsCaptchaVisible
-        {
-            get => _isCaptchaVisible;
-            set => SetProperty(ref _isCaptchaVisible, value);
-        }
         public string CaptchaLink
         {
             get => _captchaLink;
@@ -59,49 +54,48 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             {
                 UserLogin user       = new UserLogin(currentAccount.Login, currentAccount.Password);
                 LoginResult response = LoginResult.BadCredentials;
-                ErrorMessage         = (string)Application.Current.FindResource("aaw_dataWait");
+                ErrorMessage         = App.FindString("aaw_dataWait");
 
                 while ((response = user.DoLogin()) != LoginResult.LoginOkay)
                 {
                     switch (response)
                     {
                         case LoginResult.NeedEmail:
-                            ErrorMessage = (string)Application.Current.FindResource("aaw_emailCode");
+                            ErrorMessage = App.FindString("aaw_emailCode");
                             while (!_isReady) Thread.Sleep(100);
                             user.EmailCode = UserInput;
-                            ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
+                            ErrorMessage = App.FindString("aaw_installing");
                             break;
 
                         case LoginResult.NeedCaptcha:
                             _captchaLink = "https://api.steampowered.com/public/captcha.php?gid=" + user.CaptchaGID;
-                            ErrorMessage = (string)Application.Current.FindResource("aaw_captcha");
-                            IsCaptchaVisible = true;
+                            ErrorMessage = App.FindString("aaw_captcha");
                             while (!_isReady) Thread.Sleep(100);
                             user.CaptchaText = UserInput;
-                            ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
+                            ErrorMessage = App.FindString("aaw_installing");
                             break;
 
                         case LoginResult.Need2FA:
-                            ErrorMessage = (string)Application.Current.FindResource("aaw_2faCode");
+                            ErrorMessage = App.FindString("aaw_2faCode");
                             while (!_isReady) Thread.Sleep(100);
                             user.TwoFactorCode = UserInput;
-                            ErrorMessage = (string)Application.Current.FindResource("aaw_installing");
+                            ErrorMessage = App.FindString("aaw_installing");
                             break;
 
                         case LoginResult.TooManyFailedLogins:
-                            ErrorMessage = (string)Application.Current.FindResource("aaw_manyAttempts");
+                            ErrorMessage = App.FindString("aaw_manyAttempts");
                             Thread.Sleep(2000);
-                            _window.Dispatcher.Invoke(() => { _window.Close(); });
+                            _window.Dispatcher.Invoke(() => _window.Close());
                             return;
 
                         case LoginResult.GeneralFailure:
-                            ErrorMessage = (string)Application.Current.FindResource("aaw_dataIncorrect");
+                            ErrorMessage = App.FindString("aaw_dataIncorrect");
                             Thread.Sleep(2000);
-                            _window.Dispatcher.Invoke(() => { _window.Close(); });
+                            _window.Dispatcher.Invoke(() => _window.Close());
                             return;
                     }
                 }
-                if (_captchaLink != null) IsCaptchaVisible = false;
+                if (_captchaLink != null) CaptchaLink = null;
                 var linker = new AuthenticatorLinker(user.Session)
                 {
                     PhoneNumber = null
@@ -110,9 +104,9 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 var result = linker.AddAuthenticator();
                 if (result != AuthenticatorLinker.LinkResult.AwaitingFinalization)
                 {
-                    ErrorMessage = (string)Application.Current.FindResource("aaw_addFail") + " " + result;
+                    ErrorMessage = App.FindString("aaw_addFail") + " " + result;
                     Thread.Sleep(2000);
-                    _window.Dispatcher.Invoke(() => { _window.Close(); });
+                    _window.Dispatcher.Invoke(() =>  _window.Close());
                 }
 
                 try
@@ -129,26 +123,26 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 }
                 catch
                 {
-                    ErrorMessage = (string)Application.Current.FindResource("aaw_errorSave");
+                    ErrorMessage = App.FindString("aaw_errorSave");
                     Thread.Sleep(2000);
-                    _window.Dispatcher.Invoke(() => { _window.Close(); });
+                    _window.Dispatcher.Invoke(() =>  _window.Close());
                 }
 
-                ErrorMessage = (string)Application.Current.FindResource("aaw_smsCode");
+                ErrorMessage = App.FindString("aaw_smsCode");
                 while (!_isReady) Thread.Sleep(100);
 
                 var linkResult = linker.FinalizeAddAuthenticator(UserInput);
 
                 if (linkResult == AuthenticatorLinker.FinalizeResult.Success)
                 {
-                    ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
+                    ErrorMessage = App.FindString("aaw_successAdd");
                 }
                 else
                 {
                     ErrorMessage = "Error! " + linkResult;
                 }
                 Thread.Sleep(2000);
-                _window.Dispatcher.Invoke(() => { _window.Close(); });
+                _window.Dispatcher.Invoke(() => _window.Close());
             });
             
         }
@@ -169,7 +163,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 {
                     ErrorMessage = App.FindString("aaw_linkFromAnotherAcc");
                     await Task.Delay(2500);
-                    _window.Dispatcher.Invoke(() => { _window.Close(); });
+                    _window.Dispatcher.Invoke(() => _window.Close());
                 }
                 else
                 {
@@ -189,7 +183,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     currentAccount.AuthenticatorPath = authenticatorName;
 
                     Config.SaveAccounts();
-                    ErrorMessage = (string)Application.Current.FindResource("aaw_successAdd");
+                    ErrorMessage = App.FindString("aaw_successAdd");
                     await Task.Delay(2000);
                 }
             }

@@ -68,6 +68,7 @@
         <!--Colors -->
     <Color x:Key="drop_shadow">black</Color>
     <Color x:Key="comboBox_border">#7B5CD6</Color>
+    <Color x:Key="first_main_color">#FF181B28</Color>
     <Color x:Key="second_main_color">#433793</Color>
     <Color x:Key="comboBox_border_background">#232338</Color>
 </ResourceDictionary>

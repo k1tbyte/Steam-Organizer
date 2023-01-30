@@ -25,7 +25,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         private bool DataValidate()
         {
-            if (SteamLogin == "")
+            if (string.IsNullOrEmpty(ErrorMessage))
                 ErrorMessage = App.FindString("adv_error_login_empty");
             else if (SteamLogin.Contains(" "))
                 ErrorMessage = App.FindString("adv_error_login_contain_spaces");

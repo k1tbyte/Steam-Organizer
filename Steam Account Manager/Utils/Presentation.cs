@@ -1,8 +1,10 @@
 ﻿using Steam_Account_Manager.UIExtensions;
+using System;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -196,6 +198,22 @@ namespace Steam_Account_Manager.Utils
 
             element.BeginAnimation(FrameworkElement.OpacityProperty, opacityAnim);
         } 
+
+        internal static void SpinAnimation(FrameworkElement element,double from = 0, double to = 180)
+        {
+            var doubleAnimation = new DoubleAnimation(from, to, new Duration(TimeSpan.FromSeconds(0.8)))
+            {
+                EasingFunction = new CircleEase() { EasingMode = EasingMode.EaseInOut }
+            };
+
+            var rotateTransform = new RotateTransform();
+
+            element.RenderTransform = rotateTransform;
+            element.RenderTransformOrigin = new Point(0.5, 0.5);
+
+            rotateTransform.BeginAnimation(RotateTransform.AngleProperty, doubleAnimation);
+        }
+
         #endregion
     }
 }

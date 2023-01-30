@@ -133,10 +133,10 @@
             </TextBlock>
 
             <!-- Exit button -->
-            <Button Grid.Row="0"  Style="{StaticResource serviceButton}"
+            <Button Grid.Row="0"  Style="{StaticResource ModernSpinButton}"
                     Command="{Binding CloseWindowCommand}" CommandParameter="{Binding ElementName=ShowAuthenticator}"
                     VerticalAlignment="Top" HorizontalAlignment="Right"
-                        Width="15" Margin="0,10,15,0">
+                        Width="15" Margin="0,17,19,0">
                 <Icon:PackIconMaterial Kind="WindowClose"
                                        Height="15" Width="15" 
                                        VerticalAlignment="Center"/>
@@ -158,7 +158,7 @@
             </Border>
 
             <Button x:Name="codeCopyButton" Grid.Row="1"  Margin="195 0 0 30" Click="codeCopyButton_Click"
-                    Style="{StaticResource animatedCopy}" Width="27" Height="27"/>
+                    Style="{StaticResource ModernCopyButton}" Width="27" Height="27"/>
             
             <ProgressBar Grid.Row="1" Width="200" Height="5" Margin="0 40 0 0"
                          Value="{Binding TimerValue}" Maximum="30"  Style="{StaticResource noTextProgreeBar}"/>

@@ -15,10 +15,6 @@
 
                 <ResourceDictionary Source="Styles/MiscStyles.xaml"/>
 
-                <ResourceDictionary Source="Styles/ModernButtonStyle.xaml"/>
-
-                <ResourceDictionary Source="Styles/ModernTextBoxStyle.xaml"/>
-
                 <ResourceDictionary Source="Styles/ScrollBarStyle.xaml"/>
 
                 <ResourceDictionary Source="Styles/ProgressBarStyle.xaml"/>
@@ -34,6 +30,10 @@
                 <ResourceDictionary Source="Styles/ContextMenuStyle.xaml"/>
 
                 <ResourceDictionary Source="Styles/ButtonStyle.xaml"/>
+
+                <ResourceDictionary Source="Styles/ModernButtonStyle.xaml"/>
+
+                <ResourceDictionary Source="Styles/ModernTextBoxStyle.xaml"/>
 
                 <ResourceDictionary Source="ColorSchemes/Dark.xaml"/>
 
@@ -197,10 +197,6 @@
             </Style>
             <!--#endregion-->
 
-
-            <DataTemplate DataType="{x:Type viewModel:SettingsViewModel}">
-                <view:SettingsView/>
-            </DataTemplate>
 
             <DataTemplate DataType="{x:Type remoteVM:LoginViewModel}">
                 <remoteView:LoginView/>

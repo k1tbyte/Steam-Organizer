@@ -234,7 +234,7 @@
                              MaxLength="30">
                     </TextBox>
 
-                    <ToggleButton x:Name="editNick" Style="{StaticResource small_button}"  HorizontalAlignment="Right"
+                    <ToggleButton x:Name="editNick" Style="{StaticResource ModernEditToggleButton}"  HorizontalAlignment="Right"
                                    Tag="{Binding ChangeNicknameCommand}" Width="18" Height="18" Margin="3 1 0 0" >
                         <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}" Width="1" Height="10"/>
                         <ToggleButton.ToolTip>
@@ -250,7 +250,7 @@
                     <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
                         <TextBlock Text="SteamID64: " FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
                         <TextBox x:Name="steamIDbox" Style="{StaticResource settings_data_box}" Text="{Binding SteamId64}" Height="18.62"/>
-                        <Button Style="{StaticResource animatedCopy}" Margin="5 -2 0 0" Click="IdCopyButton_Click"/>
+                        <Button Style="{StaticResource ModernCopyButton}" Margin="5 -2 0 0" Click="IdCopyButton_Click"/>
                     </StackPanel>
                     
 

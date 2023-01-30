@@ -25,7 +25,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public RelayCommand LogoutCommand { get; set; }
 
         public AccountsView AccountsV;
-        public SettingsViewModel SettingsVm;
+        public SettingsView SettingsV;
         public MainRemoteControlView RemoteControlV;
         public AccountDataView AccountDataV;
 
@@ -153,7 +153,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             AccountsV      = new AccountsView();
             AccountDataV   = new AccountDataView();
             RemoteControlV = new MainRemoteControlView();
-            SettingsVm     = new SettingsViewModel();
 
             CurrentView = AccountsV;
 
@@ -162,7 +161,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             AccountsViewCommand = new RelayCommand(o =>  CurrentView = AccountsV);
 
-            SettingsViewCommand = new RelayCommand(o => CurrentView = SettingsVm);
+            SettingsViewCommand = new RelayCommand(o => 
+            {
+                if(SettingsV == null)
+                    SettingsV = new SettingsView();
+
+                CurrentView = SettingsV;
+            });
 
             MinimizeCommand     = new RelayCommand(o => WindowState = WindowState.Minimized);
 

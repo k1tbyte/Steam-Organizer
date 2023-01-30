@@ -12,6 +12,9 @@
         Title="Steam Account Manager"
         WindowState="{Binding WindowState}"
         IsHitTestVisible="True">
+    <Window.Resources>
+     
+    </Window.Resources>
 
     <Window.DataContext>
         <vm:MainWindowViewModel/>
@@ -40,8 +43,7 @@
                             
                             <WrapPanel Name ="container" Width="94" Height="94" VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <Image x:Name="steamImage" HorizontalAlignment="Center" VerticalAlignment="Center"
-                               Source="{Binding NowLoginUserImage}"
-                               ImageFailed="steamImage_ImageFailed" Stretch="UniformToFill"/>
+                               Source="{Binding NowLoginUserImage}" Stretch="UniformToFill"/>
                                 <WrapPanel.OpacityMask>
                                     <VisualBrush >
                                         <VisualBrush.Visual>
@@ -72,17 +74,17 @@
                         <StackPanel DockPanel.Dock="Top" >
 
 
-                            <RadioButton Style="{StaticResource menuButton}"
+                            <RadioButton Style="{StaticResource ModernMenuRadioButton}"
                                          IsChecked="True" Cursor="Hand"
                                          Command="{Binding AccountsViewCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="AccountMultipleOutline" Style="{StaticResource menuButtonIcon}"/>
-                                    <TextBlock Text="{DynamicResource mv_accounts_title}" FontWeight="Medium"/>
+                                    <TextBlock Text="{DynamicResource mv_accounts_title}"/>
                                 </StackPanel>
                             </RadioButton>
 
 
-                            <RadioButton x:Name="RemoteControlMenu" Style="{StaticResource menuButton}"
+                            <RadioButton x:Name="RemoteControlMenu" Style="{StaticResource ModernMenuRadioButton}"
                                          Command="{Binding RemoteControlViewCommand}" Cursor="Hand">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="RemoteDesktop" Style="{StaticResource menuButtonIcon}"/>
@@ -90,8 +92,8 @@
                                 </StackPanel>
                             </RadioButton>
 
-                            
-                            <RadioButton Style="{StaticResource menuButton}"
+
+                            <RadioButton Style="{StaticResource ModernMenuRadioButton}"
                                          Command="{Binding SettingsViewCommand}" Cursor="Hand"
                                          >
                                 <StackPanel Orientation="Horizontal">
@@ -137,14 +139,14 @@
 
 
                 <!--Service Buttons-->
-                <Button Grid.Row="0" Style="{StaticResource serviceButton}"
+                <Button Grid.Row="0" Style="{StaticResource ModernSpinButton}"
                         Command="{Binding CloseCommand}"
-                        Margin="570,-10,0,15">
+                        Margin="570,-10,0,15" >
                     <Icon:PackIconMaterial Kind="WindowClose"
                                            Height="20" Width="20" />
                 </Button>
 
-                <Button x:Name="minimize" Grid.Row="0" Style="{StaticResource serviceButton}"
+                <Button x:Name="minimize" Grid.Row="0" Style="{StaticResource ModernServiceButton}"
                         Command="{Binding MinimizeCommand}"
                         Margin="53,-10,35,15">
                     <Rectangle Width="25" Height="5" RadiusX="2.5" RadiusY="2.5" Fill="{Binding ElementName=minimize,Path=Foreground}"

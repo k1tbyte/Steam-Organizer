@@ -14,7 +14,7 @@
     <Border Background="{DynamicResource background_border_color}" CornerRadius="10" MouseLeftButtonDown="Border_MouseLeftButtonDown"
             BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_brush}">
         <Grid>
-            <Button Style="{StaticResource serviceButton}" Click="Close_Click"
+            <Button Style="{StaticResource ModernServiceButton}" Click="Close_Click"
                     VerticalAlignment="Top" HorizontalAlignment="Right" IsDefault="True"
                         Width="15" Margin="0,5,12,0">
                 <Icon:PackIconMaterial Kind="WindowClose"
