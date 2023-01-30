@@ -11,7 +11,7 @@
         AllowsTransparency="True"
         Height="200" Width="330"
         Title="Authentication">
-    <Border CornerRadius="8" Background="{DynamicResource background_border_color}"
+    <Border CornerRadius="8" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="BorderDragMove"
             BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_brush}">
         <Grid>
             <Grid.RowDefinitions>
@@ -20,7 +20,11 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5">
-                <Image Grid.Row="0" Width="25" Height="25" Source="/Images/logo.png"/>
+                <Image Grid.Row="0" Width="25" Height="25">
+                    <Image.Source>
+                        <BitmapImage UriSource="/logo.ico" DecodePixelWidth="48" DecodePixelHeight="48" CacheOption="OnLoad"/>
+                    </Image.Source>
+                </Image>
                 <TextBlock FontSize="9" FontWeight="DemiBold" VerticalAlignment="Center" Margin="3 0 0 8"
                            Foreground="{DynamicResource sub_accounttab_text}" Text="SAM security"/>
             </StackPanel>

@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace Steam_Account_Manager.UIExtensions
 {
@@ -16,8 +17,6 @@ namespace Steam_Account_Manager.UIExtensions
                 iicon.Kind = MahApps.Metro.IconPacks.PackIconMaterialKind.CloseThick;
                 iicon.Foreground = Brushes.PaleVioletRed;
             }
-
-            this.Closed += this.NotificationWindowClosed;
         }
 
         public new void Show()
@@ -27,59 +26,66 @@ namespace Steam_Account_Manager.UIExtensions
 
             if(App.MainWindow?.IsLoaded == true)
                  this.Owner = App.MainWindow;
-            this.Closed += this.NotificationWindowClosed;
             var workingArea = Screen.PrimaryScreen.WorkingArea;
 
             this.Left = workingArea.Right - this.ActualWidth;
             double top = workingArea.Bottom - this.ActualHeight;
 
-            foreach (Window window in System.Windows.Application.Current.Windows)
-            {
-                string windowName = window.GetType().Name;
-
-                if (windowName.Equals("NotificationWindow") && window != this)
+                foreach (Window window in System.Windows.Application.Current.Windows)
                 {
-                    window.Topmost = true;
-                    top = window.Top - window.ActualHeight;
+                    string windowName = window.GetType().Name;
+
+                    if (windowName.Equals("PopupMessageWindow") && window != this)
+                    {
+                        window.Topmost = true;
+                        top = window.Top - this.ActualHeight;
+                    }
                 }
-            }
-
-            this.Top = top;
-        }
-        private void ImageMouseUp(object sender,
-            System.Windows.Input.MouseButtonEventArgs e)
-        {
-            this.Close();
+            
+            this.Top = top -7;
         }
 
-        private void DoubleAnimationCompleted(object sender, EventArgs e)
+        private new void Close()
         {
-            if (!this.IsMouseOver)
+            var anim = new ThicknessAnimation(new Thickness(0), new Thickness(300, 0, 0, 0), new Duration(TimeSpan.FromSeconds(1)))
             {
-                this.Close();
-            }
+                EasingFunction = new CircleEase { EasingMode = EasingMode.EaseInOut },
+            };
+
+            anim.Completed += (obj, ee) =>
+            {
+                foreach (Window window in System.Windows.Application.Current.Windows)
+                {
+                    string windowName = window.GetType().Name;
+
+                    if (windowName.Equals("PopupMessageWindow") && window != this)
+                    {
+                        // Drop down
+                        if (window.Top < this.Top)
+                        {
+                            var dropAnim = new DoubleAnimation(window.Top, window.Top + this.ActualHeight, new Duration(TimeSpan.FromSeconds(0.6)))
+                            {
+                                EasingFunction = new CircleEase { EasingMode = EasingMode.EaseInOut }
+                            };
+
+                            (window as PopupMessageWindow).BeginAnimation(TopProperty, dropAnim);
+                        }
+                    }
+                }
+
+                base.Close();
+            };
+
+            mainArea.BeginAnimation(MarginProperty, anim);
         }
 
         private void NotificationWindowClosed(object sender, EventArgs e)
         {
-            foreach (Window window in System.Windows.Application.Current.Windows)
-            {
-                string windowName = window.GetType().Name;
-
-                if (windowName.Equals("NotificationWindow") && window != this)
-                {
-                    // Adjust any windows that were above this one to drop down
-                    if (window.Top < this.Top)
-                    {
-                        window.Top = window.Top + this.ActualHeight;
-                    }
-                }
-            }
+            if (!this.IsMouseOver)
+                Close();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
+        private void Button_Click(object sender, RoutedEventArgs e) => Close();
+        
     }
 }

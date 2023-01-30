@@ -69,12 +69,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
         {
             if (mainWindow) App.Shutdown();
             else DialogResult = false;
-        }
-
-        private void noConfirmButton_Click(object sender, RoutedEventArgs e)
-        {
-            ResetBorder.Visibility = Visibility.Hidden;
-        }
+        }        
 
         private void yesConfirmButton_Click(object sender, RoutedEventArgs e)
         {
@@ -84,9 +79,8 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
             CryptoKeyDetect();
         }
 
-        private void Reset_Click(object sender, RoutedEventArgs e)
-        {
-            ResetBorder.Visibility = Visibility.Visible;
-        }
+        private void noConfirmButton_Click(object sender, RoutedEventArgs e)                    => ResetBorder.Visibility = Visibility.Hidden;
+        private void Reset_Click(object sender, RoutedEventArgs e)                              =>  ResetBorder.Visibility = Visibility.Visible;
+        private void BorderDragMove(object sender, System.Windows.Input.MouseButtonEventArgs e) => DragMove();
     }
 }
