@@ -24,7 +24,7 @@ namespace Steam_Account_Manager.Infrastructure
                 UserCryptoKey = CryptoKey,
                 Theme = Themes.Dark,
                 Language = Languages.English,
-                RecentlyLoggedUsers = new List<RecentlyLoggedUser>()
+                RecentlyLoggedUsers = new ObservableCollection<RecentlyLoggedUser>()
             };
             try
             {

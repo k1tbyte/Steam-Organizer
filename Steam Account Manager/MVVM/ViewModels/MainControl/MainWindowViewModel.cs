@@ -37,6 +37,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         private bool _updateDetect;
         private WindowState _windowState;
 
+        #region Properties
         public WindowState WindowState
         {
             get => _windowState;
@@ -90,7 +91,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         {
             get => _currentView;
             set => SetProperty(ref _currentView, value);
-        }
+        } 
+        #endregion
 
         private static bool IsParsing = false;
         public static async Task<bool> NowLoginUserParse(ushort awaitingMs = 0)
@@ -142,6 +144,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             AccountsV      = new AccountsView();
             AccountDataV   = new AccountDataView();
             RemoteControlV = new MainRemoteControlView();
+            SettingsV      = new SettingsView();
 
             CurrentView = AccountsV;
 
@@ -152,9 +155,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             SettingsViewCommand = new RelayCommand(o => 
             {
-                if(SettingsV == null)
-                    SettingsV = new SettingsView();
-
                 CurrentView = SettingsV;
             });
 

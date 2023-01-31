@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -46,12 +47,11 @@ namespace Steam_Account_Manager.Infrastructure.Models
         public bool RememberPassword { get; set; }
         public bool MinimizeToTray { get; set; }
         public bool MinimizeOnStart { get; set; }
-        public bool HighestQualityImages { get; set; }
         public string WebApiKey { get; set; }
         public string UserCryptoKey { get; set; }
         public string Password { get; set; }
-        public List<RecentlyLoggedUser> RecentlyLoggedUsers { get; set; }
-        public string AutoLoginUserID { get; set; } 
+        public ObservableCollection<RecentlyLoggedUser> RecentlyLoggedUsers { get; set; }
+        public ulong? AutoLoginUserID { get; set; } 
 
 
         private Themes theme;
@@ -145,13 +145,10 @@ namespace Steam_Account_Manager.Infrastructure.Models
     [Serializable]
     internal sealed class RecentlyLoggedUser
     {
-        public string Nickname;
-        public bool IsRewritable { get; set; }
-        public string SteamID64 { get; set; }
+        public string Nickname { get; set; }
+        public ulong SteamID64 { get; set; }
 
-        public override string ToString()
-        {
-            return Nickname;
-        }
+        public override string ToString() => Nickname;
+        
     }
 }

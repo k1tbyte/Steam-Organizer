@@ -1,8 +1,11 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
+using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
+using Steam_Account_Manager.Utils;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
@@ -18,19 +21,18 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
 
         #region Properties
-        public List<Account> AutoLoginUsers => Config.Accounts.Where(o => o.ContainParseInfo).ToList();
+        public ObservableCollection<Account> AutoLoginUsers => Config.Accounts;
         public ConfigProperties Properties  => Config.Properties;
         public Account AutoLoginAccount
         {
             get => _autoLoginAccount;
             set
             {
-                if (value is Account acc && acc != null && (acc.SteamId64.ToString() != Config.Properties.AutoLoginUserID || _autoLoginAccount == null))
+                if (value is Account acc && (acc.SteamId64 != Config.Properties.AutoLoginUserID) || value == null)
                 {
-                    Config.Properties.AutoLoginUserID = acc.SteamId64.ToString();
+                    Config.Properties.AutoLoginUserID = value == null ? null : (value as Account).SteamId64;
                     SetProperty(ref _autoLoginAccount, value);
                 }
-                //REFACTOR STEAMID64
             }
         }
 
@@ -74,12 +76,34 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public string Version             => App.Version.ToString("# # #").Replace(' ', '.');
         #endregion
 
-        public SettingsViewModel()
-        {   
-            OpenApiKeyUrlCommand = new RelayCommand(o =>
+        private async void CheckAutoLoginUser()
+        {
+            await App.Current.Dispatcher.InvokeAsync(() =>
             {
-                using (System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://steamcommunity.com/dev/apikey"))) { };
-            });
+                if (Config.Properties.AutoLoginUserID == null)
+                    return;
+
+                var desired = Config.Accounts.Find(o => o.SteamId64.HasValue && o.SteamId64.Value == Config.Properties.AutoLoginUserID.Value);
+
+                if (desired == default(Account))
+                {
+                    Config.Properties.AutoLoginUserID = null;
+                    Config.SaveProperties();
+                    return;
+                }
+
+                AutoLoginAccount = desired;
+                if (!App.OfflineMode)
+                    ((App.MainWindow.DataContext as MainWindowViewModel).RemoteControlV.DataContext as MainRemoteControlViewModel).LoginViewCommand.Execute(desired);
+            },System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        public SettingsViewModel()
+        {
+            CheckAutoLoginUser();
+
+            OpenApiKeyUrlCommand = new RelayCommand(o =>
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://steamcommunity.com/dev/apikey")).Dispose());
 
             ChangeThemeCommand = new RelayCommand(o =>
             {
@@ -101,8 +125,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             ClearAutoLoginAccount = new RelayCommand(o =>
             {
-                _autoLoginAccount = null;
-                OnPropertyChanged(nameof(AutoLoginAccount));
+                AutoLoginAccount = null;
             });
         }
     }

@@ -223,7 +223,20 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             {
                 if(Config.Properties.NoConfirmMode || Presentation.OpenQueryMessageBox($"{App.FindString("av_confirmation_delete1")} \"{(o as Account).Nickname}\" ? {App.FindString("av_confirmation_delete2")}", App.FindString("mv_confirmAction")))
                 {
-                    Config.Accounts.Remove(o as Account);
+                    var acc = o as Account;
+
+                    var tray = Config.Properties.RecentlyLoggedUsers.Find(obj => obj.SteamID64 == acc.SteamId64);
+                    if (tray != null)
+                        Config.Properties.RecentlyLoggedUsers.Remove(tray);
+
+                    if (acc.SteamId64 == Config.Properties.AutoLoginUserID)
+                    {
+                        Config.Properties.AutoLoginUserID = null;
+                        ((App.MainWindow.DataContext as MainWindowViewModel).SettingsV.DataContext as SettingsViewModel).AutoLoginAccount = null;
+                    }
+
+
+                    Config.Accounts.Remove(acc);
                     (App.MainWindow.DataContext as MainWindowViewModel).TotalAccounts = -1;
                     Config.SaveAccounts();
                 }

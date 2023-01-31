@@ -108,8 +108,9 @@
     <v:String x:Key="adv_error_pass_overflow">Максимальна довжина пароля 50 символів!</v:String>
     <v:String x:Key="adv_error_nickError">Довжина ніку може бути від 2 до 32 символів</v:String>
     <v:String x:Key="adv_error_error403">Помилка: (403) Steam не відповідає або веб-ключ Steam API недійсний</v:String>
-    <v:String x:Key="adv_info_connection_check">Виконується перевірка мережі...</v:String>
+    <v:String x:Key="adv_parse_error">Під час збору інформації про обліковий запис сталася помилка</v:String>
     <v:String x:Key="adv_info_collect_data">Збір інформації про обліковий запис...</v:String>
+    <v:String x:Key="adv_alreadyInDb">Обліковий запис з таким ідентифікатором вже додано</v:String>
     <v:String x:Key="adv_nickname">Нікнейм</v:String>
 
     <v:String x:Key="adv_dontCollectInfo">Не збирати інформацію&#13;про цей акаунт</v:String>
@@ -184,7 +185,8 @@
 
     <!--#region Account tab view -->
     <v:String x:Key="atv_inf_steamNotFound">Steam не знайдений або не встановлений</v:String>
-    <v:String x:Key="atv_inf_loggedInSteam">Авторизовано, дочекайтеся запуску Steam</v:String>
+    <v:String x:Key="atv_inf_loggedInSteam1">Виконується вхід до акаунту</v:String>
+    <v:String x:Key="atv_inf_loggedInSteam2">Очікування завантаження Steam...</v:String>
     <v:String x:Key="atv_inf_getLocalAccInfo">Отримання інформації про аккаунт...</v:String>
     <v:String x:Key="atv_inf_errorWhileScanning">Помилка під час сканування акаунту</v:String>
     <v:String x:Key="atv_vacCount">Кількість VAC:</v:String>

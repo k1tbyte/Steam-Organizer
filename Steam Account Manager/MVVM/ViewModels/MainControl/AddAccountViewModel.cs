@@ -25,7 +25,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         private bool DataValidate()
         {
-            if (string.IsNullOrEmpty(ErrorMessage))
+            if (string.IsNullOrEmpty(SteamLogin))
                 ErrorMessage = App.FindString("adv_error_login_empty");
             else if (SteamLogin.Contains(" "))
                 ErrorMessage = App.FindString("adv_error_login_contain_spaces");
@@ -77,14 +77,17 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     }
                     else if (Config.Accounts.Exists(acc => acc.SteamId64.HasValue && acc.SteamId64.Value == steamValidator.SteamId64Ulong))
                     {
-                        ErrorMessage = "The account is already in the database";
+                        ErrorMessage = App.FindString("adv_alreadyInDb");
                     }
                     else
                     {
                         ErrorMessage = App.FindString("adv_info_collect_data");
                         var account = new Account(SteamLink, SteamPassword, steamValidator.SteamId64Ulong);
                         if(await account.ParseInfo() == false)
-                            System.Windows.Forms.MessageBox.Show("NOT IMPLEMENTED EXCEPTION");  //REFACTOR
+                        {
+                            ErrorMessage = App.FindString("adv_parse_error");
+                            return;
+                        }
                         Config.Accounts.Add(account);
                         Config.SaveAccounts();
                         ErrorMessage = "";

@@ -87,6 +87,8 @@ namespace Steam_Account_Manager.Utils
             return tmp.Any();
         }
 
+        public static  T Find<T>(this ObservableCollection<T> collection, Func<T,bool> match) => collection.Where(match).FirstOrDefault();
+
 
         #region Encryption
         public static string Sha256(string randomString)

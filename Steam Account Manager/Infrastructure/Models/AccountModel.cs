@@ -1,4 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure.Parsers;
+using Steam_Account_Manager.Utils;
 using SteamKit2;
 using System;
 using System.Threading.Tasks;
@@ -128,54 +129,12 @@ namespace Steam_Account_Manager.Infrastructure.Models
             this.HoursOnPlayed      = steamParser.HoursOnPlayed;
             this.CountGamesImageUrl = steamParser.CountGamesImageUrl;
             this.ContainParseInfo   = true;
+
+            var trayAcc = Config.Properties.RecentlyLoggedUsers.Find(o => o.SteamID64 == SteamId64);
+            if (trayAcc != default(RecentlyLoggedUser) && trayAcc.Nickname != Nickname)
+                trayAcc.Nickname = Nickname;
+
             return true;
-        }
-
-        //Update account counstructor
-        public Account(string login, string password, ulong steamId64, string note, string emailLogin, string emailPass,
-             string rockstarEmail, string rockstarPass, string uplayEmail, string uplayPass,
-             string originEmail, string originPass, CSGOStats csgoStats, string authenticatorPath,string nick = null) : this(login,password,steamId64)
-        {
-            if (csgoStats != null)
-                this.CSGOStats = csgoStats;
-
-            this.AuthenticatorPath = authenticatorPath;
-
-            this.Note = note;
-            this.EmailLogin = emailLogin;
-            this.EmailPass = emailPass;
-            this.RockstarEmail = rockstarEmail;
-            this.RockstarPass = rockstarPass;
-            this.UplayEmail = uplayEmail;
-            this.UplayPass = uplayPass;
-            this.OriginPass = originPass;
-            this.OriginEmail = originEmail;
-
-#if !DEBUG
-            if(nick.GetHashCode() != this.Nickname.GetHashCode())
-            {
-                foreach (var item in Config.Properties.RecentlyLoggedUsers) 
-                {
-                    if (item.SteamID64 == this.SteamId64 && item.Nickname != this.Nickname)
-                    {
-                        App.Current.Dispatcher.Invoke(() =>
-                        {
-                            Config.Properties.RecentlyLoggedUsers[Config.Properties.RecentlyLoggedUsers.IndexOf(item)] = new RecentlyLoggedUser()
-                            {
-                                SteamID64 = item.SteamID64,
-                                IsRewritable = item.IsRewritable,
-                                Nickname = this.Nickname
-                            };
-                            App.Tray.TrayListUpdate();
-                            Config.SaveProperties();
-                        });
-                        break;
-                    }
-                }
-            }
-#endif
-
-
         }
 
         public Account(string login, string password, string nickname)

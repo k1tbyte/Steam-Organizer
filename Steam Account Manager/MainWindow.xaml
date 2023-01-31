@@ -20,7 +20,7 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
 
-    <Border CornerRadius="25" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="Border_MouseDown">
+    <Border CornerRadius="25" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="BorderDragMove">
         <Grid>
 
             <Grid.ColumnDefinitions>

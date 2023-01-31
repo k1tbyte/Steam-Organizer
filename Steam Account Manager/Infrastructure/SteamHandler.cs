@@ -2,6 +2,7 @@
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+using Steam_Account_Manager.Utils;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,17 +20,18 @@ namespace Steam_Account_Manager.Infrastructure
             {
                 try
                 {
-                    Utils.Presentation.OpenPopupMessageBox(App.FindString("atv_inf_getLocalAccInfo"));
+                    Presentation.OpenPopupMessageBox(App.FindString("atv_inf_getLocalAccInfo"));
                     acc.SteamId64 = Utils.Common.SteamId32ToSteamId64(Utils.Common.GetSteamRegistryActiveUser());
                     await acc.ParseInfo();
                     Config.SaveAccounts();
                 }
                 catch
                 {
-                    Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
+                    Presentation.OpenPopupMessageBox((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
                 }
             }
         }
+
 
         public static async Task ConnectToSteam(Account acc)
         {
@@ -64,48 +66,28 @@ namespace Steam_Account_Manager.Infrastructure
                     }
 
 
-                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
                         //Сохраняем данные о недавно используемых аккаунтов
-                        /*if (SteamId != "Unknown" && !Config.Properties.RecentlyLoggedUsers.Any(o => o.SteamID64 == SteamId))
+                        if (acc.SteamId64.HasValue)
                         {
 
-                            if (Config.Properties.RecentlyLoggedUsers.Count < 5)
+                            var match = Config.Properties.RecentlyLoggedUsers.Find(o => o.SteamID64 == acc.SteamId64.Value);
+                            if(match != default(RecentlyLoggedUser))
                             {
-
-                                Config.Properties.RecentlyLoggedUsers.Add(new RecentlyLoggedUser
-                                {
-                                    SteamID64 = SteamId,
-                                    IsRewritable = false,
-                                    Nickname = _steamNickname
-                                });
-                                if (Config.Properties.RecentlyLoggedUsers.Count == 5)
-                                    Config.Properties.RecentlyLoggedUsers[0].IsRewritable = true;
-
-
+                                var index = Config.Properties.RecentlyLoggedUsers.IndexOf(match);
+                                if (Config.Properties.RecentlyLoggedUsers.Count > 1 && index != 0)
+                                      Config.Properties.RecentlyLoggedUsers.Move(index, 0);
                             }
                             else
                             {
-                                var index = Config.Properties.RecentlyLoggedUsers.FindIndex(o => o.IsRewritable);
-                                Config.Properties.RecentlyLoggedUsers[index] = new RecentlyLoggedUser()
-                                {
-                                    SteamID64 = SteamId,
-                                    Nickname = _steamNickname,
-                                    IsRewritable = false
-                                };
-
-                                if (index == 4)
-                                {
-                                    Config.Properties.RecentlyLoggedUsers[0].IsRewritable = true;
-                                }
-                                else
-                                {
-                                    Config.Properties.RecentlyLoggedUsers[++index].IsRewritable = true;
-                                }
+                                Config.Properties.RecentlyLoggedUsers.Insert(0,new RecentlyLoggedUser { Nickname = acc.Nickname, SteamID64 = acc.SteamId64.Value });
+                                if (Config.Properties.RecentlyLoggedUsers.Count > 5)
+                                    Config.Properties.RecentlyLoggedUsers.RemoveAt(5);
                             }
                             App.Tray.TrayListUpdate();
                             Config.SaveProperties();
-                        }*/
+                        }
 
                         if (Config.Properties.ActionAfterLogin != LoggedAction.None)
                         {
@@ -121,17 +103,16 @@ namespace Steam_Account_Manager.Infrastructure
                                     break;
                             }
                         }
-                    }));
+                    });
 
-
-                    Utils.Presentation.OpenPopupMessageBox((string)App.Current.FindResource("atv_inf_loggedInSteam"));
+                    Presentation.OpenPopupMessageBox($"{App.FindString("atv_inf_loggedInSteam1")} \"{acc.Nickname}\". {App.FindString("atv_inf_loggedInSteam2")}");
 
                     //Если надо получить данные об аккаунте без информации
                     _ = UpdateLoggedUser(acc);
                 }
                 else
                 {
-                    Utils.Presentation.OpenPopupMessageBox((string)Application.Current.FindResource("atv_inf_steamNotFound"));
+                    Presentation.OpenPopupMessageBox(App.FindString("atv_inf_steamNotFound"));
                     return;
                 }
             });

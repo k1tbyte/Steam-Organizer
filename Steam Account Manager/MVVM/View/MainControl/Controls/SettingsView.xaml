@@ -161,7 +161,7 @@
                     </Button>
 
                 </StackPanel>
-                
+
 
                 <!--Close action after logging -->
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
@@ -190,7 +190,7 @@
                            VerticalAlignment="Center" Opacity="0.9"
                            FontFamily="Cascadia Mono"  FontSize="20" Margin="5 0 0 0"  Foreground="{DynamicResource second_settings_text}"/>
 
-                <!-- Delete without confirmation -->  
+                <!-- Delete without confirmation -->
                 <DockPanel  Margin="0 5 0 0">
                     <TextBlock Text="{DynamicResource sv_confirm_when_del}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Properties.NoConfirmMode}"
@@ -215,13 +215,6 @@
                 <DockPanel>
                     <TextBlock Text="{DynamicResource sv_getID}" Style="{StaticResource settingTextBlock}"/>
                     <ToggleButton IsChecked="{Binding Properties.AutoGetSteamId}"
-                          Style="{StaticResource ModernSwitchToggleButton}"/>
-                </DockPanel>
-
-                <!-- Highest quality images -->
-                <DockPanel>
-                    <TextBlock Text="{DynamicResource sv_highestQualityImages}" Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton IsChecked="{Binding Properties.HighestQualityImages}"
                           Style="{StaticResource ModernSwitchToggleButton}"/>
                 </DockPanel>
 
@@ -255,7 +248,7 @@
 
                         </StackPanel>
                     </Border>
-                    
+
                     <Button Style="{StaticResource defaultButton}" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"
                             IsHitTestVisible="{Binding PasswordError,Converter={StaticResource BoolInverted}}"
                             Background="Transparent" Margin="5 1 0 0" BorderBrush="Transparent" Click="SetPassword_Click">
@@ -265,12 +258,12 @@
                             <ToolTip ContentStringFormat="{DynamicResource sv_toolTipSetPass}"/>
                         </Button.ToolTip>
                     </Button>
-                    
+
                 </StackPanel>
 
-                
-                
-                
+
+
+
                 <Rectangle Margin="0 12 0 15" Height="0.2" Width="570" Fill="{DynamicResource atv_rectangles_shadow}" HorizontalAlignment="Center">
                     <Rectangle.Effect>
                         <BlurEffect/>
@@ -306,7 +299,18 @@
                     <TextBlock Text="{DynamicResource sv_automaticLogin}" Style="{StaticResource settingTextBlock}"/>
                     <StackPanel Orientation="Horizontal" Margin="0 0 125 0" HorizontalAlignment="Right">
                         <ComboBox x:Name="autoLogin"  ItemsSource="{Binding AutoLoginUsers}"
-                              Width="170" SelectedItem="{Binding AutoLoginAccount}" />
+                              Width="170" SelectedItem="{Binding AutoLoginAccount}">
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ContainParseInfo}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </ComboBox>
                         <Button Style="{StaticResource defaultButton}" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Left"
                             Background="Transparent" Margin="2 0 0 0" BorderBrush="Transparent" Command="{Binding ClearAutoLoginAccount}">
                             <Icon:PackIconMaterial Kind="Close" Padding="3"/>
@@ -318,8 +322,7 @@
             </StackPanel>
         </ScrollViewer>
 
-
-            <TextBlock Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="0 0 20 -3"
+        <TextBlock Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="0 0 20 -3"
                        Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom"
                                FontSize="12" Text="{Binding Version, StringFormat=Version: {0},Mode=OneWay}"/>
 
