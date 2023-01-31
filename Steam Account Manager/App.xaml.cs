@@ -2,9 +2,11 @@
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
 using Steam_Account_Manager.UIExtensions;
+using Steam_Account_Manager.Utils;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -39,12 +41,12 @@ namespace Steam_Account_Manager
                 Shutdown();
             }
 #endif
+            ProfileOptimization.SetProfileRoot(WorkingDirectory);
+            ProfileOptimization.StartProfile("Startup.profile");
 
             DispatcherUnhandledException += new DispatcherUnhandledExceptionEventHandler(delegate(object sender, DispatcherUnhandledExceptionEventArgs args)
             {
-                
-                if (ExceptionWnd == null)
-                    ExceptionWnd = new ExceptionWindow();
+                ExceptionWnd = ExceptionWnd ?? new ExceptionWindow();
 
                 ExceptionWnd.SetMessage(args.Exception.ToString());
                 ExceptionWnd.WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -53,17 +55,18 @@ namespace Steam_Account_Manager
 
             Config.LoadProperties();
 
-
+/*            new CheckAccountWindow().ShowDialog();
+            Shutdown();*/
 
             #region Check internet connection
-            if (!Utils.Common.CheckInternetConnection())
+            if (!Common.CheckInternetConnection())
             {
                 ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                Utils.Presentation.OpenPopupMessageBox(FindString("mv_connectionNotify"));
+                Presentation.OpenPopupMessageBox(FindString("mv_connectionNotify"));
                 await Task.Delay(15000);
-                if (!Utils.Common.CheckInternetConnection())
+                if (!Common.CheckInternetConnection())
                 {
-                    Utils.Presentation.OpenPopupMessageBox(FindString("mv_autonomyModeNotify"));
+                    Presentation.OpenPopupMessageBox(FindString("mv_autonomyModeNotify"));
                     OfflineMode = true;
                 }
                 ShutdownMode = ShutdownMode.OnMainWindowClose;
@@ -71,34 +74,22 @@ namespace Steam_Account_Manager
             #endregion
 
 
-            Utils.Common.CreateHttpClientFactory();
+            Common.CreateHttpClientFactory();
             if (Config.Properties.Password == null)
             {
                 if (Config.LoadAccounts())
                 {
-                    MainWindow = new MainWindow
-                    {
-                        WindowStartupLocation = WindowStartupLocation.CenterScreen
-                    };
+                    MainWindow = new MainWindow();
                     MainWindowStart();
                 }
                 else
                 {
-                    var cryptoKeyWindow = new CryptoKeyWindow(true)
-                    {
-                        WindowStartupLocation = WindowStartupLocation.CenterScreen
-                    };
-
-                    cryptoKeyWindow.Show();
+                    new CryptoKeyWindow(true).Show();
                 }
             }
             else
             {
-                var auth = new AuthenticationWindow(true)
-                {
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen
-                };
-                auth.Show();
+                new AuthenticationWindow(true).Show();
             }
         }
 

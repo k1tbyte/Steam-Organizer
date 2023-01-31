@@ -1,5 +1,6 @@
 ﻿using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 

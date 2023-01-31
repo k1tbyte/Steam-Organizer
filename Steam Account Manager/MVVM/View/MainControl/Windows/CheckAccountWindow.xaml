@@ -1,0 +1,68 @@
+﻿<Window x:Class="Steam_Account_Manager.MVVM.View.MainControl.Windows.CheckAccountWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Steam_Account_Manager.MVVM.View.MainControl.Windows" xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Title="CheckAccountWindow"  Width="270"
+        Background="Transparent"
+        WindowStyle="None"
+        SizeToContent="Height"
+        AllowsTransparency="True">
+    <Window.Resources>
+        
+
+    </Window.Resources>
+    <Border CornerRadius="3" Background="{DynamicResource background_border_color}"
+            BorderThickness="0 3 0 3" BorderBrush="{DynamicResource second_main_brush}">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Button   Style="{StaticResource ModernSpinButton}"
+                        Click="CloseEvent" IsCancel="True"
+                        HorizontalAlignment="Right" Width="15" Margin="0,0,20,0">
+                <Icon:PackIconMaterial Kind="WindowClose" Height="15" Width="15" 
+                                       VerticalAlignment="Center"/>
+            </Button>
+
+            <TextBlock 
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left" Margin="20 20" 
+                       FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                       Text="Account viewing"
+                       FontSize="20"/>
+
+
+            <Rectangle Height="1"
+                       VerticalAlignment="Bottom" Margin="5"
+                       Fill="{DynamicResource add_window_rectangle}"
+                       Width="240"/>
+
+            <TextBox x:Name="id" Grid.Row="1" Style="{StaticResource ModernTextBoxOutlined}" Width="230" Height="30"  Tag="SteamID64/32/URL" 
+                     Margin="0 25 0 40" VerticalAlignment="Top"/>
+            <Icon:PackIconMaterial Grid.Row="1" Kind="Identifier" VerticalAlignment="Top"
+                                           Height="22" Width="22" 
+                                           Margin="23 30 0 41"
+                                           Foreground="{DynamicResource second_text_color}"/>
+
+            <StackPanel Grid.Row="1" Margin="0 58 0 0">
+                <TextBlock x:Name="Error"  VerticalAlignment="Bottom" Grid.Row="1" MaxWidth="250"
+                       Style="{StaticResource ModernErrorTextBlock}" Text=""
+                            Padding="12 0 0 0"/>
+
+
+                <Button Style="{StaticResource ModernDefaultButton}"
+                    VerticalAlignment="Bottom" Margin="0 10 0 15" Click="CheckAccountAction"
+                    Content="Check" Grid.Row="1"  IsDefault="True"/>
+            </StackPanel>
+          
+
+        </Grid>
+    </Border>
+</Window>

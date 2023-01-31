@@ -164,7 +164,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             AccountDataViewCommand = new RelayCommand(o =>
             {
-                AccountDataV.DataContext = new AccountDataViewModel((Account)o);
+                if(o != null)
+                 AccountDataV.DataContext = new AccountDataViewModel((Account)o);
                 CurrentView = AccountDataV;
             });
 

@@ -76,6 +76,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 ValidateData();
             }
         }
+
+        public Visibility OnlyPreview { get; private set; } = Visibility.Visible;
         #endregion
 
         #region Helpers
@@ -137,7 +139,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 OnPropertyChanged(nameof(CurrentAccount));
 
                 await ShowCsgoErrorAsync(App.FindString("adat_cs_inf_updSucces")).ConfigureAwait(false);
-                Config.SaveAccounts();
             }
             catch
             {
@@ -160,8 +161,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         } 
         #endregion
 
-        public AccountDataViewModel(Account account)
+        public AccountDataViewModel(Account account,bool preview = false)
         {
+            if (preview)
+                OnlyPreview = Visibility.Collapsed;
+
             currentAccount = account;
             _passwordTemp  = currentAccount.Password;
             _loginTemp     = currentAccount.Login;

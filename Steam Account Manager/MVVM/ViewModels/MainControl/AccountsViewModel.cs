@@ -30,6 +30,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public RelayCommand OpenAccountDataCommand { get; set; }
         public RelayCommand OpenAccountNoteCommand { get; set; }
         public RelayCommand RemoveAccountCommand { get; set; } 
+        public RelayCommand CheckAccountCommand { get; set; }
         #endregion
 
         #region Properties
@@ -80,7 +81,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             App.MainWindow.UpdArea.Visibility = System.Windows.Visibility.Visible;
             try
             {
-
                 for (int i = 0; i < Config.Accounts.Count; i++)
                 {
                     if (MainWindowViewModel.CancellationFlag)
@@ -99,7 +99,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             }
             catch
             {
-                Presentation.OpenPopupMessageBox("Error! No Internet connection...", true);
+                Presentation.OpenPopupMessageBox(App.FindString("adat_cs_inf_noInternet"), true);
             }
             App.MainWindow.UpdArea.Visibility = System.Windows.Visibility.Collapsed;
             MainWindowViewModel.CancellationFlag = false;
@@ -109,11 +109,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             var acc = (Account)Config.Deserialize(fileName, crypto);
             if (Config.Accounts.Exists(o => o.SteamId64.HasValue && o.SteamId64 == acc.SteamId64))
             {
-                Presentation.OpenPopupMessageBox("An account with this SteamID already exists in the database...", true);
+                Presentation.OpenPopupMessageBox(App.FindString("adv_alreadyInDb"), true);
                 return;
             }
             Config.Accounts.Add(acc);
-            Presentation.OpenPopupMessageBox("Account restored from file.");
+            Presentation.OpenPopupMessageBox(App.FindString("av_accRestoredFromFile"));
             Config.SaveAccounts();
         }
         private bool FilterPredicate(object value)
@@ -135,8 +135,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         public AccountsViewModel()
         {
-            Config.LoadAccounts();
-
             SearchFilter = CollectionViewSource.GetDefaultView(Accounts);
             SearchFilter.Filter += FilterPredicate;
 
@@ -173,7 +171,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 if (fileDialog.ShowDialog() == true)
                 {
                     Config.Serialize(Config.Accounts, fileDialog.FileName, Config.Properties.UserCryptoKey);
-                    Presentation.OpenPopupMessageBox("The database of accounts has been saved to a file.");
                 }
             });
 
@@ -188,7 +185,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     try
                     {
                         Config.Accounts = (ObservableCollection<Account>)Config.Deserialize(fileDialog.FileName, Config.Properties.UserCryptoKey);
-                        Presentation.OpenPopupMessageBox("The database of accounts was restored from a file");
+                        Presentation.OpenPopupMessageBox(App.FindString("av_dbRestoredFromFile"));
                         Config.SaveAccounts();
                     }
                     catch
@@ -196,7 +193,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                         if (Presentation.OpenDialogWindow(new CryptoKeyWindow(false,fileDialog.FileName)) == true)
                         {
                             Config.Accounts = (ObservableCollection<Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
-                            Presentation.OpenPopupMessageBox("The database of accounts was restored from a file");
+                            Presentation.OpenPopupMessageBox(App.FindString("av_dbRestoredFromFile"));
                             Config.SaveAccounts();
                         }
                     }
@@ -251,6 +248,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 MainWindowViewModel.RemoteControlViewCommand.Execute(null);
                 (((MainWindowViewModel)App.MainWindow.DataContext).RemoteControlV.DataContext as MainRemoteControlViewModel).LoginViewCommand.Execute(o as Account);
             });
+
+            CheckAccountCommand = new RelayCommand(o => Presentation.OpenDialogWindow(new CheckAccountWindow()));
 
         }
 

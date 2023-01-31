@@ -22,7 +22,7 @@
                      Tag="{DynamicResource av_searchbar_title}"
                      IsHitTestVisible="{Binding Accounts.Count,Converter={StaticResource IntToBool}}"
                      Text="{Binding SearchBoxText, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="5,0,0,0" MaxLength="80">
+                     Margin="5,0,0,0" MaxLength="30">
             </TextBox>
         </Grid>
 
@@ -39,6 +39,7 @@
 
         <!--Check account Button-->
         <Button Style="{StaticResource ModernOutlineButton}" HorizontalAlignment="Right"
+                Command="{Binding CheckAccountCommand}"
                 Height="44" Width="70" Margin="0 0 10 0">
             <StackPanel Orientation="Horizontal">
                 <Icon:PackIconMaterial Kind="AccountConvert" VerticalAlignment="Center"

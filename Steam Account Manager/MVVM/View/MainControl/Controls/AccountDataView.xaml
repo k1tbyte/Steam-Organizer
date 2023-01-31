@@ -119,7 +119,7 @@
         </Border>
         
         <!-- Right service panel -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 50 0" Grid.Row="1">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 50 0" Grid.Row="1" Visibility="{Binding OnlyPreview}">
 
             <Button Style="{StaticResource ModernServiceButton}" Command="{Binding SaveChangesComamnd}"
                 Width="35" Height="30"  Grid.Row="1" Margin="5 10 0 0" PreviewMouseLeftButtonDown="AntiSpamClicks"
@@ -360,6 +360,7 @@
                         <!-- Steam data -->
                         <StackPanel Orientation="Vertical">
  <!--Put here x2-->
+                            <StackPanel Visibility="{Binding OnlyPreview}">
                             <TextBlock Text="{DynamicResource adat_steam_account}" FontSize="16" Margin="0 0 0 10" Foreground="{DynamicResource second_text_color}"/>
 
                             <!-- Login -->
@@ -407,7 +408,7 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-
+                            </StackPanel>
 
                             <StackPanel  Margin="3 30 0 0" Orientation="Horizontal" Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}">
                                 <TextBlock Text="{DynamicResource adat_cs_header}" FontSize="16" Style="{StaticResource settings_description}"/>
@@ -543,15 +544,15 @@
                         <!-- Other data -->
                         <StackPanel Orientation="Vertical" Margin="50 0 0 0">
 
-                            <!-- Email data -->
+                            <StackPanel Visibility="{Binding OnlyPreview}">
+                                <!-- Email data -->
                             <TextBlock Text="Email from steam (optional)" FontSize="16" Margin="0 0 0 10"
                                        Foreground="{DynamicResource second_text_color}">
                                 <ToggleButton  x:Name="expandButtonMail" Style="{StaticResource showButton}" IsChecked="False"/>
                             </TextBlock>
 
                             <Border Style="{StaticResource expandOtherDataArea}" Tag="{Binding IsChecked, ElementName=expandButtonMail}">
-                                <Grid>
-                                    <StackPanel>
+                                <StackPanel>
                                         <!-- Mail login -->
                                         <TextBlock Text="{DynamicResource adat_email_address}" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                                         <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
@@ -582,7 +583,6 @@
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>
-                                </Grid>
 
                             </Border>
 
@@ -718,6 +718,7 @@
 
                             </Border>
 
+                            </StackPanel>
 
                             <!-- Steam links -->
                             <Grid  Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}">
@@ -747,8 +748,8 @@
                     </StackPanel>
 
                     <!-- Note abount account -->
-                    <TextBlock Margin="5 25 0 10" Text="{DynamicResource adat_noteAbout}" FontSize="17" Style="{StaticResource settings_description}"/>
-                    <Grid Height="120">
+                    <TextBlock Visibility="{Binding OnlyPreview}" Margin="5 25 0 10" Text="{DynamicResource adat_noteAbout}" FontSize="17" Style="{StaticResource settings_description}"/>
+                    <Grid Height="120" Visibility="{Binding OnlyPreview}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="487"/>
                             <ColumnDefinition Width="13.9"/>
@@ -762,7 +763,7 @@
                     </Grid>
                     
                     <!-- Last update time -->
-                    <TextBlock Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="0 8 0 0" HorizontalAlignment="Center" 
+                    <TextBlock Visibility="{Binding OnlyPreview}" Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="0 8 0 0" HorizontalAlignment="Center" 
                                FontSize="10" Text="{Binding CurrentAccount.LastUpdateTime,Mode=OneWay, StringFormat=Last updated account information: {0}}" />
 
                 </StackPanel>
@@ -773,7 +774,7 @@
         
         <!-- 2fa activate button -->
         <Button x:Name="TwoFaActivate" Style="{StaticResource ModernServiceButton}"
-                Width="45"  Grid.Row="1" Margin="60 10 0 0"
+                Width="45"  Grid.Row="1" Margin="60 10 0 0" Visibility="{Binding OnlyPreview}"
                 Command="{Binding AddAuthenticatorCommand}"
                 VerticalAlignment="Top" HorizontalAlignment="Left">
             <Icon:PackIconMaterial  Kind="TwoFactorAuthentication" Height="18" Width="40" />

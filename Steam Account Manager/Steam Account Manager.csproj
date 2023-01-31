@@ -154,6 +154,9 @@
     <Compile Include="Infrastructure\SteamRemoteClient\WebHandler.cs" />
     <Compile Include="Infrastructure\Validators\SteamLinkValidator.cs" />
     <Compile Include="Keys.cs" />
+    <Compile Include="MVVM\View\MainControl\Windows\CheckAccountWindow.xaml.cs">
+      <DependentUpon>CheckAccountWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UIExtensions\CircularProgressBar.xaml.cs">
       <DependentUpon>CircularProgressBar.xaml</DependentUpon>
     </Compile>
@@ -262,6 +265,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MVVM\View\MainControl\Windows\CheckAccountWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\ButtonStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

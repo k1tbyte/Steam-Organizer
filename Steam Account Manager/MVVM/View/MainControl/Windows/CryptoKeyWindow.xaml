@@ -9,6 +9,7 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Height="200" Width="330"
+        WindowStartupLocation="CenterScreen"
         Title="Data Decryption">
     
     <Border CornerRadius="8" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="BorderDragMove"

@@ -81,7 +81,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     }
                     else
                     {
-                        ErrorMessage = App.FindString("adv_info_collect_data");
                         var account = new Account(SteamLink, SteamPassword, steamValidator.SteamId64Ulong);
                         if(await account.ParseInfo() == false)
                         {

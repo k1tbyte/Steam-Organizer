@@ -84,6 +84,8 @@
     <v:String x:Key="av_accountsEditing">Редактирование аккаунтов</v:String>
     <v:String x:Key="av_dbAccsUpdate">Обновление аккаунов</v:String>
     <v:String x:Key="av_dbSuccessUpdated">База данных аккаунтов была успешно обновлена и сохранена</v:String>
+    <v:String x:Key="av_dbRestoredFromFile">База данных была восстановлена из файла, все данные были заменены и сохранены</v:String>
+    <v:String x:Key="av_accRestoredFromFile">Аккаунт был восстановлен из файла, все данные сохранены</v:String>
 
     <x:ArrayExtension x:Key="av_searchFilter" Type="v:String">
         <v:String>Никнейму</v:String>
