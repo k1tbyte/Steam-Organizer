@@ -239,14 +239,9 @@
                     <Border Margin="10 5 0 0" Background="{DynamicResource first_main_brush}"
                     Width="250" CornerRadius="5" Height="35" BorderThickness="0.7" HorizontalAlignment="Left"
                     BorderBrush="{DynamicResource buttons_border_brush}">
-                        <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
+                        <ui:ModernPasswordBox  Width="233"  Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                                Height="20" Margin="8 0 0 0" HorizontalAlignment="Left" IconKeyColor="{DynamicResource settings_buttons_isMouseOver}"/>
 
-                            <Icon:PackIconMaterial Kind="Key" Foreground="{DynamicResource settings_buttons_isMouseOver}"
-                                           VerticalAlignment="Center" Height="20" Width="20" />
-                            <ui:ModernPasswordBox  Width="195" Style="{StaticResource PasswordboxTheme}" Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-                                                Height="20" VerticalAlignment="Center"/>
-
-                        </StackPanel>
                     </Border>
 
                     <Button Style="{StaticResource defaultButton}" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"

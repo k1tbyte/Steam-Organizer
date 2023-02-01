@@ -43,17 +43,21 @@
                        Fill="{DynamicResource add_window_rectangle}"
                        Width="240"/>
 
-            <Border Grid.Row="2" Style="{StaticResource borderAddTextBox}">
-                <StackPanel Orientation="Horizontal">
-                    <Icon:PackIconMaterial Kind="Key"
-                                           Height="34" Width="28"
-                                           Foreground="{DynamicResource second_text_color}"/>
-                    <ui:ModernPasswordBox Height="18.62"
+            <ui:ModernPasswordBox  Grid.Row="2" Height="35" IconKeyColor="{DynamicResource second_text_color}"
+                                   BorderBrush="{DynamicResource second_text_color}"
                                            Password="{Binding SteamPassword, UpdateSourceTrigger=PropertyChanged}"
-                                               Style="{StaticResource PasswordboxTheme}" Width="185"/>
-                </StackPanel>
-            </Border>
-            
+                                                Width="230" BorderThickness="0 0 0 1">
+                <ui:ModernPasswordBox.Style>
+                    <Style TargetType="{x:Type ui:ModernPasswordBox}">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource second_main_brush}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ui:ModernPasswordBox.Style>
+            </ui:ModernPasswordBox>
+
             <TextBlock Grid.Row="2" Text="{DynamicResource adv_password}" FontWeight="Thin"
                        Width="57" Height="20" HorizontalAlignment="Left"
                        FontSize="14"

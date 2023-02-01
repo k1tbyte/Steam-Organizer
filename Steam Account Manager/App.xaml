@@ -17,8 +17,6 @@
 
                 <ResourceDictionary Source="Styles/ProgressBarStyle.xaml"/>
 
-                <ResourceDictionary Source="Styles/PasswordboxStyle.xaml"/>
-
                 <ResourceDictionary Source="Styles/ComboBoxStyle.xaml"/>
 
                 <ResourceDictionary Source="Styles/ListBoxStyle.xaml"/>

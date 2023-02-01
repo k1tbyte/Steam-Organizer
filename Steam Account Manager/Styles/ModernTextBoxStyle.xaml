@@ -114,7 +114,7 @@
         <Setter Property="SelectionBrush" Value="{DynamicResource second_main_brush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource default_foreground}"/>
         <Setter Property="BorderThickness" Value="0 0 0 1"/>
-        <Setter Property="Padding" Value="32 0 0 0"/>
+        <Setter Property="Padding" Value="18 0 0 0"/>
         <Setter Property="BorderBrush" Value="{DynamicResource default_foreground}"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="Cursor" Value="IBeam"/>
@@ -125,13 +125,13 @@
                     <Grid>
                         <Border Background="{TemplateBinding Background}" MaxWidth="{TemplateBinding Width}" Height="{TemplateBinding Height}"
                                 BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding Border.CornerRadius}"
-                                BorderBrush="{TemplateBinding BorderBrush}">
+                                BorderBrush="{TemplateBinding BorderBrush}" Padding="{TemplateBinding Padding}">
                             <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" HorizontalScrollBarVisibility="Hidden"
-                            Focusable="false"/>
+                            Focusable="false" Padding="0"/>
                         </Border>
-                        <TextBlock x:Name="topTitle" Text="{TemplateBinding Tag}" FontWeight="Thin" FontSize="14"
-                                       Foreground="{TemplateBinding Foreground}" Margin="2 -20 0 0"
-                                       VerticalAlignment="Top"/>
+                        <TextBlock x:Name="topTitle" Text="{TemplateBinding Tag}" FontSize="14"
+                                       Foreground="{TemplateBinding Foreground}" Margin="5 -20 0 0"
+                                       VerticalAlignment="Top" IsHitTestVisible="False"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -141,5 +141,13 @@
                 <Setter Property="BorderBrush" Value="{DynamicResource second_main_brush}"/>
             </Trigger>
         </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ModernTextBoxBordered" TargetType="{x:Type TextBox}" BasedOn="{StaticResource ModernTextBoxOutlined}">
+        <Setter Property="Border.CornerRadius" Value="8"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Background" Value="{DynamicResource adv_borders_background}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{DynamicResource second_text_color}"/>
     </Style>
 </ResourceDictionary>

@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace Steam_Account_Manager.UIExtensions
 {
@@ -16,6 +17,12 @@ namespace Steam_Account_Manager.UIExtensions
         public static readonly DependencyProperty PasswordCharProperty =
         DependencyProperty.RegisterAttached("PasswordChar", typeof(char), typeof(char), new PropertyMetadata(default(char)));
 
+        public static readonly DependencyProperty IconKeyColorProperty =
+            DependencyProperty.Register("IconKeyColor", typeof(Brush), typeof(ModernPasswordBox), new PropertyMetadata(new SolidColorBrush(Colors.White)));
+
+        public static readonly DependencyProperty BorderColorProperty =
+    DependencyProperty.Register("BorderColor", typeof(Brush), typeof(ModernPasswordBox), new PropertyMetadata(new SolidColorBrush(Colors.Transparent)));
+
         private static void PasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is ModernPasswordBox passwordBox)
@@ -24,13 +31,21 @@ namespace Steam_Account_Manager.UIExtensions
             }
         }
 
+        public Brush IconKeyColor
+        {
+            get => (Brush)GetValue(IconKeyColorProperty);
+            set { SetValue(IconKeyColorProperty, value); }
+        }
+
+        public Brush BorderColor
+        {
+            get => (Brush)GetValue(BorderColorProperty);
+            set { SetValue(BorderColorProperty, value); }
+        }
 
         public char PasswordChar
         {
-            get
-            {
-                return (char)GetValue(PasswordCharProperty);
-            }
+            get => (char)GetValue(PasswordCharProperty);
             set
             {
                 SetValue(PasswordCharProperty, value);
@@ -40,11 +55,17 @@ namespace Steam_Account_Manager.UIExtensions
 
         public string Password
         {
-            get { return (string)GetValue(PasswordProperty); }
+            get => (string)GetValue(PasswordProperty); 
             set { SetValue(PasswordProperty, value); }
         }
 
-        public ModernPasswordBox() => InitializeComponent();
+        public ModernPasswordBox()
+        {
+            InitializeComponent();
+            var frameworkElement = Content as FrameworkElement;
+            if (frameworkElement != null)
+                frameworkElement.DataContext = this;
+        }
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {

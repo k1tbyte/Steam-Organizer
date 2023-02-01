@@ -147,12 +147,9 @@
 
         </StackPanel>
 
-        <ScrollViewer Grid.Row="1" x:Name="scrollViewer" VirtualizingPanel.IsVirtualizing="True"
-                      VirtualizingPanel.VirtualizationMode="Recycling"
-                      CanContentScroll="True" Margin="0 40 0 20">
-            <Grid Width="565" HorizontalAlignment="Left" Margin="25 0 25 0">
-
-                <StackPanel HorizontalAlignment="Left" Margin="10 5 0 0">
+        <ScrollViewer Grid.Row="1" x:Name="scrollViewer"  Margin="0 40 0 20">
+            
+            <StackPanel Width="565" HorizontalAlignment="Left" Margin="35 5 25 0">
 <!-- put here -->
                     <!--#region Header info -->
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
@@ -184,7 +181,7 @@
                         <!-- Main profile info -->
                         <StackPanel Orientation="Vertical">
 
-                            <!-- Nickname -->
+                            <!--#region Nickname -->
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding CurrentAccount.Nickname,Mode=OneWay}" Style="{StaticResource settingTextBlock}"
                                            Foreground="{DynamicResource account_tab_nickname}"
@@ -199,10 +196,12 @@
                                    HorizontalAlignment="Center" FontFamily="Cascadia Mono" />
                                 </Grid>
                             </StackPanel>
+                            <!--#endregion-->
 
                             <Rectangle Margin="15 0 0 0" Width="360" Height="0.7" Fill="{DynamicResource adv_rectangle}"/>
 
-                            <!-- Profile URL -->
+
+                            <!--#region Profile URL -->
                             <StackPanel Orientation="Horizontal" Margin="18 5 0 0">
                                 <TextBlock Text="{DynamicResource adat_profile_url}" Style="{StaticResource settings_description}"/>
                                 <TextBox x:Name="URL" Style="{StaticResource settings_data_box}" Margin="5 0 0 0"  Width="230" IsHitTestVisible="{Binding CurrentAccount.ContainParseInfo,Mode=OneWay}"
@@ -212,8 +211,9 @@
                                         CommandParameter="{Binding ElementName=URL}"
                                         Style="{StaticResource ModernCopyButton}"/>
                             </StackPanel>
+                            <!--#endregion-->
 
-                            <!-- Profile ID64 count -->
+                            <!--#region ID64 -->
                             <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
                                 <TextBlock Style="{StaticResource settings_description}" Text="ID64:"/>
                                 <TextBox x:Name="ID64" Style="{StaticResource settings_data_box}" IsHitTestVisible="{Binding CurrentAccount.ContainParseInfo,Mode=OneWay}"
@@ -222,8 +222,9 @@
                                         CommandParameter="{Binding ElementName=ID64}"
                                         Style="{StaticResource ModernCopyButton}"/>
                             </StackPanel>
+                            <!--#endregion-->
 
-                            <!-- Profile ID32 -->
+                            <!--#region ID32 -->
                             <StackPanel Orientation="Horizontal" Margin="18 3 0 0">
                                 <TextBlock Style="{StaticResource settings_description}" Text="ID32:" />
                                 <TextBox x:Name="ID32" Style="{StaticResource settings_data_box}" IsHitTestVisible="{Binding CurrentAccount.ContainParseInfo,Mode=OneWay}"
@@ -232,6 +233,7 @@
                                         CommandParameter="{Binding ElementName=ID32}"
                                         Style="{StaticResource ModernCopyButton}"/>
                             </StackPanel>
+                            <!--#endregion-->
 
                             <!-- Profile visiblity -->
                             <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
@@ -253,7 +255,7 @@
                   
 
                     <Border x:Name="communityInfo" Margin="0 5 0 0" Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}"
-                    Style="{DynamicResource expandCommunityArea}" CornerRadius="15"
+                    Style="{DynamicResource expandCommunityArea}" CornerRadius="15" Width="520" HorizontalAlignment="Left"
                     Background="{DynamicResource adv_borders_background}" Opacity="0.8">
                         <Grid>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left"
@@ -350,7 +352,8 @@
                         </Grid>
                     </Border>
 
-                    <Rectangle Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}" Margin="0 15 0 0" Width="505" Height="0.7" Fill="{DynamicResource adv_rectangle}"/>
+                    <Rectangle Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}" Margin="10 15 0 0" Width="502" Height="0.7" Fill="{DynamicResource adv_rectangle}"
+                               HorizontalAlignment="Left"/>
                     <!--#endregion-->
 
                     <!-- Personal data -->
@@ -364,51 +367,26 @@
                             <TextBlock Text="{DynamicResource adat_steam_account}" FontSize="16" Margin="0 0 0 10" Foreground="{DynamicResource second_text_color}"/>
 
                             <!-- Login -->
-                            <TextBlock Text="{DynamicResource adat_login}" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                            <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
-                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
-                                <StackPanel Orientation="Horizontal">
-                                    <Icon:PackIconMaterial Kind="AccountOutline"
-                                                       VerticalAlignment="Center"
-                                           Height="22" Width="22"
-                                           Margin="8 0 0 0"
-                                           Foreground="{DynamicResource second_text_color}"/>
-                                    <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_borders_background}"
-                                         MaxLength="50" Width="173" Text="{Binding Login,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
-
-                            </Border>
+                            <Grid HorizontalAlignment="Left" Margin="0 10 0 0">
+                                <TextBox Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_login}" Margin="0 10 0 0" Opacity="0.9"
+                                         MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding Login,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                                <Icon:PackIconMaterial Kind="AccountOutline" Height="22" Width="22" VerticalAlignment="Center"
+                                           Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
+                            </Grid>
+                           
 
                             <!-- Password -->
                             <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                            <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
-                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
-                                <StackPanel Orientation="Horizontal">
-                                    <Icon:PackIconMaterial Kind="Key" VerticalAlignment="Center"
-                                           Height="22" Width="22"
-                                           Margin="8 0 0 0"
-                                           Foreground="{DynamicResource second_text_color}"/>
-                                    <ui:ModernPasswordBox Height="20.62" Width="165" Margin="0 0 0 0" VerticalAlignment="Center" 
-                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding Password, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
-                            </Border>
-                            
+                            <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
+                                                  VerticalAlignment="Center" BorderColor="{DynamicResource adv_borders_background}"
+                                                        Opacity="0.9"  Password="{Binding Password, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+
+
                             <!--Steam data error Message TextBlock-->
-                            <TextBlock VerticalAlignment="Bottom" FontSize="11" Width="220"
-                                       Padding="10 3 20 6" Foreground="PaleVioletRed" TextWrapping="WrapWithOverflow" 
-                                       Text="{Binding SteamDataValidateError,Mode=OneWay}">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SteamDataValidateError}" Value="">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            </StackPanel>
+                            <TextBlock VerticalAlignment="Bottom" Width="220" Padding="10 3 20 6" 
+                                       Text="{Binding SteamDataValidateError,Mode=OneWay}" Style="{StaticResource ModernErrorTextBlock}"/>
+
+                        </StackPanel>
 
                             <StackPanel  Margin="3 30 0 0" Orientation="Horizontal" Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}">
                                 <TextBlock Text="{DynamicResource adat_cs_header}" FontSize="16" Style="{StaticResource settings_description}"/>
@@ -420,23 +398,12 @@
                             </StackPanel>
                             
                             <!--csgo parse error Message TextBlock-->
-                            <TextBlock VerticalAlignment="Bottom" FontSize="11" Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}"
-                                       Padding="10 0 20 3" Foreground="PaleVioletRed" TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" MaxWidth="220"
-                                       Text="{Binding CsgoParseError, UpdateSourceTrigger=PropertyChanged}" >
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding CsgoParseError}" Value="">
-                                                <Setter Property="Text" Value=""/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
+                        <TextBlock VerticalAlignment="Bottom" Padding="10 0 20 3" HorizontalAlignment="Left" MaxWidth="220"
+                                       Text="{Binding CsgoParseError, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernErrorTextBlock}" />
 
 
-                            <!--#region CSGO Stats -->
+
+                        <!--#region CSGO Stats -->
                             <Border CornerRadius="15" Background="{DynamicResource adv_borders_background}" Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}" 
                                     Opacity="0.8" Width="220" Style="{StaticResource expandCsgoArea}" >
                                 <Grid>
@@ -544,8 +511,9 @@
                         <!-- Other data -->
                         <StackPanel Orientation="Vertical" Margin="50 0 0 0">
 
-                            <StackPanel Visibility="{Binding OnlyPreview}">
-                                <!-- Email data -->
+                        <StackPanel Visibility="{Binding OnlyPreview}">
+
+                            <!--#region Email Steam -->
                             <TextBlock Text="Email from steam (optional)" FontSize="16" Margin="0 0 0 10"
                                        Foreground="{DynamicResource second_text_color}">
                                 <ToggleButton  x:Name="expandButtonMail" Style="{StaticResource showButton}" IsChecked="False"/>
@@ -553,205 +521,133 @@
 
                             <Border Style="{StaticResource expandOtherDataArea}" Tag="{Binding IsChecked, ElementName=expandButtonMail}">
                                 <StackPanel>
-                                        <!-- Mail login -->
-                                        <TextBlock Text="{DynamicResource adat_email_address}" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                        <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
-                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Icon:PackIconMaterial Kind="EmailBox"
-                                                       VerticalAlignment="Center"
-                                           Height="22" Width="22"
-                                           Margin="8 0 0 0"
-                                           Foreground="{DynamicResource second_text_color}"/>
-                                                <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_borders_background}"
-                                         MaxLength="50" Width="173" Text="{Binding CurrentAccount.EmailLogin,Mode=TwoWay}"/>
-                                            </StackPanel>
-                                        </Border>
 
-                                        <!-- Mail password -->
-                                        <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                        <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
-                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Icon:PackIconMaterial Kind="ShieldKey"
-                                                       VerticalAlignment="Center"
-                                           Height="22" Width="22"
-                                           Margin="8 0 0 0"
-                                           Foreground="{DynamicResource second_text_color}"/>
-                                                <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
-                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding CurrentAccount.EmailPass,Mode=TwoWay}"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </StackPanel>
+                                    <!-- Mail login -->
+                                    <Grid HorizontalAlignment="Left" Margin="0 10 0 0">
+                                        <TextBox Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_email_address}" Margin="0 10 0 0" Opacity="0.9"
+                                         MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding CurrentAccount.EmailLogin}"/>
+                                        <Icon:PackIconMaterial Kind="EmailBox" Height="22" Width="22" VerticalAlignment="Center"
+                                           Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
+                                    </Grid>
+
+                                    <!-- Mail password -->
+                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                    <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
+                                                          BorderColor="{DynamicResource adv_borders_background}"
+                                                        Opacity="0.9"  Password="{Binding CurrentAccount.EmailPass,Mode=TwoWay}"/>
+                                </StackPanel>
 
                             </Border>
+                            <!--#endregion-->
 
-                            <!-- Rockstar games data -->
+                            <!--#region Rockstar games -->
                             <TextBlock Text="Rockstar games (additionaly)" FontSize="16" Margin="0 20 0 10"
                                        Foreground="{DynamicResource second_text_color}">
                                 <ToggleButton  x:Name="expandButtonRockstarGames" Style="{StaticResource showButton}" IsChecked="False"/>
                             </TextBlock>
 
                             <Border Style="{StaticResource expandOtherDataArea}" Tag="{Binding IsChecked, ElementName=expandButtonRockstarGames}">
-                                <Grid>
-                                    <StackPanel>
-                                        <!-- Mail login -->
-                                        <TextBlock Text="{DynamicResource adat_email_address}" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                        <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
-                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Icon:PackIconMaterial Kind="EmailBox"
-                                                       VerticalAlignment="Center"
-                                           Height="22" Width="22"
-                                           Margin="8 0 0 0"
-                                           Foreground="{DynamicResource second_text_color}"/>
-                                                <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_borders_background}"
-                                         MaxLength="50" Width="173" Text="{Binding CurrentAccount.RockstarEmail,Mode=TwoWay}"/>
-                                            </StackPanel>
-                                        </Border>
+                                <StackPanel>
 
-                                        <!-- Mail password -->
-                                        <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                        <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
-                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Icon:PackIconMaterial Kind="ShieldKey"
-                                                       VerticalAlignment="Center"
-                                           Height="22" Width="22"
-                                           Margin="8 0 0 0"
-                                           Foreground="{DynamicResource second_text_color}"/>
-                                                <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
-                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding CurrentAccount.RockstarPass,Mode=TwoWay}"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </StackPanel>
-                                </Grid>
+                                    <!-- Mail login -->
+                                    <Grid HorizontalAlignment="Left" Margin="0 10 0 0">
+                                        <TextBox Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_email_address}" Margin="0 10 0 0" Opacity="0.9"
+                                         MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding CurrentAccount.RockstarEmail}"/>
+                                        <Icon:PackIconMaterial Kind="EmailBox" Height="22" Width="22" VerticalAlignment="Center"
+                                           Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
+                                    </Grid>
 
+                                    <!-- Mail password -->
+                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                    <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
+                                                          BorderColor="{DynamicResource adv_borders_background}"
+                                                        Opacity="0.9"  Password="{Binding CurrentAccount.RockstarPass,Mode=TwoWay}"/>
+                                </StackPanel>
                             </Border>
+                            <!--#endregion-->
 
-
-                            <!-- UPlay data -->
+                            <!--#region Ubisoft play -->
                             <TextBlock Text="UPlay (additionaly)" FontSize="16" Margin="0 20 0 10"
                                        Foreground="{DynamicResource second_text_color}">
                                 <ToggleButton  x:Name="expandButtonUplay" Style="{StaticResource showButton}" IsChecked="False"/>
                             </TextBlock>
 
                             <Border Style="{StaticResource expandOtherDataArea}" Tag="{Binding IsChecked, ElementName=expandButtonUplay}">
-                                <Grid>
-                                    <StackPanel>
+                                <StackPanel>
+                                    <!-- Mail login -->
+                                    <Grid HorizontalAlignment="Left" Margin="0 10 0 0">
+                                        <TextBox Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_email_address}" Margin="0 10 0 0" Opacity="0.9"
+                                         MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding CurrentAccount.UplayEmail}"/>
+                                        <Icon:PackIconMaterial Kind="EmailBox" Height="22" Width="22" VerticalAlignment="Center"
+                                           Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
+                                    </Grid>
 
-                                        <!-- Mail login -->
-                                        <TextBlock Text="{DynamicResource adat_email_address}" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                        <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
-                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Icon:PackIconMaterial Kind="EmailBox"
-                                                       VerticalAlignment="Center"
-                                           Height="22" Width="22"
-                                           Margin="8 0 0 0"
-                                           Foreground="{DynamicResource second_text_color}"/>
-                                                <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_borders_background}"
-                                         MaxLength="50" Width="173" Text="{Binding CurrentAccount.UplayEmail,Mode=TwoWay}"/>
-                                            </StackPanel>
-                                        </Border>
-
-                                        <!-- Mail password -->
-                                        <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                        <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
-                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Icon:PackIconMaterial Kind="ShieldKey"
-                                                       VerticalAlignment="Center"
-                                           Height="22" Width="22"
-                                           Margin="8 0 0 0"
-                                           Foreground="{DynamicResource second_text_color}"/>
-                                                <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
-                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding CurrentAccount.UplayPass,Mode=TwoWay}"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </StackPanel>
-                                </Grid>
-
+                                    <!-- Mail password -->
+                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                    <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
+                                                          BorderColor="{DynamicResource adv_borders_background}"
+                                                        Opacity="0.9"  Password="{Binding CurrentAccount.UplayPass,Mode=TwoWay}"/>
+                                </StackPanel>
                             </Border>
+                            <!--#endregion-->
 
-                            <!-- Origin data -->
+                            <!--#region Origin EA Play -->
                             <TextBlock Text="Origin (additionaly)" FontSize="16" Margin="0 20 0 10"
                                        Foreground="{DynamicResource second_text_color}">
                                 <ToggleButton  x:Name="expandButtonOrigin" Style="{StaticResource showButton}" IsChecked="False"/>
                             </TextBlock>
 
                             <Border Style="{StaticResource expandOtherDataArea}" Tag="{Binding IsChecked, ElementName=expandButtonOrigin}">
-                                <Grid>
-                                    <StackPanel>
-
-                                        <!-- Mail login -->
-                                        <TextBlock Text="{DynamicResource adat_email_address}" FontSize="14" Margin="5 0 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                        <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
-                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Icon:PackIconMaterial Kind="EmailBox"
-                                                       VerticalAlignment="Center"
-                                           Height="22" Width="22"
-                                           Margin="8 0 0 0"
-                                           Foreground="{DynamicResource second_text_color}"/>
-                                                <TextBox Style="{StaticResource addTextBox}" Background="{DynamicResource adv_borders_background}"
-                                         MaxLength="50" Width="173" Text="{Binding CurrentAccount.OriginEmail,Mode=TwoWay}"/>
-                                            </StackPanel>
-                                        </Border>
-
-                                        <!-- Mail password -->
-                                        <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                        <Border Background="{DynamicResource adv_borders_background}" HorizontalAlignment="Left"
-                                Opacity="0.9" Height="35" Width="220" CornerRadius="8">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Icon:PackIconMaterial Kind="ShieldKey"
-                                                       VerticalAlignment="Center"
-                                           Height="22" Width="22"
-                                           Margin="8 0 0 0"
-                                           Foreground="{DynamicResource second_text_color}"/>
-                                                <ui:ModernPasswordBox Height="20.62" Width="165" VerticalAlignment="Center"
-                                               Style="{StaticResource PasswordboxTheme}" Password="{Binding CurrentAccount.OriginPass,Mode=TwoWay}"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </StackPanel>
-                                </Grid>
-
-                            </Border>
-
-                            </StackPanel>
-
-                            <!-- Steam links -->
-                            <Grid  Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}">
                                 <StackPanel>
-                                    <TextBlock Margin="0 20 0 10" Text="{DynamicResource adat_links_header}" FontSize="17" 
-                                       Style="{StaticResource settings_description}" HorizontalAlignment="Center"/>
-                                    <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_games}"
-                                    Command="{Binding OpenOtherLinksCommand}" CommandParameter="games"/>
-                                    <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_inventory}"
-                                    Command="{Binding OpenOtherLinksCommand}" CommandParameter="inventory"/>
-                                    <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_friends}"
-                                     Command="{Binding OpenOtherLinksCommand}" CommandParameter="friends"/>
-                                    <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_badges}"
-                                     Command="{Binding OpenOtherLinksCommand}" CommandParameter="badges"/>
-                                    <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_groups}"
-                                     Command="{Binding OpenOtherLinksCommand}" CommandParameter="groups"/>
-                                    <Button Style="{StaticResource steam_links}" Content="Csgostats.gg"
-                                     Command="{Binding OpenFromIdLinkCommand}" CommandParameter="https://csgostats.gg/player/"/>
-                                    <Button Style="{StaticResource steam_links}" Content="Faceitfinder.com"
-                                     Command="{Binding OpenFromIdLinkCommand}" CommandParameter="https://faceitfinder.com/stats/"/>
-                                </StackPanel>
-                            </Grid>
+                                    <!-- Mail login -->
+                                    <Grid HorizontalAlignment="Left" Margin="0 10 0 0">
+                                        <TextBox Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_email_address}" Margin="0 10 0 0" Opacity="0.9"
+                                         MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding CurrentAccount.OriginEmail}"/>
+                                        <Icon:PackIconMaterial Kind="EmailBox" Height="22" Width="22" VerticalAlignment="Center"
+                                           Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
+                                    </Grid>
 
+                                    <!-- Mail password -->
+                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                    <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
+                                                          BorderColor="{DynamicResource adv_borders_background}"
+                                                        Opacity="0.9"  Password="{Binding CurrentAccount.OriginPass,Mode=TwoWay}"/>
+                                </StackPanel>
+                            </Border>
+                            <!--#endregion-->
 
                         </StackPanel>
 
+                        <!-- Steam links -->
+                        <StackPanel Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Margin="0 20 0 10" Text="{DynamicResource adat_links_header}" FontSize="17" 
+                                       Style="{StaticResource settings_description}" HorizontalAlignment="Center"/>
+                            <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_games}"
+                                    Command="{Binding OpenOtherLinksCommand}" CommandParameter="games"/>
+                            <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_inventory}"
+                                    Command="{Binding OpenOtherLinksCommand}" CommandParameter="inventory"/>
+                            <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_friends}"
+                                     Command="{Binding OpenOtherLinksCommand}" CommandParameter="friends"/>
+                            <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_badges}"
+                                     Command="{Binding OpenOtherLinksCommand}" CommandParameter="badges"/>
+                            <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_groups}"
+                                     Command="{Binding OpenOtherLinksCommand}" CommandParameter="groups"/>
+                            <Button Style="{StaticResource steam_links}" Content="Csgostats.gg"
+                                     Command="{Binding OpenFromIdLinkCommand}" CommandParameter="https://csgostats.gg/player/"/>
+                            <Button Style="{StaticResource steam_links}" Content="Faceitfinder.com"
+                                     Command="{Binding OpenFromIdLinkCommand}" CommandParameter="https://faceitfinder.com/stats/"/>
+                        </StackPanel>
+
+
                     </StackPanel>
+
+                </StackPanel>
 
                     <!-- Note abount account -->
                     <TextBlock Visibility="{Binding OnlyPreview}" Margin="5 25 0 10" Text="{DynamicResource adat_noteAbout}" FontSize="17" Style="{StaticResource settings_description}"/>
-                    <Grid Height="120" Visibility="{Binding OnlyPreview}">
+                    <Grid Height="120" Visibility="{Binding OnlyPreview}"  HorizontalAlignment="Left">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="487"/>
+                            <ColumnDefinition Width="510"/>
                             <ColumnDefinition Width="13.9"/>
                         </Grid.ColumnDefinitions>
                         <Border Background="{DynamicResource adv_borders_background}" 
@@ -763,11 +659,10 @@
                     </Grid>
                     
                     <!-- Last update time -->
-                    <TextBlock Visibility="{Binding OnlyPreview}" Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="0 8 0 0" HorizontalAlignment="Center" 
+                    <TextBlock Visibility="{Binding OnlyPreview}" Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="-30 8 0 0" HorizontalAlignment="Center" 
                                FontSize="10" Text="{Binding CurrentAccount.LastUpdateTime,Mode=OneWay, StringFormat=Last updated account information: {0}}" />
 
-                </StackPanel>
-            </Grid>
+            </StackPanel>
         </ScrollViewer>
 
         <!--#region 2FA -->
