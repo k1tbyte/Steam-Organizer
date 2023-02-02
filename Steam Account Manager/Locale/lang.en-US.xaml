@@ -119,12 +119,12 @@
 
     <!--#region Account check window -->
     <v:String x:Key="acw_header_title">Account preview</v:String>
-    <v:String x:Key="acw_checkButton">View</v:String>
+    <v:String x:Key="acw_checkButton">Check</v:String>
     <!--#endregion-->
 
 
     <!--#region Account data view -->
-    <v:String x:Key="adat_visiblity">Visiblity:</v:String>
+    <v:String x:Key="adat_visiblity">Visibility:</v:String>
     <v:String x:Key="adat_profile_url">Profile URL:</v:String>
     <v:String x:Key="adat_community_statuses">• Community statuses</v:String>
     <v:String x:Key="adat_personal_data">• Personal data</v:String>
@@ -135,6 +135,8 @@
     <v:String x:Key="adat_noteAbout">• Note about account</v:String>
     <v:String x:Key="adat_2fa_confirm">Are you sure you want to link 2FA to your account?</v:String>
     <v:String x:Key="adat_2fa_toolTip">Two-factor authentication</v:String>
+    <v:String x:Key="adat_privateProfile">Private</v:String>
+    <v:String x:Key="adat_publicProfile">Public</v:String>
 
     <v:String x:Key="adat_links_header">Steam links</v:String>
     <v:String x:Key="adat_links_games">Games</v:String>

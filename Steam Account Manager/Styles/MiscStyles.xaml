@@ -22,4 +22,7 @@
                           Color="{DynamicResource comboBox_border}"
                           Opacity="1"
                           BlurRadius="8"/>
+    <DropShadowEffect x:Key="LightShadow" BlurRadius="3" Opacity="0.35"
+                                      ShadowDepth="1"
+                                      Direction="-90"/>
 </ResourceDictionary>

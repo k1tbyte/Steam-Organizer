@@ -13,8 +13,8 @@
         AllowsTransparency="True"
         SizeToContent="WidthAndHeight">
 
-    <Border CornerRadius="3" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="Border_MouseDown"
-            BorderThickness="0 3 0 3" BorderBrush="{DynamicResource second_main_brush}">
+    <Border CornerRadius="3" Margin="3" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="Border_MouseDown"
+            BorderThickness="0 3 0 3" BorderBrush="{DynamicResource second_main_brush}" Effect="{StaticResource LightShadow}" d:Effect="{x:Null}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="55"/>

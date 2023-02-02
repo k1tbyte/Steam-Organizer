@@ -8,14 +8,14 @@
         Title="CheckAccountWindow"  Width="320"
         Background="Transparent"
         WindowStyle="None"
-        SizeToContent="Height"
+        SizeToContent="WidthAndHeight"
         AllowsTransparency="True">
     <Window.Resources>
         
 
     </Window.Resources>
-    <Border CornerRadius="3" Background="{DynamicResource background_border_color}"
-            BorderThickness="0 3 0 3" BorderBrush="{DynamicResource second_main_brush}">
+    <Border Margin="3" CornerRadius="3" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="BorderDragMove"
+            BorderThickness="0 3 0 3" BorderBrush="{DynamicResource second_main_brush}" Effect="{StaticResource LightShadow}" d:Effect="{x:Null}">
 
         <Grid>
             <Grid.RowDefinitions>
@@ -58,7 +58,7 @@
 
 
                 <Button Style="{StaticResource ModernDefaultButton}"
-                    VerticalAlignment="Bottom" Margin="0 10 0 15" Click="CheckAccountAction"
+                    VerticalAlignment="Bottom" Margin="0 10 0 15" Click="CheckAccountAction" Width="Auto"
                     Content="{DynamicResource acw_checkButton}" Grid.Row="1"  IsDefault="True"/>
             </StackPanel>
           

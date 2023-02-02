@@ -156,18 +156,18 @@
                                 </Grid.ColumnDefinitions>
 
 
-                                <TextBlock Text="#" HorizontalAlignment="Left"
-                               Width="9" VerticalAlignment="Center"
-                               FontSize="12" Margin="16 3 0 0"
-                               Foreground="{DynamicResource sub_accounttab_text}" FontWeight="Medium"/>
 
-                                <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplatedParent.(ItemsControl.AlternationIndex),Converter={StaticResource IncrementConverter}}"
-                                           VerticalAlignment="Center" Margin="24 0 0 0" FontSize="13" FontWeight="Normal"
-                                           Foreground="{DynamicResource default_foreground}"/>
+                                <TextBlock Text="#" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="2 0 0 0"
+                                           FontSize="12" FontWeight="Normal" TextAlignment="Center" Width="43"
+                                           Foreground="{DynamicResource sub_accounttab_text}" TextTrimming="CharacterEllipsis">
+                                        <Run Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplatedParent.(ItemsControl.AlternationIndex),Converter={StaticResource IncrementConverter},Mode=OneWay}" 
+                                             Foreground="{DynamicResource default_foreground}"/>
+                                </TextBlock>
+
 
                                 <!--#region Avatar -->
                                 <Border Grid.Column="1" CornerRadius="25" IsHitTestVisible="{Binding ContainParseInfo,Mode=OneWay}"
-                        Background="{DynamicResource account_picture_border}" Margin="3"  Cursor="Hand">
+                        Background="{DynamicResource account_picture_border}" Margin="3"  Cursor="Hand" ToolTipService.InitialShowDelay="400">
                                     <Border.InputBindings>
                                         <MouseBinding Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.OpenProfileLinkCommand}"
                                                       CommandParameter="{Binding}"
@@ -221,7 +221,7 @@
                                 <StackPanel Orientation="Horizontal" Grid.Column="3">
                                     <!--Vac Border-->
                                     <Border  Grid.Column="3" Margin="15 0 0 0" 
-                            Width="50" Height="25" HorizontalAlignment="Left"
+                            Width="50" Height="25" HorizontalAlignment="Left" ToolTipService.InitialShowDelay="400"
                         CornerRadius="12">
                                         <TextBlock Text="VAC" Foreground="{DynamicResource vac_border_text}" VerticalAlignment="Center"
                                HorizontalAlignment="Center" FontFamily="Cascadia Mono" IsHitTestVisible="{Binding ContainParseInfo,Mode=OneWay}"
@@ -288,7 +288,7 @@
 
                                     <Button Style="{StaticResource gridNoteButton}" 
                                             Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.OpenAccountNoteCommand}"
-                                            CommandParameter="{Binding}"
+                                            CommandParameter="{Binding}" ToolTipService.InitialShowDelay="400"
                                             HorizontalAlignment="Right" Margin="0 0 5 0">
                                         <Button.ToolTip>
                                             <ToolTip ContentStringFormat="{Binding Note,Converter={StaticResource ResourceConverter}}">

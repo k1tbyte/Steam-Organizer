@@ -2,31 +2,15 @@
 using Steam_Account_Manager.Infrastructure.Validators;
 using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
 {
-    /// <summary>
-    /// Логика взаимодействия для CheckAccountWindow.xaml
-    /// </summary>
     public partial class CheckAccountWindow : Window
     {
-        public CheckAccountWindow()
-        {
-            InitializeComponent();
-        }
-
+        public CheckAccountWindow() => InitializeComponent();
+       
         private void CloseEvent(object sender, RoutedEventArgs e) => Close();
 
         private async void CheckAccountAction(object sender, RoutedEventArgs e)
@@ -58,5 +42,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
             MainWindowViewModel.AccountDataViewCommand.Execute(null);
             Close();
         }
+
+        private void BorderDragMove(object sender, MouseButtonEventArgs e) => DragMove();
     }
 }

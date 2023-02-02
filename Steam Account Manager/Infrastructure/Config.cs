@@ -1,7 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -87,12 +86,12 @@ namespace Steam_Account_Manager.Infrastructure
                 if (File.Exists(App.WorkingDirectory + "\\database.dat"))
                 {
                     if (Properties == null) LoadProperties();
-                    var result = (ObservableCollection<Account>)Deserialize(App.WorkingDirectory + @"\database.dat", Properties.UserCryptoKey);
+                    var result = Deserialize(App.WorkingDirectory + @"\database.dat", Properties.UserCryptoKey);
                     if(result == null)
                     {
                         return false;
                     }
-                    Accounts = result;
+                    Accounts = (ObservableCollection<Account>)result;
                 }
                 else
                 {

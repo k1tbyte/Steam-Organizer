@@ -239,7 +239,17 @@
                             <!-- Profile visiblity -->
                             <StackPanel  Orientation="Horizontal" Margin="18 3 0 0">
                                 <TextBlock Style="{StaticResource settings_description}" Text="{DynamicResource adat_visiblity}"/>
-                                <TextBlock Style="{StaticResource data_description}" Text="{Binding CurrentAccount.IsProfilePublic}"/>
+                            <TextBlock Text="{DynamicResource adat_publicProfile}">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource data_description}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CurrentAccount.IsProfilePublic}" Value="False">
+                                                <Setter Property="Text" Value="{DynamicResource adat_privateProfile}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                             </StackPanel>
 
 
@@ -652,7 +662,7 @@
                         </Grid.ColumnDefinitions>
                         <Border Background="{DynamicResource adv_borders_background}" 
                                 CornerRadius="15" Opacity="0.7" Grid.Column="0"/>
-                        <TextBox Grid.ColumnSpan="2" Padding="12 8 22 12" Background="Transparent" BorderThickness="0" MaxWidth="501.9"
+                        <TextBox Grid.ColumnSpan="2" Padding="0 8 22 12" Background="Transparent" BorderThickness="0" MaxWidth="501.9"
                                  Foreground="{DynamicResource second_text_color}" CaretBrush="{DynamicResource default_foreground}" TextWrapping="Wrap"
                                  AcceptsReturn="True" VerticalScrollBarVisibility="Auto" MaxLength="350" MaxLines="50" AcceptsTab="True"
                                  Text="{Binding CurrentAccount.Note,Mode=TwoWay}" SelectionBrush="{DynamicResource second_main_brush}"/>

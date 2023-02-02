@@ -35,11 +35,11 @@ namespace Steam_Account_Manager
         protected override async void OnStartup(StartupEventArgs e)
         {
 #if !DEBUG
-            if (!Mutex.WaitOne(TimeSpan.Zero, true))
+/*            if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
                 System.Windows.Forms.MessageBox.Show("Mutex already defined!");
                 Shutdown();
-            }
+            }*/
 #endif
             ProfileOptimization.SetProfileRoot(WorkingDirectory);
             ProfileOptimization.StartProfile("Startup.profile");

@@ -12,8 +12,9 @@
         WindowStartupLocation="CenterScreen"
         SizeToContent="WidthAndHeight"
         Topmost="True">
-    <Border x:Name="mainBorder"  Background="{DynamicResource background_border_color}" CornerRadius="2"  BorderThickness="0 2 0 2"
-             Padding="10 5" MouseLeftButtonDown="DragMoveEvent" BorderBrush="{DynamicResource second_main_brush}">
+    <Border x:Name="mainBorder" Margin="3" Background="{DynamicResource background_border_color}" CornerRadius="3"  BorderThickness="0 3 0 3"
+             Padding="10 5" MouseLeftButtonDown="DragMoveEvent" BorderBrush="{DynamicResource second_main_brush}"
+            Effect="{StaticResource LightShadow}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"/>
@@ -37,7 +38,7 @@
                 </Grid>
 
                 <TextBlock x:Name="Title" Text="Title" VerticalAlignment="Center"
-                       FontSize="20" FontFamily="Cascadia Mono" 
+                       FontSize="20" FontFamily="Cascadia Mono"
                        Foreground="{DynamicResource second_settings_text}"
                            Opacity="0.95" />
             </StackPanel>

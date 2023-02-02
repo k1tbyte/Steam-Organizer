@@ -9,11 +9,13 @@
         Background="Transparent"
         WindowStyle="None"
         AllowsTransparency="True"
-        Height="200" Width="330"
+        SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterScreen"
         Title="Authentication">
-    <Border CornerRadius="8" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="BorderDragMove"
-            BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="{DynamicResource second_main_brush}">
+    
+    <Border CornerRadius="3" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="BorderDragMove"
+            BorderThickness="0,3,0,3" BorderBrush="{DynamicResource second_main_brush}" Height="200" Width="330"
+            Margin="3" Effect="{StaticResource LightShadow}" d:Effect="{x:Null}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="70"/>

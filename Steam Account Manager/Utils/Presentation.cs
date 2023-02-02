@@ -125,7 +125,7 @@ namespace Steam_Account_Manager.Utils
             return window.ShowDialog();
         }
 
-        public static bool OpenQueryMessageBox(object content, string title, MboxStyle style = MboxStyle.YesNo, double maxWidth = 320d, double maxHeight = 0)
+        public static bool OpenQueryMessageBox(object content, string title, MboxStyle style = MboxStyle.YesNo, double maxWidth = 335d, double maxHeight = 0)
         {
             return new MessageWindow()
             {
@@ -138,7 +138,7 @@ namespace Steam_Account_Manager.Utils
             }.ShowDialog() == true;
         }
 
-        public static bool OpenMessageBox(object content, string title, MboxStyle style = MboxStyle.Ok, double maxWidth = 320d, double maxHeight = 0)
+        public static bool OpenMessageBox(object content, string title, MboxStyle style = MboxStyle.Ok, double maxWidth = 335d, double maxHeight = 0)
         {
             return new MessageWindow()
             {
@@ -151,7 +151,7 @@ namespace Steam_Account_Manager.Utils
             }.ShowDialog() == true;
         }
 
-        public static bool OpenErrorMessageBox(object content, string title, MboxStyle style = MboxStyle.Ok, double maxWidth = 320d, double maxHeight = 0)
+        public static bool OpenErrorMessageBox(object content, string title, MboxStyle style = MboxStyle.Ok, double maxWidth = 335d, double maxHeight = 0)
         {
 
             return new MessageWindow()

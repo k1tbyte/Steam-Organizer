@@ -10,13 +10,12 @@
         Background="Transparent"
         mc:Ignorable="d"
         AllowsTransparency="True"
-        Title="Adding an account" Height="330" Width="270"
-        WindowStyle="None"
+        Title="Adding an account"
+        WindowStyle="None"  SizeToContent="WidthAndHeight"
         Name="AddAccountClassWnd">
 
-    
-    <Border CornerRadius="3" Background="{DynamicResource background_border_color}"  MouseLeftButtonDown="BorderDragMove"
-            BorderThickness="0 3 0 3" BorderBrush="{DynamicResource second_main_brush}">
+    <Border Height="330" Width="270" Margin="3" CornerRadius="3" Background="{DynamicResource background_border_color}"  MouseLeftButtonDown="BorderDragMove"
+            BorderThickness="0 3 0 3" BorderBrush="{DynamicResource second_main_brush}" Effect="{StaticResource LightShadow}" d:Effect="{x:Null}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
