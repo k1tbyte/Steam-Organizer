@@ -47,7 +47,7 @@
                        Width="225"/>
 
             <StackPanel Grid.Row="1">
-                <StackPanel x:Name="buttons" Orientation="Horizontal" Grid.Row="1" Visibility="Visible"
+                <StackPanel x:Name="buttons" Orientation="Horizontal" Grid.Row="1"
                         HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 5 0 10">
 
                     <Button Style="{StaticResource ModernDefaultButton}" 
@@ -62,24 +62,20 @@
                 </StackPanel>
                 
                 <Image  Source="{Binding CaptchaLink}"  MaxWidth="180" HorizontalAlignment="Center" MaxHeight="50"/>
-                
-                <Border x:Name="add_panel"  Style="{StaticResource borderAddTextBox}" Visibility="Collapsed" Width="215" Margin="0 0 0 10" >
 
-                    <StackPanel Orientation="Horizontal">
-                        <Icon:PackIconMaterial Kind="BadgeAccountAlert"
-                                           Height="22" Width="22"
-                                           Margin="5 8 0 0"
+
+                <Grid x:Name="add_panel" Margin="0 10 0 10" HorizontalAlignment="Center" Visibility="Collapsed">
+                    <TextBox x:Name="Login"  Style="{StaticResource ModernTextBoxOutlined}" Width="215" Height="30"  
+                                   Text="sdasfsdafsfQFWEF WEOPF WEOFOWEI FWEOPFI WOPEFWEOP" Padding="14 0 15 0"/>
+                    <Icon:PackIconMaterial Kind="BadgeAccountAlert" VerticalAlignment="Center"
+                                           Height="22" Width="22" Margin="5 0 0 1"
                                            Foreground="{DynamicResource second_text_color}"/>
-                        <TextBox x:Name="Login" Style="{StaticResource addTextBox}"
-                             Text="{Binding UserInput, UpdateSourceTrigger=PropertyChanged}" 
-                             Width="160" MaxLength="10" Margin="6 0 0 0"/>
-                        <Button Style="{StaticResource ModernDefaultButton}" Width="20" Height="20"
-                            Command="{Binding StatusChanged}" Click="Button_Click">
-                            <Icon:PackIconMaterial Kind="Check" VerticalAlignment="Center"
+                    <Button Style="{StaticResource ModernDefaultButton}" Width="20" Height="20" Margin="0 0 4 0"
+                            Command="{Binding StatusChanged}" Click="Button_Click" HorizontalAlignment="Right">
+                        <Icon:PackIconMaterial Kind="Check" VerticalAlignment="Center"
                                                HorizontalAlignment="Center" Width="12" Height="12"/>
-                        </Button>
-                    </StackPanel>
-                </Border>
+                    </Button>
+                </Grid>
 
                 <!--Error Message TextBlock-->
                 <TextBlock Grid.Row="1"

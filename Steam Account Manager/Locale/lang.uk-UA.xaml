@@ -18,7 +18,7 @@
     <v:String x:Key="sv_crypto_key_default">За замовчуванням</v:String>
     <v:String x:Key="sv_steam_key">Користувальницький steam web API ключ</v:String>
     <v:String x:Key="sv_getID">Отримувати steam ID при вході в анонімний акаунт</v:String>
-    <v:String x:Key="sv_rememberPass">Запам'ятовувати пароль при вході</v:String>
+    <v:String x:Key="sv_dontRememberPass">Не запам'ятовувати пароль при вході</v:String>
     <v:String x:Key="sv_newPass">╰ Введіть новий пароль:</v:String>
     <v:String x:Key="sv_autoStartup">Вмикати під час запуску системи</v:String>
     <v:String x:Key="sv_minimizeAtStart">Згортати під час запуску програми</v:String>
@@ -86,11 +86,8 @@
     <v:String x:Key="av_dbSuccessUpdated">База даних облікових записів була успішно оновлена та збережена</v:String>
     <v:String x:Key="av_dbRestoredFromFile">База даних була відновлена з файлу, всі дані були замінені та збережені</v:String>
     <v:String x:Key="av_accRestoredFromFile">Акаунт був відновлений з файлу, всі дані були збережені</v:String>
-
-    <x:ArrayExtension x:Key="av_searchFilter" Type="v:String">
-        <v:String>Нікнеймом</v:String>
-        <v:String>Примітці</v:String>
-    </x:ArrayExtension>
+    <v:String x:Key="av_searchFilterName">Нікнеймом</v:String>
+    <v:String x:Key="av_searchFilterNote">Примітці</v:String>
     <!--#endregion-->
 
 
@@ -118,6 +115,10 @@
     <v:String x:Key="adv_dontCollectInfo">Не збирати інформацію&#13;про цей акаунт</v:String>
     <!--#endregion-->
 
+    <!--#region Account check window -->
+    <v:String x:Key="acw_header_title">Передпрогляд акаунту</v:String>
+    <v:String x:Key="acw_checkButton">Переглянути</v:String>
+    <!--#endregion-->
 
     <!--#region Account data view -->
     <v:String x:Key="adat_visiblity">Видимість:</v:String>

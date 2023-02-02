@@ -53,15 +53,15 @@ namespace Steam_Account_Manager.Infrastructure
                             JsonConvert.DeserializeObject<SteamGuardAccount>(
                                 System.IO.File.ReadAllText(acc.AuthenticatorPath)).GenerateSteamGuardCode());
                         }));
-                        VirtualSteamLogger(acc, Config.Properties.RememberPassword, true);
+                        VirtualSteamLogger(acc, Config.Properties.DontRememberPassword, true);
                     }
-                    else if (Config.Properties.RememberPassword)
+                    else if (Config.Properties.DontRememberPassword)
                     {
                         VirtualSteamLogger(acc, true, false);
                     }
                     else
                     {
-                        Utils.Common.KillSteamAndConnect(Config.Properties.SteamDirection, $"-noreactlogin -login {acc.Login} {acc.Password} -tcp");
+                        Common.KillSteamAndConnect(Config.Properties.SteamDirection, $"-login {acc.Login} {acc.Password} -tcp");
                         isShuttingDown = Config.Properties.ActionAfterLogin == LoggedAction.Close;
                     }
 
@@ -73,15 +73,15 @@ namespace Steam_Account_Manager.Infrastructure
                         {
 
                             var match = Config.Properties.RecentlyLoggedUsers.Find(o => o.SteamID64 == acc.SteamId64.Value);
-                            if(match != default(RecentlyLoggedUser))
+                            if (match != default(RecentlyLoggedUser))
                             {
                                 var index = Config.Properties.RecentlyLoggedUsers.IndexOf(match);
                                 if (Config.Properties.RecentlyLoggedUsers.Count > 1 && index != 0)
-                                      Config.Properties.RecentlyLoggedUsers.Move(index, 0);
+                                    Config.Properties.RecentlyLoggedUsers.Move(index, 0);
                             }
                             else
                             {
-                                Config.Properties.RecentlyLoggedUsers.Insert(0,new RecentlyLoggedUser { Nickname = acc.Nickname, SteamID64 = acc.SteamId64.Value });
+                                Config.Properties.RecentlyLoggedUsers.Insert(0, new RecentlyLoggedUser { Nickname = acc.Nickname, SteamID64 = acc.SteamId64.Value });
                                 if (Config.Properties.RecentlyLoggedUsers.Count > 5)
                                     Config.Properties.RecentlyLoggedUsers.RemoveAt(5);
                             }
@@ -120,15 +120,15 @@ namespace Steam_Account_Manager.Infrastructure
             App.MainWindow.IsHitTestVisible = true;
         }
 
-        private static void VirtualSteamLogger(Account account, bool savePassword = false, bool paste2fa = false)
+        private static void VirtualSteamLogger(Account account, bool dontRememberPassword = false, bool paste2fa = false)
         {
             Automation.RemoveAllEventHandlers();
-            if (Utils.Common.GetSteamRegistryLanguage() != account.Login)
+            if (Common.GetSteamRegistryLanguage() != account.Login)
             {
-                Utils.Common.SetSteamRegistryRememberUser(String.Empty);
+                Common.SetSteamRegistryRememberUser(String.Empty);
             }
 
-            Utils.Common.KillSteamAndConnect(Config.Properties.SteamDirection);
+            Common.KillSteamAndConnect(Config.Properties.SteamDirection,"");
             byte SteamAwaiter = 0;
 
             Automation.AddAutomationEventHandler(
@@ -148,80 +148,65 @@ namespace Steam_Account_Manager.Infrastructure
                     }
                     if (element.Current.Name.Contains("Steam") && element.Current.Name.Length > 5)
                     {
-                        Thread.Sleep(500);
+                        Thread.Sleep(3000);
                         ForceWindowToForeground((IntPtr)element.Current.NativeWindowHandle);
                         SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
                         Thread.Sleep(50);
 
-                        if (Utils.Common.GetSteamRegistryActiveUser() == 0)
+#if !DEBUG
+                        BlockInput(true);
+#endif
+                        if (String.IsNullOrEmpty(Utils.Common.GetSteamRegistryRememberUser()))
                         {
-                            BlockInput(true);
-                            if (String.IsNullOrEmpty(Utils.Common.GetSteamRegistryRememberUser()))
-                            {
-                                foreach (char c in account.Login)
-                                {
-                                    SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                                    PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
-                                }
-                                Thread.Sleep(100);
-                                SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.TAB);
-                                Thread.Sleep(100);
-                            }
-
-                            foreach (char c in account.Password)
-                            {
-                                SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                            foreach (char c in account.Login)
                                 PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
-                            }
-
-                            if (savePassword)
-                            {
-                                SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                                Thread.Sleep(100);
-                                SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.TAB);
-                                Thread.Sleep(100);
-                                SendVirtualKey((IntPtr)element.Current.NativeWindowHandle, VK.SPACE);
-                            }
-
-                            SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                            
                             Thread.Sleep(100);
-                            System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-                            SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                            if (paste2fa)
-                            {
-                                string code = "";
-                                App.Current.Dispatcher.Invoke(() => { code = System.Windows.Clipboard.GetText(TextDataFormat.Text); });
-                                Thread.Sleep(2700);
-                                if(Config.Properties.Input2FaMethod == Models.Input2faMethod.Manually)
-                                {
-                                    foreach (char c in code)
-                                    {
-                                        SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                                        PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
-                                    }
-                                }
-                                else
-                                {
-                                    keybd_event(0x11, 0, 0x00, 0);
-                                    keybd_event(0x56, 0, 0x00, 0);
-                                    Thread.Sleep(50);
-                                    keybd_event(0x11, 0, 0x02, 0);
-                                    keybd_event(0x56, 0, 0x02, 0);
-                                }
-
-                                
-                                Thread.Sleep(200);
-                                System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-                            }
-                            Automation.RemoveAllEventHandlers();
-                            BlockInput(false);
-
-
-
-                            if (Config.Properties.ActionAfterLogin == Models.LoggedAction.Close)
-                                App.Current.Dispatcher.InvokeShutdown();
                         }
 
+                        System.Windows.Forms.SendKeys.SendWait("{TAB}");
+                        Thread.Sleep(100);
+
+                        foreach (char c in account.Password)
+                            PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
+                        
+                        Thread.Sleep(100);
+                        System.Windows.Forms.SendKeys.SendWait("{TAB}");
+
+                        if (dontRememberPassword)
+                            Win32.KeyboardEvent(0x20);
+
+                        Thread.Sleep(100);
+                        System.Windows.Forms.SendKeys.SendWait("{TAB}");
+                        System.Windows.Forms.SendKeys.SendWait("{ENTER}");
+
+                        if (paste2fa)
+                        {
+                            string code = "";
+                            App.Current.Dispatcher.Invoke(() => code = System.Windows.Clipboard.GetText(TextDataFormat.Text));
+                            Thread.Sleep(1500);
+                            if (Config.Properties.Input2FaMethod == Input2faMethod.Manually)
+                            {
+                                SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
+                                foreach (char c in code)
+                                       PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
+                            }
+                            else
+                            {
+                                keybd_event(0x11, 0, 0x00, 0);
+                                keybd_event(0x56, 0, 0x00, 0);
+                                Thread.Sleep(50);
+                                keybd_event(0x11, 0, 0x02, 0);
+                                keybd_event(0x56, 0, 0x02, 0);
+                            }
+                        }
+                        Automation.RemoveAllEventHandlers();
+#if !DEBUG
+                            BlockInput(false);
+#endif
+
+                        if (Config.Properties.ActionAfterLogin == LoggedAction.Close)
+                            App.Current.Dispatcher.InvokeShutdown();
                     }
 
                 });

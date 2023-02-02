@@ -15,13 +15,10 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
         {
             InitializeComponent();
             this.DataContext = new SettingsViewModel();
-        }
-        
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
             IsPassword.IsChecked = !string.IsNullOrEmpty(Config.Properties.Password);
             CryptoKey.Text = Config.Properties.UserCryptoKey == Config.GetDefaultCryptoKey ? "" : Config.Properties.UserCryptoKey;
         }
+        
 
         #region Encryption key events
         private void ApiKey_TextChanged(object sender, TextChangedEventArgs e)

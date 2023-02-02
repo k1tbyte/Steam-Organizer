@@ -44,7 +44,7 @@ namespace Steam_Account_Manager.Infrastructure.Models
         public LoggedAction ActionAfterLogin { get; set; }
         public Input2faMethod Input2FaMethod { get; set; }
         public bool AutoGetSteamId { get; set; }
-        public bool RememberPassword { get; set; }
+        public bool DontRememberPassword { get; set; }
         public bool MinimizeToTray { get; set; }
         public bool MinimizeOnStart { get; set; }
         public string WebApiKey { get; set; }

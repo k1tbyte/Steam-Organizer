@@ -35,7 +35,6 @@
 
                 <ResourceDictionary Source="Locale/lang.en-US.xaml" />
 
-
             </ResourceDictionary.MergedDictionaries>
             
 
@@ -77,32 +76,6 @@
             <Style x:Key="TextBlockDisabled" TargetType="TextBlock">
                 <Setter Property="Text" Value="Disabled"/>
                 <Setter Property="FontSize" Value="14"/>
-            </Style>
-
-            <Style x:Key="addTextBox" TargetType="TextBox">
-                <Setter Property="Background" Value="{DynamicResource background_border_color}"/>
-                <Setter Property="Foreground" Value="{DynamicResource second_text_color}"/>
-                <Setter Property="SelectionBrush" Value="{DynamicResource second_main_brush}"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="BorderThickness" Value="0 0 0 0"/>
-                <Setter Property="Width" Value="190"/>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="MaxLength" Value="50"/>
-                <Setter Property="Margin" Value="6 0 0 0"/>
-            </Style>
-
-            <Style x:Key="borderAddTextBox" TargetType="Border">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Width" Value="230"/>
-                <Setter Property="Height" Value="35"/>
-                <Setter Property="BorderThickness" Value="0 0 0 1"/>
-                <Setter Property="BorderBrush" Value="#b0b9c6"/>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="BorderBrush" Value="{DynamicResource settings_buttons_isMouseOver}"/>
-                    </Trigger>
-                </Style.Triggers>
             </Style>
 
             <Style x:Key="opacityBox" TargetType="TextBox">

@@ -101,7 +101,7 @@ namespace Steam_Account_Manager
             if(SteamRemoteClient.IsRunning)
                 SteamRemoteClient.Logout();
 
-            MainWindow?.Dispose();
+            Tray.Dispose();
             GrabCursor.Dispose();
             GrabbingCursor.Dispose();
             Mutex.Close();

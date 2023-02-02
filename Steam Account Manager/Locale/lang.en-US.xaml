@@ -18,7 +18,7 @@
     <v:String x:Key="sv_crypto_key_default">By default</v:String>
     <v:String x:Key="sv_steam_key">Custom steam web API key</v:String>
     <v:String x:Key="sv_getID">Get steam ID when logging in anonymous account</v:String>
-    <v:String x:Key="sv_rememberPass">Remember password when logging</v:String>
+    <v:String x:Key="sv_dontRememberPass">Dont remember password when logging</v:String>
     <v:String x:Key="sv_newPass">╰ Enter new password:</v:String>
     <v:String x:Key="sv_autoStartup">Start with windows</v:String>
     <v:String x:Key="sv_minimizeAtStart">Minimize app on startup</v:String>
@@ -87,11 +87,8 @@
     <v:String x:Key="av_dbSuccessUpdated">The account database has been successfully updated and saved</v:String>
     <v:String x:Key="av_dbRestoredFromFile">The database was restored from the file, all data was replaced and saved</v:String>
     <v:String x:Key="av_accRestoredFromFile">The account was restored from the file, all data was saved</v:String>
-
-    <x:ArrayExtension x:Key="av_searchFilter" Type="v:String">
-        <v:String>Name</v:String>
-        <v:String>Note</v:String>
-    </x:ArrayExtension>
+    <v:String x:Key="av_searchFilterName">Name</v:String>
+    <v:String x:Key="av_searchFilterNote">Note</v:String>
 
     <!--#endregion-->
 
@@ -118,6 +115,11 @@
     <v:String x:Key="adv_nickname">Nickname</v:String>
 
     <v:String x:Key="adv_dontCollectInfo">Don't collect information&#13;about this account</v:String>
+    <!--#endregion-->
+
+    <!--#region Account check window -->
+    <v:String x:Key="acw_header_title">Account preview</v:String>
+    <v:String x:Key="acw_checkButton">View</v:String>
     <!--#endregion-->
 
 

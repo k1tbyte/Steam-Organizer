@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.Utils
@@ -120,6 +121,13 @@ namespace Steam_Account_Manager.Utils
             GetCursorPos(ref w32Mouse);
 
             return new Point(w32Mouse.X, w32Mouse.Y);
+        }
+
+        public static void KeyboardEvent(byte code)
+        {
+            keybd_event(code, 0, 0x00, 0);
+            Thread.Sleep(50);
+            keybd_event(code, 0, 0x02, 0);
         }
 
         public static void SendVirtualKey(IntPtr HWND, VK key)

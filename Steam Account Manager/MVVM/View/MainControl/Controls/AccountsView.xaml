@@ -95,7 +95,10 @@
                     HorizontalAlignment="Left" VerticalAlignment="Center">
             <TextBlock Text="{DynamicResource av_searchByTitle}"  Foreground="{DynamicResource add_button_foreground}" FontWeight="Medium" FontSize="12"
                        VerticalAlignment="Center"/>
-            <ComboBox Margin="5 0 0 0" SelectedIndex="{Binding SearchModeIndex}" Opacity="0.9" ItemsSource="{DynamicResource av_searchFilter}" />
+            <ComboBox Margin="5 0 0 0" SelectedIndex="{Binding SearchModeIndex}"  Opacity="0.9">
+                <ComboBoxItem Content="{DynamicResource av_searchFilterName}"/>
+                <ComboBoxItem Content="{DynamicResource av_searchFilterNote}"/>
+            </ComboBox>
 
             <ToggleButton Style="{StaticResource idle_button}" Margin="7 0 0 0" Width="25" Height="25"
                           IsChecked="{Binding ChangesAviable,Mode=OneWayToSource}" VerticalAlignment="Center">

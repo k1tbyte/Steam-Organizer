@@ -185,7 +185,7 @@ namespace Steam_Account_Manager.Utils
                 processSteam.Start();
             };
         }
-        public static void KillSteamAndConnect(string steamDir, string args = "-noreactlogin")
+        public static void KillSteamAndConnect(string steamDir, string args)
         {
             KillSteamProcess();
             System.Threading.Thread.Sleep(1500);

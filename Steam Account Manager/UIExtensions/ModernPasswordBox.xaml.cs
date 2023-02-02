@@ -15,13 +15,16 @@ namespace Steam_Account_Manager.UIExtensions
                     PasswordPropertyChanged, null, false, UpdateSourceTrigger.PropertyChanged));
 
         public static readonly DependencyProperty PasswordCharProperty =
-        DependencyProperty.RegisterAttached("PasswordChar", typeof(char), typeof(char), new PropertyMetadata(default(char)));
+            DependencyProperty.RegisterAttached("PasswordChar", typeof(char), typeof(char), new PropertyMetadata(default(char)));
 
         public static readonly DependencyProperty IconKeyColorProperty =
             DependencyProperty.Register("IconKeyColor", typeof(Brush), typeof(ModernPasswordBox), new PropertyMetadata(new SolidColorBrush(Colors.White)));
 
         public static readonly DependencyProperty BorderColorProperty =
-    DependencyProperty.Register("BorderColor", typeof(Brush), typeof(ModernPasswordBox), new PropertyMetadata(new SolidColorBrush(Colors.Transparent)));
+            DependencyProperty.Register("BorderColor", typeof(Brush), typeof(ModernPasswordBox), new PropertyMetadata(new SolidColorBrush(Colors.Transparent)));
+
+        public static readonly DependencyProperty CornerRadiusProperty =
+            DependencyProperty.Register("CornerRadius", typeof(CornerRadius), typeof(ModernPasswordBox), new PropertyMetadata(new CornerRadius(8)));
 
         private static void PasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -29,6 +32,12 @@ namespace Steam_Account_Manager.UIExtensions
             {
                 passwordBox.UpdatePassword();
             }
+        }
+
+        public CornerRadius CornerRadius
+        {
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set { SetValue(CornerRadiusProperty, value); }
         }
 
         public Brush IconKeyColor

@@ -144,7 +144,7 @@
                 </Button>
 
                 <Button x:Name="minimize" Grid.Row="0" Style="{StaticResource ModernServiceButton}"
-                        Command="{Binding MinimizeCommand}"
+                        Command="{Binding MinimizeCommand}" Width="25"
                         Margin="53,-10,35,15">
                     <Rectangle Width="25" Height="5" RadiusX="2.5" RadiusY="2.5" Fill="{Binding ElementName=minimize,Path=Foreground}"
                                Margin="0 10 0 0"/>

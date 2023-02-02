@@ -8,8 +8,7 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
              xmlns:ui="clr-namespace:Steam_Account_Manager.UIExtensions"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="600"
-             Loaded="UserControl_Loaded">
+             d:DesignHeight="450" d:DesignWidth="600">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -204,10 +203,10 @@
                           Style="{StaticResource ModernSwitchToggleButton}"/>
                 </DockPanel>
 
-                <!-- Remember password -->
+                <!-- Dont Remember password -->
                 <DockPanel>
-                    <TextBlock Text="{DynamicResource sv_rememberPass}" Style="{StaticResource settingTextBlock}"/>
-                    <ToggleButton IsChecked="{Binding Properties.RememberPassword}"
+                    <TextBlock Text="{DynamicResource sv_dontRememberPass}" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding Properties.DontRememberPassword}"
                           Style="{StaticResource ModernSwitchToggleButton}"/>
                 </DockPanel>
 
@@ -234,15 +233,10 @@
 
                 </DockPanel>
 
-                <StackPanel x:Name="PasswordPanel" Orientation="Horizontal" Margin="20 0 0 0" Visibility="Collapsed">
+                <StackPanel x:Name="PasswordPanel" Orientation="Horizontal" Margin="20 3 0 0" Visibility="Collapsed">
                     <TextBlock Text="{DynamicResource sv_newPass}" Style="{StaticResource settingTextBlock}"/>
-                    <Border Margin="10 5 0 0" Background="{DynamicResource first_main_brush}"
-                    Width="250" CornerRadius="5" Height="35" BorderThickness="0.7" HorizontalAlignment="Left"
-                    BorderBrush="{DynamicResource buttons_border_brush}">
-                        <ui:ModernPasswordBox  Width="233"  Password="{Binding Password,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-                                                Height="20" Margin="8 0 0 0" HorizontalAlignment="Left" IconKeyColor="{DynamicResource settings_buttons_isMouseOver}"/>
-
-                    </Border>
+                    <ui:ModernPasswordBox CornerRadius="5"  Width="255" BorderColor="{DynamicResource first_main_brush}"  Password="{Binding Password,UpdateSourceTrigger=PropertyChanged}"
+                                               Height="35"  Margin="8 0 0 0" HorizontalAlignment="Left" IconKeyColor="{DynamicResource settings_buttons_isMouseOver}"/>
 
                     <Button Style="{StaticResource defaultButton}" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"
                             IsHitTestVisible="{Binding PasswordError,Converter={StaticResource BoolInverted}}"

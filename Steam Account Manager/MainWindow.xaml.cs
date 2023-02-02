@@ -1,22 +1,22 @@
 ﻿using Steam_Account_Manager.MVVM.ViewModels.MainControl;
-using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
 namespace Steam_Account_Manager
 {
-    public partial class MainWindow : Window, IDisposable
+    public partial class MainWindow : Window
     {
-        TrayMenu trayMenu;
         public MainWindow()
         {
             InitializeComponent();
-            trayMenu = new TrayMenu();
-            App.Tray = trayMenu;
+            App.Tray = new TrayMenu();
+            Closed += (sender, e) =>
+            {
+                if (App.IsShuttingDown) return;
+                App.Shutdown();
+            };
         }
 
-        public void Dispose() => trayMenu.Dispose();
         private void BorderDragMove(object sender, MouseButtonEventArgs e) => this.DragMove();
             
         

@@ -50,19 +50,12 @@
             <TextBlock Margin="15 0 0 95" VerticalAlignment="Center" Grid.Row="1" Text="{DynamicResource aw_enterPassword}" Style="{StaticResource settingTextBlock}"/>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1"  Margin="15 0 0 35" VerticalAlignment="Center">
-                <Border Background="{DynamicResource first_main_brush}"
-                    Width="250" CornerRadius="5" Height="35" BorderThickness="0.7" HorizontalAlignment="Left"
-                    BorderBrush="{DynamicResource buttons_border_brush}">
-                    <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
 
-                        <Icon:PackIconMaterial Kind="Key" Foreground="{DynamicResource settings_buttons_isMouseOver}"
-                                           VerticalAlignment="Center" Height="20" Width="20" />
-                        <ui:ModernPasswordBox x:Name="Password" Width="195" Style="{StaticResource PasswordboxTheme}" 
-                                                Height="20" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
+                    <ui:ModernPasswordBox x:Name="Password" Width="250"  IconKeyColor="{DynamicResource settings_buttons_isMouseOver}" 
+                                                Height="35" VerticalAlignment="Center" CornerRadius="5"
+                                          BorderColor="{DynamicResource first_main_brush}"/>
 
-                <Button Margin="10 0 0 0" x:Name="Login" Style="{StaticResource ModernDefaultButton}" 
+                    <Button Margin="10 0 0 0" x:Name="Login" Style="{StaticResource ModernDefaultButton}" 
                         Width="35" Height="35" Click="Login_Click" IsDefault="True">
                     <Icon:Material Kind="Login"/>
                 </Button>

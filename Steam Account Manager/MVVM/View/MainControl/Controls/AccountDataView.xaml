@@ -111,6 +111,7 @@
                 VerticalAlignment="Top" HorizontalAlignment="Left">
             <Icon:PackIconMaterial  Kind="ArrowLeft" Height="20" Width="40" />
         </Button>
+        
 
         <!-- notice Border -->
         <Border Tag="{Binding NoticeView}" Grid.Row="1" Height="30" VerticalAlignment="Top" Margin="0 5 40 0" CornerRadius="10"
@@ -357,13 +358,13 @@
                     <!--#endregion-->
 
                     <!-- Personal data -->
-                    <TextBlock Margin="5 15 0 0" Text="{DynamicResource adat_personal_data}" FontSize="17" Style="{StaticResource settings_description}"/>
+                    <TextBlock Margin="5 15 0 0" Text="{DynamicResource adat_personal_data}" FontSize="17" Style="{StaticResource settings_description}" Visibility="{Binding OnlyPreview}"/>
                     <StackPanel Margin="10 10 0 0" Orientation="Horizontal">
                       
                         <!-- Steam data -->
                         <StackPanel Orientation="Vertical">
  <!--Put here x2-->
-                            <StackPanel Visibility="{Binding OnlyPreview}">
+                           <StackPanel Visibility="{Binding OnlyPreview}" Margin="0 0 0 53">
                             <TextBlock Text="{DynamicResource adat_steam_account}" FontSize="16" Margin="0 0 0 10" Foreground="{DynamicResource second_text_color}"/>
 
                             <!-- Login -->
@@ -373,22 +374,23 @@
                                 <Icon:PackIconMaterial Kind="AccountOutline" Height="22" Width="22" VerticalAlignment="Center"
                                            Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
                             </Grid>
-                           
+
 
                             <!-- Password -->
-                            <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                            <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" FontWeight="Thin" Opacity="0.8"/>
                             <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
                                                   VerticalAlignment="Center" BorderColor="{DynamicResource adv_borders_background}"
                                                         Opacity="0.9"  Password="{Binding Password, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
 
 
                             <!--Steam data error Message TextBlock-->
-                            <TextBlock VerticalAlignment="Bottom" Width="220" Padding="10 3 20 6" 
+                            <TextBlock VerticalAlignment="Bottom" Width="220" Padding="10 3 20 0" 
                                        Text="{Binding SteamDataValidateError,Mode=OneWay}" Style="{StaticResource ModernErrorTextBlock}"/>
 
-                        </StackPanel>
+                           </StackPanel>
 
-                            <StackPanel  Margin="3 30 0 0" Orientation="Horizontal" Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}">
+                            
+                        <StackPanel  Margin="3 0 0 15" Orientation="Horizontal" Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}">
                                 <TextBlock Text="{DynamicResource adat_cs_header}" FontSize="16" Style="{StaticResource settings_description}"/>
                                 <ToggleButton  x:Name="expandCsgoButton" Style="{StaticResource showButton}" IsChecked="True"/>
                                 <Button Style="{StaticResource ModernServiceButton}" Width="16" Height="14" Margin="6 0 0 -1"
@@ -398,12 +400,10 @@
                             </StackPanel>
                             
                             <!--csgo parse error Message TextBlock-->
-                        <TextBlock VerticalAlignment="Bottom" Padding="10 0 20 3" HorizontalAlignment="Left" MaxWidth="220"
-                                       Text="{Binding CsgoParseError, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernErrorTextBlock}" />
+                          <TextBlock VerticalAlignment="Bottom" Padding="15 0 20 0" Margin="0 -15 0 3" HorizontalAlignment="Left" MaxWidth="220"
+                                       Text="{Binding CsgoParseError}" Style="{StaticResource ModernErrorTextBlock}" />
 
-
-
-                        <!--#region CSGO Stats -->
+                          <!--#region CSGO Stats -->
                             <Border CornerRadius="15" Background="{DynamicResource adv_borders_background}" Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}" 
                                     Opacity="0.8" Width="220" Style="{StaticResource expandCsgoArea}" >
                                 <Grid>
@@ -511,7 +511,7 @@
                         <!-- Other data -->
                         <StackPanel Orientation="Vertical" Margin="50 0 0 0">
 
-                        <StackPanel Visibility="{Binding OnlyPreview}">
+                        <StackPanel Visibility="{Binding OnlyPreview}" Margin="0 0 0 20">
 
                             <!--#region Email Steam -->
                             <TextBlock Text="Email from steam (optional)" FontSize="16" Margin="0 0 0 10"
@@ -531,7 +531,7 @@
                                     </Grid>
 
                                     <!-- Mail password -->
-                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" FontWeight="Thin" Opacity="0.8"/>
                                     <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
                                                           BorderColor="{DynamicResource adv_borders_background}"
                                                         Opacity="0.9"  Password="{Binding CurrentAccount.EmailPass,Mode=TwoWay}"/>
@@ -558,7 +558,7 @@
                                     </Grid>
 
                                     <!-- Mail password -->
-                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" FontWeight="Thin" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                                     <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
                                                           BorderColor="{DynamicResource adv_borders_background}"
                                                         Opacity="0.9"  Password="{Binding CurrentAccount.RockstarPass,Mode=TwoWay}"/>
@@ -583,7 +583,7 @@
                                     </Grid>
 
                                     <!-- Mail password -->
-                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" FontWeight="Thin" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                                     <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
                                                           BorderColor="{DynamicResource adv_borders_background}"
                                                         Opacity="0.9"  Password="{Binding CurrentAccount.UplayPass,Mode=TwoWay}"/>
@@ -608,7 +608,7 @@
                                     </Grid>
 
                                     <!-- Mail password -->
-                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
+                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" FontWeight="Thin" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
                                     <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
                                                           BorderColor="{DynamicResource adv_borders_background}"
                                                         Opacity="0.9"  Password="{Binding CurrentAccount.OriginPass,Mode=TwoWay}"/>
@@ -619,8 +619,8 @@
                         </StackPanel>
 
                         <!-- Steam links -->
-                        <StackPanel Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}">
-                            <TextBlock Margin="0 20 0 10" Text="{DynamicResource adat_links_header}" FontSize="17" 
+                        <StackPanel Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}" Width="230">
+                            <TextBlock Margin="0 0 0 10" Text="{DynamicResource adat_links_header}" FontSize="17" 
                                        Style="{StaticResource settings_description}" HorizontalAlignment="Center"/>
                             <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_games}"
                                     Command="{Binding OpenOtherLinksCommand}" CommandParameter="games"/>

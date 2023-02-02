@@ -92,7 +92,6 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             draggedItem = null;
         }
 
-
         private void AvatarImageFailed(object sender, ExceptionRoutedEventArgs e) => (sender as Image).Source = new BitmapImage(new Uri("/Images/default_steam_profile.png", UriKind.Relative));
     }
 }
