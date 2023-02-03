@@ -128,7 +128,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                         var version = Version.Parse(Utils.Common.BetweenStr(
                             wc.DownloadString("https://raw.githubusercontent.com/Explynex/Steam_Account_Manager/master/Steam%20Account%20Manager/Properties/AssemblyInfo.cs"),
                             "[assembly: AssemblyVersion(\"", "\")]", true).Replace("*", "0"));
-                        if (version < App.Version)
+                        if (version <= App.Version)
                             return;
 
                         App.Current.Dispatcher.Invoke(async () =>
@@ -136,7 +136,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                             if (new ServiceWindow(true)
                             {
                                 AppendTitleText = version.ToString(3) + (version.Revision == 0 ? "" : " Beta"),
-                                InnerText = ""
+                                InnerText = await wc.DownloadStringTaskAsync("https://raw.githubusercontent.com/Explynex/Steam_Account_Manager/master/CHANGELOG.md")
                             }.ShowDialog() != true)
                                 return;
 
