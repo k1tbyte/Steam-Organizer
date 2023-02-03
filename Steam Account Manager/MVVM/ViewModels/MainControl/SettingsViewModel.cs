@@ -4,9 +4,7 @@ using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
 using Steam_Account_Manager.Utils;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 {
@@ -73,7 +71,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             set => Config.Properties.Input2FaMethod = (Input2faMethod)value;
         }
 
-        public string Version             => App.Version.ToString("# # #").Replace(' ', '.');
+        public string Version => App.Version.ToString(3) + (App.Version.Revision == 0 ? " Beta" : " Stable");
         #endregion
 
         private async void CheckAutoLoginUser()

@@ -146,6 +146,7 @@
     <Style x:Key="ModernTextBoxBordered" TargetType="{x:Type TextBox}" BasedOn="{StaticResource ModernTextBoxOutlined}">
         <Setter Property="Border.CornerRadius" Value="8"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource second_text_color}"/>
         <Setter Property="Background" Value="{DynamicResource adv_borders_background}"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>

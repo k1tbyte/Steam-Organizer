@@ -79,5 +79,24 @@ namespace Steam_Account_Manager.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на WScript.Sleep(1000)
+        ///Set fso = CreateObject(&quot;Scripting.FileSystemObject&quot;)
+        ///FolderPath = fso.GetParentFolderName(WScript.ScriptFullName)
+        ///CachePath = fso.BuildPath(FolderPath,&quot;downloadcache.zip&quot;)
+        ///ExecPath = fso.BuildPath(FolderPath,&quot;SteamAccountManager.exe&quot;)
+        ///Set appShell = CreateObject(&quot;Shell.Application&quot;)
+        ///Set FilesInZip=appShell.NameSpace(CachePath).items
+        ///appShell.NameSpace(FolderPath).CopyHere(FilesInZip),&amp;H10&amp;
+        ///WScript.Sleep(500)
+        ///Set objShell = WScript.CreateObject(&quot;WScript.Shell&quot;)
+        ///objShell.Run &quot;&quot;&quot;&quot; [остаток строки не уместился]&quot;;.
+        /// </summary>
+        internal static string UpdateScript {
+            get {
+                return ResourceManager.GetString("UpdateScript", resourceCulture);
+            }
+        }
     }
 }

@@ -7,7 +7,7 @@
     <ProjectGuid>{02A17623-84C2-413F-88CE-05A5B879C48A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Steam_Account_Manager</RootNamespace>
-    <AssemblyName>Steam Account Manager</AssemblyName>
+    <AssemblyName>SteamAccountManager</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -71,7 +71,6 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="protobuf-net, Version=3.0.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>..\packages\protobuf-net.3.1.17\lib\net461\protobuf-net.dll</HintPath>
     </Reference>
@@ -169,8 +168,8 @@
     <Compile Include="UIExtensions\ModernPopup.xaml.cs">
       <DependentUpon>ModernPopup.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UIExtensions\ExceptionWindow.xaml.cs">
-      <DependentUpon>ExceptionWindow.xaml</DependentUpon>
+    <Compile Include="UIExtensions\ServiceWindow.xaml.cs">
+      <DependentUpon>ServiceWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UIExtensions\PopupMessageWindow.xaml.cs">
       <DependentUpon>PopupMessageWindow.xaml</DependentUpon>
@@ -329,7 +328,7 @@
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
-    <Page Include="UIExtensions\ExceptionWindow.xaml">
+    <Page Include="UIExtensions\ServiceWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

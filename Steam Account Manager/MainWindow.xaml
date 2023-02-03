@@ -155,27 +155,6 @@
 
             </Grid>
 
-            <!--Updates detect-->
-            <Border Margin="10 0 0 0" Grid.ColumnSpan="2" VerticalAlignment="Center"
-                HorizontalAlignment="Center" Visibility="{Binding UpdateDetect, Converter={StaticResource BoolToVis}}"
-                Width="435" Height="50" Background="{DynamicResource popup_border_background}" Opacity="0.9"
-                CornerRadius="15">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="{DynamicResource mv_newUpdate}" Foreground="White"
-                       FontWeight="Normal" VerticalAlignment="Center"
-                       Margin="0 0 0 0" FontSize="16"/>
-                    <Button Command="{Binding NoLoadUpdateCommand}" Margin="10 0 0 0" Style="{StaticResource confirmationNoButton}"
-                        Width="30" Height="30">
-                        <Icon:PackIconMaterial Kind="Close" Foreground="White" VerticalAlignment="Center" Width="12" Height="12"/>
-                    </Button>
-
-                    <Button Command="{Binding YesLoadUpdateCommand}" Margin="10 0 0 0" Style="{StaticResource confirmationYesButton}"
-                        Width="30" Height="30">
-                        <Icon:PackIconMaterial Kind="Check" Foreground="White" VerticalAlignment="Center"/>
-                    </Button>
-                </StackPanel>
-            </Border>
-
             <Border CornerRadius="25" Grid.ColumnSpan="3" Background="Black"
                     Opacity="0.6" Visibility="{Binding ElementName=UpdArea,Path=Visibility}"/>
 
@@ -183,10 +162,9 @@
             <Grid x:Name="UpdArea" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed">
 
                 <StackPanel  VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 0 200" >
-                    <TextBlock x:Name="UpdTitle" Text="{DynamicResource av_dbAccsUpdate}"
-                           Foreground="White" FontWeight="Medium" FontFamily="Cascadia Mono"
-                           FontSize="20"/>
-                    <TextBlock x:Name="UpdCounterTitle"  Text="1/36" FontSize="20" FontWeight="Medium" FontFamily="Cascadia Mono" Margin="0 5 0 0"
+                    <TextBlock x:Name="UpdTitle"  Foreground="White" FontWeight="Medium" FontFamily="Cascadia Mono"
+                           FontSize="20" TextAlignment="Center"/>
+                    <TextBlock x:Name="UpdCounterTitle"  Text="0/0" FontSize="20" FontWeight="Medium" FontFamily="Cascadia Mono" Margin="0 5 0 0"
                                Foreground="{DynamicResource second_main_brush}" TextAlignment="Center" />
                 </StackPanel>
               
@@ -197,7 +175,7 @@
 
                 <ui:CircularProgressBar x:Name="UpdProgressBar"  VerticalAlignment="Center" HorizontalAlignment="Center" Radius="150"
                                     Margin="0 0 0 60"
-                                   StrokeThickness="30"  SegmentColor="{DynamicResource second_main_brush}" Percentage="20"/>
+                                   StrokeThickness="30"  SegmentColor="{DynamicResource second_main_brush}" Percentage="0"/>
 
                 <Button Style="{StaticResource defaultButton}" VerticalAlignment="Bottom" Background="{DynamicResource second_main_brush}"
                         FontWeight="Medium" Click="CancellationUpdateEvent">

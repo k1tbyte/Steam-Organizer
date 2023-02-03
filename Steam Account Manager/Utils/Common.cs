@@ -62,12 +62,12 @@ namespace Steam_Account_Manager.Utils
             list[indexB] = tmp;
             return list;
         }
-        public static string BetweenStr(string str, string leftStr, string rightStr)
+        public static string BetweenStr(string str, string leftStr, string rightStr,bool relative = false)
         {
             try
             {
                 int Pos1 = str.IndexOf(leftStr) + leftStr.Length;
-                int Pos2 = str.IndexOf(rightStr);
+                int Pos2 = relative ? str.IndexOf(rightStr,Pos1) : str.IndexOf(rightStr);
                 return str.Substring(Pos1, Pos2 - Pos1);
             }
             catch

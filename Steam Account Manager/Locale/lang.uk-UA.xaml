@@ -61,12 +61,14 @@
     <v:String x:Key="mv_logout_title">Вийти з Steam</v:String>
     <v:String x:Key="mv_remoteControl_title">Віддалене управ.</v:String>
     <v:String x:Key="mv_account_added_notification">Акаунт успішно доданий!</v:String>
-    <v:String x:Key="mv_newUpdate">Виявлено нову версію, оновити зараз?</v:String>
+    <v:String x:Key="mv_newUpdate">Доступне оновлення:</v:String>
     <v:String x:Key="mv_connectionNotify">Очікування з'єднання з інтернетом, перехід в автономний режим через 15 секунд.</v:String>
     <v:String x:Key="mv_autonomyModeNotify">Інтернет-з'єднання відсутнє, перехід в автономний режим</v:String>
     <v:String x:Key="mv_confirmAction">Підтвердьте дію</v:String>
     <v:String x:Key="mv_confirmYes">Так</v:String>
     <v:String x:Key="mv_confirmNo">Ні</v:String>
+    <v:String x:Key="mv_runtimeError">Помилка виконання</v:String>
+    <v:String x:Key="mv_downloading">Завантаження...</v:String>
     <!--#endregion-->
 
 

@@ -61,12 +61,14 @@
     <v:String x:Key="mv_logout_title">Exit from Steam</v:String>
     <v:String x:Key="mv_remoteControl_title">Remote control</v:String>
     <v:String x:Key="mv_account_added_notification">New account added!</v:String>
-    <v:String x:Key="mv_newUpdate">New app version detected, update now?</v:String>
+    <v:String x:Key="mv_newUpdate">Update aviable:</v:String>
     <v:String x:Key="mv_connectionNotify">Waiting for internet connection, going offline after 15 seconds...</v:String>
     <v:String x:Key="mv_autonomyModeNotify">There is no Internet connection, switching to offline mode.</v:String>
     <v:String x:Key="mv_confirmAction">Confirm action</v:String>
     <v:String x:Key="mv_confirmYes">Yes</v:String>
     <v:String x:Key="mv_confirmNo">No</v:String>
+    <v:String x:Key="mv_runtimeError">Runtime error</v:String>
+    <v:String x:Key="mv_downloading">Downloading...</v:String>
     <!--#endregion-->
 
 

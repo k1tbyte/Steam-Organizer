@@ -124,4 +124,22 @@
   <data name="grabbing" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Images\grabbing.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="UpdateScript" xml:space="preserve">
+    <value>WScript.Sleep(1000)
+Set fso = CreateObject("Scripting.FileSystemObject")
+FolderPath = fso.GetParentFolderName(WScript.ScriptFullName)
+CachePath = fso.BuildPath(FolderPath,"downloadcache.zip")
+ExecPath = fso.BuildPath(FolderPath,"SteamAccountManager.exe")
+Set appShell = CreateObject("Shell.Application")
+Set FilesInZip=appShell.NameSpace(CachePath).items
+appShell.NameSpace(FolderPath).CopyHere(FilesInZip),&amp;H10&amp;
+WScript.Sleep(500)
+Set objShell = WScript.CreateObject("WScript.Shell")
+objShell.Run """" &amp; ExecPath &amp; """", 3, True
+Set objShell = Nothing
+Set appShell = Nothing
+fso.DeleteFile(CachePath)
+fso.DeleteFile(Wscript.ScriptFullName)
+Set fso = Nothing</value>
+  </data>
 </root>

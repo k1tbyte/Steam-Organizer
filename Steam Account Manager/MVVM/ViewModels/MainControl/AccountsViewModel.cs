@@ -78,6 +78,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         #region Helpers
         private async Task UpdateDatabase()
         {
+            App.MainWindow.UpdTitle.Text = App.FindString("av_dbAccsUpdate");
             App.MainWindow.UpdArea.Visibility = System.Windows.Visibility.Visible;
             try
             {

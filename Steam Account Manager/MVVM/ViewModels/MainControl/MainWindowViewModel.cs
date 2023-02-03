@@ -3,8 +3,10 @@ using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.MainControl.Controls;
 using Steam_Account_Manager.MVVM.View.RemoteControl.Controls;
-using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
+using Steam_Account_Manager.UIExtensions;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,15 +16,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 {
     internal class MainWindowViewModel : ObservableObject
     {
+        #region Commands
         public static RelayCommand CloseCommand { get; set; }
         public static RelayCommand MinimizeCommand { get; set; }
         public static RelayCommand AccountsViewCommand { get; set; }
         public static RelayCommand SettingsViewCommand { get; set; }
         public static RelayCommand AccountDataViewCommand { get; set; }
         public static RelayCommand RemoteControlViewCommand { get; set; }
-        public static RelayCommand NoLoadUpdateCommand { get; set; }
-        public static RelayCommand YesLoadUpdateCommand { get; set; }
-        public RelayCommand LogoutCommand { get; set; }
+        public RelayCommand LogoutCommand { get; set; } 
+        #endregion
 
         public AccountsView AccountsV;
         public SettingsView SettingsV;
@@ -34,7 +36,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public static event EventHandler NowLoginUserNicknameChanged;
         public static bool CancellationFlag = false;
         private static string _nowLoginUserImage = "/Images/user.png", _nowLoginUserNickname = "Username";
-        private bool _updateDetect;
         private WindowState _windowState;
 
         #region Properties
@@ -42,12 +43,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         {
             get => _windowState;
             set => SetProperty(ref _windowState, value);
-        }
-
-        public bool UpdateDetect
-        {
-            get => _updateDetect;
-            set => SetProperty(ref _updateDetect, value);
         }
 
         public static string NowLoginUserNickname
@@ -121,17 +116,68 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             return accountDetected;
         }
 
-        private async Task CheckingUpdates()
+        private async Task CheckUpdate()
         {
+            if (App.OfflineMode) return;
             await Task.Factory.StartNew(() =>
             {
                 try
                 {
-                    var webClient = new WebClient();
-                    var version = webClient.DownloadString("https://raw.githubusercontent.com/Explynex/Steam_Account_Manager/master/VERSION.md").Replace(".", String.Empty);
-                    if (uint.Parse(version) > App.Version)
+                    using (var wc = new WebClient())
                     {
-                        UpdateDetect = true;
+                        var version = Version.Parse(Utils.Common.BetweenStr(
+                            wc.DownloadString("https://raw.githubusercontent.com/Explynex/Steam_Account_Manager/master/Steam%20Account%20Manager/Properties/AssemblyInfo.cs"),
+                            "[assembly: AssemblyVersion(\"", "\")]", true).Replace("*", "0"));
+                        if (version < App.Version)
+                            return;
+
+                        App.Current.Dispatcher.Invoke(async () =>
+                        {
+                            if (new ServiceWindow(true)
+                            {
+                                AppendTitleText = version.ToString(3) + (version.Revision == 0 ? "" : " Beta"),
+                                InnerText = ""
+                            }.ShowDialog() != true)
+                                return;
+
+                            App.MainWindow.UpdTitle.Text = App.FindString("mv_downloading");
+                            App.MainWindow.UpdArea.Visibility = Visibility.Visible;
+
+                            var URL = "https://download.virtualbox.org/virtualbox/7.0.6/VirtualBox-7.0.6-155176-Win.exe";
+                            var downloadPath = App.WorkingDirectory + "\\downloadcache.zip";
+
+                            await wc.OpenReadTaskAsync(URL);
+                            var size = (Convert.ToDouble(wc.ResponseHeaders["Content-Length"]) / 1048576).ToString("#.# MB");
+
+                            wc.DownloadProgressChanged += (s, e) =>
+                            {
+                                if (CancellationFlag)
+                                    wc.CancelAsync();
+
+                                App.MainWindow.UpdProgressBar.Percentage = e.ProgressPercentage;
+                                App.MainWindow.UpdCounterTitle.Text = $"{(double)e.BytesReceived / 1048576:#.# MB}/{size}";
+                            };
+
+                            wc.DownloadFileCompleted += (s, e) =>
+                            {
+                                App.MainWindow.UpdArea.Visibility = Visibility.Collapsed;
+
+                                if (e.Cancelled)
+                                {
+                                    if (File.Exists(downloadPath))
+                                        File.Delete(downloadPath);
+                                    CancellationFlag = false;
+                                    return;
+                                }
+
+                                File.WriteAllText(App.WorkingDirectory + "\\update.vbs", Properties.Resources.UpdateScript);
+                                Process.Start(App.WorkingDirectory + "\\update.vbs").Dispose();
+                                App.Shutdown();
+                            };
+
+                            await wc.DownloadFileTaskAsync(URL, downloadPath);
+
+                        }, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
                     }
                 }
                 catch { }
@@ -149,18 +195,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             CurrentView = AccountsV;
 
             _ = NowLoginUserParse().ConfigureAwait(false);
-            _ = CheckingUpdates().ConfigureAwait(false);
+#if !DEBUG
+            _ = CheckUpdate().ConfigureAwait(false);
+#endif
 
             AccountsViewCommand = new RelayCommand(o =>  CurrentView = AccountsV);
 
-            SettingsViewCommand = new RelayCommand(o => 
-            {
-                CurrentView = SettingsV;
-            });
+            SettingsViewCommand = new RelayCommand(o => CurrentView = SettingsV);
 
             MinimizeCommand     = new RelayCommand(o => WindowState = WindowState.Minimized);
-
-            NoLoadUpdateCommand = new RelayCommand(o => UpdateDetect = false);
 
             AccountDataViewCommand = new RelayCommand(o =>
             {
@@ -202,17 +245,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 }
             });
 
-            YesLoadUpdateCommand = new RelayCommand(o =>
-            {
-                using (System.Diagnostics.Process updater = new System.Diagnostics.Process())
-                {
-                    updater.StartInfo.FileName = $"{App.WorkingDirectory}\\UpdateManager.exe";
-                    updater.StartInfo.Arguments = "/upd";
-                    updater.Start();
-                }
-
-                App.Shutdown();
-            });
         }
     }
 }

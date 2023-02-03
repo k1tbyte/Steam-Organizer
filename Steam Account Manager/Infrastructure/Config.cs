@@ -86,12 +86,12 @@ namespace Steam_Account_Manager.Infrastructure
                 if (File.Exists(App.WorkingDirectory + "\\database.dat"))
                 {
                     if (Properties == null) LoadProperties();
-                    var result = Deserialize(App.WorkingDirectory + @"\database.dat", Properties.UserCryptoKey);
+                    var result = (ObservableCollection<Account>)Deserialize(App.WorkingDirectory + @"\database.dat", Properties.UserCryptoKey);
                     if(result == null)
                     {
                         return false;
                     }
-                    Accounts = (ObservableCollection<Account>)result;
+                    Accounts = result;
                 }
                 else
                 {

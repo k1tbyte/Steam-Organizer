@@ -17,13 +17,16 @@ namespace Steam_Account_Manager
 {
     public partial class App : Application
     {
+        /// <summary>
+        /// 1.0.0.0 (Major.Minor.Build.Revision (1 - Stable, 0 - Beta))
+        /// </summary>
+        public static readonly Version Version = Assembly.GetExecutingAssembly().GetName().Version;
+
         static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager");
-        public static readonly uint Version = 216;
         public static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         public static bool OfflineMode = false;
         public static new MainWindow MainWindow;
         public static TrayMenu Tray;
-        private ExceptionWindow ExceptionWnd;
 
         public static Cursor GrabCursor { get; }     = new Cursor(new MemoryStream(Steam_Account_Manager.Properties.Resources.grab));
         public static Cursor GrabbingCursor { get; } = new Cursor(new MemoryStream(Steam_Account_Manager.Properties.Resources.grabbing));
@@ -44,20 +47,9 @@ namespace Steam_Account_Manager
             ProfileOptimization.SetProfileRoot(WorkingDirectory);
             ProfileOptimization.StartProfile("Startup.profile");
 
-            DispatcherUnhandledException += new DispatcherUnhandledExceptionEventHandler(delegate(object sender, DispatcherUnhandledExceptionEventArgs args)
-            {
-                ExceptionWnd = ExceptionWnd ?? new ExceptionWindow();
-
-                ExceptionWnd.SetMessage(args.Exception.ToString());
-                ExceptionWnd.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                ExceptionWnd.ShowDialog();
-            });
+            DispatcherUnhandledException += (sender, arg) => { new ServiceWindow { InnerText = arg.Exception.ToString() }.ShowDialog(); Shutdown(); };
 
             Config.LoadProperties();
-
-/*            new CheckAccountWindow().ShowDialog();
-            Shutdown();*/
-
             #region Check internet connection
             if (!Common.CheckInternetConnection())
             {
@@ -72,7 +64,6 @@ namespace Steam_Account_Manager
                 ShutdownMode = ShutdownMode.OnMainWindowClose;
             }
             #endregion
-
 
             Common.CreateHttpClientFactory();
             if (Config.Properties.Password == null)
@@ -96,12 +87,12 @@ namespace Steam_Account_Manager
         public static new void Shutdown()
         {
             IsShuttingDown = true;
-            Config.SaveProperties();
+           // Config.SaveProperties();
 
             if(SteamRemoteClient.IsRunning)
                 SteamRemoteClient.Logout();
 
-            Tray.Dispose();
+            Tray?.Dispose();
             GrabCursor.Dispose();
             GrabbingCursor.Dispose();
             Mutex.Close();
