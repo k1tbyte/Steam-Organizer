@@ -87,6 +87,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                             ErrorMessage = App.FindString("adv_parse_error");
                             return;
                         }
+                        account.Index = Config.Accounts.Count + 1;
                         Config.Accounts.Add(account);
                         Config.SaveAccounts();
                         ErrorMessage = "";

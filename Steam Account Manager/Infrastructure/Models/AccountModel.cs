@@ -58,6 +58,9 @@ namespace Steam_Account_Manager.Infrastructure.Models
         public UInt32? SteamId32   => Utils.Common.SteamId64ToSteamId32(SteamId64);
         public string AvatarFull   => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_full.jpg" : "/Images/user.png";
         public string AvatarMedium => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_medium.jpg" : "/Images/user.png";
+
+        [field: NonSerialized]
+        public int Index { get; set; }
         #endregion
 
         #region Bans properties

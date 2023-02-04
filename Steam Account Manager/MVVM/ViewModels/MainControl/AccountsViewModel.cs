@@ -76,6 +76,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         #endregion
 
         #region Helpers
+        public void UpdateIndexes(int startWith = 0,bool refresh = false)
+        {
+            for (int i = startWith; i < Accounts.Count; i++)
+                Config.Accounts[i].Index = i + 1;
+
+            if (refresh)
+                SearchFilter.Refresh();
+        }
+
         private async Task UpdateDatabase()
         {
             App.MainWindow.UpdTitle.Text = App.FindString("av_dbAccsUpdate");
@@ -113,6 +122,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 Presentation.OpenPopupMessageBox(App.FindString("adv_alreadyInDb"), true);
                 return;
             }
+            acc.Index = Config.Accounts.Count+1;
             Config.Accounts.Add(acc);
             Presentation.OpenPopupMessageBox(App.FindString("av_accRestoredFromFile"));
             Config.SaveAccounts();
@@ -136,6 +146,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         public AccountsViewModel()
         {
+            UpdateIndexes();
             SearchFilter = CollectionViewSource.GetDefaultView(Accounts);
             SearchFilter.Filter += FilterPredicate;
 
@@ -187,6 +198,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     {
                         Config.Accounts = (ObservableCollection<Account>)Config.Deserialize(fileDialog.FileName, Config.Properties.UserCryptoKey);
                         Presentation.OpenPopupMessageBox(App.FindString("av_dbRestoredFromFile"));
+                        UpdateIndexes();
                         Config.SaveAccounts();
                     }
                     catch
@@ -195,6 +207,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                         {
                             Config.Accounts = (ObservableCollection<Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
                             Presentation.OpenPopupMessageBox(App.FindString("av_dbRestoredFromFile"));
+                            UpdateIndexes();
                             Config.SaveAccounts();
                         }
                     }
@@ -233,8 +246,9 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                         ((App.MainWindow.DataContext as MainWindowViewModel).SettingsV.DataContext as SettingsViewModel).AutoLoginAccount = null;
                     }
 
-
+                    var index = acc.Index;
                     Config.Accounts.Remove(acc);
+                    UpdateIndexes(index-1,true);
                     (App.MainWindow.DataContext as MainWindowViewModel).TotalAccounts = -1;
                     Config.SaveAccounts();
                 }
