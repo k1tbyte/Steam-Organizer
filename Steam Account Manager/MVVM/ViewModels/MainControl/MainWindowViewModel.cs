@@ -143,7 +143,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                             App.MainWindow.UpdTitle.Text = App.FindString("mv_downloading");
                             App.MainWindow.UpdArea.Visibility = Visibility.Visible;
 
-                            var URL = "https://download.virtualbox.org/virtualbox/7.0.6/VirtualBox-7.0.6-155176-Win.exe";
+                            var URL = "https://dl.dropboxusercontent.com/s/fjoc5t8dwz5d6yq/LastUpd.zip?dl=0";
                             var downloadPath = App.WorkingDirectory + "\\downloadcache.zip";
 
                             await wc.OpenReadTaskAsync(URL);
