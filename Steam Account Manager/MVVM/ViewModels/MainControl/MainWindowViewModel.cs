@@ -123,7 +123,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             {
                 try
                 {
-                    using (var wc = new WebClient())
+                    using (var wc = new WebClient { Encoding = System.Text.Encoding.UTF8})
                     {
                         var version = Version.Parse(Utils.Common.BetweenStr(
                             wc.DownloadString("https://raw.githubusercontent.com/Explynex/Steam_Account_Manager/master/Steam%20Account%20Manager/Properties/AssemblyInfo.cs"),
