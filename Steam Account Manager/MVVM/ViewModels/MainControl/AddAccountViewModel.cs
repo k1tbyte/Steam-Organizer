@@ -54,7 +54,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             if (DontCollectInfo)
             {
-                Config.Accounts.Add(new Account(SteamLogin, SteamPassword, SteamLink));
+                Config.Accounts.Add(new Account(SteamLogin, SteamPassword, SteamLink) { Index = Config.Accounts.Count +1});
                 Config.SaveAccounts();
             }
             else

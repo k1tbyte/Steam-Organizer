@@ -56,8 +56,8 @@ namespace Steam_Account_Manager.Infrastructure.Models
         public DateTime LastUpdateTime { get; set; }
 
         public UInt32? SteamId32   => Utils.Common.SteamId64ToSteamId32(SteamId64);
-        public string AvatarFull   => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_full.jpg" : "/Images/user.png";
-        public string AvatarMedium => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_medium.jpg" : "/Images/user.png";
+        public string AvatarFull   => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_full.jpg" : "/Images/default_steam_profile.png";
+        public string AvatarMedium => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_medium.jpg" : "/Images/default_steam_profile.png";
 
         [field: NonSerialized]
         public int Index { get; set; }

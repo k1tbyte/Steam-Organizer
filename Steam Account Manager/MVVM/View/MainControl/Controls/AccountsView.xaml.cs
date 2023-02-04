@@ -117,6 +117,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
                 (accountsListBox.ItemContainerGenerator.ContainerFromIndex(_targetIndex) as ListBoxItem).Effect = null;
                 Config.Accounts.Move(_draggedItemIndex, _targetIndex);
                 (this.DataContext as AccountsViewModel).UpdateIndexes(refresh: true);
+                Config.SaveAccounts();
             }
 
             if(_sender != null)

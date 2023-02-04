@@ -21,8 +21,9 @@ namespace Steam_Account_Manager.Infrastructure
                 try
                 {
                     Presentation.OpenPopupMessageBox(App.FindString("atv_inf_getLocalAccInfo"));
-                    acc.SteamId64 = Utils.Common.SteamId32ToSteamId64(Utils.Common.GetSteamRegistryActiveUser());
+                    acc.SteamId64 = Common.SteamId32ToSteamId64(Utils.Common.GetSteamRegistryActiveUser());
                     await acc.ParseInfo();
+                    App.Current.Dispatcher.Invoke(() => ((App.MainWindow.DataContext as MainWindowViewModel).AccountsV.DataContext as AccountsViewModel).SearchFilter.Refresh());
                     Config.SaveAccounts();
                 }
                 catch

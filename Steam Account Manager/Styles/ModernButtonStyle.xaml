@@ -46,7 +46,7 @@
         <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
         <Setter Property="Background" Value="{DynamicResource first_main_brush}"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Width" Value="80"/>
+        <Setter Property="Width" Value="Auto"/>
         <Setter Property="Height" Value="35"/>
         <Setter Property="Padding" Value="10 0 10 0"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>

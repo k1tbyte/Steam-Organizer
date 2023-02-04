@@ -75,7 +75,7 @@
                 <Icon:PackIconMaterial Kind="FileRestore"  Width="20" Height="20"
                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <Button.ToolTip>
-                    <ToolTip ContentStringFormat="{DynamicResource av_popup_saveDatabase}"/>
+                    <ToolTip ContentStringFormat="{DynamicResource av_popup_restoreAccount}"/>
                 </Button.ToolTip>
             </Button>
 

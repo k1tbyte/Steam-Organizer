@@ -173,11 +173,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
                     var authenticatorName = $@"{App.WorkingDirectory}\Authenticators\{list.Account_name}.maFile";
 
-                    if (!File.Exists(authenticatorName))
-                    {
-                        File.Delete(authenticatorName);
-                    }
-
                     File.Copy(fileDialog.FileName, authenticatorName, true);
 
                     currentAccount.AuthenticatorPath = authenticatorName;

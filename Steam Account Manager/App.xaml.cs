@@ -38,11 +38,11 @@ namespace Steam_Account_Manager
         protected override async void OnStartup(StartupEventArgs e)
         {
 #if !DEBUG
-/*            if (!Mutex.WaitOne(TimeSpan.Zero, true))
+            if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
                 System.Windows.Forms.MessageBox.Show("Mutex already defined!");
                 Shutdown();
-            }*/
+            }
 #endif
             ProfileOptimization.SetProfileRoot(WorkingDirectory);
             ProfileOptimization.StartProfile("Startup.profile");
@@ -50,6 +50,7 @@ namespace Steam_Account_Manager
             DispatcherUnhandledException += (sender, arg) => { new ServiceWindow { InnerText = arg.Exception.ToString() }.ShowDialog(); Shutdown(); };
 
             Config.LoadProperties();
+
             #region Check internet connection
             if (!Common.CheckInternetConnection())
             {
@@ -87,7 +88,6 @@ namespace Steam_Account_Manager
         public static new void Shutdown()
         {
             IsShuttingDown = true;
-           // Config.SaveProperties();
 
             if(SteamRemoteClient.IsRunning)
                 SteamRemoteClient.Logout();
