@@ -17,7 +17,6 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             this.DataContext = new SettingsViewModel();
             IsPassword.IsChecked = !string.IsNullOrEmpty(Config.Properties.Password);
             CryptoKey.Text = Config.Properties.UserCryptoKey == Config.GetDefaultCryptoKey ? "" : Config.Properties.UserCryptoKey;
-            Unloaded += (sender,e) => Config.SaveProperties();
         }
 
 

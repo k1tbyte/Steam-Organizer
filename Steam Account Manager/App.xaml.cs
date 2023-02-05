@@ -1,6 +1,7 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
+using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using Steam_Account_Manager.UIExtensions;
 using Steam_Account_Manager.Utils;
 using System;
@@ -89,7 +90,10 @@ namespace Steam_Account_Manager
         {
             IsShuttingDown = true;
 
-            if(SteamRemoteClient.IsRunning)
+            if((App.MainWindow.DataContext as MainWindowViewModel).SettingsV.IsLoaded)
+                Config.SaveProperties();
+
+            if (SteamRemoteClient.IsRunning)
                 SteamRemoteClient.Logout();
 
             Tray?.Dispose();

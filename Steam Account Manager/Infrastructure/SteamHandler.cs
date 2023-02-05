@@ -124,12 +124,14 @@ namespace Steam_Account_Manager.Infrastructure
         private static void VirtualSteamLogger(Account account, bool dontRememberPassword = false, bool paste2fa = false)
         {
             Automation.RemoveAllEventHandlers();
+            Common.KillSteamProcess();
             if (Common.GetSteamRegistryLanguage() != account.Login)
             {
                 Common.SetSteamRegistryRememberUser(String.Empty);
             }
 
-            Common.KillSteamAndConnect(Config.Properties.SteamDirection,"");
+            Thread.Sleep(1500);
+            Common.ConnectSteam(Config.Properties.SteamDirection,"");
             byte SteamAwaiter = 0;
 
             Automation.AddAutomationEventHandler(
@@ -160,7 +162,10 @@ namespace Steam_Account_Manager.Infrastructure
                         if (String.IsNullOrEmpty(Utils.Common.GetSteamRegistryRememberUser()))
                         {
                             foreach (char c in account.Login)
+                            {
+                                SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
                                 PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
+                            }
                             
                             Thread.Sleep(100);
                         }
@@ -169,7 +174,11 @@ namespace Steam_Account_Manager.Infrastructure
                         Thread.Sleep(100);
 
                         foreach (char c in account.Password)
+                        {
+                            SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
                             PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
+                        }
+
                         
                         Thread.Sleep(100);
                         System.Windows.Forms.SendKeys.SendWait("{TAB}");
@@ -185,7 +194,7 @@ namespace Steam_Account_Manager.Infrastructure
                         {
                             string code = "";
                             App.Current.Dispatcher.Invoke(() => code = System.Windows.Clipboard.GetText(TextDataFormat.Text));
-                            Thread.Sleep(1500);
+                            Thread.Sleep(2500);
                             if (Config.Properties.Input2FaMethod == Input2faMethod.Manually)
                             {
                                 SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);

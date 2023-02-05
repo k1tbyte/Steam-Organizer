@@ -8,7 +8,8 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
              xmlns:ui="clr-namespace:Steam_Account_Manager.UIExtensions"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="600">
+             d:DesignHeight="450" d:DesignWidth="600"
+               >
     <Grid>
 
         <Grid.RowDefinitions>

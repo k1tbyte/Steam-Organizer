@@ -10,7 +10,8 @@
         Background="Transparent"
         Name="ShowAuthenticator" WindowStyle="None"
         Title="2FA Control"
-        AllowsTransparency="True">
+        AllowsTransparency="True"
+        SizeToContent="WidthAndHeight">
     <Window.Resources>
         <Style x:Key="expandConfsArea" TargetType="{x:Type Border}">
             <Setter Property="Height" Value="180"/>
@@ -40,7 +41,7 @@
 
     <Border CornerRadius="3" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="BorderDragMove"
             BorderThickness="0,3,0,3" BorderBrush="{DynamicResource second_main_brush}" Style="{StaticResource expandConfsArea}"
-            Width="430" Margin="3" Effect="{StaticResource LightShadow}" d:Effect="{x:Null}">
+            Width="430" Margin="3" Effect="{StaticResource LightShadow}" >
         <Grid>
             
             <Grid.RowDefinitions>

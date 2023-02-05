@@ -189,6 +189,11 @@ namespace Steam_Account_Manager.Utils
         {
             KillSteamProcess();
             System.Threading.Thread.Sleep(1500);
+            ConnectSteam(steamDir, args);
+        }
+
+        public static void ConnectSteam(string steamDir, string args)
+        {
             using (Process processSteam = new Process())
             {
                 processSteam.StartInfo.UseShellExecute = true;

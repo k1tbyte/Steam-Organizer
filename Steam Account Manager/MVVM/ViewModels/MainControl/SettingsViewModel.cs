@@ -26,7 +26,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             get => _autoLoginAccount;
             set
             {
-                if (value is Account acc && (acc.SteamId64 != Config.Properties.AutoLoginUserID) || value == null)
+                if ((value is Account acc && (acc.SteamId64 != Config.Properties.AutoLoginUserID || _autoLoginAccount == null)) || value == null)
                 {
                     Config.Properties.AutoLoginUserID = value == null ? null : (value as Account).SteamId64;
                     SetProperty(ref _autoLoginAccount, value);

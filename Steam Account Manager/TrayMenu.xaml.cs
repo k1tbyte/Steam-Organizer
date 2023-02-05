@@ -47,7 +47,7 @@ namespace Steam_Account_Manager
         {
             if (App.MainWindow.IsVisible)
             {
-                App.MainWindow.Hide();
+               App.MainWindow.Hide();
             }
             else
             {

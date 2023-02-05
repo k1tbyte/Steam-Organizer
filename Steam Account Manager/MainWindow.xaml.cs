@@ -24,6 +24,10 @@ namespace Steam_Account_Manager
         {
             base.Hide();
             WindowState = WindowState.Minimized;
+            using (var proc = System.Diagnostics.Process.GetCurrentProcess())
+            {
+                proc.MaxWorkingSet = proc.MinWorkingSet;
+            }
         }
 
         public new void Show()
