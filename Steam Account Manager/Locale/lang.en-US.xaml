@@ -69,6 +69,8 @@
     <v:String x:Key="mv_confirmNo">No</v:String>
     <v:String x:Key="mv_runtimeError">Runtime error</v:String>
     <v:String x:Key="mv_downloading">Downloading...</v:String>
+    <v:String x:Key="mv_close">Close</v:String>
+    <v:String x:Key="mv_update">Update</v:String>
     <!--#endregion-->
 
 

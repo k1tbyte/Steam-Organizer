@@ -54,9 +54,9 @@
             <StackPanel Grid.Row="2" Margin="5 15 30 10" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button  HorizontalAlignment="Left" Width="25" Height="25"
                     Style="{StaticResource ModernCopyButton}" Margin="0 5 20 0" Click="Copy_Click"/>
-                <Button Style="{StaticResource ModernDefaultButton}" Content="Close" Margin="0 0 30 0" Click="Button_Click"/>
+                <Button Style="{StaticResource ModernDefaultButton}" Content="{DynamicResource mv_close}" Margin="0 0 30 0" Click="Button_Click"/>
                 <Button x:Name="AlternativeButton" 
-                        Style="{StaticResource ModernDefaultButton}" Content="Update"/>
+                        Style="{StaticResource ModernDefaultButton}" Content="{DynamicResource mv_update}"/>
             </StackPanel>
             
           

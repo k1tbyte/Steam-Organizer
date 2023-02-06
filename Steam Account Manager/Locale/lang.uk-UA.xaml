@@ -69,6 +69,8 @@
     <v:String x:Key="mv_confirmNo">Ні</v:String>
     <v:String x:Key="mv_runtimeError">Помилка виконання</v:String>
     <v:String x:Key="mv_downloading">Завантаження...</v:String>
+    <v:String x:Key="mv_close">Закрити</v:String>
+    <v:String x:Key="mv_update">Оновити</v:String>
     <!--#endregion-->
 
 

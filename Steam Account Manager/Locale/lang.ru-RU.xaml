@@ -69,6 +69,8 @@
     <v:String x:Key="mv_confirmNo">Нет</v:String>
     <v:String x:Key="mv_runtimeError">Ошибка выполнения</v:String>
     <v:String x:Key="mv_downloading">Загрузка...</v:String>
+    <v:String x:Key="mv_close">Закрыть</v:String>
+    <v:String x:Key="mv_update">Обновить</v:String>
     <!--#endregion-->
 
 
