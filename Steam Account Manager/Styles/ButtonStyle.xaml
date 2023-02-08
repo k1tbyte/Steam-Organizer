@@ -172,7 +172,7 @@
         <Setter Property="Template" >
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2">
                         <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Border>
                 </ControlTemplate>
@@ -181,6 +181,9 @@
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="SpringGreen"/>
+            </Trigger>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter Property="BorderBrush" Value="Aqua"/>
             </Trigger>
         </Style.Triggers>
     </Style>

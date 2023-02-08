@@ -122,6 +122,7 @@ namespace Steam_Account_Manager.Utils
         #region Steam
         public static UInt32? SteamId64ToSteamId32(ulong? steamId64) => steamId64.HasValue ? (UInt32?)(steamId64.Value - 76561197960265728) : null;
         public static ulong SteamId32ToSteamId64(UInt32 steamId32)   => steamId32 + 76561197960265728UL;
+        public static ulong SteamId32ToSteamId64(string steamId32) => ulong.Parse(steamId32) + 76561197960265728UL;
         public static uint SteamId64ToSteamId32(string steamId64)
         {
             if (String.IsNullOrEmpty(steamId64)) return 0;

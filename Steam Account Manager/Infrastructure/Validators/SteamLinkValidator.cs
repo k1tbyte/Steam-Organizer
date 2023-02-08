@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
+using SteamKit2;
 using System;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.Infrastructure.Validators
@@ -12,6 +14,9 @@ namespace Steam_Account_Manager.Infrastructure.Validators
         private string _apiKey = Keys.STEAM_API_KEY;
 
         private const byte MaxSteamId64Len = 17;
+        private static Regex RegexSteamID2 = new Regex("STEAM_[0-5]:[01]:\\d+$");
+        private static Regex RegexSteamID3 = new Regex("\\[U:1:[0-9]+\\]$");
+
         private readonly string _steamLink;
         public ulong SteamId64Ulong => ulong.Parse(SteamId64);
         public uint SteamId32 => Utils.Common.SteamId64ToSteamId32(SteamId64);
@@ -23,6 +28,9 @@ namespace Steam_Account_Manager.Infrastructure.Validators
             ErrorType,
             SteamId64Link,
             SteamId64,
+            SteamId32,
+            SteamId2,
+            SteamId3,
             CustomIdLink,
             CustomId,
         }
@@ -94,6 +102,10 @@ namespace Steam_Account_Manager.Infrastructure.Validators
                 {
                     SteamId64 = _steamLink;
                 }
+                else if(SteamLinkType == SteamLinkTypes.SteamId32)
+                {
+                    SteamId64 = Utils.Common.SteamId32ToSteamId64(_steamLink).ToString();
+                }
                 else if (SteamLinkType == SteamLinkTypes.CustomIdLink)
                 {
                     string[] steamLinkArr = _steamLink.Split('/');
@@ -104,6 +116,15 @@ namespace Steam_Account_Manager.Infrastructure.Validators
                 {
                     SteamId64 = ConvertCustomToId64(_steamLink);
                 }
+                else if(SteamLinkType == SteamLinkTypes.SteamId2)
+                {
+                    var chunks = _steamLink.Split(':').Skip(1).ToArray();
+                    SteamId64 = ((Convert.ToUInt64(chunks[1]) * 2) + 76561197960265728 + Convert.ToByte(chunks[0])).ToString();
+                }
+                else if(SteamLinkType == SteamLinkTypes.SteamId3)
+                {
+                    SteamId64 = Utils.Common.SteamId32ToSteamId64(_steamLink.Split(':').Last().Replace("]", "")).ToString();
+                }
             }
             else
             {
@@ -113,7 +134,15 @@ namespace Steam_Account_Manager.Infrastructure.Validators
 
         private async Task CheckSteamLinkType()
         {
-            if (Uri.IsWellFormedUriString(_steamLink, UriKind.RelativeOrAbsolute)
+            if(RegexSteamID2.IsMatch(_steamLink))
+            {
+                SteamLinkType = SteamLinkTypes.SteamId2;
+            }
+            else if(RegexSteamID3.IsMatch(_steamLink))
+            {
+                SteamLinkType = SteamLinkTypes.SteamId3;
+            }
+            else if (Uri.IsWellFormedUriString(_steamLink, UriKind.RelativeOrAbsolute)
                 && (_steamLink.Contains("https://steamcommunity.com/") || _steamLink.Contains("steamcommunity.com/"))
                 && (_steamLink.Contains("/id/") || _steamLink.Contains("/profiles/")))
             {
@@ -135,7 +164,9 @@ namespace Steam_Account_Manager.Infrastructure.Validators
                 string steamId = _steamLink;
                 if (steamId.All(char.IsDigit))
                 {
-                    if (await IsSteamId64Correct(steamId))
+                    if (steamId.Length <= 10 && await IsSteamId64Correct(Utils.Common.SteamId32ToSteamId64(steamId).ToString()))
+                        SteamLinkType = SteamLinkTypes.SteamId32;
+                    else if (await IsSteamId64Correct(steamId))
                         SteamLinkType = SteamLinkTypes.SteamId64;
                 }
                 else

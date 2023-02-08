@@ -112,8 +112,8 @@
 
         <!--Accounts-->
             <ListBox ItemsSource="{Binding Accounts}" x:Name="accountsListBox"
-                     Background="Transparent" 
-                     AlternationCount="9999" Grid.Row="2" VirtualizingPanel.CacheLengthUnit="Item"
+                     Background="Transparent"  KeyboardNavigation.TabNavigation="Once"
+                     Grid.Row="2" VirtualizingPanel.CacheLengthUnit="Item"
                      VirtualizingPanel.CacheLength="1,1" VirtualizingPanel.ScrollUnit="Pixel"
                      VirtualizingPanel.VirtualizationMode="Recycling" BorderThickness="0"
                      ScrollViewer.CanContentScroll="True">
