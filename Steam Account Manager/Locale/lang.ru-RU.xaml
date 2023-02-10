@@ -19,6 +19,7 @@
     <v:String x:Key="sv_steam_key">Пользовательский steam web API ключ</v:String>
     <v:String x:Key="sv_getID">Получать steam ID у анонимных аккаунтов при логине</v:String>
     <v:String x:Key="sv_dontRememberPass">Не запоминать пароль при входе</v:String>
+    <v:String x:Key="sv_freezeMode">Режим заморозки</v:String>
     <v:String x:Key="sv_newPass">╰ Введите новый пароль:</v:String>
     <v:String x:Key="sv_autoStartup">Включать при запуске системы</v:String>
     <v:String x:Key="sv_minimizeAtStart">Сворачивать при запуске приложения</v:String>

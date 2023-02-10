@@ -47,6 +47,7 @@ namespace Steam_Account_Manager.Infrastructure.Models
         public bool DontRememberPassword { get; set; }
         public bool MinimizeToTray { get; set; }
         public bool MinimizeOnStart { get; set; }
+        public bool FreezeMode { get; set; }
         public string WebApiKey { get; set; }
         public string UserCryptoKey { get; set; }
         public string Password { get; set; }

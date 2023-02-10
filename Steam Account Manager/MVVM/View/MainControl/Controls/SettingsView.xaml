@@ -218,6 +218,13 @@
                           Style="{StaticResource ModernSwitchToggleButton}"/>
                 </DockPanel>
 
+                <!-- Freeze mode -->
+                <DockPanel>
+                    <TextBlock Text="{DynamicResource sv_freezeMode}" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding Properties.FreezeMode}"
+                          Style="{StaticResource ModernSwitchToggleButton}"/>
+                </DockPanel>
+
                 <!--Set password-->
                 <DockPanel Grid.Row="8">
                     <TextBlock Text="{DynamicResource sv_password}" Style="{StaticResource settingTextBlock}"/>

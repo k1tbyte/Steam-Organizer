@@ -93,11 +93,6 @@
                     <Icon:PackIconMaterial Kind="ExitToApp" Padding="2" Margin="0 3 10 0"/>
                     <TextBlock Text="{DynamicResource tv_exit}"/>
                 </StackPanel>
-                <Button.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Hello"/>
-                    </ContextMenu>
-                </Button.ContextMenu>
             </Button>
         </StackPanel>
     </Border>

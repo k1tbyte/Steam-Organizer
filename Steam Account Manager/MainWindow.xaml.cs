@@ -1,4 +1,5 @@
-﻿using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+﻿using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using System.Windows;
 using System.Windows.Input;
 
@@ -15,6 +16,16 @@ namespace Steam_Account_Manager
                 if (App.IsShuttingDown) return;
                 App.Shutdown();
             };
+
+            Loaded += (sender, e) => { if(Config.Properties.FreezeMode) LimitMemory(); };
+        }
+
+        private void LimitMemory()
+        {
+            using (var proc = System.Diagnostics.Process.GetCurrentProcess())
+            {
+                proc.MaxWorkingSet = proc.MinWorkingSet;
+            }
         }
 
         private void BorderDragMove(object sender, MouseButtonEventArgs e) => this.DragMove();
@@ -24,10 +35,9 @@ namespace Steam_Account_Manager
         {
             base.Hide();
             WindowState = WindowState.Minimized;
-            using (var proc = System.Diagnostics.Process.GetCurrentProcess())
-            {
-                proc.MaxWorkingSet = proc.MinWorkingSet;
-            }
+            if (Config.Properties.FreezeMode)
+                LimitMemory();
+            
         }
 
         public new void Show()
