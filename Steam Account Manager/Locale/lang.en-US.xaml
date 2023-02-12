@@ -301,6 +301,16 @@
     <v:String x:Key="rc_lv_logout">Logout</v:String>
     <v:String x:Key="rc_lv_editNick">Edit nickname</v:String>
     <v:String x:Key="rc_lv_noInternet">No internet connection...</v:String>
+    <v:String x:Key="rc_lv_errorRequest">An error occurred while executing the request...</v:String>
+    <v:String x:Key="rc_lv_notLogSteamWeb">Missing login to Steam Web...</v:String>
+    <v:String x:Key="rc_lv_steamWebConnectTip">You are currently offline on Steam Web, probably a previous attempt failed, connect now?</v:String>
+    <v:String x:Key="rc_lv_apiKeyNoRegTip">Web API key not registered, would you like to register now?</v:String>
+    <v:String x:Key="rc_lv_apiKeyNoRegTitle">Web API key not registered!</v:String>
+    <v:String x:Key="rc_lv_apiKeyDeniedTip">Perhaps your account does not meet the requirements for obtaining a key, please visit the page manually</v:String>
+    <v:String x:Key="rc_lv_apiKeyDeniedTitle">Access to Web-API key denied</v:String>
+    <v:String x:Key="rc_lv_apiKeyRevokeTip">Perhaps the Web-API key has already been canceled or has not yet been created</v:String>
+    <v:String x:Key="rc_lv_apiKeyRevokeTitle">Steam Web-API key not registered...</v:String>
+
     <v:String x:Key="rc_lv_invalidPass">Invalid password!</v:String>
     <v:String x:Key="rc_lv_invalidTwofa">Invalid 2FA code!</v:String>
     <v:String x:Key="rc_lv_invalidGuard">Invalid auth code!</v:String>

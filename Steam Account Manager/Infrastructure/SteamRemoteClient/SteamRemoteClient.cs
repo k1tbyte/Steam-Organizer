@@ -910,7 +910,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
             else
             {
-                Utils.Presentation.OpenErrorMessageBox("An error has occurred, the settings are not set...","Web API error...");
+                Utils.Presentation.OpenPopupMessageBox(App.FindString("rc_lv_errorRequest"), true);
                 return false;
             }
 
@@ -920,7 +920,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
             if (!IsWebLoggedIn)
             {
-                Utils.Presentation.OpenMessageBox("Some help msg later...","Not logged into SteamWeb...");
+                ManualWebConnect();
                 return;
             }
 
@@ -960,25 +960,23 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 return ESteamApiKeyState.Registered;
             });
 
+            if (responseResult == ESteamApiKeyState.Error || responseResult == ESteamApiKeyState.Timeout)
+            {
+                Utils.Presentation.OpenPopupMessageBox(App.FindString("rc_lv_errorRequest"), true);
+                return;
+            }
+
             switch (responseResult)
             {
-                case ESteamApiKeyState.Error:
-                    Utils.Presentation.OpenErrorMessageBox("An error occurred while getting the Web-API key","Error");
-                    return;
-                case ESteamApiKeyState.Timeout:
-                    Utils.Presentation.OpenErrorMessageBox("some help msg later","Timeout exceeded...");
-                    return;
                 case ESteamApiKeyState.AccessDenied:
-                    Utils.Presentation.OpenErrorMessageBox("some help msg later","Access to Web API key denied");
+                    Utils.Presentation.OpenErrorMessageBox(App.FindString("rc_lv_apiKeyDeniedTip"),App.FindString("rc_lv_apiKeyDeniedTitle"));
                     return;
                 case ESteamApiKeyState.NotRegisteredYet:
-                    var response = Utils.Presentation.OpenQueryMessageBox("Web API key not registered, would you like to register now?", "Web API key not registered!");
+                    var response = Utils.Presentation.OpenQueryMessageBox(App.FindString("rc_lv_apiKeyNoRegTip"), App.FindString("rc_lv_apiKeyNoRegTitle"));
                     if (response == true)
                         RegisterWebApiKey();
                     return;
-
             }
-
         }
 
         internal static void RegisterWebApiKey()
@@ -997,11 +995,19 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             CurrentUser.WebApiKey = htmlDoc.DocumentNode.SelectSingleNode("//div[@id='bodyContents_ex']/p")?.InnerText.Replace("Key: ", "");
         }
 
+        internal static void ManualWebConnect()
+        {
+            if(Utils.Presentation.OpenQueryMessageBox(App.FindString("rc_lv_steamWebConnectTip"), App.FindString("rc_lv_notLogSteamWeb")) == true)
+            {
+
+            }
+        }
+
         internal static async Task<bool> RevokeWebApiKey()
         {
             if (!IsWebLoggedIn)
             {
-                Utils.Presentation.OpenMessageBox("some help msg later","Not logged into SteamWeb...");
+                ManualWebConnect();
                 return false;
             }
 
@@ -1021,12 +1027,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 var HtmlNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"message\"]/h3");
                 if (HtmlNode != null && HtmlNode.InnerText.Contains("Unable to revoke API Key."))
                 {
-                    Utils.Presentation.OpenErrorMessageBox("some help msg later","Error! Steam Web Api key not registered...");
+                    Utils.Presentation.OpenErrorMessageBox(App.FindString("rc_lv_apiKeyRevokeTip"), App.FindString("rc_lv_apiKeyRevokeTitle"));
                     return false;
                 }
                 return true;
             }
-            Utils.Presentation.OpenErrorMessageBox("some help msg later","An error occurred while connecting to the server...");
+            Utils.Presentation.OpenPopupMessageBox(App.FindString("rc_lv_errorRequest"),true);
             return false;
         }
 
@@ -1040,7 +1046,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             var response = await UnifiedEcon.SendMessage(x => x.GetTradeOfferAccessToken(request)).ToTask().ConfigureAwait(false);
             if (response.Result != EResult.OK)
             {
-                Utils.Presentation.OpenErrorMessageBox("some help msg later","An error occurred while getting the token...");
+                Utils.Presentation.OpenPopupMessageBox(App.FindString("rc_lv_errorRequest"),true);
                 return null;
             }
             return response.GetDeserializedResponse<CEcon_GetTradeOfferAccessToken_Response>().trade_offer_access_token;

@@ -298,6 +298,17 @@
     <v:String x:Key="rc_lv_logout">Выйти</v:String>
     <v:String x:Key="rc_lv_editNick">Редактировать имя</v:String>
     <v:String x:Key="rc_lv_noInternet">Интернет соединение отсутствует...</v:String>
+    <v:String x:Key="rc_lv_errorRequest">При выполнении запроса произошла ошибка...</v:String>
+    <v:String x:Key="rc_lv_notLogSteamWeb">Вход в Steam Web отсутствует...</v:String>
+    <v:String x:Key="rc_lv_steamWebConnectTip">В настоящее время вы не в сети Steam Web, возможно, предыдущая попытка не удалась, подключитесь сейчас?</v:String>
+    <v:String x:Key="rc_lv_apiKeyNoRegTip">Ключ Web-API не зарегистрирован. Вы хотите зарегистрироваться сейчас?</v:String>
+    <v:String x:Key="rc_lv_apiKeyNoRegTitle">Ключ Web-API не зарегистрирован.</v:String>
+    <v:String x:Key="rc_lv_apiKeyDeniedTip">Возможно, ваш аккаунт не соответствует требованиям для получения ключа, пожалуйста, посетите страницу вручную</v:String>
+    <v:String x:Key="rc_lv_apiKeyDeniedTitle">Доступ к ключу Web-API запрещен</v:String>
+    <v:String x:Key="rc_lv_apiKeyRevokeTip">Возможно, ключ Web-API уже отменен или еще не создан</v:String>
+    <v:String x:Key="rc_lv_apiKeyRevokeTitle">Ключ Web-API не зарегистрирован...</v:String>
+
+
     <v:String x:Key="rc_lv_invalidPass">Неправильный пароль!</v:String>
     <v:String x:Key="rc_lv_invalidTwofa">Неправильный код 2FA!</v:String>
     <v:String x:Key="rc_lv_invalidGuard">Неправильный код аутентификации!</v:String>
