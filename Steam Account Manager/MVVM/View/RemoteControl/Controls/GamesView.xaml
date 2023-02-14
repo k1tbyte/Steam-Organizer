@@ -73,7 +73,7 @@
                        HorizontalAlignment="Center" Margin="0 0 0 5" Width="90" TextAlignment="Center"/>
 
             <Button Command="{Binding ParseGamesComamnd}" 
-                Style="{StaticResource defaultButtonColored}"   Content="{DynamicResource rc_gv_Update}"/>
+                Style="{StaticResource ModernColoredButton}"   Content="{DynamicResource rc_gv_Update}"/>
             
           
         </StackPanel>
@@ -124,7 +124,7 @@
 
                 <Button Command="{Binding AddOtherIdCommand}" CommandParameter="{Binding ElementName=add_idBox}"  
                         Background="{DynamicResource rc_button_back}" 
-                        Style="{StaticResource defaultButtonColored}" Content="Add" Height="26" Width="40">
+                        Style="{StaticResource ModernColoredButton}" Content="Add" Height="26" Width="40">
                     <Button.ToolTip>
                         <ToolTip ContentStringFormat="{DynamicResource rc_gv_addGameDesc}"/>
                     </Button.ToolTip>

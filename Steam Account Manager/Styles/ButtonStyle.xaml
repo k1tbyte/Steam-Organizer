@@ -70,46 +70,6 @@
         </Setter>
     </Style>
 
-    <Style x:Key="defaultButton" TargetType="Button">
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Foreground" Value="{DynamicResource settings_buttons_isUncheckedText}"/>
-        <Setter Property="Background" Value="{DynamicResource first_main_brush}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource buttons_border_brush}"/>
-        <Setter Property="Width" Value="80"/>
-        <Setter Property="Height" Value="35"/>
-        <Setter Property="FontSize" Value="14"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="5" BorderThickness="0.7" BorderBrush="{TemplateBinding BorderBrush}" >
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="BorderBrush" Value="Transparent"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="defaultButtonColored" TargetType="Button" BasedOn="{StaticResource defaultButton}">
-        <Setter Property="Background" Value="{DynamicResource rc_button_back}"/>
-        <Style.Triggers>
-            <Trigger Property="IsPressed" Value="true">
-                <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
-                <Setter Property="Foreground" Value="#ffffff"/>
-            </Trigger>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
-                <Setter Property="Foreground" Value="White"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
     <Style x:Key="tabButton" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="#121518" />

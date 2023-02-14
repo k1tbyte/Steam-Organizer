@@ -54,7 +54,7 @@
                 <ComboBox  x:Name="CommentsBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacyComment}"
                            HorizontalAlignment="Left" SelectionChanged="CommentsBox_SelectionChanged" />
 
-                <Button Style="{StaticResource defaultButtonColored}" x:Name="ApplyPrivacyChanges"
+                <Button Style="{StaticResource ModernColoredButton}" x:Name="ApplyPrivacyChanges"
                         Content="Apply" Height="28" Margin="0 21 0 0" Width="100" Click="ApplyPrivacyChanges_Click"/>
             </StackPanel>
             
@@ -81,7 +81,7 @@
 
                     <Button Command="{Binding GetWebApiKeyCommand}" 
                             CommandParameter="{Binding ElementName=succesApiKeyGet}"
-                        Style="{StaticResource defaultButtonColored}"  Content="Get" Height="26" Width="40"/>
+                        Style="{StaticResource ModernColoredButton}"  Content="Get" Height="26" Width="40"/>
                     
                 </StackPanel>
 
@@ -104,7 +104,7 @@
 
                     <Button Command="{Binding GetTradeTokenCommmand}" 
                             CommandParameter="{Binding ElementName=succesTradeTokenGet}"
-                        Style="{StaticResource defaultButtonColored}"  Content="Get" Height="26" Width="40"/>
+                        Style="{StaticResource ModernColoredButton}"  Content="Get" Height="26" Width="40"/>
 
                 </StackPanel>
 

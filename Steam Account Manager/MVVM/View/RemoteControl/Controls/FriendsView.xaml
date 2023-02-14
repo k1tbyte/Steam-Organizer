@@ -69,7 +69,7 @@
 
             </DataGrid>
 
-            <Button Style="{StaticResource defaultButtonColored}" 
+            <Button Style="{StaticResource ModernColoredButton}" FontWeight="Normal" MinWidth="80"
                     VerticalAlignment="Bottom" Margin="12" Content="{DynamicResource rc_gv_Update}" Command="{Binding GetFriendsInfoCommand}"/>
         </Grid>
     </Border>

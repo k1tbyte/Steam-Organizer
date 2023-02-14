@@ -55,21 +55,64 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Grid  >
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5" Width="{TemplateBinding Width}"/>
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5"/>
                         <ContentPresenter x:Name="content" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"
                                          />
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="MouseOver">
                                     <Storyboard>
-                                        <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                        <ColorAnimation  Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
                                                             To="{DynamicResource second_main_color}" Duration="0:0:0.3"/>
+                                        <ThicknessAnimation  Storyboard.TargetName="border"  Storyboard.TargetProperty="Margin" To="2"  Duration="0:0:0.3"/>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Normal">
                                     <Storyboard>
                                         <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
                                                             To="{DynamicResource first_main_color}" Duration="0:0:0.3"/>
+                                        <ThicknessAnimation Storyboard.TargetName="border"  Storyboard.TargetProperty="Margin" To="0"  Duration="0:0:0.3"/>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter TargetName="border" Property="Effect" Value="{DynamicResource glow}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ModernColoredButton" TargetType="{x:Type Button}" BasedOn="{StaticResource ModernDefaultButton}">
+        <Setter Property="Background" Value="{DynamicResource rc_button_back}"/>
+        <Setter Property="Width" Value="80"/>
+        <Setter Property="Height" Value="35"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid  >
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5"/>
+                        <ContentPresenter x:Name="content" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"
+                                         />
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="MouseOver">
+                                    <Storyboard>
+                                        <ThicknessAnimation Storyboard.TargetName="border"  Storyboard.TargetProperty="Margin" To="1.5"  Duration="0:0:0.3"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Normal">
+                                    <Storyboard>
+
+                                        <ThicknessAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Margin" To="0"  Duration="0:0:0.3"/>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>

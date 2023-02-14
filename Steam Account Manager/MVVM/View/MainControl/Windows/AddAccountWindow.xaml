@@ -96,7 +96,7 @@
 
 
             <Button Style="{StaticResource ModernDefaultButton}"
-                    Command="{Binding AddAccountAsyncCommand}"
+                    Command="{Binding AddAccountAsyncCommand}" MinWidth="90"
                     CommandParameter="{Binding ElementName=AddAccountClassWnd}"
                     Content="{DynamicResource adv_save}" Grid.Row="4"  IsDefault="True"/>
 

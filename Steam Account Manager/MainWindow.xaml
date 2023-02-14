@@ -177,7 +177,7 @@
                                     Margin="0 0 0 60"
                                    StrokeThickness="30"  SegmentColor="{DynamicResource second_main_brush}" Percentage="0"/>
 
-                <Button Style="{StaticResource defaultButton}" VerticalAlignment="Bottom" Background="{DynamicResource second_main_brush}"
+                <Button Style="{StaticResource ModernColoredButton}" VerticalAlignment="Bottom" Background="{DynamicResource second_main_brush}"
                         FontWeight="Medium" Click="CancellationUpdateEvent">
                     Cancel
                 </Button>

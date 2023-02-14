@@ -66,9 +66,10 @@
                     <TextBlock Grid.Row="3" VerticalAlignment="Top" FontSize="11"
                        Grid.RowSpan="4" Margin="15 5 20 0" Padding="8 0 20 0" 
                        Foreground="PaleVioletRed" TextWrapping="Wrap" Text="{Binding ErrorMsg,UpdateSourceTrigger=PropertyChanged}" />
-                   
-                    <Button Margin="0 10 0 22" Style="{StaticResource defaultButtonColored}" Content="Login" IsDefault="True"
-                         Width="100" Command="{Binding LogOnCommand}">
+
+                    <Button Margin="0 10 0 22" Style="{StaticResource ModernColoredButton}" FontWeight="Normal" Content="Login"
+                            IsDefault="True" MinWidth="100"
+                          Command="{Binding LogOnCommand}">
                     </Button>
 
                 </StackPanel>
@@ -126,14 +127,14 @@
                        Text="{DynamicResource rc_lv_recently}" FontSize="15"/>
 
             <StackPanel Orientation="Horizontal" Margin="40 0 0 15" VerticalAlignment="Bottom" HorizontalAlignment="Left">
-                <Button x:Name="RecentlyDelete" Style="{StaticResource defaultButtonColored}"
+                <Button x:Name="RecentlyDelete" Style="{StaticResource ModernColoredButton}" FontWeight="Normal"
                         Width="30" Height="30" Click="RecentlyDelete_Click">
                     <Icon:Material Kind="TrashCan"/>
                     <Button.ToolTip>
                         <ToolTip ContentStringFormat="{DynamicResource rc_lv_recentlyDelete}"/>
                     </Button.ToolTip>
                 </Button>
-                <Button Style="{StaticResource defaultButtonColored}" 
+                <Button Style="{StaticResource ModernColoredButton}" FontWeight="Normal"
                         Command="{Binding RecentlyLogOnCommand}"  Margin="10 0 0 0" CommandParameter="{Binding ElementName=Recently}" Width="30" Height="30">
                     <Icon:Material Kind="Login"/>
                     <Button.ToolTip>
@@ -156,7 +157,7 @@
         <Border Visibility="{Binding SuccessLogOn,Converter={StaticResource BoolToVis}}" BorderThickness="0.8"
                 Background="{DynamicResource first_main_brush}" CornerRadius="25" >
             <Grid>
-                <Button  Style="{StaticResource defaultButtonColored}"
+                <Button  Style="{StaticResource ModernColoredButton}" FontWeight="Normal"
                          CommandParameter="{Binding ElementName=Recently}" Command="{Binding LogOutCommand}"
                          VerticalAlignment="Top" HorizontalAlignment="Left" Width="45" Height="30" Margin="23 21 0 0">
                     <Icon:Material Kind="Logout" RotationAngle="180"/>

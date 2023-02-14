@@ -100,7 +100,7 @@
                         Content="Change" Command="{Binding SetAchievementCommand}"
                         CommandParameter="{Binding ElementName=achievements}">
                     <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource defaultButton}">
+                        <Style TargetType="Button" BasedOn="{StaticResource ModernColoredButton}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=achievements,Path=SelectedIndex}" Value="-1">
                                     <Setter Property="IsHitTestVisible" Value="False"/>

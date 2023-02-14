@@ -246,7 +246,7 @@
                     <ui:ModernPasswordBox CornerRadius="5"  Width="255" BorderColor="{DynamicResource first_main_brush}"  Password="{Binding Password,UpdateSourceTrigger=PropertyChanged}"
                                                Height="35"  Margin="8 0 0 0" HorizontalAlignment="Left" IconKeyColor="{DynamicResource settings_buttons_isMouseOver}"/>
 
-                    <Button Style="{StaticResource defaultButton}" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    <Button Style="{StaticResource ModernServiceButton}" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"
                             IsHitTestVisible="{Binding PasswordError,Converter={StaticResource BoolInverted}}"
                             Background="Transparent" Margin="5 1 0 0" BorderBrush="Transparent" Click="SetPassword_Click">
                         <Icon:PackIconMaterial Kind="Check" Padding="2"  Width="20" Height="20"
@@ -308,7 +308,7 @@
                                 </Style>
                             </ComboBox.ItemContainerStyle>
                         </ComboBox>
-                        <Button Style="{StaticResource defaultButton}" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Left"
+                        <Button Style="{StaticResource ModernServiceButton}" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Left"
                             Background="Transparent" Margin="2 0 0 0" BorderBrush="Transparent" Command="{Binding ClearAutoLoginAccount}">
                             <Icon:PackIconMaterial Kind="Close" Padding="3"/>
                         </Button>
