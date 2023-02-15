@@ -5,11 +5,14 @@ using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using Steam_Account_Manager.UIExtensions;
 using Steam_Account_Manager.Utils;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.WebSockets;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -38,13 +41,19 @@ namespace Steam_Account_Manager
         [STAThread]
         protected override async void OnStartup(StartupEventArgs e)
         {
-#if !DEBUG
+//#if !DEBUG
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
-                System.Windows.Forms.MessageBox.Show("Mutex already defined!");
-                Shutdown();
+                if (e.Args.Length > 0)
+                {
+                    var currentProcess = Process.GetCurrentProcess();
+                    var proc = Process.GetProcesses().SingleOrDefault(o => o.ProcessName == currentProcess.ProcessName && o.MainWindowHandle != IntPtr.Zero);
+                    Win32.SendMessage(proc.MainWindowHandle, String.Join(" ", e.Args));
+                }
+                Application.Current.Shutdown();
             }
-#endif
+            //#endif
+
             ProfileOptimization.SetProfileRoot(WorkingDirectory);
             ProfileOptimization.StartProfile("Startup.profile");
 

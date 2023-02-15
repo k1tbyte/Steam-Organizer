@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -85,6 +86,9 @@ namespace Steam_Account_Manager.Utils
         [DllImport("user32.dll")]
         public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
+        [DllImport("User32.dll", EntryPoint = "SendMessage")]
+        private static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
+
         #endregion
 
         #region Structs
@@ -94,6 +98,16 @@ namespace Steam_Account_Manager.Utils
             public Int32 X;
             public Int32 Y;
         };
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct COPYDATASTRUCT
+        {
+            public IntPtr dwData;
+            public int cbData;
+
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string lpData;
+        }
 
         public enum WM : uint
         {
@@ -113,6 +127,7 @@ namespace Steam_Account_Manager.Utils
         public const int SW_RESTORE = 9;
         private const int GWL_EX_STYLE = -20;
         private const int WS_EX_APPWINDOW = 0x00040000, WS_EX_TOOLWINDOW = 0x00000080;
+        private const int WM_COPYDATA = 0x004A;
         #endregion
 
         public static Point GetMousePosition()
@@ -147,6 +162,20 @@ namespace Steam_Account_Manager.Utils
                 });
         }
 
+        public static void SendMessage(IntPtr hwnd, string message)
+        {
+            var messageBytes = Encoding.Unicode.GetBytes(message);
+            var data = new COPYDATASTRUCT
+            {
+                dwData = IntPtr.Zero,
+                lpData = message,
+                cbData = messageBytes.Length + 1 /* +1 because of \0 string termination */
+            };
+
+            if (SendMessage(hwnd, WM_COPYDATA, IntPtr.Zero, ref data) != 0)
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
+
         public static void AttachedThreadInputAction(Action action)
         {
             var foreThread = GetWindowThreadProcessId(GetForegroundWindow(), IntPtr.Zero);
@@ -165,6 +194,24 @@ namespace Steam_Account_Manager.Utils
                 if (threadsAttached)
                     AttachThreadInput(foreThread, appThread, false);
             }
+        }
+
+        public static string GetMessage(int message, IntPtr lParam)
+        {
+            if (message == WM_COPYDATA)
+            {
+                try
+                {
+                    var data = Marshal.PtrToStructure<COPYDATASTRUCT>(lParam);
+                    var result = string.Copy(data.lpData);
+                    return result;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+            return null;
         }
 
         /// <summary>
