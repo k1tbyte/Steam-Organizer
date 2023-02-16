@@ -34,8 +34,11 @@ namespace Steam_Account_Manager.Infrastructure
         }
 
 
-        public static async Task ConnectToSteam(Account acc)
+        public static async Task ConnectToSteam(Account acc,string addArgs = "")
         {
+            if (acc == null)
+                return;
+
             bool isShuttingDown = false;
 
             App.MainWindow.IsHitTestVisible = false;
@@ -62,7 +65,7 @@ namespace Steam_Account_Manager.Infrastructure
                     }
                     else
                     {
-                        Common.KillSteamAndConnect(Config.Properties.SteamDirection, $"-login {acc.Login} {acc.Password} -tcp");
+                        Common.KillSteamAndConnect(Config.Properties.SteamDirection, $"-login {acc.Login} {acc.Password} -tcp " + addArgs);
                         isShuttingDown = Config.Properties.ActionAfterLogin == LoggedAction.Close;
                     }
 

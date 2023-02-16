@@ -31,6 +31,7 @@ namespace Steam_Account_Manager
         public static bool OfflineMode = false;
         public static new MainWindow MainWindow;
         public static TrayMenu Tray;
+        public static string Args;
 
         public static Cursor GrabCursor { get; }     = new Cursor(new MemoryStream(Steam_Account_Manager.Properties.Resources.grab));
         public static Cursor GrabbingCursor { get; } = new Cursor(new MemoryStream(Steam_Account_Manager.Properties.Resources.grabbing));
@@ -41,7 +42,7 @@ namespace Steam_Account_Manager
         [STAThread]
         protected override async void OnStartup(StartupEventArgs e)
         {
-//#if !DEBUG
+#if DEBUG
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
                 if (e.Args.Length > 0)
@@ -52,8 +53,8 @@ namespace Steam_Account_Manager
                 }
                 Application.Current.Shutdown();
             }
-            //#endif
-
+#endif
+            Args = String.Join(" ",e.Args);
             ProfileOptimization.SetProfileRoot(WorkingDirectory);
             ProfileOptimization.StartProfile("Startup.profile");
 
