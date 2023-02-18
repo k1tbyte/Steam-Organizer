@@ -5,6 +5,9 @@ using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,6 +26,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public RelayCommand OpenOtherLinksCommand { get; set; }
         public RelayCommand ExportAccountCommand { get; set; }
         public RelayCommand AddAuthenticatorCommand { get; set; }
+        public RelayCommand CreateAccountShortcutCommand { get; set; }
         public AsyncRelayCommand RefreshCommand { get; set; } 
         #endregion
 
@@ -234,6 +238,26 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     Utils.Presentation.OpenDialogWindow(new ShowAuthenticatorWindow(currentAccount));
             });
 
+            CreateAccountShortcutCommand = new RelayCommand(o =>
+            {
+                var cachePath = App.WorkingDirectory + "\\Cache";
+                var icoPath = cachePath + "\\ico";
+
+                if (!Directory.Exists(cachePath))
+                    Directory.CreateDirectory(cachePath);
+
+                if (!Directory.Exists(icoPath))
+                    Directory.CreateDirectory(icoPath);
+
+                Utils.Imaging.SaveIcon(o as System.Windows.Media.ImageSource, icoPath + $"\\{currentAccount.SteamId64}.ico", new System.Drawing.Size(64, 64));
+                Utils.Win32.CreateShortcut(
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    $"{Regex.Replace(currentAccount.Nickname, "[\\/:*?\"<>|]+", "")}.lnk"),
+                    Assembly.GetExecutingAssembly().Location,
+                    $"-login {currentAccount.SteamId64}",
+                    App.WorkingDirectory, null, "", icoPath + $"\\{currentAccount.SteamId64}.ico"
+                     );
+            });
 
         }
     }

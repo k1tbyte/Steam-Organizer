@@ -237,6 +237,7 @@
       <DependentUpon>ShowAuthenticatorWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\Common.cs" />
+    <Compile Include="Utils\Imaging.cs" />
     <Compile Include="Utils\Presentation.cs" />
     <Compile Include="Utils\Win32.cs" />
     <Page Include="Locale\lang.en-US.xaml">

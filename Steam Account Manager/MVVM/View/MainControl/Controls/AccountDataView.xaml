@@ -678,15 +678,25 @@
         <!--#region 2FA -->
         
         <!-- 2fa activate button -->
-        <Button x:Name="TwoFaActivate" Style="{StaticResource ModernServiceButton}"
-                Width="45"  Grid.Row="1" Margin="60 10 0 0" Visibility="{Binding OnlyPreview}"
-                Command="{Binding AddAuthenticatorCommand}"
-                VerticalAlignment="Top" HorizontalAlignment="Left">
-            <Icon:PackIconMaterial  Kind="TwoFactorAuthentication" Height="18" Width="40" />
-            <Button.ToolTip>
-                <ToolTip ContentStringFormat="{DynamicResource adat_2fa_toolTip}"/>
-            </Button.ToolTip>
-        </Button>
+        <StackPanel Orientation="Horizontal" Margin="60 10 0 0" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Row="1">
+            <Button x:Name="TwoFaActivate" Style="{StaticResource ModernServiceButton}"
+                Width="45"  Visibility="{Binding OnlyPreview}" Command="{Binding AddAuthenticatorCommand}">
+                <Icon:PackIconMaterial  Kind="TwoFactorAuthentication" Height="18" Width="40" />
+                <Button.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource adat_2fa_toolTip}"/>
+                </Button.ToolTip>
+            </Button>
+
+            <Button Style="{StaticResource ModernServiceButton}" Margin="8 0 0 0"
+                  Visibility="{Binding OnlyPreview}" Width="25"
+                    Command="{Binding CreateAccountShortcutCommand}"
+                    CommandParameter="{Binding ElementName=steamImage,Path=Source}">
+                <Icon:PackIconMaterial  Kind="BadgeAccountHorizontal" Height="24" Width="24" VerticalAlignment="Center"/>
+                <Button.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource adat_popup_shortcut}"/>
+                </Button.ToolTip>
+            </Button>
+        </StackPanel>
 
         <!--#endregion-->
 

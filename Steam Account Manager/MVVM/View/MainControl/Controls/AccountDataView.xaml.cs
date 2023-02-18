@@ -1,9 +1,13 @@
 ﻿using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+using Steam_Account_Manager.Utils;
 using System;
+using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
@@ -94,6 +98,11 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             }
 
             timeStamp = DateTime.Now;
+        }
+
+        private void SaveAvatarIcon(object sender, RoutedEventArgs e) 
+        {
+            
         }
     }
 }

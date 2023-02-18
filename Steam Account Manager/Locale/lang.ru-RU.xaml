@@ -190,6 +190,7 @@
     <v:String x:Key="adat_popup_regDateUnknown">Дата регистрации неизвестна</v:String>
     <v:String x:Key="adat_popup_vacCount">Количество VAC банов:</v:String>
     <v:String x:Key="adat_popup_daysFirstBan">Дней после первого бана:</v:String>
+    <v:String x:Key="adat_popup_shortcut">Создать ярлык аккаунта на рабочем столе</v:String>
     <!--#endregion-->
 
 

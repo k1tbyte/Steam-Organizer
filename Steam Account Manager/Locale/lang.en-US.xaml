@@ -192,6 +192,7 @@
     <v:String x:Key="adat_popup_regDateUnknown">Registration date unknown</v:String>
     <v:String x:Key="adat_popup_vacCount">Vac count:</v:String>
     <v:String x:Key="adat_popup_daysFirstBan">Days since first ban:</v:String>
+    <v:String x:Key="adat_popup_shortcut">Create account shortcut on desktop</v:String>
     <!--#endregion-->
 
     
