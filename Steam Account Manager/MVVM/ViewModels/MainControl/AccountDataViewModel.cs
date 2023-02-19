@@ -155,6 +155,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             {
                 await currentAccount.ParseInfo();
                 OnPropertyChanged(nameof(CurrentAccount));
+                ((App.MainWindow.DataContext as MainWindowViewModel).AccountsV.DataContext as AccountsViewModel).SearchFilter.Refresh();
                 Config.SaveAccounts();
                 ShowNotificationAsync(App.FindString("adat_cs_inf_updated"));
             }
@@ -257,6 +258,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     $"-login {currentAccount.SteamId64}",
                     App.WorkingDirectory, null, "", icoPath + $"\\{currentAccount.SteamId64}.ico"
                      );
+
+                Utils.Presentation.OpenPopupMessageBox($"A shortcut has been created on the desktop for the account: {currentAccount.Nickname}");
             });
 
         }

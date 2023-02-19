@@ -124,10 +124,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Infrastructure\Converters\IncrementConverter.cs" />
     <Compile Include="Infrastructure\Converters\IndexBooleanConverter.cs" />
     <Compile Include="Infrastructure\Converters\IntegerToBooleanConverter.cs" />
     <Compile Include="Infrastructure\Converters\ResourceConverter.cs" />
+    <Compile Include="Infrastructure\Converters\SteamIDConverter.cs" />
     <Compile Include="Infrastructure\Models\AccountModel.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
     <Compile Include="Infrastructure\Models\GamesHandlerModel.cs" />
