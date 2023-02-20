@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using static Steam_Account_Manager.Infrastructure.Converters.SteamIDConverter;
 
 namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
 {
@@ -98,11 +99,6 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             }
 
             timeStamp = DateTime.Now;
-        }
-
-        private void SaveAvatarIcon(object sender, RoutedEventArgs e) 
-        {
-            
         }
     }
 }

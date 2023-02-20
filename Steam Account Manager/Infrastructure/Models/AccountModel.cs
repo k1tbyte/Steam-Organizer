@@ -1,4 +1,5 @@
-﻿using Steam_Account_Manager.Infrastructure.Parsers;
+﻿using Steam_Account_Manager.Infrastructure.Converters;
+using Steam_Account_Manager.Infrastructure.Parsers;
 using Steam_Account_Manager.Utils;
 using SteamKit2;
 using System;
@@ -55,11 +56,13 @@ namespace Steam_Account_Manager.Infrastructure.Models
         public bool ContainParseInfo { get; set; }
         public DateTime LastUpdateTime { get; set; }
 
-        public UInt32? SteamId32   => Utils.Common.SteamId64ToSteamId32(SteamId64);
-        public string SteamID      => Common.SteamId64ToSteamID(SteamId64);
-        public string SteamID3     => Common.SteamId64ToSteamID3(SteamId64);
-        public string AvatarFull   => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_full.jpg" : "/Images/default_steam_profile.png";
-        public string AvatarMedium => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_medium.jpg" : "/Images/default_steam_profile.png";
+        public UInt32? SteamId32     => SteamIDConverter.SteamID64To32(SteamId64);
+        public string SteamID        => SteamIDConverter.SteamID64ToSteamID(SteamId64);
+        public string SteamID3       => SteamIDConverter.SteamID64ToSteamID3(SteamId64);
+        public string FiveM          => SteamIDConverter.SteamID64ToFiveM(SteamId64);
+        public string CsgoFriendCode => SteamIDConverter.SteamID64ToCsgoFriendCode(SteamId64);
+        public string AvatarFull     => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_full.jpg" : "/Images/default_steam_profile.png";
+        public string AvatarMedium   => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_medium.jpg" : "/Images/default_steam_profile.png";
 
         [field: NonSerialized]
         public int Index { get; set; }
