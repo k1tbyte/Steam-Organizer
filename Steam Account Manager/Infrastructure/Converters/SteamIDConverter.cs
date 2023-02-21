@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -33,19 +34,21 @@ namespace Steam_Account_Manager.Infrastructure.Converters
             SteamID3,
             CSGOFriendID,
             FiveM,
+            LinkID64,
+            LinkID3,
+            LinkVanityUrl,
+            VanityUrl,
             Unknown     //Should always be the last
         }
 
         #region ToSteamID64
         public static ulong SteamID32ToID64(UInt32 steamId32) => steamId32 + SteamID64Ident;
         public static ulong SteamID32ToID64(string steamId32) => ulong.Parse(steamId32) + SteamID64Ident;
-
         public static ulong SteamIDToID64(string steamID)
         {
             var chunks = steamID.Split(':');
             return (Convert.ToUInt64(chunks[2]) * 2) + 76561197960265728 + Convert.ToByte(chunks[1]);
         }
-
         public static ulong SteamID3ToID64(string steamID3) => SteamID32ToID64(steamID3.Split(':').Last().Replace("]", ""));
         public static ulong FiveMToID64(string fiveM) => Convert.ToUInt64(fiveM.Split(':').Last(), 16);
         public static ulong CsgoFriendCodeToID64(string code)
@@ -66,6 +69,11 @@ namespace Steam_Account_Manager.Infrastructure.Converters
 
             return id + SteamID64Ident;
         }
+
+        public static ulong LinkID64ToID64(string linkID64)   => ulong.Parse(IDFromLink(linkID64));
+        public static ulong LinkID3ToID64(string linkID3)     => SteamID3ToID64(IDFromLink(linkID3));
+        public static async Task<ulong> VanityUrlToID64(string vanityURL) => await RetrieveSteamID64($"https://steamcommunity.com/id/{vanityURL}");
+        public static async Task<ulong> VanityUrlLinkToID64(string vanityURLLink) => await RetrieveSteamID64(vanityURLLink.TrimEnd('/'));
         #endregion
 
         #region FromSteamID64
@@ -103,6 +111,25 @@ namespace Steam_Account_Manager.Infrastructure.Converters
         #endregion
 
         #region Helpers
+        private static string IDFromLink(string link) => link.Split('/').Last(o => !String.IsNullOrWhiteSpace(o));
+
+        private static async Task<ulong> RetrieveSteamID64(string steamWebProfileLink)
+        {
+            using (var wc = new WebClient())
+            {
+                var str = await wc.DownloadStringTaskAsync(new Uri($"{(steamWebProfileLink.StartsWith("https://") ? steamWebProfileLink : steamWebProfileLink.Insert(0, "https://"))}/?xml=1"));
+                if (String.IsNullOrEmpty(str))
+                    return 0;
+
+                var id = Utils.Common.BetweenStr(str, "<steamID64>", $"</steamID64>");
+
+                if (String.IsNullOrEmpty(id) || !ulong.TryParse(id, out ulong result))
+                    return 0;
+
+                return result;
+            }
+        }
+
         private static string Encode(UInt64 input)
         {
             string allNum = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -138,7 +165,6 @@ namespace Steam_Account_Manager.Infrastructure.Converters
             return BitConverter.ToUInt64(bytes, 0);
         }
 
-
         private static UInt64 FromLittleEndian(byte[] bytes, int end = -1)
         {
             var result = 0ul;
@@ -172,7 +198,7 @@ namespace Steam_Account_Manager.Infrastructure.Converters
         public static UInt64 MakeU64(UInt64 value1, UInt64 value2) => value1 << 32 | value2;
         #endregion
 
-        public static ulong ToSteamID64(string steamID)
+        public static async Task<ulong> ToSteamID64(string steamID)
         {
             switch (GetSteamIDType(steamID))
             {
@@ -188,6 +214,14 @@ namespace Steam_Account_Manager.Infrastructure.Converters
                     return CsgoFriendCodeToID64(steamID);
                 case ESteamIDType.FiveM:
                     return FiveMToID64(steamID);
+                case ESteamIDType.VanityUrl:
+                    return await VanityUrlToID64(steamID);
+                case ESteamIDType.LinkVanityUrl:
+                    return await VanityUrlLinkToID64(steamID);
+                case ESteamIDType.LinkID64:
+                    return LinkID64ToID64(steamID);
+                case ESteamIDType.LinkID3:
+                    return LinkID3ToID64(steamID);
                 default:
                     return 0;
             }
@@ -217,11 +251,29 @@ namespace Steam_Account_Manager.Infrastructure.Converters
 
         public static ESteamIDType GetSteamIDType(string steamID)
         {
+            if (String.IsNullOrWhiteSpace(steamID))
+                return ESteamIDType.Unknown;
+
+            if ((steamID.StartsWith("https://steamcommunity.com/") || steamID.StartsWith("steamcommunity.com/")) && (steamID.Contains("/profiles/") || steamID.Contains("/id/")))
+            {
+                var id = IDFromLink(steamID);
+                if (IDRegexes[(int)ESteamIDType.SteamID64].IsMatch(id))
+                    return ESteamIDType.LinkID64;
+                else if (IDRegexes[(int)ESteamIDType.SteamID3].IsMatch(id))
+                    return ESteamIDType.LinkID3;
+                else if (Regex.IsMatch(id, "^[A-Za-z\\d-]{3,32}$"))
+                    return ESteamIDType.LinkVanityUrl;
+            }
+
             for (int i = 0; i < IDRegexes.Length; i++)
             {
                 if (IDRegexes[i].IsMatch(steamID))
                     return (ESteamIDType)i;
             }
+
+            if (Regex.IsMatch(steamID, "^[A-Za-z\\d-]{3,32}$"))
+                return ESteamIDType.VanityUrl;
+
             return ESteamIDType.Unknown;
         }
 

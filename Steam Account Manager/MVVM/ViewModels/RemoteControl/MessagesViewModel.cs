@@ -1,6 +1,6 @@
-﻿using Steam_Account_Manager.Infrastructure.Models.JsonModels;
+﻿using Steam_Account_Manager.Infrastructure.Converters;
+using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
-using Steam_Account_Manager.Infrastructure.Validators;
 using Steam_Account_Manager.MVVM.Core;
 using System;
 using System.Collections.ObjectModel;
@@ -19,7 +19,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
     }
     internal class MessagesViewModel : ObservableObject
     {
-        public RelayCommand SelectChatCommand { get; set; }
+        public AsyncRelayCommand SelectChatCommand { get; set; }
         public RelayCommand LeaveFromChatCommand { get; set; }
         public RelayCommand SendMessageCommand { get; set; }
         public AsyncRelayCommand AddAdminIdCommand { get; set; }
@@ -206,17 +206,17 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
         {
             Messages = new ObservableCollection<Message>();
 
-            SelectChatCommand = new RelayCommand(o =>
+            SelectChatCommand = new AsyncRelayCommand(async (o) =>
             {
                 if (!string.IsNullOrEmpty(ErrorMsg))
                     ErrorMsg = "";
                 if (TempID != InterlocutorId)
                 {
                     TempID = InterlocutorId;
-                    var steamValidator = new SteamLinkValidator(InterlocutorId);
-                    if (steamValidator.SteamLinkType != SteamLinkValidator.SteamLinkTypes.ErrorType)
+                    var id = await SteamIDConverter.ToSteamID64(InterlocutorId);
+                    if (id != 0)
                     {
-                        SteamRemoteClient.InterlocutorID = SelectedChatId = steamValidator.SteamId64Ulong;
+                        SteamRemoteClient.InterlocutorID = SelectedChatId = id;
                         InterlocutorId = "";
                         if (Messages.Count != 0)
                             Messages.Clear();
@@ -250,17 +250,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
             {
                 if (!string.IsNullOrEmpty(ErrorMsg))
                     ErrorMsg = "";
-                await Task.Factory.StartNew(() =>
-                {
                     if (TempAdminID != AdminId)
                     {
                         TempAdminID = AdminId;
-                        var steamValidator = new SteamLinkValidator(TempAdminID);
-                        if (steamValidator.SteamLinkType != SteamLinkValidator.SteamLinkTypes.ErrorType)
+                        var id = await SteamIDConverter.ToSteamID64(TempAdminID);
+                        if (id != 0)
                         {
-                            SteamRemoteClient.CurrentUser.Messenger.AdminID = steamValidator.SteamId32;
+                            SteamRemoteClient.CurrentUser.Messenger.AdminID = SteamIDConverter.SteamID64To32(id);
                             IsAdminIdValid = true;
-                            App.Current.Dispatcher.Invoke(() => { Utils.Presentation.ShakingAnimation(o as System.Windows.FrameworkElement, true); });
+                            Utils.Presentation.ShakingAnimation(o as System.Windows.FrameworkElement, true);
 
                         }
                         else
@@ -269,9 +267,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
                             IsAdminIdValid = false;
                         }
                     }
-                });
-
-
             });
 
             DeleteMsgCommand = new RelayCommand(o =>

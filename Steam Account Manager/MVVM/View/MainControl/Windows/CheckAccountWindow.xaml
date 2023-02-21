@@ -44,7 +44,7 @@
                        Fill="{DynamicResource add_window_rectangle}"
                        Width="305"/>
 
-            <TextBox x:Name="id" Grid.Row="1" Style="{StaticResource ModernTextBoxOutlined}" Width="280" Height="30"  Tag="SteamID64/32/URL" 
+            <TextBox x:Name="id" Grid.Row="1" Style="{StaticResource ModernTextBoxOutlined}" Width="280" Height="30"  Tag="{DynamicResource adv_anySteamAccoutId}" 
                      Margin="0 25 0 40" VerticalAlignment="Top"/>
             <Icon:PackIconMaterial Grid.Row="1" Kind="Link" VerticalAlignment="Top"
                                            Height="22" Width="22" 

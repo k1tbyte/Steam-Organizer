@@ -70,7 +70,7 @@
                
                 <TextBox x:Name="SteamURL" MaxLength="60"  Style="{StaticResource ModernTextBoxOutlined}" Width="230" Height="30"  
                           Text="{Binding SteamLink, UpdateSourceTrigger=PropertyChanged}"
-                         VerticalAlignment="Center" Tag="{DynamicResource adv_account_URL}"/>
+                         VerticalAlignment="Center" Tag="{DynamicResource adv_anySteamAccoutId}"/>
                 <Icon:PackIconMaterial x:Name="urlIcon" Kind="Link" VerticalAlignment="Center"
                                            Height="22" Width="22" Margin="5 0 0 1"
                                            Foreground="{DynamicResource second_text_color}"/>

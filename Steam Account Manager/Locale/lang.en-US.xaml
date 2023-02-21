@@ -102,7 +102,7 @@
     <v:String x:Key="adv_header_title">Account adding</v:String>
     <v:String x:Key="adv_login">Login</v:String>
     <v:String x:Key="adv_password">Password</v:String>
-    <v:String x:Key="adv_account_URL">Account URL</v:String>
+    <v:String x:Key="adv_anySteamAccoutId">Steam ID/URL in any form</v:String>
     <v:String x:Key="adv_save">Save</v:String>
     <v:String x:Key="adv_error_invalid_link">Invalid steam profile link!</v:String>
     <v:String x:Key="adv_error_login_empty">The login field is empty!</v:String>

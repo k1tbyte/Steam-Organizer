@@ -1,5 +1,5 @@
-﻿using Steam_Account_Manager.Infrastructure.Models;
-using Steam_Account_Manager.Infrastructure.Validators;
+﻿using Steam_Account_Manager.Infrastructure.Converters;
+using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using System;
 using System.Windows;
@@ -24,15 +24,15 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
             if (String.IsNullOrWhiteSpace(id.Text)) return;
             Error.Text = App.FindString("adv_info_collect_data");
 
-            var steamValidator = new SteamLinkValidator(id.Text);
+            var id64 = await SteamIDConverter.ToSteamID64(id.Text);
 
-            if (!await steamValidator.Validate())
+            if (id64 == 0)
             {
                 Error.Text = App.FindString("adv_error_invalid_link");
                 return;
             }
 
-            var account = new Account("", "", steamValidator.SteamId64Ulong);
+            var account = new Account("", "", id64);
             if (await account.ParseInfo() == false)
             {
                 Error.Text = App.FindString("adv_parse_error");

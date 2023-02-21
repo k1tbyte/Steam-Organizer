@@ -1,9 +1,9 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Steam_Account_Manager.Infrastructure.Converters;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
-using Steam_Account_Manager.Infrastructure.Validators;
 using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
 using SteamKit2;
@@ -517,15 +517,15 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                                     Process.Start(new ProcessStartInfo("shutdown", "/s /t 0") { CreateNoWindow = true, UseShellExecute = false });
                                     return;
                                 case "/msg":
-                                    SteamLinkValidator steamValidator;
+                                    
                                     if (command.Length < 3)
                                         steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/msg (CustomID,SteamID64,ID32,URL) (message)");
                                     else
                                     {
-                                        steamValidator = new SteamLinkValidator(command[1]);
-                                        if (steamValidator.SteamLinkType != SteamLinkValidator.SteamLinkTypes.ErrorType)
+                                        var id = await SteamIDConverter.ToSteamID64(command[1]);
+                                        if (id != 0)
                                         {
-                                            steamFriends.SendChatMessage(ulong.Parse(steamValidator.SteamId64), EChatEntryType.ChatMsg, command[2]);
+                                            steamFriends.SendChatMessage(id, EChatEntryType.ChatMsg, command[2]);
                                             steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "💬 Message sent");
                                         }
                                         else

@@ -1,10 +1,10 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
-using Steam_Account_Manager.Infrastructure.Validators;
 using Steam_Account_Manager.MVVM.Core;
 using System.Threading.Tasks;
 using System.Windows;
 using Steam_Account_Manager.Utils;
+using Steam_Account_Manager.Infrastructure.Converters;
 
 namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 {
@@ -69,19 +69,19 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
                 try
                 {
-                    var steamValidator = new SteamLinkValidator(SteamLink);
+                    var convertedId = await SteamIDConverter.ToSteamID64(SteamLink);
 
-                    if (!await steamValidator.Validate())
+                    if (convertedId == 0)
                     {
                         ErrorMessage = App.FindString("adv_error_invalid_link");
                     }
-                    else if (Config.Accounts.Exists(acc => acc.SteamId64.HasValue && acc.SteamId64.Value == steamValidator.SteamId64Ulong))
+                    else if (Config.Accounts.Exists(acc => acc.SteamId64.HasValue && acc.SteamId64.Value == convertedId))
                     {
                         ErrorMessage = App.FindString("adv_alreadyInDb");
                     }
                     else
                     {
-                        var account = new Account(SteamLogin, SteamPassword, steamValidator.SteamId64Ulong);
+                        var account = new Account(SteamLogin, SteamPassword, convertedId);
                         if(await account.ParseInfo() == false)
                         {
                             ErrorMessage = App.FindString("adv_parse_error");
