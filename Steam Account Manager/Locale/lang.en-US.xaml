@@ -32,7 +32,9 @@
     <v:String x:Key="sv_highestQualityImages">Upload images at the highest quality</v:String>
     <v:String x:Key="sv_cryptoKeyConfirm">All your data will be overwritten and encrypted with the new key. If you lose the key - accounts data will be lost, continue?</v:String>
     <v:String x:Key="sv_toolTipSetPass">Confirm password setting</v:String>
-    
+    <v:String x:Key="sv_workingFolder">Working program folder</v:String>
+    <v:String x:Key="sv_workingFolder_Tip">Open in explorer</v:String>
+
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>None</v:String>
         <v:String>Close</v:String>

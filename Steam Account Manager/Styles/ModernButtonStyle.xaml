@@ -64,7 +64,7 @@
                                     <Storyboard>
                                         <ColorAnimation  Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
                                                             To="{DynamicResource second_main_color}" Duration="0:0:0.3"/>
-                                        <ThicknessAnimation  Storyboard.TargetName="border"  Storyboard.TargetProperty="Margin" To="2"  Duration="0:0:0.3"/>
+                                        <ThicknessAnimation  Storyboard.TargetName="border"  Storyboard.TargetProperty="Margin" To="1.5"  Duration="0:0:0.3"/>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Normal">

@@ -32,7 +32,9 @@
     <v:String x:Key="sv_highestQualityImages">Загружать изображения в максимальном качестве</v:String>
     <v:String x:Key="sv_cryptoKeyConfirm">Все ваши данные будут перезаписаны и зашифованы с новым ключом. Если вы потеряете ключ - данные аккаунтов будут утрачены, продолжить?</v:String>
     <v:String x:Key="sv_toolTipSetPass">Подтвердить установку пароля</v:String>
-    
+    <v:String x:Key="sv_workingFolder">Рабочая папка программы</v:String>
+    <v:String x:Key="sv_workingFolder_Tip">Открыть в проводнике</v:String>
+
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>Ничего</v:String>
         <v:String>Закрыть</v:String>

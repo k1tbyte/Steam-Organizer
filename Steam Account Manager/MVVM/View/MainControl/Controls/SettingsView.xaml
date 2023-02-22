@@ -177,6 +177,17 @@
                     <ComboBox Margin="10 0 0 0" Width="150" Height="27" SelectedIndex="{Binding TwoFactorInputMethod}" ItemsSource="{DynamicResource sv_2fa_input_list}"/>
                 </StackPanel>
 
+                <DockPanel Margin="0 8 0 0">
+                    <TextBlock Text="{DynamicResource sv_workingFolder}" Style="{StaticResource settingTextBlock}"/>
+                    <Button HorizontalAlignment="Left" Margin="10 0 0 0" ToolTipService.InitialShowDelay="450"
+                          Style="{StaticResource ModernDefaultButton}"   Width="50" Height="27"
+                            Click="OpenRootFolder">
+                        <Button.ToolTip>
+                            <ToolTip ContentStringFormat="{DynamicResource sv_workingFolder_Tip}"/>
+                        </Button.ToolTip>
+                        <Icon:PackIconMaterial Kind="Folder"/>
+                    </Button>
+                </DockPanel>
 
 
 

@@ -1,6 +1,7 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
 using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -101,8 +102,10 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             (this.DataContext as SettingsViewModel).Password = null;
             PasswordPanel.Visibility = Visibility.Collapsed;
             Config.SaveProperties();
-        } 
+        }
         #endregion
 
+        private void OpenRootFolder(object sender, RoutedEventArgs e) => Process.Start(new ProcessStartInfo { Arguments = App.WorkingDirectory, FileName = "explorer.exe" }).Dispose();
+        
     }
 }
