@@ -24,7 +24,7 @@ namespace Steam_Account_Manager.Utils
         private static string UserXmlProfileCache;
         private static ulong UserXmlProfileCacheId;
 
-
+        
         public static long GetSystemUnixTime() => (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         public static DateTime? UnixTimeToDateTime(ulong unixtime)
         {

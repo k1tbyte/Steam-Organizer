@@ -33,7 +33,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
                 scrollViewer.ScrollToTop();
 
             expandCsgoButton.IsChecked = expandCommunityButton.IsChecked = expandCommunityButton.IsChecked = true;
-            expandButtonUplay.IsChecked = expandButtonRockstarGames.IsChecked = expandButtonOrigin.IsChecked = expandButtonMail.IsChecked = false;
+            expandButtonUplay.IsChecked = expandButtonRockstarGames.IsChecked = expandButtonOrigin.IsChecked = false;
         }
 
 
