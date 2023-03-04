@@ -33,15 +33,9 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         private readonly Account currentAccount;
         public Account CurrentAccount => currentAccount;
 
-        private bool _noticeView = false;
-        private string _csgoParseError, _steamDataValidateError, _notifyMsg;
+        private string _csgoParseError, _steamDataValidateError;
 
         #region Properties
-        public string NotifyMsg
-        {
-            get => _notifyMsg;
-            set => SetProperty(ref _notifyMsg, value);
-        }
         public string SteamDataValidateError
         {
             get => _steamDataValidateError;
@@ -51,12 +45,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         {
             get => _csgoParseError;
             set => SetProperty(ref _csgoParseError, value);
-        }
-
-        public bool NoticeView
-        {
-            get => _noticeView;
-            set => SetProperty(ref _noticeView, value);
         }
 
         private string _passwordTemp;
@@ -85,13 +73,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         #endregion
 
         #region Helpers
-        private async void ShowNotificationAsync(string message)
-        {
-            NotifyMsg = message;
-            NoticeView = true;
-            await Task.Delay(2000).ConfigureAwait(false);
-            NoticeView = false;
-        }
         private async Task ShowCsgoErrorAsync(string msg)
         {
             CsgoParseError = msg;
@@ -157,11 +138,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 OnPropertyChanged(nameof(CurrentAccount));
                 ((App.MainWindow.DataContext as MainWindowViewModel).AccountsV.DataContext as AccountsViewModel).SearchFilter.Refresh();
                 Config.SaveAccounts();
-                ShowNotificationAsync(App.FindString("adat_cs_inf_updated"));
+                Utils.Presentation.OpenPopupMessageBox(App.FindString("adat_cs_inf_updated"));
             }
             catch
             {
-                ShowNotificationAsync(App.FindString("adat_cs_inf_noInternet"));
+                Utils.Presentation.OpenPopupMessageBox(App.FindString("adat_cs_inf_noInternet"),true);
             }
         } 
         #endregion
@@ -190,7 +171,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 var box = o as TextBox;
                 box.SelectAll();
                 box.Copy();
-                ShowNotificationAsync(App.FindString("adat_notif_copiedClipoard"));
             });
 
             ParseCsgoStatsInfo = new AsyncRelayCommand(async (o) =>
@@ -215,7 +195,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             {
                 currentAccount.LastUpdateTime = DateTime.Now;
                 Config.SaveAccounts();
-                ShowNotificationAsync(App.FindString("adat_notif_changesSaved"));
+
+                Utils.Presentation.OpenPopupMessageBox(App.FindString("adat_notif_changesSaved"));
             });
 
             ExportAccountCommand = new RelayCommand(o =>
@@ -227,7 +208,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 if (fileDialog.ShowDialog() == true)
                 {
                     Config.Serialize(currentAccount, fileDialog.FileName, Config.Properties.UserCryptoKey);
-                    ShowNotificationAsync(App.FindString("adat_notif_accountExported"));
+                    Utils.Presentation.OpenPopupMessageBox(App.FindString("adat_notif_accountExported"));
                 }
             });
 

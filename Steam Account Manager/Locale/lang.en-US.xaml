@@ -134,7 +134,9 @@
     <v:String x:Key="adat_visiblity">Visibility:</v:String>
     <v:String x:Key="adat_profile_url">Profile URL:</v:String>
     <v:String x:Key="adat_community_statuses">• Community statuses</v:String>
-    <v:String x:Key="adat_personal_data">• Personal data</v:String>
+    <v:String x:Key="adat_personal_data">• Personal steam data</v:String>
+    <v:String x:Key="adat_externalLinks">• External account links</v:String>
+    <v:String x:Key="adat_otherInfo">• Other information</v:String>
     <v:String x:Key="adat_steam_account">Steam account</v:String>
     <v:String x:Key="adat_login">Login</v:String>
     <v:String x:Key="adat_password">Password</v:String>
@@ -144,6 +146,7 @@
     <v:String x:Key="adat_2fa_toolTip">Two-factor authentication</v:String>
     <v:String x:Key="adat_privateProfile">Private</v:String>
     <v:String x:Key="adat_publicProfile">Public</v:String>
+    <v:String x:Key="adat_steamEmailTitle">Mail from Steam</v:String>
 
     <v:String x:Key="adat_links_header">Steam links</v:String>
     <v:String x:Key="adat_links_games">Games</v:String>
@@ -152,7 +155,7 @@
     <v:String x:Key="adat_links_badges">Badges</v:String>
     <v:String x:Key="adat_links_groups">Groups</v:String>
 
-    <v:String x:Key="adat_cs_header">• CS:GO Statistics</v:String>
+    <v:String x:Key="adat_cs_header">CS:GO Statistics</v:String>
     <v:String x:Key="adat_cs_general">General</v:String>
     <v:String x:Key="adat_cs_ranks">Ranks</v:String>
     <v:String x:Key="adat_cs_kd">K/D:</v:String>

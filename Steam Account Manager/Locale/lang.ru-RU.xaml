@@ -132,16 +132,19 @@
     <v:String x:Key="adat_visiblity">Видимость:</v:String>
     <v:String x:Key="adat_profile_url">URL профиля:</v:String>
     <v:String x:Key="adat_community_statuses">• Комьюнити статусы</v:String>
-    <v:String x:Key="adat_personal_data">• Персональные данные</v:String>
+    <v:String x:Key="adat_personal_data">• Персональные данные Steam</v:String>
+    <v:String x:Key="adat_externalLinks">• Зовнішні прив'язки акаунту</v:String>
+    <v:String x:Key="adat_otherInfo">• Прочая информация</v:String>
     <v:String x:Key="adat_steam_account">Steam акаунт</v:String>
     <v:String x:Key="adat_login">Логин</v:String>
     <v:String x:Key="adat_password">Пароль</v:String>
-    <v:String x:Key="adat_email_address">Email адресс</v:String>
+    <v:String x:Key="adat_email_address">Email адрес</v:String>
     <v:String x:Key="adat_noteAbout">• Заметка об акаунте</v:String>
     <v:String x:Key="adat_2fa_confirm">Вы уверены, что хотите привязать 2FA к аккаунту?</v:String>
     <v:String x:Key="adat_2fa_toolTip">Двухфакторная аутентификация</v:String>
     <v:String x:Key="adat_privateProfile">Скрытый</v:String>
     <v:String x:Key="adat_publicProfile">Открытый</v:String>
+    <v:String x:Key="adat_steamEmailTitle">Почта от Steam</v:String>
 
     <v:String x:Key="adat_links_header">Steam ссылки</v:String>
     <v:String x:Key="adat_links_games">Игры</v:String>
@@ -150,7 +153,7 @@
     <v:String x:Key="adat_links_badges">Значки</v:String>
     <v:String x:Key="adat_links_groups">Группы</v:String>
 
-    <v:String x:Key="adat_cs_header">• CS:GO Статистика</v:String>
+    <v:String x:Key="adat_cs_header">CS:GO Статистика</v:String>
     <v:String x:Key="adat_cs_general">Основная</v:String>
     <v:String x:Key="adat_cs_ranks">Звания</v:String>
     <v:String x:Key="adat_cs_kd">У/С:</v:String>
