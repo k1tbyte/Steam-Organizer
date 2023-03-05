@@ -133,9 +133,9 @@
     <v:String x:Key="adat_profile_url">URL профиля:</v:String>
     <v:String x:Key="adat_community_statuses">• Комьюнити статусы</v:String>
     <v:String x:Key="adat_personal_data">• Персональные данные Steam</v:String>
-    <v:String x:Key="adat_externalLinks">• Зовнішні прив'язки акаунту</v:String>
+    <v:String x:Key="adat_externalLinks">• Внешние привязки к аккаунту</v:String>
     <v:String x:Key="adat_otherInfo">• Прочая информация</v:String>
-    <v:String x:Key="adat_steam_account">Steam акаунт</v:String>
+    <v:String x:Key="adat_steam_account">Steam аккаунт</v:String>
     <v:String x:Key="adat_login">Логин</v:String>
     <v:String x:Key="adat_password">Пароль</v:String>
     <v:String x:Key="adat_email_address">Email адрес</v:String>

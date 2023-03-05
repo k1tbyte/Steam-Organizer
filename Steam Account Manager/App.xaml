@@ -163,6 +163,34 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+
+            <Style TargetType="{x:Type TabItem}">
+                <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Border Name="Border"  CornerRadius="8,16,0,0" Margin="0,0,0,0"  >
+                                <ContentPresenter x:Name="ContentSite" 
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        Margin="10,2"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource adv_background}" />
+                                    <Setter TargetName="Border" Property="CornerRadius" Value="16 16 0 0" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="False">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource adv_background}" />
+                                    <Setter Property="Opacity" Value="0.55"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
             <!--#endregion-->
 
 

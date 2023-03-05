@@ -458,6 +458,27 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ModernCircleRadioButton" TargetType="{x:Type RadioButton}" BasedOn="{StaticResource TemplateGlowRadioButton}">
+        <Setter Property="Background" Value="{DynamicResource second_main_brush}"/>
+        <Setter Property="Width" Value="30"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Template" >
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border CornerRadius="50" Background="{TemplateBinding Background}" Height="{TemplateBinding Height}"
+                                Width="{TemplateBinding Width}" >
+                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Effect" Value="{StaticResource glow}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="ErrorAlert" TargetType="Button" BasedOn="{StaticResource ModernServiceButton}">
         <Setter Property="Foreground" Value="#D32F2F" />
         <Style.Triggers>

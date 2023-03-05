@@ -9,39 +9,7 @@
              xmlns:ui="clr-namespace:Steam_Account_Manager.UIExtensions"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="600">
-
-    <UserControl.Resources>
-        <Style TargetType="{x:Type TabItem}">
-            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TabItem">
-                        <Border Name="Border"  CornerRadius="8,16,0,0" Margin="0,0,0,0"  >
-                            <ContentPresenter x:Name="ContentSite" 
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Center"
-                                        ContentSource="Header"
-                                        Margin="10,2"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource adv_background}" />
-                                <Setter TargetName="Border" Property="CornerRadius" Value="16 16 0 0" />
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="False">
-                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource adv_background}" />
-                                <Setter Property="Opacity" Value="0.55"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
-    
     <Grid>
-
 
         <Popup x:Name="Popup" Grid.Column="1" AllowsTransparency="True"
                        HorizontalOffset="0" VerticalOffset="10">
@@ -352,11 +320,33 @@
                                 </StackPanel>
 
                                 <StackPanel Margin="10 10 0 0">
-                                    <TextBlock Text="{DynamicResource adat_steam_account}" FontSize="16" Margin="0 0 0 7" Foreground="{DynamicResource second_text_color}"/>
+
+                                    <StackPanel Margin="0 0 0 7" Orientation="Horizontal" Height="23">
+                                        <TextBlock Text="{DynamicResource adat_steam_account}" FontSize="16"  Foreground="{DynamicResource second_text_color}"/>
+                                        <Button x:Name="copySteamSelf" Click="CopySteamData" >
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource ModernCopyButton}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding ElementName=steamLoginBox,Path=Text.IsEmpty}" Value="False"/>
+                                                                <Condition Binding="{Binding ElementName=steamPasswordBox,Path=Password.IsEmpty}" Value="False"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <MultiDataTrigger.Setters>
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </MultiDataTrigger.Setters>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+
+                                    </StackPanel>
 
                                     <!-- Login -->
                                     <Grid HorizontalAlignment="Left" Margin="0 10 0 0">
-                                        <TextBox Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_login}" Margin="0 10 0 0" Opacity="0.9"
+                                        <TextBox x:Name="steamLoginBox" Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_login}" Margin="0 10 0 0" Opacity="0.9"
                                          MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding Login,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
                                         <Icon:PackIconMaterial Kind="AccountOutline" Height="22" Width="22" VerticalAlignment="Center"
                                            Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
@@ -365,7 +355,7 @@
 
                                     <!-- Password -->
                                     <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" FontWeight="Thin" Opacity="0.8"/>
-                                    <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
+                                    <ui:ModernPasswordBox x:Name="steamPasswordBox" HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
                                                   VerticalAlignment="Center" BorderColor="{DynamicResource adv_borders_background}"
                                                         Opacity="0.9"  Password="{Binding Password, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -379,12 +369,33 @@
                                 <!--#region Email Steam -->
                                 <StackPanel  Margin="50 10 0 0">
 
-                                    <TextBlock Text="{DynamicResource adat_steamEmailTitle}" FontSize="16" Margin="0 0 0 7"
+                                    <StackPanel Margin="0 0 0 7" Orientation="Horizontal" Height="23">
+
+                                        <TextBlock Text="{DynamicResource adat_steamEmailTitle}" FontSize="16"
                                        Foreground="{DynamicResource second_text_color}"/>
+                                        <Button x:Name="copySteamMail" Click="CopySteamData" >
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource ModernCopyButton}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding ElementName=steamMailBox,Path=Text.IsEmpty}" Value="False"/>
+                                                                <Condition Binding="{Binding ElementName=steamMailPasswordBox,Path=Password.IsEmpty}" Value="False"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <MultiDataTrigger.Setters>
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </MultiDataTrigger.Setters>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </StackPanel>
 
                                     <!-- Mail login -->
                                     <Grid HorizontalAlignment="Left" Margin="0 10 0 0">
-                                        <TextBox Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_email_address}" Margin="0 10 0 0" Opacity="0.9"
+                                        <TextBox x:Name="steamMailBox" Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_email_address}" Margin="0 10 0 0" Opacity="0.9"
                                          MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding CurrentAccount.EmailLogin}"/>
                                         <Icon:PackIconMaterial Kind="EmailBox" Height="22" Width="22" VerticalAlignment="Center"
                                            Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
@@ -392,7 +403,7 @@
 
                                     <!-- Mail password -->
                                     <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" FontWeight="Thin" Opacity="0.8"/>
-                                    <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
+                                    <ui:ModernPasswordBox x:Name="steamMailPasswordBox" HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
                                                           BorderColor="{DynamicResource adv_borders_background}"
                                                         Opacity="0.9"  Password="{Binding CurrentAccount.EmailPass,Mode=TwoWay}"/>
                                 </StackPanel>
@@ -402,6 +413,7 @@
                             <Rectangle Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}" Margin="10 15 0 0" Width="502" Height="0.7" Fill="{DynamicResource adv_rectangle}"
                                HorizontalAlignment="Left"/>
                             <!--#endregion-->
+
 
                             <!--#region External account links -->
                             <DockPanel x:Name="externalLinks" Margin="5 15 0 0" Visibility="{Binding OnlyPreview}" MaxHeight="20">
@@ -439,61 +451,130 @@
                                     </ToggleButton>
                                 </StackPanel>
 
-                                <StackPanel Margin="10 10 0 0">
-                                    
-                                    <!--#region Rockstar games -->
-                                    <TextBlock Text="Rockstar games" FontSize="16" Margin="0 0 0 7" Foreground="{DynamicResource second_text_color}"/>
+                                <Border Padding="12" Margin="10 15 10 5" Background="{DynamicResource background_border_color}" CornerRadius="10" VerticalAlignment="Center">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <RadioButton x:Name="ea" Style="{StaticResource ModernCircleRadioButton}" Margin="0 0 0 7" IsChecked="True">
+                                            <Image Source="/Images/PlatformsLogos/EA.png"  Width="30" Height="30" />
+                                            <RadioButton.ToolTip>
+                                                <ToolTip ContentStringFormat="Electronic arts"/>
+                                            </RadioButton.ToolTip>
+                                        </RadioButton>
 
-                                    <!-- Mail login -->
+                                        <RadioButton x:Name="egs" Style="{StaticResource ModernCircleRadioButton}" Margin="0 0 0 7">
+                                            <Image Source="/Images/PlatformsLogos/EGS.png"  Width="30" Height="30" />
+                                            <RadioButton.ToolTip>
+                                                <ToolTip ContentStringFormat="Epic games"/>
+                                            </RadioButton.ToolTip>
+                                        </RadioButton>
+
+                                        <RadioButton  x:Name="rockstar" Style="{StaticResource ModernCircleRadioButton}" Margin="0 0 0 7">
+                                            <Image Source="/Images/PlatformsLogos/Rockstar.png"  Width="30" Height="30" />
+                                            <RadioButton.ToolTip>
+                                                <ToolTip ContentStringFormat="Rockstar games"/>
+                                            </RadioButton.ToolTip>
+                                        </RadioButton>
+
+                                        <RadioButton x:Name="ubisoft" Style="{StaticResource ModernCircleRadioButton}">
+                                            <Image Source="/Images/PlatformsLogos/Ubisoft.png"  Width="30" Height="30"/>
+                                            <RadioButton.ToolTip>
+                                                <ToolTip ContentStringFormat="Ubisoft connect"/>
+                                            </RadioButton.ToolTip>
+                                        </RadioButton>
+                                    </StackPanel>
+                                </Border>
+
+
+                                <StackPanel Margin="15 18 0 0">
+
+                                    <StackPanel Orientation="Horizontal" Margin="0 0 0 7" Height="23">
+                                        <TextBlock FontSize="16"  Foreground="{DynamicResource second_text_color}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=ea,Path=IsChecked}" Value="True">
+                                                            <Setter Property="Text" Value="Electronic arts"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ElementName=rockstar,Path=IsChecked}" Value="True">
+                                                            <Setter Property="Text" Value="Rockstar games"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ElementName=ubisoft,Path=IsChecked}" Value="True">
+                                                            <Setter Property="Text" Value="Ubisoft connect"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ElementName=egs,Path=IsChecked}" Value="True">
+                                                            <Setter Property="Text" Value="Epic games"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <Button x:Name="copyExternal" Click="CopySteamData" >
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource ModernCopyButton}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding ElementName=externalMailLoginBox,Path=Text.IsEmpty}" Value="False"/>
+                                                                <Condition Binding="{Binding ElementName=externalMailPasswordBox,Path=Password.IsEmpty}" Value="False"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <MultiDataTrigger.Setters>
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </MultiDataTrigger.Setters>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </StackPanel>
+
+
+                                    <!-- External Mail login -->
                                     <Grid HorizontalAlignment="Left" Margin="0 10 0 0">
-                                        <TextBox Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_email_address}" Margin="0 10 0 0" Opacity="0.9"
-                                         MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding CurrentAccount.RockstarEmail}"/>
+                                        <TextBox x:Name="externalMailLoginBox"  Tag="{DynamicResource adat_email_address}" Margin="0 10 0 0" Opacity="0.9"
+                                         MaxLength="50" Width="220" Padding="17 4 4 4" >
+                                            <TextBox.Style>
+                                                <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource ModernTextBoxBordered}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=ea,Path=IsChecked}" Value="True">
+                                                            <Setter Property="Text" Value="{Binding CurrentAccount.OriginEmail}"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ElementName=rockstar,Path=IsChecked}" Value="True">
+                                                            <Setter Property="Text" Value="{Binding CurrentAccount.RockstarEmail}"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ElementName=ubisoft,Path=IsChecked}" Value="True">
+                                                            <Setter Property="Text" Value="{Binding CurrentAccount.UplayEmail}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
                                         <Icon:PackIconMaterial Kind="EmailBox" Height="22" Width="22" VerticalAlignment="Center"
                                            Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
                                     </Grid>
 
-                                    <!-- Mail password -->
+                                    <!-- External Mail password -->
                                     <TextBlock Text="{DynamicResource adat_password}" FontSize="14" FontWeight="Thin" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                    <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
-                                                          BorderColor="{DynamicResource adv_borders_background}"
-                                                        Opacity="0.9"  Password="{Binding CurrentAccount.RockstarPass,Mode=TwoWay}"/>
+                                    <ui:ModernPasswordBox x:Name="externalMailPasswordBox"  HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
+                                                          BorderColor="{DynamicResource adv_borders_background}" 
+                                                        Opacity="0.9" >
+                                        <ui:ModernPasswordBox.Style>
+                                            <Style TargetType="{x:Type ui:ModernPasswordBox}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ElementName=ea,Path=IsChecked}" Value="True">
+                                                        <Setter Property="Password" Value="{Binding CurrentAccount.OriginPass}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ElementName=rockstar,Path=IsChecked}" Value="True">
+                                                        <Setter Property="Password" Value="{Binding CurrentAccount.RockstarPass}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ElementName=ubisoft,Path=IsChecked}" Value="True">
+                                                        <Setter Property="Password" Value="{Binding CurrentAccount.UplayPass}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ui:ModernPasswordBox.Style>
+                                    </ui:ModernPasswordBox>
                                     <!--#endregion-->
-
-                                    <!--#region EA -->
-                                    <TextBlock Text="Electronic arts" FontSize="16" Margin="0 15 0 7" Foreground="{DynamicResource second_text_color}"/>
-
-                                    <!-- Mail login -->
-                                    <Grid HorizontalAlignment="Left" Margin="0 10 0 0">
-                                        <TextBox Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_email_address}" Margin="0 10 0 0" Opacity="0.9"
-                                         MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding CurrentAccount.OriginEmail}"/>
-                                        <Icon:PackIconMaterial Kind="EmailBox" Height="22" Width="22" VerticalAlignment="Center"
-                                           Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
-                                    </Grid>
-
-                                    <!-- Mail password -->
-                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" FontWeight="Thin" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                    <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
-                                                          BorderColor="{DynamicResource adv_borders_background}"
-                                                        Opacity="0.9"  Password="{Binding CurrentAccount.OriginPass,Mode=TwoWay}"/>
-                                    <!--#endregion-->
-                                </StackPanel>
-
-                                <StackPanel  Margin="50 10 0 0">
-                                    <TextBlock Text="Ubisoft connect" FontSize="16" Margin="0 0 0 7" Foreground="{DynamicResource second_text_color}"/>
-
-                                    <!-- Mail login -->
-                                    <Grid HorizontalAlignment="Left" Margin="0 10 0 0">
-                                        <TextBox Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_email_address}" Margin="0 10 0 0" Opacity="0.9"
-                                         MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding CurrentAccount.UplayEmail}"/>
-                                        <Icon:PackIconMaterial Kind="EmailBox" Height="22" Width="22" VerticalAlignment="Center"
-                                           Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
-                                    </Grid>
-
-                                    <!-- Mail password -->
-                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" FontWeight="Thin" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                    <ui:ModernPasswordBox HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
-                                                          BorderColor="{DynamicResource adv_borders_background}"
-                                                        Opacity="0.9"  Password="{Binding CurrentAccount.UplayPass,Mode=TwoWay}"/>
                                 </StackPanel>
 
                             </DockPanel>
@@ -501,6 +582,7 @@
                             <Rectangle Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}" Margin="10 15 0 0" Width="502" Height="0.7" Fill="{DynamicResource adv_rectangle}"
                                HorizontalAlignment="Left"/>
                             <!--#endregion-->
+
 
                             <!--#region Other info -->
                             <DockPanel x:Name="otherInfoArea" Margin="5 15 0 0" Visibility="{Binding OnlyPreview}" Height="405">

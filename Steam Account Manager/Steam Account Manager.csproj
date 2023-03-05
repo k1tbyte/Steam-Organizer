@@ -609,6 +609,12 @@
     <Resource Include="Images\grab.cur" />
     <Resource Include="Images\grabbing.cur" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\PlatformsLogos\EA.png" />
+    <Resource Include="Images\PlatformsLogos\EGS.png" />
+    <Resource Include="Images\PlatformsLogos\Rockstar.png" />
+    <Resource Include="Images\PlatformsLogos\Ubisoft.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

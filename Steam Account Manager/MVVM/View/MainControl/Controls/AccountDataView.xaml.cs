@@ -97,5 +97,17 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
 
             timeStamp = DateTime.Now;
         }
+
+        private void CopySteamData(object sender, RoutedEventArgs e)
+        {
+            if(sender == copySteamSelf)
+                  Win32.Clipboard.SetText(steamLoginBox.Text + ":" + steamPasswordBox.Password);
+            else if(sender == copySteamMail)
+                Win32.Clipboard.SetText(steamMailBox.Text + ":" + steamMailPasswordBox.Password);
+            else if(sender == copyExternal)
+                Win32.Clipboard.SetText(externalMailLoginBox.Text + ":" + externalMailPasswordBox.Password);
+        }
+            
+        
     }
 }

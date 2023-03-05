@@ -7,12 +7,12 @@ namespace Steam_Account_Manager.UIExtensions
 {
     public partial class ModernPasswordBox : UserControl
     {
-        private bool _isPasswordChanging;
+        private bool isPreventCallback;
+        private RoutedEventHandler savedCallback;
 
         public static readonly DependencyProperty PasswordProperty =
-            DependencyProperty.Register("Password", typeof(string), typeof(ModernPasswordBox),
-                new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                    PasswordPropertyChanged, null, false, UpdateSourceTrigger.PropertyChanged));
+            DependencyProperty.Register("Password",typeof(string),typeof(ModernPasswordBox),
+                new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnPasswordPropertyChanged)));
 
         public static readonly DependencyProperty PasswordCharProperty =
             DependencyProperty.RegisterAttached("PasswordChar", typeof(char), typeof(char), new PropertyMetadata(default(char)));
@@ -25,14 +25,6 @@ namespace Steam_Account_Manager.UIExtensions
 
         public static readonly DependencyProperty CornerRadiusProperty =
             DependencyProperty.Register("CornerRadius", typeof(CornerRadius), typeof(ModernPasswordBox), new PropertyMetadata(new CornerRadius(8)));
-
-        private static void PasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is ModernPasswordBox passwordBox)
-            {
-                passwordBox.UpdatePassword();
-            }
-        }
 
         public CornerRadius CornerRadius
         {
@@ -71,24 +63,34 @@ namespace Steam_Account_Manager.UIExtensions
         public ModernPasswordBox()
         {
             InitializeComponent();
+
+            savedCallback = HandlePasswordChanged;
+            passwordBox.PasswordChanged += savedCallback;
+
             var frameworkElement = Content as FrameworkElement;
-            if (frameworkElement != null)
-                frameworkElement.DataContext = this;
+            frameworkElement.DataContext = this;
         }
 
-        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        private static void OnPasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs eventArgs)
         {
-            _isPasswordChanging = true;
+            ModernPasswordBox bindablePasswordBox = (ModernPasswordBox)d;
+            PasswordBox passwordBox = (PasswordBox)bindablePasswordBox.passwordBox;
+
+            if (bindablePasswordBox.isPreventCallback)
+                return;
+            
+            passwordBox.PasswordChanged -= bindablePasswordBox.savedCallback;
+            passwordBox.Password = (eventArgs.NewValue != null) ? eventArgs.NewValue.ToString() : "";
+            passwordBox.PasswordChanged += bindablePasswordBox.savedCallback;
+        }
+
+        private void HandlePasswordChanged(object sender, RoutedEventArgs eventArgs)
+        {
+            PasswordBox passwordBox = (PasswordBox)sender;
+
+            isPreventCallback = true;
             Password = passwordBox.Password;
-            _isPasswordChanging = false;
-        }
-
-        private void UpdatePassword()
-        {
-            if (!_isPasswordChanging)
-            {
-                passwordBox.Password = Password;
-            }
+            isPreventCallback = false;
         }
     }
 }
