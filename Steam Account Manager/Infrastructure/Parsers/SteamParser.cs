@@ -67,7 +67,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
 
         #region Player games
-        private string GetPlayerGamesOwnedLink() => $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={_apiKey}&steamid={_steamId64}&include_played_free_games=1&format=json";
+        private string GetPlayerGamesOwnedLink() => $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={_apiKey}&steamid={_steamId64}&include_appinfo=true&include_played_free_games=1&format=json";
         private async Task ParseGamesInfo()
         {
             if (!IsProfilePublic)
@@ -114,12 +114,20 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
             int totalHours = 0, totalGamesPlayed = 0;
             Array.ForEach(list.Response.Games, o =>
             {
-                if (o.Playtime_forever != 0)
+                o.ImageURL = $"https://cdn.akamai.steamstatic.com/steam/apps/{o.AppID}/header.jpg";
+                if (o.PlayTime_Forever != 0)
                 {
-                    totalHours += (o.Playtime_forever / 60);
+                    o.PlayTime_Forever /= 60;
+                    totalHours += o.PlayTime_Forever;
                     totalGamesPlayed++;
                 }
             });
+
+            var dir = App.WorkingDirectory + "\\Cache\\Games";
+            if (!System.IO.Directory.Exists(dir))
+                System.IO.Directory.CreateDirectory(dir);
+
+            System.IO.File.WriteAllText(dir + $"\\{_steamId64}.json", JsonConvert.SerializeObject(list.Response.Games,Formatting.Indented));
 
             GamesPlayedCount = totalGamesPlayed;
             HoursOnPlayed    = totalHours;
@@ -138,8 +146,20 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
         private class PlayerGame
         {
-            public int Playtime_forever { get; set; }
-        } 
+            [JsonProperty("Name")]
+            public string Name { get; set; }
+
+            [JsonProperty("ImageURL")]
+            public string ImageURL { get; set; }
+
+            [JsonProperty("AppID")]
+            public int AppID { get; set; }
+
+            [JsonProperty("Playtime_Forever")]
+            public int PlayTime_Forever { get; set; }
+        }
+
+
         #endregion
 
         #region Player level

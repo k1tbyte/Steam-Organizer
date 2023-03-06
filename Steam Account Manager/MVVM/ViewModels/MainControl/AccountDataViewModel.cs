@@ -1,9 +1,12 @@
-﻿using Steam_Account_Manager.Infrastructure;
+﻿using Newtonsoft.Json;
+using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
+using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.Parsers;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.MainControl.Windows;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -21,6 +24,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public RelayCommand CopyCommand { get; set; }
         public RelayCommand OpenUrlProfileCommand { get; set; }
         public RelayCommand OpenFromIdLinkCommand { get; set; }
+        public RelayCommand OpenStoreAppLinkCommand { get; set; }
         public AsyncRelayCommand ParseCsgoStatsInfo { get; set; }
         public RelayCommand SaveChangesComamnd { get; set; }
         public RelayCommand OpenOtherLinksCommand { get; set; }
@@ -34,8 +38,26 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public Account CurrentAccount => currentAccount;
 
         private string _csgoParseError, _steamDataValidateError;
+        private int _tabSelectedIndex = 0;
 
         #region Properties
+
+        public int TabSelectedIndex
+        {
+            get => _tabSelectedIndex;
+            set
+            {
+                if (value == 1 && GamesList == null)
+                    LoadGameList();
+                SetProperty(ref _tabSelectedIndex, value);
+            }
+        }
+        public Game[] GamesList
+        {
+            get => _gamesList;
+            set => SetProperty(ref _gamesList, value);
+        }
+        private Game[] _gamesList = null;
         public string SteamDataValidateError
         {
             get => _steamDataValidateError;
@@ -137,6 +159,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 await currentAccount.ParseInfo();
                 OnPropertyChanged(nameof(CurrentAccount));
                 ((App.MainWindow.DataContext as MainWindowViewModel).AccountsV.DataContext as AccountsViewModel).SearchFilter.Refresh();
+                LoadGameList();
                 Config.SaveAccounts();
                 Utils.Presentation.OpenPopupMessageBox(App.FindString("adat_cs_inf_updated"));
             }
@@ -145,18 +168,34 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 Utils.Presentation.OpenPopupMessageBox(App.FindString("adat_cs_inf_noInternet"),true);
             }
         } 
+
+        public void LoadGameList()
+        {
+            var gameList = $"{App.WorkingDirectory}\\Cache\\Games\\{currentAccount.SteamId64}.json";
+            if (File.Exists(gameList))
+            {
+                GamesList = JsonConvert.DeserializeObject<Game[]>(File.ReadAllText(gameList));
+            }
+
+        }
         #endregion
+
+
 
         public AccountDataViewModel(Account account,bool preview = false)
         {
             if (preview)
                 OnlyPreview = Visibility.Collapsed;
-
             currentAccount = account;
+            
             _passwordTemp  = currentAccount.Password;
             _loginTemp     = currentAccount.Login;
 
-            CancelCommand         = new RelayCommand(o => MainWindowViewModel.AccountsViewCommand.Execute(true));
+            CancelCommand         = new RelayCommand(o =>
+            {
+                MainWindowViewModel.AccountsViewCommand.Execute(true);
+                TabSelectedIndex = 0;
+            });
 
             OpenUrlProfileCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo(currentAccount.ProfileURL)).Dispose());
 
@@ -165,6 +204,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             OpenOtherLinksCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo(currentAccount.ProfileURL + (string)o)).Dispose());
 
             OpenFromIdLinkCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo((string)o + currentAccount.SteamId64)).Dispose());
+
+            OpenStoreAppLinkCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{o}")).Dispose());
 
             CopyCommand = new RelayCommand(o =>
             {
@@ -222,11 +263,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             CreateAccountShortcutCommand = new RelayCommand(o =>
             {
-                var cachePath = App.WorkingDirectory + "\\Cache";
-                var icoPath = cachePath + "\\ico";
-
-                if (!Directory.Exists(cachePath))
-                    Directory.CreateDirectory(cachePath);
+                var icoPath = App.WorkingDirectory + "\\Cache\\ico";
 
                 if (!Directory.Exists(icoPath))
                     Directory.CreateDirectory(icoPath);

@@ -16,7 +16,7 @@
             <ui:ModernPopup  x:Name="Header" Foreground="White"/>
         </Popup>
 
-        <TabControl Background="{DynamicResource adv_background}">
+        <TabControl Background="{DynamicResource adv_background}" SelectedIndex="{Binding TabSelectedIndex,Mode=TwoWay}">
             <TabControl.Style>
                 <Style TargetType="{x:Type TabControl}">
                     <Setter Property="Template">
@@ -753,6 +753,64 @@
                 <TabItem.Header>
                     <TextBlock FontWeight="Medium" Text="Games"/>
                 </TabItem.Header>
+                <TabItem.Content>
+                    <Grid>
+                        <Border Background="{DynamicResource adv_borders_background}"  Margin="0,40,17,162" 
+                                Height="25" CornerRadius="2 2 2 2 " VerticalAlignment="Top"/>
+
+                        <DataGrid Margin="0 40 0 4" Background="Transparent" ItemsSource="{Binding GamesList}" VirtualizingPanel.VirtualizationMode="Standard">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="135">
+                                    <DataGridTemplateColumn.CellStyle>
+                                        <Style TargetType="DataGridCell" >
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="DataGridCell">
+                                                        <Image Width="90" Height="37" Cursor="Hand" Margin="35 0 0 0">
+                                                            <Image.Source>
+                                                                <BitmapImage UriSource="{Binding ImageURL}" DecodePixelWidth="90" DecodePixelHeight="37" CacheOption="OnLoad" />
+                                                            </Image.Source>
+                                                            <Image.InputBindings>
+                                                                <MouseBinding MouseAction="LeftClick"
+                                                                              Command="{Binding DataContext.OpenStoreAppLinkCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding AppID}"/>
+                                                            </Image.InputBindings>
+                                                        </Image>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </DataGridTemplateColumn.CellStyle>
+                                </DataGridTemplateColumn>
+                                
+                                <DataGridTextColumn Header="Name"  Binding="{Binding Name}" IsReadOnly="True" Width="200" Foreground="{DynamicResource default_foreground}">
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="DataGridCell">
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="ID" Binding="{Binding AppID,Mode=OneWay}" IsReadOnly="True" Width="70" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+
+                                <DataGridTextColumn Header="Time" Binding="{Binding PlayTime_Forever,StringFormat={}{0} h}" IsReadOnly="True" Width="*" Foreground="{DynamicResource default_foreground}"/>
+
+                               
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+                        
+                    </Grid>
+
+                </TabItem.Content>
             </TabItem>
             <TabItem>
                 <TabItem.Header>

@@ -62,6 +62,10 @@ namespace Steam_Account_Manager
 
             Config.LoadProperties();
 
+            var cachePath = App.WorkingDirectory + "\\Cache";
+            if (!Directory.Exists(cachePath))
+                Directory.CreateDirectory(cachePath);
+
             #region Check internet connection
             if (!Common.CheckInternetConnection())
             {

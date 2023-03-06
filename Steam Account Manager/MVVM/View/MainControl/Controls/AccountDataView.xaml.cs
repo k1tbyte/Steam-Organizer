@@ -107,7 +107,11 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
             else if(sender == copyExternal)
                 Win32.Clipboard.SetText(externalMailLoginBox.Text + ":" + externalMailPasswordBox.Password);
         }
-            
-        
+
+        private void TabItem_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (thisVM.GamesList == null)
+                thisVM.LoadGameList();
+        }
     }
 }
