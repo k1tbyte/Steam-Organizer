@@ -807,7 +807,10 @@
                             </DataGrid.Columns>
 
                         </DataGrid>
-                        
+
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Margin="0 40 0 0"
+                   FontSize="35" FontWeight="Bold" Foreground="{DynamicResource default_foreground}" Visibility="{Binding GamesList.Count,Converter={StaticResource BoolToVisInverted}}"
+                   Opacity="0.7" Text="{DynamicResource adat_popup_nullGames}" TextWrapping="Wrap" MaxWidth="500"/>
                     </Grid>
 
                 </TabItem.Content>

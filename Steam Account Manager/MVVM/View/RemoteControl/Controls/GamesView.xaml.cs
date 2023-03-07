@@ -5,7 +5,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows;
-using Game = Steam_Account_Manager.Infrastructure.Models.JsonModels.Game;
+using Game = Steam_Account_Manager.Infrastructure.Models.JsonModels.PlayerGame;
 using SteamRemoteClient = Steam_Account_Manager.Infrastructure.SteamRemoteClient.SteamRemoteClient;
 using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
 

@@ -174,7 +174,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             {
                 CurrentUser = new User
                 {
-                    Games = new ObservableCollection<Game>(),
+                    Games = new ObservableCollection<PlayerGame>(),
                     Friends = new ObservableCollection<Friend>(),
                     Messenger = new Messenger
                     {
@@ -198,7 +198,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     MessagesViewModel.AdminId = CurrentUser.Messenger.AdminID.ToString();
                     MessagesViewModel.SaveChatLog = CurrentUser.Messenger.SaveChatLog;
                     MessagesViewModel.MsgCommands = new ObservableCollection<Command>(CurrentUser.Messenger.Commands);
-                    GamesViewModel.Games = new ObservableCollection<Game>(CurrentUser.Games);
+                    GamesViewModel.Games = new ObservableCollection<PlayerGame>(CurrentUser.Games);
                     if (MainRemoteControlViewModel.MessagesV == null)
                         MainRemoteControlViewModel.MessagesV = new MVVM.View.RemoteControl.Controls.MessagesView();
 
@@ -815,7 +815,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
                 foreach (var game in result.games)
                 {
-                    CurrentUser.Games.Add(new Game
+                    CurrentUser.Games.Add(new PlayerGame
                     {
                         AppID = game.appid,
                         PlayTime_Forever = game.playtime_forever,

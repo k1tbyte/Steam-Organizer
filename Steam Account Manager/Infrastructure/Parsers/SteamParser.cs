@@ -1,5 +1,8 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using System;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,7 +53,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
         public async Task Parse()
         {
-
+            await ParseFriendsInfo(_steamId64);
             //Получаем инфу о банах
             await ParseVacsAsync().ConfigureAwait(false);
 
@@ -62,9 +65,33 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
             // Получаем инфу о уровне
             await ParseSteamLevelAsync().ConfigureAwait(false);
-
         }
 
+        public static async Task<Friend[]> ParseFriendsInfo(ulong steamId64)
+        {
+            using(var wc = new WebClient() { Encoding = Encoding.UTF8})
+            {
+                string json = await wc.DownloadStringTaskAsync("http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key=" + Keys.STEAM_API_KEY + "&steamid=" + steamId64);
+                var ids = (JObject.Parse(json).SelectToken("*.friends") as JToken).SelectTokens(@"$.[?(@.friend_since)].steamid");
+
+                var basePlayerSummaries = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=E4104DC8C6162BEA1495ED5EB1AE64EF&steamids=";
+                StringBuilder steamRequest = new StringBuilder(basePlayerSummaries);
+
+                int i = 1;
+                foreach (var id in ids)
+                {
+                    steamRequest.Append(id.ToString()).Append(',');
+                    if (i % 100 == 0)
+                    {
+                        json = await wc.DownloadStringTaskAsync(steamRequest.ToString());
+                    }
+                    i++;
+                }
+
+                return null;
+
+            }
+        }
 
         #region Player games
         private string GetPlayerGamesOwnedLink() => $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={_apiKey}&steamid={_steamId64}&include_appinfo=true&include_played_free_games=1&format=json";
@@ -142,21 +169,6 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         {
             public int Game_count { get; set; }
             public PlayerGame[] Games { get; set; }
-        }
-
-        private class PlayerGame
-        {
-            [JsonProperty("Name")]
-            public string Name { get; set; }
-
-            [JsonProperty("ImageURL")]
-            public string ImageURL { get; set; }
-
-            [JsonProperty("AppID")]
-            public int AppID { get; set; }
-
-            [JsonProperty("Playtime_Forever")]
-            public int PlayTime_Forever { get; set; }
         }
 
 

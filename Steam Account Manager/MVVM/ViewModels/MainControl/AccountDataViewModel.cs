@@ -52,12 +52,12 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 SetProperty(ref _tabSelectedIndex, value);
             }
         }
-        public Game[] GamesList
+        public PlayerGame[] GamesList
         {
             get => _gamesList;
             set => SetProperty(ref _gamesList, value);
         }
-        private Game[] _gamesList = null;
+        private PlayerGame[] _gamesList = null;
         public string SteamDataValidateError
         {
             get => _steamDataValidateError;
@@ -174,7 +174,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             var gameList = $"{App.WorkingDirectory}\\Cache\\Games\\{currentAccount.SteamId64}.json";
             if (File.Exists(gameList))
             {
-                GamesList = JsonConvert.DeserializeObject<Game[]>(File.ReadAllText(gameList));
+                GamesList = JsonConvert.DeserializeObject<PlayerGame[]>(File.ReadAllText(gameList));
             }
 
         }

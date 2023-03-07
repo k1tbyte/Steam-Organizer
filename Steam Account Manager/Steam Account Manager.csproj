@@ -615,6 +615,11 @@
     <Resource Include="Images\PlatformsLogos\Rockstar.png" />
     <Resource Include="Images\PlatformsLogos\Ubisoft.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Games_count_badges\29000.png" />
+    <Resource Include="Images\Games_count_badges\30000.png" />
+    <Resource Include="Images\Games_count_badges\31000.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

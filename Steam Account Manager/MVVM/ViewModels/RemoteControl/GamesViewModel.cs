@@ -18,7 +18,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
 
 
         public static event EventHandler GamesChanged;
-        public static ObservableCollection<Game> Games
+        public static ObservableCollection<PlayerGame> Games
         {
             get => SteamRemoteClient.CurrentUser.Games;
             set
@@ -59,7 +59,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
                     for (int i = 0; i < Games.Count; i++)
                         if (Games[i].AppID == id) return;
 
-                    var ManualGame = new Game()
+                    var ManualGame = new PlayerGame()
                     {
                         AppID = id,
                         Name = "Manually added",
@@ -77,13 +77,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
 
             OpenGameAchievementCommand = new RelayCommand(o =>
             {
-                AchievementsView achievementsWindow = new AchievementsView(Convert.ToUInt64(((Game)o).AppID));
+                AchievementsView achievementsWindow = new AchievementsView(Convert.ToUInt64(((PlayerGame)o).AppID));
                 Utils.Presentation.OpenDialogWindow(achievementsWindow);
             });
 
             OpenSteamStoreCommand = new RelayCommand(o =>
             {
-                using (Process.Start(new ProcessStartInfo("https://store.steampowered.com/app/" + ((Game)o).AppID) { UseShellExecute = true })) ;
+                using (Process.Start(new ProcessStartInfo("https://store.steampowered.com/app/" + ((PlayerGame)o).AppID) { UseShellExecute = true })) ;
             });
         }
     }

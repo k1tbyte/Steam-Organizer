@@ -38,14 +38,14 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         public ObservableCollection<Friend> Friends { get; set; }
 
         [JsonProperty("Games")]
-        public ObservableCollection<Game> Games { get; set; }
+        public ObservableCollection<PlayerGame> Games { get; set; }
 
         [JsonProperty("RememberGames")]
         public HashSet<int> RememberGamesIds { get; set; }
 
     }
 
-    public class Game
+    public class PlayerGame
     {
         [JsonProperty("Name")]
         public string Name { get; set; }
