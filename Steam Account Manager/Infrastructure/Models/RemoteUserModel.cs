@@ -45,6 +45,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
 
     }
 
+    [Serializable]
     public class PlayerGame
     {
         [JsonProperty("Name")]
@@ -60,15 +61,16 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         public int PlayTime_Forever { get; set; }
     }
 
+    [Serializable]
     public class Friend
     {
-        [JsonProperty("Name")]
+        [JsonProperty("PersonaName")]
         public string Name { get; set; }
 
-        [JsonProperty("SteamID64")]
+        [JsonProperty("SteamID")]
         public ulong SteamID64 { get; set; }
 
-        [JsonProperty("ImageURL")]
+        [JsonProperty("AvatarMedium")]
         public string ImageURL { get; set; }
 
         [JsonProperty("FriendSince")]

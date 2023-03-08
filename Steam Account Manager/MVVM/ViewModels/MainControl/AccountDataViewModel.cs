@@ -171,12 +171,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         public void LoadGameList()
         {
-            var gameList = $"{App.WorkingDirectory}\\Cache\\Games\\{currentAccount.SteamId64}.json";
+            var gameList = $"{App.WorkingDirectory}\\Cache\\Games\\{currentAccount.SteamId64}.dat";
             if (File.Exists(gameList))
             {
-                GamesList = JsonConvert.DeserializeObject<PlayerGame[]>(File.ReadAllText(gameList));
+                GamesList = Utils.Common.BinaryDeserialize<PlayerGame[]>(gameList);
             }
-
         }
         #endregion
 

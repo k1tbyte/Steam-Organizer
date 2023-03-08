@@ -135,18 +135,6 @@ namespace Steam_Account_Manager.Infrastructure
             Config.SaveProperties();
         }
 
-        private static void WriteObjectToStream(Stream outputStream, object obj)
-        {
-            if (ReferenceEquals(obj, null)) return;
-            BinaryFormatter bf = new BinaryFormatter();
-            bf.Serialize(outputStream, obj);
-        }
-        private static object ReadObjectFromStream(Stream inputStream)
-        {
-            BinaryFormatter binForm = new BinaryFormatter();
-            var obj = binForm.Deserialize(inputStream);
-            return obj;
-        }
         private static CryptoStream CreateEncryptionStream(byte[] key, Stream outputStream)
         {
             byte[] iv = new byte[IvSize];
@@ -186,7 +174,7 @@ namespace Steam_Account_Manager.Infrastructure
             {
                 using (CryptoStream cryptoStream = CreateEncryptionStream(key, file))
                 {
-                    WriteObjectToStream(cryptoStream, obj);
+                    Utils.Common.WriteObjectToStream(cryptoStream, obj);
                 }
             }
         }
@@ -197,9 +185,11 @@ namespace Steam_Account_Manager.Infrastructure
                 byte[] key = Convert.FromBase64String(CryptoKey);
 
                 using (FileStream file = new FileStream(path, FileMode.Open))
-                using (CryptoStream cryptoStream = CreateDecryptionStream(key, file))
                 {
-                    return ReadObjectFromStream(cryptoStream);
+                    using (CryptoStream cryptoStream = CreateDecryptionStream(key, file))
+                    {
+                        return Utils.Common.ReadObjectFromStream(cryptoStream);
+                    }
                 }
             }
             catch

@@ -3,11 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
+using System.Windows.Shapes;
 
 namespace Steam_Account_Manager.Utils
 {
@@ -119,14 +122,35 @@ namespace Steam_Account_Manager.Utils
         }
         #endregion
 
-        public static void ToLittleEndian(ref byte[] bytes)
+        public static void BinarySerialize(object obj, string fullPath)
         {
-            for (int i = 0,bit = 0; i < bytes.Length; i++)
+            using (var file = new FileStream(fullPath, FileMode.Create))
             {
-
+                WriteObjectToStream(file, obj);
             }
         }
 
+        public static T BinaryDeserialize<T>(string fullPath)
+        {
+            using (var file = new FileStream(fullPath, FileMode.Open))
+            {
+                return (T)ReadObjectFromStream(file);
+            }
+        }
+
+        public static void WriteObjectToStream(Stream outputStream, object obj)
+        {
+            if (obj is null) return;
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.Serialize(outputStream, obj);
+        }
+
+        public static object ReadObjectFromStream(Stream inputStream)
+        {
+            BinaryFormatter binForm = new BinaryFormatter();
+            var obj = binForm.Deserialize(inputStream);
+            return obj;
+        }
 
         #region Steam
         private const ulong SteamID64Ident = 76561197960265728;
