@@ -69,7 +69,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         }
 
         #region Friends
-        public static async Task<List<Friend>> ParseFriendsInfo(ulong steamId64)
+        public static async Task<Friend[]> ParseFriendsInfo(ulong steamId64)
         {
             using (var wc = new WebClient() { Encoding = Encoding.UTF8 })
             {
@@ -119,9 +119,10 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
                 if (!System.IO.Directory.Exists(dir))
                     System.IO.Directory.CreateDirectory(dir);
 
-                Utils.Common.BinarySerialize(friends,dir + $"\\{steamId64}.dat");
+                var arr = friends.ToArray();
+                Utils.Common.BinarySerialize(arr, dir + $"\\{steamId64}.dat");
 
-                return friends;
+                return arr;
 
             }
         }
@@ -151,7 +152,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
         private class ResponseFriendsSummaries
         {
             [JsonProperty("Players")]
-            public IEnumerable<Friend> Friends { get; set; }
+            public Friend[] Friends { get; set; }
         } 
         #endregion
 

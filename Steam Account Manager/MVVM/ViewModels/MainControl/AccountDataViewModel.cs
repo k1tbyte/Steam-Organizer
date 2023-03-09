@@ -49,6 +49,10 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             {
                 if (value == 1 && GamesList == null)
                     LoadGameList();
+
+                if (value == 2 && FriendList == null)
+                    LoadFriendList();
+
                 SetProperty(ref _tabSelectedIndex, value);
             }
         }
@@ -58,6 +62,14 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             set => SetProperty(ref _gamesList, value);
         }
         private PlayerGame[] _gamesList = null;
+
+        private Friend[] _friendList = null;
+        public Friend[] FriendList
+        {
+            get => _friendList;
+            set => SetProperty(ref _friendList, value);
+        }
+
         public string SteamDataValidateError
         {
             get => _steamDataValidateError;
@@ -177,6 +189,17 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 GamesList = Utils.Common.BinaryDeserialize<PlayerGame[]>(gameList);
             }
         }
+
+        public async void LoadFriendList()
+        {
+            var friendList = $"{App.WorkingDirectory}\\Cache\\Friends\\{currentAccount.SteamId64}.dat";
+            if (File.Exists(friendList))
+            {
+                FriendList = Utils.Common.BinaryDeserialize<Friend[]>(friendList);
+            }
+            else if (currentAccount.IsProfilePublic)
+                FriendList = await SteamParser.ParseFriendsInfo(currentAccount.SteamId64.Value);
+        }
         #endregion
 
 
@@ -185,6 +208,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         {
             if (preview)
                 OnlyPreview = Visibility.Collapsed;
+
+           
             currentAccount = account;
             
             _passwordTemp  = currentAccount.Password;

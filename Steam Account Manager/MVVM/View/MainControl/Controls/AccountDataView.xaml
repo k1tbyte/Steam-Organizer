@@ -809,16 +809,83 @@
                         </DataGrid>
 
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Margin="0 40 0 0"
-                   FontSize="35" FontWeight="Bold" Foreground="{DynamicResource default_foreground}" Visibility="{Binding GamesList.Count,Converter={StaticResource BoolToVisInverted}}"
+                   FontSize="35" FontWeight="Bold" Foreground="{DynamicResource default_foreground}" Visibility="{Binding GamesList.Length,Converter={StaticResource BoolToVisInverted}}"
                    Opacity="0.7" Text="{DynamicResource adat_popup_nullGames}" TextWrapping="Wrap" MaxWidth="500"/>
                     </Grid>
 
                 </TabItem.Content>
             </TabItem>
+            
             <TabItem>
                 <TabItem.Header>
                     <TextBlock FontWeight="Medium" Text="Friends"/>
                 </TabItem.Header>
+                <TabItem.Content>
+                    <Grid>
+                        <Border Background="{DynamicResource adv_borders_background}"  Margin="0,40,17,162" 
+                                Height="25" CornerRadius="2 2 2 2 " VerticalAlignment="Top"/>
+
+                        <DataGrid Margin="0 40 0 4" Background="Transparent" ItemsSource="{Binding FriendList}" VirtualizingPanel.VirtualizationMode="Standard">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="85">
+                                    <DataGridTemplateColumn.CellStyle>
+                                        <Style TargetType="DataGridCell" >
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="DataGridCell">
+                                                        <Border Background="{DynamicResource second_main_brush}" CornerRadius="20" Padding="1" Margin="35 0 0 0">
+                                                            
+                                                        
+                                                        <WrapPanel Name ="container" Width="35" Height="35">
+                                                            <Image Source="{Binding ImageURL,Mode=OneWay}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                                                            <WrapPanel.OpacityMask>
+                                                                <VisualBrush >
+                                                                    <VisualBrush.Visual>
+                                                                        <Border Height="{Binding ElementName=container, Path=ActualHeight}" 
+                            Width="{Binding ElementName=container, Path=ActualWidth}" Background="White" CornerRadius="20" />
+                                                                    </VisualBrush.Visual>
+                                                                </VisualBrush>
+                                                            </WrapPanel.OpacityMask>
+                                                        </WrapPanel>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </DataGridTemplateColumn.CellStyle>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTextColumn Header="Nickname"  Binding="{Binding Name}" IsReadOnly="True" Width="180" Foreground="{DynamicResource default_foreground}">
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="DataGridCell">
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="ID" Binding="{Binding SteamID64,Mode=OneWay}" IsReadOnly="True" Width="120" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+
+                                <DataGridTextColumn Header="Friend since" Binding="{Binding FriendSince,Mode=OneWay}" IsReadOnly="True" Width="*" Foreground="{DynamicResource default_foreground}"/>
+
+
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Margin="0 40 0 0"
+                   FontSize="35" FontWeight="Bold" Foreground="{DynamicResource default_foreground}" Visibility="{Binding FriendList.Length,Converter={StaticResource BoolToVisInverted}}"
+                   Opacity="0.7" Text="{DynamicResource adat_popup_nullGames}" TextWrapping="Wrap" MaxWidth="500"/>
+                    </Grid>
+                </TabItem.Content>
             </TabItem>
         </TabControl>
 
