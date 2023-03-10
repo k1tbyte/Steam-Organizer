@@ -31,10 +31,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public RelayCommand ExportAccountCommand { get; set; }
         public RelayCommand AddAuthenticatorCommand { get; set; }
         public RelayCommand CreateAccountShortcutCommand { get; set; }
+        public AsyncRelayCommand OpenFriendPageCommand { get; set; }
         public AsyncRelayCommand RefreshCommand { get; set; } 
         #endregion
 
-        private readonly Account currentAccount;
+        private Account currentAccount;
         public Account CurrentAccount => currentAccount;
 
         private string _csgoParseError, _steamDataValidateError;
@@ -206,12 +207,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         public AccountDataViewModel(Account account,bool preview = false)
         {
-            if (preview)
-                OnlyPreview = Visibility.Collapsed;
-
-           
             currentAccount = account;
-            
+
+            if (preview)
+            {
+                OnlyPreview = Visibility.Collapsed;
+            }
+
             _passwordTemp  = currentAccount.Password;
             _loginTemp     = currentAccount.Login;
 
@@ -221,7 +223,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 TabSelectedIndex = 0;
             });
 
-            OpenUrlProfileCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo(currentAccount.ProfileURL)).Dispose());
+            OpenUrlProfileCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo($"https://steamcommunity.com/profiles/{o}")).Dispose());
 
             RefreshCommand        = new AsyncRelayCommand(async (o) => await RefreshAccount());
 
@@ -302,6 +304,18 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                      );
 
                 Utils.Presentation.OpenPopupMessageBox($"A shortcut has been created on the desktop for the account: {currentAccount.Nickname}");
+            });
+
+            OpenFriendPageCommand = new AsyncRelayCommand(async (o) =>
+            {
+                currentAccount   = new Account("", "", (ulong)o);
+                await currentAccount.ParseInfo();
+                TabSelectedIndex = 0;
+                OnlyPreview      = Visibility.Collapsed;
+                GamesList        = null;
+                FriendList       = null;
+                OnPropertyChanged(nameof(OnlyPreview));
+                OnPropertyChanged(nameof(CurrentAccount));
             });
 
         }

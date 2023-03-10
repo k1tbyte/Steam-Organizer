@@ -28,29 +28,29 @@
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
                                     <TabPanel IsItemsHost="True" Margin="30 0 0 0"/>
-                                    
+
                                     <Border Grid.Row="1"
                             CornerRadius="15" 
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}" Margin="0 0 17 0"/>
 
                                     <ContentPresenter  ContentSource="SelectedContent" Grid.Row="1"  />
-                                
+
                                 </Grid>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
                 </Style>
             </TabControl.Style>
-            
+
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock FontWeight="Medium" Text="Information"/>
+                    <TextBlock FontWeight="Medium" Text="{DynamicResource adat_tabInfo}"/>
                 </TabItem.Header>
                 <TabItem.Content>
                     <ScrollViewer x:Name="scrollViewer" Margin="0 40 0 20">
                         <StackPanel Margin="35 5 25 0">
-                            
+
                             <!--#region Header info -->
                             <DockPanel>
 
@@ -58,7 +58,8 @@
                                 <Border Width="140" Height="140" Background="{DynamicResource account_picture_border}" HorizontalAlignment="Left"
                                 CornerRadius="20" Margin="0 7 0 0" Cursor="Hand"  IsHitTestVisible="{Binding CurrentAccount.ContainParseInfo}">
                                     <Border.InputBindings>
-                                        <MouseBinding Command="{Binding OpenUrlProfileCommand}" MouseAction="LeftClick" />
+                                        <MouseBinding Command="{Binding OpenUrlProfileCommand}" MouseAction="LeftClick"
+                                                      CommandParameter="{Binding CurrentAccount.SteamId64}"/>
                                     </Border.InputBindings>
                                     <WrapPanel Name ="container" Width="138" Height="138">
                                         <Image x:Name="steamImage" 
@@ -279,7 +280,7 @@
                                 </StackPanel>
                             </Border>
 
-                            <Rectangle Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}" Margin="10 15 0 0" Width="502" Height="0.7" Fill="{DynamicResource adv_rectangle}"
+                            <Rectangle Visibility="{Binding ElementName=communityInfo,Path=Visibility}" Margin="10 15 0 0" Width="502" Height="0.7" Fill="{DynamicResource adv_rectangle}"
                                HorizontalAlignment="Left"/>
                             <!--#endregion-->
 
@@ -410,7 +411,7 @@
                                 <!--#endregion-->
                             </DockPanel>
 
-                            <Rectangle Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}" Margin="10 15 0 0" Width="502" Height="0.7" Fill="{DynamicResource adv_rectangle}"
+                            <Rectangle Visibility="{Binding ElementName=steamDataArea,Path=Visibility}" Margin="10 15 0 0" Width="502" Height="0.7" Fill="{DynamicResource adv_rectangle}"
                                HorizontalAlignment="Left"/>
                             <!--#endregion-->
 
@@ -579,13 +580,13 @@
 
                             </DockPanel>
 
-                            <Rectangle Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}" Margin="10 15 0 0" Width="502" Height="0.7" Fill="{DynamicResource adv_rectangle}"
+                            <Rectangle x:Name="middleSeparator" Visibility="{Binding ElementName=externalLinks,Path=Visibility}"  Margin="10 15 0 0" Width="502" Height="0.7" Fill="{DynamicResource adv_rectangle}"
                                HorizontalAlignment="Left"/>
                             <!--#endregion-->
 
 
                             <!--#region Other info -->
-                            <DockPanel x:Name="otherInfoArea" Margin="5 15 0 0" Visibility="{Binding OnlyPreview}" Height="405">
+                            <DockPanel x:Name="otherInfoArea" Margin="5 15 0 0" Height="405" Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}">
 
                                 <StackPanel Orientation="Horizontal"  DockPanel.Dock="Top">
                                     <TextBlock Text="{DynamicResource adat_otherInfo}"
@@ -720,7 +721,7 @@
                                 <!--#endregion-->
 
                             </DockPanel>
-                            <Rectangle Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}" Margin="10 15 0 0" Width="502" Height="0.7" Fill="{DynamicResource adv_rectangle}"
+                            <Rectangle Visibility="{Binding ElementName=otherInfoArea,Path=Visibility}" Margin="10 15 0 0" Width="502" Height="0.7" Fill="{DynamicResource adv_rectangle}"
                                HorizontalAlignment="Left"/>
                             <!--#endregion-->
 
@@ -743,21 +744,24 @@
                             <!-- Last update time -->
                             <TextBlock Visibility="{Binding OnlyPreview}" Foreground="{DynamicResource default_foreground}" Opacity="0.4" Margin="-30 8 0 0" HorizontalAlignment="Center" 
                                FontSize="10" Text="{Binding CurrentAccount.LastUpdateTime,Mode=OneWay, StringFormat=Last updated account information: {0}}" />
-                        
+
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem.Content>
             </TabItem>
-            
+
             <TabItem >
                 <TabItem.Header>
-                    <TextBlock FontWeight="Medium" Text="Games"/>
+                    <TextBlock FontWeight="Medium" Text="{DynamicResource adat_links_games}"/>
                 </TabItem.Header>
                 <TabItem.Content>
                     <Grid>
                         <Border Background="{DynamicResource adv_borders_background}"  Margin="0,40,17,162" 
                                 Height="25" CornerRadius="2 2 2 2 " VerticalAlignment="Top"/>
 
+                        <TextBlock Foreground="{DynamicResource default_foreground}" Text="{Binding GamesList.Length,StringFormat=#{0}}"
+                                   Margin="10,46,17,162" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Medium" FontSize="10" />
+                        
                         <DataGrid Margin="0 40 0 4" Background="Transparent" ItemsSource="{Binding GamesList}" VirtualizingPanel.VirtualizationMode="Standard">
 
                             <DataGrid.Columns>
@@ -784,8 +788,8 @@
                                         </Style>
                                     </DataGridTemplateColumn.CellStyle>
                                 </DataGridTemplateColumn>
-                                
-                                <DataGridTextColumn Header="Name"  Binding="{Binding Name}" IsReadOnly="True" Width="200" Foreground="{DynamicResource default_foreground}">
+
+                                <DataGridTextColumn Header="{DynamicResource adat_gameTabName}"  Binding="{Binding Name}" IsReadOnly="True" Width="200" Foreground="{DynamicResource default_foreground}">
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="DataGridCell">
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -801,9 +805,9 @@
 
                                 <DataGridTextColumn Header="ID" Binding="{Binding AppID,Mode=OneWay}" IsReadOnly="True" Width="70" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
 
-                                <DataGridTextColumn Header="Time" Binding="{Binding PlayTime_Forever,StringFormat={}{0} h}" IsReadOnly="True" Width="*" Foreground="{DynamicResource default_foreground}"/>
+                                <DataGridTextColumn Header="{DynamicResource adat_gameTabTime}" Binding="{Binding PlayTime_Forever,StringFormat={}{0} h}" IsReadOnly="True" Width="*" Foreground="{DynamicResource default_foreground}"/>
 
-                               
+
                             </DataGrid.Columns>
 
                         </DataGrid>
@@ -815,15 +819,18 @@
 
                 </TabItem.Content>
             </TabItem>
-            
+
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock FontWeight="Medium" Text="Friends"/>
+                    <TextBlock FontWeight="Medium" Text="{DynamicResource adat_links_friends}"/>
                 </TabItem.Header>
                 <TabItem.Content>
                     <Grid>
                         <Border Background="{DynamicResource adv_borders_background}"  Margin="0,40,17,162" 
                                 Height="25" CornerRadius="2 2 2 2 " VerticalAlignment="Top"/>
+
+                        <TextBlock Foreground="{DynamicResource default_foreground}" Text="{Binding FriendList.Length,StringFormat=#{0}}"
+                                   Margin="10,46,17,162" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Medium" FontSize="10" />
 
                         <DataGrid Margin="0 40 0 4" Background="Transparent" ItemsSource="{Binding FriendList}" VirtualizingPanel.VirtualizationMode="Standard">
 
@@ -835,21 +842,25 @@
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="DataGridCell">
-                                                        <Border Background="{DynamicResource second_main_brush}" CornerRadius="20" Padding="1" Margin="35 0 0 0">
-                                                            
-                                                        
-                                                        <WrapPanel Name ="container" Width="35" Height="35">
-                                                            <Image Source="{Binding ImageURL,Mode=OneWay}"
+                                                        <Border Background="{DynamicResource second_main_brush}" CornerRadius="20" Padding="1" Margin="35 0 0 0" Cursor="Hand">
+                                                            <Border.InputBindings>
+                                                                <MouseBinding MouseAction="LeftClick"
+                                                                              Command="{Binding DataContext.OpenUrlProfileCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding SteamID64}"/>
+                                                            </Border.InputBindings>
+
+                                                            <WrapPanel Name ="container" Width="35" Height="35">
+                                                                <Image Source="{Binding ImageURL,Mode=OneWay}"
                                VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="UniformToFill"/>
-                                                            <WrapPanel.OpacityMask>
-                                                                <VisualBrush >
-                                                                    <VisualBrush.Visual>
-                                                                        <Border Height="{Binding ElementName=container, Path=ActualHeight}" 
+                                                                <WrapPanel.OpacityMask>
+                                                                    <VisualBrush >
+                                                                        <VisualBrush.Visual>
+                                                                            <Border Height="{Binding ElementName=container, Path=ActualHeight}" 
                             Width="{Binding ElementName=container, Path=ActualWidth}" Background="White" CornerRadius="20" />
-                                                                    </VisualBrush.Visual>
-                                                                </VisualBrush>
-                                                            </WrapPanel.OpacityMask>
-                                                        </WrapPanel>
+                                                                        </VisualBrush.Visual>
+                                                                    </VisualBrush>
+                                                                </WrapPanel.OpacityMask>
+                                                            </WrapPanel>
                                                         </Border>
                                                     </ControlTemplate>
                                                 </Setter.Value>
@@ -858,7 +869,7 @@
                                     </DataGridTemplateColumn.CellStyle>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTextColumn Header="Nickname"  Binding="{Binding Name}" IsReadOnly="True" Width="180" Foreground="{DynamicResource default_foreground}">
+                                <DataGridTextColumn Header="{DynamicResource adv_nickname}"  Binding="{Binding Name}" IsReadOnly="True" Width="180" Foreground="{DynamicResource default_foreground}">
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="DataGridCell">
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -874,8 +885,19 @@
 
                                 <DataGridTextColumn Header="ID" Binding="{Binding SteamID64,Mode=OneWay}" IsReadOnly="True" Width="120" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
 
-                                <DataGridTextColumn Header="Friend since" Binding="{Binding FriendSince,Mode=OneWay}" IsReadOnly="True" Width="*" Foreground="{DynamicResource default_foreground}"/>
+                                <DataGridTextColumn Header="{DynamicResource rc_fv_friendSince}" Binding="{Binding FriendSince,Mode=OneWay}" IsReadOnly="True" Width="150" Foreground="{DynamicResource default_foreground}"/>
 
+                                <DataGridTemplateColumn Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Style="{StaticResource MessageToFriend}" HorizontalAlignment="Center"
+                                                    Command="{Binding DataContext.OpenFriendPageCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                                    CommandParameter="{Binding SteamID64}" Width="26" Height="26" Padding="1" Margin="0 0 20 0">
+                                                <Icon:PackIconMaterial Kind="AccountQuestion" VerticalAlignment="Center" HorizontalAlignment="Center" Height="14" Width="14"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
                             </DataGrid.Columns>
 
@@ -883,7 +905,7 @@
 
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Margin="0 40 0 0"
                    FontSize="35" FontWeight="Bold" Foreground="{DynamicResource default_foreground}" Visibility="{Binding FriendList.Length,Converter={StaticResource BoolToVisInverted}}"
-                   Opacity="0.7" Text="{DynamicResource adat_popup_nullGames}" TextWrapping="Wrap" MaxWidth="500"/>
+                   Opacity="0.7" Text="{DynamicResource adat_friendsTabNull}" TextWrapping="Wrap" MaxWidth="500"/>
                     </Grid>
                 </TabItem.Content>
             </TabItem>
@@ -893,17 +915,12 @@
         <Border Background="{DynamicResource adv_background}" Visibility="{Binding OnlyPreview}"
                 Margin="0 38 17 0" VerticalAlignment="Top" CornerRadius="15 15 0 0"  Height="25">
 
-            <DockPanel Height="25" Margin="10 0 25 0">
+            <DockPanel Height="25" Margin="65 0 25 0">
 
-                <!-- Cancel button -->
-                <Button Style="{StaticResource ModernServiceButton}" IsCancel="True"
-                Width="35"  Margin="0 0 25 0"
-                Command="{Binding CancelCommand}"  HorizontalAlignment="Left">
-                    <Icon:PackIconMaterial  Kind="ArrowLeft" Height="20" Width="40" />
-                </Button>
+
 
                 <Button x:Name="TwoFaActivate" Style="{StaticResource ModernServiceButton}"
-                Width="45"  Visibility="{Binding OnlyPreview}" Command="{Binding AddAuthenticatorCommand}">
+                Width="45"  Visibility="{Binding CurrentAccount.ContainParseInfo,Converter={StaticResource BoolToVis}}" Command="{Binding AddAuthenticatorCommand}">
                     <Icon:PackIconMaterial  Kind="TwoFactorAuthentication" Height="18" Width="40" />
                     <Button.ToolTip>
                         <ToolTip ContentStringFormat="{DynamicResource adat_2fa_toolTip}"/>
@@ -911,7 +928,7 @@
                 </Button>
 
                 <Button Style="{StaticResource ModernServiceButton}" Margin="8 0 0 0"
-                  Visibility="{Binding OnlyPreview}" Width="25"  PreviewMouseLeftButtonDown="AntiSpamClicks"
+                  Visibility="{Binding CurrentAccount.ContainParseInfo,Converter={StaticResource BoolToVis}}" Width="25"  PreviewMouseLeftButtonDown="AntiSpamClicks"
                     Command="{Binding CreateAccountShortcutCommand}"
                     CommandParameter="{Binding ElementName=steamImage,Path=Source}">
                     <Icon:PackIconMaterial  Kind="BadgeAccountHorizontal" Height="24" Width="24" VerticalAlignment="Center"/>
@@ -945,6 +962,13 @@
 
             </DockPanel>
         </Border>
+
+        <!-- Cancel button -->
+        <Button Style="{StaticResource ModernServiceButton}" IsCancel="True"
+                Width="35"   Margin="10 40 25 0" VerticalAlignment="Top"
+                Command="{Binding CancelCommand}"  HorizontalAlignment="Left">
+            <Icon:PackIconMaterial  Kind="ArrowLeft" Height="20" Width="40" />
+        </Button>
         <!--#endregion-->
 
     </Grid>

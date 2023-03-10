@@ -146,6 +146,11 @@
     <v:String x:Key="adat_publicProfile">Открытый</v:String>
     <v:String x:Key="adat_steamEmailTitle">Почта от Steam</v:String>
 
+    <v:String x:Key="adat_tabInfo">Информация</v:String>
+    <v:String x:Key="adat_gameTabName">Название</v:String>
+    <v:String x:Key="adat_gameTabTime">Время</v:String>
+    <v:String x:Key="adat_friendsTabNull">Друзья отсутствуют или информация скрыта</v:String>
+
     <v:String x:Key="adat_links_header">Steam ссылки</v:String>
     <v:String x:Key="adat_links_games">Игры</v:String>
     <v:String x:Key="adat_links_inventory">Инвентарь</v:String>

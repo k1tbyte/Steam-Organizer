@@ -145,6 +145,11 @@
     <v:String x:Key="adat_publicProfile">Відкритий</v:String>
     <v:String x:Key="adat_steamEmailTitle">Пошта від Steam</v:String>
 
+    <v:String x:Key="adat_tabInfo">Інформація</v:String>
+    <v:String x:Key="adat_gameTabName">Назва</v:String>
+    <v:String x:Key="adat_gameTabTime">Час</v:String>
+    <v:String x:Key="adat_friendsTabNull">Друзі відсутні або інформація прихована</v:String>
+
     <v:String x:Key="adat_links_header">Steam посилання</v:String>
     <v:String x:Key="adat_links_games">Ігри</v:String>
     <v:String x:Key="adat_links_inventory">Інвентар</v:String>
