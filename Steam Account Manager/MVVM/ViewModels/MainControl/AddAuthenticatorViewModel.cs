@@ -26,11 +26,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         private readonly Window _window;
         private readonly Account currentAccount;
 
-        private class RootObjectUsername
-        {
-            public string Account_name { get; set; }
-        }
-
         public string CaptchaLink
         {
             get => _captchaLink;
@@ -68,7 +63,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                             break;
 
                         case LoginResult.NeedCaptcha:
-                            _captchaLink = "https://api.steampowered.com/public/captcha.php?gid=" + user.CaptchaGID;
+                            CaptchaLink = "https://steamcommunity.com/public/captcha.php?gid=" + user.CaptchaGID;
                             ErrorMessage = App.FindString("aaw_captcha");
                             while (!_isReady) Thread.Sleep(100);
                             user.CaptchaText = UserInput;
@@ -158,8 +153,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             if (fileDialog.ShowDialog() == true)
             {
                 //Veryfication account
-                var list = JsonConvert.DeserializeObject<RootObjectUsername>(File.ReadAllText(fileDialog.FileName));
-                if (list.Account_name != currentAccount.Login)
+                var list = JsonConvert.DeserializeObject<SteamGuardAccount>(File.ReadAllText(fileDialog.FileName));
+                if (list.Session.SteamID != currentAccount.SteamId64.Value)
                 {
                     ErrorMessage = App.FindString("aaw_linkFromAnotherAcc");
                     await Task.Delay(2500);
@@ -171,7 +166,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                     if (!Directory.Exists($@"{App.WorkingDirectory}\Authenticators"))
                         Directory.CreateDirectory($@"{App.WorkingDirectory}\Authenticators");
 
-                    var authenticatorName = $@"{App.WorkingDirectory}\Authenticators\{list.Account_name}.maFile";
+                    var authenticatorName = $@"{App.WorkingDirectory}\Authenticators\{list.AccountName.ToLower()}.maFile";
 
                     File.Copy(fileDialog.FileName, authenticatorName, true);
 
