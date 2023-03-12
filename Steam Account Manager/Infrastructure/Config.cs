@@ -27,7 +27,6 @@ namespace Steam_Account_Manager.Infrastructure
             };
             try
             {
-                Properties.SteamDirection = Utils.Common.GetSteamRegistryDirection();
                 switch (Utils.Common.GetSteamRegistryLanguage())
                 {
 

@@ -68,6 +68,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                             while (!_isReady) Thread.Sleep(100);
                             user.CaptchaText = UserInput;
                             ErrorMessage = App.FindString("aaw_installing");
+                            CaptchaLink = null;
                             break;
 
                         case LoginResult.Need2FA:

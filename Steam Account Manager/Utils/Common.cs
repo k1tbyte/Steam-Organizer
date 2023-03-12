@@ -10,7 +10,6 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
-using System.Windows.Shapes;
 
 namespace Steam_Account_Manager.Utils
 {
@@ -153,26 +152,6 @@ namespace Steam_Account_Manager.Utils
         }
 
         #region Steam
-        private const ulong SteamID64Ident = 76561197960265728;
-        public static UInt32? SteamId64ToSteamId32(ulong? steamId64) => steamId64.HasValue ? (UInt32?)(steamId64.Value - SteamID64Ident) : null;
-        public static ulong SteamId32ToSteamId64(UInt32 steamId32)   => steamId32 + SteamID64Ident;
-        public static ulong SteamId32ToSteamId64(string steamId32)   => ulong.Parse(steamId32) + SteamID64Ident;
-        public static string SteamId64ToSteamID3(ulong? steamId64)   => steamId64.HasValue ? $"[U:1:{steamId64 - SteamID64Ident}]" : null;
-        public static uint SteamId64ToSteamId32(string steamId64)
-        {
-            if (String.IsNullOrEmpty(steamId64)) return 0;
-            var lId = ulong.Parse(steamId64) - SteamID64Ident;
-            return Convert.ToUInt32(lId);
-        }
-        public static string SteamId64ToSteamID(ulong? steamId64)
-        {
-            if (!steamId64.HasValue)
-                return null;
-
-            var steamAccId = steamId64 - SteamID64Ident;
-            return $"STEAM_0:{(steamAccId % 2 == 0 ? 0 : 1)}:{steamAccId / 2}";
-        }
-
         public static string GetSteamAvatarUrl(ulong steamId64, bool fromCache = true, EAvatarType type = EAvatarType.Full)
         {
             try
@@ -266,7 +245,7 @@ namespace Steam_Account_Manager.Utils
             catch { throw; }
         }
 
-        public static string GetSteamRegistryDirection()
+        public static string GetSteamExeRegistryPath()
         {
             RegistryKey registryKey = Environment.Is64BitOperatingSystem ?
         RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64) :
@@ -282,7 +261,7 @@ namespace Steam_Account_Manager.Utils
             catch { return null; }
         }
 
-        public static int GetSteamRegistryHWND()
+        public static int GetSteamRegistryPid()
         {
             RegistryKey registryKey = Environment.Is64BitOperatingSystem ?
         RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64) :

@@ -1,14 +1,17 @@
-﻿using Steam_Account_Manager.Infrastructure;
+﻿using ProtoBuf.WellKnownTypes;
+using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.MainControl.Controls;
 using Steam_Account_Manager.MVVM.View.RemoteControl.Controls;
 using Steam_Account_Manager.UIExtensions;
+using Steam_Account_Manager.Utils;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Management;
 using System.Net;
-using System.Threading;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -34,8 +37,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         public static event EventHandler TotalAccountsChanged;
         public static event EventHandler NowLoginUserImageChanged;
         public static event EventHandler NowLoginUserNicknameChanged;
-        public static bool CancellationFlag = false;
-        private static string _nowLoginUserImage = "/Images/user.png", _nowLoginUserNickname = "Username";
+        public static ManagementEventWatcher RegistrySteamUserWatcher;
+        public static bool CancellationFlag          = false;
+        public static Account CollectInfoAcc         = null;
+        public static DateTime CollectInfoTimeStamp;
+        private static string _nowLoginUserImage     = "/Images/user.png", _nowLoginUserNickname = "Username";
         private WindowState _windowState;
 
         #region Properties
@@ -90,30 +96,58 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         #endregion
 
         private static bool IsParsing = false;
-        public static async Task<bool> NowLoginUserParse(ushort awaitingMs = 0)
+        public static async void CurrentUserChanged(object sender,EventArrivedEventArgs e)
         {
             if (IsParsing) 
-                return false;
+                return;
             IsParsing = true;
-            bool accountDetected = false;
-            await Task.Factory.StartNew(() =>
+
+            await Task.Factory.StartNew(async() =>
             {
-                Thread.Sleep(awaitingMs);
-                var steamID = Utils.Common.GetSteamRegistryActiveUser();
-                if (steamID != 0)
-                {
-                    NowLoginUserImage = Utils.Common.GetSteamAvatarUrl(steamID + 76561197960265728UL) ?? "/Images/user.png";
-                    NowLoginUserNickname = Utils.Common.GetSteamNickname(steamID + 76561197960265728UL) ?? "Username";
-                    accountDetected = true;
-                }
-                else if(awaitingMs != 0)
+
+                var steamID = Common.GetSteamRegistryActiveUser();
+                if(steamID == 0)
                 {
                     NowLoginUserImage = "/Images/user.png";
                     NowLoginUserNickname = "Username";
+                    return;
                 }
+
+                var id64 = steamID + 76561197960265728UL;
+
+                #region If need to get info from anonym
+                if (CollectInfoAcc != null && (DateTime.Now - CollectInfoTimeStamp).Ticks < 600000000)
+                {
+                    try
+                    {
+                        if (!Config.Accounts.Exists(o => o.SteamId64 == id64))
+                        {
+                            Presentation.OpenPopupMessageBox(App.FindString("atv_inf_getLocalAccInfo"));
+                            CollectInfoAcc.SteamId64 = id64;
+                            await CollectInfoAcc.ParseInfo();
+                            App.Current.Dispatcher.Invoke(() => ((App.MainWindow.DataContext as MainWindowViewModel).AccountsV.DataContext as AccountsViewModel).SearchFilter.Refresh());
+                            Config.SaveAccounts();
+
+                            NowLoginUserImage = CollectInfoAcc.AvatarFull;
+                            NowLoginUserNickname = CollectInfoAcc.Nickname;
+                        }
+                        else goto m;
+                    }
+                    catch
+                    {
+                        Presentation.OpenPopupMessageBox((string)App.Current.FindResource("atv_inf_errorWhileScanning"));
+                    }
+                    CollectInfoAcc = null;
+                    return;
+                } 
+                #endregion
+              m:
+                CollectInfoAcc = null;
+                NowLoginUserImage    = Common.GetSteamAvatarUrl(id64) ?? "/Images/user.png";
+                NowLoginUserNickname = Common.GetSteamNickname(id64) ?? "Username";
+
             });
             IsParsing = false;
-            return accountDetected;
         }
 
         private async Task CheckUpdate()
@@ -194,7 +228,14 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             CurrentView = AccountsV;
 
-            _ = NowLoginUserParse().ConfigureAwait(false);
+            CurrentUserChanged(null, null);
+
+            //Installation steam active user watcher
+            RegistrySteamUserWatcher = new ManagementEventWatcher(new WqlEventQuery($"SELECT * FROM RegistryValueChangeEvent WHERE Hive = 'HKEY_USERS'" +
+                    $@"AND KeyPath = '{WindowsIdentity.GetCurrent().User.Value}\\SOFTWARE\\Valve\\Steam\\ActiveProcess' AND ValueName='ActiveUser'"));
+            RegistrySteamUserWatcher.EventArrived += new EventArrivedEventHandler(CurrentUserChanged);
+            RegistrySteamUserWatcher.Start();
+
 #if !DEBUG
             _ = CheckUpdate().ConfigureAwait(false);
 #endif

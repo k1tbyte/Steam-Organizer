@@ -38,7 +38,6 @@ namespace Steam_Account_Manager.Infrastructure.Models
     [Serializable]
     internal sealed class ConfigProperties
     {
-        public string SteamDirection { get; set; }
         public bool NoConfirmMode { get; set; }
         public bool TakeAccountInfo { get; set; }
         public LoggedAction ActionAfterLogin { get; set; }

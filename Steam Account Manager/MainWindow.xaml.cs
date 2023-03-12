@@ -54,7 +54,7 @@ namespace Steam_Account_Manager
                 return IntPtr.Zero;
             }
 
-            Win32.SetForegroundWindow(WindowHandle);
+            Win32.BringWindowToFront(WindowHandle);
             ArgumentsHandler(args);
             handled = true;
             return IntPtr.Zero;

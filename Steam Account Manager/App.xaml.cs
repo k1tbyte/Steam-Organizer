@@ -12,10 +12,8 @@ using System.Reflection;
 using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.WebSockets;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
 
 namespace Steam_Account_Manager
 {
@@ -26,9 +24,10 @@ namespace Steam_Account_Manager
         /// </summary>
         public static readonly Version Version = Assembly.GetExecutingAssembly().GetName().Version;
 
-        static readonly Mutex Mutex = new Mutex(true, "Steam Account Manager");
+        static readonly Mutex Mutex                    = new Mutex(true, "Steam Account Manager");
         public static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        public static bool OfflineMode = false;
+        public static readonly string SteamExePath     = Common.GetSteamExeRegistryPath();
+        public static bool OfflineMode                 = false;
         public static new MainWindow MainWindow;
         public static TrayMenu Tray;
         public static string Args;
@@ -110,6 +109,7 @@ namespace Steam_Account_Manager
             if (SteamRemoteClient.IsRunning)
                 SteamRemoteClient.Logout();
 
+            MainWindowViewModel.RegistrySteamUserWatcher?.Dispose();
             Tray?.Dispose();
             GrabCursor.Dispose();
             GrabbingCursor.Dispose();

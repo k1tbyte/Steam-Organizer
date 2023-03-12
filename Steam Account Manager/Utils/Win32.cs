@@ -48,9 +48,6 @@ namespace Steam_Account_Manager.Utils
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        [DllImport("user32.dll")]
-        public static extern bool ShowWindowAsync(HandleRef hWnd, int nCmdShow);
-
         [DllImport("user32.dll", SetLastError = true)]
         public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
 
@@ -70,9 +67,6 @@ namespace Steam_Account_Manager.Utils
         [DllImport("user32.dll")]
         public static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern bool BringWindowToTop(IntPtr hWnd);
-
         [DllImport("user32.dll", EntryPoint = "BlockInput")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool BlockInput([MarshalAs(UnmanagedType.Bool)] bool fBlockIt);
@@ -89,7 +83,30 @@ namespace Steam_Account_Manager.Utils
         [DllImport("User32.dll", EntryPoint = "SendMessage")]
         private static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
 
+        [DllImport("user32.dll")]
+        public static extern IntPtr FindWindow(string className, string windowTitle);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ShowWindow(IntPtr hWnd, EShowWindow flags);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetWindowPlacement(IntPtr hWnd, ref Windowplacement lpwndpl);
+
         #endregion
+
+        public static void BringWindowToFront(IntPtr hWnd)
+        {
+            Windowplacement placement = new Windowplacement();
+            GetWindowPlacement(hWnd, ref placement);
+
+            if (placement.showCmd == 2)
+            {
+                ShowWindow(hWnd, EShowWindow.Restore);
+            }
+            SetForegroundWindow(hWnd);
+        }
 
         #region Structs
         [StructLayout(LayoutKind.Sequential)]
@@ -109,6 +126,16 @@ namespace Steam_Account_Manager.Utils
             public string lpData;
         }
 
+        private struct Windowplacement
+        {
+            public int length;
+            public int flags;
+            public int showCmd;
+            public System.Drawing.Point ptMinPosition;
+            public System.Drawing.Point ptMaxPosition;
+            public System.Drawing.Rectangle rcNormalPosition;
+        }
+
         public enum WM : uint
         {
             KEYDOWN = 0x0100,
@@ -123,6 +150,22 @@ namespace Steam_Account_Manager.Utils
             CONTROL = 0X11,
             SPACE = 0x20
         }
+
+        public enum EShowWindow
+        {
+            Hide = 0,
+            ShowNormal = 1,
+            ShowMinimized = 2,
+            Maximize = 3,
+            ShowNormalNoActivate = 4,
+            Show = 5,
+            Minimize = 6,
+            ShowMinNoActivate = 7,
+            ShowNoActivate = 8,
+            Restore = 9,
+            ShowDefault = 10,
+            ForceMinimized = 11
+        };
 
         [ComImport, TypeLibType((short)0x1040), Guid("F935DC23-1CF0-11D0-ADB9-00C04FD58A0B")]
         private interface IWshShortcut
@@ -194,17 +237,6 @@ namespace Steam_Account_Manager.Utils
             PostMessage(HWND, (int)WM.KEYUP, (IntPtr)key, IntPtr.Zero);
         }
 
-        public static void ForceWindowToForeground(IntPtr HWND)
-        {
-            const int SW_SHOW = 5;
-            AttachedThreadInputAction(
-                () =>
-                {
-                    BringWindowToTop(HWND);
-                    ShowWindow(HWND, SW_SHOW);
-                });
-        }
-
         public static void SendMessage(IntPtr hwnd, string message)
         {
             var messageBytes = Encoding.Unicode.GetBytes(message);
@@ -219,25 +251,6 @@ namespace Steam_Account_Manager.Utils
                 throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
-        public static void AttachedThreadInputAction(Action action)
-        {
-            var foreThread = GetWindowThreadProcessId(GetForegroundWindow(), IntPtr.Zero);
-            var appThread = GetCurrentThreadId();
-            bool threadsAttached = false;
-            try
-            {
-                threadsAttached =
-                    foreThread == appThread ||
-                    AttachThreadInput(foreThread, appThread, true);
-                if (threadsAttached) action();
-                else throw new Exception("Attached steam thread failed");
-            }
-            finally
-            {
-                if (threadsAttached)
-                    AttachThreadInput(foreThread, appThread, false);
-            }
-        }
 
         public static string GetMessage(int message, IntPtr lParam)
         {

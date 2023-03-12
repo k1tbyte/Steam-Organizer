@@ -88,6 +88,7 @@
       <HintPath>..\packages\System.Collections.Immutable.6.0.0\lib\net461\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -129,6 +130,9 @@
     <Compile Include="Infrastructure\Converters\ResourceConverter.cs" />
     <Compile Include="Infrastructure\Converters\SteamIDConverter.cs" />
     <Compile Include="Infrastructure\Models\AccountModel.cs" />
+    <Compile Include="Infrastructure\Parsers\VDF\VdfDeserializer.cs" />
+    <Compile Include="Infrastructure\Parsers\VDF\VdfTable.cs" />
+    <Compile Include="Infrastructure\Parsers\VDF\VdfValue.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
     <Compile Include="Infrastructure\Models\GamesHandlerModel.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\AuthenticatorLinker.cs" />
