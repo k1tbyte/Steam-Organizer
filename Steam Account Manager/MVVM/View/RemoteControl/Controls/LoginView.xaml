@@ -42,15 +42,15 @@
                          VerticalAlignment="Center" Tag="{DynamicResource adat_login}"/>
                         <Icon:PackIconMaterial Kind="AccountOutline" VerticalAlignment="Center"
                                            Height="22" Width="22" Margin="8 0 0 1"
-                                           Foreground="{DynamicResource second_text_color}"/>
+                                           Foreground="{DynamicResource first_settings_text}"/>
                     </Grid>
 
 
                     <TextBlock Grid.Row="2" Text="{DynamicResource adv_password}" FontWeight="Thin"
                        Width="57" Height="20" HorizontalAlignment="Left"
-                       FontSize="14" Margin="0 20 0 0" Foreground="{DynamicResource second_text_color}" />
-                    <ui:ModernPasswordBox  Grid.Row="2" Height="35" IconKeyColor="{DynamicResource default_foreground}"
-                                   BorderBrush="{DynamicResource second_text_color}"
+                       FontSize="14" Margin="0 20 0 0" Foreground="{DynamicResource first_settings_text}" />
+                    <ui:ModernPasswordBox  Grid.Row="2" Height="35" IconKeyColor="{DynamicResource first_settings_text}"
+                                           BorderBrush="{DynamicResource first_settings_text}"
                                            Password="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
                                                 Width="230" BorderThickness="0 0 0 1"/>
 
@@ -59,7 +59,7 @@
                                  Tag="{DynamicResource rc_lv_guardCode}"  Text="{Binding AuthCode,UpdateSourceTrigger=PropertyChanged}"/>
                         <Icon:PackIconMaterial Kind="Shield" VerticalAlignment="Center"
                                            Height="22" Width="22" Margin="5 0 0 1"
-                                           Foreground="{DynamicResource second_text_color}"/>
+                                           Foreground="{DynamicResource first_settings_text}"/>
                     </Grid>
 
 

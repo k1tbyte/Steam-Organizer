@@ -109,13 +109,13 @@
     <Style x:Key="ModernTextBoxOutlined" TargetType="{x:Type TextBox}">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="Foreground" Value="{DynamicResource second_text_color}"/>
+        <Setter Property="Foreground" Value="{DynamicResource first_settings_text}"/>
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="SelectionBrush" Value="{DynamicResource second_main_brush}"/>
-        <Setter Property="CaretBrush" Value="{DynamicResource second_text_color}"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource first_settings_text}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource first_settings_text}"/>
         <Setter Property="BorderThickness" Value="0 0 0 1"/>
         <Setter Property="Padding" Value="18 0 0 0"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource second_text_color}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource first_settings_text}"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="Cursor" Value="IBeam"/>
         <Setter Property="Template">
@@ -130,7 +130,7 @@
                             Focusable="false" Padding="0"/>
                         </Border>
                         <TextBlock x:Name="topTitle" Text="{TemplateBinding Tag}" FontSize="14" FontWeight="Thin"
-                                       Foreground="{TemplateBinding Foreground}" Margin="5 -20 0 0"
+                                       Foreground="{DynamicResource first_settings_text}" Margin="5 -20 0 0"
                                        VerticalAlignment="Top" IsHitTestVisible="False"/>
                     </Grid>
                 </ControlTemplate>
@@ -146,8 +146,10 @@
     <Style x:Key="ModernTextBoxBordered" TargetType="{x:Type TextBox}" BasedOn="{StaticResource ModernTextBoxOutlined}">
         <Setter Property="Border.CornerRadius" Value="8"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="SelectionBrush" Value="{DynamicResource second_text_color}"/>
         <Setter Property="Background" Value="{DynamicResource adv_borders_background}"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource default_secundary_foreground}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource default_secundary_foreground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource default_secundary_foreground}"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
 </ResourceDictionary>

@@ -13,13 +13,13 @@
     <Brush x:Key="menu_button_background">#7B5CD6</Brush>
     <Brush x:Key="menu_button_text">#D0C0FF</Brush>
     <Brush x:Key="default_foreground">#b0b9c6</Brush>
-    
+    <Brush x:Key="default_secundary_foreground">#b0b9c6</Brush>
+
 
     <!-- Accounts view -->
     <Brush x:Key="searchbox">#FF181B28</Brush>
     <Brush x:Key="add_button_background">#FF181B28</Brush>
     <Brush x:Key="add_button_foreground">#b0b9c6</Brush>
-    <Brush x:Key="add_button_isMouseOver">#433793</Brush>
     <Brush x:Key="accounts_scroll_foreground">#433793</Brush>
 
     <!-- Add account view -->

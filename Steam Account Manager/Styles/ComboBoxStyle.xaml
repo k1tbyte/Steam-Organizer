@@ -66,7 +66,7 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontWeight" Value="Medium" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource default_secundary_foreground}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBox}">
@@ -118,7 +118,7 @@
                                  IsReadOnly="True"
                                  FontWeight="Medium"
                                  FontSize="14"
-                                 Foreground="{DynamicResource default_foreground}"/>
+                                 Foreground="{DynamicResource default_secundary_foreground}"/>
                         <Popup x:Name="Popup"
                                Placement="Bottom"
                                IsOpen="{TemplateBinding IsDropDownOpen}"
@@ -161,7 +161,7 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="Foreground" Value="{DynamicResource default_foreground}" />
+        <Setter Property="Foreground" Value="{DynamicResource default_secundary_foreground}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBoxItem}">

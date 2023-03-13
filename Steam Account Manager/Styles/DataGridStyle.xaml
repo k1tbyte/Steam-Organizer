@@ -21,7 +21,7 @@
 
     <Style TargetType="DataGridColumnHeader">
         <Setter Property="SnapsToDevicePixels" Value="True" />
-        <Setter Property="Foreground" Value="{DynamicResource default_foreground}" />
+        <Setter Property="Foreground" Value="{DynamicResource default_secundary_foreground}" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="Medium"/>
         <Setter Property="Cursor" Value="Hand" />

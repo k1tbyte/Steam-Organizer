@@ -25,7 +25,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Icon:PackIconMaterial x:Name="iicon" Kind="InformationOutline" Background="Transparent"
-                                       Width="30" Height="30" Margin="12 0 0 0" Foreground="White"
+                                       Width="30" Height="30" Margin="12 0 0 0" Foreground="{DynamicResource atv_rectangles_shadow}"
                                        Grid.RowSpan="2" VerticalAlignment="Center"/>
 
                 <TextBlock VerticalAlignment="Top" Foreground="{DynamicResource default_foreground}"

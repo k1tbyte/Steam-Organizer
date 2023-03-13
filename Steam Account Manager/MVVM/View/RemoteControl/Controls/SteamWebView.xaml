@@ -76,7 +76,7 @@
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
 
                     <TextBox x:Name="apiKeyText" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
-                          Width="165" Margin="0 0 6 0" MaxLength="60" Text="{Binding WebApiKey}" />
+                          Width="165" Margin="0 0 6 0" MaxLength="60" Text="{Binding WebApiKey}" Foreground="{DynamicResource default_secundary_foreground}" />
 
 
                     <Button Command="{Binding GetWebApiKeyCommand}" 
@@ -99,7 +99,7 @@
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
 
                     <TextBox x:Name="tradeTokenText" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
-                          Width="165" Margin="0 0 6 0" MaxLength="60" Text="{Binding TradeToken}" />
+                          Width="165" Margin="0 0 6 0" MaxLength="60" Text="{Binding TradeToken}" Foreground="{DynamicResource default_secundary_foreground}" />
 
 
                     <Button Command="{Binding GetTradeTokenCommmand}" 

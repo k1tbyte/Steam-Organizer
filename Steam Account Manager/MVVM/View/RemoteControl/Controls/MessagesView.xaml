@@ -50,7 +50,7 @@
                     <ControlTemplate TargetType="ToggleButton">
                         <Border x:Name="border"  Background="{DynamicResource rc_button_back}" CornerRadius="0 5 5 0">
                             <Icon:PackIconMaterial x:Name="arrowIcon" Kind="ArrowDownBold" Width="15" Height="12" RotationAngle="270"
-                                                   VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource top_service_buttons}"/>
+                                                   VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource default_secundary_foreground}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <DataTrigger Binding="{Binding SelectedChatId}" Value="0">
@@ -62,7 +62,6 @@
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="arrowIcon" Property="Foreground" Value="#ffff"/>
-                                <Setter TargetName="border" Property="Background" Value="{DynamicResource settings_buttons_isMouseOver}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -158,7 +157,7 @@
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Margin="0 0 0 5">
-                                        <TextBlock FontSize="10" Text="{Binding Username}" Foreground="white" 
+                                        <TextBlock FontSize="10" Text="{Binding Username}" Foreground="{DynamicResource default_secundary_foreground}" 
                                            Opacity="0.7" Margin="8 0 0 2" FontWeight="Medium"/>
 
                                         <Border CornerRadius="15 15 15 0" MinHeight="30" MinWidth="100"
@@ -170,8 +169,8 @@
 
                                         </Border>
 
-                                        <TextBlock FontSize="9" HorizontalAlignment="Left" Text="{Binding Time}" Foreground="white" 
-                                           Opacity="0.7" Margin="5 0 0 0" FontWeight="Thin"/>
+                                        <TextBlock FontSize="9" HorizontalAlignment="Left" Text="{Binding Time}" Foreground="{DynamicResource default_secundary_foreground}" 
+                                           Opacity="0.7" Margin="5 0 0 0" FontWeight="Thin" />
 
                                     </StackPanel>
 
@@ -179,7 +178,7 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
 
-                        <TextBlock Margin="29,0,0,33" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="#b0b9c6" IsHitTestVisible="False"
+                        <TextBlock Margin="29,0,0,33" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="{DynamicResource default_secundary_foreground}" IsHitTestVisible="False"
                           Panel.ZIndex="1" Text="{DynamicResource rc_mv_writeMsg}" FontSize="12"
                           Visibility="{Binding ElementName=MessageBox, Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
 
@@ -189,13 +188,13 @@
                              Margin="20 0 0 15" >
 
                             <Border Height="40" Width="265" CornerRadius="10"
-                        Background="{DynamicResource second_main_brush}" Opacity="0.6">
+                        Background="{DynamicResource second_main_brush}" Opacity="0.8">
                                 <TextBox  MaxLength="4000" AcceptsTab="True" Text="{Binding Message,UpdateSourceTrigger=PropertyChanged}"
-                              TextWrapping="Wrap" Foreground="White"
+                              TextWrapping="Wrap" Foreground="{DynamicResource default_secundary_foreground}"
                              AcceptsReturn="True" MaxLines="140" x:Name="MessageBox"
                               Background="Transparent" Margin="5"
                              KeyUp="MessageBox_KeyUp" PreviewKeyDown="MessageBox_PreviewKeyDown"
-                             BorderThickness="0" CaretBrush="{DynamicResource atv_rectangles_shadow}"/>
+                             BorderThickness="0" CaretBrush="{DynamicResource default_secundary_foreground}"/>
                             </Border>
 
                             <Button  Style="{StaticResource ModernColoredButton}" IsHitTestVisible="{Binding ElementName=MessageBox,Path=Text.IsEmpty,Converter={StaticResource BoolInverted}}"
@@ -223,13 +222,13 @@
 
 
                     <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5 40 0 0">
-                        <TextBlock Text="{DynamicResource rc_mv_goToChatId}" Margin="4 0 0 2" FontSize="11" Foreground="{DynamicResource default_foreground}"/>
+                        <TextBlock Text="{DynamicResource rc_mv_goToChatId}" Margin="4 0 0 2" FontSize="11" Foreground="{DynamicResource first_settings_text}"/>
                         <StackPanel Orientation="Horizontal" >
 
                             <Border Margin="0 0 -124 0" Background="{DynamicResource rc_button_back}"
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
 
-                            <TextBox x:Name="add_idBox" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
+                            <TextBox x:Name="add_idBox" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" Foreground="{DynamicResource default_secundary_foreground}"
                          IsReadOnly="False" Width="115" Margin="0 0 6 0" MaxLength="60" Text="{Binding InterlocutorId, UpdateSourceTrigger=PropertyChanged}"/>
 
 
@@ -239,14 +238,14 @@
                         </StackPanel>
 
 
-                        <TextBlock Text="{DynamicResource rc_mv_currntAdm}" Margin="4 7 0 2" FontSize="11" Foreground="{DynamicResource default_foreground}"/>
+                        <TextBlock Text="{DynamicResource rc_mv_currntAdm}" Margin="4 7 0 2" FontSize="11" Foreground="{DynamicResource first_settings_text}"/>
                         <Grid Width="205">
                             <StackPanel Orientation="Horizontal" >
 
                                 <Border Margin="0 0 -124 0" Background="{DynamicResource rc_button_back}"
                         Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
 
-                                <TextBox x:Name="add_admin_box"  Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
+                                <TextBox x:Name="add_admin_box"  Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0"  Foreground="{DynamicResource default_secundary_foreground}"
                          IsReadOnly="False" Width="115" Margin="0 0 6 0" MaxLength="60" Text="{Binding AdminId,UpdateSourceTrigger=PropertyChanged}"/>
 
 
@@ -283,14 +282,14 @@
                         </TextBlock>
                         <StackPanel Margin="0 60 0 0" Orientation="Horizontal">
                             <TextBlock Text="{DynamicResource rc_mv_saveChatLog}" Margin="4 3 10 2" FontSize="13" 
-                                       Foreground="{DynamicResource default_foreground}"/>
+                                       Foreground="{DynamicResource first_settings_text}"/>
                             <ToggleButton Style="{StaticResource ModernCheckbox}" Width="25" Height="25"
                                           Background="{DynamicResource rc_button_back}" IsChecked="{Binding SaveChatLog}"/>
                         </StackPanel>
 
                         <StackPanel Margin="0 5 0 0" Orientation="Horizontal">
                             <TextBlock Text="{DynamicResource rc_mv_enableCmds}" Margin="4 3 10 2" FontSize="13" 
-                                       Foreground="{DynamicResource default_foreground}"/>
+                                       Foreground="{DynamicResource first_settings_text}"/>
 
                             <ToggleButton Style="{StaticResource ModernCheckbox}" Width="25" Height="25" 
                                           IsHitTestVisible="{Binding IsAdminIdValid}"
@@ -316,7 +315,7 @@
                         <StackPanel>
                             <TextBlock Text="{DynamicResource rc_mv_cmdsTitle}"
                                    Margin="10 5 0 2" FontWeight="Medium"
-                                   Foreground="{DynamicResource default_foreground}"/>
+                                   Foreground="{DynamicResource default_secundary_foreground}"/>
 
                             <ListBox x:Name="commandListBox" Background="Transparent" Width="320" Height="185"
                              VirtualizingPanel.IsVirtualizing="True" ItemsSource="{Binding MsgCommands}"
@@ -331,11 +330,11 @@
                                                 <ColumnDefinition Width="105"/>
                                             </Grid.ColumnDefinitions>
 
-                                            <TextBox Grid.Column="0"  Text="{Binding Keyword}" MaxWidth="90" Style="{StaticResource commandBox}" Foreground="{DynamicResource default_foreground}"/>
+                                            <TextBox Grid.Column="0"  Text="{Binding Keyword}" MaxWidth="90" Style="{StaticResource commandBox}" Foreground="{DynamicResource first_settings_text}"/>
 
-                                            <TextBox Grid.Column="1" Text="{Binding CommandExecution}" MaxWidth="90" Style="{StaticResource commandBox}" Foreground="{DynamicResource default_foreground}"/>
+                                            <TextBox Grid.Column="1" Text="{Binding CommandExecution}" MaxWidth="90" Style="{StaticResource commandBox}" Foreground="{DynamicResource first_settings_text}"/>
 
-                                            <TextBox Grid.Column="2" Text="{Binding MessageAfterExecute}" MaxWidth="90" Style="{StaticResource commandBox}" Foreground="{DynamicResource default_foreground}"/>
+                                            <TextBox Grid.Column="2" Text="{Binding MessageAfterExecute}" MaxWidth="90" Style="{StaticResource commandBox}" Foreground="{DynamicResource first_settings_text}"/>
 
                                         </Grid>
                                     </DataTemplate>
@@ -346,27 +345,27 @@
 
                         <TextBlock Text="{DynamicResource rc_mv_onlyConsoleCmds}" Visibility="{Binding ElementName=CommandBox,Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"
                                    VerticalAlignment="Bottom" Margin="7 0 0 26.5"
-                                   FontSize="9" Foreground="{StaticResource default_foreground}" Opacity="0.6"/>
+                                   FontSize="9" Foreground="{StaticResource default_secundary_foreground}" Opacity="0.9"/>
 
 
                         <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Left">
                             <TextBlock Text="{DynamicResource rc_mv_keyword}" Margin="4 -16 0 0" FontSize="11"
-                                       Foreground="{DynamicResource default_foreground}" x:Name="KeywordTitle"/>
+                                       Foreground="{DynamicResource first_settings_text}" x:Name="KeywordTitle"/>
                             <TextBox x:Name="KeywordBox" Style="{StaticResource opacityBox}" Height="25" 
-                          Width="145"  Margin="0 0 0 20" Padding="11 4 4 6"/>
+                          Width="145"  Margin="0 0 0 20" Padding="11 4 4 6" Foreground="{DynamicResource default_secundary_foreground}"/>
 
-                            <TextBlock Text="{DynamicResource rc_mv_cmd}" Margin="4 -16 0 0" FontSize="11" Foreground="{DynamicResource default_foreground}"
+                            <TextBlock Text="{DynamicResource rc_mv_cmd}" Margin="4 -16 0 0" FontSize="11" Foreground="{DynamicResource first_settings_text}"
                                        x:Name="CommandTitle"/>
                             <TextBox x:Name="CommandBox" Style="{StaticResource opacityBox}" Height="25" 
-                          Width="145" Margin="0 0 0 20"/>
+                          Width="145" Margin="0 0 0 20" Foreground="{DynamicResource default_secundary_foreground}"/>
                             
                         </StackPanel>
 
                         <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Left"
                                    Text="/" Margin="8 0 0 70" FontSize="11"
-                                   Foreground="{DynamicResource default_foreground}"/>
+                                   Foreground="{DynamicResource default_secundary_foreground}"/>
 
-                            <TextBox Style="{StaticResource opacityBox}" Height="25" x:Name="CommandMsgBox"
+                        <TextBox Style="{StaticResource opacityBox}" Height="25" x:Name="CommandMsgBox" Foreground="{DynamicResource first_settings_text}"
                           Width="145" Uid="{DynamicResource rc_mv_message}" VerticalAlignment="Bottom" Margin="170 0 0 65" HorizontalAlignment="Left"/>
                         
                             <Button x:Name="AddCommand" Style="{StaticResource ModernColoredButton}" Width="60" Height="26" Click="AddCommand_Click"  VerticalAlignment="Bottom"

@@ -49,6 +49,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Root" Property="Background" Value="{DynamicResource second_main_brush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource default_secundary_foreground}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

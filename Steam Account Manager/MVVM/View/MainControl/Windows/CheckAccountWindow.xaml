@@ -49,7 +49,7 @@
             <Icon:PackIconMaterial Grid.Row="1" Kind="Link" VerticalAlignment="Top"
                                            Height="22" Width="22" 
                                            Margin="27 30 0 41"
-                                           Foreground="{DynamicResource second_text_color}"/>
+                                           Foreground="{DynamicResource first_settings_text}"/>
 
             <StackPanel Grid.Row="1" Margin="0 58 0 0">
                 <TextBlock x:Name="Error"  VerticalAlignment="Bottom" Grid.Row="1" MaxWidth="250"

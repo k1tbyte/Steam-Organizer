@@ -45,11 +45,12 @@
             <TextBlock Grid.Row="2" Text="{DynamicResource adv_password}" FontWeight="Thin"
                        Width="57" Height="20" HorizontalAlignment="Left"
                        FontSize="14"
-                       Foreground="{DynamicResource second_text_color}" Margin="20,-8,0,37" />
-            
-            <ui:ModernPasswordBox  Grid.Row="2" Height="35" IconKeyColor="{DynamicResource second_text_color}"
-                                   BorderBrush="{DynamicResource second_text_color}"
-                                           Password="{Binding SteamPassword, UpdateSourceTrigger=PropertyChanged}"
+                       Foreground="{DynamicResource first_settings_text}" Margin="20,-8,0,37" />
+
+            <ui:ModernPasswordBox  Grid.Row="2" Height="35" IconKeyColor="{DynamicResource first_settings_text}"
+                                   BorderBrush="{DynamicResource first_settings_text}"
+                                   Foreground="{DynamicResource default_foreground}"
+                                   Password="{Binding SteamPassword, UpdateSourceTrigger=PropertyChanged}"
                                                 Width="230" BorderThickness="0 0 0 1"/>
 
             <Grid Grid.Row="1" Margin="20 4 0 0" HorizontalAlignment="Left" VerticalAlignment="Center">
@@ -59,7 +60,7 @@
                          VerticalAlignment="Center" Tag="{DynamicResource adv_login}"/>
                 <Icon:PackIconMaterial Kind="AccountOutline" VerticalAlignment="Center"
                                            Height="22" Width="22" Margin="8 0 0 1"
-                                           Foreground="{DynamicResource second_text_color}"/>
+                                           Foreground="{DynamicResource first_settings_text}"/>
             </Grid>
 
 
@@ -67,13 +68,13 @@
 
             <!-- URL or Nickname -->
             <Grid Grid.Row="3" Margin="20 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left">
-               
+
                 <TextBox x:Name="SteamURL" MaxLength="60"  Style="{StaticResource ModernTextBoxOutlined}" Width="230" Height="30"  
-                          Text="{Binding SteamLink, UpdateSourceTrigger=PropertyChanged}"
+                          Text="{Binding SteamLink, UpdateSourceTrigger=PropertyChanged}" 
                          VerticalAlignment="Center" Tag="{DynamicResource adv_anySteamAccoutId}"/>
                 <Icon:PackIconMaterial x:Name="urlIcon" Kind="Link" VerticalAlignment="Center"
                                            Height="22" Width="22" Margin="5 0 0 1"
-                                           Foreground="{DynamicResource second_text_color}"/>
+                                           Foreground="{DynamicResource first_settings_text}"/>
             </Grid>
 
 

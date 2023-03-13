@@ -87,7 +87,7 @@
                             <Icon:PackIconMaterial x:Name="apiIcon" Kind="Api" Foreground="{DynamicResource settings_buttons_isMouseOver}"
                                            VerticalAlignment="Center" Height="20" Width="20" />
 
-                            <TextBox Margin="5 0 0 0" Width="205"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
+                            <TextBox Margin="5 0 0 0" Width="205"  Foreground="{DynamicResource first_settings_text}"
                          Text="{Binding Properties.WebApiKey,Mode=OneWay}" VerticalAlignment="Center" SelectionBrush="{DynamicResource second_main_brush}"
                          Background="{DynamicResource first_main_brush}" MaxLength="32" BorderThickness="0" CaretBrush="White"
                          TextChanged="ApiKey_TextChanged"/>
@@ -125,10 +125,10 @@
                                            VerticalAlignment="Center" Height="20" Width="20" />
 
                             <Grid  Margin="5 0 0 0" VerticalAlignment="Center">
-                                <TextBox x:Name="CryptoKey" Width="235"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
+                                <TextBox x:Name="CryptoKey" Width="235"  Foreground="{DynamicResource first_settings_text}"
                                          IsReadOnly="True" Background="{DynamicResource first_main_brush}" MaxLength="32" 
                                          BorderThickness="0" CaretBrush="White" SelectionBrush="{DynamicResource second_main_brush}"/>
-                                <TextBlock Text="{DynamicResource sv_crypto_key_default}" Foreground="{DynamicResource settings_buttons_isUncheckedText}"
+                                <TextBlock Text="{DynamicResource sv_crypto_key_default}" Foreground="{DynamicResource first_settings_text}"
                                            Visibility="{Binding ElementName=CryptoKey,Path=Text.IsEmpty,Converter={StaticResource BoolToVis}}"/>
                             </Grid>
                         </StackPanel>

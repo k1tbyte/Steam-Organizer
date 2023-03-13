@@ -30,7 +30,7 @@
 
                 <Icon:PackIconMaterial x:Name="UpdateIcon" Visibility="Collapsed" Margin="12 0 10 0" Width="30" Height="30" Kind="Update" Foreground="LightGreen"/>
 
-                <TextBlock x:Name="Title"  VerticalAlignment="Center" Foreground="White" Opacity="0.8"
+                <TextBlock x:Name="Title"  VerticalAlignment="Center" Foreground="{DynamicResource second_settings_text}" Opacity="0.8"
                            FontSize="17" Margin="3 0 0 0"
                            Text=""  FontFamily="Cascadia Code"/>
 

@@ -333,7 +333,7 @@
                             <Setter TargetName="arrowIcon" Property="Kind" Value="ArrowDownCircleOutline"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="arrowIcon" Property="Foreground" Value="#ffff"/>
+                            <Setter TargetName="arrowIcon" Property="Foreground" Value="{DynamicResource adv_service_buttons_isMouseOver}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

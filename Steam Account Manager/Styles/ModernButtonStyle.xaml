@@ -90,6 +90,7 @@
 
     <Style x:Key="ModernColoredButton" TargetType="{x:Type Button}" BasedOn="{StaticResource ModernDefaultButton}">
         <Setter Property="Background" Value="{DynamicResource rc_button_back}"/>
+        <Setter Property="Foreground" Value="{DynamicResource default_secundary_foreground}"/>
         <Setter Property="Width" Value="80"/>
         <Setter Property="Height" Value="35"/>
         <Setter Property="Padding" Value="0"/>
@@ -158,7 +159,7 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="Foreground" Value="#fff"/>
                         </Trigger>
                         <EventTrigger RoutedEvent="Unchecked">
                             <BeginStoryboard>

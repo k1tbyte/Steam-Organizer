@@ -186,7 +186,7 @@
 
                             <Border x:Name="communityInfo" Margin="0 5 0 0" Visibility="{Binding CurrentAccount.ContainParseInfo, Converter={StaticResource BoolToVis}}"
                     CornerRadius="15" Width="520" HorizontalAlignment="Left" Height="75"
-                    Background="{DynamicResource adv_borders_background}" Opacity="0.8">
+                    Background="{DynamicResource adv_borders_background}" Opacity="0.9">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left"
                                         Margin="30 0 0 0">
 
@@ -323,7 +323,7 @@
                                 <StackPanel Margin="10 10 0 0">
 
                                     <StackPanel Margin="0 0 0 7" Orientation="Horizontal" Height="23">
-                                        <TextBlock Text="{DynamicResource adat_steam_account}" FontSize="16"  Foreground="{DynamicResource second_text_color}"/>
+                                        <TextBlock Text="{DynamicResource adat_steam_account}" Foreground="{DynamicResource default_foreground}" FontSize="16"/>
                                         <Button x:Name="copySteamSelf" Click="CopySteamData" >
                                             <Button.Style>
                                                 <Style TargetType="Button" BasedOn="{StaticResource ModernCopyButton}">
@@ -350,13 +350,13 @@
                                         <TextBox x:Name="steamLoginBox" Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_login}" Margin="0 10 0 0" Opacity="0.9"
                                          MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding Login,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
                                         <Icon:PackIconMaterial Kind="AccountOutline" Height="22" Width="22" VerticalAlignment="Center"
-                                           Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
+                                           Margin="8 8 0 0" Foreground="{DynamicResource default_secundary_foreground}"/>
                                     </Grid>
 
 
                                     <!-- Password -->
-                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" FontWeight="Thin" Opacity="0.8"/>
-                                    <ui:ModernPasswordBox x:Name="steamPasswordBox" HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
+                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" FontWeight="Thin" Opacity="0.8" Foreground="{DynamicResource first_settings_text}"/>
+                                    <ui:ModernPasswordBox x:Name="steamPasswordBox" HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource default_secundary_foreground}" 
                                                   VerticalAlignment="Center" BorderColor="{DynamicResource adv_borders_background}"
                                                         Opacity="0.9"  Password="{Binding Password, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -372,8 +372,7 @@
 
                                     <StackPanel Margin="0 0 0 7" Orientation="Horizontal" Height="23">
 
-                                        <TextBlock Text="{DynamicResource adat_steamEmailTitle}" FontSize="16"
-                                       Foreground="{DynamicResource second_text_color}"/>
+                                        <TextBlock Text="{DynamicResource adat_steamEmailTitle}" Foreground="{DynamicResource default_foreground}" FontSize="16"/>
                                         <Button x:Name="copySteamMail" Click="CopySteamData" >
                                             <Button.Style>
                                                 <Style TargetType="Button" BasedOn="{StaticResource ModernCopyButton}">
@@ -399,12 +398,12 @@
                                         <TextBox x:Name="steamMailBox" Style="{StaticResource ModernTextBoxBordered}" Tag="{DynamicResource adat_email_address}" Margin="0 10 0 0" Opacity="0.9"
                                          MaxLength="50" Width="220" Padding="17 4 4 4" Text="{Binding CurrentAccount.EmailLogin}"/>
                                         <Icon:PackIconMaterial Kind="EmailBox" Height="22" Width="22" VerticalAlignment="Center"
-                                           Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
+                                           Margin="8 8 0 0" Foreground="{DynamicResource default_secundary_foreground}"/>
                                     </Grid>
 
                                     <!-- Mail password -->
-                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" FontWeight="Thin" Opacity="0.8"/>
-                                    <ui:ModernPasswordBox x:Name="steamMailPasswordBox" HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
+                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" Margin="5 10 0 2" FontWeight="Thin" Opacity="0.8" Foreground="{DynamicResource first_settings_text}"/>
+                                    <ui:ModernPasswordBox x:Name="steamMailPasswordBox" HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource default_secundary_foreground}" 
                                                           BorderColor="{DynamicResource adv_borders_background}"
                                                         Opacity="0.9"  Password="{Binding CurrentAccount.EmailPass,Mode=TwoWay}"/>
                                 </StackPanel>
@@ -488,7 +487,7 @@
                                 <StackPanel Margin="15 18 0 0">
 
                                     <StackPanel Orientation="Horizontal" Margin="0 0 0 7" Height="23">
-                                        <TextBlock FontSize="16"  Foreground="{DynamicResource second_text_color}">
+                                        <TextBlock FontSize="16"  Foreground="{DynamicResource default_foreground}">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Style.Triggers>
@@ -551,12 +550,12 @@
                                             </TextBox.Style>
                                         </TextBox>
                                         <Icon:PackIconMaterial Kind="EmailBox" Height="22" Width="22" VerticalAlignment="Center"
-                                           Margin="8 8 0 0" Foreground="{DynamicResource second_text_color}"/>
+                                           Margin="8 8 0 0" Foreground="{DynamicResource default_secundary_foreground}"/>
                                     </Grid>
 
                                     <!-- External Mail password -->
-                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" FontWeight="Thin" Margin="5 10 0 2" Foreground="{DynamicResource second_text_color}" Opacity="0.8"/>
-                                    <ui:ModernPasswordBox x:Name="externalMailPasswordBox"  HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource second_text_color}" 
+                                    <TextBlock Text="{DynamicResource adat_password}" FontSize="14" FontWeight="Thin" Margin="5 10 0 2" Foreground="{DynamicResource first_settings_text}" Opacity="0.8"/>
+                                    <ui:ModernPasswordBox x:Name="externalMailPasswordBox"  HorizontalAlignment="Left" Width="220" IconKeyColor="{DynamicResource default_secundary_foreground}" 
                                                           BorderColor="{DynamicResource adv_borders_background}" 
                                                         Opacity="0.9" >
                                         <ui:ModernPasswordBox.Style>
@@ -628,7 +627,7 @@
                                     <StackPanel>
 
                                         <StackPanel Orientation="Horizontal" Margin="0 -30 0 0">
-                                            <TextBlock Text="{DynamicResource adat_cs_header}" FontSize="16"  Foreground="{DynamicResource second_text_color}"/>
+                                            <TextBlock Text="{DynamicResource adat_cs_header}" FontSize="16"  Foreground="{DynamicResource default_foreground}"/>
                                             <Button Style="{StaticResource ModernServiceButton}" Width="16" Height="14" Margin="5 0 0 7"
                                            Command="{Binding ParseCsgoStatsInfo}">
                                                 <Icon:PackIconMaterial Kind="Reload" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -636,7 +635,7 @@
                                         </StackPanel>
 
                                         <TextBlock Text="{DynamicResource adat_cs_ranks}" FontSize="16" Margin="0 7 0 0" HorizontalAlignment="Center"
-                                       Foreground="{DynamicResource second_text_color}" FontWeight="Medium"/>
+                                       Foreground="{DynamicResource default_secundary_foreground}" FontWeight="Medium"/>
 
                                         <!-- Ranks -->
                                         <StackPanel Orientation="Horizontal" Margin="18 10 0 0" VerticalAlignment="Top">
@@ -655,45 +654,45 @@
                                         </StackPanel>
 
                                         <TextBlock Text="{DynamicResource adat_cs_general}" FontSize="16" Margin="0 7 0 0" HorizontalAlignment="Center"
-                                       Foreground="{DynamicResource second_text_color}" FontWeight="Medium"/>
+                                       Foreground="{DynamicResource default_secundary_foreground}" FontWeight="Medium"/>
 
                                         <!-- CS:GO -->
                                         <TextBlock Margin="18 7 0 10" Style="{StaticResource settings_description}" Foreground="{DynamicResource adv_csgo_text_foreground}" FontWeight="Medium">
                                                 <Run Text="{DynamicResource adat_cs_kd}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.KD,StringFormat={}{0:0.00},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.KD,StringFormat={}{0:0.00},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                                 <LineBreak/>
                                                 <Run Text="{DynamicResource adat_cs_kills}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.Kills,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.Kills,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                                 <LineBreak/>
                                                 <Run Text="{DynamicResource adat_cs_deaths}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.Deaths,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.Deaths,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                                 <LineBreak/>
                                                 <Run Text="{DynamicResource adat_cs_playedMatches}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.PlayedMatches,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.PlayedMatches,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                                 <LineBreak/>
                                                 <Run Text="{DynamicResource adat_cs_matchesWon}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.MatchesWon,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.MatchesWon,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                                 <LineBreak/>
                                                 <Run Text="{DynamicResource adat_cs_winrate}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.Winrate,StringFormat={}{0:P},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.Winrate,StringFormat={}{0:P},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                                 <LineBreak/>
                                                 <Run Text="{DynamicResource adat_cs_roundsPlayed}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.RoundsPlayed,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.RoundsPlayed,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                                 <LineBreak/>
                                                 <Run Text="{DynamicResource adat_cs_shots}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.TotalShots,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.TotalShots,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                                 <LineBreak/>
                                                 <Run Text="{DynamicResource adat_cs_shotsHit}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.ShotsHit,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.ShotsHit,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                                 <LineBreak/>
                                                 <Run Text="{DynamicResource adat_cs_averageAccuracy}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.Accuracy,StringFormat={}{0:P},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.Accuracy,StringFormat={}{0:P},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                                 <LineBreak/>
                                                 <Run Text="{DynamicResource adat_cs_headshots}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.Headshots,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.Headshots,StringFormat={}{0:#\,#},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                                 <LineBreak/>
                                                 <Run Text="{DynamicResource adat_cs_headshotspercent}" />
-                                                <Run Text="{Binding CurrentAccount.CSGOStats.HeadshotPercent,StringFormat={}{0:P},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                                <Run Text="{Binding CurrentAccount.CSGOStats.HeadshotPercent,StringFormat={}{0:P},Mode=OneWay,TargetNullValue=-}" FontWeight="Normal" Foreground="{DynamicResource default_secundary_foreground}"/>
                                         </TextBlock>
 
                                     </StackPanel>
@@ -702,7 +701,7 @@
 
                                 <!--#region Steam links -->
                                 <StackPanel Margin="50 10 0 0" Width="240" HorizontalAlignment="Right">
-                                    <TextBlock Text="{DynamicResource adat_links_header}" Margin="0 0 0 5" HorizontalAlignment="Center" FontSize="16"  Foreground="{DynamicResource second_text_color}"/>
+                                    <TextBlock Text="{DynamicResource adat_links_header}" Margin="0 0 0 5" HorizontalAlignment="Center" FontSize="16"  Foreground="{DynamicResource default_foreground}"/>
                                     <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_games}"
                                     Command="{Binding OpenOtherLinksCommand}" CommandParameter="games"/>
                                     <Button Style="{StaticResource steam_links}" Content="{DynamicResource adat_links_inventory}"
@@ -733,9 +732,9 @@
                                     <ColumnDefinition Width="13.9"/>
                                 </Grid.ColumnDefinitions>
                                 <Border Background="{DynamicResource adv_borders_background}" 
-                                CornerRadius="15" Opacity="0.7" Grid.Column="0"/>
+                                CornerRadius="15" Opacity="0.9" Grid.Column="0"/>
                                 <TextBox Grid.ColumnSpan="2" Padding="8 8 12 12" Background="Transparent" BorderThickness="0" MaxWidth="515" 
-                                 Foreground="{DynamicResource second_text_color}" CaretBrush="{DynamicResource default_foreground}" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource default_secundary_foreground}" CaretBrush="{DynamicResource default_foreground}" TextWrapping="Wrap"
                                  AcceptsReturn="True" VerticalScrollBarVisibility="Auto" MaxLength="350" MaxLines="50" AcceptsTab="True"
                                  Text="{Binding CurrentAccount.Note,Mode=TwoWay}" SelectionBrush="{DynamicResource second_main_brush}"/>
                             </Grid>
@@ -759,7 +758,7 @@
                         <Border Background="{DynamicResource adv_borders_background}"  Margin="0,40,17,162" 
                                 Height="25" CornerRadius="2 2 2 2 " VerticalAlignment="Top"/>
 
-                        <TextBlock Foreground="{DynamicResource default_foreground}" Text="{Binding GamesList.Length,StringFormat=#{0}}"
+                        <TextBlock Foreground="{DynamicResource default_secundary_foreground}" Text="{Binding GamesList.Length,StringFormat=#{0}}"
                                    Margin="10,46,17,162" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Medium" FontSize="10" />
                         
                         <DataGrid Margin="0 40 0 4" Background="Transparent" ItemsSource="{Binding GamesList}" VirtualizingPanel.VirtualizationMode="Standard">
@@ -789,7 +788,12 @@
                                     </DataGridTemplateColumn.CellStyle>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTextColumn Header="{DynamicResource adat_gameTabName}"  Binding="{Binding Name}" IsReadOnly="True" Width="200" Foreground="{DynamicResource default_foreground}">
+                                <DataGridTextColumn Header="{DynamicResource adat_gameTabName}"  Binding="{Binding Name}" IsReadOnly="True" Width="200">
+                                     <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="DataGridCell">
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -803,9 +807,22 @@
                                     </DataGridTextColumn.HeaderStyle>
                                 </DataGridTextColumn>
 
-                                <DataGridTextColumn Header="ID" Binding="{Binding AppID,Mode=OneWay}" IsReadOnly="True" Width="70" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                <DataGridTextColumn Header="ID" Binding="{Binding AppID,Mode=OneWay}" IsReadOnly="True" Width="70" FontWeight="Normal">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
 
-                                <DataGridTextColumn Header="{DynamicResource adat_gameTabTime}" Binding="{Binding PlayTime_Forever,StringFormat={}{0} h}" IsReadOnly="True" Width="*" Foreground="{DynamicResource default_foreground}"/>
+                                <DataGridTextColumn Header="{DynamicResource adat_gameTabTime}" Binding="{Binding PlayTime_Forever,StringFormat={}{0} h}" IsReadOnly="True" Width="*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
 
 
                             </DataGrid.Columns>
@@ -829,7 +846,7 @@
                         <Border Background="{DynamicResource adv_borders_background}"  Margin="0,40,17,162" 
                                 Height="25" CornerRadius="2 2 2 2 " VerticalAlignment="Top"/>
 
-                        <TextBlock Foreground="{DynamicResource default_foreground}" Text="{Binding FriendList.Length,StringFormat=#{0}}"
+                        <TextBlock Foreground="{DynamicResource default_secundary_foreground}" Text="{Binding FriendList.Length,StringFormat=#{0}}"
                                    Margin="10,46,17,162" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Medium" FontSize="10" />
 
                         <DataGrid Margin="0 40 0 4" Background="Transparent" ItemsSource="{Binding FriendList}" VirtualizingPanel.VirtualizationMode="Standard">
@@ -869,7 +886,7 @@
                                     </DataGridTemplateColumn.CellStyle>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTextColumn Header="{DynamicResource adv_nickname}"  Binding="{Binding Name}" IsReadOnly="True" Width="180" Foreground="{DynamicResource default_foreground}">
+                                <DataGridTextColumn Header="{DynamicResource adv_nickname}"  Binding="{Binding Name}" IsReadOnly="True" Width="180">
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="DataGridCell">
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -881,11 +898,28 @@
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
                                         </Style>
                                     </DataGridTextColumn.HeaderStyle>
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
 
-                                <DataGridTextColumn Header="ID" Binding="{Binding SteamID64,Mode=OneWay}" IsReadOnly="True" Width="120" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                                <DataGridTextColumn Header="ID" Binding="{Binding SteamID64,Mode=OneWay}" IsReadOnly="True" Width="120" FontWeight="Normal">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
 
-                                <DataGridTextColumn Header="{DynamicResource rc_fv_friendSince}" Binding="{Binding FriendSince,Mode=OneWay}" IsReadOnly="True" Width="150" Foreground="{DynamicResource default_foreground}"/>
+                                <DataGridTextColumn Header="{DynamicResource rc_fv_friendSince}" Binding="{Binding FriendSince,Mode=OneWay}" IsReadOnly="True" Width="150">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
 
                                 <DataGridTemplateColumn Width="*">
                                     <DataGridTemplateColumn.CellTemplate>

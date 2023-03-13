@@ -20,7 +20,6 @@
     <Brush x:Key="searchbox">#1f2b3a</Brush>
     <Brush x:Key="add_button_background">#1f2b3a</Brush>
     <Brush x:Key="add_button_foreground">#b0b9c6</Brush>
-    <Brush x:Key="add_button_isMouseOver">#2F4961</Brush>
     <Brush x:Key="accounts_scroll_foreground">#2F4961</Brush>
 
 
