@@ -21,7 +21,8 @@ namespace Steam_Account_Manager.Infrastructure
             if (acc == null)
                 return;
 
-            bool isShuttingDown = false;
+            bool isShuttingDown      = false;
+            bool connectFromRemember = false;
 
             App.MainWindow.IsHitTestVisible = false;
             await Task.Factory.StartNew(() =>
@@ -33,7 +34,7 @@ namespace Steam_Account_Manager.Infrastructure
                 }
 
                 var steamHwnd = FindWindow(null, "Steam");
-                if (Common.GetSteamRegistryActiveUser() == acc.SteamId32)
+                if (steamHwnd != IntPtr.Zero && Common.GetSteamRegistryActiveUser() == acc.SteamId32)
                 {
                     BringWindowToFront(steamHwnd);
                     return;
@@ -54,11 +55,16 @@ namespace Steam_Account_Manager.Infrastructure
                         if(table.Name == acc.SteamId64.Value.ToString() && (table["RememberPassword"] as VdfInteger).Content == 1
                         && (table["MostRecent"] as VdfInteger).Content == 1 && (table["AllowAutoLogin"] as VdfInteger).Content == 1)
                         {
-                            Common.ConnectSteam(App.SteamExePath,null);
+                            connectFromRemember = true;
                             break;
                         }
                     }
-                }    
+                }
+
+                if (connectFromRemember)
+                {
+                    Common.ConnectSteam(App.SteamExePath, null);
+                }
                 //Copy steam auth code in clipboard
                 else if (!String.IsNullOrEmpty(acc.AuthenticatorPath) && System.IO.File.Exists(acc.AuthenticatorPath))
                 {
@@ -158,13 +164,12 @@ namespace Steam_Account_Manager.Infrastructure
                     {
                         Thread.Sleep(3000);
                         Win32.BringWindowToFront((IntPtr)element.Current.NativeWindowHandle);
-                        SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                        Thread.Sleep(50);
+                        Thread.Sleep(150);
 
 #if !DEBUG
                         BlockInput(true);
 #endif
-                        if (String.IsNullOrEmpty(Utils.Common.GetSteamRegistryRememberUser()))
+                        if (String.IsNullOrEmpty(Common.GetSteamRegistryRememberUser()))
                         {
                             foreach (char c in account.Login)
                             {

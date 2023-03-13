@@ -149,7 +149,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             });
             IsParsing = false;
         }
-
         private async Task CheckUpdate()
         {
             if (App.OfflineMode) return;
