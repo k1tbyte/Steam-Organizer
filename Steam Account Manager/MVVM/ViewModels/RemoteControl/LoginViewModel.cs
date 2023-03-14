@@ -7,7 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Media;
+using System.Windows.Controls.Primitives;
 
 namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
 {
@@ -17,7 +17,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
         public AsyncRelayCommand RecentlyLogOnCommand { get; set; }
         public RelayCommand ChangeNicknameCommand { get; set; }
         public RelayCommand LogOutCommand { get; set; }
-        public RelayCommand PrivacySettingsCommand { get; set; }
 
 
         private bool _isAuthCode;
@@ -25,124 +24,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
 
         #region Callbacks receiver handlers
 
-        private static string _steamId64;
-        public static event EventHandler SteamId64Changed;
-        public static string SteamId64
-        {
-            get => _steamId64;
-            set
-            {
-                _steamId64 = value;
-                SteamId64Changed?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        private static string _wallet;
-        public static event EventHandler WalletChanged;
-        public static string Wallet
-        {
-            get => _wallet;
-            set
-            {
-                _wallet = value;
-                WalletChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        private static string _ipCountryCode;
-        public static event EventHandler IPCountryCodeChanged;
-        public static string IPCountryCode
-        {
-            get => _ipCountryCode;
-            set
-            {
-                _ipCountryCode = value;
-                IPCountryCodeChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        private static string _countryImage;
-        public static event EventHandler CountryImageChanged;
-        public static string CountryImage
-        {
-            get => _countryImage;
-            set
-            {
-                _countryImage = value;
-                CountryImageChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        private static string _nickname;
-        public static event EventHandler NicknameChanged;
-        public static string Nickname
-        {
-            get => _nickname;
-            set
-            {
-                _nickname = value;
-                NicknameChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-        private static int _authedComputers;
-        public static event EventHandler AuthedComputersChanged;
-        public static int AuthedComputers
-        {
-            get => _authedComputers;
-            set
-            {
-                _authedComputers = value;
-                AuthedComputersChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        private static string _emailAddress;
-        public static event EventHandler EmailAddressChanged;
-        public static string EmailAddress
-        {
-            get => _emailAddress;
-            set
-            {
-                _emailAddress = value;
-                EmailAddressChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        private static bool _emailVerification;
-        public static event EventHandler EmailVerificationChanged;
-        public static bool EmailVerification
-        {
-            get => _emailVerification;
-            set
-            {
-                _emailVerification = value;
-                EmailVerificationChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        private static string _imageUrl;
-        public static event EventHandler ImageUrlChanged;
-        public static string ImageUrl
-        {
-            get => _imageUrl;
-            set
-            {
-                _imageUrl = value;
-                ImageUrlChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-
-        private static Brush _avatarStateOutline;
-        public static event EventHandler AvatarStateOutlineChanged;
-        public static Brush AvatarStateOutline
-        {
-            get => _avatarStateOutline;
-            set
-            {
-                _avatarStateOutline = value;
-                AvatarStateOutlineChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
+        public User CurrentUser => SteamRemoteClient.CurrentUser;
 
         public static event EventHandler SuccessLogOnChanged;
         private static bool _successLogOn;
@@ -201,12 +83,12 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
         {
             if (!App.MainWindow.IsVisible && result != EResult.OK && result != EResult.NotLoggedOn)
             {
-                Utils.Presentation.OpenPopupMessageBox($"{SteamRemoteClient.UserPersonaName} {App.FindString("rc_lv_accAlreadyUse")}", true);
+                Utils.Presentation.OpenPopupMessageBox($"{CurrentUser.Nickname} {App.FindString("rc_lv_accAlreadyUse")}", true);
                 LogOutCommand.Execute(null);
             }
             else if(result == EResult.LoggedInElsewhere)
             {
-                var nickname = SteamRemoteClient.UserPersonaName;
+                var nickname = CurrentUser.Nickname;
                 LogOutCommand.Execute(null);
                 Utils.Presentation.OpenMessageBox($"{nickname} {App.FindString("rc_lv_accAlreadyUse")}","some title later");
             }
@@ -237,10 +119,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
             }
         }
 
+
         public LoginViewModel()
         {
             RecentlyLoggedIn = Config.Deserialize(App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey) 
                 as ObservableCollection<RecentlyLoggedAccount> ?? new ObservableCollection<RecentlyLoggedAccount>();
+
+            SteamRemoteClient.UserStatusChanged += () => OnPropertyChanged(nameof(CurrentUser));
 
 
             LogOnCommand = new AsyncRelayCommand(async (o) =>
@@ -268,9 +153,9 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
 
             ChangeNicknameCommand = new RelayCommand(o =>
             {
-                if (Nickname != SteamRemoteClient.UserPersonaName)
+                if (o is TextBox txtBox && !String.IsNullOrEmpty(txtBox.Text) && txtBox.Text != CurrentUser.Nickname)
                 {
-                    SteamRemoteClient.ChangeCurrentName(Nickname);
+                    SteamRemoteClient.ChangeCurrentName(txtBox.Text);
                 }
             });
 
@@ -287,7 +172,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
                 {
                     ErrorMsg = App.FindString("rc_lv_keyExpired");
                     RecentlyLoggedIn.Remove(element);
-                    Config.Serialize(RecentlyLoggedIn, App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
+                    Config.Serialize(RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
                 }
                 else
                 {
@@ -301,13 +186,9 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
                 SteamRemoteClient.Logout();
                 Username = Password = AuthCode = "";
                 IsAuthCode = false;
-
-            });
-
-            PrivacySettingsCommand = new RelayCommand(o =>
-            {
-
             });
         }
+
+
     }
 }

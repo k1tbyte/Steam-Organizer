@@ -6,6 +6,7 @@ using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
+using Steam_Account_Manager.Utils;
 using SteamKit2;
 using SteamKit2.Internal;
 using System;
@@ -28,7 +29,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         [System.Runtime.InteropServices.DllImport("PowrProf.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, ExactSpelling = true)]
         public static extern bool SetSuspendState(bool hiberate, bool forceCritical, bool disableWakeEvent);
 
-        public static string UserPersonaName { get; private set; }
+        public static event Action UserStatusChanged;
+
         public static ulong InterlocutorID { get; set; }
         internal static EOSType OSType { get; private set; } = EOSType.Unknown;
 
@@ -43,19 +45,15 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static readonly SteamUnifiedMessages.UnifiedService<IPlayer> UnifiedPlayerService;
         private static readonly SteamUnifiedMessages.UnifiedService<IEcon> UnifiedEcon;
         private static readonly SteamUnifiedMessages steamUnified;
-        private static readonly SteamGameCoordinator gameCoordinator;
-        private static readonly SteamGameCoordinator.MessageCallback gameCoordinatorMsgs;
 
         private static string SteamGuardCode;
         private static string TwoFactorCode;
         private static string Username;
         private static string Password;
         private static EResult LastLogOnResult;
-        private static EPersonaState CurrentPersonaState;
         private static ulong CurrentSteamId64;
         private static string LoginKey;
         private static string WebApiUserNonce;
-        private static string UniqueId;
 
 
         public static bool IsRunning { get; set; }
@@ -68,18 +66,17 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         static SteamRemoteClient()
         {
-            steamClient = new SteamClient();
-            gamesHandler = new GamesHandler();
+            steamClient     = new SteamClient();
+            gamesHandler    = new GamesHandler();
             callbackManager = new CallbackManager(steamClient);
-            webHandler = new WebHandler();
+            webHandler      = new WebHandler();
 
-            steamUser = steamClient.GetHandler<SteamUser>();
-            steamFriends = steamClient.GetHandler<SteamFriends>();
-            gameCoordinator = steamClient.GetHandler<SteamGameCoordinator>();
+            steamUser       = steamClient.GetHandler<SteamUser>();
+            steamFriends    = steamClient.GetHandler<SteamFriends>();
 
-            steamUnified = steamClient.GetHandler<SteamUnifiedMessages>();
+            steamUnified         = steamClient.GetHandler<SteamUnifiedMessages>();
             UnifiedPlayerService = steamUnified.CreateService<IPlayer>();
-            UnifiedEcon = steamUnified.CreateService<IEcon>();
+            UnifiedEcon          = steamUnified.CreateService<IEcon>();
 
 
             callbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
@@ -109,6 +106,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         }
 
+        private static void RaiseUserStatusChanged()
+        {
+            if (UserStatusChanged == null) return;
+            UserStatusChanged();
+        }
+
         public static EResult Login(string username, string password, string authCode, string loginKey = null)
         {
             Username = username;
@@ -130,7 +133,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             {
                 if (LastLogOnResult == EResult.AccountLogonDenied)
                     SteamGuardCode = authCode;
-                else if (LastLogOnResult == EResult.AccountLoginDeniedNeedTwoFactor || !String.IsNullOrEmpty(authCode))
+                else if (LastLogOnResult == EResult.AccountLoginDeniedNeedTwoFactor)
                     TwoFactorCode = authCode;
             }
             if (!String.IsNullOrEmpty(loginKey))
@@ -147,75 +150,57 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             return LastLogOnResult;
         }
 
-        #region In file save
+        #region Cacheble
         private static void SerializeUser()
         {
             if (CurrentUser == null) 
                 return;
-            var ConvertedJson = JsonConvert.SerializeObject(CurrentUser, new JsonSerializerSettings
-            {
-                DefaultValueHandling = DefaultValueHandling.Populate,
-                Formatting = Formatting.Indented
-            });
 
-            File.WriteAllText($@"{App.WorkingDirectory}\RemoteUsers\{Username}\User.json", ConvertedJson);
+            Utils.Common.BinarySerialize(CurrentUser, $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat");
         }
 
         private static void DeserializeUser()
         {
-            bool state = false;
-            if (File.Exists($@"{App.WorkingDirectory}\RemoteUsers\{Username}\User.json") && CurrentUser == null)
-            {
-                CurrentUser = JsonConvert.DeserializeObject<User>(File.ReadAllText($@"{App.WorkingDirectory}\RemoteUsers\{Username}\User.json"));
+            string path = $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat";
 
-                state = true;
+            if (File.Exists(path) && CurrentUser == null)
+            {
+                CurrentUser = Utils.Common.BinaryDeserialize<User>(path);
+
             }
-            if (CurrentUser == null)
+            else if (CurrentUser == null)
             {
-                CurrentUser = new User
-                {
-                    Games = new ObservableCollection<PlayerGame>(),
-                    Friends = new ObservableCollection<Friend>(),
-                    Messenger = new Messenger
-                    {
-                        Commands = new List<Command>()
-                    }
-                };
-
+                CurrentUser = new User();
                 SerializeUser();
-                state = true;
             }
 
-            if (state)
+            return;
+
+            if (CurrentUser?.Messenger?.AdminID != null)
+                MessagesViewModel.IsAdminIdValid = true;
+
+
+            Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                if (CurrentUser?.Messenger?.AdminID != null)
-                    MessagesViewModel.IsAdminIdValid = true;
+                MessagesViewModel.EnableCommands = CurrentUser.Messenger.EnableCommands;
+                MessagesViewModel.AdminId = CurrentUser.Messenger.AdminID.ToString();
+                MessagesViewModel.SaveChatLog = CurrentUser.Messenger.SaveChatLog;
+                MessagesViewModel.MsgCommands = new ObservableCollection<Command>(CurrentUser.Messenger.Commands);
+                GamesViewModel.Games = new ObservableCollection<PlayerGame>(CurrentUser.Games);
+                if (MainRemoteControlViewModel.MessagesV == null)
+                    MainRemoteControlViewModel.MessagesV = new MVVM.View.RemoteControl.Controls.MessagesView();
 
+                MessagesViewModel.InitDefaultCommands();
 
-                Application.Current.Dispatcher.Invoke(new Action(() =>
-                {
-                    MessagesViewModel.EnableCommands = CurrentUser.Messenger.EnableCommands;
-                    MessagesViewModel.AdminId = CurrentUser.Messenger.AdminID.ToString();
-                    MessagesViewModel.SaveChatLog = CurrentUser.Messenger.SaveChatLog;
-                    MessagesViewModel.MsgCommands = new ObservableCollection<Command>(CurrentUser.Messenger.Commands);
-                    GamesViewModel.Games = new ObservableCollection<PlayerGame>(CurrentUser.Games);
-                    if (MainRemoteControlViewModel.MessagesV == null)
-                        MainRemoteControlViewModel.MessagesV = new MVVM.View.RemoteControl.Controls.MessagesView();
+            }));
 
-                    MessagesViewModel.InitDefaultCommands();
-
-                }));
-            }
         }
         #endregion
 
         public static void Logout()
         {
 
-            IsRunning =  LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;
-
-            Application.Current.Dispatcher.Invoke(() => { (((MainWindowViewModel)App.MainWindow.DataContext).RemoteControlV.DataContext as MainRemoteControlViewModel).LoginViewCommand.Execute(null); });
-            
+            IsRunning =  LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;            
 
             SerializeUser();
 
@@ -230,13 +215,14 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         #region Callbacks processing
 
+        //FIXED
         private static void OnConnected(SteamClient.ConnectedCallback callback)
         {
 
             byte[] sentryHash = null;
-            if (File.Exists(Username + ".bin"))
+            if (File.Exists($"{App.WorkingDirectory}\\Sentry\\{Username}.bin"))
             {
-                byte[] sentryFile = File.ReadAllBytes(Username + ".bin");
+                byte[] sentryFile = File.ReadAllBytes($"{App.WorkingDirectory}\\Sentry\\{Username}.bin");
                 sentryHash = CryptoHelper.SHAHash(sentryFile);
             }
 
@@ -266,40 +252,32 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             if (LastLogOnResult == EResult.InvalidPassword && LoginKey != null)
             {
-                LoginKey = null;
+                LoginKey        = null;
                 LastLogOnResult = EResult.Cancelled;
             }
-
-
             if (LastLogOnResult != EResult.OK)
             {
                 return;
             }
 
-            Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Presentation.StringToBrush("Gray"));
+            CurrentUser.SteamID64      = steamClient.SteamID.ConvertToUInt64();
+            CurrentUser.Username       = Username;
+            CurrentUser.IPCountryCode  = callback.PublicIP.ToString();
+            CurrentUser.IPCountryImage = $"https://flagcdn.com/w20/{callback.IPCountryCode.ToLower()}.png";
+            ChangePersonaState(EPersonaState.Invisible);
 
-            CurrentSteamId64 = steamClient.SteamID.ConvertToUInt64();
-            LoginViewModel.SteamId64 = CurrentSteamId64.ToString();
-            LoginViewModel.ImageUrl = Utils.Common.GetSteamAvatarUrl(CurrentSteamId64);
-
-            CurrentUser.Username = Username;
-
-            if (CurrentUser.SteamID64 == null)
-                CurrentUser.SteamID64 = LoginViewModel.SteamId64;
 
             if (!String.IsNullOrEmpty(LoginKey))
             {
-                UniqueId = LoginKey;
                 steamUser.RequestWebAPIUserNonce();
             }
-            LoginViewModel.IPCountryCode = callback.PublicIP.ToString();
-            LoginViewModel.CountryImage = $"https://flagcdn.com/w20/{callback.IPCountryCode.ToLower()}.png";
+
             WebApiUserNonce = callback.WebAPIUserNonce;
 
             MainRemoteControlViewModel.IsPanelActive = true;
             LoginViewModel.SuccessLogOn = true;
 
-            if(CurrentUser.RememberGamesIds != null && CurrentUser.RememberGamesIds.Count > 0)
+/*            if(CurrentUser.RememberGamesIds != null && CurrentUser.RememberGamesIds.Count > 0)
             {
                 if(CurrentUser.RememberGamesIds.Count > 32)
                 {
@@ -323,7 +301,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     MainRemoteControlViewModel.GamesV.Idle.IsChecked = true;
                     await IdleGames(CurrentUser.RememberGamesIds);
                 }));
-            }
+            }*/
 
 /*            steamClient.Send((IClientMsg)new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayed)
             {
@@ -345,7 +323,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
             LastLogOnResult = callback.Result;
 
-            if (callback.Result.ToString() == "ServiceUnavailable")
+            if (callback.Result == EResult.ServiceUnavailable)
             {
                 steamClient.Disconnect();
             }
@@ -356,6 +334,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             IsRunning = false;
         }
 
+        //FIXED
         private static void OnMachineAuth(SteamUser.UpdateMachineAuthCallback callback)
         {
             byte[] sentryHash = CryptoHelper.SHAHash(callback.Data);
@@ -363,45 +342,45 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             steamUser.SendMachineAuthResponse(new SteamUser.MachineAuthDetails
             {
-                JobID = callback.JobID,
-                FileName = callback.FileName,
-                BytesWritten = callback.BytesToWrite,
-                FileSize = callback.Data.Length,
-                Offset = callback.Offset,
-                Result = EResult.OK,
-                LastError = 0,
+                JobID           = callback.JobID,
+                FileName        = callback.FileName,
+                BytesWritten    = callback.BytesToWrite,
+                FileSize        = callback.Data.Length,
+                Offset          = callback.Offset,
+                Result          = EResult.OK,
+                LastError       = 0,
                 OneTimePassword = callback.OneTimePassword,
-                SentryFileHash = sentryHash
+                SentryFileHash  = sentryHash
             });
         }
 
+        //NOT WORK
         private static void OnLoginKey(SteamUser.LoginKeyCallback callback)
         {
-            UniqueId = callback.UniqueID.ToString();
+            //   LoginKey = callback.UniqueID.ToString();
+            LoginKey = callback.LoginKey;
             steamUser.RequestWebAPIUserNonce();
             steamUser.AcceptNewLoginKey(callback);
-            for (int i = 0; i < LoginViewModel.RecentlyLoggedIn.Count; i++)
+
+            if(LoginViewModel.RecentlyLoggedIn.Exists(o => o.Username == Username,out int index))
             {
-                if (Username == LoginViewModel.RecentlyLoggedIn[i].Username)
+                Application.Current.Dispatcher.Invoke(() => LoginViewModel.RecentlyLoggedIn[index] = new RecentlyLoggedAccount
                 {
-                    Application.Current.Dispatcher.Invoke(new Action(() => LoginViewModel.RecentlyLoggedIn[i] = new RecentlyLoggedAccount
-                    {
-                        Username = Username,
-                        Loginkey = callback.LoginKey,
-                        ImageUrl = LoginViewModel.ImageUrl
-                    }));
-                    return;
-                }
+                    Username = Username,
+                    Loginkey = callback.LoginKey,
+                    ImageUrl = CurrentUser.AvatarUrl
+                });
             }
-
-            Application.Current.Dispatcher.Invoke(new Action(() => LoginViewModel.RecentlyLoggedIn.Add(new RecentlyLoggedAccount
+            else
             {
-                Username = Username,
-                Loginkey = callback.LoginKey,
-                ImageUrl = LoginViewModel.ImageUrl
-            })));
-
-
+                Application.Current.Dispatcher.Invoke(() => LoginViewModel.RecentlyLoggedIn.Add(new RecentlyLoggedAccount
+                {
+                    Username = Username,
+                    Loginkey = callback.LoginKey,
+                    ImageUrl = CurrentUser.AvatarUrl
+                }));
+            }
+            Config.Serialize(LoginViewModel.RecentlyLoggedIn,$"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
         }
 
         private static void OnWebApiUser(SteamUser.WebAPIUserNonceCallback callback)
@@ -414,235 +393,236 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         }
 
 
+        //FIXED
         private static void OnAccountInfo(SteamUser.AccountInfoCallback callback)
         {
-            LoginViewModel.Nickname = UserPersonaName = callback.PersonaName;
-            LoginViewModel.AuthedComputers = callback.CountAuthedComputers;
+            CurrentUser.Nickname        = callback.PersonaName;
+            CurrentUser.AuthedComputers = callback.CountAuthedComputers;
         }
 
+        //FIXED
         private static void OnEmailInfo(SteamUser.EmailAddrInfoCallback callback)
         {
-            LoginViewModel.EmailAddress = callback.EmailAddress;
-            LoginViewModel.EmailVerification = callback.IsValidated;
+            CurrentUser.EmailAddress    = callback.EmailAddress;
+            CurrentUser.IsEmailVerified = callback.IsValidated;
         }
 
+        //FIXED
         private static void OnWalletInfo(SteamUser.WalletInfoCallback callback)
         {
             if (callback.HasWallet && callback.LongBalance >= 0L)
             {
-                LoginViewModel.Wallet = (float.Parse(callback.LongBalance.ToString()) / 100f).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+                CurrentUser.Wallet = (float.Parse(callback.LongBalance.ToString()) / 100f).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
                 if (callback.Currency != ECurrencyCode.Invalid)
-                    LoginViewModel.Wallet += " " + callback.Currency.ToString();
+                    CurrentUser.Wallet += " " + callback.Currency.ToString();
             }
             else
             {
-                LoginViewModel.Wallet = "0.00 USD";
+                CurrentUser.Wallet = "0.00 USD";
             }
 
-
+            RaiseUserStatusChanged();
         }
 
+        //FIXED
         private static void OnPersonaNameChange(SteamFriends.PersonaChangeCallback callback)
         {
-            UserPersonaName = callback.Name;
+            CurrentUser.Nickname = callback.Name;
+            RaiseUserStatusChanged();
         }
 
+        //FIXED
         private static void OnPersonaState(SteamFriends.PersonaStateCallback callback)
         {
-            if (callback.FriendID == steamClient.SteamID)
-            {
-                if (CurrentPersonaState != callback.State)
-                {
-                    CurrentPersonaState = callback.State;
-                    if (CurrentPersonaState == EPersonaState.Online)
-                    {
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Presentation.StringToBrush("#5da5c2"));
-                    }
-                    else if (callback.GameAppID != 0)
-                    {
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Presentation.StringToBrush("#688843"));
-                    }
-                    else if (CurrentPersonaState == EPersonaState.Away || CurrentPersonaState == EPersonaState.Snooze)
-                    {
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = System.Windows.Media.Brushes.Orange);
-                    }
-                    else
-                        Dispatcher.CurrentDispatcher.Invoke(() => LoginViewModel.AvatarStateOutline = Utils.Presentation.StringToBrush("#666c71"));
-                }
+            if (callback.FriendID != steamClient.SteamID)
+                return;
 
-                if (LoginViewModel.Nickname != callback.Name)
+            bool flag = false;
+            
+            if(callback.State != (EPersonaState)CurrentUser.PersonaState)
+            {
+                CurrentUser._personaState = (int)callback.State;
+
+                if (callback.GameAppID != 0)
                 {
-                    LoginViewModel.Nickname = callback.Name;
+                    CurrentUser.PersonaStateBrush = Utils.Presentation.StringToBrush("#688843");
+                }
+                else if (callback.State == EPersonaState.Online || callback.State == EPersonaState.LookingToTrade || callback.State == EPersonaState.LookingToPlay)
+                {
+                    CurrentUser.PersonaStateBrush = Utils.Presentation.StringToBrush("#5da5c2");
+                }
+                else if (callback.State == EPersonaState.Away || callback.State == EPersonaState.Snooze)
+                {
+                    CurrentUser.PersonaStateBrush = System.Windows.Media.Brushes.Orange;
+                }
+                else
+                    CurrentUser.PersonaStateBrush = Utils.Presentation.StringToBrush("#666c71");
+                flag = true;
+            }
+
+            var hash = Utils.Common.ByteArrayToHexString(callback.AvatarHash);
+            if (hash != CurrentUser.AvatarHash)
+            {
+                CurrentUser.AvatarHash = hash;
+                flag = true;
+            }
+
+
+            if(flag)
+              RaiseUserStatusChanged();
+        }
+
+        //FIXED
+        private static async void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
+        {
+            if (callback.EntryType != EChatEntryType.ChatMsg || callback.Message[0] != '/')
+                return;
+
+            var FriendPersonaName = steamFriends.GetFriendPersonaName(callback.Sender);
+            var command = callback.Message.Split(' ');
+            var invalidCommand = "🚧 Invalid command!\n  Sample: ";
+
+            if (callback.Sender.AccountID == CurrentUser.Messenger.AdminID && CurrentUser.Messenger.EnableCommands)
+            {
+                try
+                {
+                    switch (command[0])
+                    {
+                        case "/help":
+                            string outHelp = "🌌 Aviable commands 🌌\n";
+                            for (int i = 0; i < MessagesViewModel.MsgCommands.Count; i++)
+                            {
+                                outHelp += $"\n 🔹  {MessagesViewModel.MsgCommands[i].Keyword} ➖ {MessagesViewModel.MsgCommands[i].CommandExecution}";
+                            }
+                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, outHelp);
+                            return;
+                        case "/shutdown":
+                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "🔌 App shutting down.");
+                            App.IsShuttingDown = true;
+                            App.Current.Dispatcher.InvokeShutdown();
+                            return;
+                        case "/pcsleep":
+                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "💤 Sleeping...");
+                            SetSuspendState(false, true, true);
+                            return;
+                        case "/pcshutdown":
+                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "🚩 Shutting down...");
+                            SerializeUser();
+                            Process.Start(new ProcessStartInfo("shutdown", "/s /t 0") { CreateNoWindow = true, UseShellExecute = false });
+                            return;
+                        case "/msg":
+
+                            if (command.Length < 3)
+                            {
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/msg (CustomID,SteamID64,ID32,URL) (message)");
+                                return;
+                            }    
+                                
+                            var id = await SteamIDConverter.ToSteamID64(command[1]);
+                            if(id == 0)
+                            {
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "🚧 Invalid ID!");
+                                return;
+                            }
+                            steamFriends.SendChatMessage(id, EChatEntryType.ChatMsg, command[2]);
+                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "💬 Message sent");
+                            return;
+                        case "/idle":
+                            if (command.Length != 2)
+                            {
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/idle (AppID1 or AppID1,AppID2,AppID3...)");
+                                return;
+                            }
+
+                            var appIds = Array.ConvertAll(command[1].Split(','), int.Parse);
+                            if (appIds.Length == 1)
+                            {
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"⏳ Idling game: {appIds[0]}");
+                                await IdleGame(appIds[0]);
+                            }
+                            return;
+                        case "/stopgame":
+                            if (IsPlaying)
+                            {
+                                await StopIdle();
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "❕ Game activity stopped");
+                            }
+                            else
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "❕ No games running");
+                            return;
+                        case "/customgame":
+                            if (command.Length != 2)
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/customgame (Name)");
+                            else
+                            {
+                                await IdleGame(null, command[1]);
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"⏳ Game title setted: {command[1]}");
+                            }
+                            return;
+                        case "/state":
+                            if (command.Length != 2)
+                            {
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/state (mode)\n\n" +
+                                                                           $"Modes\n 1 - Offline 🖥\n 2 - Online 📡\n 3 - Busy 🔍\n 4 - Away 👀\n 5 - Snooze 😴\n 6 - Looking to trade 🤖\n 7 - Looking to play 👾\n 8 - Invisible 👁‍");
+                            }
+                            else
+                            {
+                                var state = (EPersonaState)int.Parse(command[1]);
+                                ChangePersonaState(state);
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"📣 State changed to: {state}");
+                            }
+                            return;
+                    }
+
+                    for (int i = 0; i < CurrentUser.Messenger.Commands.Count; i++)
+                    {
+                        if (command[0] == CurrentUser.Messenger.Commands[i].Keyword)
+                        {
+                            using (var process = new Process())
+                            {
+                                process.StartInfo.UseShellExecute = false;
+                                process.StartInfo.CreateNoWindow = true;
+                                process.StartInfo.FileName = "cmd";
+                                process.StartInfo.Arguments = "/c " + CurrentUser.Messenger.Commands[i].CommandExecution;
+                                process.Start();
+                            }
+                            if (CurrentUser.Messenger.Commands[i].MessageAfterExecute != "-")
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, CurrentUser.Messenger.Commands[i].MessageAfterExecute);
+                            break;
+                        }
+                    }
+                }
+                catch { steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "📛 An error has occurred!"); }
+            }
+
+            if (!CurrentUser.Messenger.SaveChatLog)
+            {
+                var SteamID64 = callback.Sender.ConvertToUInt64();
+                var CleanName = System.Text.RegularExpressions.Regex.Replace(FriendPersonaName, "\\/:*?\"<>|", "");
+                var FileName = $"[{SteamID64}] - {CleanName}.txt";
+                var Message = $"{DateTime.Now} | {FriendPersonaName}: {callback.Message}\n";
+                var Path = $@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs\{FileName}";
+                if (File.Exists(Path))
+                {
+                    File.AppendAllText(Path, Message);
+                }
+                else
+                {
+                    File.WriteAllText(Path, $" • 𝐂𝐡𝐚𝐭 𝐥𝐨𝐠 𝐰𝐢𝐭𝐡 𝐮𝐬𝐞𝐫 [{SteamID64}]\n\n" + Message);
                 }
             }
 
-        }
-
-        private static async void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
-        {
-            if (callback.EntryType == EChatEntryType.ChatMsg)
+            if (callback.Sender == InterlocutorID)
             {
-                var FriendPersonaName = steamFriends.GetFriendPersonaName(callback.Sender);
-                if (callback.Message[0] == '/')
+
+                Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
                 {
-                    var command = callback.Message.Split(' ');
-                    var invalidCommand = "🚧 Invalid command!\n  Sample: ";
-
-                    if (callback.Sender.AccountID == CurrentUser.Messenger.AdminID && CurrentUser.Messenger.EnableCommands)
-                    {
-                        try
-                        {
-                            switch (command[0])
-                            {
-                                case "/help":
-                                    string outHelp = "🌌 Aviable commands 🌌\n";
-                                    for (int i = 0; i < MessagesViewModel.MsgCommands.Count; i++)
-                                    {
-                                        outHelp += $"\n 🔹  {MessagesViewModel.MsgCommands[i].Keyword} ➖ {MessagesViewModel.MsgCommands[i].CommandExecution}";
-                                    }
-                                    steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, outHelp);
-                                    return;
-                                case "/shutdown":
-                                    steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "🔌 App shutting down.");
-                                    App.IsShuttingDown = true;
-                                    App.Current.Dispatcher.InvokeShutdown();
-                                    return;
-                                case "/pcsleep":
-                                    steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "💤 Sleeping...");
-                                    SetSuspendState(false, true, true);
-                                    return;
-                                case "/pcshutdown":
-                                    steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "🚩 Shutting down...");
-                                    SerializeUser();
-                                    Process.Start(new ProcessStartInfo("shutdown", "/s /t 0") { CreateNoWindow = true, UseShellExecute = false });
-                                    return;
-                                case "/msg":
-                                    
-                                    if (command.Length < 3)
-                                        steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/msg (CustomID,SteamID64,ID32,URL) (message)");
-                                    else
-                                    {
-                                        var id = await SteamIDConverter.ToSteamID64(command[1]);
-                                        if (id != 0)
-                                        {
-                                            steamFriends.SendChatMessage(id, EChatEntryType.ChatMsg, command[2]);
-                                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "💬 Message sent");
-                                        }
-                                        else
-                                        {
-                                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "🚧 Invalid ID!");
-                                        }
-                                    }
-                                    return;
-                                case "/idle":
-                                    if (command.Length != 2)
-                                        steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/idle (AppID1 or AppID1,AppID2,AppID3...)");
-                                    else
-                                    {
-                                        var appIds = Array.ConvertAll(command[1].Split(','), int.Parse);
-                                        if (appIds.Length == 1)
-                                        {
-                                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"⏳ Idling game: {appIds[0]}");
-                                            await IdleGame(appIds[0]);
-                                        }
-                                    }
-
-                                    return;
-                                case "/stopgame":
-                                    if (IsPlaying)
-                                    {
-                                        await StopIdle();
-                                        steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "❕ Game activity stopped");
-                                    }
-                                    else
-                                        steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "❕ No games running");
-                                    return;
-                                case "/customgame":
-                                    if (command.Length != 2)
-                                        steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/customgame (Name)");
-                                    else
-                                    {
-                                        await IdleGame(null, command[1]);
-                                        steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"⏳ Game title setted: {command[1]}");
-                                    }
-                                    return;
-                                case "/state":
-                                    if (command.Length != 2)
-                                    {
-                                        steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/state (mode)\n\n" +
-                                                                                   $"Modes\n 1 - Offline 🖥\n 2 - Online 📡\n 3 - Busy 🔍\n 4 - Away 👀\n 5 - Snooze 😴\n 6 - Looking to trade 🤖\n 7 - Looking to play 👾\n 8 - Invisible 👁‍");
-                                    }
-                                    else
-                                    {
-                                        var state = (EPersonaState)int.Parse(command[1]);
-                                        ChangeCurrentPersonaState(state);
-                                        steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"📣 State changed to: {state}");
-                                    }
-                                    return;
-                                case "/achievements":
-                                    if (command.Length != 2)
-                                    {
-
-                                    }
-                                    else
-                                    {
-
-                                    }
-                                    return;
-                            }
-                            for (int i = 0; i < CurrentUser.Messenger.Commands.Count; i++)
-                            {
-                                if (command[0] == CurrentUser.Messenger.Commands[i].Keyword)
-                                {
-                                    using (var process = new Process())
-                                    {
-                                        process.StartInfo.UseShellExecute = false;
-                                        process.StartInfo.CreateNoWindow = true;
-                                        process.StartInfo.FileName = "cmd";
-                                        process.StartInfo.Arguments = "/c " + CurrentUser.Messenger.Commands[i].CommandExecution;
-                                        process.Start();
-                                    }
-                                    if (CurrentUser.Messenger.Commands[i].MessageAfterExecute != "-")
-                                        steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, CurrentUser.Messenger.Commands[i].MessageAfterExecute);
-                                    break;
-                                }
-                            }
-                        }
-                        catch { steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "📛 An error has occurred!"); }
-                    }
-
-                }
-
-
-                if (CurrentUser.Messenger.SaveChatLog)
-                {
-                    var SteamID64 = callback.Sender.ConvertToUInt64();
-                    var CleanName = System.Text.RegularExpressions.Regex.Replace(FriendPersonaName, "\\/:*?\"<>|", "");
-                    var FileName = $"[{SteamID64}] - {CleanName}.txt";
-                    var Message = $"{DateTime.Now} | {FriendPersonaName}: {callback.Message}\n";
-                    var Path = $@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs\{FileName}";
-                    if (File.Exists(Path))
-                    {
-                        File.AppendAllText(Path, Message);
-                    }
-                    else
-                    {
-                        File.WriteAllText(Path, $" • 𝐂𝐡𝐚𝐭 𝐥𝐨𝐠 𝐰𝐢𝐭𝐡 𝐮𝐬𝐞𝐫 [{SteamID64}]\n\n" + Message);
-                    }
-                }
-
-                if (callback.Sender == InterlocutorID)
-                {
-                    
-                    Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
-                    {
-                        Msg = callback.Message,
-                        Time = DateTime.Now.ToString("HH:mm"),
-                        Username = FriendPersonaName,
-                        TextBrush = (System.Windows.Media.Brush)App.Current.FindResource("default_foreground"),
-                        MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("second_main_brush")
-                    })));
-                }
+                    Msg = callback.Message,
+                    Time = DateTime.Now.ToString("HH:mm"),
+                    Username = FriendPersonaName,
+                    TextBrush = (System.Windows.Media.Brush)App.Current.FindResource("default_foreground"),
+                    MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("second_main_brush")
+                })));
             }
         }
 
@@ -688,15 +668,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         #endregion
 
-        public static void ChangeCurrentName(string Name)
-        {
-            steamFriends.SetPersonaName(Name);
-        }
-
-        public static void ChangeCurrentPersonaState(EPersonaState state)
-        {
-            steamFriends.SetPersonaState(state);
-        }
+        public static void ChangeCurrentName(string Name)          => steamFriends.SetPersonaName(Name);
+        public static void ChangePersonaState(EPersonaState state) =>  steamFriends.SetPersonaState(state);
+        
 
         public static void ChangePersonaFlags(uint uimode)
         {
@@ -719,22 +693,20 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
             steamFriends.SendChatMessage(InterlocutorID, EChatEntryType.ChatMsg, Msg);
 
-            Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
+/*            Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
             {
                 Msg = Msg,
                 Time = DateTime.Now.ToString("HH:mm"),
                 Username = LoginViewModel.Nickname,
                 TextBrush = Utils.Presentation.StringToBrush("White"),
                 MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("menu_button_background")
-            })));
+            })));*/
         }
 
         #region Friends parse
 
         public static async Task ParseUserFriends()
         {
-            if (CurrentUser.Friends.Count != 0)
-                CurrentUser.Friends.Clear();
 
             string webApiKey = Keys.STEAM_API_KEY;
             IEnumerable<JToken> sinces = null;
@@ -877,7 +849,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         #region Steam WEB
         private static void UserWebLogOn()
         {
-            IsWebLoggedIn = webHandler.Authenticate(UniqueId, steamClient, WebApiUserNonce);
+            IsWebLoggedIn = webHandler.Authenticate(LoginKey, steamClient, WebApiUserNonce);
         }
 
         internal static async Task<bool> SetProfilePrivacy(int Profile, int Inventory, int Gifts, int OwnedGames, int Playtime, int Friends, int Comments)

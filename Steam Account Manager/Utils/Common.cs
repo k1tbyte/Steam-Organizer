@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Steam_Account_Manager.Utils
 {
@@ -84,6 +85,14 @@ namespace Steam_Account_Manager.Utils
             return tmp.Any();
         }
 
+        public static bool Exists<T>(this ObservableCollection<T> collection, Func<T, bool> match,out int index)
+        {
+            index = -1;
+            var tmp = collection.Where(match);
+            index = collection.IndexOf(tmp.First());
+            return tmp.Any();
+        }
+
         public static  T Find<T>(this ObservableCollection<T> collection, Func<T,bool> match) => collection.Where(match).FirstOrDefault();
 
 
@@ -118,6 +127,14 @@ namespace Steam_Account_Manager.Utils
                 ret[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             }
             return ret;
+        }
+
+        public static string ByteArrayToHexString(byte[] ba)
+        {
+            StringBuilder hex = new StringBuilder(ba.Length * 2);
+            foreach (byte b in ba)
+                hex.AppendFormat("{0:x2}", b);
+            return hex.ToString();
         }
         #endregion
 

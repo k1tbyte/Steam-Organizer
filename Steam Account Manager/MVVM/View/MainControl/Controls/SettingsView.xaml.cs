@@ -12,12 +12,14 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
     public partial class SettingsView : UserControl
     {
         private readonly Regex CharsDigitsRegex = new Regex("^[a-zA-Z0-9]+\\z");
+        public static new bool IsLoaded { get; private set; }
         public SettingsView()
         {
             InitializeComponent();
             this.DataContext = new SettingsViewModel();
             IsPassword.IsChecked = !string.IsNullOrEmpty(Config.Properties.Password);
             CryptoKey.Text = Config.Properties.UserCryptoKey == Config.GetDefaultCryptoKey ? "" : Config.Properties.UserCryptoKey;
+            Loaded += (sender, e) => IsLoaded = true;
         }
 
 

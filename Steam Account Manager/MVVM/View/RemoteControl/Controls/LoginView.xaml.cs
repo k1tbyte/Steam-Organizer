@@ -9,9 +9,6 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
     {
         public LoginView() => InitializeComponent();
         
-
-        private void state_box_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
-            Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangeCurrentPersonaState((SteamKit2.EPersonaState)state_box.SelectedIndex);
         private void IdCopyButton_Click(object sender, RoutedEventArgs e) => Utils.Win32.Clipboard.SetText(steamIDbox.Text);
 
 

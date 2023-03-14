@@ -203,8 +203,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
         }
         #endregion
 
-
-
         public AccountDataViewModel(Account account,bool preview = false)
         {
             currentAccount = account;

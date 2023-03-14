@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
+using SteamKit2;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,33 +16,69 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         AccessDenied
     }
 
+    [Serializable]
     public class User
     {
-        [JsonProperty("Username")]
+        public User()
+        {
+            Messenger = new Messenger() { Commands = new List<Command>() };
+            Friends   = new ObservableCollection<Friend>();
+            Games     = new ObservableCollection<PlayerGame>();
+        }
         public string Username { get; set; }
-
-        [JsonProperty("SteamID64")]
-        public string SteamID64 { get; set; }
-
-        [JsonProperty("WebAPIKey")]
+        public ulong SteamID64 { get; set; }
         public string WebApiKey { get; set; }
-
-        [JsonProperty("TradeToken")]
         public string TradeToken { get; set; }
-
-        [JsonProperty("FriendsInviteLink")]
         public string FriendsInvite { get; set; }
-
-        [JsonProperty("MessengerProperties")]
         public Messenger Messenger { get; set; }
 
-        [JsonProperty("Friends")]
+        [field: NonSerialized]
         public ObservableCollection<Friend> Friends { get; set; }
 
-        [JsonProperty("Games")]
+        [field: NonSerialized]
         public ObservableCollection<PlayerGame> Games { get; set; }
 
-        [JsonProperty("RememberGames")]
+        [field: NonSerialized]
+        public string AvatarHash { get; set; }
+        public string AvatarUrl => $"https://avatars.cloudflare.steamstatic.com/{AvatarHash}_full.jpg";
+
+        [field: NonSerialized]
+        public string IPCountryCode { get; set; }
+
+        [field: NonSerialized]
+        public string IPCountryImage { get; set; }
+
+        [field: NonSerialized]
+        public string Nickname { get; set; }
+
+        [field: NonSerialized]
+        public int AuthedComputers { get; set; }
+
+        [field: NonSerialized]
+        public string EmailAddress { get; set; }
+
+        [field: NonSerialized]
+        public bool IsEmailVerified { get; set; }
+
+        [field: NonSerialized]
+        public string Wallet { get; set; }
+
+        [field: NonSerialized]
+        public int _personaState;
+        public int PersonaState 
+        {
+            get => _personaState;
+            set
+            {
+                if(_personaState == value ) return;   // Установка значения происходит при калбэке в SteamRemoteClient - иначе рекурсия
+                SteamRemoteClient.SteamRemoteClient.ChangePersonaState((EPersonaState)value);
+            }
+        }
+
+        [field: NonSerialized]
+        public System.Windows.Media.Brush PersonaStateBrush { get; set; }
+
+
         public HashSet<int> RememberGamesIds { get; set; }
 
     }
@@ -64,58 +102,34 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
     [Serializable]
     public class Friend
     {
-        [JsonProperty("PersonaName")]
         public string Name { get; set; }
-
-        [JsonProperty("SteamID")]
         public ulong SteamID64 { get; set; }
-
-        [JsonProperty("AvatarMedium")]
         public string ImageURL { get; set; }
-
-        [JsonProperty("FriendSince")]
         public string FriendSince { get; set; }
-
     }
 
+    [Serializable]
     public class Messenger
     {
-        [JsonProperty("AdminID")]
         public uint? AdminID { get; set; }
-
-        [JsonProperty("ChatLogging")]
         public bool SaveChatLog { get; set; }
-
-        [JsonProperty("EnableCommands")]
         public bool EnableCommands { get; set; }
-
-        [JsonProperty("Commands")]
         public List<Command> Commands { get; set; }
-
     }
 
+    [Serializable]
     public class Command
     {
-        [JsonProperty("Keyword")]
         public string Keyword { get; set; }
-
-        [JsonProperty("CommandExecution")]
         public string CommandExecution { get; set; }
-
-        [JsonProperty("MessageAfterExecute")]
         public string MessageAfterExecute { get; set; }
     }
 
     [Serializable]
     public class RecentlyLoggedAccount
     {
-        [JsonProperty("Username")]
         public string Username { get; set; }
-
-        [JsonProperty("Loginkey")]
         public string Loginkey { get; set; }
-
-        [JsonProperty("ImageUrl")]
         public string ImageUrl { get; set; }
     }
 

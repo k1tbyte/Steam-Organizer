@@ -19,7 +19,7 @@ namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
             urlIcon.Kind  = (sender as ToggleButton).IsChecked == true ? MahApps.Metro.IconPacks.PackIconMaterialKind.InformationVariant : MahApps.Metro.IconPacks.PackIconMaterialKind.Link;
-            SteamURL.Tag = (sender as ToggleButton).IsChecked == true ? App.FindString("adv_nickname") : App.FindString("adv_account_URL");
+            SteamURL.Tag  = (sender as ToggleButton).IsChecked == true ? App.FindString("adv_nickname") : App.FindString("adv_anySteamAccoutId");
         }
     }
 }

@@ -241,30 +241,6 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ModernEditToggleButton" TargetType="ToggleButton">
-        <Setter Property="Width" Value="18"/>
-        <Setter Property="Height" Value="18"/>
-        <Setter Property="Margin" Value="5 0 0 0"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ToggleButton">
-                    <Border Background="{DynamicResource adv_copy_button}" BorderThickness="0" CornerRadius="4">
-                        <Icon:PackIconMaterial x:Name="ico" Kind="Pencil" Foreground="white" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                                       Width="11" Height="11"/>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="ico" Property="Kind" Value="Check"/>
-                        </Trigger>
-                        <Trigger Property="IsChecked" Value="False">
-                            <Setter Property="Command" Value="{Binding Path=Tag, RelativeSource={RelativeSource Self}}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 
     <Style x:Key="ModernCheckbox" TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="{DynamicResource first_main_brush}"/>

@@ -166,12 +166,22 @@
                     </Button.ToolTip>
                 </Button>
                 <StackPanel>
-                    <Ellipse Margin="0 15 0 5" HorizontalAlignment="Center"
-                             Width="100" Height="100" Stroke="{Binding AvatarStateOutline}" StrokeThickness="2">
-                        <Ellipse.Fill>
-                            <ImageBrush ImageSource="{Binding ImageUrl}"/>
-                        </Ellipse.Fill>
-                    </Ellipse>
+                    <Border Width="100" Height="100" Background="{DynamicResource background_border_color}" CornerRadius="100" Margin="0 15 0 5" HorizontalAlignment="Center"
+                            BorderThickness="3" BorderBrush="{Binding CurrentUser.PersonaStateBrush}">
+
+                        <WrapPanel Name ="container" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Image x:Name="steamImage" HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Source="{Binding CurrentUser.AvatarUrl}" Stretch="Fill"/>
+                            <WrapPanel.OpacityMask>
+                                <VisualBrush >
+                                    <VisualBrush.Visual>
+                                        <Border Height="100" Width="100" Background="White" CornerRadius="100" />
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </WrapPanel.OpacityMask>
+                        </WrapPanel>
+                    </Border>
+
                     <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                         <TextBlock Text="{DynamicResource rc_lv_loggedIn}" FontSize="16" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
                         <TextBlock Text="{Binding Username}" FontSize="16" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
@@ -181,20 +191,47 @@
 
                 </StackPanel>
 
-                <TextBlock Text="{Binding Wallet,UpdateSourceTrigger=PropertyChanged}" FontSize="15" FontWeight="Medium" HorizontalAlignment="Right" Margin="0 20 25 0"
+                <TextBlock Text="{Binding CurrentUser.Wallet,UpdateSourceTrigger=PropertyChanged}" FontSize="15" FontWeight="Medium" HorizontalAlignment="Right" Margin="0 20 25 0"
                            Foreground="{DynamicResource menu_button_background}"/>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 0 12">
                     <TextBlock Text="{DynamicResource rc_lv_nickname}" FontSize="16" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
-                    <TextBox x:Name="nickname" FontSize="15" Text="{Binding Nickname,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource nickname}"
-                             Tag="{Binding ElementName=editNick,Path=IsChecked}" Margin="-1 -2 0 -3"
-                             Background="Transparent" BorderThickness="0"
+                    <TextBox x:Name="nickname" FontSize="15" Text="{Binding CurrentUser.Nickname,Mode=OneWay}" Style="{StaticResource nickname}"
+                             Tag="{Binding ElementName=editNick,Path=IsChecked}" Margin="0 0 0 0"
+                             Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center"
                              FontWeight="Normal" Foreground="{DynamicResource default_foreground}"
                              MaxLength="30">
                     </TextBox>
 
-                    <ToggleButton x:Name="editNick" Style="{StaticResource ModernEditToggleButton}"  HorizontalAlignment="Right"
-                                   Tag="{Binding ChangeNicknameCommand}" Width="18" Height="18" Margin="3 1 0 0" >
+                    <ToggleButton x:Name="editNick"  HorizontalAlignment="Right"
+                                  CommandParameter="{Binding ElementName=nickname}"
+                                  Width="18" Height="18" Margin="3 1 0 0">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Width" Value="18"/>
+                                <Setter Property="Height" Value="18"/>
+                                <Setter Property="Margin" Value="5 0 0 0"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border Background="{DynamicResource adv_copy_button}" BorderThickness="0" CornerRadius="4">
+                                                <Icon:PackIconMaterial x:Name="ico" Kind="Pencil" Foreground="white" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                       Width="11" Height="11"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter TargetName="ico" Property="Kind" Value="Check"/>
+                                                </Trigger>
+                                                <Trigger Property="IsChecked" Value="False">
+                                                    <Setter Property="Command" Value="{Binding ChangeNicknameCommand}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ToggleButton.Style>
                         <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}" Width="1" Height="10"/>
                         <ToggleButton.ToolTip>
                             <ToolTip ContentStringFormat="{DynamicResource rc_lv_editNick}"/>
@@ -207,38 +244,38 @@
 
 
                     <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
-                        <TextBlock Text="SteamID64: " FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
-                        <TextBox x:Name="steamIDbox" Style="{StaticResource settings_data_box}" Text="{Binding SteamId64}" Height="18.62"/>
-                        <Button Style="{StaticResource ModernCopyButton}" Margin="5 -2 0 0" Click="IdCopyButton_Click"/>
+                        <TextBlock Text="SteamID64: " FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" VerticalAlignment="Center" />
+                        <TextBox x:Name="steamIDbox" Style="{StaticResource settings_data_box}" Text="{Binding CurrentUser.SteamID64}" VerticalContentAlignment="Center" />
+                        <Button Style="{StaticResource ModernCopyButton}" Margin="5 -1 0 0" Click="IdCopyButton_Click"/>
                     </StackPanel>
 
 
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
                         <TextBlock Text="{DynamicResource rc_lv_hostedOn}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
-                        <TextBlock Text="{Binding IPCountryCode}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
-                        <Image Margin="7 3 0 0" Height="10" Width="17" Source="{Binding CountryImage}"/>
+                        <TextBlock Text="{Binding CurrentUser.IPCountryCode}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                        <Image Margin="7 3 0 0" Height="10" Width="17" Source="{Binding CurrentUser.IPCountryImage}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
-                        <TextBlock Text="{DynamicResource rc_lv_authedDevices}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
-                        <TextBlock Text="{Binding AuthedComputers}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                        <TextBlock Text="{DynamicResource rc_lv_authedDevices}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}"/>
+                        <TextBlock Text="{Binding CurrentUser.AuthedComputers}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
                         <TextBlock Text="{DynamicResource rc_lv_emailAddress}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
-                        <TextBox Style="{StaticResource settings_data_box}" Text="{Binding EmailAddress}"/>
+                        <TextBox Style="{StaticResource settings_data_box}" Text="{Binding CurrentUser.EmailAddress}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0 2 0 0">
                         <TextBlock Text="{DynamicResource rc_lv_emailVerif}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
-                        <TextBlock Text="{Binding EmailVerification}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                        <TextBlock Text="{Binding CurrentUser.IsEmailVerified}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Combo boxes -->
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 190 70 0">
                     <TextBlock Text="{DynamicResource rc_lv_accountState}" FontSize="14" FontWeight="Medium" Margin="0 0 0 5" Foreground="{DynamicResource default_foreground}" />
-                    <ComboBox x:Name="state_box" Width="140" Height="25" SelectionChanged="state_box_SelectionChanged" ItemsSource="{DynamicResource rc_lv_accountStates}" />
+                    <ComboBox x:Name="state_box" Width="140" Height="25" SelectedIndex="{Binding CurrentUser.PersonaState,Mode=TwoWay}" ItemsSource="{DynamicResource rc_lv_accountStates}" />
 
 
                     <TextBlock Text="{DynamicResource rc_lv_uiMode}" FontSize="14" FontWeight="Medium"
