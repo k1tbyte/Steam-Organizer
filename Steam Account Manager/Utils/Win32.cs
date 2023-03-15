@@ -94,6 +94,9 @@ namespace Steam_Account_Manager.Utils
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool GetWindowPlacement(IntPtr hWnd, ref Windowplacement lpwndpl);
 
+        [System.Runtime.InteropServices.DllImport("PowrProf.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, ExactSpelling = true)]
+        public static extern bool SetSuspendState(bool hiberate, bool forceCritical, bool disableWakeEvent);
+
         #endregion
 
         public static void BringWindowToFront(IntPtr hWnd)

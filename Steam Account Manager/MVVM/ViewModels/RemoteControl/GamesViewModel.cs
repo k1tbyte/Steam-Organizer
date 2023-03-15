@@ -20,7 +20,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
         public static event EventHandler GamesChanged;
         public static ObservableCollection<PlayerGame> Games
         {
-            get => SteamRemoteClient.CurrentUser.Games;
+            get => SteamRemoteClient.CurrentUser?.Games;
             set
             {
                 SteamRemoteClient.CurrentUser.Games = value;
@@ -42,12 +42,18 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
         public GamesViewModel()
         {
             // SteamRemoteClient.CurrentUser = JsonConvert.DeserializeObject<RootObject>(File.ReadAllText($@".\RemoteUsers\D1lettantZz.json"));
-            IsLibraryEmpty = Games.Count == 0;
+            //IsLibraryEmpty = Games.Count == 0;
+
+            SteamRemoteClient.CurrentUser = new User();
+            var usrid = 76561199051937995;
+            var gamesPath = $"{App.WorkingDirectory}\\Cache\\Games\\{usrid}.dat";
+            if(System.IO.File.Exists(gamesPath))
+                Games = new ObservableCollection<PlayerGame>(Utils.Common.BinaryDeserialize<PlayerGame[]>(gamesPath));
+
             ParseGamesComamnd = new AsyncRelayCommand(async (o) =>
             {
                 await SteamRemoteClient.GetOwnedGames();
                 IsLibraryEmpty = Games.Count == 0;
-                OnPropertyChanged(nameof(Games));
             });
 
             AddOtherIdCommand = new RelayCommand(o =>
@@ -70,7 +76,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
                     SteamRemoteClient.CurrentUser.Games.Add(ManualGame);
                     Games.Add(ManualGame);
                     IsLibraryEmpty = false;
-                    OnPropertyChanged(nameof(Games));
                 }
                 txtBox.Text = "";
             });

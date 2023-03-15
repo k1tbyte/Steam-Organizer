@@ -15,55 +15,62 @@
         </Popup>
         
         <Border CornerRadius="20" Background="{DynamicResource first_main_brush}">
-            <ListBox x:Name="games" ItemsSource="{Binding Games,UpdateSourceTrigger=PropertyChanged}"
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     Width="475" HorizontalAlignment="Left" SelectionMode="Multiple"
-                     SelectionChanged="games_SelectionChanged"
-                     Margin="9,10,0,10" Background="Transparent"
-                     VirtualizingPanel.IsVirtualizing="True"  BorderThickness="0"
-                     VirtualizingPanel.VirtualizationMode="Recycling"
-                     ItemContainerStyle="{StaticResource games_listboxItem}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <Grid MaxWidth="140" Margin="6">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Border Name="Mask"
-                        Background="{DynamicResource second_main_brush}"
-                        BorderBrush="{DynamicResource account_picture_border}"
-                        BorderThickness="1"
-                        CornerRadius="13"/>
-                                <StackPanel  Cursor="Hand">
-                                    <Image>
-                                        <Image.Source>
-                                            <BitmapImage UriSource="{Binding ImageURL}"
-                                                     CacheOption="OnLoad"
-                                                     DecodePixelHeight="60"/>
-                                        </Image.Source>
-                                    </Image>
-                                    <StackPanel.OpacityMask>
-                                        <VisualBrush Visual="{Binding ElementName=Mask}"/>
-                                    </StackPanel.OpacityMask>
-                                </StackPanel>
+            <DataGrid x:Name="games" Margin="0 6 117 6" Background="Transparent" ItemsSource="{Binding Games}" VirtualizingPanel.VirtualizationMode="Standard"
+                      SelectionMode="Single">
 
-                                <TextBox Text="{Binding Name,UpdateSourceTrigger=PropertyChanged}"
-                                HorizontalAlignment="Center" BorderThickness="0"
-                                Background="Transparent" Foreground="{DynamicResource default_foreground}" IsReadOnly="True" 
-                                CaretBrush="{DynamicResource atv_rectangles_shadow}"
-                                Grid.Row="1" Margin="3 4 3 3"/>
-                            </Grid>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="120">
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="DataGridCell" >
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="DataGridCell">
+                                            <Image Width="90" Height="37" Cursor="Hand" Margin="20 0 0 0">
+                                                <Image.Source>
+                                                    <BitmapImage UriSource="{Binding ImageURL}" DecodePixelWidth="90" DecodePixelHeight="37" CacheOption="OnLoad" />
+                                                </Image.Source>
+                                                <Image.InputBindings>
+                                                    <MouseBinding MouseAction="LeftClick"
+                                                                              Command="{Binding DataContext.OpenStoreAppLinkCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding AppID}"/>
+                                                </Image.InputBindings>
+                                            </Image>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="{DynamicResource adat_gameTabName}"  Binding="{Binding Name}" IsReadOnly="True" Width="140">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="{DynamicResource adat_gameTabTime}" Binding="{Binding PlayTime_Forever,StringFormat={}{0} h}" IsReadOnly="True" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
         </Border>
         <Rectangle Fill="{DynamicResource menu_button_background}" Width="8"
                    Height="330" RadiusY="3" RadiusX="3" Margin="357 0 0 0" Opacity="0.2" IsHitTestVisible="False" />

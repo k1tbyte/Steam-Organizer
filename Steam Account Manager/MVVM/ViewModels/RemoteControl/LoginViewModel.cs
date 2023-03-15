@@ -7,7 +7,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 
 namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
 {
@@ -90,7 +89,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
             {
                 var nickname = CurrentUser.Nickname;
                 LogOutCommand.Execute(null);
-                Utils.Presentation.OpenMessageBox($"{nickname} {App.FindString("rc_lv_accAlreadyUse")}","some title later");
+                Utils.Presentation.OpenMessageBox($"{nickname} {App.FindString("rc_lv_accAlreadyUse")}","Already use");
             }
             else
             {

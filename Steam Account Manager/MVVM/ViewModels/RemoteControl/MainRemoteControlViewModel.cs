@@ -1,5 +1,4 @@
-﻿using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.Infrastructure.Models;
+﻿using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.RemoteControl.Controls;
@@ -55,12 +54,12 @@ namespace Steam_Account_Manager.MVVM.ViewModels.RemoteControl
         public MainRemoteControlViewModel()
         {
             LoginVm = new LoginViewModel();
-
+            GamesV = new GamesView();
             //  CurrentView = MessagesV;
 
             //  FriendsV = new FriendsView();
             // CurrentView = FriendsV;
-            RemoteControlCurrentView = LoginVm;
+            RemoteControlCurrentView = GamesV;
 
 
             LoginViewCommand = new RelayCommand(o =>

@@ -1,10 +1,8 @@
 ﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Steam_Account_Manager.Infrastructure.Converters;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
-using Steam_Account_Manager.MVVM.ViewModels.MainControl;
 using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
 using Steam_Account_Manager.Utils;
 using SteamKit2;
@@ -20,15 +18,11 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 {
     internal static class SteamRemoteClient
     {
-        [System.Runtime.InteropServices.DllImport("PowrProf.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, ExactSpelling = true)]
-        public static extern bool SetSuspendState(bool hiberate, bool forceCritical, bool disableWakeEvent);
-
         public static event Action UserStatusChanged;
 
         public static ulong InterlocutorID { get; set; }
@@ -51,8 +45,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static string Username;
         private static string Password;
         private static EResult LastLogOnResult;
-        private static ulong CurrentSteamId64;
         private static string LoginKey;
+        private static string UniqueId;
         private static string WebApiUserNonce;
 
 
@@ -114,9 +108,10 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         public static EResult Login(string username, string password, string authCode, string loginKey = null)
         {
-            Username = username;
-            Password = password;
-            IsRunning = true;
+            Username        = username;
+            Password        = password;
+            LoginKey        = loginKey;
+            IsRunning       = true;
 
             if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers"))
                 Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers");
@@ -129,15 +124,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             DeserializeUser();
 
-            if (!string.IsNullOrEmpty(authCode))
-            {
-                if (LastLogOnResult == EResult.AccountLogonDenied)
-                    SteamGuardCode = authCode;
-                else if (LastLogOnResult == EResult.AccountLoginDeniedNeedTwoFactor)
-                    TwoFactorCode = authCode;
-            }
-            if (!String.IsNullOrEmpty(loginKey))
-                LoginKey = loginKey;
+            if (LastLogOnResult == EResult.AccountLogonDenied)
+                SteamGuardCode = authCode;
+            else if (LastLogOnResult == EResult.AccountLoginDeniedNeedTwoFactor || !String.IsNullOrEmpty(authCode))
+                TwoFactorCode = authCode;
+
+            LastLogOnResult = EResult.NotLoggedOn;
 
             steamClient.Connect();
 
@@ -197,28 +189,11 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         }
         #endregion
 
-        public static void Logout()
-        {
-
-            IsRunning =  LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;            
-
-            SerializeUser();
-
-            Config.Serialize(LoginViewModel.RecentlyLoggedIn,App.WorkingDirectory + "\\RecentlyLoggedUsers.dat",Config.Properties.UserCryptoKey);
-
-            steamUser.LogOff();
-            CurrentUser = null;
-            WebApiUserNonce = LoginKey = null;
-
-            LastLogOnResult = EResult.NotLoggedOn;
-        }
-
         #region Callbacks processing
 
         //FIXED
         private static void OnConnected(SteamClient.ConnectedCallback callback)
         {
-
             byte[] sentryHash = null;
             if (File.Exists($"{App.WorkingDirectory}\\Sentry\\{Username}.bin"))
             {
@@ -249,6 +224,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static void OnLoggedOn(SteamUser.LoggedOnCallback callback)
         {
             LastLogOnResult = callback.Result;
+            SteamGuardCode = TwoFactorCode = null;
 
             if (LastLogOnResult == EResult.InvalidPassword && LoginKey != null)
             {
@@ -274,8 +250,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             WebApiUserNonce = callback.WebAPIUserNonce;
 
-            MainRemoteControlViewModel.IsPanelActive = true;
-            LoginViewModel.SuccessLogOn = true;
+           LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = true;
 
 /*            if(CurrentUser.RememberGamesIds != null && CurrentUser.RememberGamesIds.Count > 0)
             {
@@ -319,19 +294,15 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         }
 
-        private static void OnLoggedOff(SteamUser.LoggedOffCallback callback)
-        {
-            LastLogOnResult = callback.Result;
-
-            if (callback.Result == EResult.ServiceUnavailable)
-            {
-                steamClient.Disconnect();
-            }
-        }
+        private static void OnLoggedOff(SteamUser.LoggedOffCallback callback) => LastLogOnResult = callback.Result;
+        public static void Logout()                                           => steamUser.LogOff();
 
         private static void OnDisconnected(SteamClient.DisconnectedCallback callback)
         {
-            IsRunning = false;
+            IsRunning = LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;
+            SerializeUser();
+            CurrentUser = null;
+            WebApiUserNonce = LoginKey = null;
         }
 
         //FIXED
@@ -503,7 +474,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                             return;
                         case "/pcsleep":
                             steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "💤 Sleeping...");
-                            SetSuspendState(false, true, true);
+                            Win32.SetSuspendState(false, true, true);
                             return;
                         case "/pcshutdown":
                             steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "🚩 Shutting down...");
@@ -718,7 +689,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 var webClient = new WebClient { Encoding = Encoding.UTF8 };
                 string json = await webClient.DownloadStringTaskAsync(
                     "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key=" +
-                    webApiKey + "&steamid=" + CurrentSteamId64);
+                    webApiKey + "&steamid=" + CurrentUser.SteamID64);
                 JToken node = JObject.Parse(json).SelectToken("*.friends");
                 sinces = node.SelectTokens(@"$.[?(@.friend_since)].friend_since");
             }
@@ -767,7 +738,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
             var request = new CPlayer_GetOwnedGames_Request
             {
-                steamid = CurrentSteamId64,
+                steamid = CurrentUser.SteamID64,
                 include_appinfo = true,
                 include_free_sub = false,
                 include_played_free_games = true
@@ -827,12 +798,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         internal static async Task<ObservableCollection<StatData>> GetAppAchievements(ulong gameID)
         {
-            return new ObservableCollection<StatData>(await gamesHandler.GetAchievements(CurrentSteamId64, gameID).ConfigureAwait(false));
+            return new ObservableCollection<StatData>(await gamesHandler.GetAchievements(CurrentUser.SteamID64, gameID).ConfigureAwait(false));
         }
 
         internal static async Task<bool> SetAppAchievements(ulong appID, IEnumerable<StatData> achievementsToSet)
         {
-            return await gamesHandler.SetAchievements(CurrentSteamId64, appID, achievementsToSet);
+            return await gamesHandler.SetAchievements(CurrentUser.SteamID64, appID, achievementsToSet);
         }
         #endregion
 
@@ -849,7 +820,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         #region Steam WEB
         private static void UserWebLogOn()
         {
-            IsWebLoggedIn = webHandler.Authenticate(LoginKey, steamClient, WebApiUserNonce);
+            IsWebLoggedIn = webHandler.Authenticate(UniqueId, steamClient, WebApiUserNonce);
         }
 
         internal static async Task<bool> SetProfilePrivacy(int Profile, int Inventory, int Gifts, int OwnedGames, int Playtime, int Friends, int Comments)
@@ -873,7 +844,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                   }//FriendsOnly,Public,Private
                 };
 
-                response = webHandler.Fetch("https://steamcommunity.com/profiles/" + CurrentSteamId64 + "/ajaxsetprivacy/", "POST", ProfileSettings);
+                response = webHandler.Fetch("https://steamcommunity.com/profiles/" + CurrentUser.SteamID64 + "/ajaxsetprivacy/", "POST", ProfileSettings);
             });
 
             if (!String.IsNullOrEmpty(response) && response.Contains("success\":1"))
