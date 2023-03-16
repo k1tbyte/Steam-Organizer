@@ -1,12 +1,12 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
-using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
+using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.Utils;
 using System;
 using System.Collections.ObjectModel;
 
-namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
+namespace Steam_Account_Manager.MVVM.ViewModels
 {
     internal class SettingsViewModel : ObservableObject
     {
@@ -91,8 +91,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
                 }
 
                 AutoLoginAccount = desired;
-                if (!App.OfflineMode)
-                    ((App.MainWindow.DataContext as MainWindowViewModel).RemoteControlV.DataContext as MainRemoteControlViewModel).LoginViewCommand.Execute(desired);
+              /*  if (!App.OfflineMode) //NEED TO FIX
+                    ((App.MainWindow.DataContext as MainWindowViewModel).RemoteControlV.DataContext as RemoteControlViewModel).LoginViewCommand.Execute(desired);*/
             },System.Windows.Threading.DispatcherPriority.Background);
         }
 

@@ -1,8 +1,8 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
-using Steam_Account_Manager.MVVM.View.MainControl.Controls;
-using Steam_Account_Manager.MVVM.View.MainControl.Windows;
-using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+using Steam_Account_Manager.MVVM.View.Controls;
+using Steam_Account_Manager.MVVM.View.Windows;
+using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.UIExtensions;
 using Steam_Account_Manager.Utils;
 using System;
@@ -42,7 +42,7 @@ namespace Steam_Account_Manager
         [STAThread]
         protected override async void OnStartup(StartupEventArgs e)
         {
-#if DEBUG
+#if !DEBUG
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
                 if (e.Args.Length > 0)

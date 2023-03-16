@@ -1,4 +1,4 @@
-﻿using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+﻿using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.Utils;
 using System;
 using System.Drawing;
@@ -11,7 +11,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using static Steam_Account_Manager.Infrastructure.Converters.SteamIDConverter;
 
-namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
+namespace Steam_Account_Manager.MVVM.View.Controls
 {
 
     public partial class AccountDataView : UserControl

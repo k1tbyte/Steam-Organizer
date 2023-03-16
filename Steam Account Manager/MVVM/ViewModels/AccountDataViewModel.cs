@@ -4,7 +4,7 @@ using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.Parsers;
 using Steam_Account_Manager.MVVM.Core;
-using Steam_Account_Manager.MVVM.View.MainControl.Windows;
+using Steam_Account_Manager.MVVM.View.Windows;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
+namespace Steam_Account_Manager.MVVM.ViewModels
 {
     internal sealed class AccountDataViewModel : ObservableObject
     {

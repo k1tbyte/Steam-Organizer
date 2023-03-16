@@ -8,20 +8,20 @@ namespace Steam_Account_Manager.Infrastructure.Converters
         public object Convert(object value, Type targetType, object parameter,
            System.Globalization.CultureInfo culture)
         {
-            if (value is MVVM.View.RemoteControl.Controls.MessagesView)
+          /*  if (value is MVVM.View.Controls.MessagesView)
             {
-                return true;
-            }
+                return true; NEED TO FIX
+            }*/
             return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
-            if (value is MVVM.View.RemoteControl.Controls.MessagesView)
-            {
-                return true;
-            }
+            /*            if (value is MVVM.View.Controls.MessagesView)
+                        {
+                            return true; NEED TO FIX
+                        }*/
             return false;
         }
     }

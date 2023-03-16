@@ -1,5 +1,5 @@
 ﻿using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+using Steam_Account_Manager.MVVM.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +10,7 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using static Steam_Account_Manager.Utils.Presentation;
 
-namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
+namespace Steam_Account_Manager.MVVM.View.Controls
 {
     public partial class AccountsView : UserControl
     {

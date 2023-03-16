@@ -23,7 +23,6 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         {
             Messenger = new Messenger() { Commands = new List<Command>() };
             Friends   = new ObservableCollection<Friend>();
-            Games     = new ObservableCollection<PlayerGame>();
         }
         public string Username { get; set; }
         public ulong SteamID64 { get; set; }
@@ -34,9 +33,6 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
 
         [field: NonSerialized]
         public ObservableCollection<Friend> Friends { get; set; }
-
-        [field: NonSerialized]
-        public ObservableCollection<PlayerGame> Games { get; set; }
 
         [field: NonSerialized]
         public string AvatarHash { get; set; }
@@ -86,17 +82,11 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
     [Serializable]
     public class PlayerGame
     {
-        [JsonProperty("Name")]
         public string Name { get; set; }
-
-        [JsonProperty("ImageURL")]
         public string ImageURL { get; set; }
-
-        [JsonProperty("AppID")]
         public int AppID { get; set; }
-
-        [JsonProperty("Playtime_Forever")]
         public int PlayTime_Forever { get; set; }
+        public bool IsSelected { get; set; }
     }
 
     [Serializable]

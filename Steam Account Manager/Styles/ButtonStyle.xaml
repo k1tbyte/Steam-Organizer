@@ -243,30 +243,6 @@
 
 
     <!--#region RadioButtons -->  
-    <Style x:Key="RemoteControlButton" TargetType="RadioButton" >
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource menu_button_text}" />
-        <Setter Property="Height" Value="35" />
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="RadioButton">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="7">
-                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource menu_button_background}"/>
-                            <Setter Property="Foreground" Value="White"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style x:Key="themeButton" TargetType="RadioButton" BasedOn="{StaticResource TemplateGlowRadioButton}">
         <Setter Property="Margin" Value="10 0 0 0"/>
         <Setter Property="Width" Value="80"/>

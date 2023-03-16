@@ -8,13 +8,16 @@
              d:DataContext="{d:DesignInstance Type=vm:GamesViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="600">
+    <Border CornerRadius="20" Background="{DynamicResource first_main_brush}">
     <Grid>
         <Popup x:Name="Popup" Grid.Column="3" AllowsTransparency="True"
                        HorizontalOffset="0" VerticalOffset="10">
             <ui:ModernPopup  x:Name="Header" Foreground="White"/>
         </Popup>
+        <Border Background="{DynamicResource adv_borders_background}" Opacity="0.6"  Margin="5,5,117,162" 
+                                Height="25" CornerRadius="15 15 2 2 " VerticalAlignment="Top"/>
+
         
-        <Border CornerRadius="20" Background="{DynamicResource first_main_brush}">
             <DataGrid x:Name="games" Margin="0 6 117 6" Background="Transparent" ItemsSource="{Binding Games}" VirtualizingPanel.VirtualizationMode="Standard"
                       SelectionMode="Single">
 
@@ -69,15 +72,29 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
+
+                    <DataGridTemplateColumn Width="30">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ToggleButton Style="{StaticResource ModernCheckbox}" Width="25" Height="25" IsChecked="{Binding IsSelected,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                              PreviewMouseLeftButtonDown="ToggleButton_PreviewMouseLeftButtonDown" Background="{DynamicResource background_border_color}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-        </Border>
+       
+        
         <Rectangle Fill="{DynamicResource menu_button_background}" Width="8"
-                   Height="330" RadiusY="3" RadiusX="3" Margin="357 0 0 0" Opacity="0.2" IsHitTestVisible="False" />
+                   Height="300" RadiusY="3" RadiusX="3" Margin="357 20 0 0" Opacity="0.2" IsHitTestVisible="False" />
 
         <StackPanel  Margin="0 13 15 0" VerticalAlignment="Top" HorizontalAlignment="Right">
-            <TextBlock x:Name="SelectsText" FontSize="11" Foreground="{DynamicResource default_foreground}"
-                       HorizontalAlignment="Center" Margin="0 0 0 5" Width="90" TextAlignment="Center"/>
+                
+            <TextBlock  FontSize="11" Foreground="{DynamicResource default_foreground}"
+                       HorizontalAlignment="Center" Margin="0 0 0 5" Width="90" TextAlignment="Center">
+                    <Run Text="{DynamicResource rc_gv_selected}" />
+                <Run Text="{Binding SelectedGamesCount,Mode=OneWay}" Foreground="{DynamicResource second_main_brush}"/>
+            </TextBlock>
 
             <Button Command="{Binding ParseGamesComamnd}" 
                 Style="{StaticResource ModernColoredButton}"   Content="{DynamicResource rc_gv_Update}"/>
@@ -113,7 +130,7 @@
 
             <TextBlock FontSize="11" Foreground="{DynamicResource default_foreground}"
                        Text="{DynamicResource rc_gv_customGameTitle}" HorizontalAlignment="Center" Margin="0 0 0 3" />
-            <Grid>
+            <Grid Margin="0 0 0 20">
                 <Border Margin="0 0 0 0" Background="{DynamicResource rc_button_back}"
                         Height="24" CornerRadius="5" Opacity="0.6"/>
                 <TextBox  x:Name="Custom_gameTitle" Style="{StaticResource settings_data_box}" FontSize="12" Padding="2" 
@@ -121,25 +138,6 @@
                          Foreground="{DynamicResource default_secundary_foreground}"/>
             </Grid>
 
-
-            <TextBlock FontSize="11" Foreground="{DynamicResource default_foreground}"
-                       Text="{DynamicResource rc_gv_Other_gameID}" HorizontalAlignment="Center" Margin="-14 10 0 3" />
-            <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
-                <Border Margin="0 0 -54 0" Background="{DynamicResource rc_button_back}"
-                        Height="24" CornerRadius="5 0 0 5" Opacity="0.6"/>
-                <TextBox x:Name="add_idBox" PreviewTextInput="add_idBox_PreviewTextInput"  Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
-                         IsReadOnly="False" Width="45" Margin="0 0 6 0" MaxLength="7"
-                         Foreground="{DynamicResource default_secundary_foreground}"/>
-
-                <Button Command="{Binding AddOtherIdCommand}" CommandParameter="{Binding ElementName=add_idBox}"  
-                        Background="{DynamicResource rc_button_back}" 
-                        Style="{StaticResource ModernColoredButton}" Content="Add" Height="26" Width="40">
-                    <Button.ToolTip>
-                        <ToolTip ContentStringFormat="{DynamicResource rc_gv_addGameDesc}"/>
-                    </Button.ToolTip>
-                </Button>
-
-            </StackPanel>
 
             <ToggleButton x:Name="Idle" Style="{StaticResource idle_button}" Margin="0 10 0 0"
                           Click="Idle_Click"/>
@@ -154,4 +152,5 @@
 
 
     </Grid>
+    </Border>
 </UserControl>

@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
+namespace Steam_Account_Manager.MVVM.ViewModels
 {
     internal class AddAuthenticatorViewModel : ObservableObject
     {

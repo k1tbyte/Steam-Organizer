@@ -1,7 +1,7 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using System.Windows;
 
-namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
+namespace Steam_Account_Manager.MVVM.View.Windows
 {
     public partial class AuthenticationWindow : Window
     {

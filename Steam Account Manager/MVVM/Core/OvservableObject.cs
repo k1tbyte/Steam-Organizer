@@ -1,4 +1,4 @@
-﻿using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+﻿using Steam_Account_Manager.MVVM.ViewModels;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 

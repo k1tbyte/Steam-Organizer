@@ -2,7 +2,7 @@
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Parsers.Vdf;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
-using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.Utils;
 using System;
 using System.Linq;

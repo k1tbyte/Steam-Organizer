@@ -1,13 +1,13 @@
 ﻿using Steam_Account_Manager.Infrastructure;
-using Steam_Account_Manager.MVVM.View.MainControl.Windows;
-using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+using Steam_Account_Manager.MVVM.View.Windows;
+using Steam_Account_Manager.MVVM.ViewModels;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Steam_Account_Manager.MVVM.View.MainControl.Controls
+namespace Steam_Account_Manager.MVVM.View.Controls
 {
     public partial class SettingsView : UserControl
     {

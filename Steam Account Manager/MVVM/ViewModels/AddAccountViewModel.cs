@@ -6,7 +6,7 @@ using System.Windows;
 using Steam_Account_Manager.Utils;
 using Steam_Account_Manager.Infrastructure.Converters;
 
-namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
+namespace Steam_Account_Manager.MVVM.ViewModels
 {
     internal class AddAccountViewModel : ObservableObject
     {

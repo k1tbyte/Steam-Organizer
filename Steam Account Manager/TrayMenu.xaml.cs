@@ -1,7 +1,7 @@
 ﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
-using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.Utils;
 using System;
 using System.Collections.ObjectModel;

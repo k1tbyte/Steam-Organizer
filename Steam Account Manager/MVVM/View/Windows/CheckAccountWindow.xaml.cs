@@ -1,11 +1,11 @@
 ﻿using Steam_Account_Manager.Infrastructure.Converters;
 using Steam_Account_Manager.Infrastructure.Models;
-using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+using Steam_Account_Manager.MVVM.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
+namespace Steam_Account_Manager.MVVM.View.Windows
 {
     public partial class CheckAccountWindow : Window
     {

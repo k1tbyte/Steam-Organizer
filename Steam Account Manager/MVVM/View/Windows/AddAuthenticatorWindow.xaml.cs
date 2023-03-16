@@ -1,10 +1,10 @@
 ﻿using Steam_Account_Manager.Infrastructure.Models;
-using Steam_Account_Manager.MVVM.ViewModels.MainControl;
+using Steam_Account_Manager.MVVM.ViewModels;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Steam_Account_Manager.MVVM.View.MainControl.Windows
+namespace Steam_Account_Manager.MVVM.View.Windows
 {
     public partial class AddAuthenticatorWindow : Window
     {

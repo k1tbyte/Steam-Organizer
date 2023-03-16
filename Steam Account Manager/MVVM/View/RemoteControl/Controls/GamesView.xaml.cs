@@ -8,6 +8,9 @@ using System.Windows;
 using Game = Steam_Account_Manager.Infrastructure.Models.JsonModels.PlayerGame;
 using SteamRemoteClient = Steam_Account_Manager.Infrastructure.SteamRemoteClient.SteamRemoteClient;
 using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
+using Steam_Account_Manager.Infrastructure.Models.JsonModels;
+using System.Collections.ObjectModel;
+using System;
 
 namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
 {
@@ -19,42 +22,7 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
         public GamesView()
         {
             InitializeComponent();
-            add_idBox.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste, PasteBlocked));
             this.DataContext = new GamesViewModel();
-
-            SelectsText.Text = (string)App.Current.FindResource("rc_gv_selected") + "0";
-            
-        }
-
-        private void PasteBlocked(object sender, ExecutedRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
-
-        private void games_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (Error)
-            {
-                SelectsText.Foreground = Utils.Presentation.StringToBrush("#b0b9c6");
-                Error = false;
-            }
-
-            if (games.SelectedItems.Count == 0)
-            {
-                SelectsText.Text = (string)App.Current.FindResource("rc_gv_selected") + "0";
-            }
-            else if (games.SelectedItems.Count == 1)
-            {
-                SelectsText.Text = (string)App.Current.FindResource("rc_gv_selected") + "\nAppID: " + GamesViewModel.Games[games.SelectedIndex].AppID +
-                    "\nPlaytime: " + GamesViewModel.Games[games.SelectedIndex].PlayTime_Forever / 60 + "h";
-            }
-            else
-                SelectsText.Text = (string)App.Current.FindResource("rc_gv_selected") + games.SelectedItems.Count;
-        }
-
-        private void add_idBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = _regex.IsMatch(e.Text);
         }
 
         private async void Idle_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -74,13 +42,7 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
                 if (selectedCount > 32 || selectedCount == 0)
                 {
                     Error = true;
-                    SelectsText.Foreground = Brushes.PaleVioletRed;
-
-                    if (games.SelectedItems.Count > 32)
-                        SelectsText.Text = (string)App.Current.FindResource("rc_gv_maximumGames");
-                    else if (games.SelectedItems.Count == 0)
-                        SelectsText.Text = (string)App.Current.FindResource("rc_gv_selectGames");
-
+                   
                     e.Handled = true;
                     Idle.IsChecked = false;
                 }
@@ -120,6 +82,25 @@ namespace Steam_Account_Manager.MVVM.View.RemoteControl.Controls
         {
             Popup.Visibility = Visibility.Collapsed;
             Popup.IsOpen = false;
+        }
+
+
+        private void ToggleButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var button = sender as ToggleButton;
+            var selectedCount = (this.DataContext as GamesViewModel).SelectedGamesCount;
+
+            if (button.IsChecked == true)
+                (this.DataContext as GamesViewModel).SelectedGamesCount--;
+            else if (button.IsChecked == false && selectedCount < 32)
+                (this.DataContext as GamesViewModel).SelectedGamesCount++;
+            else
+            {
+                e.Handled = true;
+                return;
+            }
+
+            Utils.Common.BinarySerialize((this.DataContext as GamesViewModel).Games.ToArray(), $"{App.WorkingDirectory}\\Cache\\Games\\{76561199051937995}.dat");
         }
     }
 }

@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using Steam_Account_Manager.Infrastructure.Converters;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
-using Steam_Account_Manager.MVVM.ViewModels.RemoteControl;
+using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.Utils;
 using SteamKit2;
 using SteamKit2.Internal;
@@ -168,7 +168,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             return;
 
-            if (CurrentUser?.Messenger?.AdminID != null)
+          /*  if (CurrentUser?.Messenger?.AdminID != null)
                 MessagesViewModel.IsAdminIdValid = true;
 
 
@@ -178,13 +178,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 MessagesViewModel.AdminId = CurrentUser.Messenger.AdminID.ToString();
                 MessagesViewModel.SaveChatLog = CurrentUser.Messenger.SaveChatLog;
                 MessagesViewModel.MsgCommands = new ObservableCollection<Command>(CurrentUser.Messenger.Commands);
-                GamesViewModel.Games = new ObservableCollection<PlayerGame>(CurrentUser.Games);
                 if (MainRemoteControlViewModel.MessagesV == null)
                     MainRemoteControlViewModel.MessagesV = new MVVM.View.RemoteControl.Controls.MessagesView();
 
                 MessagesViewModel.InitDefaultCommands();
 
-            }));
+            }));*/
 
         }
         #endregion
@@ -250,7 +249,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             WebApiUserNonce = callback.WebAPIUserNonce;
 
-           LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = true;
+           /*LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = true;*/
 
 /*            if(CurrentUser.RememberGamesIds != null && CurrentUser.RememberGamesIds.Count > 0)
             {
@@ -299,7 +298,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnDisconnected(SteamClient.DisconnectedCallback callback)
         {
-            IsRunning = LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = false;
+            IsRunning = /*LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive =*/ false;
             SerializeUser();
             CurrentUser = null;
             WebApiUserNonce = LoginKey = null;
@@ -333,9 +332,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             steamUser.RequestWebAPIUserNonce();
             steamUser.AcceptNewLoginKey(callback);
 
-            if(LoginViewModel.RecentlyLoggedIn.Exists(o => o.Username == Username,out int index))
+            if (RemoteControlViewModel.RecentlyLoggedIn.Exists(o => o.Username == Username, out int index))
             {
-                Application.Current.Dispatcher.Invoke(() => LoginViewModel.RecentlyLoggedIn[index] = new RecentlyLoggedAccount
+                Application.Current.Dispatcher.Invoke(() => RemoteControlViewModel.RecentlyLoggedIn[index] = new RecentlyLoggedAccount
                 {
                     Username = Username,
                     Loginkey = callback.LoginKey,
@@ -344,14 +343,14 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
             else
             {
-                Application.Current.Dispatcher.Invoke(() => LoginViewModel.RecentlyLoggedIn.Add(new RecentlyLoggedAccount
+                Application.Current.Dispatcher.Invoke(() => RemoteControlViewModel.RecentlyLoggedIn.Add(new RecentlyLoggedAccount
                 {
                     Username = Username,
                     Loginkey = callback.LoginKey,
                     ImageUrl = CurrentUser.AvatarUrl
                 }));
             }
-            Config.Serialize(LoginViewModel.RecentlyLoggedIn,$"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
+            Config.Serialize(RemoteControlViewModel.RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
         }
 
         private static void OnWebApiUser(SteamUser.WebAPIUserNonceCallback callback)
@@ -452,7 +451,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             var FriendPersonaName = steamFriends.GetFriendPersonaName(callback.Sender);
             var command = callback.Message.Split(' ');
             var invalidCommand = "🚧 Invalid command!\n  Sample: ";
-
+/*
             if (callback.Sender.AccountID == CurrentUser.Messenger.AdminID && CurrentUser.Messenger.EnableCommands)
             {
                 try
@@ -594,7 +593,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     TextBrush = (System.Windows.Media.Brush)App.Current.FindResource("default_foreground"),
                     MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("second_main_brush")
                 })));
-            }
+            }*/
         }
 
 /*        private static void OnCsgoMessage(SteamGameCoordinator.MessageCallback callback)
@@ -736,7 +735,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         #region Games methods
         internal static async Task GetOwnedGames()
         {
-            var request = new CPlayer_GetOwnedGames_Request
+         /*   var request = new CPlayer_GetOwnedGames_Request
             {
                 steamid = CurrentUser.SteamID64,
                 include_appinfo = true,
@@ -766,7 +765,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                         ImageURL = $"https://cdn.akamai.steamstatic.com/steam/apps/{game.appid}/header.jpg"
                     });
                 }
-            });
+            });*/
 
         }
 

@@ -2,8 +2,7 @@
 using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
-using Steam_Account_Manager.MVVM.View.MainControl.Controls;
-using Steam_Account_Manager.MVVM.View.RemoteControl.Controls;
+using Steam_Account_Manager.MVVM.View.Controls;
 using Steam_Account_Manager.UIExtensions;
 using Steam_Account_Manager.Utils;
 using System;
@@ -15,7 +14,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
+namespace Steam_Account_Manager.MVVM.ViewModels
 {
     internal class MainWindowViewModel : ObservableObject
     {
@@ -31,7 +30,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
         public AccountsView AccountsV;
         public SettingsView SettingsV;
-        public MainRemoteControlView RemoteControlV;
+        public RemoteControlView RemoteControlV;
         public AccountDataView AccountDataV;
 
         public static event EventHandler TotalAccountsChanged;
@@ -222,12 +221,12 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
 
             AccountsV      = new AccountsView();
             AccountDataV   = new AccountDataView();
-            RemoteControlV = new MainRemoteControlView();
+            RemoteControlV = new RemoteControlView();
             SettingsV      = new SettingsView();
 
             CurrentView = AccountsV;
 
-            CurrentUserChanged(null, null);
+            
 
             //Installation steam active user watcher
             RegistrySteamUserWatcher = new ManagementEventWatcher(new WqlEventQuery($"SELECT * FROM RegistryValueChangeEvent WHERE Hive = 'HKEY_USERS'" +
@@ -236,6 +235,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels.MainControl
             RegistrySteamUserWatcher.Start();
 
 #if !DEBUG
+            CurrentUserChanged(null, null);
             _ = CheckUpdate().ConfigureAwait(false);
 #endif
 
