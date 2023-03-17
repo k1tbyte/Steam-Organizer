@@ -29,6 +29,8 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         public string WebApiKey { get; set; }
         public string TradeToken { get; set; }
         public string FriendsInvite { get; set; }
+        public bool AutoIdlingGames { get; set; }
+        public string CustomGameTitle { get; set; }
         public Messenger Messenger { get; set; }
 
         [field: NonSerialized]
@@ -73,9 +75,6 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
 
         [field: NonSerialized]
         public System.Windows.Media.Brush PersonaStateBrush { get; set; }
-
-
-        public HashSet<int> RememberGamesIds { get; set; }
 
     }
 

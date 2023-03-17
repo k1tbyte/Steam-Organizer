@@ -1,12 +1,16 @@
-﻿using Steam_Account_Manager.Infrastructure;
+﻿using Newtonsoft.Json;
+using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.Core;
 using SteamKit2;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
-using static SteamKit2.GC.Dota.Internal.CMsgDOTADPCFeed;
 
 namespace Steam_Account_Manager.MVVM.ViewModels
 {
@@ -15,25 +19,44 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
         #region Commands
         public AsyncRelayCommand LogOnCommand { get; set; }
-        public AsyncRelayCommand LogOutCommand { get; set; }
+        public RelayCommand LogOutCommand { get; set; }
         public RelayCommand ChangeNicknameCommand { get; set; }
-        public AsyncRelayCommand RecentlyLogOnCommand { get; set; } 
+        public RelayCommand RemoveRecentUserCommand { get; set; }
+        public RelayCommand OpenStoreAppLinkCommand { get; set; }
+        public RelayCommand UpdateGamesListCommand { get; set; }
         #endregion
 
 
-        private string _username, _password, _authCode, _errorMsg;
+        private string _username, _password, _authCode, _errorMsg,_steamId;
         private bool _needAuthCode;
         public User CurrentUser => SteamRemoteClient.CurrentUser;
 
-        private static bool _isLoggedOn;
-        public static event EventHandler IsLoggedOnChanged;
-        public static bool IsLoggedOn
+        private bool _isLoggedOn;
+        public bool IsLoggedOn
         {
             get => _isLoggedOn;
+            set => SetProperty(ref _isLoggedOn, value);
+        }
+
+        private bool _isGamesIdling;
+        public bool IsGamesIdling
+        {
+            get => _isGamesIdling;
             set
             {
-                _isLoggedOn = value;
-                IsLoggedOnChanged?.Invoke(null, EventArgs.Empty);
+                if(value)
+                {
+                    if (SelectedGamesCount <= 0 && String.IsNullOrWhiteSpace(CurrentUser.CustomGameTitle)) return;
+
+                    var selected = Games?.Where(game => game.IsSelected);
+                    _ = SteamRemoteClient.IdleGames(selected?.Select(game => game.AppID).ToHashSet(), CurrentUser.CustomGameTitle);
+                }
+                else
+                {
+                    _ = SteamRemoteClient.StopIdle();
+                }
+
+                SetProperty(ref _isGamesIdling, value);
             }
         }
 
@@ -46,6 +69,34 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             {
                 _recentlyLoggedIn = value;
                 RecentlyLoggedOnChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+        private ObservableCollection<PlayerGame> _games;
+        public ObservableCollection<PlayerGame> Games
+        {
+            get => _games;
+            set => SetProperty(ref _games, value);
+        }
+        private int _selectedGamesCount;
+        public int SelectedGamesCount 
+        { 
+            get => _selectedGamesCount;
+            set => SetProperty(ref _selectedGamesCount, value);
+        }
+
+        private int _selectedTabIndex;
+        public int SelectedTabIndex
+        {
+            get => _selectedTabIndex;
+            set
+            {
+                if(value == 1 && Games == null)
+                {
+                   Games = SteamRemoteClient.GetOwnedGames().Result;
+                }
+
+                SetProperty(ref _selectedTabIndex, value);
             }
         }
 
@@ -78,6 +129,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         }
         #endregion
 
+        #region Helpers
         private void CheckLoginResult(EResult result)
         {
             ErrorMsg = "";
@@ -111,14 +163,43 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                     break;
             }
         }
+        private void HandleDisconnection()
+        {
+            if (Games != null && Games.Count > 0)
+            {
+                Utils.Common.BinarySerialize(Games.ToArray(), $"{App.WorkingDirectory}\\Cache\\Games\\{_steamId}.dat");
+            }
+            Games = null;
+            _steamId = null;
+            _isGamesIdling = IsLoggedOn = false;
+            SelectedGamesCount = 0;
+        }
+        private void HandleConnection()
+        {
+            _steamId = SteamRemoteClient.CurrentUser.SteamID64.ToString();
+            string gamesCache = $"{App.WorkingDirectory}\\Cache\\Games\\{_steamId}.dat";
+
+            if (System.IO.File.Exists(gamesCache))
+            {
+                Games = new ObservableCollection<PlayerGame>(Utils.Common.BinaryDeserialize<PlayerGame[]>(gamesCache));
+                SelectedGamesCount = Games.Where(o => o.IsSelected).Count();
+
+                if(SelectedGamesCount > 0 && CurrentUser.AutoIdlingGames)
+                    IsGamesIdling = true;
+            }
+
+            IsLoggedOn = true;
+        } 
+        #endregion
 
         public RemoteControlViewModel()
         {
             RecentlyLoggedIn = Config.Deserialize(App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey)
                 as ObservableCollection<RecentlyLoggedAccount> ?? new ObservableCollection<RecentlyLoggedAccount>();
-            SteamRemoteClient.UserStatusChanged += () => OnPropertyChanged(nameof(CurrentUser));
 
-            IsLoggedOn = false;
+            SteamRemoteClient.UserStatusChanged += () => OnPropertyChanged(nameof(CurrentUser));
+            SteamRemoteClient.Connected += HandleConnection;
+            SteamRemoteClient.Disconnected += HandleDisconnection;
 
             LogOnCommand = new AsyncRelayCommand(async (o) =>
             {
@@ -132,6 +213,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                     LoginKey = recentAcc.Loginkey;
                     Username = recentAcc.Username;
                 }
+                else if(o is Account acc)
+                {
+                    Username = acc.Login;
+                    Password = acc.Password;
+                    if(System.IO.File.Exists(acc.AuthenticatorPath))
+                        AuthCode = JsonConvert.DeserializeObject<SteamGuardAccount>(System.IO.File.ReadAllText(acc.AuthenticatorPath)).GenerateSteamGuardCode();
+                }
 
                 if (String.IsNullOrWhiteSpace(Username) || (String.IsNullOrEmpty(Password) && LoginKey == null))
                     return;
@@ -141,15 +229,39 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                     return SteamRemoteClient.Login(Username, Password, AuthCode, LoginKey);
                 }, TaskCreationOptions.LongRunning);
 
-                if(result == EResult.Cancelled && o is RecentlyLoggedAccount acc && LoginKey != null)
+                if(result == EResult.Cancelled && o is RecentlyLoggedAccount tmp && LoginKey != null)
                 {
-                    RecentlyLoggedIn.Remove(acc);
+                    RecentlyLoggedIn.Remove(tmp);
                     Config.Serialize(RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
                 }
 
                 CheckLoginResult(result);
-
             });
+
+            #region Common account command
+            RemoveRecentUserCommand = new RelayCommand(o =>
+    {
+        RecentlyLoggedIn.Remove(o as RecentlyLoggedAccount);
+        Config.Serialize(RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
+    });
+            LogOutCommand = new RelayCommand(o =>
+            {
+                SteamRemoteClient.Logout();
+                Username = Password = AuthCode = "";
+                NeedAuthCode = false;
+            });
+            ChangeNicknameCommand = new RelayCommand(o =>
+            {
+                if (o is System.Windows.Controls.TextBox txtBox && !String.IsNullOrEmpty(txtBox.Text) && txtBox.Text != CurrentUser.Nickname)
+                {
+                    SteamRemoteClient.ChangeCurrentName(txtBox.Text);
+                }
+            });
+            #endregion
+
+            OpenStoreAppLinkCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{o}")).Dispose());
+            UpdateGamesListCommand = new RelayCommand(o => Games = SteamRemoteClient.GetOwnedGames().Result);
         }
+
     }
 }

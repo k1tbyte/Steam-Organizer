@@ -84,17 +84,295 @@
                 Background="{DynamicResource second_main_brush}" Width="340">
 
         </Border>
-        <TabControl Grid.RowSpan="3" Style="{StaticResource RemoteTabControl}" Margin="0 0 0 0">
+        <TabControl Grid.RowSpan="3" Style="{StaticResource RemoteTabControl}" Margin="0" SelectedIndex="{Binding SelectedTabIndex}">
             <TabItem Style="{StaticResource RemoteControlTabItem}" IsSelected="True">
                 <TabItem.Header>
                     <Icon:PackIconMaterial Kind="Account" Width="25" Height="25"/>
                 </TabItem.Header>
+                <TabItem.Content>
+                    <Grid>
+                        <Button  Style="{StaticResource ModernColoredButton}" FontWeight="Normal"
+                         CommandParameter="{Binding ElementName=Recently}" Command="{Binding LogOutCommand}"
+                         VerticalAlignment="Top" HorizontalAlignment="Left" Width="45" Height="30" Margin="23 21 0 0">
+                            <Icon:Material Kind="Logout" RotationAngle="180"/>
+                            <Button.ToolTip>
+                                <ToolTip ContentStringFormat="{DynamicResource rc_lv_logout}"/>
+                            </Button.ToolTip>
+                        </Button>
+                        <StackPanel>
+                            <Border Width="100" Height="100" Background="{DynamicResource background_border_color}" CornerRadius="100" Margin="0 15 0 5" HorizontalAlignment="Center"
+                            BorderThickness="3" BorderBrush="{Binding CurrentUser.PersonaStateBrush}">
+
+                                <WrapPanel Name ="container" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Image x:Name="steamImage" HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Source="{Binding CurrentUser.AvatarUrl}" Stretch="Fill"/>
+                                    <WrapPanel.OpacityMask>
+                                        <VisualBrush >
+                                            <VisualBrush.Visual>
+                                                <Border Height="100" Width="100" Background="White" CornerRadius="100" />
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </WrapPanel.OpacityMask>
+                                </WrapPanel>
+                            </Border>
+
+                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                <TextBlock Text="{DynamicResource rc_lv_loggedIn}" FontSize="16" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
+                                <TextBlock Text="{Binding Username}" FontSize="16" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                            </StackPanel>
+
+                            <Rectangle Margin="0 10 0 0" Width="530" Height="1" Fill="{DynamicResource adv_rectangle}" Opacity="1"/>
+
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding CurrentUser.Wallet,UpdateSourceTrigger=PropertyChanged}" FontSize="15" FontWeight="Medium" HorizontalAlignment="Right" Margin="0 20 25 0"
+                           Foreground="{DynamicResource menu_button_background}"/>
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 0 12">
+                            <TextBlock Text="{DynamicResource rc_lv_nickname}" FontSize="16" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
+                            <TextBox x:Name="nickname" FontSize="15" Text="{Binding CurrentUser.Nickname,Mode=OneWay}"
+                             Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center"
+                             FontWeight="Normal" Foreground="{DynamicResource default_foreground}"
+                             MaxLength="30">
+                                <TextBox.Style>
+                                    <Style TargetType="{x:Type TextBox}">
+                                        <Setter Property="IsReadOnly" Value="True"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=editNick,Path=IsChecked}" Value="True">
+                                                <Setter Property="IsReadOnly" Value="False"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+
+                            <ToggleButton x:Name="editNick"  HorizontalAlignment="Right"
+                                  CommandParameter="{Binding ElementName=nickname}"
+                                  Width="18" Height="18" Margin="3 1 0 0">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Setter Property="Width" Value="18"/>
+                                        <Setter Property="Height" Value="18"/>
+                                        <Setter Property="Margin" Value="5 0 0 0"/>
+                                        <Setter Property="Cursor" Value="Hand"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Border Background="{DynamicResource adv_copy_button}" BorderThickness="0" CornerRadius="4">
+                                                        <Icon:PackIconMaterial x:Name="ico" Kind="Pencil" Foreground="white" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                       Width="11" Height="11"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsChecked" Value="True">
+                                                            <Setter TargetName="ico" Property="Kind" Value="Check"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsChecked" Value="False">
+                                                            <Setter Property="Command" Value="{Binding ChangeNicknameCommand}"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ToggleButton.Style>
+                                <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}" Width="1" Height="10"/>
+                                <ToggleButton.ToolTip>
+                                    <ToolTip ContentStringFormat="{DynamicResource rc_lv_editNick}"/>
+                                </ToggleButton.ToolTip>
+                            </ToggleButton>
+                        </StackPanel>
+
+                        <!-- Left info panel -->
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70 190 0 0">
+
+                            <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
+                                <TextBlock Text="SteamID64: " FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" VerticalAlignment="Center" />
+                                <TextBox x:Name="steamIDbox" Style="{StaticResource settings_data_box}" Text="{Binding CurrentUser.SteamID64}" VerticalContentAlignment="Center" />
+                                <Button Style="{StaticResource ModernCopyButton}" Margin="5 -1 0 0" Click="IdCopyButton_Click"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0 0 0 0">
+                                <TextBlock Text="{DynamicResource rc_lv_hostedOn}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
+                                <TextBlock Text="{Binding CurrentUser.IPCountryCode}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource default_foreground}" />
+                                <Image Margin="7 3 0 0" Height="10" Width="17" Source="{Binding CurrentUser.IPCountryImage}"/>
+                            </StackPanel>
+
+                            <TextBlock Margin="0 3 0 0" FontSize="14" FontWeight="Medium">
+                                <Run Text="{DynamicResource rc_lv_authedDevices}" Foreground="{DynamicResource rc_lv_main_text}"/>
+                                <Run Text="{Binding CurrentUser.AuthedComputers,Mode=OneWay}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                            </TextBlock>
+
+                            <StackPanel Orientation="Horizontal" Margin="0 3 0 0">
+                                <TextBlock Text="{DynamicResource rc_lv_emailAddress}" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
+                                <TextBox Style="{StaticResource settings_data_box}" Text="{Binding CurrentUser.EmailAddress}"/>
+                            </StackPanel>
+
+                            <TextBlock Margin="0 2 0 0" FontSize="14" FontWeight="Medium">
+                                <Run Text="{DynamicResource rc_lv_emailVerif}" Foreground="{DynamicResource rc_lv_main_text}"/>
+                                <Run Text="{Binding CurrentUser.IsEmailVerified,Mode=OneWay}" FontWeight="Normal" Foreground="{DynamicResource default_foreground}"/>
+                            </TextBlock>
+                            
+                        </StackPanel>
+
+                        <!-- Combo boxes -->
+                        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 190 70 0">
+                            <TextBlock Text="{DynamicResource rc_lv_accountState}" FontSize="14" FontWeight="Medium" Margin="0 0 0 5" Foreground="{DynamicResource default_foreground}" />
+                            <ComboBox x:Name="state_box" Width="140" Height="25" SelectedIndex="{Binding CurrentUser.PersonaState,Mode=TwoWay}" ItemsSource="{DynamicResource rc_lv_accountStates}" />
+
+
+                            <TextBlock Text="{DynamicResource rc_lv_uiMode}" FontSize="14" FontWeight="Medium"
+                               Margin="0 20 0 5" Foreground="{DynamicResource default_foreground}" />
+                            <ComboBox x:Name="ui_box" Width="140" Height="25" SelectionChanged="ui_box_SelectionChanged" ItemsSource="{DynamicResource rc_lv_uiModes}"/>
+
+
+                        </StackPanel>
+                    </Grid>
+                </TabItem.Content>
             </TabItem>
 
             <TabItem Style="{StaticResource RemoteControlTabItem}">
                 <TabItem.Header>
                     <Icon:PackIconMaterial Kind="GoogleController" Width="25" Height="25"/>
                 </TabItem.Header>
+                <TabItem.Content>
+                    <Grid>
+                        <Border Background="{DynamicResource adv_borders_background}" Opacity="0.6"  Margin="5,8,117,162" 
+                                Height="25" CornerRadius="15 15 2 2 " VerticalAlignment="Top"/>
+
+                        <TextBlock Foreground="{DynamicResource default_secundary_foreground}" Text="{Binding Games.Count,StringFormat=#{0}}"
+                                   Margin="20,16,17,162" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Medium" FontSize="10" />
+
+                        <DataGrid x:Name="games" Margin="0 8 117 9" Background="Transparent" ItemsSource="{Binding Games}" VirtualizingPanel.VirtualizationMode="Standard"
+                                  VirtualizingPanel.CacheLength="10">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="120">
+                                    <DataGridTemplateColumn.CellStyle>
+                                        <Style TargetType="DataGridCell" >
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="DataGridCell">
+                                                        <Image Width="90" Height="37" Cursor="Hand" Margin="20 0 0 0">
+                                                            <Image.Source>
+                                                                <BitmapImage UriSource="{Binding ImageURL}" DecodePixelWidth="90" DecodePixelHeight="37" CacheOption="OnLoad" />
+                                                            </Image.Source>
+                                                            <Image.InputBindings>
+                                                                <MouseBinding MouseAction="LeftClick"
+                                                                              Command="{Binding DataContext.OpenStoreAppLinkCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding AppID}"/>
+                                                            </Image.InputBindings>
+                                                        </Image>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </DataGridTemplateColumn.CellStyle>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTextColumn Header="{DynamicResource adat_gameTabName}"  Binding="{Binding Name}" IsReadOnly="True" Width="140">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="DataGridCell">
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="{DynamicResource adat_gameTabTime}" Binding="{Binding PlayTime_Forever,StringFormat={}{0} h}" IsReadOnly="True" Width="*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+
+                                <DataGridTemplateColumn Width="60">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+
+                                                <Button Style="{StaticResource gridNoteButton}" Width="25" Height="25" Margin="5 0 0 0" Padding="0"
+                                                        Command="{Binding DataContext.OpenGameAchievementsCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding AppID}">
+                                                    <Icon:PackIconMaterial Kind="StarCog" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                </Button>
+
+                                                <ToggleButton Style="{StaticResource ModernCheckbox}" Width="25" Height="25" IsChecked="{Binding IsSelected,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                              PreviewMouseLeftButtonDown="SelectedGamesCountValidator" Background="{DynamicResource background_border_color}"/>
+
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Rectangle Fill="{DynamicResource menu_button_background}" Width="8"
+                   Height="310" RadiusY="3" RadiusX="3" Margin="356.75 25 0 0" Opacity="0.2" IsHitTestVisible="False" />
+
+                        <StackPanel  Margin="0 13 15 0" VerticalAlignment="Top" HorizontalAlignment="Right">
+
+                            <TextBlock  FontSize="11" Foreground="{DynamicResource default_foreground}"
+                       HorizontalAlignment="Center" Margin="0 0 0 5" Width="90" TextAlignment="Center">
+                    <Run Text="{DynamicResource rc_gv_selected}" />
+                <Run Text="{Binding SelectedGamesCount,Mode=OneWay}" Foreground="{DynamicResource second_main_brush}"/>
+                            </TextBlock>
+
+                            <Button Command="{Binding UpdateGamesListCommand}" 
+                Style="{StaticResource ModernColoredButton}"   Content="{DynamicResource rc_gv_Update}"/>
+
+
+                        </StackPanel>
+
+                        <StackPanel Margin="0 0 15 20" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+
+
+
+                            <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+                                <TextBlock FontSize="11" Foreground="{DynamicResource default_foreground}"
+                       Text="Auto idling" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 3 0" />
+                                <ToggleButton Width="23" Height="23" IsChecked="{Binding CurrentUser.AutoIdlingGames,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                              Style="{StaticResource ModernCheckbox}" Background="{DynamicResource rc_button_back}" Margin="0">
+                                    <ToggleButton.ToolTip>
+                                        <ToolTip ContentStringFormat="{DynamicResource rc_gv_saveGameListDesc}"/>
+                                    </ToggleButton.ToolTip>
+                                </ToggleButton>
+                            </StackPanel>
+
+
+                            <TextBlock FontSize="11" Foreground="{DynamicResource default_foreground}"
+                       Text="{DynamicResource rc_gv_customGameTitle}" HorizontalAlignment="Center" Margin="0 0 0 3" />
+                            <Grid Margin="0 0 0 0">
+                                <Border Margin="0 0 0 0" Background="{DynamicResource rc_button_back}"
+                        Height="24" CornerRadius="5" Opacity="0.6"/>
+                                <TextBox Style="{StaticResource settings_data_box}" FontSize="12" Padding="2" 
+                         IsReadOnly="False" Width="80" MaxLength="32" VerticalContentAlignment="Center"
+                                         Text="{Binding CurrentUser.CustomGameTitle,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                         Foreground="{DynamicResource default_secundary_foreground}"/>
+                            </Grid>
+                            
+                            <ToggleButton Style="{StaticResource idle_button}" IsChecked="{Binding IsGamesIdling}" Margin="0 10 0 0"/>
+                        </StackPanel>
+
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 130 0"
+                   TextAlignment="Center" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource default_foreground}"
+                   Opacity="0.7" Visibility="{Binding Games.Count,Converter={StaticResource BoolToVisInverted}}"
+                   Text="{DynamicResource rc_gv_noGames}"/>
+
+                    </Grid>
+                </TabItem.Content>
             </TabItem>
 
             <TabItem Style="{StaticResource RemoteControlTabItem}">
@@ -117,8 +395,8 @@
         </TabControl>
         <!--#endregion-->
 
-        <!-- Login border -->
-        <Grid Grid.Row="1" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVisInverted}}">
+        <!--#region Login border -->
+        <Grid d:Visibility="Collapsed" Grid.Row="1" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVisInverted}}">
             <Border Background="{DynamicResource first_main_brush}" Width="280" CornerRadius="20" VerticalAlignment="Top">
                 <StackPanel HorizontalAlignment="Center" Margin="0 20 0 10">
 
@@ -218,7 +496,9 @@
                        Text="{DynamicResource rc_lv_recently}" FontSize="15"/>
 
             <StackPanel Orientation="Horizontal" Margin="40 0 0 15" VerticalAlignment="Bottom" HorizontalAlignment="Left">
-                <Button x:Name="RecentlyDelete" Style="{StaticResource ModernColoredButton}" FontWeight="Normal"
+                <Button  Style="{StaticResource ModernColoredButton}" FontWeight="Normal"
+                         Command="{Binding RemoveRecentUserCommand}"
+                         CommandParameter="{Binding ElementName=Recently,Path=SelectedItem}"
                         Width="30" Height="30">
                     <Icon:Material Kind="TrashCan"/>
                     <Button.ToolTip>
@@ -226,7 +506,7 @@
                     </Button.ToolTip>
                 </Button>
                 <Button Style="{StaticResource ModernColoredButton}" FontWeight="Normal"
-                        Command="{Binding RecentlyLogOnCommand}"  Margin="10 0 0 0" CommandParameter="{Binding ElementName=Recently}" Width="30" Height="30">
+                        Command="{Binding LogOnCommand}"  Margin="10 0 0 0" CommandParameter="{Binding ElementName=Recently,Path=SelectedItem}" Width="30" Height="30">
                     <Icon:Material Kind="Login"/>
                     <Button.ToolTip>
                         <ToolTip ContentStringFormat="{DynamicResource rc_lv_recentlyLogin}"/>
@@ -244,6 +524,7 @@
                 </StackPanel.Style>
             </StackPanel>
         </Grid>
+        <!--#endregion-->
 
     </Grid>
 </UserControl>

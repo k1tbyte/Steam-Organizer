@@ -102,13 +102,17 @@ namespace Steam_Account_Manager
 
         public static new void Shutdown()
         {
-            IsShuttingDown = true;
-
-            if(SettingsView.IsLoaded)
+            if (SettingsView.IsLoaded)
                 Config.SaveProperties();
 
             if (SteamRemoteClient.IsRunning)
+            {
                 SteamRemoteClient.Logout();
+                Thread.Sleep(150);
+            }    
+                
+
+            IsShuttingDown = true;
 
             MainWindowViewModel.RegistrySteamUserWatcher?.Dispose();
             Tray?.Dispose();

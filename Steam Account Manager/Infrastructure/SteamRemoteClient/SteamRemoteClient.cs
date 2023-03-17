@@ -24,6 +24,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
     internal static class SteamRemoteClient
     {
         public static event Action UserStatusChanged;
+        public static event Action Connected;
+        public static event Action Disconnected;
 
         public static ulong InterlocutorID { get; set; }
         internal static EOSType OSType { get; private set; } = EOSType.Unknown;
@@ -122,20 +124,18 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs"))
                 Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs");
 
-            DeserializeUser();
-
             if (LastLogOnResult == EResult.AccountLogonDenied)
                 SteamGuardCode = authCode;
             else if (LastLogOnResult == EResult.AccountLoginDeniedNeedTwoFactor || !String.IsNullOrEmpty(authCode))
                 TwoFactorCode = authCode;
 
             LastLogOnResult = EResult.NotLoggedOn;
+            DeserializeUser();
 
             steamClient.Connect();
 
             while (IsRunning)
             {
-                if (App.IsShuttingDown) Logout();
                 callbackManager.RunWaitCallbacks(TimeSpan.FromMilliseconds(CallbackSleep));
             }
 
@@ -148,17 +148,15 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             if (CurrentUser == null) 
                 return;
 
-            Utils.Common.BinarySerialize(CurrentUser, $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat");
+            Common.BinarySerialize(CurrentUser, $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat");
         }
 
         private static void DeserializeUser()
         {
             string path = $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat";
-
             if (File.Exists(path) && CurrentUser == null)
             {
-                CurrentUser = Utils.Common.BinaryDeserialize<User>(path);
-
+                CurrentUser = Common.BinaryDeserialize<User>(path);
             }
             else if (CurrentUser == null)
             {
@@ -235,7 +233,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 return;
             }
 
-            CurrentUser.SteamID64      = steamClient.SteamID.ConvertToUInt64();
+            CurrentUser.SteamID64 = steamClient.SteamID.ConvertToUInt64();
             CurrentUser.Username       = Username;
             CurrentUser.IPCountryCode  = callback.PublicIP.ToString();
             CurrentUser.IPCountryImage = $"https://flagcdn.com/w20/{callback.IPCountryCode.ToLower()}.png";
@@ -249,7 +247,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             WebApiUserNonce = callback.WebAPIUserNonce;
 
-           /*LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive = true;*/
+            Connected?.Invoke();
+
+          //  
 
 /*            if(CurrentUser.RememberGamesIds != null && CurrentUser.RememberGamesIds.Count > 0)
             {
@@ -298,10 +298,11 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnDisconnected(SteamClient.DisconnectedCallback callback)
         {
-            IsRunning = /*LoginViewModel.SuccessLogOn = MainRemoteControlViewModel.IsPanelActive =*/ false;
+            IsRunning = false;
             SerializeUser();
             CurrentUser = null;
             WebApiUserNonce = LoginKey = null;
+            Disconnected?.Invoke();
         }
 
         //FIXED
@@ -733,9 +734,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
 
         #region Games methods
-        internal static async Task GetOwnedGames()
+        internal static async Task<ObservableCollection<PlayerGame>> GetOwnedGames()
         {
-         /*   var request = new CPlayer_GetOwnedGames_Request
+            var request = new CPlayer_GetOwnedGames_Request
             {
                 steamid = CurrentUser.SteamID64,
                 include_appinfo = true,
@@ -743,38 +744,21 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 include_played_free_games = true
             };
 
-
+            var content = new ObservableCollection<PlayerGame>();
             var response = await UnifiedPlayerService.SendMessage(x => x.GetOwnedGames(request)).ToTask().ConfigureAwait(false);
-
             var result = response.GetDeserializedResponse<CPlayer_GetOwnedGames_Response>();
 
-            Application.Current.Dispatcher.Invoke(() =>
+            foreach (var game in result.games)
             {
-                if (CurrentUser.Games.Count != 0)
+                content.Add(new PlayerGame
                 {
-                    CurrentUser.Games.Clear();
-                }
-
-                foreach (var game in result.games)
-                {
-                    CurrentUser.Games.Add(new PlayerGame
-                    {
-                        AppID = game.appid,
-                        PlayTime_Forever = game.playtime_forever,
-                        Name = game.name,
-                        ImageURL = $"https://cdn.akamai.steamstatic.com/steam/apps/{game.appid}/header.jpg"
-                    });
-                }
-            });*/
-
-        }
-
-        internal static async Task IdleGame(int? AppId, string GameName = null)
-        {
-            if (IsPlaying)
-                await gamesHandler.PlayGames(null).ConfigureAwait(false);
-            await gamesHandler.PlayGames(new HashSet<int>(1) { AppId ?? 0 }, GameName).ConfigureAwait(false);
-            IsPlaying = true;
+                    AppID = game.appid,
+                    PlayTime_Forever = game.playtime_forever / 60,
+                    Name = game.name,
+                    ImageURL = $"https://cdn.akamai.steamstatic.com/steam/apps/{game.appid}/header.jpg"
+                });
+            }
+            return content;
         }
 
         internal static async Task IdleGames(IReadOnlyCollection<int> AppIds, string GameName = null)

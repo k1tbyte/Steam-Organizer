@@ -101,12 +101,13 @@
         <Setter Property="BorderBrush" Value="#4A148C" />
         <Setter Property="Foreground" Value="#ffffff" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Padding" Value="5"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Template" >
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" Padding="5" BorderThickness="1" CornerRadius="5">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" Padding="{TemplateBinding Padding}" BorderThickness="1" CornerRadius="5">
                         <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Border>
                 </ControlTemplate>

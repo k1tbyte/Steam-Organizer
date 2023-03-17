@@ -1,5 +1,10 @@
 ﻿using Steam_Account_Manager.MVVM.ViewModels;
+using System.ComponentModel;
+using System.Web.UI.WebControls;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
 namespace Steam_Account_Manager.MVVM.View.Controls
 {
@@ -9,6 +14,45 @@ namespace Steam_Account_Manager.MVVM.View.Controls
         {
             InitializeComponent();
             this.DataContext = new RemoteControlViewModel();
+        }
+
+        private void IdCopyButton_Click(object sender, RoutedEventArgs e) => Utils.Win32.Clipboard.SetText(steamIDbox.Text);
+
+
+        private void ui_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch (ui_box.SelectedIndex)
+            {
+                case 0:
+                    Infrastructure.SteamRemoteClient.SteamRemoteClient.UIMode(0);
+                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(0);
+                    break;
+                case 1:
+                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(1024); //BP
+                    break;
+                case 2:
+                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(2048); //VR
+                    break;
+                case 3:
+                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(512); // phone
+                    break;
+            }
+        }
+
+        private void SelectedGamesCountValidator(object sender, MouseButtonEventArgs e)
+        {
+            var button = sender as ToggleButton;
+            var selectedCount = (this.DataContext as RemoteControlViewModel).SelectedGamesCount;
+
+            if (button.IsChecked == true)
+                (this.DataContext as RemoteControlViewModel).SelectedGamesCount--;
+            else if (button.IsChecked == false && selectedCount < 32)
+                (this.DataContext as RemoteControlViewModel).SelectedGamesCount++;
+            else
+            {
+                e.Handled = true;
+                return;
+            }
         }
     }
 }

@@ -260,8 +260,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
             ConnectToSteamRemotelyCommand = new RelayCommand(o =>
             {
-                /*MainWindowViewModel.RemoteControlViewCommand.Execute(null); //NEED FIX
-                (((MainWindowViewModel)App.MainWindow.DataContext).RemoteControlV.DataContext as RemoteControlViewModel).LoginViewCommand.Execute(o as Account);*/
+                MainWindowViewModel.RemoteControlViewCommand.Execute(null); 
+                (((MainWindowViewModel)App.MainWindow.DataContext).RemoteControlV.DataContext as RemoteControlViewModel).LogOnCommand.Execute(o as Account);
             });
 
             CheckAccountCommand = new RelayCommand(o => Presentation.OpenDialogWindow(new CheckAccountWindow()));
