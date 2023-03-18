@@ -5,6 +5,7 @@ using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.Core;
+using Steam_Account_Manager.MVVM.View.Windows;
 using SteamKit2;
 using System;
 using System.Collections.ObjectModel;
@@ -24,6 +25,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         public RelayCommand RemoveRecentUserCommand { get; set; }
         public RelayCommand OpenStoreAppLinkCommand { get; set; }
         public RelayCommand UpdateGamesListCommand { get; set; }
+        public RelayCommand OpenGameAchievementsCommand { get; set; }
         #endregion
 
 
@@ -167,7 +169,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         {
             if (Games != null && Games.Count > 0)
             {
-                Utils.Common.BinarySerialize(Games.ToArray(), $"{App.WorkingDirectory}\\Cache\\Games\\{_steamId}.dat");
+                Task.Factory.StartNew(() => Utils.Common.BinarySerialize(Games.ToArray(), $"{App.WorkingDirectory}\\Cache\\Games\\{_steamId}.dat"));
             }
             Games = null;
             _steamId = null;
@@ -261,6 +263,10 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
             OpenStoreAppLinkCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{o}")).Dispose());
             UpdateGamesListCommand = new RelayCommand(o => Games = SteamRemoteClient.GetOwnedGames().Result);
+            OpenGameAchievementsCommand = new RelayCommand(o =>
+            {
+                new AchievementsWindow((int)o).ShowDialog();
+            });
         }
 
     }

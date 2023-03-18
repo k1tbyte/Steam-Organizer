@@ -13,7 +13,6 @@
         public uint StatValue { get; set; }
         public string IconHash { get; set; }
         public string IconHashGray { get; set; }
-        public string CurrentIconView { get; set; }
         public string Description { get; set; }
     }
 

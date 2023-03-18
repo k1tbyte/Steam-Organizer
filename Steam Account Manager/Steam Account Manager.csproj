@@ -156,6 +156,9 @@
     <Compile Include="Infrastructure\SteamHandler.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\WebHandler.cs" />
     <Compile Include="Keys.cs" />
+    <Compile Include="MVVM\View\Windows\AchievementsWindow.xaml.cs">
+      <DependentUpon>AchievementsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\Windows\CheckAccountWindow.xaml.cs">
       <DependentUpon>CheckAccountWindow.xaml</DependentUpon>
     </Compile>
@@ -244,6 +247,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MVVM\View\Windows\AchievementsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MVVM\View\Windows\CheckAccountWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

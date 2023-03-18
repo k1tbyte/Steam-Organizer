@@ -26,7 +26,7 @@
             </Grid.RowDefinitions>
 
 
-            <TextBlock Grid.ColumnSpan="2"
+            <TextBlock 
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left" Margin="20 20" 
                        FontFamily="Cascadia Mono"
@@ -37,7 +37,6 @@
 
             <Rectangle Height="1"
                        VerticalAlignment="Bottom"
-                       Grid.ColumnSpan="2"
                        Margin="5"
                        Fill="{DynamicResource add_window_rectangle}"
                        Width="240"/>
@@ -101,7 +100,7 @@
                     CommandParameter="{Binding ElementName=AddAccountClassWnd}"
                     Content="{DynamicResource adv_save}" Grid.Row="4"  IsDefault="True"/>
 
-            <Button Grid.Column="1"  Style="{StaticResource ModernSpinButton}"
+            <Button  Style="{StaticResource ModernSpinButton}"
                         Click="CloseEvent" IsCancel="True"
                         HorizontalAlignment="Right"
                         Width="15" Margin="0,0,20,0">
