@@ -241,7 +241,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         internal async Task<List<StatData>> GetAchievements(ulong steamId, ulong gameID)
         {
 
-            GetAchievementsCallback response = await GetAchievementsResponse(76561199051937995, gameID);
+            GetAchievementsCallback response = await GetAchievementsResponse(steamId, gameID);
             if (!response.Success)
                 return null;
 

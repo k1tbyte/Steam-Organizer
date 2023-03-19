@@ -26,8 +26,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         public static event Action UserStatusChanged;
         public static event Action Connected;
         public static event Action Disconnected;
+        public static event Action<SteamChatMessage> SteamChatCallback;
 
-        public static ulong InterlocutorID { get; set; }
         internal static EOSType OSType { get; private set; } = EOSType.Unknown;
 
 
@@ -446,127 +446,121 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         //FIXED
         private static async void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
         {
-            if (callback.EntryType != EChatEntryType.ChatMsg || callback.Message[0] != '/')
+            if (callback.EntryType != EChatEntryType.ChatMsg)
                 return;
 
             var FriendPersonaName = steamFriends.GetFriendPersonaName(callback.Sender);
             var command = callback.Message.Split(' ');
             var invalidCommand = "🚧 Invalid command!\n  Sample: ";
-/*
-            if (callback.Sender.AccountID == CurrentUser.Messenger.AdminID && CurrentUser.Messenger.EnableCommands)
+
+            if (callback.Sender == CurrentUser.AdminID && CurrentUser.EnableCommands && callback.Message[0] == '/')
             {
                 try
                 {
-                    switch (command[0])
+                    switch (command[0].ToLower())
                     {
                         case "/help":
                             string outHelp = "🌌 Aviable commands 🌌\n";
-                            for (int i = 0; i < MessagesViewModel.MsgCommands.Count; i++)
-                            {
-                                outHelp += $"\n 🔹  {MessagesViewModel.MsgCommands[i].Keyword} ➖ {MessagesViewModel.MsgCommands[i].CommandExecution}";
-                            }
                             steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, outHelp);
                             return;
-                        case "/shutdown":
-                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "🔌 App shutting down.");
-                            App.IsShuttingDown = true;
-                            App.Current.Dispatcher.InvokeShutdown();
-                            return;
-                        case "/pcsleep":
-                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "💤 Sleeping...");
-                            Win32.SetSuspendState(false, true, true);
-                            return;
-                        case "/pcshutdown":
-                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "🚩 Shutting down...");
-                            SerializeUser();
-                            Process.Start(new ProcessStartInfo("shutdown", "/s /t 0") { CreateNoWindow = true, UseShellExecute = false });
-                            return;
-                        case "/msg":
 
+                        case "/shutdown":
+                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "🔌 Bot is shutting down.");
+                            App.Current.Dispatcher.Invoke(() => App.Shutdown());
+                            return;
+
+                        case "/msg":
                             if (command.Length < 3)
                             {
                                 steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/msg (CustomID,SteamID64,ID32,URL) (message)");
                                 return;
-                            }    
-                                
+                            }
                             var id = await SteamIDConverter.ToSteamID64(command[1]);
-                            if(id == 0)
+                            if (id == 0)
                             {
                                 steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "🚧 Invalid ID!");
                                 return;
                             }
-                            steamFriends.SendChatMessage(id, EChatEntryType.ChatMsg, command[2]);
+                            steamFriends.SendChatMessage(id, EChatEntryType.ChatMsg, string.Join(" ",command.Skip(2)));
                             steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "💬 Message sent");
                             return;
+
                         case "/idle":
-                            if (command.Length != 2)
+                            if(IsPlaying)
                             {
-                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/idle (AppID1 or AppID1,AppID2,AppID3...)");
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"🚧 At the moment the games are already running, use \"/stopplay\"");
+                                return;
+                            }
+                            if (command.Length < 2)
+                            {
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/idle (AppID1 or AppID1,AppID2,AppID3...) ([optional] title)");
                                 return;
                             }
 
                             var appIds = Array.ConvertAll(command[1].Split(','), int.Parse);
-                            if (appIds.Length == 1)
+                            if(appIds.Length > 32)
                             {
-                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"⏳ Idling game: {appIds[0]}");
-                                await IdleGame(appIds[0]);
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"🚧 Maximum number of games: 32");
+                                return;
+                            }
+                            if (appIds.Length > 0)
+                            {
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"⏳ Idling: {command[1]}");
+                                await IdleGames(appIds,command.Length == 3 ? command[2] : null);
+                                App.Current.Dispatcher.Invoke(() => ((App.MainWindow.DataContext as MainWindowViewModel).RemoteControlV?.DataContext as RemoteControlViewModel)?.ResetPlayingState(true));
                             }
                             return;
-                        case "/stopgame":
+
+                        case "/stopplay":
                             if (IsPlaying)
                             {
                                 await StopIdle();
+                                App.Current.Dispatcher.Invoke(() => ((App.MainWindow.DataContext as MainWindowViewModel).RemoteControlV?.DataContext as RemoteControlViewModel)?.ResetPlayingState(false));
                                 steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "❕ Game activity stopped");
                             }
                             else
                                 steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "❕ No games running");
                             return;
-                        case "/customgame":
-                            if (command.Length != 2)
-                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/customgame (Name)");
-                            else
-                            {
-                                await IdleGame(null, command[1]);
-                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"⏳ Game title setted: {command[1]}");
-                            }
-                            return;
+
                         case "/state":
                             if (command.Length != 2)
                             {
                                 steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/state (mode)\n\n" +
                                                                            $"Modes\n 1 - Offline 🖥\n 2 - Online 📡\n 3 - Busy 🔍\n 4 - Away 👀\n 5 - Snooze 😴\n 6 - Looking to trade 🤖\n 7 - Looking to play 👾\n 8 - Invisible 👁‍");
+                                return;
+                            }
+
+                            if (int.TryParse(command[1], out int state) & --state >= 0 && state <= 7)
+                            {
+                                ChangePersonaState((EPersonaState)state);
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"📣 State changed to: {(EPersonaState)state}");
                             }
                             else
-                            {
-                                var state = (EPersonaState)int.Parse(command[1]);
-                                ChangePersonaState(state);
-                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"📣 State changed to: {state}");
-                            }
-                            return;
-                    }
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"🚧 Failed to set state");
 
-                    for (int i = 0; i < CurrentUser.Messenger.Commands.Count; i++)
-                    {
-                        if (command[0] == CurrentUser.Messenger.Commands[i].Keyword)
-                        {
-                            using (var process = new Process())
+                            return;
+                        case "/execute":
+                            string mode;
+                            if (command.Length < 3 || ((mode = command[1].ToLower()) != "powershell" && mode != "cmd"))
                             {
-                                process.StartInfo.UseShellExecute = false;
-                                process.StartInfo.CreateNoWindow = true;
-                                process.StartInfo.FileName = "cmd";
-                                process.StartInfo.Arguments = "/c " + CurrentUser.Messenger.Commands[i].CommandExecution;
-                                process.Start();
+                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"{invalidCommand}/execute [(powershell) or (cmd)] (command)");
+                                return;
                             }
-                            if (CurrentUser.Messenger.Commands[i].MessageAfterExecute != "-")
-                                steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, CurrentUser.Messenger.Commands[i].MessageAfterExecute);
-                            break;
-                        }
+
+                            Process.Start(new ProcessStartInfo {
+                                UseShellExecute = false, 
+                                CreateNoWindow = true,
+                                Arguments = $"{(mode == "cmd" ? "/c " : "")}{string.Join(" ", command.Skip(2))}" ,
+                                FileName = mode }).Dispose();
+
+                            steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"⚙️ Command executed!");
+                            return;
                     }
                 }
                 catch { steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, "📛 An error has occurred!"); }
             }
 
-            if (!CurrentUser.Messenger.SaveChatLog)
+            if (CurrentUser.SaveChatLog)
             {
                 var SteamID64 = callback.Sender.ConvertToUInt64();
                 var CleanName = System.Text.RegularExpressions.Regex.Replace(FriendPersonaName, "\\/:*?\"<>|", "");
@@ -583,18 +577,10 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 }
             }
 
-            if (callback.Sender == InterlocutorID)
+            if (callback.Sender == CurrentUser.InterlocutorID)
             {
-
-                Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
-                {
-                    Msg = callback.Message,
-                    Time = DateTime.Now.ToString("HH:mm"),
-                    Username = FriendPersonaName,
-                    TextBrush = (System.Windows.Media.Brush)App.Current.FindResource("default_foreground"),
-                    MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("second_main_brush")
-                })));
-            }*/
+                SteamChatCallback.Invoke(new SteamChatMessage { Message = callback.Message,Nickname = FriendPersonaName, Time= DateTime.Now.ToString("HH:mm"), IsSelf = false });
+            }
         }
 
 /*        private static void OnCsgoMessage(SteamGameCoordinator.MessageCallback callback)
@@ -662,16 +648,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         public static void SendInterlocutorMessage(string Msg)
         {
-            steamFriends.SendChatMessage(InterlocutorID, EChatEntryType.ChatMsg, Msg);
-
-/*            Application.Current.Dispatcher.Invoke(new Action(() => MessagesViewModel.Messages.Add(new Message
-            {
-                Msg = Msg,
-                Time = DateTime.Now.ToString("HH:mm"),
-                Username = LoginViewModel.Nickname,
-                TextBrush = Utils.Presentation.StringToBrush("White"),
-                MsgBrush = (System.Windows.Media.Brush)App.Current.FindResource("menu_button_background")
-            })));*/
+            steamFriends.SendChatMessage(CurrentUser.InterlocutorID, EChatEntryType.ChatMsg, Msg);
+            SteamChatCallback.Invoke(new SteamChatMessage { IsSelf = true, Message = Msg, Nickname = CurrentUser.Nickname, Time = DateTime.Now.ToString("HH:mm") });
         }
 
         #region Friends parse
@@ -713,14 +691,14 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     avatarTemp = "fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb";
                 }
 
-                CurrentUser.Friends.Add(new Friend
+    /*            CurrentUser.Friends.Add(new Friend
                 {
                     SteamID64 = temp.ConvertToUInt64(),
                     Name = steamFriends.GetFriendPersonaName(temp),
                     FriendSince = Utils.Common.UnixTimeToDateTime(ulong.TryParse(
                         sinces?.ElementAt(j).ToString(), out ulong result) ? result : 0)?.ToString("yyyy/MM/dd"), //REFACTOR STEAMID64
                     ImageURL = $"https://avatars.akamai.steamstatic.com/{avatarTemp}.jpg"
-                });
+                });*/
                 j++;
             }
         }
@@ -779,14 +757,14 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             IsPlaying = false;
         }
 
-        internal static async Task<ObservableCollection<StatData>> GetAppAchievements(ulong gameID)
+        internal static async Task<List<StatData>> GetAppAchievements(ulong gameID)
         {
-            return new ObservableCollection<StatData>(await gamesHandler.GetAchievements(CurrentUser.SteamID64, gameID).ConfigureAwait(false));
+            return await gamesHandler.GetAchievements(CurrentUser.SteamID64, gameID).ConfigureAwait(false);
         }
 
-        internal static async Task<bool> SetAppAchievements(ulong appID, IEnumerable<StatData> achievementsToSet)
+        internal static async Task<bool> SetAppAchievements(int appID, IEnumerable<StatData> achievementsToSet)
         {
-            return await gamesHandler.SetAchievements(CurrentUser.SteamID64, appID, achievementsToSet);
+            return await gamesHandler.SetAchievements(CurrentUser.SteamID64, (ulong)appID, achievementsToSet);
         }
         #endregion
 

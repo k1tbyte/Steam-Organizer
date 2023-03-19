@@ -110,8 +110,7 @@ namespace Steam_Account_Manager
                 SteamRemoteClient.Logout();
                 Thread.Sleep(150);
             }    
-                
-
+               
             IsShuttingDown = true;
 
             MainWindowViewModel.RegistrySteamUserWatcher?.Dispose();

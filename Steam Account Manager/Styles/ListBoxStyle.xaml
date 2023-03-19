@@ -19,7 +19,7 @@
                         Margin="2"
                         Opacity="0.25">
                         </Border>
-                        <ContentPresenter />
+                        <ContentPresenter Margin="5" />
                     </Grid>
 
                     <ControlTemplate.Triggers>
@@ -34,19 +34,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <Style x:Key="games_listboxItem"  TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource base_listboxItem}">
-        <Setter Property="ContextMenu">
-            <Setter.Value>
-                <ContextMenu>
-                    <MenuItem Header="Steam store" 
-                              Command="{Binding PlacementTarget.Tag.OpenSteamStoreCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                              CommandParameter="{Binding}"/>
-                    <MenuItem Header="Achievements" Command="{Binding PlacementTarget.Tag.OpenGameAchievementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                              CommandParameter="{Binding}"/>
-                </ContextMenu>
-            </Setter.Value>
-        </Setter> 
-    </Style>
-
 </ResourceDictionary>

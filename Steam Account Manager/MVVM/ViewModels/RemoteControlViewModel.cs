@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Steam_Account_Manager.Infrastructure;
+using Steam_Account_Manager.Infrastructure.Converters;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
@@ -19,13 +20,16 @@ namespace Steam_Account_Manager.MVVM.ViewModels
     {
 
         #region Commands
-        public AsyncRelayCommand LogOnCommand { get; set; }
-        public RelayCommand LogOutCommand { get; set; }
-        public RelayCommand ChangeNicknameCommand { get; set; }
-        public RelayCommand RemoveRecentUserCommand { get; set; }
-        public RelayCommand OpenStoreAppLinkCommand { get; set; }
-        public RelayCommand UpdateGamesListCommand { get; set; }
-        public RelayCommand OpenGameAchievementsCommand { get; set; }
+        public AsyncRelayCommand LogOnCommand { get; private set; }
+        public RelayCommand LogOutCommand { get; private set; }
+        public RelayCommand ChangeNicknameCommand { get; private set; }
+        public RelayCommand RemoveRecentUserCommand { get; private set; }
+        public RelayCommand OpenStoreAppLinkCommand { get; private set; }
+        public RelayCommand UpdateGamesListCommand { get; private set; }
+        public AsyncRelayCommand OpenGameAchievementsCommand { get; private set; }
+        public RelayCommand SelectChatCommand { get; private set; }
+        public RelayCommand LeaveChatCommand { get; private set; }
+        public RelayCommand AddChatAdminCommand { get; private set; }
         #endregion
 
 
@@ -80,6 +84,14 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             get => _games;
             set => SetProperty(ref _games, value);
         }
+
+        private ObservableCollection<SteamChatMessage> _messages = new ObservableCollection<SteamChatMessage>();
+        public ObservableCollection<SteamChatMessage> Messages
+        {
+            get => _messages;
+            set => SetProperty(ref _messages, value);
+        }
+
         private int _selectedGamesCount;
         public int SelectedGamesCount 
         { 
@@ -171,6 +183,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             {
                 Task.Factory.StartNew(() => Utils.Common.BinarySerialize(Games.ToArray(), $"{App.WorkingDirectory}\\Cache\\Games\\{_steamId}.dat"));
             }
+
+            App.Current?.Dispatcher?.Invoke(() => Messages.Clear());
             Games = null;
             _steamId = null;
             _isGamesIdling = IsLoggedOn = false;
@@ -192,6 +206,22 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
             IsLoggedOn = true;
         } 
+        private bool CheckSteamID(string steamid, out ulong id64)
+        {
+            id64 = SteamIDConverter.ToSteamID64(steamid).Result;
+            if (id64 == 0)
+            {
+                Utils.Presentation.OpenPopupMessageBox("The user with this ID was not found. Check for correctness.,", true);
+                return false;
+            }
+            else if (id64 == CurrentUser.SteamID64) return false;
+            return true;
+        }
+        public void ResetPlayingState(bool value)
+        {
+            _isGamesIdling = value;
+            OnPropertyChanged(nameof(IsGamesIdling));
+        }
         #endregion
 
         public RemoteControlViewModel()
@@ -199,9 +229,12 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             RecentlyLoggedIn = Config.Deserialize(App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey)
                 as ObservableCollection<RecentlyLoggedAccount> ?? new ObservableCollection<RecentlyLoggedAccount>();
 
+            IsLoggedOn = true;
+
             SteamRemoteClient.UserStatusChanged += () => OnPropertyChanged(nameof(CurrentUser));
             SteamRemoteClient.Connected += HandleConnection;
             SteamRemoteClient.Disconnected += HandleDisconnection;
+            SteamRemoteClient.SteamChatCallback += (msg) => App.Current.Dispatcher.Invoke(() => Messages.Add(msg));
 
             LogOnCommand = new AsyncRelayCommand(async (o) =>
             {
@@ -261,11 +294,40 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             });
             #endregion
 
-            OpenStoreAppLinkCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{o}")).Dispose());
-            UpdateGamesListCommand = new RelayCommand(o => Games = SteamRemoteClient.GetOwnedGames().Result);
-            OpenGameAchievementsCommand = new RelayCommand(o =>
+            OpenStoreAppLinkCommand     = new RelayCommand(o => Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{o}")).Dispose());
+            UpdateGamesListCommand      = new RelayCommand(o => Games = SteamRemoteClient.GetOwnedGames().Result);
+            OpenGameAchievementsCommand = new AsyncRelayCommand(async(o) =>
             {
-                new AchievementsWindow((int)o).ShowDialog();
+                var collection = await SteamRemoteClient.GetAppAchievements(Convert.ToUInt64(o));
+                if(collection == null || collection.Count == 0)
+                {
+                    Utils.Presentation.OpenPopupMessageBox($"It seems there are no achievements available in the selected game...");
+                    return;
+                }
+
+                Utils.Presentation.OpenDialogWindow(new AchievementsWindow((int)o,ref collection));                
+            });
+
+            SelectChatCommand = new RelayCommand(o =>
+            {
+                if (!CheckSteamID(o as string,out ulong id64) || id64 == CurrentUser.InterlocutorID) return;
+                CurrentUser.InterlocutorID = id64;
+                OnPropertyChanged(nameof(CurrentUser));
+            });
+
+            LeaveChatCommand = new RelayCommand(o =>
+            {
+                Messages.Clear();
+                CurrentUser.InterlocutorID = 0;
+                OnPropertyChanged(nameof(CurrentUser));
+            });
+
+            AddChatAdminCommand = new RelayCommand(o =>
+            {
+                if (string.IsNullOrEmpty(o as string)) CurrentUser.AdminID = null;
+                else if (!CheckSteamID(o as string, out ulong id64) || id64 == CurrentUser.AdminID) return;
+                else CurrentUser.AdminID = id64;
+                OnPropertyChanged(nameof(CurrentUser));
             });
         }
 

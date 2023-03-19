@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json;
-using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
-using SteamKit2;
+﻿using SteamKit2;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
@@ -19,11 +16,6 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
     [Serializable]
     public class User
     {
-        public User()
-        {
-            Messenger = new Messenger() { Commands = new List<Command>() };
-            Friends   = new ObservableCollection<Friend>();
-        }
         public string Username { get; set; }
         public ulong SteamID64 { get; set; }
         public string WebApiKey { get; set; }
@@ -31,10 +23,9 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         public string FriendsInvite { get; set; }
         public bool AutoIdlingGames { get; set; }
         public string CustomGameTitle { get; set; }
-        public Messenger Messenger { get; set; }
-
-        [field: NonSerialized]
-        public ObservableCollection<Friend> Friends { get; set; }
+        public ulong? AdminID { get; set; }
+        public bool SaveChatLog { get; set; }
+        public bool EnableCommands { get; set; }
 
         [field: NonSerialized]
         public string AvatarHash { get; set; }
@@ -60,6 +51,9 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
 
         [field: NonSerialized]
         public string Wallet { get; set; }
+
+        [field: NonSerialized]
+        public ulong InterlocutorID { get; set; }
 
         [field: NonSerialized]
         public int _personaState;
@@ -98,23 +92,6 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
     }
 
     [Serializable]
-    public class Messenger
-    {
-        public uint? AdminID { get; set; }
-        public bool SaveChatLog { get; set; }
-        public bool EnableCommands { get; set; }
-        public List<Command> Commands { get; set; }
-    }
-
-    [Serializable]
-    public class Command
-    {
-        public string Keyword { get; set; }
-        public string CommandExecution { get; set; }
-        public string MessageAfterExecute { get; set; }
-    }
-
-    [Serializable]
     public class RecentlyLoggedAccount
     {
         public string Username { get; set; }
@@ -122,4 +99,11 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         public string ImageUrl { get; set; }
     }
 
+    public class SteamChatMessage
+    {
+        public string Message { get; set; }
+        public string Time { get; set; }
+        public string Nickname { get; set; }
+        public bool IsSelf { get; set; }
+    }
 }

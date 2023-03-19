@@ -21,7 +21,7 @@ namespace Steam_Account_Manager.Infrastructure.Converters
         {
             if (value is bool @bool)
                 return @bool ? True : False;
-            return System.Convert.ToInt32(value) > 0 ? True : False;
+            return System.Convert.ToInt64(value) > 0 ? True : False;
 
         }
 

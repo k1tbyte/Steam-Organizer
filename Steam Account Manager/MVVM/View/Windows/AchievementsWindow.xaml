@@ -4,12 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:vm="clr-namespace:Steam_Account_Manager.MVVM.ViewModels"
         mc:Ignorable="d"
         Background="Transparent"
         AllowsTransparency="True"
         WindowStyle="None"
-        Title="Achievements" Height="540" Width="380">
+        ShowInTaskbar="False"
+        Title="Achievements" Height="535" Width="380">
     <Border  Margin="3" CornerRadius="3" Background="{DynamicResource background_border_color}"  Padding="20" MouseLeftButtonDown="BorderDragMove"
             BorderThickness="0 3 0 3" BorderBrush="{DynamicResource second_main_brush}" Effect="{StaticResource LightShadow}" d:Effect="{x:Null}">
         <Grid>
@@ -38,14 +38,15 @@
 
             <Rectangle Height="1"
                        VerticalAlignment="Bottom"
-                       Margin="5"
+                       Margin="0 5 0 5"
                        Fill="{DynamicResource add_window_rectangle}"
-                       Width="325"/>
+                       Width="330"/>
 
             <TextBox x:Name="search" Grid.Row="1" Style="{StaticResource ModernSearchBox}" TextChanged="TextBox_TextChanged"
                      Width="285" Height="40" Tag="Search for achievements . . ."/>
 
-            <Button Height="35" Width="40" Grid.Row="1" HorizontalAlignment="Right" Style="{StaticResource ModernColoredButton}">
+            <Button Height="35" Width="40" Grid.Row="1" HorizontalAlignment="Right" Style="{StaticResource ModernColoredButton}"
+                    Click="SetAchievements">
                 <Icon:PackIconMaterial Kind="CheckBold"/>
             </Button>
 
@@ -67,7 +68,7 @@
                      ItemContainerStyle="{StaticResource base_listboxItem}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Width="305" Height="62" Margin="6" Background="{DynamicResource first_main_brush}" CornerRadius="10">
+                        <Border Width="305" Height="62" Background="{DynamicResource first_main_brush}" CornerRadius="10">
                             <Grid VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="50"/>
@@ -108,6 +109,8 @@
                 </ListBox.ItemTemplate>
                 <ListBox.ContextMenu>
                     <ContextMenu>
+                        <MenuItem x:Name="locked" Header="Select all locked" Click="SelectInvariant_Click"/>
+                        <MenuItem x:Name="unlocked" Header="Select all unlocked" Click="SelectInvariant_Click"/>
                         <MenuItem Header="Select all" Click="SelectAll_Click"/>
                         <MenuItem Header="Unselect all" Click="UnselectAll_Click"/>
                     </ContextMenu>

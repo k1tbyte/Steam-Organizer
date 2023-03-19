@@ -200,6 +200,7 @@ namespace Steam_Account_Manager.Infrastructure.Converters
 
         public static async Task<ulong> ToSteamID64(string steamID)
         {
+            if (string.IsNullOrWhiteSpace(steamID)) return 0;
             switch (GetSteamIDType(steamID))
             {
                 case ESteamIDType.SteamID64:

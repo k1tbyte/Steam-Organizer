@@ -118,6 +118,9 @@ namespace Steam_Account_Manager.Utils
         #region Windows
         public static bool? OpenDialogWindow(Window window)
         {
+            if (window == null) 
+                return null;
+
             if (Application.Current.MainWindow != null)
                 window.Owner = Application.Current.MainWindow;
 

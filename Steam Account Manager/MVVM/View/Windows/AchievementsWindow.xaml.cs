@@ -1,9 +1,8 @@
 ﻿using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,31 +11,48 @@ namespace Steam_Account_Manager.MVVM.View.Windows
 {
     public partial class AchievementsWindow : Window
     {
-        int appId;
-        private ObservableCollection<StatData> achievementsList;
-        private ICollectionView AchievementShowFilter;
-        public AchievementsWindow(int appID)
+        private readonly int appId;
+        private readonly List<StatData> achievementsList;
+        private readonly ICollectionView AchievementShowFilter;
+        internal AchievementsWindow(int appID,ref List<StatData> dataContent)
         {
             InitializeComponent();
-            this.appId = appID;
-            this.Header.Text = $"Achievements AppID: {appID}";
-            RetrieveAppAchievements();
+            this.appId               = appID;
+            this.Header.Text         = $"Achievements: {appID}";
+            achievements.ItemsSource = achievementsList = dataContent;
+            AchievementShowFilter    = CollectionViewSource.GetDefaultView(achievementsList);
+            UnlockedCount.Text       = $"{achievementsList.Count(o => o.IsSet)}/{achievementsList.Count}";
         }
 
-        private async void RetrieveAppAchievements()
+        private async void SetAchievements(object sender, RoutedEventArgs e)
         {
-            achievementsList = await SteamRemoteClient.GetAppAchievements((ulong)appId);
-            achievements.ItemsSource = achievementsList;
-            AchievementShowFilter = CollectionViewSource.GetDefaultView(achievementsList);
-            UnlockedCount.Text = $"{achievementsList.Count(o => o.IsSet)}/{achievementsList.Count}";
+            if (achievements.SelectedItems.Count <= 0) return;
+
+            var SelectedItems = achievements.SelectedItems.Cast<StatData>();
+            if (await SteamRemoteClient.SetAppAchievements(appId, SelectedItems))
+            {
+                foreach (var item in SelectedItems)
+                {
+                    if (item.IsSet)
+                    {
+                        item.IsSet = false;
+                    }
+                    else
+                    {
+                        item.IsSet = true;
+                    }
+                }
+                AchievementShowFilter.Refresh();
+
+                Utils.Presentation.OpenPopupMessageBox($"{achievements.SelectedItems.Count} achievements have been changed.");
+                UnlockedCount.Text = $"{achievementsList.Count(o => o.IsSet)}/{achievementsList.Count}";
+                achievements.UnselectAll();
+            }
         }
 
         private void Close_Click(object sender, RoutedEventArgs e) => this.Close();
-
         private void BorderDragMove(object sender, System.Windows.Input.MouseButtonEventArgs e) => this.DragMove();
-        
-
-        private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (achievementsList == null) return;
 
@@ -53,10 +69,22 @@ namespace Steam_Account_Manager.MVVM.View.Windows
                     break;
             }
         }
-
         private void SelectAll_Click(object sender, RoutedEventArgs e)    => achievements.SelectAll();
         private void UnselectAll_Click(object sender, RoutedEventArgs e)  => achievements.UnselectAll();
+        private void SelectInvariant_Click(object sender, RoutedEventArgs e)
+        {
+            if (achievements.SelectedItems.Count != 0)
+                achievements.UnselectAll();
+
+            for ( int i = 0; i < achievementsList.Count; i++)
+            {
+                if ((sender == locked && !achievementsList[i].IsSet) || (sender == unlocked && achievementsList[i].IsSet))
+                {
+                    achievements.SelectedItems.Add(achievementsList[i]);
+                }
+            }
+
+        }
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e) => ComboBox_SelectionChanged(null, null);
-        
     }
 }
