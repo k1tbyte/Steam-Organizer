@@ -143,14 +143,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         }
 
         #region Cacheble
-        private static void SerializeUser()
-        {
-            if (CurrentUser == null) 
-                return;
-
-            Common.BinarySerialize(CurrentUser, $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat");
-        }
-
         private static void DeserializeUser()
         {
             string path = $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat";
@@ -161,7 +153,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             else if (CurrentUser == null)
             {
                 CurrentUser = new User();
-                SerializeUser();
+                Common.BinarySerialize(CurrentUser, $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat");
             }
 
             return;
@@ -298,9 +290,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnDisconnected(SteamClient.DisconnectedCallback callback)
         {
-            IsRunning = false;
-            SerializeUser();
-            CurrentUser = null;
+            IsPlaying = IsRunning = false;
             WebApiUserNonce = LoginKey = null;
             Disconnected?.Invoke();
         }
@@ -398,6 +388,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         //FIXED
         private static void OnPersonaNameChange(SteamFriends.PersonaChangeCallback callback)
         {
+            if (CurrentUser.Nickname == callback.Name) return;
             CurrentUser.Nickname = callback.Name;
             RaiseUserStatusChanged();
         }
@@ -537,8 +528,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                             }
                             else
                                 steamFriends.SendChatMessage(callback.Sender, EChatEntryType.ChatMsg, $"🚧 Failed to set state");
-
                             return;
+
                         case "/execute":
                             string mode;
                             if (command.Length < 3 || ((mode = command[1].ToLower()) != "powershell" && mode != "cmd"))
@@ -657,41 +648,36 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         public static async Task ParseUserFriends()
         {
 
-            string webApiKey = Keys.STEAM_API_KEY;
             IEnumerable<JToken> sinces = null;
-            if (!String.IsNullOrEmpty(Config.Properties.WebApiKey))
-                webApiKey = Config.Properties.WebApiKey;
 
             try
             {
-                var webClient = new WebClient { Encoding = Encoding.UTF8 };
-                string json = await webClient.DownloadStringTaskAsync(
-                    "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key=" +
-                    webApiKey + "&steamid=" + CurrentUser.SteamID64);
-                JToken node = JObject.Parse(json).SelectToken("*.friends");
-                sinces = node.SelectTokens(@"$.[?(@.friend_since)].friend_since");
+                using (var webClient = new WebClient { Encoding = Encoding.UTF8 })
+                {
+                    string json = await webClient.DownloadStringTaskAsync(
+    $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={Config.Properties.WebApiKey ?? Keys.STEAM_API_KEY}&steamid={CurrentUser.SteamID64}");
+                    JToken node = JObject.Parse(json).SelectToken("*.friends");
+                    sinces = node.SelectTokens(@"$.[?(@.friend_since)].friend_since");
+                }
+
             }
             catch { }
 
-
-            SteamID temp;
-            string avatarTemp;
-
             for (int i = 0, j = 0; i < steamFriends.GetFriendCount(); i++)
             {
-                temp = steamFriends.GetFriendByIndex(i);
+                SteamID temp = steamFriends.GetFriendByIndex(i);
 
                 if (steamFriends.GetFriendRelationship(temp) != EFriendRelationship.Friend)
                     continue;
 
-                avatarTemp = BitConverter.ToString(steamFriends.GetFriendAvatar(temp)).Replace("-", "");
+                string avatarTemp = BitConverter.ToString(steamFriends.GetFriendAvatar(temp)).Replace("-", "");
 
                 if (avatarTemp == "0000000000000000000000000000000000000000")
                 {
                     avatarTemp = "fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb";
                 }
 
-    /*            CurrentUser.Friends.Add(new Friend
+               /* CurrentUser.Friends.Add(new Friend
                 {
                     SteamID64 = temp.ConvertToUInt64(),
                     Name = steamFriends.GetFriendPersonaName(temp),

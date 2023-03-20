@@ -7,6 +7,7 @@ using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.Windows;
+using Steam_Account_Manager.Utils;
 using SteamKit2;
 using System;
 using System.Collections.ObjectModel;
@@ -33,8 +34,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         #endregion
 
 
-        private string _username, _password, _authCode, _errorMsg,_steamId;
-        private bool _needAuthCode;
+        private string _username, _password, _authCode, _errorMsg;
+        private bool _needAuthCode, _needToUpdGames;
         public User CurrentUser => SteamRemoteClient.CurrentUser;
 
         private bool _isLoggedOn;
@@ -82,7 +83,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         public ObservableCollection<PlayerGame> Games
         {
             get => _games;
-            set => SetProperty(ref _games, value);
+            set
+            {
+                SetProperty(ref _games, value);
+                _needToUpdGames = true;
+            }
         }
 
         private ObservableCollection<SteamChatMessage> _messages = new ObservableCollection<SteamChatMessage>();
@@ -177,23 +182,42 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                     break;
             }
         }
+
         private void HandleDisconnection()
         {
-            if (Games != null && Games.Count > 0)
+            
+            if (CurrentUser != null && CurrentUser.SteamID64 != 0)
             {
-                Task.Factory.StartNew(() => Utils.Common.BinarySerialize(Games.ToArray(), $"{App.WorkingDirectory}\\Cache\\Games\\{_steamId}.dat"));
+                Common.BinarySerialize(CurrentUser, $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat");
+
+                if(Games != null && Games.Count > 0)
+                     Common.BinarySerialize(Games.ToArray(), $"{App.WorkingDirectory}\\Cache\\Games\\{CurrentUser.SteamID64}.dat");
+
+                //Updating local accdb cache
+                var localUser = Config.Accounts.Find(o => o.SteamId64 == CurrentUser.SteamID64);
+                if (localUser != null)
+                {
+                    localUser.Nickname   = CurrentUser.Nickname;
+                    localUser.AvatarHash = CurrentUser.AvatarHash;
+                    Config.SaveAccounts();
+                }
             }
 
+            if (App.IsShuttingDown)
+            {
+                App.Shutdown();
+                return;
+            }
+
+            Games                              = null;
+            SteamRemoteClient.CurrentUser      = null;
             App.Current?.Dispatcher?.Invoke(() => Messages.Clear());
-            Games = null;
-            _steamId = null;
-            _isGamesIdling = IsLoggedOn = false;
-            SelectedGamesCount = 0;
+            _isGamesIdling                     = IsLoggedOn = false;
+            SelectedGamesCount                 = 0;
         }
         private void HandleConnection()
         {
-            _steamId = SteamRemoteClient.CurrentUser.SteamID64.ToString();
-            string gamesCache = $"{App.WorkingDirectory}\\Cache\\Games\\{_steamId}.dat";
+            string gamesCache = $"{App.WorkingDirectory}\\Cache\\Games\\{CurrentUser.SteamID64}.dat";
 
             if (System.IO.File.Exists(gamesCache))
             {

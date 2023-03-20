@@ -102,16 +102,15 @@ namespace Steam_Account_Manager
 
         public static new void Shutdown()
         {
-            if (SettingsView.IsLoaded)
-                Config.SaveProperties();
-
+            IsShuttingDown = true;
             if (SteamRemoteClient.IsRunning)
             {
                 SteamRemoteClient.Logout();
-                Thread.Sleep(150);
-            }    
-               
-            IsShuttingDown = true;
+                return;
+            }
+
+            if (SettingsView.IsLoaded)
+                Config.SaveProperties();
 
             MainWindowViewModel.RegistrySteamUserWatcher?.Dispose();
             Tray?.Dispose();
@@ -119,7 +118,7 @@ namespace Steam_Account_Manager
             GrabbingCursor.Dispose();
             Mutex.Close();
 
-            Application.Current.Shutdown();
+            App.Current.Dispatcher.InvokeShutdown();
         }
 
         public static string FindString(string resourceKey) => (string)App.Current.FindResource(resourceKey);
