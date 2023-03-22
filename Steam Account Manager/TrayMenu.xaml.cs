@@ -71,13 +71,11 @@ namespace Steam_Account_Manager
             if (this.Height != newHeight)
                 this.Height = newHeight;
 
-            var points = Utils.Win32.GetMousePosition();
+            var points = Win32.GetMousePosition();
 
             this.Left = points.X - this.Width + 3;
-            this.Top = points.Y - this.Height + 3;
+            this.Top  = points.Y - this.Height + 3;
             base.Show();
-
-
         }
 
         private void Menu_MouseLeave(object sender, MouseEventArgs e)    =>  this.Hide();
@@ -96,15 +94,15 @@ namespace Steam_Account_Manager
             this.Hide();
         }
 
-        private void box_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private async void box_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (recentlyAccs.SelectedItem == null) return;
             var acc = Config.Accounts.Find(o => o.SteamId64.HasValue && o.SteamId64.Value == (recentlyAccs.SelectedItem as RecentlyLoggedUser).SteamID64);
 
-            if (acc != default(Account))
-                 _ = SteamHandler.ConnectToSteam(acc);
             recentlyAccs.UnselectAll();
             this.Hide();
+            if (acc != default(Account))
+                  await SteamHandler.ConnectToSteam(acc);
         }
     }
 

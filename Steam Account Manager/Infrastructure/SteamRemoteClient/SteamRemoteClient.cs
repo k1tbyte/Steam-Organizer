@@ -6,6 +6,8 @@ using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.Utils;
 using SteamKit2;
+using SteamKit2.GC;
+using SteamKit2.GC.CSGO.Internal;
 using SteamKit2.Internal;
 using System;
 using System.Collections.Generic;
@@ -155,26 +157,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 CurrentUser = new User();
                 Common.BinarySerialize(CurrentUser, $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat");
             }
-
-            return;
-
-          /*  if (CurrentUser?.Messenger?.AdminID != null)
-                MessagesViewModel.IsAdminIdValid = true;
-
-
-            Application.Current.Dispatcher.Invoke(new Action(() =>
-            {
-                MessagesViewModel.EnableCommands = CurrentUser.Messenger.EnableCommands;
-                MessagesViewModel.AdminId = CurrentUser.Messenger.AdminID.ToString();
-                MessagesViewModel.SaveChatLog = CurrentUser.Messenger.SaveChatLog;
-                MessagesViewModel.MsgCommands = new ObservableCollection<Command>(CurrentUser.Messenger.Commands);
-                if (MainRemoteControlViewModel.MessagesV == null)
-                    MainRemoteControlViewModel.MessagesV = new MVVM.View.RemoteControl.Controls.MessagesView();
-
-                MessagesViewModel.InitDefaultCommands();
-
-            }));*/
-
         }
         #endregion
 
@@ -225,12 +207,13 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 return;
             }
 
-            CurrentUser.SteamID64 = steamClient.SteamID.ConvertToUInt64();
+            CurrentUser.SteamID64      = steamClient.SteamID.ConvertToUInt64();
             CurrentUser.Username       = Username;
             CurrentUser.IPCountryCode  = callback.PublicIP.ToString();
             CurrentUser.IPCountryImage = $"https://flagcdn.com/w20/{callback.IPCountryCode.ToLower()}.png";
-            ChangePersonaState(EPersonaState.Invisible);
+            CurrentUser.Level          = GetLevel().Result;
 
+            ChangePersonaState(EPersonaState.Invisible);
 
             if (!String.IsNullOrEmpty(LoginKey))
             {
@@ -240,34 +223,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             WebApiUserNonce = callback.WebAPIUserNonce;
 
             Connected?.Invoke();
-
-          //  
-
-/*            if(CurrentUser.RememberGamesIds != null && CurrentUser.RememberGamesIds.Count > 0)
-            {
-                if(CurrentUser.RememberGamesIds.Count > 32)
-                {
-                    CurrentUser.RememberGamesIds = null;
-                    return;
-                }
-
-                App.Current.Dispatcher.Invoke(new Action(async() =>
-                {
-                    if (MainRemoteControlViewModel.GamesV == null)
-                        MainRemoteControlViewModel.GamesV = new MVVM.View.RemoteControl.Controls.GamesView();
-
-                    MainRemoteControlViewModel.GamesV.rememberButton.IsChecked = true;
-
-                    foreach (var item in CurrentUser.Games)
-                    {
-                        if (CurrentUser.RememberGamesIds.Contains(item.AppID))
-                            MainRemoteControlViewModel.GamesV.games.SelectedItems.Add(item);
-                    }
-
-                    MainRemoteControlViewModel.GamesV.Idle.IsChecked = true;
-                    await IdleGames(CurrentUser.RememberGamesIds);
-                }));
-            }*/
 
 /*            steamClient.Send((IClientMsg)new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayed)
             {
@@ -287,7 +242,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnLoggedOff(SteamUser.LoggedOffCallback callback) => LastLogOnResult = callback.Result;
         public static void Logout()                                           => steamUser.LogOff();
-
+        
         private static void OnDisconnected(SteamClient.DisconnectedCallback callback)
         {
             IsPlaying = IsRunning = false;
@@ -606,7 +561,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
 /*        private static void OnCSGODetails(IPacketGCMsg packetMsg)
         {
-            ClientGCMsgProtobuf<CMsgGCCStrike15_v2_PlayersProfile> clientGcMsgProtobuf = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_PlayersProfile>(packetMsg);
+            ClientGCMsgProtobuf<CMsgGCCStr> clientGcMsgProtobuf = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_PlayersProfile>(packetMsg);
             var CSGOLevel = clientGcMsgProtobuf.Body.account_profiles[0].player_level;
             var CSGORank = clientGcMsgProtobuf.Body.account_profiles[0].ranking.rank_id.ToString();
             var CSGOWins = clientGcMsgProtobuf.Body.account_profiles[0].ranking.wins;
@@ -618,7 +573,20 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         public static void ChangeCurrentName(string Name)          => steamFriends.SetPersonaName(Name);
         public static void ChangePersonaState(EPersonaState state) =>  steamFriends.SetPersonaState(state);
-        
+        public static async Task<uint?> GetLevel()
+        {
+            var request = new CPlayer_GetGameBadgeLevels_Request();
+
+            var response = await UnifiedPlayerService.SendMessage(x => x.GetGameBadgeLevels(request)).ToTask().ConfigureAwait(false);
+            return response?.GetDeserializedResponse<CPlayer_GetGameBadgeLevels_Response>()?.player_level;
+        }
+        public static async Task<List<string>> GetNicknamesList()
+        {
+            var request = new CPlayer_GetAvatarFrame_Request();
+            var response = await UnifiedPlayerService.SendMessage(x => x.GetAvatarFrame(request)).ToTask().ConfigureAwait(false);
+            var result = response.GetDeserializedResponse<CPlayer_GetAvatarFrame_Response>();
+            return null;
+        }
 
         public static void ChangePersonaFlags(uint uimode)
         {

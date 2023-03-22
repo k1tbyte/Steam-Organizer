@@ -199,6 +199,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 {
                     localUser.Nickname   = CurrentUser.Nickname;
                     localUser.AvatarHash = CurrentUser.AvatarHash;
+                    localUser.SteamLevel = (int?)CurrentUser.Level;
                     Config.SaveAccounts();
                 }
             }

@@ -1,30 +1,33 @@
-﻿using Newtonsoft.Json;
+﻿using FlaUI.Core.AutomationElements;
+using FlaUI.Core.Definitions;
+using FlaUI.UIA3;
+using Newtonsoft.Json;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Parsers.Vdf;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.Utils;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Automation;
 using static Steam_Account_Manager.Utils.Win32;
 
 namespace Steam_Account_Manager.Infrastructure
 {
     internal static class SteamHandler
     {
-        public static async Task ConnectToSteam(Account acc,string addArgs = "")
+        private static bool _isLocked = false;
+        public static async Task ConnectToSteam(Account acc, string addArgs = "")
         {
-            if (acc == null)
+            if (acc == null || _isLocked)
                 return;
 
-            bool isShuttingDown      = false;
             bool connectFromRemember = false;
+            _isLocked = true;
 
-            App.MainWindow.IsHitTestVisible = false;
             await Task.Factory.StartNew(() =>
             {
                 if (!System.IO.File.Exists(App.SteamExePath))
@@ -40,19 +43,20 @@ namespace Steam_Account_Manager.Infrastructure
                     return;
                 }
 
-                if(!acc.ContainParseInfo && Config.Properties.AutoGetSteamId)
+                if (!acc.ContainParseInfo && Config.Properties.AutoGetSteamId)
                 {
                     MainWindowViewModel.CollectInfoTimeStamp = DateTime.Now;
-                    MainWindowViewModel.CollectInfoAcc       = acc;
+                    MainWindowViewModel.CollectInfoAcc = acc;
                 }
 
                 var vdfConfigPath = $"{App.SteamExePath.Substring(0, App.SteamExePath.Length - 9)}config\\loginusers.vdf";
+
                 if (steamHwnd == IntPtr.Zero && acc.SteamId64 != null && System.IO.File.Exists(vdfConfigPath))
                 {
                     var loginConfig = new VdfDeserializer(System.IO.File.ReadAllText(vdfConfigPath));
                     foreach (VdfTable table in (loginConfig.Deserialize() as VdfTable)?.Cast<VdfTable>())
                     {
-                        if(table.Name == acc.SteamId64.Value.ToString() && (table["RememberPassword"] as VdfInteger).Content == 1
+                        if (table.Name == acc.SteamId64.Value.ToString() && (table["RememberPassword"] as VdfInteger).Content == 1
                         && (table["MostRecent"] as VdfInteger).Content == 1 && (table["AllowAutoLogin"] as VdfInteger).Content == 1)
                         {
                             connectFromRemember = true;
@@ -61,31 +65,27 @@ namespace Steam_Account_Manager.Infrastructure
                     }
                 }
 
+                Presentation.OpenPopupMessageBox($"{App.FindString("atv_inf_loggedInSteam1")} \"{acc.Nickname}\". {App.FindString("atv_inf_loggedInSteam2")}");
+
                 if (connectFromRemember)
                 {
                     Common.ConnectSteam(App.SteamExePath, null);
                 }
                 //Copy steam auth code in clipboard
-                else if (!String.IsNullOrEmpty(acc.AuthenticatorPath) && System.IO.File.Exists(acc.AuthenticatorPath))
+                else if (Config.Properties.DontRememberPassword || (!String.IsNullOrEmpty(acc.AuthenticatorPath) && System.IO.File.Exists(acc.AuthenticatorPath)))
                 {
-                    Application.Current.Dispatcher.Invoke(new Action(() =>
+#if !DEBUG
+                    Win32.BlockInput(true);
+#endif
+                    if(!VirtualSteamLogger(acc) & Win32.BlockInput(false))
                     {
-                        Win32.Clipboard.SetText(
-                            JsonConvert.DeserializeObject<SteamGuardAccount>(
-                                System.IO.File.ReadAllText(acc.AuthenticatorPath)).GenerateSteamGuardCode());
-                    }));
-                    VirtualSteamLogger(acc, Config.Properties.DontRememberPassword, true);
-                }
-                else if (Config.Properties.DontRememberPassword)
-                {
-                    VirtualSteamLogger(acc, true, false);
+                        return;
+                    }
                 }
                 else
                 {
                     Common.KillSteamAndConnect(App.SteamExePath, $"-login {acc.Login} {acc.Password} -tcp " + addArgs);
-                    isShuttingDown = Config.Properties.ActionAfterLogin == LoggedAction.Close;
                 }
-
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -110,126 +110,154 @@ namespace Steam_Account_Manager.Infrastructure
                         Config.SaveProperties();
                     }
 
-                    if (Config.Properties.ActionAfterLogin != LoggedAction.None)
+                    switch (Config.Properties.ActionAfterLogin)
                     {
-                        switch (Config.Properties.ActionAfterLogin)
-                        {
-                            case LoggedAction.Close:
-                                if (isShuttingDown)
-                                    App.Shutdown();
-                                break;
-                            case LoggedAction.Minimize:
-                                if (App.MainWindow.IsVisible)
-                                    App.MainWindow.Hide();
-                                break;
-                        }
+                        case LoggedAction.Close:
+                            App.Shutdown();
+                            break;
+                        case LoggedAction.Minimize:
+                            if (App.MainWindow.IsVisible)
+                                App.MainWindow.Hide();
+                            break;
                     }
+
                 });
-
-                Presentation.OpenPopupMessageBox($"{App.FindString("atv_inf_loggedInSteam1")} \"{acc.Nickname}\". {App.FindString("atv_inf_loggedInSteam2")}");
             });
-
-            App.MainWindow.IsHitTestVisible = true;
+            _isLocked = false;
         }
 
-        private static void VirtualSteamLogger(Account account, bool dontRememberPassword = false, bool paste2fa = false)
+        private static bool VirtualSteamLogger(Account account)
         {
-            Automation.RemoveAllEventHandlers();
-            Common.KillSteamProcess();
-            if (Common.GetSteamRegistryLanguage() != account.Login)
+            try
             {
-                Common.SetSteamRegistryRememberUser(String.Empty);
+                Common.KillSteamProcess();
+
+                IntPtr loginWindowHandle = IntPtr.Zero;
+                for (int i = 0; i < 15; i++) // 15000 ms (15 s) timeout
+                {
+                    var proc = Process.GetProcessesByName("Steam").FirstOrDefault();
+                    if (proc == null)
+                    {
+                        Common.ConnectSteam(App.SteamExePath, "");
+                    }
+                    else if (proc.MainWindowTitle?.Length > 5 && proc.MainWindowTitle?.EndsWith("Steam") == true)
+                    {
+                        loginWindowHandle = proc.MainWindowHandle;
+                        break;
+                    }
+                    if (loginWindowHandle != IntPtr.Zero) { break; }
+                    Thread.Sleep(1000);
+                }
+
+                if (loginWindowHandle == IntPtr.Zero)
+                    return false;
+
+                using (var automation = new UIA3Automation())
+                {
+                    var window = automation.FromHandle(loginWindowHandle);
+
+                    Win32.BringWindowToFront(loginWindowHandle);
+                    if (!RetrieveAutomationDocument(window, 15, out AutomationElement document))
+                        return false;
+
+                    if (!RetrieveAutomationChildrens(document, 15, out AutomationElement[] childrens))
+                        return false;
+
+                    var textBoxes = childrens.Where(o => o.ControlType == ControlType.Edit)?.Select(o => o.AsTextBox()).ToArray();
+
+                    //Selection account view
+                    if (textBoxes.Length != 2)
+                    {
+                        childrens.Last().AsButton().Invoke();
+
+                        Win32.BringWindowToFront(loginWindowHandle);
+                        if (!RetrieveAutomationDocument(window, 15, out document) || !RetrieveAutomationChildrens(document, 15, out childrens))
+                            return false;
+                        textBoxes = childrens.Where(o => o.ControlType == ControlType.Edit)?.Select(o => o.AsTextBox()).ToArray();
+                    }
+
+                    var rememberButton = document.FindFirstChild(o => o.ByControlType(ControlType.Group)).AsButton();
+                    var loginButton = document.FindFirstChild(o => o.ByControlType(ControlType.Button)).AsButton();
+                    var isRememberChecked = document.FindFirstChild(o => o.ByControlType(ControlType.Image)) != null;
+                    textBoxes[0].Text = account.Login;
+                    textBoxes[1].Text = account.Password;
+
+                    if ((Config.Properties.DontRememberPassword && !isRememberChecked) || (!Config.Properties.DontRememberPassword && isRememberChecked))
+                    {
+                        rememberButton.Focus();
+                        rememberButton.Invoke();
+                    }
+
+                    loginButton.Focus();
+                    loginButton.Invoke();
+
+                    if (account.AuthenticatorPath == null || !System.IO.File.Exists(account.AuthenticatorPath))
+                        return true;
+
+                    Win32.BringWindowToFront(loginWindowHandle);
+
+                    for (int i = 0; i < 15 && document.FindFirstChild().Name != "STEAM GUARD" || textBoxes?.Length == 2; i++)
+                    {
+                        document = window.FindFirstDescendant(o => o.ByControlType(ControlType.Document));
+                        textBoxes = document.FindAllChildren(o => o.ByControlType(ControlType.Edit))?.Select(o => o.AsTextBox()).ToArray();
+                        Thread.Sleep(500);
+                    }
+
+                    if (textBoxes?.Length != 5)
+                    {
+                        RetrieveAutomationChildrens(document, 15, out childrens);
+                        childrens[childrens.Length - 2].Focus();
+                        childrens[childrens.Length - 2].Click();
+                    }
+
+                    for (int i = 0; i < 10 && textBoxes.Length != 5; i++)
+                    {
+                        textBoxes = window.FindFirstDescendant(o => o.ByControlType(ControlType.Document)).FindAllChildren(o => o.ByControlType(ControlType.Edit))?.Select(o => o.AsTextBox()).ToArray();
+                        Thread.Sleep(500);
+                    }
+
+                    var authCode = JsonConvert.DeserializeObject<SteamGuardAccount>(System.IO.File.ReadAllText(account.AuthenticatorPath)).GenerateSteamGuardCode();
+                    for (int i = 0; i < 5; i++)
+                        textBoxes[i].Text = authCode[i].ToString();
+
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show(e.ToString());
+                return false;
             }
 
-            Thread.Sleep(1500);
-            Common.ConnectSteam(App.SteamExePath,"");
-            byte SteamAwaiter = 0;
 
-            Automation.AddAutomationEventHandler(
-                WindowPattern.WindowOpenedEvent,
-                AutomationElement.RootElement,
-                TreeScope.Children,
-                (sender, e) =>
+            bool RetrieveAutomationChildrens(AutomationElement element, int timeout, out AutomationElement[] childrens)
+            {
+                childrens = element.FindAllChildren();
+                for (int i = 0; i < timeout && (childrens?.Length <= 0 || childrens[0].ActualWidth == 0 || childrens[0].ActualHeight == 0); i++)
                 {
-                    var element = sender as AutomationElement;
+                    Thread.Sleep(500);
+                    childrens = element.FindAllChildren();
+                }
+                if (childrens?.Length <= 0 || childrens[0].ActualWidth == 0 || childrens[0].ActualHeight == 0)
+                    return false;
 
-                    if (element.Current.Name.Equals("Steam"))
-                    {
-                        if (++SteamAwaiter >= 2)
-                        {
-                            Automation.RemoveAllEventHandlers();
-                        }
-                    }
-                    if (element.Current.Name.Contains("Steam") && element.Current.Name.Length > 5)
-                    {
-                        Thread.Sleep(3000);
-                        Win32.BringWindowToFront((IntPtr)element.Current.NativeWindowHandle);
-                        Thread.Sleep(150);
+                return true;
+            }
+            bool RetrieveAutomationDocument(AutomationElement window, int timeout, out AutomationElement document)
+            {
+                document = window.FindFirstDescendant(o => o.ByControlType(ControlType.Document));
+                for (int i = 0; i < timeout && (document == null || document.FindFirstChild() == null); i++)
+                {
+                    Thread.Sleep(500);
+                    document = window.FindFirstDescendant(o => o.ByControlType(ControlType.Document));
+                }
 
-#if !DEBUG
-                        BlockInput(true);
-#endif
-                        if (String.IsNullOrEmpty(Common.GetSteamRegistryRememberUser()))
-                        {
-                            foreach (char c in account.Login)
-                            {
-                                SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                                PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
-                            }
-                            
-                            Thread.Sleep(100);
-                        }
+                if (document == null || document.FindFirstChild() == null)
+                    return false;
 
-                        System.Windows.Forms.SendKeys.SendWait("{TAB}");
-                        Thread.Sleep(100);
-
-                        foreach (char c in account.Password)
-                        {
-                            SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                            PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
-                        }
-
-                        
-                        Thread.Sleep(100);
-                        System.Windows.Forms.SendKeys.SendWait("{TAB}");
-
-                        if (dontRememberPassword)
-                            Win32.KeyboardEvent(0x20);
-
-                        Thread.Sleep(100);
-                        System.Windows.Forms.SendKeys.SendWait("{TAB}");
-                        System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-
-                        if (paste2fa)
-                        {
-                            string code = "";
-                            App.Current.Dispatcher.Invoke(() => code = System.Windows.Clipboard.GetText(TextDataFormat.Text));
-                            Thread.Sleep(2500);
-                            if (Config.Properties.Input2FaMethod == Input2faMethod.Manually)
-                            {
-                                SetForegroundWindow((IntPtr)element.Current.NativeWindowHandle);
-                                foreach (char c in code)
-                                       PostMessage((IntPtr)element.Current.NativeWindowHandle, (int)WM.CHAR, (IntPtr)c, IntPtr.Zero);
-                            }
-                            else
-                            {
-                                keybd_event(0x11, 0, 0x00, 0);
-                                keybd_event(0x56, 0, 0x00, 0);
-                                Thread.Sleep(50);
-                                keybd_event(0x11, 0, 0x02, 0);
-                                keybd_event(0x56, 0, 0x02, 0);
-                            }
-                        }
-                        Automation.RemoveAllEventHandlers();
-#if !DEBUG
-                            BlockInput(false);
-#endif
-
-                        if (Config.Properties.ActionAfterLogin == LoggedAction.Close)
-                            App.Current.Dispatcher.InvokeShutdown();
-                    }
-
-                });
+                Thread.Sleep(500);
+                return true;
+            }
         }
     }
 }

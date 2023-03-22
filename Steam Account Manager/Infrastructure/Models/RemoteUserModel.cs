@@ -70,6 +70,9 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         [field: NonSerialized]
         public System.Windows.Media.Brush PersonaStateBrush { get; set; }
 
+        [field: NonSerialized]
+        public uint? Level { get; set; }
+
     }
 
     [Serializable]
