@@ -26,7 +26,7 @@ namespace Steam_Account_Manager.MVVM.View.Windows
 
         private async void SetAchievements(object sender, RoutedEventArgs e)
         {
-            if (achievements.SelectedItems.Count <= 0) return;
+           /* if (achievements.SelectedItems.Count <= 0) return;
 
             var SelectedItems = achievements.SelectedItems.Cast<StatData>();
             if (await SteamRemoteClient.SetAppAchievements(appId, SelectedItems))
@@ -47,7 +47,7 @@ namespace Steam_Account_Manager.MVVM.View.Windows
                 Utils.Presentation.OpenPopupMessageBox($"{achievements.SelectedItems.Count} achievements have been changed.");
                 UnlockedCount.Text = $"{achievementsList.Count(o => o.IsSet)}/{achievementsList.Count}";
                 achievements.UnselectAll();
-            }
+            }*/
         }
 
         private void Close_Click(object sender, RoutedEventArgs e) => this.Close();

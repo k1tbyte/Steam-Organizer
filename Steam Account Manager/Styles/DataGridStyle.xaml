@@ -106,4 +106,33 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style x:Key="FriendImageDataGridCellStyle" TargetType="DataGridCell" >
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border Background="{DynamicResource second_main_brush}" CornerRadius="20" Padding="1" Margin="35 0 0 0" Cursor="Hand">
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick"
+                                                                              Command="{Binding DataContext.OpenUrlProfileCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                                                              CommandParameter="{Binding SteamID64}"/>
+                        </Border.InputBindings>
+
+                        <WrapPanel Name ="container" Width="35" Height="35">
+                            <Image Source="{Binding ImageURL,Mode=OneWay}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="UniformToFill"/>
+                            <WrapPanel.OpacityMask>
+                                <VisualBrush >
+                                    <VisualBrush.Visual>
+                                        <Border Height="35" Width="35" Background="White" CornerRadius="20" />
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </WrapPanel.OpacityMask>
+                        </WrapPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

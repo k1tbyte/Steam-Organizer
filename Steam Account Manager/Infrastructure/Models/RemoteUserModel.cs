@@ -62,8 +62,8 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
             get => _personaState;
             set
             {
-                if(_personaState == value ) return;   // Установка значения происходит при калбэке в SteamRemoteClient - иначе рекурсия
-                SteamRemoteClient.SteamRemoteClient.ChangePersonaState((EPersonaState)value);
+               /* if(_personaState == value ) return;   // Установка значения происходит при калбэке в SteamRemoteClient - иначе рекурсия
+                SteamRemoteClient.SteamRemoteClient.ChangePersonaState((EPersonaState)value);*/
             }
         }
 

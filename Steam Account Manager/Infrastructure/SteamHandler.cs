@@ -51,13 +51,12 @@ namespace Steam_Account_Manager.Infrastructure
 
                 var vdfConfigPath = $"{App.SteamExePath.Substring(0, App.SteamExePath.Length - 9)}config\\loginusers.vdf";
 
-                if (steamHwnd == IntPtr.Zero && acc.SteamId64 != null && System.IO.File.Exists(vdfConfigPath))
+                if (acc.SteamId64 != null && System.IO.File.Exists(vdfConfigPath))
                 {
                     var loginConfig = new VdfDeserializer(System.IO.File.ReadAllText(vdfConfigPath));
                     foreach (VdfTable table in (loginConfig.Deserialize() as VdfTable)?.Cast<VdfTable>())
                     {
-                        if (table.Name == acc.SteamId64.Value.ToString() && (table["RememberPassword"] as VdfInteger).Content == 1
-                        && (table["MostRecent"] as VdfInteger).Content == 1 && (table["AllowAutoLogin"] as VdfInteger).Content == 1)
+                        if (table.Name == acc.SteamId64.Value.ToString() && (table["RememberPassword"] as VdfInteger).Content == 1 && (table["AllowAutoLogin"] as VdfInteger).Content == 1)
                         {
                             connectFromRemember = true;
                             break;
@@ -69,14 +68,12 @@ namespace Steam_Account_Manager.Infrastructure
 
                 if (connectFromRemember)
                 {
-                    Common.ConnectSteam(App.SteamExePath, null);
+                    Common.SetSteamRegistryRememberUser(acc.Login.ToLower());
+                    Common.KillSteamAndConnect(App.SteamExePath, null);
                 }
                 //Copy steam auth code in clipboard
-                else if (Config.Properties.DontRememberPassword || (!String.IsNullOrEmpty(acc.AuthenticatorPath) && System.IO.File.Exists(acc.AuthenticatorPath)))
+                else if (!String.IsNullOrEmpty(acc.AuthenticatorPath) && System.IO.File.Exists(acc.AuthenticatorPath))
                 {
-#if !DEBUG
-                    Win32.BlockInput(true);
-#endif
                     if(!VirtualSteamLogger(acc) & Win32.BlockInput(false))
                     {
                         return;
@@ -130,7 +127,12 @@ namespace Steam_Account_Manager.Infrastructure
         {
             try
             {
-                Common.KillSteamProcess();
+                Common.SetSteamRegistryRememberUser("");
+                if (Process.GetProcessesByName("Steam")?.Length != 0)
+                {
+                    Common.ConnectSteam(App.SteamExePath, "-shutdown");
+                    Thread.Sleep(1000);
+                }
 
                 IntPtr loginWindowHandle = IntPtr.Zero;
                 for (int i = 0; i < 15; i++) // 15000 ms (15 s) timeout
@@ -138,14 +140,14 @@ namespace Steam_Account_Manager.Infrastructure
                     var proc = Process.GetProcessesByName("Steam").FirstOrDefault();
                     if (proc == null)
                     {
-                        Common.ConnectSteam(App.SteamExePath, "");
+                        Common.ConnectSteam(App.SteamExePath, "-login");
                     }
                     else if (proc.MainWindowTitle?.Length > 5 && proc.MainWindowTitle?.EndsWith("Steam") == true)
                     {
                         loginWindowHandle = proc.MainWindowHandle;
                         break;
                     }
-                    if (loginWindowHandle != IntPtr.Zero) { break; }
+                    if (loginWindowHandle != IntPtr.Zero)  break; 
                     Thread.Sleep(1000);
                 }
 
@@ -175,18 +177,20 @@ namespace Steam_Account_Manager.Infrastructure
                             return false;
                         textBoxes = childrens.Where(o => o.ControlType == ControlType.Edit)?.Select(o => o.AsTextBox()).ToArray();
                     }
+#if !DEBUG
+                    Win32.BlockInput(true);
+#endif
 
-                    var rememberButton = document.FindFirstChild(o => o.ByControlType(ControlType.Group)).AsButton();
-                    var loginButton = document.FindFirstChild(o => o.ByControlType(ControlType.Button)).AsButton();
-                    var isRememberChecked = document.FindFirstChild(o => o.ByControlType(ControlType.Image)) != null;
-                    textBoxes[0].Text = account.Login;
-                    textBoxes[1].Text = account.Password;
+                    /*                    var rememberButton    = document.FindFirstChild(o => o.ByControlType(ControlType.Group)).AsButton();*/
+                    var loginButton       = document.FindFirstChild(o => o.ByControlType(ControlType.Button)).AsButton();
+                    textBoxes[0].Text     = account.Login;
+                    textBoxes[1].Text     = account.Password;
 
-                    if ((Config.Properties.DontRememberPassword && !isRememberChecked) || (!Config.Properties.DontRememberPassword && isRememberChecked))
+/*                    if (Config.Properties.DontRememberPassword)
                     {
                         rememberButton.Focus();
                         rememberButton.Invoke();
-                    }
+                    }*/
 
                     loginButton.Focus();
                     loginButton.Invoke();

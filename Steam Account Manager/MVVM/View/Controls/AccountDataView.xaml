@@ -852,40 +852,7 @@
                         <DataGrid Margin="0 40 0 4" Background="Transparent" ItemsSource="{Binding FriendList}" VirtualizingPanel.VirtualizationMode="Standard">
 
                             <DataGrid.Columns>
-                                <DataGridTemplateColumn Width="85">
-                                    <DataGridTemplateColumn.CellStyle>
-                                        <Style TargetType="DataGridCell" >
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="DataGridCell">
-                                                        <Border Background="{DynamicResource second_main_brush}" CornerRadius="20" Padding="1" Margin="35 0 0 0" Cursor="Hand">
-                                                            <Border.InputBindings>
-                                                                <MouseBinding MouseAction="LeftClick"
-                                                                              Command="{Binding DataContext.OpenUrlProfileCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
-                                                                              CommandParameter="{Binding SteamID64}"/>
-                                                            </Border.InputBindings>
-
-                                                            <WrapPanel Name ="container" Width="35" Height="35">
-                                                                <Image Source="{Binding ImageURL,Mode=OneWay}"
-                               VerticalAlignment="Center" HorizontalAlignment="Center" Stretch="UniformToFill"/>
-                                                                <WrapPanel.OpacityMask>
-                                                                    <VisualBrush >
-                                                                        <VisualBrush.Visual>
-                                                                            <Border Height="{Binding ElementName=container, Path=ActualHeight}" 
-                            Width="{Binding ElementName=container, Path=ActualWidth}" Background="White" CornerRadius="20" />
-                                                                        </VisualBrush.Visual>
-                                                                    </VisualBrush>
-                                                                </WrapPanel.OpacityMask>
-                                                            </WrapPanel>
-                                                        </Border>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </DataGridTemplateColumn.CellStyle>
-                                </DataGridTemplateColumn>
-
+                                <DataGridTemplateColumn Width="85" CellStyle="{StaticResource FriendImageDataGridCellStyle}"/>
                                 <DataGridTextColumn Header="{DynamicResource adv_nickname}"  Binding="{Binding Name}" IsReadOnly="True" Width="180">
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="DataGridCell">

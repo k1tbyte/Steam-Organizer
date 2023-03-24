@@ -26,16 +26,20 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         public RelayCommand ChangeNicknameCommand { get; private set; }
         public RelayCommand RemoveRecentUserCommand { get; private set; }
         public RelayCommand OpenStoreAppLinkCommand { get; private set; }
+        public RelayCommand OpenUrlProfileCommand { get; private set; }
         public RelayCommand UpdateGamesListCommand { get; private set; }
         public AsyncRelayCommand OpenGameAchievementsCommand { get; private set; }
+        public AsyncRelayCommand UpdateFriendsListCommand { get; private set; }
         public RelayCommand SelectChatCommand { get; private set; }
         public RelayCommand LeaveChatCommand { get; private set; }
         public RelayCommand AddChatAdminCommand { get; private set; }
+        public RelayCommand OpenFriendChatCommand { get; private set; }
+        public RelayCommand RemoveFriendCommand { get; private set; }
         #endregion
 
-
+        #region Properties
         private string _username, _password, _authCode, _errorMsg;
-        private bool _needAuthCode, _needToUpdGames;
+        private bool _needAuthCode, _needGamesUpdate,_needFriendsUpdate;
         public User CurrentUser => SteamRemoteClient.CurrentUser;
 
         private bool _isLoggedOn;
@@ -86,7 +90,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             set
             {
                 SetProperty(ref _games, value);
-                _needToUpdGames = true;
+                _needGamesUpdate = true;
             }
         }
 
@@ -95,13 +99,29 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         {
             get => _messages;
             set => SetProperty(ref _messages, value);
+            
+        }
+
+        private ObservableCollection<Friend> _friends;
+        public ObservableCollection<Friend> Friends
+        {
+            get => _friends;
+            set
+            {
+                SetProperty(ref _friends, value);
+                _needFriendsUpdate = true;
+            }
         }
 
         private int _selectedGamesCount;
         public int SelectedGamesCount 
         { 
             get => _selectedGamesCount;
-            set => SetProperty(ref _selectedGamesCount, value);
+            set
+            {
+                SetProperty(ref _selectedGamesCount, value);
+                _needGamesUpdate = true;
+            }
         }
 
         private int _selectedTabIndex;
@@ -110,16 +130,15 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             get => _selectedTabIndex;
             set
             {
-                if(value == 1 && Games == null)
-                {
-                   Games = SteamRemoteClient.GetOwnedGames().Result;
-                }
+                if (value == 1 && Games == null)
+                    Games = SteamRemoteClient.GetOwnedGames().Result;
+                else if (value == 3 && Friends == null)
+                    Friends = SteamRemoteClient.ParseUserFriends().Result;
 
                 SetProperty(ref _selectedTabIndex, value);
             }
         }
 
-        #region Properties
         public string AuthCode
         {
             get => _authCode;
@@ -190,8 +209,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             {
                 Common.BinarySerialize(CurrentUser, $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat");
 
-                if(Games != null && Games.Count > 0)
+                if(Games != null && Games.Count > 0 && _needGamesUpdate)
                      Common.BinarySerialize(Games.ToArray(), $"{App.WorkingDirectory}\\Cache\\Games\\{CurrentUser.SteamID64}.dat");
+
+                if (Friends != null && Friends.Count > 0 && _needFriendsUpdate)
+                    Common.BinarySerialize(Friends.ToArray(), $"{App.WorkingDirectory}\\Cache\\Friends\\{CurrentUser.SteamID64}.dat");
 
                 //Updating local accdb cache
                 var localUser = Config.Accounts.Find(o => o.SteamId64 == CurrentUser.SteamID64);
@@ -219,14 +241,22 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         private void HandleConnection()
         {
             string gamesCache = $"{App.WorkingDirectory}\\Cache\\Games\\{CurrentUser.SteamID64}.dat";
+            string friendsCache = $"{App.WorkingDirectory}\\Cache\\Friends\\{CurrentUser.SteamID64}.dat";
 
             if (System.IO.File.Exists(gamesCache))
             {
-                Games = new ObservableCollection<PlayerGame>(Utils.Common.BinaryDeserialize<PlayerGame[]>(gamesCache));
+                Games              = new ObservableCollection<PlayerGame>(Common.BinaryDeserialize<PlayerGame[]>(gamesCache));
                 SelectedGamesCount = Games.Where(o => o.IsSelected).Count();
 
                 if(SelectedGamesCount > 0 && CurrentUser.AutoIdlingGames)
                     IsGamesIdling = true;
+                _needGamesUpdate  = false;
+            }
+
+            if(System.IO.File.Exists(friendsCache))
+            {
+                Friends            = new ObservableCollection<Friend>(Common.BinaryDeserialize<Friend[]>(friendsCache));
+                _needFriendsUpdate = false;
             }
 
             IsLoggedOn = true;
@@ -263,6 +293,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
             LogOnCommand = new AsyncRelayCommand(async (o) =>
             {
+                if (SteamRemoteClient.IsRunning) return;
+
                 string LoginKey = null;
                 if (o is string key && !String.IsNullOrWhiteSpace(key))
                 {
@@ -277,28 +309,28 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 {
                     Username = acc.Login;
                     Password = acc.Password;
-                    if(System.IO.File.Exists(acc.AuthenticatorPath))
-                        AuthCode = JsonConvert.DeserializeObject<SteamGuardAccount>(System.IO.File.ReadAllText(acc.AuthenticatorPath)).GenerateSteamGuardCode();
+                    /*if(System.IO.File.Exists(acc.AuthenticatorPath))
+                        AuthCode = JsonConvert.DeserializeObject<SteamGuardAccount>(System.IO.File.ReadAllText(acc.AuthenticatorPath)).GenerateSteamGuardCode();*/
                 }
 
                 if (String.IsNullOrWhiteSpace(Username) || (String.IsNullOrEmpty(Password) && LoginKey == null))
                     return;
 
-                EResult result = await Task<EResult>.Factory.StartNew(() =>
+                await Task.Factory.StartNew(() =>
                 {
-                    return SteamRemoteClient.Login(Username, Password, AuthCode, LoginKey);
-                }, TaskCreationOptions.LongRunning);
+                    SteamRemoteClient.Login(Username, Password);
+                });
 
-                if(result == EResult.Cancelled && o is RecentlyLoggedAccount tmp && LoginKey != null)
+/*                if(result == EResult.Cancelled && o is RecentlyLoggedAccount tmp && LoginKey != null)
                 {
                     RecentlyLoggedIn.Remove(tmp);
                     Config.Serialize(RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
                 }
 
-                CheckLoginResult(result);
+                CheckLoginResult(result);*/
             });
 
-            #region Common account command
+            #region Account common 
             RemoveRecentUserCommand = new RelayCommand(o =>
     {
         RecentlyLoggedIn.Remove(o as RecentlyLoggedAccount);
@@ -319,34 +351,35 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             });
             #endregion
 
-            OpenStoreAppLinkCommand     = new RelayCommand(o => Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{o}")).Dispose());
-            UpdateGamesListCommand      = new RelayCommand(o => Games = SteamRemoteClient.GetOwnedGames().Result);
-            OpenGameAchievementsCommand = new AsyncRelayCommand(async(o) =>
+            #region Games
+            OpenStoreAppLinkCommand = new RelayCommand(o => Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{o}")).Dispose());
+            UpdateGamesListCommand = new RelayCommand(o => Games = SteamRemoteClient.GetOwnedGames().Result);
+            OpenGameAchievementsCommand = new AsyncRelayCommand(async (o) =>
             {
                 var collection = await SteamRemoteClient.GetAppAchievements(Convert.ToUInt64(o));
-                if(collection == null || collection.Count == 0)
+                if (collection == null || collection.Count == 0)
                 {
                     Utils.Presentation.OpenPopupMessageBox($"It seems there are no achievements available in the selected game...");
                     return;
                 }
 
-                Utils.Presentation.OpenDialogWindow(new AchievementsWindow((int)o,ref collection));                
-            });
+                Utils.Presentation.OpenDialogWindow(new AchievementsWindow((int)o, ref collection));
+            }); 
+            #endregion
 
+            #region Chat
             SelectChatCommand = new RelayCommand(o =>
             {
-                if (!CheckSteamID(o as string,out ulong id64) || id64 == CurrentUser.InterlocutorID) return;
+                if (!CheckSteamID(o as string, out ulong id64) || id64 == CurrentUser.InterlocutorID) return;
                 CurrentUser.InterlocutorID = id64;
                 OnPropertyChanged(nameof(CurrentUser));
             });
-
             LeaveChatCommand = new RelayCommand(o =>
             {
                 Messages.Clear();
                 CurrentUser.InterlocutorID = 0;
                 OnPropertyChanged(nameof(CurrentUser));
             });
-
             AddChatAdminCommand = new RelayCommand(o =>
             {
                 if (string.IsNullOrEmpty(o as string)) CurrentUser.AdminID = null;
@@ -354,6 +387,25 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 else CurrentUser.AdminID = id64;
                 OnPropertyChanged(nameof(CurrentUser));
             });
+            #endregion
+
+            #region Friends
+            UpdateFriendsListCommand = new AsyncRelayCommand(async (o) => Friends = await SteamRemoteClient.ParseUserFriends());
+            OpenFriendChatCommand = new RelayCommand(o =>
+            {
+                Messages.Clear();
+                CurrentUser.InterlocutorID = Convert.ToUInt64(o);
+                SelectedTabIndex = 2;
+                OnPropertyChanged(nameof(CurrentUser));
+            });
+            OpenUrlProfileCommand = new RelayCommand(o => Process.Start($"https://steamcommunity.com/profiles/{o}").Dispose());
+            RemoveFriendCommand = new RelayCommand(o =>
+            {
+                SteamRemoteClient.RemoveFriend((o as Friend).SteamID64);
+                Friends.Remove(o as Friend);
+                _needFriendsUpdate = true;
+            }); 
+            #endregion
         }
 
     }

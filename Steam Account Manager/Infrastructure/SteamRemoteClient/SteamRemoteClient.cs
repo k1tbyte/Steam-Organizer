@@ -6,6 +6,7 @@ using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.Utils;
 using SteamKit2;
+using SteamKit2.Authentication;
 using SteamKit2.GC;
 using SteamKit2.GC.CSGO.Internal;
 using SteamKit2.Internal;
@@ -44,8 +45,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static readonly SteamUnifiedMessages.UnifiedService<IEcon> UnifiedEcon;
         private static readonly SteamUnifiedMessages steamUnified;
 
-        private static string SteamGuardCode;
-        private static string TwoFactorCode;
         private static string Username;
         private static string Password;
         private static EResult LastLogOnResult;
@@ -82,7 +81,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             callbackManager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
             callbackManager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
             callbackManager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
-            callbackManager.Subscribe<SteamUser.LoginKeyCallback>(OnLoginKey);
             callbackManager.Subscribe<SteamUser.WebAPIUserNonceCallback>(OnWebApiUser);
 
             callbackManager.Subscribe<SteamUser.AccountInfoCallback>(OnAccountInfo);
@@ -99,9 +97,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             {
                 Directory.CreateDirectory($@"{App.WorkingDirectory}\Sentry");
             }
-
-            SteamGuardCode = TwoFactorCode = null;
-
         }
 
         private static void RaiseUserStatusChanged()
@@ -110,11 +105,10 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             UserStatusChanged();
         }
 
-        public static EResult Login(string username, string password, string authCode, string loginKey = null)
+        public static EResult Login(string username, string password)
         {
             Username        = username;
             Password        = password;
-            LoginKey        = loginKey;
             IsRunning       = true;
 
             if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers"))
@@ -125,11 +119,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs"))
                 Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs");
-
-            if (LastLogOnResult == EResult.AccountLogonDenied)
-                SteamGuardCode = authCode;
-            else if (LastLogOnResult == EResult.AccountLoginDeniedNeedTwoFactor || !String.IsNullOrEmpty(authCode))
-                TwoFactorCode = authCode;
 
             LastLogOnResult = EResult.NotLoggedOn;
             DeserializeUser();
@@ -163,7 +152,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         #region Callbacks processing
 
         //FIXED
-        private static void OnConnected(SteamClient.ConnectedCallback callback)
+        private static async void OnConnected(SteamClient.ConnectedCallback callback)
         {
             byte[] sentryHash = null;
             if (File.Exists($"{App.WorkingDirectory}\\Sentry\\{Username}.bin"))
@@ -172,30 +161,28 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 sentryHash = CryptoHelper.SHAHash(sentryFile);
             }
 
-            var logOnDetails = new SteamUser.LogOnDetails
+            var authSession = await steamClient.Authentication.BeginAuthSessionViaCredentialsAsync(new AuthSessionDetails
             {
-                Username = Username,
-                Password = Password,
-                AuthCode = SteamGuardCode,
-                TwoFactorCode = TwoFactorCode,
-                LoginID = LoginID,
-                ShouldRememberPassword = true,
-                LoginKey = LoginKey,
+                Username            = Username,
+                Password            = Password,
+                IsPersistentSession = false,
+                Authenticator       = new UserConsoleAuthenticator(),
+            });
+
+            var pollResponse = await authSession.PollingWaitForResultAsync();
+
+            steamUser.LogOn(new SteamUser.LogOnDetails
+            {
+                LoginID        = LoginID,
                 SentryFileHash = sentryHash,
-            };
-
-            if (OSType == EOSType.Unknown)
-            {
-                OSType = logOnDetails.ClientOSType;
-            }
-
-            steamUser.LogOn(logOnDetails);
+                Username       = pollResponse.AccountName,
+                AccessToken    = pollResponse.RefreshToken,
+            });
         }
 
         private static void OnLoggedOn(SteamUser.LoggedOnCallback callback)
         {
             LastLogOnResult = callback.Result;
-            SteamGuardCode = TwoFactorCode = null;
 
             if (LastLogOnResult == EResult.InvalidPassword && LoginKey != null)
             {
@@ -215,12 +202,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             ChangePersonaState(EPersonaState.Invisible);
 
-            if (!String.IsNullOrEmpty(LoginKey))
-            {
-                steamUser.RequestWebAPIUserNonce();
-            }
-
             WebApiUserNonce = callback.WebAPIUserNonce;
+            steamUser.RequestWebAPIUserNonce();
 
             Connected?.Invoke();
 
@@ -268,35 +251,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 OneTimePassword = callback.OneTimePassword,
                 SentryFileHash  = sentryHash
             });
-        }
-
-        //NOT WORK
-        private static void OnLoginKey(SteamUser.LoginKeyCallback callback)
-        {
-            //   LoginKey = callback.UniqueID.ToString();
-            LoginKey = callback.LoginKey;
-            steamUser.RequestWebAPIUserNonce();
-            steamUser.AcceptNewLoginKey(callback);
-
-            if (RemoteControlViewModel.RecentlyLoggedIn.Exists(o => o.Username == Username, out int index))
-            {
-                Application.Current.Dispatcher.Invoke(() => RemoteControlViewModel.RecentlyLoggedIn[index] = new RecentlyLoggedAccount
-                {
-                    Username = Username,
-                    Loginkey = callback.LoginKey,
-                    ImageUrl = CurrentUser.AvatarUrl
-                });
-            }
-            else
-            {
-                Application.Current.Dispatcher.Invoke(() => RemoteControlViewModel.RecentlyLoggedIn.Add(new RecentlyLoggedAccount
-                {
-                    Username = Username,
-                    Loginkey = callback.LoginKey,
-                    ImageUrl = CurrentUser.AvatarUrl
-                }));
-            }
-            Config.Serialize(RemoteControlViewModel.RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
         }
 
         private static void OnWebApiUser(SteamUser.WebAPIUserNonceCallback callback)
@@ -613,23 +567,20 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         #region Friends parse
 
-        public static async Task ParseUserFriends()
+        public static async Task<ObservableCollection<Friend>> ParseUserFriends()
         {
-
+            var friends = new ObservableCollection<Friend>();
             IEnumerable<JToken> sinces = null;
 
-            try
+            using (var webClient = new WebClient { Encoding = Encoding.UTF8 })
             {
-                using (var webClient = new WebClient { Encoding = Encoding.UTF8 })
-                {
-                    string json = await webClient.DownloadStringTaskAsync(
-    $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={Config.Properties.WebApiKey ?? Keys.STEAM_API_KEY}&steamid={CurrentUser.SteamID64}");
-                    JToken node = JObject.Parse(json).SelectToken("*.friends");
-                    sinces = node.SelectTokens(@"$.[?(@.friend_since)].friend_since");
-                }
-
+                string json = await webClient.DownloadStringTaskAsync(
+$"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={(String.IsNullOrWhiteSpace(Config.Properties.WebApiKey) == true ? Keys.STEAM_API_KEY : Config.Properties.WebApiKey)}&steamid={CurrentUser.SteamID64}");
+                JToken node = JObject.Parse(json)?.SelectToken("*.friends");
+                sinces = node?.SelectTokens(@"$.[?(@.friend_since)].friend_since");
             }
-            catch { }
+
+            if (sinces == null) return null;
 
             for (int i = 0, j = 0; i < steamFriends.GetFriendCount(); i++)
             {
@@ -640,21 +591,23 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
                 string avatarTemp = BitConverter.ToString(steamFriends.GetFriendAvatar(temp)).Replace("-", "");
 
-                if (avatarTemp == "0000000000000000000000000000000000000000")
+                if (avatarTemp.All(o => o == '0'))
                 {
                     avatarTemp = "fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb";
                 }
 
-               /* CurrentUser.Friends.Add(new Friend
+                friends.Add(new Friend
                 {
                     SteamID64 = temp.ConvertToUInt64(),
                     Name = steamFriends.GetFriendPersonaName(temp),
                     FriendSince = Utils.Common.UnixTimeToDateTime(ulong.TryParse(
                         sinces?.ElementAt(j).ToString(), out ulong result) ? result : 0)?.ToString("yyyy/MM/dd"), //REFACTOR STEAMID64
                     ImageURL = $"https://avatars.akamai.steamstatic.com/{avatarTemp}.jpg"
-                });*/
+                });
                 j++;
             }
+
+            return friends;
         }
 
         #endregion

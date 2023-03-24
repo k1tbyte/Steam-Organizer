@@ -267,7 +267,7 @@
                                                     <ControlTemplate TargetType="DataGridCell">
                                                         <Image Width="90" Height="37" Cursor="Hand" Margin="20 0 0 0">
                                                             <Image.Source>
-                                                                <BitmapImage UriSource="{Binding ImageURL}" DecodePixelWidth="90" DecodePixelHeight="37" CacheOption="OnLoad" />
+                                                                <BitmapImage UriSource="{Binding ImageURL,Mode=OneWay}" DecodePixelWidth="90" DecodePixelHeight="37" CacheOption="OnLoad" />
                                                             </Image.Source>
                                                             <Image.InputBindings>
                                                                 <MouseBinding MouseAction="LeftClick"
@@ -680,6 +680,80 @@
                 <TabItem.Header>
                     <Icon:PackIconMaterial Kind="AccountGroup" Width="25" Height="25"/>
                 </TabItem.Header>
+                <TabItem.Content>
+                    <Grid>
+                        <Border Background="{DynamicResource adv_borders_background}" Opacity="0.6"  Margin="5,8,117,162" 
+                                Height="25" CornerRadius="15 15 2 2 " VerticalAlignment="Top"/>
+
+                        <TextBlock Foreground="{DynamicResource default_secundary_foreground}" Text="{Binding Friends.Count,StringFormat=#{0}}"
+                                   Margin="20,16,17,162" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Medium" FontSize="10" />
+
+                        <DataGrid Margin="0 8 117 9" Background="Transparent" ItemsSource="{Binding Friends}" VirtualizingPanel.VirtualizationMode="Standard"
+                                  VirtualizingPanel.CacheLength="10" ScrollViewer.VerticalScrollBarVisibility="Visible">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="85" CellStyle="{StaticResource FriendImageDataGridCellStyle}"/>
+
+                                <DataGridTextColumn Header="{DynamicResource adv_nickname}"  Binding="{Binding Name}" IsReadOnly="True" Width="170">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="DataGridCell">
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="{DynamicResource rc_fv_friendSince}" Binding="{Binding FriendSince,Mode=OneWay}" IsReadOnly="True" Width="150">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTemplateColumn Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+                                                <Button Style="{StaticResource MessageToFriend}" Width="25" Height="25" Padding="0"
+                                                        Command="{Binding DataContext.OpenFriendChatCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding SteamID64}">
+                                                    <Icon:PackIconMaterial Kind="MessageTextOutline" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                </Button>
+
+                                                <Button Style="{StaticResource gridRemoveButton}" Margin="5 0 0 0" Width="25" Height="25" Padding="0"
+                                                        Command="{Binding DataContext.RemoveFriendCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}">
+                                                    <Icon:PackIconMaterial Kind="CloseCircleOutline" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                    <Button.ToolTip>
+                                                        <ToolTip ContentStringFormat="Remove from friends"/>
+                                                    </Button.ToolTip>
+                                                </Button>
+
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Rectangle Fill="{DynamicResource menu_button_background}" Width="8"
+                   Height="310" RadiusY="3" RadiusX="3" Margin="356.75 25 0 0" Opacity="0.2" IsHitTestVisible="False" />
+
+                        <Button Command="{Binding UpdateFriendsListCommand}" VerticalAlignment="Top" HorizontalAlignment="Right"
+                Style="{StaticResource ModernColoredButton}"   Content="{DynamicResource rc_gv_Update}" Margin="20 30 20 20"/>
+                    </Grid>
+                </TabItem.Content>
             </TabItem>
 
             <TabItem Style="{StaticResource RemoteControlTabItem}" Tag="{x:Static Visibility.Collapsed}">

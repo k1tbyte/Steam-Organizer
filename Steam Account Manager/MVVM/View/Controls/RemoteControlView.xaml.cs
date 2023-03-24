@@ -19,22 +19,22 @@ namespace Steam_Account_Manager.MVVM.View.Controls
         private void IdCopyButton_Click(object sender, RoutedEventArgs e) => Utils.Win32.Clipboard.SetText(steamIDbox.Text);
         private void ui_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            switch (ui_box.SelectedIndex)
+          /*  switch (ui_box.SelectedIndex)
             {
                 case 0:
-                    Infrastructure.SteamRemoteClient.SteamRemoteClient.UIMode(0);
-                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(0);
+                    SteamRemoteClient.UIMode(0);
+                    SteamRemoteClient.ChangePersonaFlags(0);
                     break;
                 case 1:
-                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(1024); //BP
+                    SteamRemoteClient.ChangePersonaFlags(1024); //BP
                     break;
                 case 2:
-                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(2048); //VR
+                    SteamRemoteClient.ChangePersonaFlags(2048); //VR
                     break;
                 case 3:
-                    Infrastructure.SteamRemoteClient.SteamRemoteClient.ChangePersonaFlags(512); // phone
+                    SteamRemoteClient.ChangePersonaFlags(512); // phone
                     break;
-            }
+            }*/
         }
         private void SelectedGamesCountValidator(object sender, MouseButtonEventArgs e)
         {
@@ -56,7 +56,7 @@ namespace Steam_Account_Manager.MVVM.View.Controls
         {
             if (e.Key == Key.Enter && Keyboard.Modifiers != ModifierKeys.Shift)
             {
-                SteamRemoteClient.SendInterlocutorMessage(MessageBox.Text);
+               /* SteamRemoteClient.SendInterlocutorMessage(MessageBox.Text);*/
                 MessageBox.Text = "";
             }
         }
