@@ -578,7 +578,9 @@
   <ItemGroup>
     <Resource Include="Images\Steam_years_of_service\year19.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\login_mobile_auth.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\grab.cur" />
     <Resource Include="Images\grabbing.cur" />

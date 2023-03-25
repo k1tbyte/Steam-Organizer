@@ -7,8 +7,6 @@ using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.Utils;
 using SteamKit2;
 using SteamKit2.Authentication;
-using SteamKit2.GC;
-using SteamKit2.GC.CSGO.Internal;
 using SteamKit2.Internal;
 using System;
 using System.Collections.Generic;
@@ -19,20 +17,43 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 {
     internal static class SteamRemoteClient
     {
+        internal class Authenticator : IAuthenticator
+        {
+            internal static event Action<EAuthSessionGuardType> AuthenticationCallback;
+            public bool RequiredDeviceConfirmations { get; set; } = true;
+            public Task<bool> AcceptDeviceConfirmationAsync()
+            {
+                if (RequiredDeviceConfirmations)
+                    AuthenticationCallback(EAuthSessionGuardType.k_EAuthSessionGuardType_DeviceConfirmation);
+                return Task.FromResult(RequiredDeviceConfirmations);
+            }
+
+            public Task<string> GetDeviceCodeAsync(bool previousCodeWasIncorrect)
+            {
+                AuthenticationCallback(EAuthSessionGuardType.k_EAuthSessionGuardType_DeviceCode);
+                throw new NotImplementedException();
+            }
+
+            public Task<string> GetEmailCodeAsync(string email, bool previousCodeWasIncorrect)
+            {
+                AuthenticationCallback(EAuthSessionGuardType.k_EAuthSessionGuardType_EmailCode);
+                throw new NotImplementedException();
+            }
+        }
+
         public static event Action UserStatusChanged;
         public static event Action Connected;
         public static event Action Disconnected;
         public static event Action<SteamChatMessage> SteamChatCallback;
 
         internal static EOSType OSType { get; private set; } = EOSType.Unknown;
-
 
         private static readonly CallbackManager callbackManager;
         private static readonly SteamClient steamClient;
@@ -48,15 +69,15 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static string Username;
         private static string Password;
         private static EResult LastLogOnResult;
-        private static string LoginKey;
-        private static string UniqueId;
         private static string WebApiUserNonce;
+        private static CancellationTokenSource authCancellationToken;
 
 
         public static bool IsRunning { get; set; }
         public static bool IsPlaying { get; set; }
         public static bool IsWebLoggedIn { get; private set; }
         public static User CurrentUser { get; set; }
+        public static CredentialsAuthSession AuthSession { get; private set; }
 
         internal const ushort CallbackSleep = 500; //milliseconds
         private const uint LoginID = 1488; // This must be the same for all processes
@@ -124,7 +145,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             DeserializeUser();
 
             steamClient.Connect();
-
+            
             while (IsRunning)
             {
                 callbackManager.RunWaitCallbacks(TimeSpan.FromMilliseconds(CallbackSleep));
@@ -161,34 +182,39 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 sentryHash = CryptoHelper.SHAHash(sentryFile);
             }
 
-            var authSession = await steamClient.Authentication.BeginAuthSessionViaCredentialsAsync(new AuthSessionDetails
+            authCancellationToken?.Dispose();
+            authCancellationToken = new CancellationTokenSource();
+            try
             {
-                Username            = Username,
-                Password            = Password,
-                IsPersistentSession = false,
-                Authenticator       = new UserConsoleAuthenticator(),
-            });
+                AuthSession = await steamClient.Authentication.BeginAuthSessionViaCredentialsAsync(new AuthSessionDetails
+                {
+                    Username = Username,
+                    Password = Password,
+                    IsPersistentSession = false,
+                    Authenticator = new Authenticator(),
+                });
+                var pollResponse = await AuthSession.PollingWaitForResultAsync(authCancellationToken.Token).ConfigureAwait(false);
 
-            var pollResponse = await authSession.PollingWaitForResultAsync();
-
-            steamUser.LogOn(new SteamUser.LogOnDetails
+                steamUser.LogOn(new SteamUser.LogOnDetails
+                {
+                    LoginID        = LoginID,
+                    SentryFileHash = sentryHash,
+                    Username       = pollResponse.AccountName,
+                    AccessToken    = pollResponse.RefreshToken,
+                });
+            }
+            catch (OperationCanceledException) {}
+            catch(AuthenticationException e)
             {
-                LoginID        = LoginID,
-                SentryFileHash = sentryHash,
-                Username       = pollResponse.AccountName,
-                AccessToken    = pollResponse.RefreshToken,
-            });
+                LastLogOnResult = e.Result;
+                steamClient.Disconnect();
+            }
         }
 
         private static void OnLoggedOn(SteamUser.LoggedOnCallback callback)
         {
             LastLogOnResult = callback.Result;
 
-            if (LastLogOnResult == EResult.InvalidPassword && LoginKey != null)
-            {
-                LoginKey        = null;
-                LastLogOnResult = EResult.Cancelled;
-            }
             if (LastLogOnResult != EResult.OK)
             {
                 return;
@@ -229,7 +255,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static void OnDisconnected(SteamClient.DisconnectedCallback callback)
         {
             IsPlaying = IsRunning = false;
-            WebApiUserNonce = LoginKey = null;
+            authCancellationToken.Cancel();
+            WebApiUserNonce = null;
             Disconnected?.Invoke();
         }
 
@@ -255,11 +282,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnWebApiUser(SteamUser.WebAPIUserNonceCallback callback)
         {
-            if (callback.Result == EResult.OK && callback.Nonce != WebApiUserNonce)
-            {
-                WebApiUserNonce = callback.Nonce;
-                UserWebLogOn();
-            }
         }
 
 
@@ -686,10 +708,6 @@ $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=frien
 
 
         #region Steam WEB
-        private static void UserWebLogOn()
-        {
-            IsWebLoggedIn = webHandler.Authenticate(UniqueId, steamClient, WebApiUserNonce);
-        }
 
         internal static async Task<bool> SetProfilePrivacy(int Profile, int Inventory, int Gifts, int OwnedGames, int Playtime, int Friends, int Comments)
         {

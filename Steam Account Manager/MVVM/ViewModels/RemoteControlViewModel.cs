@@ -9,6 +9,7 @@ using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.Windows;
 using Steam_Account_Manager.Utils;
 using SteamKit2;
+using SteamKit2.Internal;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -35,18 +36,31 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         public RelayCommand AddChatAdminCommand { get; private set; }
         public RelayCommand OpenFriendChatCommand { get; private set; }
         public RelayCommand RemoveFriendCommand { get; private set; }
+        public AsyncRelayCommand SendSteamGuardCodeCommand { get; private set; }
         #endregion
 
         #region Properties
-        private string _username, _password, _authCode, _errorMsg;
-        private bool _needAuthCode, _needGamesUpdate,_needFriendsUpdate;
+        private string _username, _password,_authCode, _errorMsg;
+        private bool _needGamesUpdate,_needFriendsUpdate;
         public User CurrentUser => SteamRemoteClient.CurrentUser;
 
+        public string AuthCode
+        {
+            get => _authCode;
+            set => SetProperty(ref _authCode, value);
+        }
         private bool _isLoggedOn;
         public bool IsLoggedOn
         {
             get => _isLoggedOn;
             set => SetProperty(ref _isLoggedOn, value);
+        }
+
+        private int _confirmationType = 0;
+        public int ConfirmationType
+        {
+            get => _confirmationType;
+            set => SetProperty(ref _confirmationType, value);
         }
 
         private bool _isGamesIdling;
@@ -139,11 +153,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             }
         }
 
-        public string AuthCode
-        {
-            get => _authCode;
-            set => SetProperty(ref _authCode, value);
-        }
         public string Password
         {
             get => _password;
@@ -159,11 +168,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         {
             get => _errorMsg;
             set => SetProperty(ref _errorMsg, value);
-        }
-        public bool NeedAuthCode
-        {
-            get => _needAuthCode;
-            set => SetProperty(ref _needAuthCode, value);
         }
         #endregion
 
@@ -183,6 +187,9 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 case EResult.ServiceUnavailable:
                     ErrorMsg = App.FindString("rc_lv_servUnavailable");
                     break;
+                case EResult.AccessDenied:
+                    ErrorMsg = "Connection error! Access denied.";
+                    break;
                 case EResult.Timeout:
                     ErrorMsg = App.FindString("rc_lv_workTimeout");
                     break;
@@ -192,12 +199,10 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 case EResult.TryAnotherCM:
                     ErrorMsg = App.FindString("rc_lv_tryLater");
                     break;
-                case EResult.Cancelled:
-                    ErrorMsg = App.FindString("rc_lv_keyExpired");
+                case EResult.TwoFactorCodeMismatch:
+                    ErrorMsg = "Two-factor authentication code mismatch";
                     break;
                 case EResult.AccountLogonDenied:
-                case EResult.AccountLoginDeniedNeedTwoFactor:
-                    NeedAuthCode = true;
                     break;
             }
         }
@@ -205,7 +210,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         private void HandleDisconnection()
         {
             
-            if (CurrentUser != null && CurrentUser.SteamID64 != 0)
+            if (IsLoggedOn && CurrentUser != null && CurrentUser.SteamID64 != 0)
             {
                 Common.BinarySerialize(CurrentUser, $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat");
 
@@ -234,9 +239,9 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
             Games                              = null;
             SteamRemoteClient.CurrentUser      = null;
-            App.Current?.Dispatcher?.Invoke(() => Messages.Clear());
+            App.Current.Dispatcher.Invoke(()   => Messages.Clear());
             _isGamesIdling                     = IsLoggedOn = false;
-            SelectedGamesCount                 = 0;
+            ConfirmationType                   = SelectedGamesCount = 0;
         }
         private void HandleConnection()
         {
@@ -261,6 +266,10 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
             IsLoggedOn = true;
         } 
+        private void HandleAuthentication(EAuthSessionGuardType type)
+        {
+            ConfirmationType = (int)type;
+        }
         private bool CheckSteamID(string steamid, out ulong id64)
         {
             id64 = SteamIDConverter.ToSteamID64(steamid).Result;
@@ -284,11 +293,12 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             RecentlyLoggedIn = Config.Deserialize(App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey)
                 as ObservableCollection<RecentlyLoggedAccount> ?? new ObservableCollection<RecentlyLoggedAccount>();
 
-            IsLoggedOn = true;
+            // IsLoggedOn = true;
 
             SteamRemoteClient.UserStatusChanged += () => OnPropertyChanged(nameof(CurrentUser));
             SteamRemoteClient.Connected += HandleConnection;
             SteamRemoteClient.Disconnected += HandleDisconnection;
+            SteamRemoteClient.Authenticator.AuthenticationCallback += HandleAuthentication;
             SteamRemoteClient.SteamChatCallback += (msg) => App.Current.Dispatcher.Invoke(() => Messages.Add(msg));
 
             LogOnCommand = new AsyncRelayCommand(async (o) =>
@@ -316,32 +326,41 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 if (String.IsNullOrWhiteSpace(Username) || (String.IsNullOrEmpty(Password) && LoginKey == null))
                     return;
 
-                await Task.Factory.StartNew(() =>
-                {
-                    SteamRemoteClient.Login(Username, Password);
-                });
-
-/*                if(result == EResult.Cancelled && o is RecentlyLoggedAccount tmp && LoginKey != null)
-                {
-                    RecentlyLoggedIn.Remove(tmp);
-                    Config.Serialize(RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
-                }
-
-                CheckLoginResult(result);*/
+                CheckLoginResult(await Task.Run(() => SteamRemoteClient.Login(Username, Password)));
             });
 
             #region Account common 
             RemoveRecentUserCommand = new RelayCommand(o =>
-    {
-        RecentlyLoggedIn.Remove(o as RecentlyLoggedAccount);
-        Config.Serialize(RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
-    });
+            {
+                RecentlyLoggedIn.Remove(o as RecentlyLoggedAccount);
+                Config.Serialize(RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
+            });
             LogOutCommand = new RelayCommand(o =>
             {
                 SteamRemoteClient.Logout();
                 Username = Password = AuthCode = "";
-                NeedAuthCode = false;
             });
+            SendSteamGuardCodeCommand = new AsyncRelayCommand(async (o) =>
+            {
+                ErrorMsg = "";
+                if (ConfirmationType == 4)
+                {
+                    ConfirmationType = 3;
+                    return;
+                }
+                else if(!String.IsNullOrWhiteSpace(AuthCode) && AuthCode.Length == 5)
+                {
+                    try
+                    {
+                        await SteamRemoteClient.AuthSession.SendSteamGuardCodeAsync(AuthCode, (EAuthSessionGuardType)ConfirmationType);
+                    }
+                    catch(SteamKit2.Authentication.AuthenticationException e)
+                    {
+                        CheckLoginResult(e.Result);
+                    }
+                }
+            });
+
             ChangeNicknameCommand = new RelayCommand(o =>
             {
                 if (o is System.Windows.Controls.TextBox txtBox && !String.IsNullOrEmpty(txtBox.Text) && txtBox.Text != CurrentUser.Nickname)
@@ -349,6 +368,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                     SteamRemoteClient.ChangeCurrentName(txtBox.Text);
                 }
             });
+
             #endregion
 
             #region Games

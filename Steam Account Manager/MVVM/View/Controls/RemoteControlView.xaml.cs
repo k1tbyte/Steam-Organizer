@@ -1,5 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.MVVM.ViewModels;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -10,6 +11,7 @@ namespace Steam_Account_Manager.MVVM.View.Controls
     public partial class RemoteControlView : UserControl
     {
         int CurrentCollectionCount;
+        private Regex DigAndEnLetters = new Regex("^[A-Za-z\\d]*$");
         public RemoteControlView()
         {
             InitializeComponent();
@@ -19,7 +21,7 @@ namespace Steam_Account_Manager.MVVM.View.Controls
         private void IdCopyButton_Click(object sender, RoutedEventArgs e) => Utils.Win32.Clipboard.SetText(steamIDbox.Text);
         private void ui_box_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-          /*  switch (ui_box.SelectedIndex)
+            switch (ui_box.SelectedIndex)
             {
                 case 0:
                     SteamRemoteClient.UIMode(0);
@@ -34,7 +36,7 @@ namespace Steam_Account_Manager.MVVM.View.Controls
                 case 3:
                     SteamRemoteClient.ChangePersonaFlags(512); // phone
                     break;
-            }*/
+            }
         }
         private void SelectedGamesCountValidator(object sender, MouseButtonEventArgs e)
         {
@@ -56,7 +58,7 @@ namespace Steam_Account_Manager.MVVM.View.Controls
         {
             if (e.Key == Key.Enter && Keyboard.Modifiers != ModifierKeys.Shift)
             {
-               /* SteamRemoteClient.SendInterlocutorMessage(MessageBox.Text);*/
+                SteamRemoteClient.SendInterlocutorMessage(MessageBox.Text);
                 MessageBox.Text = "";
             }
         }
@@ -84,5 +86,11 @@ namespace Steam_Account_Manager.MVVM.View.Controls
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) => CurrentCollectionCount = 0;
+
+        private void SteamGuardCodePreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if(!DigAndEnLetters.IsMatch(e.Text))
+                e.Handled = true;
+        }
     }
 }
