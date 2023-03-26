@@ -13,45 +13,23 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 {
     internal static class SteamRemoteClient
     {
-        internal class Authenticator : IAuthenticator
-        {
-            internal static event Action<EAuthSessionGuardType> AuthenticationCallback;
-            public bool RequiredDeviceConfirmations { get; set; } = true;
-            public Task<bool> AcceptDeviceConfirmationAsync()
-            {
-                if (RequiredDeviceConfirmations)
-                    AuthenticationCallback(EAuthSessionGuardType.k_EAuthSessionGuardType_DeviceConfirmation);
-                return Task.FromResult(RequiredDeviceConfirmations);
-            }
-
-            public Task<string> GetDeviceCodeAsync(bool previousCodeWasIncorrect)
-            {
-                AuthenticationCallback(EAuthSessionGuardType.k_EAuthSessionGuardType_DeviceCode);
-                throw new NotImplementedException();
-            }
-
-            public Task<string> GetEmailCodeAsync(string email, bool previousCodeWasIncorrect)
-            {
-                AuthenticationCallback(EAuthSessionGuardType.k_EAuthSessionGuardType_EmailCode);
-                throw new NotImplementedException();
-            }
-        }
-
         public static event Action UserStatusChanged;
         public static event Action Connected;
         public static event Action Disconnected;
         public static event Action<SteamChatMessage> SteamChatCallback;
+        public static event Action<EAuthSessionGuardType> AuthenticationCallback;
 
         internal static EOSType OSType { get; private set; } = EOSType.Unknown;
 
@@ -70,7 +48,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static string Password;
         private static EResult LastLogOnResult;
         private static string WebApiUserNonce;
-        private static CancellationTokenSource authCancellationToken;
 
 
         public static bool IsRunning { get; set; }
@@ -96,7 +73,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             UnifiedPlayerService = steamUnified.CreateService<IPlayer>();
             UnifiedEcon          = steamUnified.CreateService<IEcon>();
 
-
             callbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
             callbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnected);
             callbackManager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
@@ -105,7 +81,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             callbackManager.Subscribe<SteamUser.WebAPIUserNonceCallback>(OnWebApiUser);
 
             callbackManager.Subscribe<SteamUser.AccountInfoCallback>(OnAccountInfo);
-            callbackManager.Subscribe<SteamUser.WalletInfoCallback>(OnWalletInfo);
             callbackManager.Subscribe<SteamUser.EmailAddrInfoCallback>(OnEmailInfo);
             callbackManager.Subscribe<SteamFriends.PersonaStateCallback>(OnPersonaState);
             callbackManager.Subscribe<SteamFriends.PersonaChangeCallback>(OnPersonaNameChange);
@@ -118,12 +93,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             {
                 Directory.CreateDirectory($@"{App.WorkingDirectory}\Sentry");
             }
-        }
-
-        private static void RaiseUserStatusChanged()
-        {
-            if (UserStatusChanged == null) return;
-            UserStatusChanged();
         }
 
         public static EResult Login(string username, string password)
@@ -182,33 +151,51 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 sentryHash = CryptoHelper.SHAHash(sentryFile);
             }
 
-            authCancellationToken?.Dispose();
-            authCancellationToken = new CancellationTokenSource();
-            try
+            var remembered = RemoteControlViewModel.RecentlyLoggedIn.Find(o => o.Username == Username);
+            (AuthPollResult, EResult) pollResponse = default;
+
+            if (remembered == null)
             {
                 AuthSession = await steamClient.Authentication.BeginAuthSessionViaCredentialsAsync(new AuthSessionDetails
                 {
                     Username = Username,
                     Password = Password,
-                    IsPersistentSession = false,
-                    Authenticator = new Authenticator(),
-                });
-                var pollResponse = await AuthSession.PollingWaitForResultAsync(authCancellationToken.Token).ConfigureAwait(false);
+                    IsPersistentSession = Config.Properties.RememberRemoteUser,
+                }).ConfigureAwait(false);
 
-                steamUser.LogOn(new SteamUser.LogOnDetails
+                AuthenticationCallback(AuthSession.AllowedConfirmations[0].confirmation_type);
+                
+                while (IsRunning)
                 {
-                    LoginID        = LoginID,
-                    SentryFileHash = sentryHash,
-                    Username       = pollResponse.AccountName,
-                    AccessToken    = pollResponse.RefreshToken,
-                });
+                    pollResponse = await AuthSession.PollAuthSessionStatusAsync().ConfigureAwait(false);
+                    if (pollResponse.Item2 != EResult.OK)
+                    {
+                        LastLogOnResult = pollResponse.Item2;
+                        steamClient.Disconnect();
+                        return;
+                    }
+                    else if (pollResponse.Item1 != null) break;
+
+                    await Task.Delay(500);
+                }
+
+                if (pollResponse.Item1 == null) return;
+
+                if (Config.Properties.RememberRemoteUser)
+                {
+                    RemoteControlViewModel.RecentlyLoggedIn.Add(new RecentlyLoggedAccount { Username = Username, RefreshToken = pollResponse.Item1.RefreshToken });
+                    Config.Serialize(RemoteControlViewModel.RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
+                }    
+                    
             }
-            catch (OperationCanceledException) {}
-            catch(AuthenticationException e)
+
+            steamUser.LogOn(new SteamUser.LogOnDetails
             {
-                LastLogOnResult = e.Result;
-                steamClient.Disconnect();
-            }
+                LoginID                = LoginID,
+                SentryFileHash         = sentryHash,
+                Username               = Username,
+                AccessToken            = remembered?.RefreshToken ?? pollResponse.Item1.RefreshToken
+            });
         }
 
         private static void OnLoggedOn(SteamUser.LoggedOnCallback callback)
@@ -216,15 +203,12 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             LastLogOnResult = callback.Result;
 
             if (LastLogOnResult != EResult.OK)
-            {
                 return;
-            }
-
+            
             CurrentUser.SteamID64      = steamClient.SteamID.ConvertToUInt64();
             CurrentUser.Username       = Username;
             CurrentUser.IPCountryCode  = callback.PublicIP.ToString();
             CurrentUser.IPCountryImage = $"https://flagcdn.com/w20/{callback.IPCountryCode.ToLower()}.png";
-            CurrentUser.Level          = GetLevel().Result;
 
             ChangePersonaState(EPersonaState.Invisible);
 
@@ -255,7 +239,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         private static void OnDisconnected(SteamClient.DisconnectedCallback callback)
         {
             IsPlaying = IsRunning = false;
-            authCancellationToken.Cancel();
             WebApiUserNonce = null;
             Disconnected?.Invoke();
         }
@@ -282,49 +265,54 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static void OnWebApiUser(SteamUser.WebAPIUserNonceCallback callback)
         {
+            if (callback.Result == EResult.OK && callback.Nonce != WebApiUserNonce)
+            {
+                WebApiUserNonce = callback.Nonce;
+                LoginIntoSteamWeb();
+            }
         }
 
+        private static async void LoginIntoSteamWeb()
+        {
+            IsWebLoggedIn = await webHandler.Initialize(steamClient, WebApiUserNonce);
+            if(!IsWebLoggedIn)
+            {
+                System.Windows.Forms.MessageBox.Show("Не удалось подключиться к steamWeb");
+            }
 
-        //FIXED
+            if((DateTimeOffset.UtcNow.ToUnixTimeSeconds() - CurrentUser.CacheTimestamp) > 43200) //12 hours in seconds
+            {
+                await GetAccessToken();
+                await GetWebApiKey();
+                await GetTradeToken();
+                CurrentUser.CacheTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            }
+
+            await GetLevel();
+            await GetWalletInfo();
+            await GetPointsBalance();
+            UserStatusChanged?.Invoke();
+        }
+
         private static void OnAccountInfo(SteamUser.AccountInfoCallback callback)
         {
             CurrentUser.Nickname        = callback.PersonaName;
             CurrentUser.AuthedComputers = callback.CountAuthedComputers;
         }
 
-        //FIXED
         private static void OnEmailInfo(SteamUser.EmailAddrInfoCallback callback)
         {
             CurrentUser.EmailAddress    = callback.EmailAddress;
             CurrentUser.IsEmailVerified = callback.IsValidated;
         }
 
-        //FIXED
-        private static void OnWalletInfo(SteamUser.WalletInfoCallback callback)
-        {
-            if (callback.HasWallet && callback.LongBalance >= 0L)
-            {
-                CurrentUser.Wallet = (float.Parse(callback.LongBalance.ToString()) / 100f).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
-                if (callback.Currency != ECurrencyCode.Invalid)
-                    CurrentUser.Wallet += " " + callback.Currency.ToString();
-            }
-            else
-            {
-                CurrentUser.Wallet = "0.00 USD";
-            }
-
-            RaiseUserStatusChanged();
-        }
-
-        //FIXED
         private static void OnPersonaNameChange(SteamFriends.PersonaChangeCallback callback)
         {
             if (CurrentUser.Nickname == callback.Name) return;
             CurrentUser.Nickname = callback.Name;
-            RaiseUserStatusChanged();
+            UserStatusChanged?.Invoke();
         }
 
-        //FIXED
         private static void OnPersonaState(SteamFriends.PersonaStateCallback callback)
         {
             if (callback.FriendID != steamClient.SteamID)
@@ -362,10 +350,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
 
             if(flag)
-              RaiseUserStatusChanged();
+                UserStatusChanged?.Invoke();
         }
 
-        //FIXED
         private static async void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
         {
             if (callback.EntryType != EChatEntryType.ChatMsg)
@@ -549,21 +536,13 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         public static void ChangeCurrentName(string Name)          => steamFriends.SetPersonaName(Name);
         public static void ChangePersonaState(EPersonaState state) =>  steamFriends.SetPersonaState(state);
-        public static async Task<uint?> GetLevel()
+        public static async Task GetLevel()
         {
             var request = new CPlayer_GetGameBadgeLevels_Request();
 
             var response = await UnifiedPlayerService.SendMessage(x => x.GetGameBadgeLevels(request)).ToTask().ConfigureAwait(false);
-            return response?.GetDeserializedResponse<CPlayer_GetGameBadgeLevels_Response>()?.player_level;
+            CurrentUser.Level = response?.GetDeserializedResponse<CPlayer_GetGameBadgeLevels_Response>()?.player_level;
         }
-        public static async Task<List<string>> GetNicknamesList()
-        {
-            var request = new CPlayer_GetAvatarFrame_Request();
-            var response = await UnifiedPlayerService.SendMessage(x => x.GetAvatarFrame(request)).ToTask().ConfigureAwait(false);
-            var result = response.GetDeserializedResponse<CPlayer_GetAvatarFrame_Response>();
-            return null;
-        }
-
         public static void ChangePersonaFlags(uint uimode)
         {
             ClientMsgProtobuf<CMsgClientChangeStatus> requestPersonaFlag = new ClientMsgProtobuf<CMsgClientChangeStatus>(EMsg.ClientChangeStatus)
@@ -588,7 +567,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         }
 
         #region Friends parse
-
         public static async Task<ObservableCollection<Friend>> ParseUserFriends()
         {
             var friends = new ObservableCollection<Friend>();
@@ -631,14 +609,12 @@ $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=frien
 
             return friends;
         }
-
         #endregion
 
         internal static void RemoveFriend(ulong SteamID64)
         {
             steamFriends.RemoveFriend(SteamID64);
         }
-
 
         #region Games methods
         internal static async Task<ObservableCollection<PlayerGame>> GetOwnedGames()
@@ -706,7 +682,6 @@ $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=frien
             return response.GetDeserializedResponse<CPlayer_GetPrivacySettings_Response>().privacy_settings;
         }
 
-
         #region Steam WEB
 
         internal static async Task<bool> SetProfilePrivacy(int Profile, int Inventory, int Gifts, int OwnedGames, int Playtime, int Friends, int Comments)
@@ -714,24 +689,20 @@ $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=frien
             if (!IsWebLoggedIn)
                 return false;
 
-            string response = null;
-            await Task.Factory.StartNew(() =>
-            {
-                var ProfileSettings = new NameValueCollection
+            var ProfileSettings = new NameValueCollection
                 {
                   { "sessionid", webHandler.SessionID },// Unknown,Private, FriendsOnly,Public
-                    { "Privacy","{\"PrivacyProfile\":"+Profile+
+                  { "Privacy","{\"PrivacyProfile\":"+Profile+
                                ",\"PrivacyInventory\":" +Inventory+
                                 ",\"PrivacyInventoryGifts\":"+Gifts+
                                  ",\"PrivacyOwnedGames\":"+OwnedGames+
                                 ",\"PrivacyPlaytime\":"+Playtime+
                                  ",\"PrivacyFriendsList\":"+Friends+"}"},
-                      { "eCommentPermission" ,Comments.ToString()
+                  { "eCommentPermission" ,Comments.ToString()
                   }//FriendsOnly,Public,Private
                 };
 
-                response = webHandler.Fetch("https://steamcommunity.com/profiles/" + CurrentUser.SteamID64 + "/ajaxsetprivacy/", "POST", ProfileSettings);
-            });
+            string response = await webHandler.Fetch("https://steamcommunity.com/profiles/" + CurrentUser.SteamID64 + "/ajaxsetprivacy/", "POST", ProfileSettings);
 
             if (!String.IsNullOrEmpty(response) && response.Contains("success\":1"))
             {
@@ -745,18 +716,92 @@ $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=frien
 
         }
 
-        public static async Task GetWebApiKey()
+        internal static async Task<bool> RevokeWebApiKey()
         {
-            if (!IsWebLoggedIn)
+            var htmlDoc = new HtmlDocument();
+            var data = new NameValueCollection
             {
-                ManualWebConnect();
-                return;
+                { "sessionid", webHandler.SessionID },
+                { "Revoke","Revoke My Steam Web API Key"}
+            };
+
+            var response = await webHandler.Fetch("https://steamcommunity.com/dev/revokekey", "POST", data);
+
+            if (!String.IsNullOrEmpty(response))
+            {
+                CurrentUser.WebApiKey = null;
+                htmlDoc.LoadHtml(response);
+                var HtmlNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"message\"]/h3");
+                if (HtmlNode != null && HtmlNode.InnerText.Contains("Unable to revoke API Key."))
+                {
+                    Utils.Presentation.OpenErrorMessageBox(App.FindString("rc_lv_apiKeyRevokeTip"), App.FindString("rc_lv_apiKeyRevokeTitle"));
+                    return false;
+                }
+                return true;
+            }
+            Utils.Presentation.OpenPopupMessageBox(App.FindString("rc_lv_errorRequest"),true);
+            return false;
+        }
+        internal static async Task GetPointsBalance()
+        {
+            if (string.IsNullOrEmpty(CurrentUser.WebApiCachedAccessToken)) return;
+
+            var arguments = new Dictionary<string, object>(2, StringComparer.Ordinal)
+            {
+                { "access_token", CurrentUser.WebApiCachedAccessToken },
+                { "steamid", CurrentUser.SteamID64 }
+            };
+
+            KeyValue response;
+
+            using (var iLoyaltyRewards = WebAPI.GetAsyncInterface("ILoyaltyRewardsService"))
+            {
+                iLoyaltyRewards.Timeout = TimeSpan.FromSeconds(100);
+
+                response = await iLoyaltyRewards.CallAsync(HttpMethod.Get, "GetSummary", args: arguments).ConfigureAwait(false);
             }
 
-            var responseResult = await Task.Factory.StartNew(() =>
+            if (response == null)
+                return;
+
+            KeyValue pointsInfo = response["summary"]["points"];
+            if (pointsInfo == KeyValue.Invalid)
+                return;
+
+            uint result = pointsInfo.AsUnsignedInteger(uint.MaxValue);
+
+            if (result == uint.MaxValue)
+                return;
+
+            CurrentUser.Points = result;
+        }
+
+        internal static async Task GetWalletInfo()
+        {
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(await webHandler.Fetch("https://store.steampowered.com/account/store_transactions?l=english", "GET"));
+
+            if (htmlDoc.DocumentNode == null)
+                return;
+
+            CurrentUser.Wallet = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"main_content\"]/div[2]/div[2]/div[1]/div[1]/div[1]/a")?.InnerText;
+            CurrentUser.Region = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"main_content\"]/div[2]/div[2]/div[3]/div/p/span")?.InnerText;
+        }
+
+        private static async Task GetAccessToken()
+        {
+            var response = await webHandler.Fetch("https://store.steampowered.com/pointssummary/ajaxgetasyncconfig", "GET");
+            if (response == null)
+                return;
+
+            CurrentUser.WebApiCachedAccessToken = (string)JObject.Parse(response).SelectToken(".data")?.SelectToken(".webapi_token");
+        }
+        private static async Task GetWebApiKey()
+        {
+            var responseResult = await Task.Run(async () =>
             {
                 var htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(webHandler.Fetch("https://steamcommunity.com/dev/apikey?l=english", "GET"));
+                htmlDoc.LoadHtml(await webHandler.Fetch("https://steamcommunity.com/dev/apikey?l=english", "GET"));
 
                 if (htmlDoc?.DocumentNode == null)
                     return ESteamApiKeyState.Timeout;
@@ -789,26 +834,18 @@ $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=frien
                 return ESteamApiKeyState.Registered;
             });
 
-            if (responseResult == ESteamApiKeyState.Error || responseResult == ESteamApiKeyState.Timeout)
-            {
-                Utils.Presentation.OpenPopupMessageBox(App.FindString("rc_lv_errorRequest"), true);
+            if (responseResult == ESteamApiKeyState.Error || responseResult == ESteamApiKeyState.Timeout || responseResult == ESteamApiKeyState.AccessDenied)
                 return;
-            }
 
-            switch (responseResult)
+            else if (responseResult == ESteamApiKeyState.NotRegisteredYet)
             {
-                case ESteamApiKeyState.AccessDenied:
-                    Utils.Presentation.OpenErrorMessageBox(App.FindString("rc_lv_apiKeyDeniedTip"),App.FindString("rc_lv_apiKeyDeniedTitle"));
-                    return;
-                case ESteamApiKeyState.NotRegisteredYet:
-                    var response = Utils.Presentation.OpenQueryMessageBox(App.FindString("rc_lv_apiKeyNoRegTip"), App.FindString("rc_lv_apiKeyNoRegTitle"));
-                    if (response == true)
-                        RegisterWebApiKey();
-                    return;
+                if (Config.Properties.RegisterWebApiKeys)
+                    RegisterWebApiKey();
             }
-        }
 
-        internal static void RegisterWebApiKey()
+
+        }
+        private static async void RegisterWebApiKey()
         {
             var htmlDoc = new HtmlDocument();
             var data = new NameValueCollection
@@ -819,53 +856,11 @@ $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=frien
                 { "Submit", "Register" }
             };
 
-            var response = webHandler.Fetch("https://steamcommunity.com/dev/registerkey", "POST", data);
+            var response = await webHandler.Fetch("https://steamcommunity.com/dev/registerkey", "POST", data);
             htmlDoc.LoadHtml(response);
-            CurrentUser.WebApiKey = htmlDoc.DocumentNode.SelectSingleNode("//div[@id='bodyContents_ex']/p")?.InnerText.Replace("Key: ", "");
+            CurrentUser.WebApiKey = htmlDoc.DocumentNode.SelectSingleNode("//div[@id='bodyContents_ex']/p")?.InnerText?.Replace("Key: ", "");
         }
-
-        internal static void ManualWebConnect()
-        {
-            if(Utils.Presentation.OpenQueryMessageBox(App.FindString("rc_lv_steamWebConnectTip"), App.FindString("rc_lv_notLogSteamWeb")) == true)
-            {
-
-            }
-        }
-
-        internal static async Task<bool> RevokeWebApiKey()
-        {
-            if (!IsWebLoggedIn)
-            {
-                ManualWebConnect();
-                return false;
-            }
-
-            var htmlDoc = new HtmlDocument();
-            var data = new NameValueCollection
-            {
-                { "sessionid", webHandler.SessionID },
-                { "Revoke","Revoke My Steam Web API Key"}
-            };
-
-            var response = await webHandler.AsyncFetch("https://steamcommunity.com/dev/revokekey", "POST", data);
-
-            if (!String.IsNullOrEmpty(response))
-            {
-                CurrentUser.WebApiKey = null;
-                htmlDoc.LoadHtml(response);
-                var HtmlNode = htmlDoc.DocumentNode.SelectSingleNode("//*[@id=\"message\"]/h3");
-                if (HtmlNode != null && HtmlNode.InnerText.Contains("Unable to revoke API Key."))
-                {
-                    Utils.Presentation.OpenErrorMessageBox(App.FindString("rc_lv_apiKeyRevokeTip"), App.FindString("rc_lv_apiKeyRevokeTitle"));
-                    return false;
-                }
-                return true;
-            }
-            Utils.Presentation.OpenPopupMessageBox(App.FindString("rc_lv_errorRequest"),true);
-            return false;
-        }
-
-        internal static async Task<string> GetTradeToken(bool generateNew = false)
+        internal static async Task GetTradeToken(bool generateNew = false)
         {
             var request = new CEcon_GetTradeOfferAccessToken_Request
             {
@@ -874,13 +869,10 @@ $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=frien
 
             var response = await UnifiedEcon.SendMessage(x => x.GetTradeOfferAccessToken(request)).ToTask().ConfigureAwait(false);
             if (response.Result != EResult.OK)
-            {
-                Utils.Presentation.OpenPopupMessageBox(App.FindString("rc_lv_errorRequest"),true);
-                return null;
-            }
-            return response.GetDeserializedResponse<CEcon_GetTradeOfferAccessToken_Response>().trade_offer_access_token;
-        }
+                return;
 
+            CurrentUser.TradeToken = response.GetDeserializedResponse<CEcon_GetTradeOfferAccessToken_Response>()?.trade_offer_access_token;
+        }
         #endregion
     }
 }

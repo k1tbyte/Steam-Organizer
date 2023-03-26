@@ -3,7 +3,6 @@ using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 
 namespace Steam_Account_Manager.Infrastructure

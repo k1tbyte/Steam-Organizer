@@ -19,6 +19,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         public string Username { get; set; }
         public ulong SteamID64 { get; set; }
         public string WebApiKey { get; set; }
+        public string WebAccessToken { get; set; }
         public string TradeToken { get; set; }
         public string FriendsInvite { get; set; }
         public bool AutoIdlingGames { get; set; }
@@ -26,6 +27,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         public ulong? AdminID { get; set; }
         public bool SaveChatLog { get; set; }
         public bool EnableCommands { get; set; }
+        public long CacheTimestamp { get; set; } 
 
         [field: NonSerialized]
         public string AvatarHash { get; set; }
@@ -53,7 +55,16 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         public string Wallet { get; set; }
 
         [field: NonSerialized]
+        public string Region { get; set; }
+
+        [field: NonSerialized]
         public ulong InterlocutorID { get; set; }
+
+        [field: NonSerialized]
+        public uint? Points { get; set; }
+
+        [field: NonSerialized]
+        public string WebApiCachedAccessToken { get; set; }
 
         [field: NonSerialized]
         public int _personaState;
@@ -62,8 +73,8 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
             get => _personaState;
             set
             {
-               /* if(_personaState == value ) return;   // Установка значения происходит при калбэке в SteamRemoteClient - иначе рекурсия
-                SteamRemoteClient.SteamRemoteClient.ChangePersonaState((EPersonaState)value);*/
+                if (_personaState == value) return;   // Установка значения происходит при калбэке в SteamRemoteClient - иначе рекурсия
+                SteamRemoteClient.SteamRemoteClient.ChangePersonaState((EPersonaState)value);
             }
         }
 
@@ -98,7 +109,7 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
     public class RecentlyLoggedAccount
     {
         public string Username { get; set; }
-        public string Loginkey { get; set; }
+        public string RefreshToken { get; set; }
         public string ImageUrl { get; set; }
     }
 

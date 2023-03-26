@@ -82,45 +82,7 @@
             <Setter Property="IsReadOnly" Value="True"/>
             <Setter Property="CaretBrush" Value="{DynamicResource atv_rectangles_shadow}"/>
         </Style>
-
-        <ControlTemplate x:Key="AnimatedCheckBox" TargetType="{x:Type CheckBox}">
-            <ControlTemplate.Resources>
-                <Storyboard x:Key="MouseOver">
-                    <ColorAnimation Storyboard.TargetName="BackgroundBrush" 
-                                Storyboard.TargetProperty="(SolidColorBrush.Color)" 
-                                To="#FFAAAAAA" Duration="0:0:0.2" />
-                </Storyboard>
-                <Storyboard x:Key="MouseLeave">
-                    <ColorAnimation Storyboard.TargetName="BackgroundBrush" 
-                                Storyboard.TargetProperty="(SolidColorBrush.Color)" 
-                                To="Transparent" Duration="0:0:0.2" />
-                </Storyboard>
-            </ControlTemplate.Resources>
-            <StackPanel Orientation="Horizontal">
-                <Border BorderThickness="1" CornerRadius="2" BorderBrush="Black"
-                    Background="{TemplateBinding Background}" x:Name="BackgroundBorder">
-                    <CheckBox IsChecked="{TemplateBinding IsChecked}" />
-                </Border>
-                <ContentPresenter Margin="5,0,0,0" VerticalAlignment="Center" />
-            </StackPanel>
-            <ControlTemplate.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Trigger.ExitActions>
-                        <BeginStoryboard Storyboard="{StaticResource MouseLeave}" />
-                    </Trigger.ExitActions>
-                    <Trigger.EnterActions>
-                        <BeginStoryboard Storyboard="{StaticResource MouseOver}" />
-                    </Trigger.EnterActions>
-                </Trigger>
-                <Trigger Property="IsChecked" Value="True">
-                    <Setter TargetName="BackgroundBorder" Property="Background">
-                        <Setter.Value>
-                            <SolidColorBrush Color="Green" />
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
+        
     </UserControl.Resources>
 
     <Grid>
@@ -806,7 +768,6 @@
         <Border d:Visibility="Visible" Grid.Row="1" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVisInverted}}" Background="{DynamicResource first_main_brush}" Width="350" CornerRadius="20">
             <Grid>
 
-                <CheckBox Template="{StaticResource AnimatedCheckBox}" Width="50" Height="50"/>
                 <!--#region Credentials -->
                 <StackPanel x:Name="credentialsPanel" d:Visibility="Visible" Visibility="{Binding ConfirmationType,Converter={StaticResource BoolToVisInverted}}" HorizontalAlignment="Center" Margin="0 20 0 10">
 
@@ -838,7 +799,7 @@
                     <StackPanel Orientation="Horizontal" Margin="0 8 0 0">
 
                         <ToggleButton Style="{StaticResource ModernCheckbox}" Width="25" Height="25"
-                                      Background="{DynamicResource background_border_color}"/>
+                                      Background="{DynamicResource background_border_color}" IsChecked="{Binding Properties.RememberRemoteUser,Mode=TwoWay}"/>
 
                         <TextBlock Text="Запомнить меня" VerticalAlignment="Center" Foreground="{DynamicResource first_settings_text}" Margin="10 0 0 0"/>
                     </StackPanel>
@@ -951,7 +912,7 @@
                 <!--#endregion-->
 
                 <TextBlock VerticalAlignment="Center" FontSize="11" Margin="0 290 0 0" MaxWidth="300" TextAlignment="Center"
-                       HorizontalAlignment="Center" Padding="0 0 0 0" d:Text="Сервера стим не отвечают, попробуйте позже или идите нахуй"
+                       HorizontalAlignment="Center" Padding="0 0 0 0" d:Text="Testing error message title Testing error message title Testing error message title"
                        Foreground="PaleVioletRed" TextWrapping="Wrap" Text="{Binding ErrorMsg}" />
 
                 <Rectangle VerticalAlignment="Top" Margin="0 60 0 0" Width="300" Height="1" Fill="{DynamicResource background_border_color}"/>

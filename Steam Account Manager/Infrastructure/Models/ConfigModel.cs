@@ -47,11 +47,22 @@ namespace Steam_Account_Manager.Infrastructure.Models
         public bool MinimizeToTray { get; set; }
         public bool MinimizeOnStart { get; set; }
         public bool FreezeMode { get; set; }
+        public bool RegisterWebApiKeys { get; set; }
         public string WebApiKey { get; set; }
         public string UserCryptoKey { get; set; }
         public string Password { get; set; }
         public ObservableCollection<RecentlyLoggedUser> RecentlyLoggedUsers { get; set; }
-        public ulong? AutoLoginUserID { get; set; } 
+        public ulong? AutoLoginUserID { get; set; }
+        private bool _rememberRemoteUser;
+        public bool RememberRemoteUser
+        {
+            get => _rememberRemoteUser;
+            set
+            {
+                _rememberRemoteUser = value;
+                Config.SaveProperties();
+            }
+        }
 
 
         private Themes theme;
