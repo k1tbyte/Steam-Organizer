@@ -1,5 +1,4 @@
-﻿using ProtoBuf.WellKnownTypes;
-using Steam_Account_Manager.Infrastructure;
+﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.Controls;
@@ -142,8 +141,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 #endregion
               m:
                 CollectInfoAcc = null;
-                NowLoginUserImage    = Common.GetSteamAvatarUrl(id64) ?? "/Images/user.png";
-                NowLoginUserNickname = Common.GetSteamNickname(id64) ?? "Username";
+                NowLoginUserImage    = await Common.GetSteamAvatarUrl(id64) ?? "/Images/user.png";
+                NowLoginUserNickname = await Common.GetSteamNickname(id64) ?? "Username";
 
             });
             IsParsing = false;
@@ -221,12 +220,9 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
             AccountsV      = new AccountsView();
             AccountDataV   = new AccountDataView();
-            RemoteControlV = new RemoteControlView();
             SettingsV      = new SettingsView();
 
             CurrentView = AccountsV;
-
-            
 
             //Installation steam active user watcher
             RegistrySteamUserWatcher = new ManagementEventWatcher(new WqlEventQuery($"SELECT * FROM RegistryValueChangeEvent WHERE Hive = 'HKEY_USERS'" +
@@ -255,6 +251,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             RemoteControlViewCommand = new RelayCommand(o =>
             {
                 App.MainWindow.RemoteControlMenu.IsChecked = true;
+                RemoteControlV = RemoteControlV ?? new RemoteControlView();
                 CurrentView = RemoteControlV;
             });
 

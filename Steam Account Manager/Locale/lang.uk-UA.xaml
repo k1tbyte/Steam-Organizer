@@ -7,7 +7,6 @@
     <v:String x:Key="sv_theme">Тема</v:String>
     <v:String x:Key="sv_language">Мова</v:String>
     <v:String x:Key="sv_action_after_logging">Дія після входу в акаунт</v:String>
-    <v:String x:Key="sv_paste2fa_method">Спосіб введення 2FA-коду</v:String>
     <v:String x:Key="sv_confirm_when_del">Видаляти акаунти без підтвердження</v:String>
     <v:String x:Key="sv_save_changes">Зберегти</v:String>
     <v:String x:Key="sv_on">Увімкнено</v:String>
@@ -39,11 +38,6 @@
         <v:String>Нічого</v:String>
         <v:String>Закрити</v:String>
         <v:String>Згорнути у трей</v:String>
-    </x:ArrayExtension>
-
-    <x:ArrayExtension x:Key="sv_2fa_input_list" Type="v:String">
-        <v:String>Вставкою</v:String>
-        <v:String>Вручну</v:String>
     </x:ArrayExtension>
 
     <v:String x:Key="sv_popup_apiKeyInfo" xml:space="preserve"
@@ -311,14 +305,6 @@
     <v:String x:Key="rc_lv_editNick">Редагувати нікнейм</v:String>
     <v:String x:Key="rc_lv_noInternet">Інтернет з'єднання відсутнє...</v:String>
     <v:String x:Key="rc_lv_errorRequest">Під час виконання запиту сталася помилка...</v:String>
-    <v:String x:Key="rc_lv_notLogSteamWeb">Відсутній вхід до Steam Web...</v:String>
-    <v:String x:Key="rc_lv_steamWebConnectTip">Зараз ви перебуваєте в мережі Steam Web, можливо, попередня спроба не вдалася, підключитися зараз?</v:String>
-    <v:String x:Key="rc_lv_apiKeyNoRegTip">Ключ Web-API не зареєстровано. Зареєструвати зараз?</v:String>
-    <v:String x:Key="rc_lv_apiKeyNoRegTitle">Ключ Web-API не зареєстровано.</v:String>
-    <v:String x:Key="rc_lv_apiKeyDeniedTip">Можливо, ваш обліковий запис не відповідає вимогам для отримання ключа, перейдіть на сторінку вручну</v:String>
-    <v:String x:Key="rc_lv_apiKeyDeniedTitle">Доступ до ключа Web-API забороненый</v:String>
-    <v:String x:Key="rc_lv_apiKeyRevokeTip">Можливо, ключ Web-API вже скасовано або ще не створено</v:String>
-    <v:String x:Key="rc_lv_apiKeyRevokeTitle">Ключ Web-API не зареєстрований...</v:String>
 
     <v:String x:Key="rc_lv_invalidPass">Неправильный пароль!</v:String>
     <v:String x:Key="rc_lv_invalidTwofa">Неправильный код 2FA!</v:String>

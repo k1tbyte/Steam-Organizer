@@ -104,7 +104,7 @@
                 <TabItem.Content>
                     <Grid>
                         <Button  Style="{StaticResource ModernColoredButton}" FontWeight="Normal"
-                         CommandParameter="{Binding ElementName=Recently}" Command="{Binding LogOutCommand}"
+                                 Command="{Binding LogOutCommand}"
                          VerticalAlignment="Top" HorizontalAlignment="Left" Width="45" Height="30" Margin="23 21 0 0">
                             <Icon:Material Kind="Logout" RotationAngle="180"/>
                             <Button.ToolTip>
@@ -272,7 +272,7 @@
                                                     <ControlTemplate TargetType="DataGridCell">
                                                         <Image Width="90" Height="37" Cursor="Hand" Margin="20 0 0 0">
                                                             <Image.Source>
-                                                                <BitmapImage UriSource="{Binding ImageURL,Mode=OneWay}" DecodePixelWidth="90" DecodePixelHeight="37" CacheOption="OnLoad" />
+                                                                <BitmapImage UriSource="{Binding ImageURL,Mode=OneWay,TargetNullValue={x:Null}}" DecodePixelWidth="90" DecodePixelHeight="37" CacheOption="OnLoad" />
                                                             </Image.Source>
                                                             <Image.InputBindings>
                                                                 <MouseBinding MouseAction="LeftClick"

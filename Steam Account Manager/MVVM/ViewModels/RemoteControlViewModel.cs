@@ -12,12 +12,19 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.MVVM.ViewModels
 {
-    internal class RemoteControlViewModel : ObservableObject
+    internal class RemoteControlViewModel : ObservableObject, IDisposable
     {
+        private readonly SemaphoreSlim LoginSemaphore = new SemaphoreSlim(1);
+
+        public void Dispose()
+        {
+            LoginSemaphore.Dispose();
+        }
 
         #region Commands
         public AsyncRelayCommand LogOnCommand { get; private set; }
@@ -40,7 +47,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         #region Properties
         private string _username, _password,_authCode, _errorMsg;
         private bool _needGamesUpdate,_needFriendsUpdate;
-        public User CurrentUser            => SteamRemoteClient.CurrentUser;
+        public User CurrentUser => SteamRemoteClient.CurrentUser;
         public ConfigProperties Properties => Config.Properties;
 
         public string AuthCode
@@ -69,6 +76,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             get => _isGamesIdling;
             set
             {
+                if(IsPlayingSessionBlocked == true)
+                {
+                    Presentation.OpenPopupMessageBox("Steam is currently being used on another computer, please end your game session to start");
+                    return;
+                }
                 if (value)
                 {
                     if (SelectedGamesCount <= 0 && String.IsNullOrWhiteSpace(CurrentUser.CustomGameTitle)) return;
@@ -83,6 +95,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
                 SetProperty(ref _isGamesIdling, value);
             }
+        }
+
+        private bool? _isPlayingSessionBlocked;
+        public bool? IsPlayingSessionBlocked
+        {
+            get => _isPlayingSessionBlocked;
+            set => SetProperty(ref _isPlayingSessionBlocked, value);
         }
 
         private ObservableCollection<PlayerGame> _games;
@@ -189,7 +208,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                     ErrorMsg = App.FindString("rc_lv_servUnavailable");
                     break;
                 case EResult.AccessDenied:
-                    ErrorMsg = "Connection error! Access denied.";
+                    ErrorMsg = "Connection lost. Access denied.";
                     break;
                 case EResult.Timeout:
                     ErrorMsg = App.FindString("rc_lv_workTimeout");
@@ -209,11 +228,27 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             }
         }
 
-        private void HandleDisconnection()
+        private void HandlePlayingSession(bool isSessionBlocked)
         {
-            
+            if(IsPlayingSessionBlocked.HasValue && IsPlayingSessionBlocked == isSessionBlocked) return;
+
+            IsPlayingSessionBlocked = isSessionBlocked;
+
+            if (!isSessionBlocked && !IsGamesIdling && SelectedGamesCount > 0 && CurrentUser.AutoIdlingGames)
+                IsGamesIdling = true;
+        }
+
+        private void HandleDisconnection(EResult logOutResult)
+        {
             if (IsLoggedOn && CurrentUser != null && CurrentUser.SteamID64 != 0)
             {
+                if(logOutResult == EResult.LoggedInElsewhere && IsGamesIdling && CurrentUser.AutoIdlingGames && RecentlyLoggedIn.Exists(o => o.Username == CurrentUser.Username,out int index))
+                {
+                    ResetPlayingState(false);
+                    LogOnCommand.Execute(RecentlyLoggedIn[index]);
+                    return;
+                }
+
                 Common.BinarySerialize(CurrentUser, $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat");
 
                 if(Games != null && Games.Count > 0 && _needGamesUpdate)
@@ -226,8 +261,11 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 var localUser = Config.Accounts.Find(o => o.SteamId64 == CurrentUser.SteamID64);
                 if (localUser != null && (localUser.Nickname != CurrentUser.Nickname || localUser.AvatarHash != CurrentUser.AvatarHash || CurrentUser.Level != localUser.SteamLevel))
                 {
-                    localUser.Nickname   = CurrentUser.Nickname;
-                    localUser.AvatarHash = CurrentUser.AvatarHash;
+                    if(!String.IsNullOrEmpty(localUser.Nickname))
+                        localUser.Nickname   = CurrentUser.Nickname;
+                    
+                    if(!String.IsNullOrEmpty(localUser.AvatarHash))
+                        localUser.AvatarHash = CurrentUser.AvatarHash;
 
                     if(CurrentUser.Level != null)
                         localUser.SteamLevel = (int?)CurrentUser.Level;
@@ -250,6 +288,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         }
         private void HandleConnection()
         {
+            if (IsLoggedOn) return;
+
             string gamesCache = $"{App.WorkingDirectory}\\Cache\\Games\\{CurrentUser.SteamID64}.dat";
             string friendsCache = $"{App.WorkingDirectory}\\Cache\\Friends\\{CurrentUser.SteamID64}.dat";
 
@@ -257,9 +297,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             {
                 Games              = new ObservableCollection<PlayerGame>(Common.BinaryDeserialize<PlayerGame[]>(gamesCache));
                 SelectedGamesCount = Games.Where(o => o.IsSelected).Count();
-
-                if(SelectedGamesCount > 0 && CurrentUser.AutoIdlingGames)
-                    IsGamesIdling = true;
                 _needGamesUpdate  = false;
             }
 
@@ -291,19 +328,24 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
         public RemoteControlViewModel()
         {
-            RecentlyLoggedIn = Config.Deserialize(App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey)
-                as ObservableCollection<RecentlyLoggedAccount> ?? new ObservableCollection<RecentlyLoggedAccount>();
+            RecentlyLoggedIn = Config.Deserialize(App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey) as ObservableCollection<RecentlyLoggedAccount> ?? new ObservableCollection<RecentlyLoggedAccount>();
             // IsLoggedOn = true;
 
             SteamRemoteClient.UserStatusChanged += () => OnPropertyChanged(nameof(CurrentUser));
             SteamRemoteClient.Connected += HandleConnection;
             SteamRemoteClient.Disconnected += HandleDisconnection;
+            SteamRemoteClient.GameSessionStateCallback += HandlePlayingSession;
             SteamRemoteClient.AuthenticationCallback += (type) => ConfirmationType = type == EAuthSessionGuardType.k_EAuthSessionGuardType_None ? 0 : (int)type;
             SteamRemoteClient.SteamChatCallback += (msg) => App.Current.Dispatcher.Invoke(() => Messages.Add(msg));
 
             LogOnCommand = new AsyncRelayCommand(async (o) =>
             {
-                if (SteamRemoteClient.IsRunning) return;
+                await LoginSemaphore.WaitAsync();
+                if (!Common.CheckInternetConnection())
+                {
+                    ErrorMsg = App.FindString("rc_lv_noInternet");
+                    return;
+                }
 
                 ErrorMsg = "";
 
@@ -315,10 +357,10 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 else if (o is RecentlyLoggedAccount recently)
                     Username = recently.Username;
 
-                if (String.IsNullOrWhiteSpace(Username) || (String.IsNullOrEmpty(Password) && o.GetType() != typeof(RecentlyLoggedAccount)))
-                    return;
+                if (!String.IsNullOrWhiteSpace(Username) && (!String.IsNullOrEmpty(Password) || o?.GetType() == typeof(RecentlyLoggedAccount)))
+                    CheckLoginResult(await Task.Run(() => SteamRemoteClient.Login(Username, Password)));
 
-                CheckLoginResult(await Task.Run(() => SteamRemoteClient.Login(Username, Password)));
+                LoginSemaphore.Release();
             });
 
             #region Account common 

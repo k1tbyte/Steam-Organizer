@@ -66,6 +66,7 @@ namespace Steam_Account_Manager
             if (!Directory.Exists(cachePath))
                 Directory.CreateDirectory(cachePath);
 
+#if !DEBUG
             #region Check internet connection
             if (!Common.CheckInternetConnection())
             {
@@ -80,8 +81,8 @@ namespace Steam_Account_Manager
                 ShutdownMode = ShutdownMode.OnMainWindowClose;
             }
             #endregion
+#endif
 
-            Common.CreateHttpClientFactory();
             if (Config.Properties.Password == null)
             {
                 if (Config.LoadAccounts())
@@ -117,6 +118,7 @@ namespace Steam_Account_Manager
             GrabCursor.Dispose();
             GrabbingCursor.Dispose();
             Mutex.Close();
+            Utils.Common.CachedHttpClient.Dispose();
 
             App.Current.Dispatcher.InvokeShutdown();
         }

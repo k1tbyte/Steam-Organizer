@@ -1,6 +1,4 @@
 ﻿using Microsoft.Win32;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,21 +11,18 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.Utils
 {
     internal static class Common
     {
-        public enum EAvatarType : byte
+        static Common()
         {
-            Icon,
-            Medium,
-            Full
+            CachedHttpClient = new HttpClient(new HttpClientHandler(), disposeHandler: false);
         }
 
-        private static HttpClient HttpClientFactory;
+        public static HttpClient CachedHttpClient { get; private set; }
         private static string UserXmlProfileCache;
         private static ulong UserXmlProfileCacheId;
 
@@ -54,19 +49,10 @@ namespace Steam_Account_Manager.Utils
                 return false;
             }
         }
-        public static ref HttpClient CreateHttpClientFactory()
-        {
-            if (HttpClientFactory == null)
-            {
-                HttpClientFactory = new HttpClient(new HttpClientHandler(), disposeHandler: false);
-            }
-            return ref HttpClientFactory;
-        }
+
         public static IList<T> Swap<T>(this IList<T> list, int indexA, int indexB)
         {
-            T tmp = list[indexA];
-            list[indexA] = list[indexB];
-            list[indexB] = tmp;
+            (list[indexB], list[indexA]) = (list[indexA], list[indexB]);
             return list;
         }
         public static string BetweenStr(string str, string leftStr, string rightStr,bool relative = false)
@@ -101,11 +87,11 @@ namespace Steam_Account_Manager.Utils
 
         public static async Task<string> DownloadStringSync(string url)
         {
-            using (var response =  HttpClientFactory.GetAsync(url).Result)
+            using (var response =  CachedHttpClient.GetAsync(url).Result)
             {
-                using (HttpContent content = response.Content)
+                using (HttpContent content = response?.Content)
                 {
-                    return  await content.ReadAsStringAsync();
+                    return  await content?.ReadAsStringAsync();
                 }
             }
         }
@@ -183,7 +169,7 @@ namespace Steam_Account_Manager.Utils
         }
 
         #region Steam
-        public static string GetSteamAvatarUrl(ulong steamId64, bool fromCache = true, EAvatarType type = EAvatarType.Full)
+        public static async Task<string> GetSteamAvatarUrl(ulong steamId64, bool fromCache = true, EAvatarType type = EAvatarType.Full)
         {
             try
             {
@@ -192,21 +178,14 @@ namespace Steam_Account_Manager.Utils
                     return BetweenStr(UserXmlProfileCache, $"<avatar{type}><![CDATA[", $"]]></avatar{type}>");
                 }
                 UserXmlProfileCacheId = steamId64;
-                using (HttpResponseMessage response = HttpClientFactory.GetAsync($"https://steamcommunity.com/profiles/{steamId64}?xml=1").Result)
-                {
-                    using (HttpContent content = response.Content)
-                    {
-                        UserXmlProfileCache = content.ReadAsStringAsync().Result;
-                        return BetweenStr(UserXmlProfileCache, $"<avatar{type}><![CDATA[", $"]]></avatar{type}>");
-                    }
-                }
+                return BetweenStr(UserXmlProfileCache = await DownloadStringSync($"https://steamcommunity.com/profiles/{steamId64}?xml=1"), $"<avatar{type}><![CDATA[", $"]]></avatar{type}>");
             }
             catch
             {
                 return null;
             }
         }
-        public static string GetSteamNickname(ulong steamId64, bool fromCache = true)
+        public static async Task<string> GetSteamNickname(ulong steamId64, bool fromCache = true)
         {
             try
             {
@@ -215,14 +194,7 @@ namespace Steam_Account_Manager.Utils
                     return BetweenStr(UserXmlProfileCache, $"<steamID><![CDATA[", $"]]></steamID>");
                 }
                 UserXmlProfileCacheId = steamId64;
-                using (HttpResponseMessage response = HttpClientFactory.GetAsync($"https://steamcommunity.com/profiles/{steamId64}?xml=1").Result)
-                {
-                    using (HttpContent content = response.Content)
-                    {
-                        UserXmlProfileCache = content.ReadAsStringAsync().Result;
-                        return BetweenStr(UserXmlProfileCache, $"<steamID><![CDATA[", $"]]></steamID>");
-                    }
-                }
+                return BetweenStr(UserXmlProfileCache = await DownloadStringSync($"https://steamcommunity.com/profiles/{steamId64}?xml=1"), $"<steamID><![CDATA[", $"]]></steamID>");
             }
             catch
             {
@@ -290,22 +262,6 @@ namespace Steam_Account_Manager.Utils
 
             }
             catch { return null; }
-        }
-
-        public static int GetSteamRegistryPid()
-        {
-            RegistryKey registryKey = Environment.Is64BitOperatingSystem ?
-        RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64) :
-        RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
-            try
-            {
-                using (registryKey = registryKey.OpenSubKey(@"Software\\Valve\\Steam\\ActiveProcess", false))
-                {
-                    return Convert.ToInt32(registryKey.GetValue("pid"));
-                }
-
-            }
-            catch { throw; }
         }
 
         public static string GetSteamRegistryLanguage()
@@ -400,5 +356,12 @@ namespace Steam_Account_Manager.Utils
         }
 
         #endregion
+
+        public enum EAvatarType : byte
+        {
+            Icon,
+            Medium,
+            Full
+        }
     }
 }

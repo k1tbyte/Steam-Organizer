@@ -189,6 +189,8 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <BitmapImage x:Key="DefaultSteamImageFull" UriSource="/Images/default_steam_profile.png" />
             <!--#endregion-->
 
 

@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using static SteamKit2.GC.Dota.Internal.CMsgDOTABotDebugInfo;
 
 namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 {
@@ -24,6 +23,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         public string Token { get; private set; }
         public string SessionID { get; private set; }
         public string TokenSecure { get; private set; }
+        public ulong LastLogOnSteamID { get; private set; }
         private CookieContainer Cookies = new CookieContainer();
 
         internal async Task<string> Fetch(string url, string method, NameValueCollection data = null, bool ajax = true)
@@ -113,6 +113,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         public async Task<bool> Initialize(SteamClient client, string webAPIUserNonce)
         {
+            LastLogOnSteamID = 0;
             if (string.IsNullOrEmpty(webAPIUserNonce) || client == null)
                 return false;
 
@@ -182,6 +183,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             Cookies.Add(new Cookie("timezoneOffset", timeZoneOffset, "/", $".{SteamCommunityURL.Host}"));
             Cookies.Add(new Cookie("timezoneOffset", timeZoneOffset, "/", $".{SteamHelpURL.Host}"));
             Cookies.Add(new Cookie("timezoneOffset", timeZoneOffset, "/", $".{SteamStoreURL.Host}"));
+            LastLogOnSteamID = client.SteamID.ConvertToUInt64();
             return true;
         }
 

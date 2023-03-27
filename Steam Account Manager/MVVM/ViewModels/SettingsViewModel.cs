@@ -65,12 +65,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             set => Config.Properties.ActionAfterLogin = (LoggedAction)value;
         }
 
-        public byte TwoFactorInputMethod
-        {
-            get => (byte)Config.Properties.Input2FaMethod;
-            set => Config.Properties.Input2FaMethod = (Input2faMethod)value;
-        }
-
         public string Version => App.Version.ToString(3) + (App.Version.Revision == 0 ? " Beta" : " Stable");
         #endregion
 
@@ -118,7 +112,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
                 Config.Properties.Language = attachedLocale;
                 OnPropertyChanged(nameof(ActionAfterLogin));
-                OnPropertyChanged(nameof(TwoFactorInputMethod));
             });
 
             ClearAutoLoginAccount = new RelayCommand(o =>

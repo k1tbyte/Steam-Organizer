@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -29,9 +28,10 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
     {
         public static event Action UserStatusChanged;
         public static event Action Connected;
-        public static event Action Disconnected;
+        public static event Action<EResult> Disconnected;
         public static event Action<SteamChatMessage> SteamChatCallback;
         public static event Action<EAuthSessionGuardType> AuthenticationCallback;
+        public static event Action<bool> GameSessionStateCallback;
 
         internal static EOSType OSType { get; private set; } = EOSType.Unknown;
 
@@ -59,7 +59,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         public static CredentialsAuthSession AuthSession { get; private set; }
 
         internal const ushort CallbackSleep = 500; //milliseconds
-        private const uint LoginID = 1488; // This must be the same for all processes
+        private const uint LoginID          = 1488; // This must be the same for all processes
         private static RecentlyLoggedAccount RecentlyLogged;
 
         static SteamRemoteClient()
@@ -69,22 +69,23 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             callbackManager = new CallbackManager(steamClient);
             webHandler      = new WebHandler();
 
-            steamUser       = steamClient.GetHandler<SteamUser>();
-            steamFriends    = steamClient.GetHandler<SteamFriends>();
+            steamUser     = steamClient.GetHandler<SteamUser>();
+            steamFriends  = steamClient.GetHandler<SteamFriends>();
+            steamUnified  = steamClient.GetHandler<SteamUnifiedMessages>();
 
-            steamUnified         = steamClient.GetHandler<SteamUnifiedMessages>();
             UnifiedPlayerService = steamUnified.CreateService<IPlayer>();
             UnifiedEcon          = steamUnified.CreateService<IEcon>();
 
             callbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
             callbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnected);
+
             callbackManager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
             callbackManager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
             callbackManager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
-            callbackManager.Subscribe<SteamUser.WebAPIUserNonceCallback>(OnWebApiUser);
-
+            callbackManager.Subscribe<SteamUser.PlayingSessionStateCallback>(OnPlayingSessionState);
             callbackManager.Subscribe<SteamUser.AccountInfoCallback>(OnAccountInfo);
             callbackManager.Subscribe<SteamUser.EmailAddrInfoCallback>(OnEmailInfo);
+
             callbackManager.Subscribe<SteamFriends.PersonaStateCallback>(OnPersonaState);
             callbackManager.Subscribe<SteamFriends.PersonaChangeCallback>(OnPersonaNameChange);
             callbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnFriendMessage);
@@ -133,7 +134,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         #region Callbacks processing
 
-        //FIXED
         private static async void OnConnected(SteamClient.ConnectedCallback callback)
         {
             byte[] sentryHash = null;
@@ -221,17 +221,26 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs"))
                 Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs");
 
+
+            var steamId = steamClient.SteamID.ConvertToUInt64();
+
+            //  In order not to overwrite the same data, since with LoggedInElsewhere and RememberIdleGames
+            //  the system will automatically re-login to the same account without clearing the session (Current user != null)
+            //  In any other case, the session will be cleared and this will not happen.
+            if (CurrentUser?.SteamID64 == steamId)
+                return;
+
             DeserializeUser();
 
-            CurrentUser.SteamID64      = steamClient.SteamID.ConvertToUInt64();
+            CurrentUser.SteamID64      = steamId;
             CurrentUser.Username       = Username;
             CurrentUser.IPCountryCode  = callback.PublicIP.ToString();
             CurrentUser.IPCountryImage = $"https://flagcdn.com/w20/{callback.IPCountryCode.ToLower()}.png";
-
+            
             ChangePersonaState(EPersonaState.Invisible);
 
             WebApiUserNonce = callback.WebAPIUserNonce;
-            steamUser.RequestWebAPIUserNonce();
+            LoginIntoSteamWeb();
 
             Connected?.Invoke();
 
@@ -258,10 +267,9 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         {
             IsPlaying = IsRunning = false;
             WebApiUserNonce = null;
-            Disconnected?.Invoke();
+            Disconnected?.Invoke(LastLogOnResult);
         }
 
-        //FIXED
         private static void OnMachineAuth(SteamUser.UpdateMachineAuthCallback callback)
         {
             byte[] sentryHash = CryptoHelper.SHAHash(callback.Data);
@@ -281,18 +289,11 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             });
         }
 
-        private static void OnWebApiUser(SteamUser.WebAPIUserNonceCallback callback)
-        {
-            if (callback.Result == EResult.OK && callback.Nonce != WebApiUserNonce)
-            {
-                WebApiUserNonce = callback.Nonce;
-                LoginIntoSteamWeb();
-            }
-        }
-
         private static async void LoginIntoSteamWeb()
         {
-            IsWebLoggedIn = await webHandler.Initialize(steamClient, WebApiUserNonce);
+            if(webHandler.LastLogOnSteamID != CurrentUser.SteamID64 || !IsWebLoggedIn)
+                IsWebLoggedIn = await webHandler.Initialize(steamClient, WebApiUserNonce);
+
             if(!IsWebLoggedIn)
             {
                 System.Windows.Forms.MessageBox.Show("Не удалось подключиться к steamWeb");
@@ -515,6 +516,11 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             }
         }
 
+        private static void OnPlayingSessionState(SteamUser.PlayingSessionStateCallback callback)
+        {
+            GameSessionStateCallback?.Invoke(callback.PlayingBlocked);
+        }
+
 /*        private static void OnCsgoMessage(SteamGameCoordinator.MessageCallback callback)
         {
             System.Action<IPacketGCMsg> action;
@@ -533,27 +539,27 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             action(callback.Message);
         }*/
 
-/*        private static void OnCSGOClientWelcome(IPacketGCMsg packetMsg)
-        {
-            ClientGCMsgProtobuf<SteamKit2.GC.CSGO.Internal.CMsgClientWelcome> clientGcMsgProtobuf = new ClientGCMsgProtobuf<SteamKit2.GC.CSGO.Internal.CMsgClientWelcome>(packetMsg);
-            gameCoordinator.Send((IClientGCMsg)new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_ClientRequestPlayersProfile>(9127U)
-            {
-                Body = {
-                     account_id = (uint)(CurrentSteamId64 - 76561197960265728),
-                     request_level = 32U
-                       }
-            }, 730U);
-        }*/
+        /*        private static void OnCSGOClientWelcome(IPacketGCMsg packetMsg)
+                {
+                    ClientGCMsgProtobuf<SteamKit2.GC.CSGO.Internal.CMsgClientWelcome> clientGcMsgProtobuf = new ClientGCMsgProtobuf<SteamKit2.GC.CSGO.Internal.CMsgClientWelcome>(packetMsg);
+                    gameCoordinator.Send((IClientGCMsg)new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_ClientRequestPlayersProfile>(9127U)
+                    {
+                        Body = {
+                             account_id = (uint)(CurrentSteamId64 - 76561197960265728),
+                             request_level = 32U
+                               }
+                    }, 730U);
+                }*/
 
-/*        private static void OnCSGODetails(IPacketGCMsg packetMsg)
-        {
-            ClientGCMsgProtobuf<CMsgGCCStr> clientGcMsgProtobuf = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_PlayersProfile>(packetMsg);
-            var CSGOLevel = clientGcMsgProtobuf.Body.account_profiles[0].player_level;
-            var CSGORank = clientGcMsgProtobuf.Body.account_profiles[0].ranking.rank_id.ToString();
-            var CSGOWins = clientGcMsgProtobuf.Body.account_profiles[0].ranking.wins;
-            var medals = clientGcMsgProtobuf.Body.account_profiles[0].medals;
-            
-        }*/
+        /*        private static void OnCSGODetails(IPacketGCMsg packetMsg)
+                {
+                    ClientGCMsgProtobuf<CMsgGCCStr> clientGcMsgProtobuf = new ClientGCMsgProtobuf<CMsgGCCStrike15_v2_PlayersProfile>(packetMsg);
+                    var CSGOLevel = clientGcMsgProtobuf.Body.account_profiles[0].player_level;
+                    var CSGORank = clientGcMsgProtobuf.Body.account_profiles[0].ranking.rank_id.ToString();
+                    var CSGOWins = clientGcMsgProtobuf.Body.account_profiles[0].ranking.wins;
+                    var medals = clientGcMsgProtobuf.Body.account_profiles[0].medals;
+
+                }*/
 
         #endregion
 

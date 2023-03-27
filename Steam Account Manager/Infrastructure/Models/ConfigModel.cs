@@ -29,19 +29,12 @@ namespace Steam_Account_Manager.Infrastructure.Models
         Minimize = 2
     }
 
-    internal enum Input2faMethod : byte
-    {
-        Paste,
-        Manually
-    }
-
     [Serializable]
     internal sealed class ConfigProperties
     {
         public bool NoConfirmMode { get; set; }
         public bool TakeAccountInfo { get; set; }
         public LoggedAction ActionAfterLogin { get; set; }
-        public Input2faMethod Input2FaMethod { get; set; }
         public bool AutoGetSteamId { get; set; }
         public bool DontRememberPassword { get; set; }
         public bool MinimizeToTray { get; set; }

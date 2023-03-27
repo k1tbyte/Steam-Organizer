@@ -26,7 +26,7 @@ namespace Steam_Account_Manager.MVVM.View.Controls
         {
             InitializeComponent();
             this.DataContext = new AccountsViewModel();
-            scroll = GetDescendantByType(accountsListBox, typeof(ScrollViewer)) as ScrollViewer;
+            scroll           = GetDescendantByType(accountsListBox, typeof(ScrollViewer)) as ScrollViewer;
         }
 
         public static Visual GetDescendantByType(Visual element, Type type)
