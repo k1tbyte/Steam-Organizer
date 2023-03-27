@@ -92,5 +92,14 @@ namespace Steam_Account_Manager.MVVM.View.Controls
             if(!DigAndEnLetters.IsMatch(e.Text))
                 e.Handled = true;
         }
+
+        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if(e.ClickCount == 2)
+            {
+                (this.DataContext as RemoteControlViewModel).LogOnCommand.Execute(recently.SelectedItem);
+                recently.UnselectAll();
+            }
+        }
     }
 }

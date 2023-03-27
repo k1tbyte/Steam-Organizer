@@ -110,7 +110,8 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
     {
         public string Username { get; set; }
         public string RefreshToken { get; set; }
-        public string ImageUrl { get; set; }
+        public string AvatarHash { get; set; }
+        public string AvatarUrl => $"https://avatars.cloudflare.steamstatic.com/{AvatarHash}_medium.jpg";
     }
 
     public class SteamChatMessage

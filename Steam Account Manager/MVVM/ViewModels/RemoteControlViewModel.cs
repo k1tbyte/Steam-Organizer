@@ -1,10 +1,8 @@
-﻿using Newtonsoft.Json;
-using Steam_Account_Manager.Infrastructure;
+﻿using Steam_Account_Manager.Infrastructure;
 using Steam_Account_Manager.Infrastructure.Converters;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
 using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
-using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.Core;
 using Steam_Account_Manager.MVVM.View.Windows;
 using Steam_Account_Manager.Utils;
@@ -226,11 +224,14 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
                 //Updating local accdb cache
                 var localUser = Config.Accounts.Find(o => o.SteamId64 == CurrentUser.SteamID64);
-                if (localUser != null)
+                if (localUser != null && (localUser.Nickname != CurrentUser.Nickname || localUser.AvatarHash != CurrentUser.AvatarHash || CurrentUser.Level != localUser.SteamLevel))
                 {
                     localUser.Nickname   = CurrentUser.Nickname;
                     localUser.AvatarHash = CurrentUser.AvatarHash;
-                    localUser.SteamLevel = (int?)CurrentUser.Level;
+
+                    if(CurrentUser.Level != null)
+                        localUser.SteamLevel = (int?)CurrentUser.Level;
+
                     Config.SaveAccounts();
                 }
             }
@@ -292,7 +293,6 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         {
             RecentlyLoggedIn = Config.Deserialize(App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey)
                 as ObservableCollection<RecentlyLoggedAccount> ?? new ObservableCollection<RecentlyLoggedAccount>();
-
             // IsLoggedOn = true;
 
             SteamRemoteClient.UserStatusChanged += () => OnPropertyChanged(nameof(CurrentUser));
@@ -306,21 +306,16 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 if (SteamRemoteClient.IsRunning) return;
 
                 ErrorMsg = "";
-                string LoginKey = null;
 
-                if (o is string key && !String.IsNullOrWhiteSpace(key))
-                {
-                    LoginKey = key;
-                }
-                else if(o is Account acc)
+                if (o is Account acc)
                 {
                     Username = acc.Login;
                     Password = acc.Password;
-                    /*if(System.IO.File.Exists(acc.AuthenticatorPath))
-                        AuthCode = JsonConvert.DeserializeObject<SteamGuardAccount>(System.IO.File.ReadAllText(acc.AuthenticatorPath)).GenerateSteamGuardCode();*/
                 }
+                else if (o is RecentlyLoggedAccount recently)
+                    Username = recently.Username;
 
-                if (String.IsNullOrWhiteSpace(Username) || (String.IsNullOrEmpty(Password) && LoginKey == null))
+                if (String.IsNullOrWhiteSpace(Username) || (String.IsNullOrEmpty(Password) && o.GetType() != typeof(RecentlyLoggedAccount)))
                     return;
 
                 CheckLoginResult(await Task.Run(() => SteamRemoteClient.Login(Username, Password)));

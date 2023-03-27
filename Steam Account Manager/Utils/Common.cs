@@ -1,4 +1,6 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,6 +13,8 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.Utils
 {
@@ -95,6 +99,16 @@ namespace Steam_Account_Manager.Utils
 
         public static  T Find<T>(this ObservableCollection<T> collection, Func<T,bool> match) => collection.Where(match).FirstOrDefault();
 
+        public static async Task<string> DownloadStringSync(string url)
+        {
+            using (var response =  HttpClientFactory.GetAsync(url).Result)
+            {
+                using (HttpContent content = response.Content)
+                {
+                    return  await content.ReadAsStringAsync();
+                }
+            }
+        }
 
         #region Encryption
         public static string Sha256(string randomString)

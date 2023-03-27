@@ -92,11 +92,11 @@
         </Grid.RowDefinitions>
 
         <!--#region Tab control -->
-        <Border Visibility="{Binding ElementName=tabs,Path=Visibility}" Height="55" VerticalAlignment="Top" Margin="0 17 0 0" HorizontalAlignment="Center" CornerRadius="15" 
+        <Border d:Visibility="Collapsed" Visibility="{Binding ElementName=tabs,Path=Visibility}" Height="55" VerticalAlignment="Top" Margin="0 17 0 0" HorizontalAlignment="Center" CornerRadius="15" 
                 Background="{DynamicResource second_main_brush}" Width="340">
 
         </Border>
-        <TabControl x:Name="tabs" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVis}}" d:Visibility="Collapsed" Grid.RowSpan="3" Style="{StaticResource RemoteTabControl}" Margin="0" SelectedIndex="{Binding SelectedTabIndex}">
+        <TabControl x:Name="tabs" d:Visibility="Collapsed" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVis}}" Grid.RowSpan="3" Style="{StaticResource RemoteTabControl}" Margin="0" SelectedIndex="{Binding SelectedTabIndex}">
             <TabItem Style="{StaticResource RemoteControlTabItem}" IsSelected="True">
                 <TabItem.Header>
                     <Icon:PackIconMaterial Kind="Account" Width="25" Height="25"/>
@@ -137,8 +137,13 @@
 
                         </StackPanel>
 
-                        <TextBlock Text="{Binding CurrentUser.Wallet,UpdateSourceTrigger=PropertyChanged}" FontSize="15" FontWeight="Medium" HorizontalAlignment="Right" Margin="0 20 25 0"
-                           Foreground="{DynamicResource menu_button_background}"/>
+                        <StackPanel HorizontalAlignment="Right" Margin="0 20 25 0" VerticalAlignment="Top">
+                            <TextBlock Text="{Binding CurrentUser.Wallet,UpdateSourceTrigger=PropertyChanged,TargetNullValue=0\,00 $}" FontSize="15" FontWeight="Medium" 
+                           Foreground="{DynamicResource menu_button_background}" d:Text="ARS$ 5254,23"/>
+                            <TextBlock d:Text="Argentina" Text="{Binding CurrentUser.Region}" FontSize="9" HorizontalAlignment="Right" FontWeight="Thin"
+                                       Foreground="{DynamicResource first_settings_text}" Opacity="0.8"/>
+                        </StackPanel>
+                       
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 0 12">
                             <TextBlock Text="{DynamicResource rc_lv_nickname}" FontSize="16" FontWeight="Medium" Foreground="{DynamicResource rc_lv_main_text}" />
@@ -255,7 +260,7 @@
                                    Margin="20,16,17,162" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Medium" FontSize="10" />
 
                         <DataGrid x:Name="games" Margin="0 8 117 9" Background="Transparent" ItemsSource="{Binding Games}" VirtualizingPanel.VirtualizationMode="Standard"
-                                  VirtualizingPanel.CacheLength="10">
+                                  VirtualizingPanel.CacheLength="10" ScrollViewer.VerticalScrollBarVisibility="Visible">
 
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Width="120">
@@ -765,7 +770,7 @@
         <!--#endregion-->
 
         <!--#region Login border -->
-        <Border d:Visibility="Visible" Grid.Row="1" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVisInverted}}" Background="{DynamicResource first_main_brush}" Width="350" CornerRadius="20">
+        <Border x:Name="loginArea" d:Visibility="Visible" Grid.Row="1" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVisInverted}}" Background="{DynamicResource first_main_brush}" Width="350" CornerRadius="20">
             <Grid>
 
                 <!--#region Credentials -->
@@ -920,5 +925,43 @@
         </Border>
         <!--#endregion-->
 
+        <ListBox x:Name="recently" ItemsSource="{Binding RecentlyLoggedIn}" BorderThickness="0" Background="Transparent"
+                 HorizontalAlignment="Center"  MaxWidth="530" ScrollViewer.CanContentScroll="False" Visibility="{Binding ElementName=loginArea,Path=Visibility}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource base_listboxItem}">
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="Height" Value="90"/>
+                    <Setter Property="Margin" Value="3 0 3 0"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="4" Background="{DynamicResource first_main_brush}" CornerRadius="10" 
+                            MouseLeftButtonDown="Border_MouseLeftButtonDown">
+                        <StackPanel Margin="7">
+                            <Rectangle RadiusY="5" RadiusX="5" Width="45" Height="45">
+                                <Rectangle.Fill>
+                                    <ImageBrush ImageSource="{Binding AvatarUrl}"/>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <TextBlock HorizontalAlignment="Center" Margin="0 2 0 0" Text="{Binding Username}" Width="60" TextTrimming="WordEllipsis" TextAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- 
+        <Button HorizontalAlignment="Left" Style="{StaticResource ModernServiceButton}" Width="18" Height="32" Margin="10 0 0 0">
+            <Path Data="M15 18l-6-6 6-6" StrokeLineJoin="Round" Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" StrokeThickness="6"
+                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stretch="Fill"/>
+        </Button>
+        -->
     </Grid>
 </UserControl>

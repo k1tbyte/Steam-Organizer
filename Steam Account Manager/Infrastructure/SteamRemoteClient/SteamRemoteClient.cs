@@ -1,8 +1,10 @@
 ﻿using HtmlAgilityPack;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Steam_Account_Manager.Infrastructure.Converters;
 using Steam_Account_Manager.Infrastructure.Models;
 using Steam_Account_Manager.Infrastructure.Models.JsonModels;
+using Steam_Account_Manager.Infrastructure.SteamRemoteClient.Authenticator;
 using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.Utils;
 using SteamKit2;
@@ -58,6 +60,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         internal const ushort CallbackSleep = 500; //milliseconds
         private const uint LoginID = 1488; // This must be the same for all processes
+        private static RecentlyLoggedAccount RecentlyLogged;
 
         static SteamRemoteClient()
         {
@@ -101,18 +104,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             Password        = password;
             IsRunning       = true;
 
-            if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers"))
-                Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers");
-
-            if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers\{Username}"))
-                Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers\{Username}");
-
-            if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs"))
-                Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs");
-
             LastLogOnResult = EResult.NotLoggedOn;
-            DeserializeUser();
-
+            
             steamClient.Connect();
             
             while (IsRunning)
@@ -134,7 +127,6 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             else if (CurrentUser == null)
             {
                 CurrentUser = new User();
-                Common.BinarySerialize(CurrentUser, $"{App.WorkingDirectory}\\RemoteUsers\\{Username}\\User.dat");
             }
         }
         #endregion
@@ -151,10 +143,10 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 sentryHash = CryptoHelper.SHAHash(sentryFile);
             }
 
-            var remembered = RemoteControlViewModel.RecentlyLoggedIn.Find(o => o.Username == Username);
+            RecentlyLogged = RemoteControlViewModel.RecentlyLoggedIn.Find(o => o.Username == Username);
             (AuthPollResult, EResult) pollResponse = default;
 
-            if (remembered == null)
+            if (RecentlyLogged == null)
             {
                 AuthSession = await steamClient.Authentication.BeginAuthSessionViaCredentialsAsync(new AuthSessionDetails
                 {
@@ -163,7 +155,18 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                     IsPersistentSession = Config.Properties.RememberRemoteUser,
                 }).ConfigureAwait(false);
 
-                AuthenticationCallback(AuthSession.AllowedConfirmations[0].confirmation_type);
+                var authAcc = Config.Accounts.Find(o => o.Login == Username);
+                if(AuthSession.AllowedConfirmations.Exists(o => o.confirmation_type == EAuthSessionGuardType.k_EAuthSessionGuardType_DeviceCode) && authAcc != null && !String.IsNullOrEmpty(authAcc.AuthenticatorPath) && System.IO.File.Exists(authAcc.AuthenticatorPath))
+                {
+                    try
+                    {
+                        await AuthSession.SendSteamGuardCodeAsync(
+                      JsonConvert.DeserializeObject<SteamGuardAccount>(authAcc.AuthenticatorPath).GenerateSteamGuardCode(), EAuthSessionGuardType.k_EAuthSessionGuardType_DeviceCode);
+                    }
+                    catch { AuthenticationCallback(AuthSession.AllowedConfirmations[0].confirmation_type); }
+                }
+                else
+                    AuthenticationCallback(AuthSession.AllowedConfirmations[0].confirmation_type);
                 
                 while (IsRunning)
                 {
@@ -183,7 +186,11 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
                 if (Config.Properties.RememberRemoteUser)
                 {
-                    RemoteControlViewModel.RecentlyLoggedIn.Add(new RecentlyLoggedAccount { Username = Username, RefreshToken = pollResponse.Item1.RefreshToken });
+                    if (RemoteControlViewModel.RecentlyLoggedIn.Count == 6)
+                        RemoteControlViewModel.RecentlyLoggedIn.RemoveAt(5);
+
+                    RecentlyLogged = new RecentlyLoggedAccount { Username = Username, RefreshToken = pollResponse.Item1.RefreshToken };
+                    App.Current.Dispatcher.Invoke(() => RemoteControlViewModel.RecentlyLoggedIn.Add(RecentlyLogged));
                     Config.Serialize(RemoteControlViewModel.RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
                 }    
                     
@@ -194,7 +201,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 LoginID                = LoginID,
                 SentryFileHash         = sentryHash,
                 Username               = Username,
-                AccessToken            = remembered?.RefreshToken ?? pollResponse.Item1.RefreshToken
+                AccessToken            = RecentlyLogged?.RefreshToken ?? pollResponse.Item1.RefreshToken
             });
         }
 
@@ -204,7 +211,18 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             if (LastLogOnResult != EResult.OK)
                 return;
-            
+
+            if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers"))
+                Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers");
+
+            if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers\{Username}"))
+                Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers\{Username}");
+
+            if (!Directory.Exists($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs"))
+                Directory.CreateDirectory($@"{App.WorkingDirectory}\RemoteUsers\{Username}\ChatLogs");
+
+            DeserializeUser();
+
             CurrentUser.SteamID64      = steamClient.SteamID.ConvertToUInt64();
             CurrentUser.Username       = Username;
             CurrentUser.IPCountryCode  = callback.PublicIP.ToString();
@@ -348,6 +366,11 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 flag = true;
             }
 
+            if(hash != RecentlyLogged.AvatarHash)
+            {
+                RecentlyLogged.AvatarHash = hash;
+                Config.Serialize(RemoteControlViewModel.RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
+            }
 
             if(flag)
                 UserStatusChanged?.Invoke();
@@ -574,8 +597,8 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             using (var webClient = new WebClient { Encoding = Encoding.UTF8 })
             {
-                string json = await webClient.DownloadStringTaskAsync(
-$"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={(String.IsNullOrWhiteSpace(Config.Properties.WebApiKey) == true ? Keys.STEAM_API_KEY : Config.Properties.WebApiKey)}&steamid={CurrentUser.SteamID64}");
+                var link = $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={(String.IsNullOrWhiteSpace(Config.Properties.WebApiKey) == true ? Keys.STEAM_API_KEY : Config.Properties.WebApiKey)}&steamid={CurrentUser.SteamID64}";
+                string json = await Common.DownloadStringSync(link);
                 JToken node = JObject.Parse(json)?.SelectToken("*.friends");
                 sinces = node?.SelectTokens(@"$.[?(@.friend_since)].friend_since");
             }

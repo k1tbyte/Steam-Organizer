@@ -4,30 +4,24 @@
     <Style x:Key="base_listboxItem" TargetType="{x:Type ListBoxItem}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
         <Setter Property="OverridesDefaultStyle" Value="true"/>
-        <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" />
+        <Setter Property="BorderThickness" Value="5"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
                     <Grid>
                         <Border 
                         Name="Border"
-                        Padding="7"
-                        SnapsToDevicePixels="True"
-                            BorderThickness="1"
-                            
+                            BorderThickness="2"
                         CornerRadius="15"
-                        Margin="2"
                         Opacity="0.25">
                         </Border>
-                        <ContentPresenter Margin="5" />
+                        <ContentPresenter Margin="{TemplateBinding BorderThickness}" />
                     </Grid>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="Border" Property="Background"
                                     Value="{DynamicResource ResourceKey=rc_selected_item_backgound}"/>
-                            <Setter TargetName="Border" Property="BorderBrush"
-                                    Value="{DynamicResource ResourceKey=adv_expand_border}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
