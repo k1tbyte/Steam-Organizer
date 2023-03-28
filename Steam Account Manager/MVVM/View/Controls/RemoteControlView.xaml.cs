@@ -1,5 +1,6 @@
 ﻿using Steam_Account_Manager.Infrastructure.SteamRemoteClient;
 using Steam_Account_Manager.MVVM.ViewModels;
+using System;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;

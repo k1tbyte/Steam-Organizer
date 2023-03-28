@@ -24,11 +24,8 @@ namespace Steam_Account_Manager.MVVM.Core
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        public void RaiseCanExecuteChanged()
-        {
-            CommandManager.InvalidateRequerySuggested();
-        }
-
+        public void RaiseCanExecuteChanged() => CommandManager.InvalidateRequerySuggested();
+        
         public bool CanExecute(object parameter)
         {
             if (Interlocked.Read(ref _isExecuting) != 0)
@@ -51,6 +48,6 @@ namespace Steam_Account_Manager.MVVM.Core
                 Interlocked.Exchange(ref _isExecuting, 0);
                 RaiseCanExecuteChanged();
             }
-             }
+        }
     }
 }

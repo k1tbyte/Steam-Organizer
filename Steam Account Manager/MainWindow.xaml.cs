@@ -3,6 +3,7 @@ using Steam_Account_Manager.MVVM.ViewModels;
 using Steam_Account_Manager.Utils;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -23,12 +24,26 @@ namespace Steam_Account_Manager
                 App.Shutdown();
             };
 
-            Loaded += (sender, e) => 
+            Loaded += async (sender, e) => 
             {
                 WindowHandle = new WindowInteropHelper(this).Handle;
                 HwndSource.FromHwnd(WindowHandle)?.AddHook(new HwndSourceHook(MessagesHandler));
                 if (Config.Properties.FreezeMode)
                     LimitMemory();
+
+                if (string.IsNullOrEmpty(App.SteamExePath) && Presentation.OpenQueryMessageBox("Steam is not found on your computer, would you like to download now?", "Steam client not found") == true)
+                {
+                    using (var response = await Common.CachedHttpClient.GetAsync("https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe"))
+                    {
+                        var path = $"{Environment.GetEnvironmentVariable("USERPROFILE")}\\Downloads\\SteamSetup.exe";
+                        using (var fs = new FileStream(path, FileMode.Create))
+                        {
+                            await response.Content.CopyToAsync(fs);
+                        }
+                        Process.Start(path).Dispose();
+                        App.Shutdown();
+                    }
+                }
 
                 if (App.Args == null)
                     return;
@@ -39,7 +54,7 @@ namespace Steam_Account_Manager
 
         private void LimitMemory()
         {
-            using (var proc = System.Diagnostics.Process.GetCurrentProcess())
+            using (var proc = Process.GetCurrentProcess())
             {
                 proc.MaxWorkingSet = proc.MinWorkingSet;
             }
@@ -50,9 +65,8 @@ namespace Steam_Account_Manager
             var args = Win32.GetMessage(message, lParameter);
 
             if (args == null)
-            {
                 return IntPtr.Zero;
-            }
+            
 
             Win32.BringWindowToFront(WindowHandle);
             ArgumentsHandler(args);

@@ -17,14 +17,9 @@ using System.Threading.Tasks;
 
 namespace Steam_Account_Manager.MVVM.ViewModels
 {
-    internal class RemoteControlViewModel : ObservableObject, IDisposable
+    internal class RemoteControlViewModel : ObservableObject
     {
-        private readonly SemaphoreSlim LoginSemaphore = new SemaphoreSlim(1);
-
-        public void Dispose()
-        {
-            LoginSemaphore.Dispose();
-        }
+        public static SemaphoreSlim LoginSemaphore { get; private set; }
 
         #region Commands
         public AsyncRelayCommand LogOnCommand { get; private set; }
@@ -276,6 +271,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
 
             if (App.IsShuttingDown)
             {
+                LoginSemaphore.Release();
                 App.Shutdown();
                 return;
             }
@@ -337,10 +333,13 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             SteamRemoteClient.GameSessionStateCallback += HandlePlayingSession;
             SteamRemoteClient.AuthenticationCallback += (type) => ConfirmationType = type == EAuthSessionGuardType.k_EAuthSessionGuardType_None ? 0 : (int)type;
             SteamRemoteClient.SteamChatCallback += (msg) => App.Current.Dispatcher.Invoke(() => Messages.Add(msg));
+            LoginSemaphore = new SemaphoreSlim(1);
 
             LogOnCommand = new AsyncRelayCommand(async (o) =>
             {
-                await LoginSemaphore.WaitAsync();
+                if (!await LoginSemaphore.WaitAsync(10000))
+                    return;
+
                 if (!Common.CheckInternetConnection())
                 {
                     ErrorMsg = App.FindString("rc_lv_noInternet");

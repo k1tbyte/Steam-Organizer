@@ -96,7 +96,7 @@
                 Background="{DynamicResource second_main_brush}" Width="340">
 
         </Border>
-        <TabControl x:Name="tabs" d:Visibility="Collapsed" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVis}}" Grid.RowSpan="3" Style="{StaticResource RemoteTabControl}" Margin="0" SelectedIndex="{Binding SelectedTabIndex}">
+        <TabControl x:Name="tabs" d:Visibility="Visible" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVis}}" Grid.RowSpan="3" Style="{StaticResource RemoteTabControl}" Margin="0" SelectedIndex="{Binding SelectedTabIndex}">
             <TabItem Style="{StaticResource RemoteControlTabItem}" IsSelected="True">
                 <TabItem.Header>
                     <Icon:PackIconMaterial Kind="Account" Width="25" Height="25"/>
@@ -401,7 +401,7 @@
 
             <TabItem Style="{StaticResource RemoteControlTabItem}">
                 <TabItem.Header>
-                    <Icon:PackIconMaterial Kind="Message" Width="25" Height="25"/>
+                    <Icon:PackIconMaterial Kind="FormatListText" Width="25" Height="25"/>
                 </TabItem.Header>
 
                 <TabItem.Content>
@@ -643,40 +643,10 @@
 
 
                         <!-- Commands area -->
-                        <Grid Margin="20 25 0 0">
-                            <Border Background="{DynamicResource rc_button_back}" CornerRadius="0 0 15 15" 
-                                Opacity="0.6" Margin="0 25 0 0" Height="190" VerticalAlignment="Top"/>
-                            <Border Background="{DynamicResource rc_button_back}" CornerRadius="15 15 0 0" 
-                                Opacity="1" Margin="0 0 0 0" Height="25" VerticalAlignment="Top"/>
-                            <StackPanel>
-                                <TextBlock Text="{DynamicResource rc_mv_cmdsTitle}"
-                                   Margin="10 5 0 2" FontWeight="Medium"
-                                   Foreground="{DynamicResource default_secundary_foreground}"/>
+                        <Rectangle Fill="{DynamicResource adv_rectangle}" Margin="50 15 0 15" Width="2"
+                                   RadiusY="20" RadiusX="20"/>
 
-                                <ListBox Background="Transparent" Width="320" Height="185" BorderThickness="0" 
-                                     ScrollViewer.VerticalScrollBarVisibility="Hidden">
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Margin="0 3 0 0">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="105"/>
-                                                    <ColumnDefinition Width="105"/>
-                                                    <ColumnDefinition Width="105"/>
-                                                </Grid.ColumnDefinitions>
 
-                                                <TextBox Grid.Column="0"  Text="{Binding Keyword}" MaxWidth="90" Style="{StaticResource commandBox}" Foreground="{DynamicResource first_settings_text}"/>
-
-                                                <TextBox Grid.Column="1" Text="{Binding CommandExecution}" MaxWidth="90" Style="{StaticResource commandBox}" Foreground="{DynamicResource first_settings_text}"/>
-
-                                                <TextBox Grid.Column="2" Text="{Binding MessageAfterExecute}" MaxWidth="90" Style="{StaticResource commandBox}" Foreground="{DynamicResource first_settings_text}"/>
-
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                    <ListBoxItem />
-                                </ListBox>
-                            </StackPanel>
-                        </Grid>
                     </StackPanel>
                 </TabItem.Content>
             </TabItem>
@@ -770,7 +740,7 @@
         <!--#endregion-->
 
         <!--#region Login border -->
-        <Border x:Name="loginArea" d:Visibility="Visible" Grid.Row="1" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVisInverted}}" Background="{DynamicResource first_main_brush}" Width="350" CornerRadius="20">
+        <Border x:Name="loginArea" d:Visibility="Collapsed" Grid.Row="1" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVisInverted}}" Background="{DynamicResource first_main_brush}" Width="350" CornerRadius="20">
             <Grid>
 
                 <!--#region Credentials -->

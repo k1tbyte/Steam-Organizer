@@ -156,7 +156,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 }).ConfigureAwait(false);
 
                 var authAcc = Config.Accounts.Find(o => o.Login == Username);
-                if(AuthSession.AllowedConfirmations.Exists(o => o.confirmation_type == EAuthSessionGuardType.k_EAuthSessionGuardType_DeviceCode) && authAcc != null && !String.IsNullOrEmpty(authAcc.AuthenticatorPath) && System.IO.File.Exists(authAcc.AuthenticatorPath))
+                if (AuthSession.AllowedConfirmations.Exists(o => o.confirmation_type == EAuthSessionGuardType.k_EAuthSessionGuardType_DeviceCode) && authAcc != null && !String.IsNullOrEmpty(authAcc.AuthenticatorPath) && System.IO.File.Exists(authAcc.AuthenticatorPath))
                 {
                     try
                     {
@@ -167,7 +167,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
                 }
                 else
                     AuthenticationCallback(AuthSession.AllowedConfirmations[0].confirmation_type);
-                
+
                 while (IsRunning)
                 {
                     pollResponse = await AuthSession.PollAuthSessionStatusAsync().ConfigureAwait(false);
@@ -186,15 +186,18 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
                 if (Config.Properties.RememberRemoteUser)
                 {
-                    if (RemoteControlViewModel.RecentlyLoggedIn.Count == 6)
-                        RemoteControlViewModel.RecentlyLoggedIn.RemoveAt(5);
-
                     RecentlyLogged = new RecentlyLoggedAccount { Username = Username, RefreshToken = pollResponse.Item1.RefreshToken };
                     App.Current.Dispatcher.Invoke(() => RemoteControlViewModel.RecentlyLoggedIn.Add(RecentlyLogged));
                     Config.Serialize(RemoteControlViewModel.RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
-                }    
-                    
+                }
+
             }
+            else if(RemoteControlViewModel.RecentlyLoggedIn.IndexOf(RecentlyLogged) !=0)
+            {
+                App.Current.Dispatcher.Invoke(() => RemoteControlViewModel.RecentlyLoggedIn.Move(RemoteControlViewModel.RecentlyLoggedIn.IndexOf(RecentlyLogged), 0));
+                Config.Serialize(RemoteControlViewModel.RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);
+            }    
+                
 
             steamUser.LogOn(new SteamUser.LogOnDetails
             {

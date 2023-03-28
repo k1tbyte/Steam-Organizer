@@ -66,6 +66,7 @@ namespace Steam_Account_Manager
             if (!Directory.Exists(cachePath))
                 Directory.CreateDirectory(cachePath);
 
+
 #if !DEBUG
             #region Check internet connection
             if (!Common.CheckInternetConnection())
@@ -114,6 +115,7 @@ namespace Steam_Account_Manager
                 Config.SaveProperties();
 
             MainWindowViewModel.RegistrySteamUserWatcher?.Dispose();
+            RemoteControlViewModel.LoginSemaphore?.Dispose();
             Tray?.Dispose();
             GrabCursor.Dispose();
             GrabbingCursor.Dispose();

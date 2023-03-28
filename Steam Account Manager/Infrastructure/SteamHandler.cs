@@ -125,8 +125,6 @@ namespace Steam_Account_Manager.Infrastructure
 
         private static bool VirtualSteamLogger(Account account)
         {
-            try
-            {
                 Common.SetSteamRegistryRememberUser("");
                 if (Process.GetProcessesByName("Steam")?.Length != 0)
                 {
@@ -226,13 +224,6 @@ namespace Steam_Account_Manager.Infrastructure
 
                     return true;
                 }
-            }
-            catch (Exception e)
-            {
-                System.Windows.Forms.MessageBox.Show(e.ToString());
-                return false;
-            }
-
 
             bool RetrieveAutomationChildrens(AutomationElement element, int timeout, out AutomationElement[] childrens)
             {
@@ -250,7 +241,7 @@ namespace Steam_Account_Manager.Infrastructure
             bool RetrieveAutomationDocument(AutomationElement window, int timeout, out AutomationElement document)
             {
                 document = window.FindFirstDescendant(o => o.ByControlType(ControlType.Document));
-                for (int i = 0; i < timeout && (document == null || document.FindFirstChild() == null); i++)
+                for (int i = 0; i < timeout && (document == null || document.FindAllChildren().Length <= 2); i++)
                 {
                     Thread.Sleep(500);
                     document = window.FindFirstDescendant(o => o.ByControlType(ControlType.Document));

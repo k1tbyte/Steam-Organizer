@@ -91,7 +91,7 @@ namespace Steam_Account_Manager.Infrastructure.Parsers
 
         public async Task RankParse()
         {
-            int calcellationTime = 6000;
+            int calcellationTime = 8000;
             using (var browser = new WebBrowser())
             {
                 bool IsDocumentLoaded = false;

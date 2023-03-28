@@ -150,7 +150,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         private async Task CheckUpdate()
         {
             if (App.OfflineMode) return;
-            await Task.Factory.StartNew(() =>
+            await Task.Run(() =>
             {
                 try
                 {
@@ -271,11 +271,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 if (NowLoginUserNickname != "Username")
                 {
                     Utils.Common.KillSteamProcess();
-
-                    if (!String.IsNullOrEmpty(Utils.Common.GetSteamRegistryRememberUser()))
-                    {
-                        Utils.Common.SetSteamRegistryRememberUser(String.Empty);
-                    }
+                    Utils.Common.SetSteamRegistryRememberUser(String.Empty);
 
                     NowLoginUserImage = "/Images/user.png";
                     NowLoginUserNickname = "Username";
