@@ -44,6 +44,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         private bool _needGamesUpdate,_needFriendsUpdate;
         public User CurrentUser => SteamRemoteClient.CurrentUser;
         public ConfigProperties Properties => Config.Properties;
+        public bool IsWebLoggedIn => SteamRemoteClient.IsWebLoggedIn;
 
         public string AuthCode
         {
@@ -327,7 +328,7 @@ namespace Steam_Account_Manager.MVVM.ViewModels
             RecentlyLoggedIn = Config.Deserialize(App.WorkingDirectory + "\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey) as ObservableCollection<RecentlyLoggedAccount> ?? new ObservableCollection<RecentlyLoggedAccount>();
             // IsLoggedOn = true;
 
-            SteamRemoteClient.UserStatusChanged += () => OnPropertyChanged(nameof(CurrentUser));
+            SteamRemoteClient.UserStatusChanged += () => { OnPropertyChanged(nameof(CurrentUser)); OnPropertyChanged(nameof(IsWebLoggedIn));  }; 
             SteamRemoteClient.Connected += HandleConnection;
             SteamRemoteClient.Disconnected += HandleDisconnection;
             SteamRemoteClient.GameSessionStateCallback += HandlePlayingSession;
