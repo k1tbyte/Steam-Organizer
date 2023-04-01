@@ -37,6 +37,8 @@ namespace Steam_Account_Manager.MVVM.ViewModels
         public RelayCommand OpenFriendChatCommand { get; private set; }
         public RelayCommand RemoveFriendCommand { get; private set; }
         public AsyncRelayCommand SendSteamGuardCodeCommand { get; private set; }
+        public AsyncRelayCommand ApplyPrivacyCommand { get; private set; }
+        public AsyncRelayCommand RefreshTradeToken { get; private set; }
         #endregion
 
         #region Properties
@@ -458,8 +460,25 @@ namespace Steam_Account_Manager.MVVM.ViewModels
                 SteamRemoteClient.RemoveFriend((o as Friend).SteamID64);
                 Friends.Remove(o as Friend);
                 _needFriendsUpdate = true;
-            }); 
+            });
             #endregion
+
+            ApplyPrivacyCommand = new AsyncRelayCommand(async (o) =>
+            {
+                if (!await SteamRemoteClient.SetProfilePrivacy(CurrentUser.Privacy))
+                {
+                    Presentation.OpenPopupMessageBox("An error occurred while setting privacy settings...", true);
+                }
+            });
+
+            RefreshTradeToken = new AsyncRelayCommand(async (o) =>
+            {
+                if(!await SteamRemoteClient.GetTradeToken(true))
+                {
+                    Presentation.OpenPopupMessageBox("An error occurred while refreshing the trade token...", true);
+                }
+                OnPropertyChanged(nameof(CurrentUser));
+            });
         }
 
     }

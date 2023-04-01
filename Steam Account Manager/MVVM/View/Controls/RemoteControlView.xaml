@@ -92,8 +92,8 @@
         </Grid.RowDefinitions>
 
         <!--#region Tab control -->
-        <Border d:Visibility="Collapsed" Visibility="{Binding ElementName=tabs,Path=Visibility}" Height="55" VerticalAlignment="Top" Margin="0 17 0 0" HorizontalAlignment="Center" CornerRadius="15" 
-                Background="{DynamicResource second_main_brush}" Width="340">
+        <Border d:Visibility="Visible" Visibility="{Binding ElementName=tabs,Path=Visibility}" Height="55" VerticalAlignment="Top" Margin="0 17 0 0" HorizontalAlignment="Center" CornerRadius="10" 
+                Background="{DynamicResource second_main_brush}" Width="260">
 
         </Border>
         <TabControl x:Name="tabs" d:Visibility="Visible" Visibility="{Binding IsLoggedOn,Converter={StaticResource BoolToVis}}" Grid.RowSpan="3" Style="{StaticResource RemoteTabControl}" Margin="0" SelectedIndex="{Binding SelectedTabIndex}">
@@ -386,7 +386,7 @@
                                          Text="{Binding CurrentUser.CustomGameTitle,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                          Foreground="{DynamicResource default_secundary_foreground}"/>
                             </Grid>
-                            
+
                             <ToggleButton Style="{StaticResource idle_button}" IsChecked="{Binding IsGamesIdling}" Margin="0 10 0 0"/>
                         </StackPanel>
 
@@ -400,6 +400,86 @@
             </TabItem>
 
             <TabItem Style="{StaticResource RemoteControlTabItem}">
+                <TabItem.Header>
+                    <Icon:PackIconMaterial Kind="AccountGroup" Width="25" Height="25"/>
+                </TabItem.Header>
+                <TabItem.Content>
+                    <Grid>
+                        <Border Background="{DynamicResource adv_borders_background}" Opacity="0.6"  Margin="5,8,117,162" 
+                                Height="25" CornerRadius="15 15 2 2 " VerticalAlignment="Top"/>
+
+                        <TextBlock Foreground="{DynamicResource default_secundary_foreground}" Text="{Binding Friends.Count,StringFormat=#{0}}"
+                                   Margin="20,16,17,162" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Medium" FontSize="10" />
+
+                        <DataGrid Margin="0 8 117 9" Background="Transparent" ItemsSource="{Binding Friends}" VirtualizingPanel.VirtualizationMode="Standard"
+                                  VirtualizingPanel.CacheLength="10" ScrollViewer.VerticalScrollBarVisibility="Visible">
+
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="85" CellStyle="{StaticResource FriendImageDataGridCellStyle}"/>
+
+                                <DataGridTextColumn Header="{DynamicResource adv_nickname}"  Binding="{Binding Name}" IsReadOnly="True" Width="170">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="DataGridCell">
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="{DynamicResource rc_fv_friendSince}" Binding="{Binding FriendSince,Mode=OneWay}" IsReadOnly="True" Width="150">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTemplateColumn Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+                                                <Button Style="{StaticResource MessageToFriend}" Width="25" Height="25" Padding="0"
+                                                        Command="{Binding DataContext.OpenFriendChatCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding SteamID64}">
+                                                    <Icon:PackIconMaterial Kind="MessageTextOutline" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                </Button>
+
+                                                <Button Style="{StaticResource gridRemoveButton}" Margin="5 0 0 0" Width="25" Height="25" Padding="0"
+                                                        Command="{Binding DataContext.RemoveFriendCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}">
+                                                    <Icon:PackIconMaterial Kind="CloseCircleOutline" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                    <Button.ToolTip>
+                                                        <ToolTip ContentStringFormat="Remove from friends"/>
+                                                    </Button.ToolTip>
+                                                </Button>
+
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Rectangle Fill="{DynamicResource menu_button_background}" Width="8"
+                   Height="310" RadiusY="3" RadiusX="3" Margin="356.75 25 0 0" Opacity="0.2" IsHitTestVisible="False" />
+
+                        <Button Command="{Binding UpdateFriendsListCommand}" VerticalAlignment="Top" HorizontalAlignment="Right"
+                Style="{StaticResource ModernColoredButton}"   Content="{DynamicResource rc_gv_Update}" Margin="20 30 20 20"/>
+                    </Grid>
+                </TabItem.Content>
+            </TabItem>
+
+            <TabItem Style="{StaticResource RemoteControlTabItem}"  Tag="{x:Static Visibility.Collapsed}">
                 <TabItem.Header>
                     <Icon:PackIconMaterial Kind="FormatListText" Width="25" Height="25"/>
                 </TabItem.Header>
@@ -642,11 +722,11 @@
                         </StackPanel >
 
 
-                        <!-- Commands area -->
-                        <Rectangle Fill="{DynamicResource adv_rectangle}" Margin="50 15 0 15" Width="2"
+
+                        <Rectangle Fill="{DynamicResource adv_rectangle}" Margin="70 15 0 15" Width="2"
                                    RadiusY="20" RadiusX="20"/>
 
-                        <StackPanel Margin="30 20 0 20">
+                        <StackPanel Margin="30 20 0 20" IsHitTestVisible="{Binding IsWebLoggedIn}">
                             <TextBlock VerticalAlignment="Top" Height="17">
                                 <Run Text="Steam WEB" Foreground="{DynamicResource second_settings_text}"
                                      FontFamily="Cascadia Code" FontSize="18"/>
@@ -666,123 +746,93 @@
                                 </Run>
                             </TextBlock>
 
-                            <StackPanel HorizontalAlignment="Left" Margin="23">
-                                <TextBlock Margin="0 0 0 10" FontFamily="Cascadia Mono"
-                       Foreground="{DynamicResource second_settings_text}"
-                       Text="Profile privacy" FontSize="20"/>
+                            <TextBlock Text="Your steam web API key" Margin="4 15 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                            <StackPanel Orientation="Horizontal" >
 
-                                <TextBlock Text="Profile" FontSize="12" FontWeight="Normal"
-                           Margin="3 0 0 1" Foreground="{DynamicResource default_foreground}" />
-                                <ComboBox  x:Name="ProfileBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
-                           HorizontalAlignment="Left" />
+                                <Button Width="20" Height="20"  Style="{StaticResource ModernServiceButton}"
+                            IsHitTestVisible="{Binding ElementName=apiKeyText,Path=Text.Length,Converter={StaticResource BoolInverted}}">
+                                    <Icon:PackIconMaterial Kind="Minus" Width="12"/>
+                                </Button>
 
-                                <TextBlock Text="Inventory" FontSize="12" FontWeight="Normal"
-                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
-                                <ComboBox  x:Name="InventoryBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
-                           HorizontalAlignment="Left" />
+                                <Border Margin="0 0 -240 0" Background="{DynamicResource rc_button_back}"
+                        Height="24" CornerRadius="5" Opacity="0.6"/>
 
-                                <TextBlock Text="Steam gifts" FontSize="12" FontWeight="Normal"
-                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
-                                <ComboBox  x:Name="GiftsBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
-                           HorizontalAlignment="Left" />
+                                <TextBox x:Name="apiKeyText" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
+                          Width="235" Margin="0 0 6 0" MaxLength="60" Text="{Binding CurrentUser.WebApiKey}" />
 
-                                <TextBlock Text="Game details" FontSize="12" FontWeight="Normal"
-                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
-                                <ComboBox  x:Name="GameDetailsBox" Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
-                           HorizontalAlignment="Left" />
                             </StackPanel>
 
+                            <TextBlock Text="Your trade token" Margin="4 5 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                            <StackPanel Orientation="Horizontal" >
+
+                                <Button Width="20" Height="20"  Style="{StaticResource ModernServiceButton}"
+                            IsHitTestVisible="{Binding ElementName=tradeTokenText,Path=Text.Length,Converter={StaticResource BoolInverted}}"
+                                        >
+                                    <Icon:PackIconMaterial Kind="Refresh" Width="12"/>
+                                </Button>
+
+                                <Border Margin="0 0 -240 0" Background="{DynamicResource rc_button_back}"
+                        Height="24" CornerRadius="5" Opacity="0.6"/>
+
+                                <TextBox x:Name="tradeTokenText" Style="{StaticResource settings_data_box}" FontSize="11" Padding="4 5 0 0" 
+                          Width="235" Margin="0 0 6 0" MaxLength="60" Text="{Binding CurrentUser.TradeToken}" />
+
+                            </StackPanel>
+
+                            <DockPanel HorizontalAlignment="Left" Margin="0 10 0 0">
+
+                                <StackPanel >
+
+                                    <TextBlock Text="Profile" FontSize="12" FontWeight="Normal"
+                           Margin="3 0 0 1" Foreground="{DynamicResource default_foreground}" />
+                                    <ComboBox  Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" SelectedIndex="{Binding CurrentUser.Privacy.Profile,Mode=TwoWay}" />
+
+                                    <TextBlock Text="Inventory" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                                    <ComboBox  Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left"  SelectedIndex="{Binding CurrentUser.Privacy.Inventory,Mode=TwoWay}"/>
+
+                                    <TextBlock Text="Steam gifts" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                                    <ComboBox Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" SelectedIndex="{Binding CurrentUser.Privacy.SteamGifts,Mode=TwoWay}" />
+
+                                    <TextBlock Text="Comments" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                                    <ComboBox Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacyComment}"
+                           HorizontalAlignment="Left" SelectedIndex="{Binding CurrentUser.Privacy.Comments,Mode=TwoWay}"/>
+
+
+                                </StackPanel>
+
+                                <StackPanel Margin="20 0 0 0">
+                                    <TextBlock Text="Game details" FontSize="12" FontWeight="Normal"
+                           Margin="3 0 0 1" Foreground="{DynamicResource default_foreground}" />
+                                    <ComboBox Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" SelectedIndex="{Binding CurrentUser.Privacy.GameDetails,Mode=TwoWay}" />
+
+                                    <TextBlock Text="Game playtime" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                                    <ComboBox  Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" SelectedIndex="{Binding CurrentUser.Privacy.GamePlaytime,Mode=TwoWay}" />
+
+                                    <TextBlock Text="Friends list" FontSize="12" FontWeight="Normal"
+                           Margin="3 5 0 1" Foreground="{DynamicResource default_foreground}" />
+                                    <ComboBox Width="120" Height="25" ItemsSource="{DynamicResource rc_swv_privacy}"
+                           HorizontalAlignment="Left" SelectedIndex="{Binding CurrentUser.Privacy.Friends,Mode=TwoWay}" />
+
+                                    <Button Style="{StaticResource ModernColoredButton}" Command="{Binding ApplyPrivacyCommand}"
+                        Content="Apply" Height="28" Margin="0 21 0 0" Width="100"/>
+                                </StackPanel>
+                            </DockPanel>
+
                         </StackPanel>
-                        
+
                     </StackPanel>
                 </TabItem.Content>
             </TabItem>
 
-            <TabItem Style="{StaticResource RemoteControlTabItem}">
-                <TabItem.Header>
-                    <Icon:PackIconMaterial Kind="AccountGroup" Width="25" Height="25"/>
-                </TabItem.Header>
-                <TabItem.Content>
-                    <Grid>
-                        <Border Background="{DynamicResource adv_borders_background}" Opacity="0.6"  Margin="5,8,117,162" 
-                                Height="25" CornerRadius="15 15 2 2 " VerticalAlignment="Top"/>
-
-                        <TextBlock Foreground="{DynamicResource default_secundary_foreground}" Text="{Binding Friends.Count,StringFormat=#{0}}"
-                                   Margin="20,16,17,162" VerticalAlignment="Top" HorizontalAlignment="Left" FontWeight="Medium" FontSize="10" />
-
-                        <DataGrid Margin="0 8 117 9" Background="Transparent" ItemsSource="{Binding Friends}" VirtualizingPanel.VirtualizationMode="Standard"
-                                  VirtualizingPanel.CacheLength="10" ScrollViewer.VerticalScrollBarVisibility="Visible">
-
-                            <DataGrid.Columns>
-                                <DataGridTemplateColumn Width="85" CellStyle="{StaticResource FriendImageDataGridCellStyle}"/>
-
-                                <DataGridTextColumn Header="{DynamicResource adv_nickname}"  Binding="{Binding Name}" IsReadOnly="True" Width="170">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                    <DataGridTextColumn.CellStyle>
-                                        <Style TargetType="DataGridCell">
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                                            <Setter Property="VerticalAlignment" Value="Center"/>
-                                        </Style>
-                                    </DataGridTextColumn.CellStyle>
-                                    <DataGridTextColumn.HeaderStyle>
-                                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                                        </Style>
-                                    </DataGridTextColumn.HeaderStyle>
-                                </DataGridTextColumn>
-
-                                <DataGridTextColumn Header="{DynamicResource rc_fv_friendSince}" Binding="{Binding FriendSince,Mode=OneWay}" IsReadOnly="True" Width="150">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-                                <DataGridTemplateColumn Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-
-                                                <Button Style="{StaticResource MessageToFriend}" Width="25" Height="25" Padding="0"
-                                                        Command="{Binding DataContext.OpenFriendChatCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
-                                                        CommandParameter="{Binding SteamID64}">
-                                                    <Icon:PackIconMaterial Kind="MessageTextOutline" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                                </Button>
-
-                                                <Button Style="{StaticResource gridRemoveButton}" Margin="5 0 0 0" Width="25" Height="25" Padding="0"
-                                                        Command="{Binding DataContext.RemoveFriendCommand,RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=DataGrid}}"
-                                                        CommandParameter="{Binding}">
-                                                    <Icon:PackIconMaterial Kind="CloseCircleOutline" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                                    <Button.ToolTip>
-                                                        <ToolTip ContentStringFormat="Remove from friends"/>
-                                                    </Button.ToolTip>
-                                                </Button>
-
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-
-                        <Rectangle Fill="{DynamicResource menu_button_background}" Width="8"
-                   Height="310" RadiusY="3" RadiusX="3" Margin="356.75 25 0 0" Opacity="0.2" IsHitTestVisible="False" />
-
-                        <Button Command="{Binding UpdateFriendsListCommand}" VerticalAlignment="Top" HorizontalAlignment="Right"
-                Style="{StaticResource ModernColoredButton}"   Content="{DynamicResource rc_gv_Update}" Margin="20 30 20 20"/>
-                    </Grid>
-                </TabItem.Content>
-            </TabItem>
-
-            <TabItem Style="{StaticResource RemoteControlTabItem}" Tag="{x:Static Visibility.Collapsed}">
-                <TabItem.Header>
-                    <Icon:PackIconMaterial Kind="Web" Width="25" Height="25"/>
-                </TabItem.Header>
-            </TabItem>
         </TabControl>
         <!--#endregion-->
 

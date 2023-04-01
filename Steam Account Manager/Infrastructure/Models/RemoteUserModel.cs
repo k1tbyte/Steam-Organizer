@@ -1,4 +1,6 @@
-﻿using SteamKit2;
+﻿using ProtoBuf;
+using SteamKit2;
+using SteamKit2.Internal;
 using System;
 using System.Collections.ObjectModel;
 
@@ -11,6 +13,18 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
         Registered,
         NotRegisteredYet,
         AccessDenied
+    }
+
+    [ProtoContract]
+    public class PrivacySettings
+    {
+        public int Profile { get; set; }
+        public int Inventory { get; set; }
+        public int SteamGifts { get; set; }
+        public int Comments { get; set; }
+        public int GameDetails { get; set; }
+        public int GamePlaytime { get; set; }
+        public int Friends { get; set; }
     }
 
     [Serializable]
@@ -65,6 +79,9 @@ namespace Steam_Account_Manager.Infrastructure.Models.JsonModels
 
         [field: NonSerialized]
         public string WebApiCachedAccessToken { get; set; }
+
+        [field: NonSerialized]
+        public PrivacySettings Privacy { get; set; }
 
         [field: NonSerialized]
         public int _personaState;

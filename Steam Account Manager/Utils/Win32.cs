@@ -26,16 +26,15 @@ namespace Steam_Account_Manager.Utils
 
             public static bool SetText(string text)
             {
-                if (!OpenClipboard(IntPtr.Zero))
-                {
-                    return false;
-                }
-
                 var global = Marshal.StringToHGlobalUni(text);
-
-                SetClipboardData(CF_UNICODETEXT, global);
-                CloseClipboard();
-                return true;
+                for (int i = 0; i < 10; i++)
+                {
+                    if (OpenClipboard(IntPtr.Zero) && SetClipboardData(CF_UNICODETEXT, global) && CloseClipboard())
+                        return true;
+                    Thread.Sleep(5);
+                    
+                }
+                return false;
             }
         }
 

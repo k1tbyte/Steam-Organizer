@@ -294,6 +294,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
         private static async void LoginIntoSteamWeb()
         {
+            CurrentUser.Privacy = await GetProfilePrivacy();
             if(webHandler.LastLogOnSteamID != CurrentUser.SteamID64 || !IsWebLoggedIn)
                 IsWebLoggedIn = await webHandler.Initialize(steamClient, WebApiUserNonce);
 
@@ -705,18 +706,27 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
         }
         #endregion
 
-        internal static async Task<CPrivacySettings> GetProfilePrivacy()
+        internal static async Task<PrivacySettings> GetProfilePrivacy()
         {
 
             var request = new CPlayer_GetPrivacySettings_Request { };
 
             var response = await UnifiedPlayerService.SendMessage(x => x.GetPrivacySettings(request)).ToTask().ConfigureAwait(false);
-            return response.GetDeserializedResponse<CPlayer_GetPrivacySettings_Response>().privacy_settings;
+            var privacy = response.GetDeserializedResponse<CPlayer_GetPrivacySettings_Response>().privacy_settings;
+            return new PrivacySettings
+            {
+                Profile      = privacy.privacy_state,
+                Friends      = privacy.privacy_state_friendslist,
+                GameDetails  = privacy.privacy_state_ownedgames,
+                GamePlaytime = privacy.privacy_state_playtime,
+                Inventory    = privacy.privacy_state_inventory,
+                SteamGifts   = privacy.privacy_state_gifts
+            };
         }
 
         #region Steam WEB
 
-        internal static async Task<bool> SetProfilePrivacy(int Profile, int Inventory, int Gifts, int OwnedGames, int Playtime, int Friends, int Comments)
+        internal static async Task<bool> SetProfilePrivacy(PrivacySettings privacy)
         {
             if (!IsWebLoggedIn)
                 return false;
@@ -724,13 +734,13 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             var ProfileSettings = new NameValueCollection
                 {
                   { "sessionid", webHandler.SessionID },// Unknown,Private, FriendsOnly,Public
-                  { "Privacy","{\"PrivacyProfile\":"+Profile+
-                               ",\"PrivacyInventory\":" +Inventory+
-                                ",\"PrivacyInventoryGifts\":"+Gifts+
-                                 ",\"PrivacyOwnedGames\":"+OwnedGames+
-                                ",\"PrivacyPlaytime\":"+Playtime+
-                                 ",\"PrivacyFriendsList\":"+Friends+"}"},
-                  { "eCommentPermission" ,Comments.ToString()
+                  { "Privacy","{\"PrivacyProfile\":"+privacy.Profile+
+                               ",\"PrivacyInventory\":" +privacy.Inventory+
+                                ",\"PrivacyInventoryGifts\":"+privacy.SteamGifts+
+                                 ",\"PrivacyOwnedGames\":"+privacy.GameDetails+
+                                ",\"PrivacyPlaytime\":"+privacy.GamePlaytime+
+                                 ",\"PrivacyFriendsList\":"+privacy.Friends+"}"},
+                  { "eCommentPermission" ,privacy.Comments.ToString()
                   }//FriendsOnly,Public,Private
                 };
 
@@ -740,11 +750,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             {
                 return true;
             }
-            else
-            {
-                Utils.Presentation.OpenPopupMessageBox(App.FindString("rc_lv_errorRequest"), true);
                 return false;
-            }
 
         }
 
@@ -892,7 +898,7 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
             htmlDoc.LoadHtml(response);
             CurrentUser.WebApiKey = htmlDoc.DocumentNode.SelectSingleNode("//div[@id='bodyContents_ex']/p")?.InnerText?.Replace("Key: ", "");
         }
-        internal static async Task GetTradeToken(bool generateNew = false)
+        internal static async Task<bool> GetTradeToken(bool generateNew = false)
         {
             var request = new CEcon_GetTradeOfferAccessToken_Request
             {
@@ -901,9 +907,10 @@ namespace Steam_Account_Manager.Infrastructure.SteamRemoteClient
 
             var response = await UnifiedEcon.SendMessage(x => x.GetTradeOfferAccessToken(request)).ToTask().ConfigureAwait(false);
             if (response.Result != EResult.OK)
-                return;
+                return false;
 
             CurrentUser.TradeToken = response.GetDeserializedResponse<CEcon_GetTradeOfferAccessToken_Response>()?.trade_offer_access_token;
+            return true;
         }
         #endregion
     }
