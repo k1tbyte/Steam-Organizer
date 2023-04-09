@@ -37,6 +37,7 @@
         <Style x:Key="RemoteControlTabItem" TargetType="{x:Type TabItem}">
             <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
             <Setter Property="IsHitTestVisible" Value="{Binding IsLoggedOn}"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Height" Value="40"/>
             <Setter Property="MinWidth" Value="45"/>
             <Setter Property="Width" Value="Auto"/>
@@ -746,7 +747,7 @@
                                 </Run>
                             </TextBlock>
 
-                            <TextBlock Text="Your steam web API key" Margin="4 15 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                            <TextBlock Text="{DynamicResource rc_mv_yourWebApi}" Margin="4 15 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
                             <StackPanel Orientation="Horizontal" >
 
                                 <Button Width="20" Height="20"  Style="{StaticResource ModernServiceButton}"
@@ -762,7 +763,7 @@
 
                             </StackPanel>
 
-                            <TextBlock Text="Your trade token" Margin="4 5 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
+                            <TextBlock Text="{DynamicResource rc_mv_yourTradeToken}" Margin="4 5 0 2" FontSize="11" Foreground="{StaticResource default_foreground}"/>
                             <StackPanel Orientation="Horizontal" >
 
                                 <Button Width="20" Height="20"  Style="{StaticResource ModernServiceButton}"
@@ -823,7 +824,7 @@
                            HorizontalAlignment="Left" SelectedIndex="{Binding CurrentUser.Privacy.Friends,Mode=TwoWay}" />
 
                                     <Button Style="{StaticResource ModernColoredButton}" Command="{Binding ApplyPrivacyCommand}"
-                        Content="Apply" Height="28" Margin="0 21 0 0" Width="100"/>
+                        Content="{DynamicResource mv_apply}" Height="28" Margin="0 21 0 0" Width="100"/>
                                 </StackPanel>
                             </DockPanel>
 
@@ -841,13 +842,13 @@
             <Grid>
 
                 <!--#region Credentials -->
-                <StackPanel x:Name="credentialsPanel" d:Visibility="Visible" Visibility="{Binding ConfirmationType,Converter={StaticResource BoolToVisInverted}}" HorizontalAlignment="Center" Margin="0 20 0 10">
+                <StackPanel x:Name="credentialsPanel" d:Visibility="Collapsed" Visibility="{Binding ConfirmationType,Converter={StaticResource BoolToVisInverted}}" HorizontalAlignment="Center" Margin="0 20 0 10">
 
                     <TextBlock 
                        HorizontalAlignment="Center" Margin="0 0 0 15" 
                        FontFamily="Cascadia Mono"
                        Foreground="{DynamicResource second_settings_text}"
-                       Text="Аутентификация" FontSize="20"/>
+                       Text="{DynamicResource aw_authentication}" FontSize="20"/>
 
                     <Grid Grid.Row="1" Margin="0 40 0 0" HorizontalAlignment="Left" VerticalAlignment="Center">
 
@@ -873,12 +874,12 @@
                         <ToggleButton Style="{StaticResource ModernCheckbox}" Width="25" Height="25"
                                       Background="{DynamicResource background_border_color}" IsChecked="{Binding Properties.RememberRemoteUser,Mode=TwoWay}"/>
 
-                        <TextBlock Text="Запомнить меня" VerticalAlignment="Center" Foreground="{DynamicResource first_settings_text}" Margin="10 0 0 0"/>
+                        <TextBlock Text="{DynamicResource rc_lv_rememberMe}" VerticalAlignment="Center" Foreground="{DynamicResource first_settings_text}" Margin="10 0 0 0"/>
                     </StackPanel>
 
 
 
-                    <Button Margin="0 30 0 22" Style="{StaticResource ModernColoredButton}" FontWeight="Normal" Content="Login"
+                    <Button Margin="0 30 0 22" Style="{StaticResource ModernColoredButton}" FontWeight="Normal" Content="{DynamicResource rc_lv_recentlyLogin}"
                             IsDefault="True" MinWidth="200"
                           Command="{Binding LogOnCommand}">
                     </Button>
@@ -898,7 +899,7 @@
                         <StackPanel VerticalAlignment="Bottom" Margin="10 0 0 0" Orientation="Horizontal">
                             <Image Source="\Images\login_mobile_auth.png" Width="75" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
 
-                            <TextBlock VerticalAlignment="Center" Text="Подтвердите вход в своём мобильном приложении Steam" Foreground="{DynamicResource first_settings_text}"
+                            <TextBlock VerticalAlignment="Center" Text="{DynamicResource rc_lv_mobileConfirm}" Foreground="{DynamicResource first_settings_text}"
                                       Padding="10 0 10 0"  TextWrapping="Wrap" Width="210" FontSize="15"/>
                         </StackPanel>
                     </Border>
@@ -907,7 +908,7 @@
                         <Button Style="{StaticResource ModernServiceButton}" Width="35" Height="35" Command="{Binding LogOutCommand}">
                             <Icon:PackIconMaterial Kind="ArrowLeft" Height="25" Width="25"/>
                         </Button>
-                        <Button Style="{StaticResource  ModernColoredButton}" Height="40" Content="Войти с помощью кода"
+                        <Button Style="{StaticResource  ModernColoredButton}" Height="40" Content="{DynamicResource rc_lv_loginWithCode}"
                             HorizontalAlignment="Center" Padding="10"  Width="Auto" Margin="10 0 0 0" Command="{Binding SendSteamGuardCodeCommand}"/>
                     </StackPanel>
                     <StackPanel.Style>
@@ -933,14 +934,14 @@
 
                     <TextBlock Foreground="{DynamicResource default_foreground}" FontSize="15"
                                TextWrapping="Wrap" MaxWidth="250" TextAlignment="Center" Margin="0 20 0 0">
-                        <Run Text="Введите код доступа"/>
+                        <Run Text="{DynamicResource rc_lv_enterAccessCode}"/>
                         <Run>
                             <Run.Style>
                                 <Style TargetType="Run">
-                                    <Setter Property="Text" Value="из вашего двухфакторного аутентификатора"/>
+                                    <Setter Property="Text" Value="{DynamicResource rc_lv_accessCode2FA}"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding ConfirmationType}" Value="2">
-                                            <Setter Property="Text" Value="из письма, которое пришло на почту"/>
+                                            <Setter Property="Text" Value="{DynamicResource rc_lv_accessCodeMail}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -961,7 +962,7 @@
                             <Icon:PackIconMaterial Kind="ArrowLeft" Height="25" Width="25"/>
                         </Button>
 
-                        <Button Style="{StaticResource  ModernColoredButton}" Height="40" Content="Войти в аккаунт"
+                        <Button Style="{StaticResource  ModernColoredButton}" Height="40" Content="{DynamicResource rc_lv_signIntoAccount}"
                             HorizontalAlignment="Center" Padding="10"  Width="Auto" Margin="10 0 0 0" Command="{Binding SendSteamGuardCodeCommand}"/>
                     </StackPanel>
                     <StackPanel.Style>
@@ -1000,6 +1001,7 @@
                     <Setter Property="BorderThickness" Value="1"/>
                     <Setter Property="Height" Value="90"/>
                     <Setter Property="Margin" Value="3 0 3 0"/>
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemsPanel>
@@ -1017,7 +1019,8 @@
                                     <ImageBrush ImageSource="{Binding AvatarUrl}"/>
                                 </Rectangle.Fill>
                             </Rectangle>
-                            <TextBlock HorizontalAlignment="Center" Margin="0 2 0 0" Text="{Binding Username}" Width="60" TextTrimming="WordEllipsis" TextAlignment="Center"/>
+                            <TextBlock HorizontalAlignment="Center" Margin="0 2 0 0" Text="{Binding Username}" Width="60" TextTrimming="WordEllipsis" TextAlignment="Center"
+                                       Foreground="{DynamicResource first_settings_text}"/>
                         </StackPanel>
                     </Border>
                 </DataTemplate>

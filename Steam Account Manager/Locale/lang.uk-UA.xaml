@@ -68,6 +68,7 @@
     <v:String x:Key="mv_downloading">Завантаження...</v:String>
     <v:String x:Key="mv_close">Закрити</v:String>
     <v:String x:Key="mv_update">Оновити</v:String>
+    <v:String x:Key="mv_apply">Застосувати</v:String>
     <!--#endregion-->
 
 
@@ -268,9 +269,15 @@
     <!--#region Remote control -->
 
     <!--#region Login view -->
-    <v:String x:Key="rc_lv_signIn">Вхід</v:String>
+    <v:String x:Key="rc_lv_rememberMe">Запам'ятати мене</v:String>
     <v:String x:Key="rc_lv_guardCode">Код Steam guard</v:String>
-    <v:String x:Key="rc_lv_recently">Недавні</v:String>
+    <v:String x:Key="rc_lv_mobileConfirm">Підтвердьте вхід у своєму мобільному додатку Steam</v:String>
+    <v:String x:Key="rc_lv_loginWithCode">Увійти за допомогою коду</v:String>
+    <v:String x:Key="rc_lv_enterAccessCode">Введіть код доступу</v:String>
+    <v:String x:Key="rc_lv_accessCodeMail">з листа, який надійшов вам на пошту</v:String>
+    <v:String x:Key="rc_lv_accessCode2FA">з вашого двофакторного автентифікатора</v:String>
+    <v:String x:Key="rc_lv_signIntoAccount">Увійти до акаунту</v:String>
+    <v:String x:Key="rc_lv_recently">Нещодавні</v:String>
     <v:String x:Key="rc_lv_loggedIn" xml:space="preserve">Поточний активний: </v:String>
     <v:String x:Key="rc_lv_nickname" xml:space="preserve">Нікнейм: </v:String>
     <v:String x:Key="rc_lv_hostedOn" xml:space="preserve">Запущений на: </v:String>
@@ -323,31 +330,25 @@
     <v:String x:Key="rc_gv_selected" xml:space="preserve">Обрані: </v:String>
     <v:String x:Key="rc_gv_customGameTitle">Тайтл гри</v:String>
     <v:String x:Key="rc_gv_Update">Оновити</v:String>
-    <v:String x:Key="rc_gv_Other_gameID">ID іншої гри</v:String>
     <v:String x:Key="rc_gv_idle">Запуск</v:String>
     <v:String x:Key="rc_gv_stop">Стоп</v:String>
-    <v:String x:Key="rc_gv_maximumGames" xml:space="preserve">"Максимум&#13;32 гри!"</v:String>
     <v:String x:Key="rc_gv_selectGames">Виберіть гру!</v:String>
     <v:String x:Key="rc_gv_rememberGames">Запам'ятати</v:String>
     <v:String x:Key="rc_gv_saveGameListDesc" xml:space="preserve">Запам'ятовує поточні ігри і автоматично вмикає їх,&#13;коли ви входите до свого облікового запису.</v:String>
-    <v:String x:Key="rc_gv_addGameDesc" xml:space="preserve">Ви можете додати гру, якої немає в списку, але яка&#13;є у вашій бібліотеці. Наприклад, Family Share</v:String>
     <!--#endregion-->
 
     <!--#region Messages view -->
     <v:String x:Key="rc_mv_chat">Чат:</v:String>
     <v:String x:Key="rc_mv_writeMsg">Написати повідомлення...</v:String>
-    <v:String x:Key="rc_mv_goToChatId">Перейти до чату ID64/ID32/URL</v:String>
+    <v:String x:Key="rc_mv_goToChatId">Перейти до чату (Будь-який SteamID)</v:String>
     <v:String x:Key="rc_mv_currntAdm">Поточний адміністратор</v:String>
     <v:String x:Key="rc_mv_saveChatLog">Зберігати лог чата</v:String>
     <v:String x:Key="rc_mv_enableCmds">Увімкнути команди</v:String>
     <v:String x:Key="rc_mv_chatNotSelect">Чат не обрано</v:String>
-    <v:String x:Key="rc_mv_cmdsTitle" xml:space="preserve">  Ключове слово          Команда              Повідомлення   </v:String>
-    <v:String x:Key="rc_mv_onlyConsoleCmds">Тільки консольні команди</v:String>
-    <v:String x:Key="rc_mv_cmd">Команда</v:String>
-    <v:String x:Key="rc_mv_keyword">Ключове слово</v:String>
-    <v:String x:Key="rc_mv_message">Повідомлення</v:String>
     <v:String x:Key="rc_mv_chatLeave">Вийти з поточного чату</v:String>
     <v:String x:Key="rc_mv_addAdmin" xml:space="preserve">Користувач, команди&#13;якого буде виконувати бот</v:String>
+    <v:String x:Key="rc_mv_yourWebApi">Ваш web API ключ</v:String>
+    <v:String x:Key="rc_mv_yourTradeToken">Ваш trade токен</v:String>
     <!--#endregion-->
 
     <!--#region Friends view -->

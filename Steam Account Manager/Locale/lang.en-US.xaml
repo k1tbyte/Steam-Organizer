@@ -68,6 +68,7 @@
     <v:String x:Key="mv_downloading">Downloading...</v:String>
     <v:String x:Key="mv_close">Close</v:String>
     <v:String x:Key="mv_update">Update</v:String>
+    <v:String x:Key="mv_apply">Apply</v:String>
     <!--#endregion-->
 
 
@@ -269,9 +270,14 @@
 
     <!--#region Remote control -->
 
-    <!--#region Login view --> 
-    <v:String x:Key="rc_lv_signIn">Sign in</v:String>
-    <v:String x:Key="rc_lv_guardCode">Steam guard code</v:String>
+    <!--#region Login view -->
+    <v:String x:Key="rc_lv_rememberMe">Remember me</v:String>
+    <v:String x:Key="rc_lv_mobileConfirm">Confirm login in your Steam mobile application</v:String>
+    <v:String x:Key="rc_lv_loginWithCode">Login with code</v:String>
+    <v:String x:Key="rc_lv_enterAccessCode">Enter the access code</v:String>
+    <v:String x:Key="rc_lv_accessCodeMail">from the letter you received in the mail</v:String>
+    <v:String x:Key="rc_lv_accessCode2FA">from your two-factor authenticator</v:String>
+    <v:String x:Key="rc_lv_signIntoAccount">Sign into account</v:String>
     <v:String x:Key="rc_lv_recently">Recently</v:String>
     <v:String x:Key="rc_lv_loggedIn" xml:space="preserve">Logged in: </v:String>
     <v:String x:Key="rc_lv_nickname" xml:space="preserve">Nickname: </v:String>
@@ -325,32 +331,27 @@
     <v:String x:Key="rc_gv_selected" xml:space="preserve">Selected: </v:String>
     <v:String x:Key="rc_gv_customGameTitle">Custom game title</v:String>
     <v:String x:Key="rc_gv_Update">Update</v:String>
-    <v:String x:Key="rc_gv_Other_gameID">Other gameID</v:String>
     <v:String x:Key="rc_gv_idle">Idle</v:String>
     <v:String x:Key="rc_gv_stop">Stop</v:String>
     <v:String x:Key="rc_gv_maximumGames" xml:space="preserve">"Maximum&#13;32 games!"</v:String>
     <v:String x:Key="rc_gv_selectGames">Select game!</v:String>
     <v:String x:Key="rc_gv_rememberGames">Remember</v:String>
     <v:String x:Key="rc_gv_saveGameListDesc" xml:space="preserve">Remembers current games and automatically&#13;turns them on when you log into your account</v:String>
-    <v:String x:Key="rc_gv_addGameDesc" xml:space="preserve">You can add a game that is not on the list,&#13;but is in your library. For example Family Share</v:String>
     <!--#endregion-->
 
     
     <!--#region Messages view -->
     <v:String x:Key="rc_mv_chat">Сhat:</v:String>
     <v:String x:Key="rc_mv_writeMsg">Write a message...</v:String>
-    <v:String x:Key="rc_mv_goToChatId">Go to chat ID64/ID32/URL</v:String>
+    <v:String x:Key="rc_mv_goToChatId">Go to chat (SteamID any form)</v:String>
     <v:String x:Key="rc_mv_currntAdm">Current administrator</v:String> 
     <v:String x:Key="rc_mv_saveChatLog">Save chat log</v:String>
     <v:String x:Key="rc_mv_enableCmds">Enable commands</v:String>
     <v:String x:Key="rc_mv_chatNotSelect">Chat not selected</v:String>
-    <v:String x:Key="rc_mv_cmdsTitle" xml:space="preserve">     Keyword                 Command                 Message   </v:String>
-    <v:String x:Key="rc_mv_onlyConsoleCmds">Only console commands</v:String>
-    <v:String x:Key="rc_mv_cmd">Command</v:String>
-    <v:String x:Key="rc_mv_keyword">Keyword</v:String>
-    <v:String x:Key="rc_mv_message">Message</v:String>
     <v:String x:Key="rc_mv_chatLeave">Leave the current chat</v:String>
     <v:String x:Key="rc_mv_addAdmin" xml:space="preserve">User, per commands&#13;which the bot responds</v:String>
+    <v:String x:Key="rc_mv_yourWebApi">Your steam web API key</v:String>
+    <v:String x:Key="rc_mv_yourTradeToken">Your trade token</v:String>
     <!--#endregion-->
 
     

@@ -68,6 +68,7 @@
     <v:String x:Key="mv_downloading">Загрузка...</v:String>
     <v:String x:Key="mv_close">Закрыть</v:String>
     <v:String x:Key="mv_update">Обновить</v:String>
+    <v:String x:Key="mv_apply">Применить</v:String>
     <!--#endregion-->
 
 
@@ -267,8 +268,14 @@
     <!--#region Remote control -->
 
     <!--#region Login view -->
-    <v:String x:Key="rc_lv_signIn">Вход</v:String>
+    <v:String x:Key="rc_lv_rememberMe">Запомнить меня</v:String>
     <v:String x:Key="rc_lv_guardCode">Код Steam guard</v:String>
+    <v:String x:Key="rc_lv_mobileConfirm">Подтвердите вход в своём мобильном приложении Steam</v:String>
+    <v:String x:Key="rc_lv_loginWithCode">Войти с помощью кода</v:String>
+    <v:String x:Key="rc_lv_enterAccessCode">Введите код доступа</v:String>
+    <v:String x:Key="rc_lv_accessCodeMail">из письма, которое пришло вам на почту</v:String>
+    <v:String x:Key="rc_lv_accessCode2FA">из вашего двухфакторного аутентификатора</v:String>
+    <v:String x:Key="rc_lv_signIntoAccount">Войти в аккаунт</v:String>
     <v:String x:Key="rc_lv_recently">Недавние</v:String>
     <v:String x:Key="rc_lv_loggedIn" xml:space="preserve">Текущий активный: </v:String>
     <v:String x:Key="rc_lv_nickname" xml:space="preserve">Никнейм: </v:String>
@@ -323,32 +330,25 @@
     <v:String x:Key="rc_gv_selected" xml:space="preserve">Выбранных: </v:String>
     <v:String x:Key="rc_gv_customGameTitle">Тайтл игры</v:String>
     <v:String x:Key="rc_gv_Update">Обновить</v:String>
-    <v:String x:Key="rc_gv_Other_gameID">ID другой игры</v:String>
     <v:String x:Key="rc_gv_idle">Запуск</v:String>
     <v:String x:Key="rc_gv_stop">Стоп</v:String>
-    <v:String x:Key="rc_gv_maximumGames" xml:space="preserve">"Максимум&#13;32 игры!"</v:String>
     <v:String x:Key="rc_gv_selectGames">Выберите игру!</v:String>
     <v:String x:Key="rc_gv_rememberGames">Запомнить</v:String>
     <v:String x:Key="rc_gv_saveGameListDesc" xml:space="preserve">Запоминает текущие игры и автоматически включает их,&#13;когда вы входите в свою учетную запись.</v:String>
-    <v:String x:Key="rc_gv_addGameDesc" xml:space="preserve">Вы можете добавить игру, которой нет в списке, но которая&#13;есть в вашей библиотеке. Например, Family Share</v:String>
     <!--#endregion-->
 
     <!--#region Messages view -->
     <v:String x:Key="rc_mv_chat">Чат:</v:String>
     <v:String x:Key="rc_mv_writeMsg">Написать сообщение...</v:String>
-    <v:String x:Key="rc_mv_goToChatId">Перейти в чат ID64/ID32/URL</v:String>
+    <v:String x:Key="rc_mv_goToChatId">Перейти в чат (SteamID любой формы)</v:String>
     <v:String x:Key="rc_mv_currntAdm">Текущий администратор</v:String>
     <v:String x:Key="rc_mv_saveChatLog">Сохранять лог чата</v:String>
     <v:String x:Key="rc_mv_enableCmds">Включить команды</v:String>
     <v:String x:Key="rc_mv_chatNotSelect">Чат не выбран</v:String>
-
-    <v:String x:Key="rc_mv_cmdsTitle" xml:space="preserve">  Ключевое слово        Команда              Сообщение   </v:String>
-    <v:String x:Key="rc_mv_onlyConsoleCmds">Только консольные команды</v:String>
-    <v:String x:Key="rc_mv_cmd">Команда</v:String>
-    <v:String x:Key="rc_mv_keyword">Ключевое слово</v:String>
-    <v:String x:Key="rc_mv_message">Сообщение</v:String>
     <v:String x:Key="rc_mv_chatLeave">Покинуть текущий чат</v:String>
     <v:String x:Key="rc_mv_addAdmin" xml:space="preserve">Пользователь, команды&#13;которого выполняет бот</v:String>
+    <v:String x:Key="rc_mv_yourWebApi">Ваш web API ключ</v:String>
+    <v:String x:Key="rc_mv_yourTradeToken">Ваш trade токен</v:String>
     <!--#endregion-->
 
 

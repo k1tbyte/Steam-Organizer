@@ -58,7 +58,12 @@ namespace Steam_Account_Manager
             ProfileOptimization.SetProfileRoot(WorkingDirectory);
             ProfileOptimization.StartProfile("Startup.profile");
 
-            DispatcherUnhandledException += (sender, arg) => { new ServiceWindow { InnerText = arg.Exception.ToString() }.ShowDialog(); Shutdown(); };
+            DispatcherUnhandledException += (sender, arg) => 
+            {
+                new ServiceWindow { InnerText = arg.Exception.ToString() }.ShowDialog();
+                Logger.LogRuntimeError(arg.Exception);
+                Shutdown(); 
+            };
 
             Config.LoadProperties();
 
@@ -120,7 +125,8 @@ namespace Steam_Account_Manager
             GrabCursor.Dispose();
             GrabbingCursor.Dispose();
             Mutex.Close();
-            Utils.Common.CachedHttpClient.Dispose();
+            Logger.Stop();
+            Common.CachedHttpClient.Dispose();
 
             App.Current.Dispatcher.InvokeShutdown();
         }

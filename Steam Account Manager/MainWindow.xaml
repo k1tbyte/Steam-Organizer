@@ -13,9 +13,6 @@
         WindowState="{Binding WindowState}"
         IsHitTestVisible="True"
         ResizeMode="NoResize">
-    <Window.Resources>
-     
-    </Window.Resources>
 
     <Window.DataContext>
         <vm:MainWindowViewModel/>
@@ -152,7 +149,7 @@
                 </Button>
 
                 <!--Page content-->
-                <ContentControl Grid.Row="1"  Content="{Binding CurrentView}"/>
+                <ContentControl FocusVisualStyle="{x:Null}" Grid.Row="1"  Content="{Binding CurrentView}"/>
 
             </Grid>
 

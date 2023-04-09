@@ -4,6 +4,7 @@
     <Style x:Key="ModernOutlineButton" TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource add_button_background}"/>
         <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Width" Value="125"/>
         <Setter Property="Height" Value="35"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -45,6 +46,7 @@
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
         <Setter Property="Background" Value="{DynamicResource first_main_brush}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Width" Value="Auto"/>
         <Setter Property="Height" Value="35"/>
@@ -133,6 +135,7 @@
     <Style x:Key="ModernMenuRadioButton" TargetType="{x:Type RadioButton}">
         <Setter Property="Background" Value="{DynamicResource menu_button_background}"/>
         <Setter Property="Foreground" Value="{DynamicResource menu_button_text}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Height" Value="35" />
         <Setter Property="Margin" Value="15 3" />
         <Setter Property="FontSize" Value="13" />
@@ -179,6 +182,7 @@
     <Style x:Key="ModernServiceButton" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource top_service_buttons}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Height" Value="20" />
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Width" Value="20" />
@@ -299,6 +303,7 @@
     <Style x:Key="ModernSwitchToggleButton" TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="{DynamicResource first_main_brush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource first_main_brush}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Height" Value="35"/>
         <Setter Property="Width" Value="85"/>
         <Setter Property="Margin" Value="0 0 100 0"/>
