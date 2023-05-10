@@ -1,0 +1,86 @@
+﻿<Window x:Class="SteamOrganizer.UIExtensions.PopupMessageWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    mc:Ignorable="d"
+    Title="NotificationWindow"  MaxWidth="300" ShowInTaskbar="False"
+    WindowStyle="None" AllowsTransparency="True" 
+    Background="Transparent"
+    SizeToContent="Height">
+
+    <Grid x:Name="mainArea" Width="300" d:Margin="0">
+        <Border Background="{StaticResource background_border_color}" 
+                CornerRadius="3 0 0 3" BorderThickness="0,3,0,3" BorderBrush="{DynamicResource second_main_brush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="55"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
+
+                <Icon:PackIconMaterial x:Name="iicon" Kind="InformationOutline" Background="Transparent"
+                                       Width="30" Height="30" Margin="12 0 0 0" Foreground="{DynamicResource atv_rectangles_shadow}"
+                                       Grid.RowSpan="2" VerticalAlignment="Center"/>
+
+                <TextBlock VerticalAlignment="Top" Foreground="{DynamicResource default_foreground}"
+                           HorizontalAlignment="Left" Margin="0 -10 0 10"
+                           Text="Some ge fefefefefeffefeefefefefeefefewfwefwefwefwefeffefeefte" Grid.Row="1"
+                           FontSize="13" TextWrapping="Wrap" x:Name="Title"
+                           Grid.Column="1" />
+
+                <Button Style="{StaticResource ModernSpinButton}" Click="Button_Click"
+                        HorizontalAlignment="Right" IsCancel="True" Margin="0 5 8 0"
+                        Width="10" Height="10" VerticalAlignment="Center" Grid.Column="2">
+                    <Icon:PackIconMaterial Kind="WindowClose"
+                                       Height="10" Width="10" 
+                                       VerticalAlignment="Center"/>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Animation -->
+        <Grid.Triggers>
+            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                <BeginStoryboard x:Name="StoryboardLoad">
+                    <Storyboard>
+                        <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                            Storyboard.TargetName="mainArea"
+                                            From="300 0 0 0" To="0" Duration="0:0:1">
+                            <ThicknessAnimation.EasingFunction>
+                                <CircleEase EasingMode="EaseInOut"/>
+                            </ThicknessAnimation.EasingFunction>
+                        </ThicknessAnimation>
+
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)"  Completed="NotificationWindowClosed">
+                            <SplineDoubleKeyFrame KeyTime="0:0:4" Value="1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+
+            <EventTrigger RoutedEvent="Mouse.MouseEnter">
+                <EventTrigger.Actions>
+                    <RemoveStoryboard BeginStoryboardName="StoryboardLoad"/>
+                    <RemoveStoryboard BeginStoryboardName="StoryboardFade"/>
+                </EventTrigger.Actions>
+            </EventTrigger>
+
+            <EventTrigger RoutedEvent="Mouse.MouseLeave">
+                <BeginStoryboard x:Name="StoryboardFade">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)"  Completed="NotificationWindowClosed">
+                            <SplineDoubleKeyFrame KeyTime="0:0:2" Value="1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+
+        </Grid.Triggers>
+    </Grid>
+</Window>

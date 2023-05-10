@@ -1,0 +1,114 @@
+﻿<Window x:Class="SteamOrganizer.MVVM.View.Windows.AddAccountWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:ui="clr-namespace:SteamOrganizer.UIExtensions"
+        xmlns:viewmodels="clr-namespace:SteamOrganizer.MVVM.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:AddAccountViewModel}"
+        Background="Transparent"
+        mc:Ignorable="d"
+        AllowsTransparency="True"
+        Title="Adding an account"
+        WindowStyle="None"  SizeToContent="WidthAndHeight"
+        Name="AddAccountClassWnd">
+
+    <Border Height="330" Width="270" Margin="3" CornerRadius="3" Background="{DynamicResource background_border_color}"  MouseLeftButtonDown="BorderDragMove"
+            BorderThickness="0 3 0 3" BorderBrush="{DynamicResource second_main_brush}" Effect="{StaticResource LightShadow}" d:Effect="{x:Null}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="65"/>
+                <RowDefinition Height="65"/>
+                <RowDefinition Height="65"/>
+                <RowDefinition Height="55"/>
+            </Grid.RowDefinitions>
+
+
+            <TextBlock 
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left" Margin="20 20" 
+                       FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                       Text="{DynamicResource adv_header_title}"
+                       FontSize="20"/>
+
+
+            <Rectangle Height="1"
+                       VerticalAlignment="Bottom"
+                       Margin="5"
+                       Fill="{DynamicResource add_window_rectangle}"
+                       Width="240"/>
+
+            <TextBlock Grid.Row="2" Text="{DynamicResource adv_password}" FontWeight="Thin"
+                       Width="57" Height="20" HorizontalAlignment="Left"
+                       FontSize="14"
+                       Foreground="{DynamicResource first_settings_text}" Margin="20,-8,0,37" />
+
+            <ui:ModernPasswordBox  Grid.Row="2" Height="35" IconKeyColor="{DynamicResource first_settings_text}"
+                                   BorderBrush="{DynamicResource first_settings_text}"
+                                   Foreground="{DynamicResource default_foreground}"
+                                   Password="{Binding SteamPassword, UpdateSourceTrigger=PropertyChanged}"
+                                                Width="230" BorderThickness="0 0 0 1"/>
+
+            <Grid Grid.Row="1" Margin="20 4 0 0" HorizontalAlignment="Left" VerticalAlignment="Center">
+
+                <TextBox   Style="{StaticResource ModernTextBoxOutlined}" Width="230" Height="30"  
+                          Text="{Binding SteamLogin, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalAlignment="Center" Tag="{DynamicResource adv_login}"/>
+                <Icon:PackIconMaterial Kind="AccountOutline" VerticalAlignment="Center"
+                                           Height="22" Width="22" Margin="8 0 0 1"
+                                           Foreground="{DynamicResource first_settings_text}"/>
+            </Grid>
+
+
+          
+
+            <!-- URL or Nickname -->
+            <Grid Grid.Row="3" Margin="20 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left">
+
+                <TextBox x:Name="SteamURL" MaxLength="60"  Style="{StaticResource ModernTextBoxOutlined}" Width="230" Height="30"  
+                          Text="{Binding SteamLink, UpdateSourceTrigger=PropertyChanged}" 
+                         VerticalAlignment="Center" Tag="{DynamicResource adv_anySteamAccoutId}"/>
+                <Icon:PackIconMaterial x:Name="urlIcon" Kind="Link" VerticalAlignment="Center"
+                                           Height="22" Width="22" Margin="5 0 0 1"
+                                           Foreground="{DynamicResource first_settings_text}"/>
+            </Grid>
+
+
+
+
+            <!--Error Message TextBlock-->
+            <TextBlock Grid.Row="3" VerticalAlignment="Top"
+                       Style="{StaticResource ModernErrorTextBlock}"
+                       Grid.RowSpan="4" Margin="0 53 0 0" Padding="20 0 20 0"
+                       Text="{Binding ErrorMessage}">
+            </TextBlock>
+
+            <!-- Checkbox -->
+            <ToggleButton Width="25" Height="25"  IsChecked="{Binding DontCollectInfo}" Click="ToggleButton_Checked"
+                         Grid.Row="4" HorizontalAlignment="Right" Margin="0 0 55 0" Style="{StaticResource ModernCheckbox}">
+                <ToggleButton.ToolTip>
+                    <ToolTip ContentStringFormat="{DynamicResource adv_dontCollectInfo}"/>
+                </ToggleButton.ToolTip>
+            </ToggleButton>
+
+
+            <Button Style="{StaticResource ModernDefaultButton}"
+                    Command="{Binding AddAccountAsyncCommand}" MinWidth="90"
+                    CommandParameter="{Binding ElementName=AddAccountClassWnd}"
+                    Content="{DynamicResource adv_save}" Grid.Row="4"  IsDefault="True"/>
+
+            <Button  Style="{StaticResource ModernSpinButton}"
+                        Click="CloseEvent" IsCancel="True"
+                        HorizontalAlignment="Right"
+                        Width="15" Margin="0,0,20,0">
+                <Icon:PackIconMaterial Kind="WindowClose"
+                                       Height="15" Width="15" 
+                                       VerticalAlignment="Center"/>
+            </Button>
+
+        </Grid>
+    </Border>
+</Window>

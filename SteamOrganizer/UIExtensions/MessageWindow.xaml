@@ -1,0 +1,79 @@
+﻿<Window x:Class="SteamOrganizer.UIExtensions.MessageWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
+        SizeToContent="WidthAndHeight"
+        Topmost="True">
+    <Border x:Name="mainBorder" Margin="3" Background="{DynamicResource background_border_color}" CornerRadius="3"  BorderThickness="0 3 0 3"
+             Padding="10 5" MouseLeftButtonDown="DragMoveEvent" BorderBrush="{DynamicResource second_main_brush}"
+            Effect="{StaticResource LightShadow}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal"  >
+               
+                <Grid>
+                    <Icon:PackIconMaterial x:Name="errorIcon" Visibility="Collapsed" Kind="CloseOutline" Foreground="PaleVioletRed" 
+                                         VerticalAlignment="Center" Margin="0 0 7 0"
+                                         Width="26" Height="26"/>
+                    <Icon:PackIconMaterial x:Name="queryIcon" Visibility="Collapsed" Kind="Exclamation" Foreground="Orange" 
+                                         VerticalAlignment="Center" Margin="0 0 7 0"
+                                         Width="26" Height="26"/>
+                </Grid>
+
+                <TextBlock x:Name="Title" Text="Title" VerticalAlignment="Center"
+                       FontSize="20" FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                           Opacity="0.95" />
+            </StackPanel>
+
+            <Button Style="{StaticResource ModernSpinButton}" Grid.Column="1"
+                    VerticalAlignment="Center" HorizontalAlignment="Right" IsDefault="True"
+                        Width="20" Click="no_Click">
+                <Icon:PackIconMaterial Kind="WindowClose"
+                                       Height="15" Width="15" 
+                                       VerticalAlignment="Center"/>
+            </Button>
+
+            <ScrollViewer Grid.Row="1" Margin="5 0 10 5" MaxHeight="250" Grid.ColumnSpan="2">
+                <ContentPresenter x:Name="contentArea">
+                    <ContentPresenter.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="FontSize" Value="12"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                            <Setter Property="FontWeight" Value="Medium"/>
+                            <Setter Property="MaxWidth" Value="330"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                            <Setter Property="Foreground" Value="{DynamicResource default_foreground}"/>
+                        </Style>
+                    </ContentPresenter.Resources>
+                </ContentPresenter>
+            </ScrollViewer>
+
+
+            <StackPanel x:Name="ActionPanel" Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Height="35">
+                <Button x:Name="no" Click="no_Click"
+                                Width="60" Height="25" Style="{StaticResource ModernDefaultButton}" Content="{DynamicResource mv_confirmNo}" />
+
+                <Button x:Name="yes" Margin="20 0 0 0" Click="yes_Click"
+                                Width="60" Height="25" Style="{StaticResource ModernDefaultButton}" Content="{DynamicResource mv_confirmYes}"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

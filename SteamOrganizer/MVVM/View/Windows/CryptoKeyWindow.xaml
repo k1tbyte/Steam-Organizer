@@ -1,0 +1,116 @@
+﻿<Window x:Class="SteamOrganizer.MVVM.View.Windows.CryptoKeyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Background="Transparent"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen"
+        Title="Data Decryption">
+    
+    <Border CornerRadius="3" Background="{DynamicResource background_border_color}" MouseLeftButtonDown="BorderDragMove"
+            BorderThickness="0,3,0,3" Margin="3" Effect="{StaticResource LightShadow}" BorderBrush="{DynamicResource second_main_brush}"  Height="200" Width="330">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+
+            <TextBlock Grid.Row="0"
+                VerticalAlignment="Center"
+                       HorizontalAlignment="Center" Margin="0 10 0 0" 
+                       FontFamily="Cascadia Mono"
+                       Foreground="{DynamicResource second_settings_text}"
+                       Text="{DynamicResource aw_encryptedData}"
+                       FontSize="20">
+            </TextBlock>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5">
+                <Image Grid.Row="0" Width="25" Height="25">
+                    <Image.Source>
+                        <BitmapImage UriSource="/logo.ico" DecodePixelWidth="48" DecodePixelHeight="48" CacheOption="OnLoad"/>
+                    </Image.Source>
+                </Image>
+                <TextBlock FontSize="9" FontWeight="DemiBold" VerticalAlignment="Center" Margin="3 0 0 8"
+                           Foreground="{DynamicResource sub_accounttab_text}" Text="SO security"/>
+            </StackPanel>
+
+
+            <Rectangle Height="1"
+                       VerticalAlignment="Bottom"
+                       Grid.Row="0" Grid.ColumnSpan="2"
+                       Margin="5"
+                       Fill="{DynamicResource add_window_rectangle}"
+                       Width="300"/>
+
+            <TextBlock Margin="15 0 0 95" VerticalAlignment="Center" Grid.Row="1" Text="{DynamicResource aw_enterCryptoKey}" Style="{StaticResource settingTextBlock}"/>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="1"  Margin="15 0 0 35" VerticalAlignment="Center">
+                <Border Background="{DynamicResource first_main_brush}"
+                    Width="250" CornerRadius="5" Height="35" BorderThickness="0.7" HorizontalAlignment="Left"
+                    BorderBrush="{DynamicResource buttons_border_brush}">
+                    <StackPanel Orientation="Horizontal" Margin="10 5 10 5">
+
+                        <Icon:PackIconMaterial Kind="ShieldKeyOutline" Foreground="{DynamicResource settings_buttons_isMouseOver}"
+                                           VerticalAlignment="Center" Height="20" Width="20" />
+
+                        <TextBox x:Name="key"  Width="195"  Foreground="{DynamicResource settings_buttons_isUncheckedText}"
+                         VerticalAlignment="Center"  Background="{DynamicResource first_main_brush}" MaxLength="44" BorderThickness="0" CaretBrush="White" />
+                    </StackPanel>
+                </Border>
+
+                <Button Margin="10 0 0 0" x:Name="TryDecrypt" Style="{StaticResource ModernDefaultButton}" 
+                        Width="35" Height="35" Click="TryDecrypt_Click" IsDefault="True">
+                    <Icon:Material Kind="Login"/>
+                </Button>
+                
+            </StackPanel>
+            
+            <TextBlock x:Name="ErrorBlock" Grid.Row="1" VerticalAlignment="Top" FontSize="11"
+                       Margin="0 75 0 0" Padding="15 0 20 0"
+                       Foreground="PaleVioletRed" TextWrapping="Wrap"
+                       Text="">
+            </TextBlock>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0 0 0 15"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                <Button x:Name="Cancel" Style="{StaticResource ModernDefaultButton}" Height="30" Content="{DynamicResource aw_cancel}" Click="Cancel_Click" IsCancel="True"/>
+                <Button x:Name="Reset" IsHitTestVisible="True"
+                        Style="{StaticResource ModernDefaultButton}" Height="30" Margin="20 0 0 0" Content="{DynamicResource aw_reset}" Click="Reset_Click"/>
+            </StackPanel>
+
+
+            <!--Confirmation Rest-->
+            <Border x:Name="ResetBorder" Margin="0 0 0 30" Grid.Row="1" VerticalAlignment="Center"
+                HorizontalAlignment="Center" Visibility="Hidden"
+                Width="300" Height="40" Background="{DynamicResource popup_border_background}" Opacity="0.8"
+                CornerRadius="15" >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{DynamicResource aw_resetDataLost}" Foreground="White"
+                       FontWeight="Normal" VerticalAlignment="Center"
+                       Margin="15 0 0 0" FontSize="11"/>
+
+                    <!-- No button -->
+                    <Button x:Name="noConfirmButton" Click="noConfirmButton_Click" Margin="10 0 0 0" Style="{StaticResource confirmationNoButton}"
+                        Width="25" Height="25">
+                        <Icon:PackIconMaterial Kind="Close" Foreground="White" VerticalAlignment="Center" Width="12" Height="12"/>
+                    </Button>
+
+                    <!-- Yes button -->
+                    <Button x:Name="yesConfirmButton"  Margin="10 0 0 0" Style="{StaticResource confirmationYesButton}"
+                        Width="25" Height="25" Click="yesConfirmButton_Click">
+                        <Icon:PackIconMaterial Kind="Check" Foreground="White" VerticalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+
+
+    </Border>
+</Window>
