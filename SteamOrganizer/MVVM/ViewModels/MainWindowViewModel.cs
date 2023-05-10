@@ -157,7 +157,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                     using (var wc = new WebClient { Encoding = System.Text.Encoding.UTF8})
                     {
                         var version = Version.Parse(Common.BetweenStr(
-                            wc.DownloadString("https://raw.githubusercontent.com/Explynex/SteamOrganizer/master/Steam%20Account%20Manager/Properties/AssemblyInfo.cs"),
+                            wc.DownloadString("https://raw.githubusercontent.com/Explynex/Steam-Organizer/master/SteamOrganizer/Properties/AssemblyInfo.cs"),
                             "[assembly: AssemblyVersion(\"", "\")]", true).Replace("*", "0"));
                         if (version <= App.Version)
                             return;
@@ -167,7 +167,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                             if (new ServiceWindow(true)
                             {
                                 AppendTitleText = version.ToString(3) + (version.Revision == 0 ? "" : " Beta"),
-                                InnerText = await wc.DownloadStringTaskAsync("https://raw.githubusercontent.com/Explynex/SteamOrganizer/master/CHANGELOG.md")
+                                InnerText = await wc.DownloadStringTaskAsync("https://raw.githubusercontent.com/Explynex/Steam-Organizer/master/CHANGELOG.md")
                             }.ShowDialog() != true)
                                 return;
 
