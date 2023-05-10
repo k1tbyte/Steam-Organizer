@@ -8,8 +8,7 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
              xmlns:ui="clr-namespace:SteamOrganizer.UIExtensions"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="600"
-               >
+             d:DesignHeight="450" d:DesignWidth="600">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -27,8 +26,6 @@
 
         <ScrollViewer Grid.Row="1" >
             <StackPanel>
-                <Button Content="Export" Margin="10" Click="Button_Click"/>
-                <Button Content="Import" Margin="10" Click="Button_Click_1"/>
                 <TextBlock Text="{DynamicResource sv_title_interface}" 
                            VerticalAlignment="Center" Opacity="0.9"
                            FontFamily="Cascadia Mono"  FontSize="20" Margin="5 -3 0 8"  Foreground="{DynamicResource second_settings_text}"/>

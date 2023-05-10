@@ -2,6 +2,7 @@
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.View.Windows;
 using SteamOrganizer.MVVM.ViewModels;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -109,16 +110,5 @@ namespace SteamOrganizer.MVVM.View.Controls
         #endregion
 
         private void OpenRootFolder(object sender, RoutedEventArgs e) => Process.Start(new ProcessStartInfo { Arguments = App.WorkingDirectory, FileName = "explorer.exe" }).Dispose();
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            System.IO.File.WriteAllText("Config.json",JsonConvert.SerializeObject(Config.Properties));
-            System.IO.File.WriteAllText("Accounts.json", JsonConvert.SerializeObject(Config.Accounts));
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

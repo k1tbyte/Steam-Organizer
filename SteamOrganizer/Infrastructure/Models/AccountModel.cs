@@ -1,7 +1,6 @@
 ﻿using SteamOrganizer.Infrastructure.Converters;
 using SteamOrganizer.Infrastructure.Parsers;
 using SteamOrganizer.Utils;
-using SteamKit2;
 using System;
 using System.Threading.Tasks;
 
