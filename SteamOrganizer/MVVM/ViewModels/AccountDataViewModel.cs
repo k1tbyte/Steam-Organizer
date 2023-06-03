@@ -279,7 +279,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             AddAuthenticatorCommand = new RelayCommand(o =>
             {
-                if (currentAccount.AuthenticatorPath == null || !System.IO.File.Exists(currentAccount.AuthenticatorPath))
+                if (currentAccount.AuthenticatorPath == null || !File.Exists(currentAccount.AuthenticatorPath))
                     Utils.Presentation.OpenDialogWindow(new AddAuthenticatorWindow(currentAccount));
                 else
                     Utils.Presentation.OpenDialogWindow(new ShowAuthenticatorWindow(currentAccount));

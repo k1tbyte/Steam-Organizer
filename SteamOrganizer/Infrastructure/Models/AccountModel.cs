@@ -94,6 +94,8 @@ namespace SteamOrganizer.Infrastructure.Models
         public string UplayPass { get; set; }
         public string OriginEmail { get; set; }
         public string OriginPass { get; set; }
+        public string EpicGamesEmail { get; set; }
+        public string EpicGamesPass { get; set; }
         public string AuthenticatorPath { get; set; }  
         #endregion
 

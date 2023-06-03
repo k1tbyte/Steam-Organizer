@@ -542,6 +542,9 @@
                                                         <DataTrigger Binding="{Binding ElementName=rockstar,Path=IsChecked}" Value="True">
                                                             <Setter Property="Text" Value="{Binding CurrentAccount.RockstarEmail}"/>
                                                         </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ElementName=egs,Path=IsChecked}" Value="True">
+                                                            <Setter Property="Text" Value="{Binding CurrentAccount.EpicGamesEmail}"/>
+                                                        </DataTrigger>
                                                         <DataTrigger Binding="{Binding ElementName=ubisoft,Path=IsChecked}" Value="True">
                                                             <Setter Property="Text" Value="{Binding CurrentAccount.UplayEmail}"/>
                                                         </DataTrigger>
@@ -566,6 +569,9 @@
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding ElementName=rockstar,Path=IsChecked}" Value="True">
                                                         <Setter Property="Password" Value="{Binding CurrentAccount.RockstarPass}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ElementName=egs,Path=IsChecked}" Value="True">
+                                                        <Setter Property="Password" Value="{Binding CurrentAccount.EpicGamesPass}"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding ElementName=ubisoft,Path=IsChecked}" Value="True">
                                                         <Setter Property="Password" Value="{Binding CurrentAccount.UplayPass}"/>
