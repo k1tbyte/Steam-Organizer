@@ -205,6 +205,7 @@
     <v:String x:Key="atv_inf_steamNotFound">Steam not found or not installed</v:String>
     <v:String x:Key="atv_inf_loggedInSteam1">Account is being logged in</v:String>
     <v:String x:Key="atv_inf_loggedInSteam2">Waiting for Steam loading...</v:String>
+    <v:String x:Key="atv_inf_loggedInSteamErr">An error occurred while trying to log into account</v:String>
     <v:String x:Key="atv_inf_getLocalAccInfo">Getting account information...</v:String>
     <v:String x:Key="atv_inf_errorWhileScanning">Error while scanning account</v:String>
     <v:String x:Key="atv_vacCount">Vac count:</v:String>
