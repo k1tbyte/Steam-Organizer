@@ -228,6 +228,14 @@
                           Style="{StaticResource ModernSwitchToggleButton}"/>
                 </DockPanel>
 
+
+                <!-- Notify about pre-releases update -->
+                <DockPanel>
+                    <TextBlock Text="{DynamicResource sv_notifyPreRelease}" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding Properties.NotifyPreReleases}"
+                          Style="{StaticResource ModernSwitchToggleButton}"/>
+                </DockPanel>
+
                 <!--Set password-->
                 <DockPanel Grid.Row="8">
                     <TextBlock Text="{DynamicResource sv_password}" Style="{StaticResource settingTextBlock}"/>

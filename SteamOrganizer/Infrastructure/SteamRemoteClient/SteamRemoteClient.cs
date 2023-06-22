@@ -161,7 +161,7 @@ namespace SteamOrganizer.Infrastructure.SteamRemoteClient
                     try
                     {
                         await AuthSession.SendSteamGuardCodeAsync(
-                      JsonConvert.DeserializeObject<SteamGuardAccount>(authAcc.AuthenticatorPath).GenerateSteamGuardCode(), EAuthSessionGuardType.k_EAuthSessionGuardType_DeviceCode);
+                      JsonConvert.DeserializeObject<SteamGuardAccount>(File.ReadAllText(authAcc.AuthenticatorPath)).GenerateSteamGuardCode(), EAuthSessionGuardType.k_EAuthSessionGuardType_DeviceCode);
                     }
                     catch { AuthenticationCallback(AuthSession.AllowedConfirmations[0].confirmation_type); }
                 }
@@ -371,7 +371,7 @@ namespace SteamOrganizer.Infrastructure.SteamRemoteClient
                 flag = true;
             }
 
-            if(hash != RecentlyLogged.AvatarHash)
+            if(RecentlyLogged != null && hash != RecentlyLogged.AvatarHash)
             {
                 RecentlyLogged.AvatarHash = hash;
                 Config.Serialize(RemoteControlViewModel.RecentlyLoggedIn, $"{App.WorkingDirectory}\\RecentlyLoggedUsers.dat", Config.Properties.UserCryptoKey);

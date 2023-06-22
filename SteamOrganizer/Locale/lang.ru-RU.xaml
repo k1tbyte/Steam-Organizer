@@ -33,6 +33,7 @@
     <v:String x:Key="sv_toolTipSetPass">Подтвердить установку пароля</v:String>
     <v:String x:Key="sv_workingFolder">Рабочая папка программы</v:String>
     <v:String x:Key="sv_workingFolder_Tip">Открыть в проводнике</v:String>
+    <v:String x:Key="sv_notifyPreRelease">Уведомлять о предварительных обновлениях</v:String>
 
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>Ничего</v:String>
@@ -203,7 +204,7 @@
     <v:String x:Key="atv_inf_steamNotFound">Steam не найден или не установлен</v:String>
     <v:String x:Key="atv_inf_loggedInSteam1">Выполняется вход в аккаунт</v:String>
     <v:String x:Key="atv_inf_loggedInSteam2">Ожидание загрузки Steam...</v:String>
-    <v:String x:Key="atv_inf_loggedInSteamErr">Виникла помилка під час спроби увійти до облікового запису</v:String>
+    <v:String x:Key="atv_inf_loggedInSteamErr">Произошла ошибка при попытке войти в аккаунт</v:String>
     <v:String x:Key="atv_inf_getLocalAccInfo">Получение информации об акаунте...</v:String>
     <v:String x:Key="atv_inf_errorWhileScanning">Ошибка при сканировании аккаунта</v:String>
     <v:String x:Key="atv_vacCount">Количество VAC:</v:String>

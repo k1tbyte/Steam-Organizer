@@ -36,6 +36,11 @@ namespace SteamOrganizer.Utils
             return origin.AddSeconds(unixtime);
         }
 
+        public static string ToReadable(this Version version)
+        {
+            return $"{version}{(version.Revision == 0 ? "" : " Pre-release")}";
+        }
+
 
         public static bool CheckInternetConnection()
         {

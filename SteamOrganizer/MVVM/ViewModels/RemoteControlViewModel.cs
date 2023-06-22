@@ -163,9 +163,16 @@ namespace SteamOrganizer.MVVM.ViewModels
             set
             {
                 if (value == 1 && Games == null)
+                {
                     Games = SteamRemoteClient.GetOwnedGames().Result;
+                }
                 else if (value == 3 && Friends == null)
+                {
                     Friends = SteamRemoteClient.ParseUserFriends().Result;
+                    if (Friends == null)
+                        Presentation.OpenPopupMessageBox(App.FindString("adat_friendsTabNull"));
+                }
+
 
                 SetProperty(ref _selectedTabIndex, value);
             }

@@ -476,6 +476,11 @@
 
                         <Button Command="{Binding UpdateFriendsListCommand}" VerticalAlignment="Top" HorizontalAlignment="Right"
                 Style="{StaticResource ModernColoredButton}"   Content="{DynamicResource rc_gv_Update}" Margin="20 30 20 20"/>
+
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 0 130 0" MaxWidth="400" TextWrapping="Wrap"
+                   TextAlignment="Center" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource default_foreground}"
+                   Opacity="0.7" Visibility="{Binding Friends.Count,Converter={StaticResource BoolToVisInverted}}"
+                   Text="{DynamicResource adat_friendsTabNull}"/>
                     </Grid>
                 </TabItem.Content>
             </TabItem>

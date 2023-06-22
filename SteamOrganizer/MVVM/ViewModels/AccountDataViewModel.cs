@@ -272,7 +272,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    Config.Serialize(currentAccount, fileDialog.FileName, Config.Properties.UserCryptoKey);
+                    Config.Serialize(JsonConvert.SerializeObject(currentAccount), fileDialog.FileName, Config.Properties.UserCryptoKey);
                     Utils.Presentation.OpenPopupMessageBox(App.FindString("adat_notif_accountExported"));
                 }
             });

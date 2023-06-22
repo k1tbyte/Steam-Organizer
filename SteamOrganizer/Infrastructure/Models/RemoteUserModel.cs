@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using Newtonsoft.Json;
+using ProtoBuf;
 using SteamKit2;
 using SteamKit2.Internal;
 using System;
@@ -116,9 +117,15 @@ namespace SteamOrganizer.Infrastructure.Models.JsonModels
     [Serializable]
     public class Friend
     {
+        [JsonProperty("personaname")]
         public string Name { get; set; }
+
+        [JsonProperty("steamid")]
         public ulong SteamID64 { get; set; }
+
+        [JsonProperty("avatarmedium")]
         public string ImageURL { get; set; }
+
         public string FriendSince { get; set; }
     }
 

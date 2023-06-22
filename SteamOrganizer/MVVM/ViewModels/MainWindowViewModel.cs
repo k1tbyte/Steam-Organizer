@@ -159,14 +159,14 @@ namespace SteamOrganizer.MVVM.ViewModels
                         var version = Version.Parse(Common.BetweenStr(
                             wc.DownloadString("https://raw.githubusercontent.com/k1tbyte/Steam-Organizer/master/SteamOrganizer/Properties/AssemblyInfo.cs"),
                             "[assembly: AssemblyVersion(\"", "\")]", true).Replace("*", "0"));
-                        if (version <= App.Version)
+                        if (version <= App.Version || (version.Revision != 0 && !Config.Properties.NotifyPreReleases))
                             return;
 
                         App.Current.Dispatcher.Invoke(async () =>
                         {
                             if (new ServiceWindow(true)
                             {
-                                AppendTitleText = version.ToString(3) + (version.Revision == 0 ? "" : " Beta"),
+                                AppendTitleText = version.ToReadable(),
                                 InnerText = await wc.DownloadStringTaskAsync("https://raw.githubusercontent.com/k1tbyte/Steam-Organizer/master/CHANGELOG.md")
                             }.ShowDialog() != true)
                                 return;
@@ -174,7 +174,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                             App.MainWindow.UpdTitle.Text = App.FindString("mv_downloading");
                             App.MainWindow.UpdArea.Visibility = Visibility.Visible;
 
-                            var URL = "https://dl.dropboxusercontent.com/s/fjoc5t8dwz5d6yq/LastUpd.zip?dl=0";
+                            var URL = $"https://github.com/k1tbyte/Steam-Organizer/releases/download/{version}/SteamOrganizer-Portable.zip";
                             var downloadPath = App.WorkingDirectory + "\\downloadcache.zip";
 
                             await wc.OpenReadTaskAsync(URL);

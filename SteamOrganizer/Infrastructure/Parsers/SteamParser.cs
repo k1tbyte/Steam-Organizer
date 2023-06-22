@@ -95,7 +95,7 @@ namespace SteamOrganizer.Infrastructure.Parsers
                     if (index % 100 == 0)
                     {
                         json = await wc.DownloadStringTaskAsync(steamRequest.Append("&relationship=friend").ToString());
-                        friends.AddRange(JsonConvert.DeserializeObject<RootObjectFriends>(json).Response.Friends);
+                        friends.AddRange(JsonConvert.DeserializeObject<RootObjectFriendsSummaries>(json).Response.Friends);
                         steamRequest.Clear().Append(basePlayerSummaries);
                         index = 0;
                     }
@@ -105,7 +105,7 @@ namespace SteamOrganizer.Infrastructure.Parsers
                 if (index > 1)
                 {
                     json = await wc.DownloadStringTaskAsync(steamRequest.ToString());
-                    friends.AddRange(JsonConvert.DeserializeObject<RootObjectFriends>(json).Response.Friends);
+                    friends.AddRange(JsonConvert.DeserializeObject<RootObjectFriendsSummaries>(json).Response.Friends);
                 }
 
                 friends.Sort((x, y) => x.SteamID64.CompareTo(y.SteamID64));
@@ -144,14 +144,14 @@ namespace SteamOrganizer.Infrastructure.Parsers
         }
 
 
-        private class RootObjectFriends
+        private class RootObjectFriendsSummaries
         {
             public ResponseFriendsSummaries Response { get; set; }
         }
 
         private class ResponseFriendsSummaries
         {
-            [JsonProperty("Players")]
+            [JsonProperty("players")]
             public Friend[] Friends { get; set; }
         } 
         #endregion

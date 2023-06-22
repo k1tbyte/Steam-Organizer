@@ -65,7 +65,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             set => Config.Properties.ActionAfterLogin = (LoggedAction)value;
         }
 
-        public string Version => App.Version.ToString(3) + (App.Version.Revision == 0 ? " Beta" : " Stable");
+        public string Version => App.Version.ToReadable();
         #endregion
 
         private async void CheckAutoLoginUser()

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using static SteamKit2.GC.Dota.Internal.CMsgDOTABotDebugInfo;
 
 namespace SteamOrganizer.Infrastructure.Models
 {
@@ -46,6 +47,7 @@ namespace SteamOrganizer.Infrastructure.Models
         public string Password { get; set; }
         public ObservableCollection<RecentlyLoggedUser> RecentlyLoggedUsers { get; set; }
         public ulong? AutoLoginUserID { get; set; }
+        public bool NotifyPreReleases { get; set; }
         private bool _rememberRemoteUser;
         public bool RememberRemoteUser
         {

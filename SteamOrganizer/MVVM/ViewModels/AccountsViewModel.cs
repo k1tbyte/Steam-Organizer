@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.Infrastructure.Models;
 using SteamOrganizer.MVVM.Core;
@@ -82,7 +83,11 @@ namespace SteamOrganizer.MVVM.ViewModels
                 Config.Accounts[i].Index = i + 1;
 
             if (refresh)
+            {
+                OnPropertyChanged(nameof(Accounts));
                 SearchFilter.Refresh();
+            }
+                
         }
 
         private async Task UpdateDatabase()
@@ -113,19 +118,6 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
             App.MainWindow.UpdArea.Visibility = System.Windows.Visibility.Collapsed;
             MainWindowViewModel.CancellationFlag = false;
-        }
-        private void RestoreAccountFromFile(string fileName, string crypto)
-        {
-            var acc = (Account)Config.Deserialize(fileName, crypto);
-            if (Config.Accounts.Exists(o => o.SteamId64.HasValue && o.SteamId64 == acc.SteamId64))
-            {
-                Presentation.OpenPopupMessageBox(App.FindString("adv_alreadyInDb"), true);
-                return;
-            }
-            acc.Index = Config.Accounts.Count+1;
-            Config.Accounts.Add(acc);
-            Presentation.OpenPopupMessageBox(App.FindString("av_accRestoredFromFile"));
-            Config.SaveAccounts();
         }
         private bool FilterPredicate(object value)
         {
@@ -158,20 +150,22 @@ namespace SteamOrganizer.MVVM.ViewModels
                 {
                     Filter = "Steam Account (.sa)|*.sa"
                 };
-                if (fileDialog.ShowDialog() == true)
-                {
-                    try
-                    {
-                        RestoreAccountFromFile(fileDialog.FileName, Config.Properties.UserCryptoKey);
-                    }
-                    catch
-                    {
-                        if (Presentation.OpenDialogWindow(new CryptoKeyWindow(false, fileDialog.FileName)) == true)
-                        {
-                            RestoreAccountFromFile(fileDialog.FileName, Config.TempUserKey);
-                        }
-                    }
-                }
+
+                if (fileDialog.ShowDialog() != true)
+                    return;
+
+                var json = Config.Deserialize(fileDialog.FileName, Config.Properties.UserCryptoKey);
+
+                if (json?.GetType() != typeof(string) && (Presentation.OpenDialogWindow(new CryptoKeyWindow(false, fileDialog.FileName)) != true || (json = Config.Deserialize(fileDialog.FileName, Config.TempUserKey)).GetType() != typeof(string)))
+                    return;
+
+                var acc = JsonConvert.DeserializeObject<Account>(json as string);
+
+                acc.Index = Config.Accounts.Count + 1;
+                Config.Accounts.Add(acc);
+                Presentation.OpenPopupMessageBox(App.FindString("av_accRestoredFromFile"));
+                Config.SaveAccounts();
+
             });
 
             StoreAccountDatabaseCommand = new RelayCommand(o =>
@@ -182,7 +176,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    Config.Serialize(Config.Accounts, fileDialog.FileName, Config.Properties.UserCryptoKey);
+                    Config.Serialize(JsonConvert.SerializeObject(Config.Accounts), fileDialog.FileName, Config.Properties.UserCryptoKey);
                 }
             });
 
@@ -192,26 +186,19 @@ namespace SteamOrganizer.MVVM.ViewModels
                 {
                     Filter = "Steam Account (.sadb)|*.sadb"
                 };
-                if (fileDialog.ShowDialog() == true)
-                {
-                    try
-                    {
-                        Config.Accounts = (ObservableCollection<Account>)Config.Deserialize(fileDialog.FileName, Config.Properties.UserCryptoKey);
-                        Presentation.OpenPopupMessageBox(App.FindString("av_dbRestoredFromFile"));
-                        UpdateIndexes();
-                        Config.SaveAccounts();
-                    }
-                    catch
-                    {
-                        if (Presentation.OpenDialogWindow(new CryptoKeyWindow(false,fileDialog.FileName)) == true)
-                        {
-                            Config.Accounts = (ObservableCollection<Account>)Config.Deserialize(fileDialog.FileName, Config.TempUserKey);
-                            Presentation.OpenPopupMessageBox(App.FindString("av_dbRestoredFromFile"));
-                            UpdateIndexes();
-                            Config.SaveAccounts();
-                        }
-                    }
-                }
+                if (fileDialog.ShowDialog() != true)
+                    return;
+
+                var db = Config.Deserialize(fileDialog.FileName, Config.Properties.UserCryptoKey);
+
+                if (db?.GetType() != typeof(string) && 
+                (Presentation.OpenDialogWindow(new CryptoKeyWindow(false, fileDialog.FileName)) != true || (db = Config.Deserialize(fileDialog.FileName, Config.TempUserKey)).GetType() != typeof(string)))
+                    return;
+
+                Config.Accounts = JsonConvert.DeserializeObject<ObservableCollection<Account>>(db as string);
+                Presentation.OpenPopupMessageBox(App.FindString("av_dbRestoredFromFile"));
+                UpdateIndexes(refresh: true);
+                Config.SaveAccounts();
 
             });
 

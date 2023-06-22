@@ -96,10 +96,12 @@ namespace SteamOrganizer.Infrastructure.Models
         public string OriginPass { get; set; }
         public string EpicGamesEmail { get; set; }
         public string EpicGamesPass { get; set; }
-        public string AuthenticatorPath { get; set; }  
+        public string AuthenticatorPath { get; set; }
         #endregion
 
         #endregion
+
+        public Account() { }
 
         //Default
         public Account(string login, string password, ulong steamId64)
