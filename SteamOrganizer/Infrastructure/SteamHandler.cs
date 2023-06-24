@@ -206,12 +206,12 @@ namespace SteamOrganizer.Infrastructure
 
                 Win32.BringWindowToFront(loginWindowHandle);
 
-/*                for (int i = 0; i < 15 && document.FindFirstChild().Name != "STEAM GUARD" || textBoxes?.Length == 2; i++)
+                for (int i = 0; i < 15 && document.FindFirstChild().AutomationId != "Layer_2" || textBoxes?.Length == 2; i++)
                 {
                     document = window.FindFirstDescendant(o => o.ByControlType(ControlType.Document));
                     textBoxes = document.FindAllChildren(o => o.ByControlType(ControlType.Edit))?.Select(o => o.AsTextBox()).ToArray();
                     Thread.Sleep(500);
-                }*/
+                }
 
                 if (textBoxes?.Length != 5)
                 {
