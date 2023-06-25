@@ -148,13 +148,9 @@
     <Compile Include="Infrastructure\Parsers\VDF\VdfValue.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
     <Compile Include="Infrastructure\Models\GamesHandlerModel.cs" />
-    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\AuthenticatorLinker.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\Confirmation.cs" />
-    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\SessionData.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\SteamGuardAccount.cs" />
-    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\SteamWeb.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\TimeAligner.cs" />
-    <Compile Include="Infrastructure\SteamRemoteClient\Authenticator\UserLogin.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\GamesHandler.cs" />
     <Compile Include="Infrastructure\SteamRemoteClient\SteamRemoteClient.cs" />
     <Compile Include="Infrastructure\Config.cs" />

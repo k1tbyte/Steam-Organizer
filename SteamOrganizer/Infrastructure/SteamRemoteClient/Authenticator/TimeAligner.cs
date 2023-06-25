@@ -39,7 +39,7 @@ namespace SteamOrganizer.Infrastructure.SteamRemoteClient.Authenticator
             {
                 try
                 {
-                    string response = client.UploadString(SteamWeb.TWO_FACTOR_TIME_QUERY, "steamid=0");
+                    string response = client.UploadString("https://api.steampowered.com/ITwoFactorService/QueryTime/v0001", "steamid=0");
                     TimeQuery query = JsonConvert.DeserializeObject<TimeQuery>(response);
                     _timeDifference = (int)(query.Response.ServerTime - currentTime);
                     _aligned = true;
@@ -57,7 +57,7 @@ namespace SteamOrganizer.Infrastructure.SteamRemoteClient.Authenticator
             WebClient client = new WebClient();
             try
             {
-                string response = await client.UploadStringTaskAsync(new Uri(SteamWeb.TWO_FACTOR_TIME_QUERY), "steamid=0");
+                string response = await client.UploadStringTaskAsync(new Uri("https://api.steampowered.com/ITwoFactorService/QueryTime/v0001"), "steamid=0");
                 TimeQuery query = JsonConvert.DeserializeObject<TimeQuery>(response);
                 TimeAligner._timeDifference = (int)(query.Response.ServerTime - currentTime);
                 TimeAligner._aligned = true;

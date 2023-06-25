@@ -72,7 +72,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             await Task.Factory.StartNew(async () =>
             {
                 LoadSteamGuardAccountFromFilePath();
-                await guard.RefreshSessionAsync().ConfigureAwait(false);
+             //   await guard.RefreshSessionAsync().ConfigureAwait(false);
                 while (!_remove)
                 {
                     Thread.Sleep(1000);
@@ -94,9 +94,9 @@ namespace SteamOrganizer.MVVM.ViewModels
                 try
                 {
                     ErrorMessage = (string)App.Current.FindResource("saw_authRemove");
-                    bool success = guard.DeactivateAuthenticator();
-                    ErrorMessage = success == true ? (string)App.Current.FindResource("saw_authRemoveSuccess") :
-                    (string)App.Current.FindResource("saw_authRemoveError");
+                  //  bool success = guard.DeactivateAuthenticator();
+                    /*ErrorMessage = success == true ? (string)App.Current.FindResource("saw_authRemoveSuccess") :
+                    (string)App.Current.FindResource("saw_authRemoveError");*/
                     _remove = true;
                     File.Delete(currentAccount.AuthenticatorPath);
                     currentAccount.AuthenticatorPath = null;
@@ -136,14 +136,14 @@ namespace SteamOrganizer.MVVM.ViewModels
                 {
                     if (item.ID == (ulong)o)
                     {
-                        if (await guard.AcceptConfirmation(item).ConfigureAwait(false))
+/*                        if (await guard.AcceptConfirmation(item).ConfigureAwait(false))
                         {
                             Confirmations.Remove(item);
                         }
                         else
                         {
                             ErrorMessage = "An error occurred while confirmation...";
-                        }
+                        }*/
                         break;
                     }
                 }
@@ -157,14 +157,14 @@ namespace SteamOrganizer.MVVM.ViewModels
                 {
                     if (item.ID == (ulong)o)
                     {
-                        if (await guard.DenyConfirmation(item).ConfigureAwait(false))
+/*                        if (await guard.DenyConfirmation(item).ConfigureAwait(false))
                         {
                             Confirmations.Remove(item);
                         }
                         else
                         {
                             ErrorMessage = "An error occurred while denying...";
-                        }
+                        }*/
                         break;
                     }
                 }
@@ -176,11 +176,11 @@ namespace SteamOrganizer.MVVM.ViewModels
                     ErrorMessage = "";
                 try
                 {
-                    Confirmations = await guard.FetchConfirmationsAsync().ConfigureAwait(false);
+                   /* Confirmations = await guard.FetchConfirmationsAsync().ConfigureAwait(false);
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         Utils.Presentation.ShakingAnimation(o as System.Windows.FrameworkElement, true);
-                    });
+                    });*/
                 }
                 catch
                 {

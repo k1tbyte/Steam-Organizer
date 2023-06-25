@@ -75,12 +75,8 @@ namespace SteamOrganizer.Infrastructure
                     }
                     else if (!VirtualSteamLogger(acc) & Win32.BlockInput(false))
                     {
-                        return;
+                        throw new ApplicationException();
                     }
-                    /*                else
-                                    {
-                                        Common.KillSteamAndConnect(App.SteamExePath, $"-login {acc.Login} {acc.Password} -tcp " + addArgs);
-                                    }*/
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
