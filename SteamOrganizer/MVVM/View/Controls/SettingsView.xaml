@@ -228,6 +228,13 @@
                           Style="{StaticResource ModernSwitchToggleButton}"/>
                 </DockPanel>
 
+                <!-- Notify about pre-releases update -->
+                <DockPanel>
+                    <TextBlock Text="{DynamicResource sv_dontNotifyUpdates}" Style="{StaticResource settingTextBlock}"/>
+                    <ToggleButton IsChecked="{Binding Properties.CheckUpdates}"
+                          Style="{StaticResource ModernSwitchToggleButton}"/>
+                </DockPanel>
+
 
                 <!-- Notify about pre-releases update -->
                 <DockPanel>

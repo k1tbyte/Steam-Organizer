@@ -48,6 +48,7 @@ namespace SteamOrganizer.Infrastructure.Models
         public ObservableCollection<RecentlyLoggedUser> RecentlyLoggedUsers { get; set; }
         public ulong? AutoLoginUserID { get; set; }
         public bool NotifyPreReleases { get; set; }
+        public bool DontCheckUpdates { get; set; }
         private bool _rememberRemoteUser;
         public bool RememberRemoteUser
         {

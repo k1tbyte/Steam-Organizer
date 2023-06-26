@@ -1,3 +1,11 @@
+VERSION 1.0.2.0 
+
+  ● Fixed automatic steam login
+  ● Added option to disable check for updates
+  ● Removed feature adding/removing an authenticator
+  ● The feature for accepting/rejecting Steam confirmations has been removed.
+  ● Steam Guard is not supported yet (token generation is an exception).
+
 VERSION 1.0.1.0 
 
   ● Fixed signing in after latest Steam update

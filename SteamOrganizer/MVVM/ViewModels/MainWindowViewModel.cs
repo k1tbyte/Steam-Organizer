@@ -232,7 +232,9 @@ namespace SteamOrganizer.MVVM.ViewModels
 
 #if !DEBUG
             CurrentUserChanged(null, null);
-            _ = CheckUpdate().ConfigureAwait(false);
+
+            if (!Config.Properties.DontCheckUpdates)
+                _ = CheckUpdate().ConfigureAwait(false);
 #endif
 
             AccountsViewCommand = new RelayCommand(o =>  CurrentView = AccountsV);

@@ -34,6 +34,7 @@
     <v:String x:Key="sv_workingFolder">Working program folder</v:String>
     <v:String x:Key="sv_workingFolder_Tip">Open in explorer</v:String>
     <v:String x:Key="sv_notifyPreRelease">Notify about pre-release updates</v:String>
+    <v:String x:Key="sv_dontNotifyUpdates">Don't notify me about updates</v:String>
 
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>None</v:String>

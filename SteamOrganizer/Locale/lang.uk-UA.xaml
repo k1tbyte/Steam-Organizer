@@ -34,6 +34,7 @@
     <v:String x:Key="sv_workingFolder">Робоча папка програми</v:String>
     <v:String x:Key="sv_workingFolder_Tip">Відкрити у провіднику</v:String>
     <v:String x:Key="sv_notifyPreRelease">Повідомляти про пре-релізні оновлення</v:String>
+    <v:String x:Key="sv_dontNotifyUpdates">Не повідомляти про оновлення</v:String>
 
     <x:ArrayExtension x:Key="sv_actions_after_logging_list" Type="v:String">
         <v:String>Нічого</v:String>

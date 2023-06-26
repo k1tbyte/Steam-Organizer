@@ -1,8 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.Infrastructure.Models;
 using SteamOrganizer.Infrastructure.Models.JsonModels;
 using SteamOrganizer.Infrastructure.Parsers;
+using SteamOrganizer.Infrastructure.SteamRemoteClient.Authenticator;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.View.Windows;
 using System;
@@ -14,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
@@ -182,6 +185,34 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
         } 
 
+        private async void LoadAuthenticator()
+        {
+            var fileDialog = new OpenFileDialog
+            {
+                Filter = "Mobile authenticator File (.maFile)|*.maFile",
+                InitialDirectory = Directory.GetCurrentDirectory()
+            };
+
+            if (fileDialog.ShowDialog() != true)
+                return;
+
+            var list = JsonConvert.DeserializeObject<SteamGuardAccount>(File.ReadAllText(fileDialog.FileName));
+
+            if (!Directory.Exists($@"{App.WorkingDirectory}\Authenticators"))
+                Directory.CreateDirectory($@"{App.WorkingDirectory}\Authenticators");
+
+            var authenticatorName = $@"{App.WorkingDirectory}\Authenticators\{list.AccountName.ToLower()}.maFile";
+
+            if (!File.Exists(authenticatorName))
+                File.Copy(fileDialog.FileName, authenticatorName, true);
+
+            currentAccount.AuthenticatorPath = authenticatorName;
+
+            Config.SaveAccounts();
+            Utils.Presentation.OpenPopupMessageBox(App.FindString("aaw_successAdd"));   
+            await Task.Delay(2000);
+        }
+
         public void LoadGameList()
         {
             var gameList = $"{App.WorkingDirectory}\\Cache\\Games\\{currentAccount.SteamId64}.dat";
@@ -201,6 +232,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             else if (currentAccount.IsProfilePublic)
                 FriendList = await SteamParser.ParseFriendsInfo(currentAccount.SteamId64.Value);
         }
+
         #endregion
 
         public AccountDataViewModel(Account account,bool preview = false)
@@ -280,7 +312,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             AddAuthenticatorCommand = new RelayCommand(o =>
             {
                 if (currentAccount.AuthenticatorPath == null || !File.Exists(currentAccount.AuthenticatorPath))
-                    Utils.Presentation.OpenDialogWindow(new AddAuthenticatorWindow(currentAccount));
+                    LoadAuthenticator();
                 else
                     Utils.Presentation.OpenDialogWindow(new ShowAuthenticatorWindow(currentAccount));
             });
