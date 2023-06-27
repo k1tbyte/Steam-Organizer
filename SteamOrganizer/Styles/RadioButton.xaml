@@ -1,0 +1,112 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                    mc:Ignorable="d" >
+    
+    <Style x:Key="MenuRadioButton" TargetType="{x:Type RadioButton}">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
+        <Setter Property="Height" Value="80" />
+        <Setter Property="Width" Value="Auto"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template" >
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid Background="Transparent">
+
+                        <Border x:Name="border"
+                                Background="{DynamicResource TertiaryBackgroundBrush}"
+                                BorderBrush="{DynamicResource PrimarySubBrush}"
+                                BorderThickness="3 0 0 0">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="-1"/>
+                            </Border.RenderTransform>
+
+                            <d:Border.RenderTransform>
+                                <d:ScaleTransform ScaleX="0"/>
+                            </d:Border.RenderTransform>
+                        </Border>
+
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <ContentPresenter RenderTransformOrigin="0.5 0.5" x:Name="Content" Margin="0 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <ContentPresenter.RenderTransform>
+                                    <ScaleTransform ScaleX="-1"/>
+                                </ContentPresenter.RenderTransform>
+                            </ContentPresenter>
+                            <TextBlock x:Name="Title"
+                                           Margin="0 5 0 0"
+                                           Text="{TemplateBinding Tag}"
+                                           VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=LeftPanel,Path=Width}" Value="200">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                        </StackPanel>
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Checked">
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.2"
+                                                                 Storyboard.TargetName="Content"
+                                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                               To="1"/>
+
+                                        <DoubleAnimation Duration="0:0:0.3"
+                                                                 Storyboard.TargetName="border"
+                                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                               To="1"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked" />
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource SecondaryForegroundBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource LightBlueGrad}"/>
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource SecondaryForegroundBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource LightBlueGrad}"/>
+                        </Trigger>
+
+                        <EventTrigger RoutedEvent="Unchecked">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.2"
+                                                                 Storyboard.TargetName="Content"
+                                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                               To="-1"/>
+
+                                        <DoubleAnimation Duration="0:0:0.4"
+                                                                 Storyboard.TargetName="border"
+                                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                               To="-1"/>
+                                    </Storyboard>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+</ResourceDictionary>

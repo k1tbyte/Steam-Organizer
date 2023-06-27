@@ -16,11 +16,15 @@
         <WindowChrome CaptionHeight="1"/>
     </WindowChrome.WindowChrome>
 
+    <Window.Resources>
+
+
+    </Window.Resources>
     
     <Border x:Name="MainBorder" Background="{DynamicResource PrimaryBackgroundBrush}" d:CornerRadius="9" >
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="140"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -30,7 +34,7 @@
             </Grid.RowDefinitions>
 
 
-            <Border x:Name="LeftPanel" 
+            <Border x:Name="TopPanel" 
                     d:CornerRadius="9 9 0 0" 
                     Grid.ColumnSpan="2" 
                     BorderThickness="0 0 0 1.5"  
@@ -40,16 +44,47 @@
 
             </Border>
 
-            <Border x:Name="TopPanel"
+            <Border x:Name="LeftPanel"
+                    Width="200"
                     d:CornerRadius="0 0 0 9"
                     Background="{DynamicResource SecondaryBackgroundBrush}" 
                     Grid.Row="1"
                     BorderThickness="0 0 1.5 0"
                     BorderBrush="{DynamicResource PrimaryBorderBrush}">
+                <StackPanel>
+                    <RadioButton IsChecked="True"  Style="{StaticResource MenuRadioButton}" Tag="Accounts">
+                        <Icon:PackIconMaterial Kind="AccountGroupOutline" Height="23" Width="23" />
+                    </RadioButton>
 
+                    <RadioButton  Style="{StaticResource MenuRadioButton}" Tag="Remote control">
+                        <Icon:PackIconMaterial Kind="RemoteDesktop" Height="23" Width="23" />
+                    </RadioButton>
+                </StackPanel>
             </Border>
 
-            <StackPanel VerticalAlignment="Center" Margin="20 0 20 0" Orientation="Horizontal">
+            <Border Background          ="Transparent"
+                    Grid.Column         ="1" Grid.Row="1"
+                    MinWidth            ="8"
+                    HorizontalAlignment ="Left"
+                    Cursor              ="/SteamOrganizer;component/Resources/split.cur"
+                    GiveFeedback        ="MenuExpanderOnGiveFeedback"
+                    MouseLeftButtonDown ="MenuExpanderOnLeftMouseDown"
+                    MouseEnter          ="MenuExpanderOnMouseEnter"
+                    MouseLeave          ="MenuExpanderOnMouseLeave">
+                <Rectangle Fill="{DynamicResource PrimarySubBrush}"
+                           Height="45" Width="5"
+                           Visibility="Collapsed"
+                           RadiusY="3"
+                           RadiusX="3"
+                           Margin="3 0 0 0">
+                </Rectangle>
+            </Border>
+
+            <TextBlock x:Name="text" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Test">
+                
+            </TextBlock>
+
+            <DockPanel Margin="20 0 20 0" Grid.ColumnSpan="2">
                 
                 <Rectangle RadiusY="50" RadiusX="50"  
                            MouseLeftButtonDown="OnCloseWindow"
@@ -69,8 +104,9 @@
                            MouseLeftButtonDown="OnMinimizeWindow"
                            Cursor="Hand"
                            Width="12" Height="12"
-                           Fill="#62C254"/>
-            </StackPanel>
+                           Fill="#62C254"
+                           HorizontalAlignment="Left"/>
+            </DockPanel>
         </Grid>
     </Border>
 </Window>
