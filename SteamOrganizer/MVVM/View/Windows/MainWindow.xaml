@@ -1,0 +1,76 @@
+﻿<Window  x:Class="SteamOrganizer.MVVM.View.Windows.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d" 
+        WindowStartupLocation="CenterScreen"
+        Title="Steam Organizer"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowState="Normal"
+        MinHeight="500" MinWidth="900">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="1"/>
+    </WindowChrome.WindowChrome>
+
+    
+    <Border x:Name="MainBorder" Background="{DynamicResource PrimaryBackgroundBrush}" d:CornerRadius="9" >
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="140"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+
+            <Border x:Name="LeftPanel" 
+                    d:CornerRadius="9 9 0 0" 
+                    Grid.ColumnSpan="2" 
+                    BorderThickness="0 0 0 1.5"  
+                    BorderBrush="{DynamicResource PrimaryBorderBrush}"
+                    Background="{DynamicResource SecondaryBackgroundBrush}"
+                    MouseLeftButtonDown="OnDragMove">
+
+            </Border>
+
+            <Border x:Name="TopPanel"
+                    d:CornerRadius="0 0 0 9"
+                    Background="{DynamicResource SecondaryBackgroundBrush}" 
+                    Grid.Row="1"
+                    BorderThickness="0 0 1.5 0"
+                    BorderBrush="{DynamicResource PrimaryBorderBrush}">
+
+            </Border>
+
+            <StackPanel VerticalAlignment="Center" Margin="20 0 20 0" Orientation="Horizontal">
+                
+                <Rectangle RadiusY="50" RadiusX="50"  
+                           MouseLeftButtonDown="OnCloseWindow"
+                           Cursor="Hand"
+                           Height="12" Width="12"
+                           Fill="#EC6A5D" 
+                           Margin="0 0 7 0"/>
+                
+                <Rectangle RadiusY="50" RadiusX="50"
+                           MouseLeftButtonDown="OnMaximizeWindow"
+                           Cursor="Hand"
+                           Width="12" Height="12"
+                           Fill="#F2C14B"
+                           Margin="0 0 7 0"/>
+                
+                <Rectangle RadiusY="50" RadiusX="50"
+                           MouseLeftButtonDown="OnMinimizeWindow"
+                           Cursor="Hand"
+                           Width="12" Height="12"
+                           Fill="#62C254"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

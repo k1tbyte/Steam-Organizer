@@ -1,5 +1,4 @@
-﻿using SteamOrganizer.MVVM.ViewModels;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace SteamOrganizer.MVVM.Core

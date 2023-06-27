@@ -1,146 +1,62 @@
-﻿using SteamOrganizer.Infrastructure;
-using SteamOrganizer.Infrastructure.SteamRemoteClient;
-using SteamOrganizer.MVVM.View.Controls;
-using SteamOrganizer.MVVM.View.Windows;
-using SteamOrganizer.MVVM.ViewModels;
-using SteamOrganizer.UIExtensions;
-using SteamOrganizer.Utils;
+﻿using SteamOrganizer.MVVM.View.Windows;
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 
 namespace SteamOrganizer
 {
-    public partial class App : Application
+    public sealed partial class App : Application
     {
-        /// <summary>
-        /// 1.0.0.0 (Major.Minor.Build.Revision (1 - Stable, 0 - Beta))
-        /// </summary>
-        public static readonly Version Version = Assembly.GetExecutingAssembly().GetName().Version;
+        #region App domain info
+        internal static readonly Version Version   = Assembly.GetExecutingAssembly().GetName().Version;
+        internal static readonly string WorkingDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static readonly Mutex Mutex        = new Mutex(true, "SteamOrganizer");
 
-        static readonly Mutex Mutex                    = new Mutex(true, "SteamOrganizer");
-        public static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        public static readonly string SteamExePath     = Common.GetSteamExeRegistryPath();
-        public static bool OfflineMode                 = false;
-        public static new MainWindow MainWindow;
-        public static TrayMenu Tray;
-        public static string Args;
+        internal static bool IsShuttingDown { get; private set; }
+        internal static new MainWindow MainWindow { get; private set; }
+        #endregion
 
-        public static Cursor GrabCursor { get; }     = new Cursor(new MemoryStream(SteamOrganizer.Properties.Resources.grab));
-        public static Cursor GrabbingCursor { get; } = new Cursor(new MemoryStream(SteamOrganizer.Properties.Resources.grabbing));
-
-
-        public static bool IsShuttingDown { get; set; }
 
         [STAThread]
-        protected override async void OnStartup(StartupEventArgs e)
+        protected override void OnStartup(StartupEventArgs e)
         {
 #if !DEBUG
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
-                if (e.Args.Length > 0)
-                {
-                    var currentProcess = Process.GetCurrentProcess();
-                    var proc = Process.GetProcesses().SingleOrDefault(o => o.ProcessName == currentProcess.ProcessName && o.MainWindowHandle != IntPtr.Zero);
-                    Win32.SendMessage(proc.MainWindowHandle, String.Join(" ", e.Args));
-                }
-                Application.Current.Shutdown();
+                Current.Shutdown();
             }
 #endif
-            Args = String.Join(" ",e.Args);
-            ProfileOptimization.SetProfileRoot(WorkingDirectory);
+            ProfileOptimization.SetProfileRoot(WorkingDir);
             ProfileOptimization.StartProfile("Startup.profile");
 
-            DispatcherUnhandledException += (sender, arg) => 
-            {
-                new ServiceWindow { InnerText = arg.Exception.ToString() }.ShowDialog();
-                Logger.LogRuntimeError(arg.Exception);
-                Shutdown(); 
-            };
-
-            Config.LoadProperties();
-
-            var cachePath = App.WorkingDirectory + "\\Cache";
-            if (!Directory.Exists(cachePath))
-                Directory.CreateDirectory(cachePath);
-
-
-#if !DEBUG
-            #region Check internet connection
-            if (!Common.CheckInternetConnection())
-            {
-                ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                Presentation.OpenPopupMessageBox(FindString("mv_connectionNotify"));
-                await Task.Delay(15000);
-                if (!Common.CheckInternetConnection())
-                {
-                    Presentation.OpenPopupMessageBox(FindString("mv_autonomyModeNotify"));
-                    OfflineMode = true;
-                }
-                ShutdownMode = ShutdownMode.OnMainWindowClose;
-            }
-            #endregion
-#endif
-
-            if (Config.Properties.Password == null)
-            {
-                if (Config.LoadAccounts())
-                {
-                    MainWindow = new MainWindow();
-                    MainWindowStart();
-                }
-                else
-                {
-                    new CryptoKeyWindow(true).Show();
-                }
-            }
-            else
-            {
-                new AuthenticationWindow(true).Show();
-            }
+            MainWindow = new MainWindow();
+            MainWindow.Show();
         }
 
         public static new void Shutdown()
         {
             IsShuttingDown = true;
-            if (SteamRemoteClient.IsRunning)
-            {
-                SteamRemoteClient.Logout();
-                return;
-            }
-
-            if (SettingsView.IsLoaded)
-                Config.SaveProperties();
-
-            MainWindowViewModel.RegistrySteamUserWatcher?.Dispose();
-            RemoteControlViewModel.LoginSemaphore?.Dispose();
-            Tray?.Dispose();
-            GrabCursor.Dispose();
-            GrabbingCursor.Dispose();
             Mutex.Close();
-            Logger.Stop();
-            Common.CachedHttpClient.Dispose();
-
             App.Current.Dispatcher.InvokeShutdown();
         }
 
-        public static string FindString(string resourceKey) => (string)App.Current.FindResource(resourceKey);
-
-        public static void MainWindowStart()
+        public static string FindString(string resourceKey) 
         {
-            if (Config.Properties.MinimizeOnStart)
+            var value = Current.TryFindResource(resourceKey);
+            if(value == null)
             {
-                MainWindow.WindowState = WindowState.Minimized;
-                return;
+                //Log cannot find resource
             }
-            MainWindow.Show();
-        }
+            else if(value is string locale) 
+            {
+                return locale;
+            }
+
+            return null;
+        } 
+
     }
 }
