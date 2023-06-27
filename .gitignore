@@ -365,3 +365,5 @@ FodyWeavers.xsd
 /SteamOrganizer/Keys.cs
 /TestConsole
 /desktop.ini
+/SteamOrganizer/Properties/Settings.Designer.cs
+/SteamOrganizer/Properties/Settings.settings
