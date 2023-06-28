@@ -138,6 +138,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\SerializationManager.cs" />
     <Compile Include="Helpers\WindowMessageHandler.cs" />
     <Compile Include="Infrastructure\Win32.cs" />
     <Compile Include="Infrastructure\Utils.cs" />
@@ -189,7 +190,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
-    <Resource Include="Resources\EQPro.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
