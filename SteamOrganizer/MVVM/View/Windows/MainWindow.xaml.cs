@@ -1,5 +1,7 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
+using SteamOrganizer.MVVM.ViewModels;
+using SteamOrganizer.Storages;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,16 +13,19 @@ namespace SteamOrganizer.MVVM.View.Windows
     public sealed partial class MainWindow : Window
     {
         private readonly CornerRadius TopPanelCornerRadius   = new CornerRadius(9d, 9d, 0d, 0d);
-        private readonly CornerRadius LeftBorderCornerRadius = new CornerRadius(0d, 0d, 0d, 9d);
+        private readonly CornerRadius SidebarCornerRadius    = new CornerRadius(0d, 0d, 0d, 9d);
         private readonly CornerRadius MainBorderCornerRadius = new CornerRadius(9d);
 
         private bool IsMenuExpanderWaiting = false;
-
 
         public MainWindow()
         {
             SourceInitialized += new EventHandler(OnWindowSourceInitialize);
             InitializeComponent();
+
+            this.DataContext = new MainWindowViewModel();
+            Sidebar.Width = (double)App.Config.SideBarState;
+
             RoundOffBorders();
         }
 
@@ -85,19 +90,20 @@ namespace SteamOrganizer.MVVM.View.Windows
             var offsetY = Win32.GetMousePosition().X - (this.WindowState == WindowState.Maximized ? 0 : this.Left);
 
             //TODO: Enum of panel positions and save to config
-            if (offsetY < 30 && LeftPanel.Width != 0)
+            if (offsetY < 30 && Sidebar.Width != 0)
             {
-                LeftPanel.Width = 0;
+                Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Hidden);
             }
-            else if (offsetY > 60 && offsetY < 100 && LeftPanel.Width != 70)
+            else if (offsetY > 60 && offsetY < 100 && Sidebar.Width != 70)
             {
-                LeftPanel.Width = 70;
+                Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Open);
             }
-            else if (offsetY > 180 && LeftPanel.Width != 200)
+            else if (offsetY > 180 && Sidebar.Width != 200)
             {
-                LeftPanel.Width = 200;
+                Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Expanded);
             }
 
+            App.Config.IsPropertiesChanged = true;
             MenuExpanderOnMouseLeave(sender, null);
             e.Handled = true;
         }
@@ -139,13 +145,29 @@ namespace SteamOrganizer.MVVM.View.Windows
         {
             if(unset)
             {
-                TopPanel.CornerRadius = LeftPanel.CornerRadius = MainBorder.CornerRadius = new CornerRadius(0d);
+                TopPanel.CornerRadius = Sidebar.CornerRadius = MainBorder.CornerRadius = new CornerRadius(0d);
                 return;
             }
 
             TopPanel.CornerRadius    = TopPanelCornerRadius;
-            LeftPanel.CornerRadius   = LeftBorderCornerRadius;
+            Sidebar.CornerRadius   = SidebarCornerRadius;
             MainBorder.CornerRadius  = MainBorderCornerRadius;
+        }
+
+        internal void OpenPopupWindow(object content)
+        {
+            PopupWindow.PopupContent = content;
+            PopupWindow.IsOpen = true;
+        }
+
+        /// <summary>
+        /// Closes the popup window
+        /// </summary>
+        /// <param name="onClosing">The action is automatically cleared after execution</param>
+        internal void ClosePopupWindow(Action onClosing = null)
+        {
+            PopupWindow.IsOpen = false;
+            PopupWindow.Closed = onClosing;
         }
     }
 }

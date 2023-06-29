@@ -4,6 +4,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:ext="clr-namespace:SteamOrganizer.MVVM.View.Extensions"
+        xmlns:viewModels="clr-namespace:SteamOrganizer.MVVM.ViewModels"
         mc:Ignorable="d" 
         WindowStartupLocation="CenterScreen"
         Title="Steam Organizer"
@@ -11,15 +13,12 @@
         AllowsTransparency="True"
         Background="Transparent"
         WindowState="Normal"
-        MinHeight="500" MinWidth="900">
+        MinHeight="500" MinWidth="900"
+        d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="1"/>
     </WindowChrome.WindowChrome>
 
-    <Window.Resources>
-
-
-    </Window.Resources>
     
     <Border x:Name="MainBorder" Background="{DynamicResource PrimaryBackgroundBrush}" d:CornerRadius="9" >
         <Grid>
@@ -44,7 +43,7 @@
 
             </Border>
 
-            <Border x:Name="LeftPanel"
+            <Border x:Name="Sidebar"
                     Width="200"
                     d:CornerRadius="0 0 0 9"
                     Background="{DynamicResource SecondaryBackgroundBrush}" 
@@ -107,6 +106,10 @@
                            Fill="#62C254"
                            HorizontalAlignment="Left"/>
             </DockPanel>
+
+            <ext:BuiltInPopup x:Name="PopupWindow" Grid.ColumnSpan="2" Grid.RowSpan="2" 
+                              CornerRadius="{Binding ElementName=MainBorder,Path=CornerRadius}"/>
+
         </Grid>
     </Border>
 </Window>

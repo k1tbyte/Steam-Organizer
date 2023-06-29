@@ -24,6 +24,10 @@ namespace SteamOrganizer.Infrastructure
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        static extern bool MoveFileEx(string existingFileName, string newFileName, int flags);
+
         #endregion
 
         #region Structs
@@ -125,6 +129,14 @@ namespace SteamOrganizer.Infrastructure
             GetCursorPos(ref w32Mouse);
 
             return w32Mouse;
+        }
+
+        internal static void MoveFile(string existingFileName, string newFileName, bool overwrite)
+        {
+            if(overwrite)
+                MoveFileEx(existingFileName, newFileName, 0x1 | 0x8 | 0x2);
+            else
+                MoveFileEx(existingFileName, newFileName, 0x8 | 0x2);
         }
 
     }

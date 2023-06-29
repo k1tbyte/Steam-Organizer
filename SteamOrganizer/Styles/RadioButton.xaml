@@ -44,7 +44,7 @@
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Visibility" Value="Collapsed"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ElementName=LeftPanel,Path=Width}" Value="200">
+                                            <DataTrigger Binding="{Binding ElementName=Sidebar,Path=Width}" Value="200">
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
                                         </Style.Triggers>

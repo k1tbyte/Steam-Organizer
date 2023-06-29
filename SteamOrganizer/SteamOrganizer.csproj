@@ -56,7 +56,6 @@
     <ApplicationIcon>Logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Accessibility" />
     <Reference Include="FlaUI.Core, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FlaUI.Core.4.0.0\lib\net48\FlaUI.Core.dll</HintPath>
     </Reference>
@@ -103,7 +102,6 @@
       <HintPath>..\packages\System.Collections.Immutable.7.0.0\lib\net462\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Management" />
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
@@ -128,7 +126,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -140,12 +137,23 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\SerializationManager.cs" />
     <Compile Include="Helpers\WindowMessageHandler.cs" />
+    <Compile Include="Infrastructure\Models\Account.cs" />
     <Compile Include="Infrastructure\Win32.cs" />
     <Compile Include="Infrastructure\Utils.cs" />
     <Compile Include="Keys.cs" />
+    <Compile Include="Log\AppExceptions.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
     <Compile Include="MVVM\Core\OvservableObject.cs" />
+    <Compile Include="MVVM\ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="MVVM\View\Extensions\BuiltInPopup.xaml.cs">
+      <DependentUpon>BuiltInPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Storages\GlobalStorage.cs" />
     <Page Include="Locale\lang.en-US.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Extensions\BuiltInPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -337,9 +345,7 @@
     <Resource Include="Resources\Images\SteamGamesBadges\31000.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Infrastructure\Models\" />
     <Folder Include="MVVM\Converters\" />
-    <Folder Include="MVVM\ViewModels\" />
     <Folder Include="MVVM\View\Controls\" />
   </ItemGroup>
   <ItemGroup>
