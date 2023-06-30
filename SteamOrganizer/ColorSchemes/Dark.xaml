@@ -12,14 +12,23 @@
     <Brush x:Key="PrimarySubBrush">#6d67fd</Brush>
 
     <Brush x:Key="PrimaryForegroundBrush">#474c69</Brush>
-    <Brush x:Key="SecondaryForegroundBrush">#dbdbe4</Brush>
-    
+    <Brush x:Key="SecondaryForegroundBrush">#b8b8b8</Brush>
+    <Brush x:Key="TertiaryForegroundBrush">#f7f7f7</Brush>
+
+    <Brush x:Key="ErrorBrush">PaleVioletRed</Brush>
+
+
 
     <Brush x:Key="PrimaryBorderBrush">#212236</Brush>
 
     <LinearGradientBrush x:Key="LightBlueGrad"  StartPoint="0,0" EndPoint="1,0">
         <GradientStop Offset="0" Color="#87CEFA"/>
         <GradientStop Offset="1" Color="#6c5ecf"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PurpleGradient" StartPoint="0,0" EndPoint="1,1" >
+        <GradientStop Color="#7222db" Offset="0.1"/>
+        <GradientStop Color="#6c5ecf" Offset="1"/>
     </LinearGradientBrush>
 
     <Color x:Key="TertiaryBackgroundColor">#292848</Color>

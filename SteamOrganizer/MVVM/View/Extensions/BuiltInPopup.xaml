@@ -11,15 +11,31 @@
       d:DataContext="{d:DesignInstance local:BuiltInPopup}">
     <Border x:Name="Splash" Background="Black" CornerRadius="{Binding CornerRadius}" Opacity="0.45" MouseLeftButtonDown="HidePopup"/>
 
-    <Border Background="{DynamicResource PrimaryBackgroundBrush}" d:Margin="0"
+    <Border Background="{DynamicResource SecondaryBackgroundBrush}" d:Margin="0"
                 Margin="0 -300 0 0" x:Name="PopupPresenter" Width="Auto" Height="Auto"
                 VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="5">
         <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="23"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
             <Rectangle FocusVisualStyle="{x:Null}" x:Name="cancel" Focusable="True"  VerticalAlignment="Top" HorizontalAlignment="Left" RadiusX="50" RadiusY="50"
-                Margin="10" Fill="#EC6A5D" Width="12" Height="12" MouseLeftButtonDown="HidePopup"
+                Margin="10 10 0 0" Fill="#EC6A5D" Width="12" Height="12" MouseLeftButtonDown="HidePopup"
                         Cursor="Hand"/>
 
-            <ContentControl Margin="0 20 0 0"   Content="{Binding PopupContent}"/>
+            <TextBlock HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                        Grid.Row="1"
+                       Foreground="{DynamicResource TertiaryForegroundBrush}"
+                       FontWeight="Medium" 
+                       FontSize="18" x:Name="Title"/>
+
+            <Rectangle Grid.Row="1" Margin="0 0 0 3"
+                       Fill="{DynamicResource PrimaryBackgroundBrush}" Height="3"
+                       VerticalAlignment="Bottom"/>
+            
+            <ContentControl Grid.Row="2" Content="{Binding PopupContent}"/>
 
         </Grid>
     </Border>

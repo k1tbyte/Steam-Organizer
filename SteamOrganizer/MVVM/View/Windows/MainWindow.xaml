@@ -68,7 +68,7 @@
                     HorizontalAlignment ="Left"
                     Cursor              ="/SteamOrganizer;component/Resources/split.cur"
                     GiveFeedback        ="MenuExpanderOnGiveFeedback"
-                    MouseLeftButtonDown ="MenuExpanderOnLeftMouseDown"
+                   
                     MouseEnter          ="MenuExpanderOnMouseEnter"
                     MouseLeave          ="MenuExpanderOnMouseLeave">
                 <Rectangle Fill="{DynamicResource PrimarySubBrush}"
@@ -108,7 +108,7 @@
                            HorizontalAlignment="Left"/>
             </DockPanel>
 
-            <ext:BuiltInPopup x:Name="PopupWindow" Grid.ColumnSpan="2" Grid.RowSpan="2" IsOpen="True"
+            <ext:BuiltInPopup x:Name="PopupWindow" Grid.ColumnSpan="2" Grid.RowSpan="2"
                               CornerRadius="{Binding ElementName=MainBorder,Path=CornerRadius}"/>
 
         </Grid>

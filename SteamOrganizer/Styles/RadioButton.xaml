@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-                    mc:Ignorable="d" >
+                    mc:Ignorable="d" 
+                     xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks">
     
     <Style x:Key="MenuRadioButton" TargetType="{x:Type RadioButton}">
         <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}" />
@@ -108,5 +109,51 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
+    <Style x:Key="DynamicContentButton" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Foreground" Value="{DynamicResource SecondaryForegroundBrush}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid Background="Transparent">
+                        <Icon:PackIconMaterial x:Name="Content" Kind="{TemplateBinding Content}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Opacity="1"/>
+                        <Icon:PackIconMaterial x:Name="Content2" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Kind="{TemplateBinding Tag}" Opacity="0"/>
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Checked">
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.4" Storyboard.TargetName="Content2" 
+                                                                    Storyboard.TargetProperty="Opacity" To="1"/>
+                                        <DoubleAnimation Duration="0:0:0.4" Storyboard.TargetName="Content" 
+                                                                    Storyboard.TargetProperty="Opacity" To="0"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked">
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:0.4" Storyboard.TargetName="Content2" 
+                                                                    Storyboard.TargetProperty="Opacity" To="0"/>
+                                        <DoubleAnimation Duration="0:0:0.4" Storyboard.TargetName="Content" 
+                                                                    Storyboard.TargetProperty="Opacity"  To="1"/>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource TertiaryForegroundBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource TertiaryForegroundBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

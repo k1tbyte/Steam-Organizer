@@ -142,15 +142,18 @@
     <Compile Include="Infrastructure\Utils.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="Log\AppExceptions.cs" />
+    <Compile Include="MVVM\Converters\NullOrEmptyStringConverter.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
     <Compile Include="MVVM\Core\OvservableObject.cs" />
-    <Compile Include="MVVM\ViewModels\AuthenticationViewModel.cs" />
     <Compile Include="MVVM\ViewModels\MainWindowViewModel.cs" />
     <Compile Include="MVVM\View\Controls\AuthenticationView.xaml.cs">
       <DependentUpon>AuthenticationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\Extensions\BuiltInPopup.xaml.cs">
       <DependentUpon>BuiltInPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Extensions\HoverButton.xaml.cs">
+      <DependentUpon>HoverButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\Extensions\PasswordBox.xaml.cs">
       <DependentUpon>PasswordBox.xaml</DependentUpon>
@@ -167,6 +170,10 @@
     <Page Include="MVVM\View\Extensions\BuiltInPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Extensions\HoverButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MVVM\View\Extensions\PasswordBox.xaml">
       <SubType>Designer</SubType>
@@ -364,7 +371,7 @@
     <Resource Include="Resources\Images\SteamGamesBadges\31000.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MVVM\Converters\" />
+    <Folder Include="Infrastructure\Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\split.cur" />

@@ -3,6 +3,7 @@ using SteamOrganizer.Infrastructure.Models;
 using SteamOrganizer.MVVM.View.Windows;
 using SteamOrganizer.Storages;
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using System.Runtime;
@@ -70,16 +71,36 @@ namespace SteamOrganizer
         private void OnLoadingDatabase(object sender, RoutedEventArgs e)
         {
             var loadResult = Config.LoadDatabase();
-            if (loadResult == true)
+            if (loadResult)
                 return;
 
-            if(File.Exists(DatabasePath) && loadResult == null)
+            // request password for exists db
+            if (!loadResult && File.Exists(DatabasePath))
             {
-                // request password for existing db
+                MainWindow.OpenPopupWindow(new MVVM.View.Controls.AuthenticationView(DatabasePath,OnSuccessDecrypt,true), FindString("av_title"), OnInstallationCanceled);
             }
-            else
+            // request password for new db
+            else if (Config.DatabaseKey == null)
             {
-                // request password for new db
+                MainWindow.OpenPopupWindow(new MVVM.View.Controls.AuthenticationView(), FindString("word_registration"), OnInstallationCanceled);
+            }
+
+
+            void OnSuccessDecrypt(object content, byte[] key)
+            {
+                if(content is ObservableCollection<Account> db)
+                {
+                    Config.Database = db;
+                    Config.DatabaseKey = key;
+                    Config.Save();
+                    Config.SaveDatabase();
+                }
+            }
+
+            void OnInstallationCanceled()
+            {
+                if (_config.DatabaseKey == null)
+                    App.Shutdown();
             }
         }
 

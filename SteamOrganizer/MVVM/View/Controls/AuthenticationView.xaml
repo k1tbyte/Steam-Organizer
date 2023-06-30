@@ -1,4 +1,4 @@
-﻿<Grid x:Class="SteamOrganizer.MVVM.View.Controls.AuthenticationView"
+﻿<StackPanel x:Class="SteamOrganizer.MVVM.View.Controls.AuthenticationView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,20 +6,51 @@
       xmlns:local="clr-namespace:SteamOrganizer.MVVM.View.Controls"
       xmlns:viewModels="clr-namespace:SteamOrganizer.MVVM.ViewModels"
       xmlns:ext="clr-namespace:SteamOrganizer.MVVM.View.Extensions"
+       xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
       mc:Ignorable="d" 
       Height="Auto" Width="300"
-      d:Background="{DynamicResource PrimaryBackgroundBrush}"
-      d:DataContext="{d:DesignInstance viewModels:AuthenticationViewModel}">
-    <StackPanel>
-        <TextBlock HorizontalAlignment="Center"
-                   Foreground="#fff"
-                   FontWeight="Medium" FontSize="18" >Authentication</TextBlock>
-        <Rectangle Fill="{DynamicResource SecondaryBackgroundBrush}" Height="3" Margin="0 10 0 5"/>
+      d:Background="{DynamicResource SecondaryBackgroundBrush}"
+      Margin="0 0 0 10">
 
-        <ext:PasswordBox Height="35" CornerRadius="3"
-                         Margin="10" Text="Eldsaes" IsTextHidden="{Binding ElementName=sas,Path=IsChecked}"
-                         Background="{DynamicResource TertiaryBackgroundBrush}"/>
+    <DockPanel Margin="10 10 10 10">
+        <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}" Kind="InformationVariant"/>
+        <TextBlock x:Name="Tip" Padding="5 0 0 0" Foreground="{DynamicResource SecondaryForegroundBrush}"
+                   TextWrapping="Wrap" />
+    </DockPanel>
+    
+    <DockPanel Margin="10 0 10 10">
+        <TextBlock Text="{DynamicResource word_password}" FontWeight="Medium"  
+                       DockPanel.Dock="Top" Margin="1 0 0 4"
+                       Foreground="#6c5eb3" FontSize="14"/>
 
-        <ToggleButton x:Name="sas" Width="50" Height="30"/>
-    </StackPanel>
-</Grid>
+        <Border CornerRadius="3" 
+                    Width="35" Height="35" Padding="7"
+                    Background="{DynamicResource PurpleGradient}"
+                    Margin="0 0 10 0" >
+            <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}" Kind="Key" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Border>
+
+        <ext:PasswordBox x:Name="PassBox" Height="35" CornerRadius="3"
+                         SelectionBrush="{DynamicResource LightBlueGrad}"
+                         Background="{DynamicResource TertiaryBackgroundBrush}"
+                         Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+    </DockPanel>
+
+    <TextBlock x:Name="Error"
+               FontSize="11"
+               Padding="10 0 10 0"
+               Foreground="{DynamicResource ErrorBrush}"/>
+
+    <DockPanel  HorizontalAlignment="Center" Margin="0 12 0 0">
+        <ext:HoverButton x:Name="Reset" MouseDoubleClick="OnReset"
+                         Background="{DynamicResource ErrorBrush}" Visibility="Collapsed"
+                         Content="Reset" Width="100" Margin="0 0 30 0"/>
+        <ext:HoverButton x:Name="Sign" Click="OnSignIn"
+                     Content="Sign in" 
+                     IsDefault="True" Width="100"
+                     HoverBackground="{DynamicResource TertiaryForegroundBrush}"/>
+    </DockPanel>
+
+   
+
+</StackPanel>

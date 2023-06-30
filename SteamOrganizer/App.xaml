@@ -1,15 +1,21 @@
 ﻿<Application x:Class="SteamOrganizer.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:converters="clr-namespace:SteamOrganizer.MVVM.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ColorSchemes/Dark.xaml"/>
 
+                <ResourceDictionary Source="Locale/lang.en-US.xaml"/>
+
                 <ResourceDictionary Source="Styles/RadioButton.xaml"/>
 
                 <ResourceDictionary Source="Styles/TextBox.xaml"/>
+
             </ResourceDictionary.MergedDictionaries>
+
+            <converters:NullOrEmptyStringConverter x:Key="NullOrEmptyStringConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

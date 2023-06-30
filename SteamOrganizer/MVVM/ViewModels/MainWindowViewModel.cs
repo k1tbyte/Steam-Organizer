@@ -1,4 +1,5 @@
 ﻿using SteamOrganizer.MVVM.Core;
+using SteamOrganizer.MVVM.View.Controls;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
@@ -10,7 +11,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         {
             SettingsCommand = new RelayCommand((o) =>
             {
-                App.MainWindow.OpenPopupWindow("Slava fisting anuss", () => App.Shutdown());
+                App.MainWindow.OpenPopupWindow(new AuthenticationView(),App.FindString("av_title"), () => App.Shutdown());
             });
         }
     }

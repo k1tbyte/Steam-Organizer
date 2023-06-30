@@ -23,7 +23,7 @@ namespace SteamOrganizer.Storages
     internal class GlobalStorage
     {
         [field: NonSerialized]
-        public ObservableCollection<Account> Accounts { get; set; } = new ObservableCollection<Account>();
+        public ObservableCollection<Account> Database { get; set; }
 
         #region UI Meta information
         /// <summary>
@@ -41,6 +41,7 @@ namespace SteamOrganizer.Storages
         private byte[] _databaseKey;
         public byte[] DatabaseKey
         {
+            get => _databaseKey;
             set
             {
                 if (value.Length != 32)
@@ -65,30 +66,24 @@ namespace SteamOrganizer.Storages
             return new GlobalStorage();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>
-        /// null  - Decryption key not found <br/>
-        /// false - Decryption key does not match <br/>
-        /// true  - Success
-        /// </returns>
-        public bool? LoadDatabase()
+
+        public bool LoadDatabase()
         {
-
-            //We need to ask the user for a new password
-            if (_databaseKey == null)
+            if (SerializationManager.Deserialize(App.DatabasePath, out ObservableCollection<Account> result, _databaseKey))
             {
-                return null;
-            }
-
-            if (SerializationManager.Deserialize(App.ConfigPath, out ObservableCollection<Account> result, _databaseKey))
-            {
-                Accounts = result;
+                Database = result;
                 return true;
             }
 
+            Database = new ObservableCollection<Account>();
             return false;
+        }
+
+        public void SaveDatabase()
+        {
+            _databaseKey.ThrowIfNull();
+
+            SerializationManager.Serialize(Database, App.DatabasePath, _databaseKey);
         }
     }
 }

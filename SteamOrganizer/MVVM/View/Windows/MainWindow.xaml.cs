@@ -26,7 +26,6 @@ namespace SteamOrganizer.MVVM.View.Windows
 
             this.DataContext = new MainWindowViewModel();
             Sidebar.Width = (double)App.Config.SideBarState;
-            PopupWindow.PopupContent = new AuthenticationView();
             RoundOffBorders();
         }
 
@@ -155,11 +154,12 @@ namespace SteamOrganizer.MVVM.View.Windows
             MainBorder.CornerRadius  = MainBorderCornerRadius;
         }
 
-        internal void OpenPopupWindow(object content, Action onClosing = null)
+        internal void OpenPopupWindow(object content,string title = null, Action onClosing = null)
         {
             PopupWindow.PopupContent = content;
-            PopupWindow.Closed = onClosing;
-            PopupWindow.IsOpen = true;
+            PopupWindow.Closed       = onClosing;
+            PopupWindow.Title.Text   = title;
+            PopupWindow.IsOpen       = true;
         }
 
         /// <summary>
