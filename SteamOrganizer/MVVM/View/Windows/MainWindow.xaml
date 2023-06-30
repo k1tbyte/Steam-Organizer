@@ -55,7 +55,8 @@
                         <Icon:PackIconMaterial Kind="AccountGroupOutline" Height="23" Width="23" />
                     </RadioButton>
 
-                    <RadioButton  Style="{StaticResource MenuRadioButton}" Tag="Remote control">
+                    <RadioButton  Style="{StaticResource MenuRadioButton}" Tag="Remote control"
+                                  Command="{Binding SettingsCommand}">
                         <Icon:PackIconMaterial Kind="RemoteDesktop" Height="23" Width="23" />
                     </RadioButton>
                 </StackPanel>
@@ -107,7 +108,7 @@
                            HorizontalAlignment="Left"/>
             </DockPanel>
 
-            <ext:BuiltInPopup x:Name="PopupWindow" Grid.ColumnSpan="2" Grid.RowSpan="2" 
+            <ext:BuiltInPopup x:Name="PopupWindow" Grid.ColumnSpan="2" Grid.RowSpan="2" IsOpen="True"
                               CornerRadius="{Binding ElementName=MainBorder,Path=CornerRadius}"/>
 
         </Grid>

@@ -63,9 +63,25 @@ namespace SteamOrganizer
             _config = GlobalStorage.Load();
 
             MainWindow = new MainWindow();
+            MainWindow.Loaded += OnLoadingDatabase;
             MainWindow.Show();
         }
 
+        private void OnLoadingDatabase(object sender, RoutedEventArgs e)
+        {
+            var loadResult = Config.LoadDatabase();
+            if (loadResult == true)
+                return;
+
+            if(File.Exists(DatabasePath) && loadResult == null)
+            {
+                // request password for existing db
+            }
+            else
+            {
+                // request password for new db
+            }
+        }
 
         public static new void Shutdown()
         {

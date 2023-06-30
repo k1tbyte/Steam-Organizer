@@ -144,16 +144,31 @@
     <Compile Include="Log\AppExceptions.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
     <Compile Include="MVVM\Core\OvservableObject.cs" />
+    <Compile Include="MVVM\ViewModels\AuthenticationViewModel.cs" />
     <Compile Include="MVVM\ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="MVVM\View\Controls\AuthenticationView.xaml.cs">
+      <DependentUpon>AuthenticationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\Extensions\BuiltInPopup.xaml.cs">
       <DependentUpon>BuiltInPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Extensions\PasswordBox.xaml.cs">
+      <DependentUpon>PasswordBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Storages\GlobalStorage.cs" />
     <Page Include="Locale\lang.en-US.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\Controls\AuthenticationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\Extensions\BuiltInPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Extensions\PasswordBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -179,6 +194,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\RadioButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\TextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -346,7 +365,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MVVM\Converters\" />
-    <Folder Include="MVVM\View\Controls\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\split.cur" />

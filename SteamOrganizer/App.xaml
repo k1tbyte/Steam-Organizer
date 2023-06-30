@@ -7,6 +7,8 @@
                 <ResourceDictionary Source="ColorSchemes/Dark.xaml"/>
 
                 <ResourceDictionary Source="Styles/RadioButton.xaml"/>
+
+                <ResourceDictionary Source="Styles/TextBox.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
