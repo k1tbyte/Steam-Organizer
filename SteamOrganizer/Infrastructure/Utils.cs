@@ -54,7 +54,7 @@ namespace SteamOrganizer.Infrastructure
             }
 
             return HashData(
-                XorData(App.EncryptionKey, Encoding.ASCII.GetBytes(GUID.Replace("-", "") + Encoding.ASCII.GetString(App.EncryptionKey))));
+                XorData(App.EncryptionKey, Encoding.UTF8.GetBytes(GUID.Replace("-", "") + Encoding.UTF8.GetString(App.EncryptionKey))));
         }
     }
 }

@@ -56,7 +56,7 @@ namespace SteamOrganizer.MVVM.View.Controls
             if (string.IsNullOrEmpty(PassBox.Password))
                 return;
 
-            var bytes = Utils.HashData(Encoding.ASCII.GetBytes(PassBox.Password + Encoding.ASCII.GetString(App.EncryptionKey)));
+            var bytes = Utils.HashData(Encoding.UTF8.GetBytes(PassBox.Password + Encoding.UTF8.GetString(App.EncryptionKey)));
 
             // We just need to initialize the key for future database saves.
             if (IsInitialSetup)
