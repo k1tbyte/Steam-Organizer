@@ -2,18 +2,35 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:v="clr-namespace:System;assembly=mscorlib">
 
+    <!--#region Common -->
+    
     <v:String x:Key="file_not_found">File not found at specified path</v:String>
     <v:String x:Key="invalid_pass">The password is incorrect</v:String>
-    
+
     <v:String x:Key="word_password">Password</v:String>
+    <v:String x:Key="word_language">Language</v:String>
     <v:String x:Key="word_signin">Sign in</v:String>
     <v:String x:Key="word_confirm">Confirm</v:String>
     <v:String x:Key="word_registration">Registration</v:String>
+    
+    <!--#endregion-->
 
+    <!--#region Settings view -->
+
+    <v:String x:Key="sv_title">Settings</v:String>
+    <v:String x:Key="sv_section1">Appearance</v:String>
+    <v:String x:Key="sv_corner_prop">Window corners rounding radius</v:String>
+
+    <!--#endregion-->
+
+    <!--#region Authentication view -->
+    
     <v:String x:Key="av_title">Authentication</v:String>
     <v:String x:Key="av_newPassword">Enter a new password to encrypt your accounts, this is a required step. Enter a password that you 100% remember. If you forget your password, you will permanently lose access to your data.</v:String>
     <v:String x:Key="av_tooShortPass">Password must be at least 8 characters</v:String>
     <v:String x:Key="av_resetInfo">To confirm, press the reset button twice again, all data will be deleted</v:String>
     <v:String x:Key="av_authInfo">For various reasons, the data could not be decrypted, please enter the password.</v:String>
+    
+    <!--#endregion-->
 
 </ResourceDictionary>

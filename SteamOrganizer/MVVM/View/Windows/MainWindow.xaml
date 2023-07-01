@@ -39,9 +39,8 @@
                     BorderThickness="0 0 0 1.5"  
                     BorderBrush="{DynamicResource PrimaryBorderBrush}"
                     Background="{DynamicResource SecondaryBackgroundBrush}"
-                    MouseLeftButtonDown="OnDragMove">
+                    MouseLeftButtonDown="OnDragMove"/>
 
-            </Border>
 
             <Border x:Name="Sidebar"
                     Width="200"
@@ -68,7 +67,7 @@
                     HorizontalAlignment ="Left"
                     Cursor              ="/SteamOrganizer;component/Resources/split.cur"
                     GiveFeedback        ="MenuExpanderOnGiveFeedback"
-                   
+                    MouseLeftButtonDown ="MenuExpanderOnLeftMouseDown"
                     MouseEnter          ="MenuExpanderOnMouseEnter"
                     MouseLeave          ="MenuExpanderOnMouseLeave">
                 <Rectangle Fill="{DynamicResource PrimarySubBrush}"
@@ -84,6 +83,7 @@
                 
             </TextBlock>
 
+            <!-- Top panel -->
             <DockPanel Margin="20 0 20 0" Grid.ColumnSpan="2">
                 
                 <Rectangle RadiusY="50" RadiusX="50"  
@@ -106,6 +106,21 @@
                            Width="12" Height="12"
                            Fill="#62C254"
                            HorizontalAlignment="Left"/>
+
+                <Button Style="{StaticResource SpinButton}" 
+                        DockPanel.Dock="Right"
+                        Margin="20 0 5 0"
+                        VerticalAlignment="Center"
+                        Command="{Binding SettingsCommand}">
+                    <Icon:PackIconMaterial Kind="Cog"/>
+                </Button>
+
+                <Button Style="{StaticResource FlatButton}"  
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                    <Icon:PackIconMaterial Kind="Bell"/>
+                </Button>
+                
             </DockPanel>
 
             <ext:BuiltInPopup x:Name="PopupWindow" Grid.ColumnSpan="2" Grid.RowSpan="2"

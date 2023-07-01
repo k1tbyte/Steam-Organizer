@@ -79,11 +79,13 @@ namespace SteamOrganizer
             {
                 MainWindow.OpenPopupWindow(new MVVM.View.Controls.AuthenticationView(DatabasePath,OnSuccessDecrypt,true), FindString("av_title"), OnInstallationCanceled);
             }
+#if !DEBUG
             // request password for new db
             else if (Config.DatabaseKey == null)
             {
                 MainWindow.OpenPopupWindow(new MVVM.View.Controls.AuthenticationView(), FindString("word_registration"), OnInstallationCanceled);
             }
+#endif
 
 
             void OnSuccessDecrypt(object content, byte[] key)

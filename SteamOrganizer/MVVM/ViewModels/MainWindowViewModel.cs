@@ -7,12 +7,18 @@ namespace SteamOrganizer.MVVM.ViewModels
     {
         public RelayCommand SettingsCommand { get; }
 
+        public SettingsView Settings { get; private set; }
+
+        public void OnOpeningSettings(object param)
+        {
+            Settings = Settings ?? new SettingsView();
+            App.Config.IsPropertiesChanged = true;
+            App.MainWindow.OpenPopupWindow(Settings, App.FindString("sv_title"));
+        }
+
         public MainWindowViewModel()
         {
-            SettingsCommand = new RelayCommand((o) =>
-            {
-                App.MainWindow.OpenPopupWindow(new AuthenticationView(),App.FindString("av_title"), () => App.Shutdown());
-            });
+            SettingsCommand = new RelayCommand(OnOpeningSettings);
         }
     }
 }

@@ -13,9 +13,9 @@ namespace SteamOrganizer.MVVM.View.Windows
 {
     public sealed partial class MainWindow : Window
     {
-        private readonly CornerRadius TopPanelCornerRadius   = new CornerRadius(9d, 9d, 0d, 0d);
-        private readonly CornerRadius SidebarCornerRadius    = new CornerRadius(0d, 0d, 0d, 9d);
-        private readonly CornerRadius MainBorderCornerRadius = new CornerRadius(9d);
+        private readonly CornerRadius TopPanelCornerRadius   = new CornerRadius(App.Config.MainWindowCornerRadius, App.Config.MainWindowCornerRadius, 0d, 0d);
+        private readonly CornerRadius SidebarCornerRadius    = new CornerRadius(0d, 0d, 0d, App.Config.MainWindowCornerRadius);
+        private readonly CornerRadius MainBorderCornerRadius = new CornerRadius(App.Config.MainWindowCornerRadius);
 
         private bool IsMenuExpanderWaiting = false;
 
@@ -143,6 +143,9 @@ namespace SteamOrganizer.MVVM.View.Windows
         /// <param name="unset">Set corner radius to 0</param>
         private void RoundOffBorders(bool unset = false)
         {
+            if (MainBorderCornerRadius.TopRight == 0)
+                return;
+
             if(unset)
             {
                 TopPanel.CornerRadius = Sidebar.CornerRadius = MainBorder.CornerRadius = new CornerRadius(0d);

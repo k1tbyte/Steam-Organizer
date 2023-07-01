@@ -33,6 +33,8 @@ namespace SteamOrganizer.Storages
         public bool IsPropertiesChanged { get; set; }
 
         public ESideBarState SideBarState { get; set; } = ESideBarState.Expanded;
+
+        public double MainWindowCornerRadius { get; set; } = 9d;
         #endregion
 
         public bool MinimizeOnStart { get; set; }

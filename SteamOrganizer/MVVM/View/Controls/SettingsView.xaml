@@ -1,0 +1,46 @@
+﻿<StackPanel x:Class="SteamOrganizer.MVVM.View.Controls.SettingsView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:viewModel="clr-namespace:SteamOrganizer.MVVM.ViewModels"
+      xmlns:local="clr-namespace:SteamOrganizer.MVVM.View.Controls" 
+      xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      mc:Ignorable="d" 
+      d:DataContext="{d:DesignInstance viewModel:SettingsViewModel}"
+      Height="Auto" Width="400"
+      d:Background="{DynamicResource SecondaryBackgroundBrush}"
+      Margin="0 10 0 10">
+    
+    <DockPanel Margin="10 0 10 10">
+        <TextBlock Text="{DynamicResource sv_section1}" FontWeight="Medium"  
+                   DockPanel.Dock="Top" Margin="1 0 0 7"
+                   Foreground="{DynamicResource SecondarySubBrush}" 
+                   FontSize="14"/>
+        <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
+            <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}" Kind="Earth" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Border>
+        
+        <TextBlock Text="{DynamicResource word_language}" VerticalAlignment="Center" 
+                       Foreground="{DynamicResource SecondaryForegroundBrush}" FontSize="14"
+                       FontWeight="Medium"/>
+        
+    </DockPanel>
+
+    <DockPanel Margin="10 0 10 10">
+        <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
+            <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                   Kind="RoundedCorner" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Border>
+
+
+        <Slider Style="{StaticResource Horizontal_Slider}"
+                Minimum="0" Maximum="25" SmallChange="1" LargeChange="1" 
+                Tag="{DynamicResource sv_corner_prop}"
+                Value="{Binding Config.MainWindowCornerRadius}"
+                Uid="{Binding RelativeSource={RelativeSource Self}, Path=Value,StringFormat={}{0:0 px}}"
+                Height="12" Margin="0 17 0 0"/>
+
+    </DockPanel>
+
+</StackPanel>

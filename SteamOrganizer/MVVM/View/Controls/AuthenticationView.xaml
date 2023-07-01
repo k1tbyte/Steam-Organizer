@@ -21,12 +21,9 @@
     <DockPanel Margin="10 0 10 10">
         <TextBlock Text="{DynamicResource word_password}" FontWeight="Medium"  
                        DockPanel.Dock="Top" Margin="1 0 0 4"
-                       Foreground="#6c5eb3" FontSize="14"/>
+                       Foreground="{DynamicResource SecondarySubBrush}" FontSize="14"/>
 
-        <Border CornerRadius="3" 
-                    Width="35" Height="35" Padding="7"
-                    Background="{DynamicResource PurpleGradient}"
-                    Margin="0 0 10 0" >
+        <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
             <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}" Kind="Key" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Border>
 

@@ -1,0 +1,69 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="Horizontal_Slider" TargetType="Slider">
+        <Style.Resources>
+            <Style x:Key="SliderRepeatButton" TargetType="RepeatButton">
+                <Setter Property="SnapsToDevicePixels" Value="true" />
+                <Setter Property="OverridesDefaultStyle" Value="true" />
+                <Setter Property="IsTabStop" Value="false" />
+                <Setter Property="Focusable" Value="false" />
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RepeatButton">
+                            <Border Background="{TemplateBinding Background}" Height="{TemplateBinding Height}" Opacity="1" CornerRadius="3 0 0 3"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="SliderThumb" TargetType="Thumb">
+                <Setter Property="SnapsToDevicePixels" Value="true" />
+                <Setter Property="OverridesDefaultStyle" Value="true" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Thumb">
+                            <Border Background="{DynamicResource LightCyanGradient}" CornerRadius="3" Height="{TemplateBinding Height}" Width="12"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Style.Resources>
+        <Setter Property="Focusable" Value="True"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Foreground" Value="{DynamicResource  PurpleGradient1}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Height" Value="11"/>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="Slider">
+                            <Grid>
+                                <DockPanel Margin="0 -20 0 0" VerticalAlignment="Top">
+                                    <TextBlock Text="{TemplateBinding Tag}" FontWeight="Medium" HorizontalAlignment="Left" Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+                                    <TextBlock VerticalAlignment="Bottom" Text="{TemplateBinding Uid}" FontSize="10" HorizontalAlignment="Right" Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+                                </DockPanel>
+                                <Border Background="#4d4d5d" Padding="0" CornerRadius="3">
+                                    <Track x:Name="PART_Track">
+                                        <Track.DecreaseRepeatButton>
+                                            <RepeatButton Style="{StaticResource SliderRepeatButton}" Height="{TemplateBinding Height}" Command="Slider.DecreaseLarge" Background="{DynamicResource PurpleGradient}" />
+                                        </Track.DecreaseRepeatButton>
+                                        <Track.Thumb>
+                                            <Thumb Cursor="Hand" Style="{StaticResource SliderThumb}" Margin="-1.5 0 0 0" Height="{TemplateBinding Height}"  />
+                                        </Track.Thumb>
+                                        <Track.IncreaseRepeatButton>
+                                            <RepeatButton Command="Slider.IncreaseLarge" Style="{StaticResource SliderRepeatButton}" Height="{TemplateBinding Height}"/>
+                                        </Track.IncreaseRepeatButton>
+                                    </Track>
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

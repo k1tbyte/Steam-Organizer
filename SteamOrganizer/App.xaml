@@ -9,9 +9,17 @@
 
                 <ResourceDictionary Source="Locale/lang.en-US.xaml"/>
 
+                <ResourceDictionary Source="Styles/Buttons.xaml"/>
+
                 <ResourceDictionary Source="Styles/RadioButton.xaml"/>
 
                 <ResourceDictionary Source="Styles/TextBox.xaml"/>
+
+                <ResourceDictionary Source="Styles/Misc.xaml"/>
+
+                <ResourceDictionary Source="Styles/ComboBox.xaml"/>
+
+                <ResourceDictionary Source="Styles/Slider.xaml"/>
 
             </ResourceDictionary.MergedDictionaries>
 
