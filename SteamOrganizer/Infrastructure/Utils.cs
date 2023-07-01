@@ -3,6 +3,10 @@ using SteamOrganizer.Log;
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Windows;
+using System.Windows.Controls.Primitives;
 
 namespace SteamOrganizer.Infrastructure
 {
@@ -55,6 +59,41 @@ namespace SteamOrganizer.Infrastructure
 
             return HashData(
                 XorData(App.EncryptionKey, Encoding.UTF8.GetBytes(GUID.Replace("-", "") + Encoding.UTF8.GetString(App.EncryptionKey))));
+        }
+
+        public static async void InBackground(Action action, bool longRunning = false)
+        {
+            action.ThrowIfNull();
+
+            TaskCreationOptions options = TaskCreationOptions.DenyChildAttach;
+
+            if (longRunning)
+            {
+                options |= TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness;
+            }
+
+            await Task.Factory.StartNew(action, CancellationToken.None, options, TaskScheduler.Default).ConfigureAwait(false);
+        }
+
+        public static void InBackground<T>(Func<T> function, bool longRunning = false)
+        {
+            function.ThrowIfNull();
+
+            InBackground(new Action(() => function()), longRunning);
+        }
+
+        public static void OpenPopup(this Popup popup, FrameworkElement target, PlacementMode placement,bool invertHorizontal = false, bool invertVertical = false)
+        {
+            popup.PlacementTarget = target;
+            popup.Placement = placement;
+
+            if (invertHorizontal)
+                popup.HorizontalOffset = -popup.Width + target.ActualWidth;
+
+            if (invertVertical)
+                popup.VerticalOffset = -popup.Height + target.ActualHeight;
+
+            popup.IsOpen = true;
         }
     }
 }

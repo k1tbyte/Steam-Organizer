@@ -32,6 +32,15 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
+            <Popup x:Name="Notifications"  Width="240" Height="150"
+                  StaysOpen="False" AllowsTransparency="True"
+                   PopupAnimation="Slide" VerticalOffset="5">
+                <Border Effect="{StaticResource LightShadow}" Margin="3"
+                        CornerRadius="3" Background="{DynamicResource SecondaryBackgroundBrush}">
+                    
+                </Border>
+            </Popup>
+
 
             <Border x:Name="TopPanel" 
                     d:CornerRadius="9 9 0 0" 
@@ -116,14 +125,14 @@
                 </Button>
 
                 <Button Style="{StaticResource FlatButton}"  
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
+                        HorizontalAlignment="Right" ToolTipService.InitialShowDelay="0"
+                        VerticalAlignment="Center" Click="OnNotificationPopup">
                     <Icon:PackIconMaterial Kind="Bell"/>
                 </Button>
                 
             </DockPanel>
 
-            <ext:BuiltInPopup x:Name="PopupWindow" Grid.ColumnSpan="2" Grid.RowSpan="2"
+            <ext:BuiltInPopup x:Name="PopupWindow" Grid.ColumnSpan="2" Grid.RowSpan="2" 
                               CornerRadius="{Binding ElementName=MainBorder,Path=CornerRadius}"/>
 
         </Grid>

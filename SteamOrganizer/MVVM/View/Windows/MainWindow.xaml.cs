@@ -1,13 +1,12 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
-using SteamOrganizer.MVVM.View.Controls;
 using SteamOrganizer.MVVM.ViewModels;
 using SteamOrganizer.Storages;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Shapes;
 
 namespace SteamOrganizer.MVVM.View.Windows
 {
@@ -135,6 +134,9 @@ namespace SteamOrganizer.MVVM.View.Windows
         }
         #endregion
 
+        private void OnNotificationPopup(object sender, RoutedEventArgs e)
+            => Notifications.OpenPopup(sender as FrameworkElement, PlacementMode.Bottom,true);
+
         #endregion
 
         /// <summary>
@@ -157,12 +159,13 @@ namespace SteamOrganizer.MVVM.View.Windows
             MainBorder.CornerRadius  = MainBorderCornerRadius;
         }
 
-        internal void OpenPopupWindow(object content,string title = null, Action onClosing = null)
+        #region Popup window API
+        internal void OpenPopupWindow(object content, string title = null, Action onClosing = null)
         {
             PopupWindow.PopupContent = content;
-            PopupWindow.Closed       = onClosing;
-            PopupWindow.Title.Text   = title;
-            PopupWindow.IsOpen       = true;
+            PopupWindow.Closed = onClosing;
+            PopupWindow.Title.Text = title;
+            PopupWindow.IsOpen = true;
         }
 
         /// <summary>
@@ -172,6 +175,9 @@ namespace SteamOrganizer.MVVM.View.Windows
         internal void ClosePopupWindow()
         {
             PopupWindow.IsOpen = false;
-        }
+        } 
+        #endregion
+
+        
     }
 }

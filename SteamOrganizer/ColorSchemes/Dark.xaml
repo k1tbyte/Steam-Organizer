@@ -38,6 +38,8 @@
         <GradientStop Offset="1" Color="Cyan"/>
     </LinearGradientBrush>
 
+    <DropShadowEffect x:Key="LightShadow" BlurRadius="5" ShadowDepth="0"  Color="Black" Opacity="0.4"/>
+
     <Color x:Key="TertiaryBackgroundColor">#292848</Color>
     <Color x:Key="TertiarySubColor">#3F3D7C</Color>
 </ResourceDictionary>

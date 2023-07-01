@@ -9,6 +9,31 @@
         <Setter Property="Height" Value="35"/>
         <Setter Property="Width" Value="35"/>
         <Setter Property="Padding" Value="7"/>
-    </Style> 
-    
+    </Style>
+
+    <Style TargetType="{x:Type ToolTip}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Placement" Value="Top"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <Border CornerRadius="5" Padding="7" Margin="0 0 0 7" Background="{DynamicResource PurpleGradient}">
+                        <TextBlock Text="{TemplateBinding Property=Content}" FontSize="12" Foreground="{DynamicResource TertiaryForegroundBrush}" TextWrapping="Wrap"
+                                           MaxWidth="200"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="0.8" Duration="0:0:0.4"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
 </ResourceDictionary>
