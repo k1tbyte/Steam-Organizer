@@ -30,6 +30,8 @@
     <v:String x:Key="av_tooShortPass">Password must be at least 8 characters</v:String>
     <v:String x:Key="av_resetInfo">To confirm, press the reset button twice again, all data will be deleted</v:String>
     <v:String x:Key="av_authInfo">For various reasons, the data could not be decrypted, please enter the password.</v:String>
+    <v:String x:Key="av_generation">Generation ...</v:String>
+    <v:String x:Key="av_decryption">Decryption ...</v:String>
     
     <!--#endregion-->
 

@@ -54,13 +54,13 @@ namespace SteamOrganizer.Storages
         }
 
         public bool Save()
-            =>  SerializationManager.Serialize(this, App.ConfigPath, Utils.GetLocalMachineGUID());
+            =>  FileCryptor.Serialize(this, App.ConfigPath, Utils.GetLocalMachineGUID());
         
 
         public static GlobalStorage Load()
         {
             if (File.Exists(App.ConfigPath) &&
-                SerializationManager.Deserialize(App.ConfigPath,out GlobalStorage result,Utils.GetLocalMachineGUID()))
+                FileCryptor.Deserialize(App.ConfigPath,out GlobalStorage result,Utils.GetLocalMachineGUID()))
             {
                 return result;
             }
@@ -71,7 +71,7 @@ namespace SteamOrganizer.Storages
 
         public bool LoadDatabase()
         {
-            if (SerializationManager.Deserialize(App.DatabasePath, out ObservableCollection<Account> result, _databaseKey))
+            if (FileCryptor.Deserialize(App.DatabasePath, out ObservableCollection<Account> result, _databaseKey))
             {
                 Database = result;
                 return true;
@@ -85,7 +85,7 @@ namespace SteamOrganizer.Storages
         {
             _databaseKey.ThrowIfNull();
 
-            SerializationManager.Serialize(Database, App.DatabasePath, _databaseKey);
+            FileCryptor.Serialize(Database, App.DatabasePath, _databaseKey);
         }
     }
 }

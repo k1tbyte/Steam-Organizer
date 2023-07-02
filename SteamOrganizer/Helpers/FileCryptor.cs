@@ -4,15 +4,28 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace SteamOrganizer.Helpers
 {
-    internal static class SerializationManager
+    internal static class FileCryptor
     {
 
         private const int KeySize             = 256;
         private const int IvSize              = 16;
-            
+        private const int PBKDF2Iterations    = 100000;
+
+        internal static byte[] GenerateEncryptionKey(string password, byte[] salt)
+        {
+            password.ThrowIfNullOrEmpty();
+            salt.ThrowIfNull();
+
+            using (Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, salt, PBKDF2Iterations))
+            {
+                return pbkdf2.GetBytes(256/8);
+            }
+        }
+
         internal static bool Serialize(object obj, string filePath, byte[] encryptionKey = null)
         {
             obj.ThrowIfNull();
@@ -101,13 +114,19 @@ namespace SteamOrganizer.Helpers
         private static CryptoStream CreateEncryptionStream(byte[] key, Stream outputStream)
         {
             byte[] iv = new byte[IvSize];
-            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider()) rng.GetNonZeroBytes(iv);
+            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetNonZeroBytes(iv);
+            }
+                
 
             outputStream.Write(iv, 0, iv.Length);
-            Rijndael rijndael = new RijndaelManaged();
-            rijndael.KeySize = KeySize;
-            CryptoStream encryptor = new CryptoStream(outputStream, rijndael.CreateEncryptor(key, iv), CryptoStreamMode.Write);
-            return encryptor;
+            using (Rijndael rijndael = new RijndaelManaged())
+            {
+                rijndael.KeySize = KeySize;
+                CryptoStream encryptor = new CryptoStream(outputStream, rijndael.CreateEncryptor(key, iv), CryptoStreamMode.Write);
+                return encryptor;
+            }
         }
 
         private static CryptoStream CreateDecryptionStream(byte[] key, Stream inputStream)
@@ -119,10 +138,12 @@ namespace SteamOrganizer.Helpers
                 throw new SerializationException("Failed to read IV from stream.");
             }
 
-            Rijndael rijndael = new RijndaelManaged();
-            rijndael.KeySize = KeySize;
-            CryptoStream decryptor = new CryptoStream(inputStream, rijndael.CreateDecryptor(key, iv), CryptoStreamMode.Read);
-            return decryptor;
+            using(Rijndael rijndael = new RijndaelManaged())
+            {
+                rijndael.KeySize = KeySize;
+                CryptoStream decryptor = new CryptoStream(inputStream, rijndael.CreateDecryptor(key, iv), CryptoStreamMode.Read);
+                return decryptor;
+            }
         }
 
         private static void WriteObjectToStream(Stream outputStream, object obj)

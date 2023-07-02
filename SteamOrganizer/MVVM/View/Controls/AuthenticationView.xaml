@@ -41,10 +41,11 @@
     <DockPanel  HorizontalAlignment="Center" Margin="0 12 0 0">
         <ext:HoverButton x:Name="Reset" MouseDoubleClick="OnReset"
                          Background="{DynamicResource ErrorBrush}" Visibility="Collapsed"
-                         Content="Reset" Width="100" Margin="0 0 30 0"/>
+                         Content="Reset" MinWidth="100" Padding="10 4 10 4"
+                         Margin="0 0 30 0"/>
         <ext:HoverButton x:Name="Sign" Click="OnSignIn"
-                     Content="Sign in" 
-                     IsDefault="True" Width="100"
+                     Content="Sign in" MinWidth="100" 
+                     IsDefault="True" Padding="10 4 10 4"
                      HoverBackground="{DynamicResource TertiaryForegroundBrush}"/>
     </DockPanel>
 

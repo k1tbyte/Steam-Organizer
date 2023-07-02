@@ -4,6 +4,7 @@ using SteamOrganizer.MVVM.ViewModels;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using System.Windows.Controls;
 
 namespace SteamOrganizer.MVVM.View.Controls
@@ -56,8 +57,6 @@ namespace SteamOrganizer.MVVM.View.Controls
             if (string.IsNullOrEmpty(PassBox.Password))
                 return;
 
-            var bytes = Utils.HashData(Encoding.UTF8.GetBytes(PassBox.Password + Encoding.UTF8.GetString(App.EncryptionKey)));
-
             // We just need to initialize the key for future database saves.
             if (IsInitialSetup)
             {
@@ -67,13 +66,22 @@ namespace SteamOrganizer.MVVM.View.Controls
                     return;
                 }
 
-                App.Config.DatabaseKey = bytes;
+                Sign.Content           = App.FindString("av_generation");
+                App.Config.DatabaseKey = await Utils.InBackground(() => FileCryptor.GenerateEncryptionKey(PassBox.Password, App.EncryptionKey));
                 App.Config.Save();
                 App.MainWindow.ClosePopupWindow();
                 return;
             }
 
             FilePath.ThrowIfNullOrEmpty();
+
+            var tmpTitle = Sign.Content;
+            Sign.Content = App.FindString("av_decryption");
+
+            var bytes = await Utils.InBackground(() => FileCryptor.GenerateEncryptionKey(PassBox.Password, App.EncryptionKey));
+            PassBox.Clear();
+
+            Sign.Content = tmpTitle;
 
             // The file may or may not have been intentionally deleted
             if (!System.IO.File.Exists(FilePath))
@@ -83,10 +91,9 @@ namespace SteamOrganizer.MVVM.View.Controls
                 return;
             }
 
-            if(!SerializationManager.Deserialize(FilePath,out object result, bytes))
+            if(!FileCryptor.Deserialize(FilePath,out object result, bytes))
             {
                 _ = SetError("invalid_pass");
-                PassBox.Password = null;
                 return;
             }
     

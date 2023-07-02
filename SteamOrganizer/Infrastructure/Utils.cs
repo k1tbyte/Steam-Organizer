@@ -47,6 +47,17 @@ namespace SteamOrganizer.Infrastructure
             }
         }
 
+        public static unsafe void ClearStringMemory(string str)
+        {
+            fixed (char* ptr = str)
+            {
+                for (int i = 0; i < str.Length; i++)
+                {
+                    *(ptr + i) = '\0';
+                }
+            }
+        }
+
         internal static byte[] GetLocalMachineGUID()
         {
             if (!(RegistryKey
@@ -80,6 +91,13 @@ namespace SteamOrganizer.Infrastructure
             function.ThrowIfNull();
 
             InBackground(new Action(() => function()), longRunning);
+        }
+
+        public static async Task<T> InBackground<T>(Func<T> action)
+        {
+            action.ThrowIfNull();
+
+            return await Task.Run(action);
         }
 
         public static void OpenPopup(this Popup popup, FrameworkElement target, PlacementMode placement,bool invertHorizontal = false, bool invertVertical = false)

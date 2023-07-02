@@ -117,6 +117,9 @@ namespace SteamOrganizer
             App.Current.Dispatcher.InvokeShutdown();
         }
 
+        public static void STAInvoke(Action action)
+            => Current.Dispatcher.Invoke(action);
+
         public static string FindString(string resourceKey) 
         {
             var value = Current.TryFindResource(resourceKey);
