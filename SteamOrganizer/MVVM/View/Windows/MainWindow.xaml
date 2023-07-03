@@ -108,28 +108,69 @@
                            Width="12" Height="12"
                            Fill="#F2C14B"
                            Margin="0 0 7 0"/>
-                
+
                 <Rectangle RadiusY="50" RadiusX="50"
                            MouseLeftButtonDown="OnMinimizeWindow"
                            Cursor="Hand"
                            Width="12" Height="12"
-                           Fill="#62C254"
-                           HorizontalAlignment="Left"/>
+                           Fill="#62C254"/>
 
-                <Button Style="{StaticResource SpinButton}" 
-                        DockPanel.Dock="Right"
-                        Margin="20 0 5 0"
-                        VerticalAlignment="Center"
+
+                <StackPanel DockPanel.Dock="Right"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+
+                    <Button Style="{StaticResource FlatButton}"  
+                        Margin="0 0 20 0"
+                        Click="OnNotificationPopup">
+                        <Icon:PackIconMaterial Kind="Bell"/>
+                    </Button>
+
+                    <Button Style="{StaticResource SpinButton}" 
                         Command="{Binding SettingsCommand}">
-                    <Icon:PackIconMaterial Kind="Cog"/>
-                </Button>
+                        <Icon:PackIconMaterial Kind="Cog"/>
+                    </Button>
+                </StackPanel>
 
-                <Button Style="{StaticResource FlatButton}"  
-                        HorizontalAlignment="Right" ToolTipService.InitialShowDelay="0"
-                        VerticalAlignment="Center" Click="OnNotificationPopup">
-                    <Icon:PackIconMaterial Kind="Bell"/>
-                </Button>
-                
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                    <StackPanel.Resources>
+
+                        <Ellipse x:Key="LoggedInAvatar"
+                                 Width="40" Height="40" StrokeThickness="4.5"
+                                 StrokeDashArray="11" StrokeDashCap="Round"
+                                 Stroke="{DynamicResource LightBlueGrad}">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding LoggedInImage}"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <Icon:PackIconMaterial x:Key="NotLoggedIn" Kind="AccountCircle"
+                                           Width="27" Height="27"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource LightBlueGrad}"/>
+                    </StackPanel.Resources>
+
+                    <ToggleButton 
+                        Style="{StaticResource DynamicContentButton}"
+                        IsHitTestVisible="False"
+                        IsChecked="{Binding LoggedInImage,Converter={StaticResource ToBooleanConverter}}" 
+                        Tag="{StaticResource LoggedInAvatar}"
+                        Content="{StaticResource NotLoggedIn}">
+                   
+                    </ToggleButton>
+                   
+                    <TextBlock Text="N o t   l o g g e d   i n"
+                               VerticalAlignment="Center"
+                               Margin="10 0 0 0"
+                               FontWeight="Medium"
+                               FontSize="15"
+                               Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                </StackPanel>
+
+
             </DockPanel>
 
             <ext:BuiltInPopup x:Name="PopupWindow" Grid.ColumnSpan="2" Grid.RowSpan="2" 

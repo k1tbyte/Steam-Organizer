@@ -118,35 +118,17 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
                     <Grid Background="Transparent">
-                        <Icon:PackIconMaterial x:Name="Content" Kind="{TemplateBinding Content}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Opacity="1"/>
-                        <Icon:PackIconMaterial x:Name="Content2" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Kind="{TemplateBinding Tag}" Opacity="0"/>
-
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Checked">
-                                    <Storyboard>
-                                        <DoubleAnimation Duration="0:0:0.4" Storyboard.TargetName="Content2" 
-                                                                    Storyboard.TargetProperty="Opacity" To="1"/>
-                                        <DoubleAnimation Duration="0:0:0.4" Storyboard.TargetName="Content" 
-                                                                    Storyboard.TargetProperty="Opacity" To="0"/>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Unchecked">
-                                    <Storyboard>
-                                        <DoubleAnimation Duration="0:0:0.4" Storyboard.TargetName="Content2" 
-                                                                    Storyboard.TargetProperty="Opacity" To="0"/>
-                                        <DoubleAnimation Duration="0:0:0.4" Storyboard.TargetName="Content" 
-                                                                    Storyboard.TargetProperty="Opacity"  To="1"/>
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
+                        <ContentPresenter x:Name="Content" Content="{TemplateBinding Content}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Visibility="Visible"/>
+                        <ContentPresenter x:Name="Content2" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Content="{TemplateBinding Tag}" Visibility="Collapsed"/>
                     </Grid>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter Property="Foreground" Value="{DynamicResource TertiaryForegroundBrush}"/>
+                            <Setter TargetName="Content" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="Content2" Property="Visibility" Value="Visible"/>
                         </Trigger>
+                        
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Foreground" Value="{DynamicResource TertiaryForegroundBrush}"/>
                         </Trigger>

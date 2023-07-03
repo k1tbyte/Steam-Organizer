@@ -23,7 +23,7 @@
 
             </ResourceDictionary.MergedDictionaries>
 
-            <converters:NullOrEmptyStringConverter x:Key="NullOrEmptyStringConverter"/>
+            <converters:ToBooleanConverter x:Key="ToBooleanConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

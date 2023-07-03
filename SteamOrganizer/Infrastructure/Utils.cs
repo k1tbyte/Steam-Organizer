@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace SteamOrganizer.Infrastructure
 {
@@ -93,11 +95,22 @@ namespace SteamOrganizer.Infrastructure
             InBackground(new Action(() => function()), longRunning);
         }
 
-        public static async Task<T> InBackground<T>(Func<T> action)
+        public static async Task<T> InBackgroundAwait<T>(Func<T> action)
         {
             action.ThrowIfNull();
 
             return await Task.Run(action);
+        }
+
+        public static void CreateDirIfNotExists(string path, FileAttributes? attributes = null)
+        {
+            if (Directory.Exists(path))
+                return;
+
+            var dr = Directory.CreateDirectory(path);
+
+            if(attributes != null)
+                dr.Attributes = attributes.Value;
         }
 
         public static void OpenPopup(this Popup popup, FrameworkElement target, PlacementMode placement,bool invertHorizontal = false, bool invertVertical = false)
@@ -112,6 +125,19 @@ namespace SteamOrganizer.Infrastructure
                 popup.VerticalOffset = -popup.Height + target.ActualHeight;
 
             popup.IsOpen = true;
+        }
+
+        public static BitmapImage GetImageFromUrl(string  url,int pixelHeight = 0, int pixelWidth = 0) 
+        {
+            var img = new BitmapImage();
+
+            img.BeginInit();
+            img.DecodePixelHeight = pixelHeight;
+            img.DecodePixelWidth  = pixelWidth;
+            img.CacheOption       = BitmapCacheOption.OnLoad;
+            img.UriSource         = new Uri(url);
+            img.EndInit();
+            return img;
         }
     }
 }

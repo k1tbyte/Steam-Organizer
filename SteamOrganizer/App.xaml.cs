@@ -1,4 +1,5 @@
-﻿using SteamOrganizer.Infrastructure;
+﻿using SteamOrganizer.Helpers;
+using SteamOrganizer.Infrastructure;
 using SteamOrganizer.Infrastructure.Models;
 using SteamOrganizer.Log;
 using SteamOrganizer.MVVM.View.Windows;
@@ -24,6 +25,7 @@ namespace SteamOrganizer
         internal static readonly string WorkingDir;
         internal static readonly string ConfigPath;
         internal static readonly string DatabasePath;
+        internal static readonly string CacheFolderPath;
 
         internal static readonly byte[] EncryptionKey = new byte[32] 
         { 
@@ -43,10 +45,11 @@ namespace SteamOrganizer
             /*AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;*/
 
-            WorkingDir   = Path.GetDirectoryName(Assembly.GetExecutingAssembly()?.Location) ?? throw new ArgumentNullException(nameof(WorkingDir));
-            Version      = Assembly.GetExecutingAssembly()?.GetName()?.Version ?? throw new ArgumentNullException(nameof(Version));
-            ConfigPath   = Path.Combine(WorkingDir, "config.bin");
-            DatabasePath = Path.Combine(WorkingDir, "database.dat");
+            WorkingDir      = Path.GetDirectoryName(Assembly.GetExecutingAssembly()?.Location) ?? throw new ArgumentNullException(nameof(WorkingDir));
+            Version         = Assembly.GetExecutingAssembly()?.GetName()?.Version ?? throw new ArgumentNullException(nameof(Version));
+            ConfigPath      = Path.Combine(WorkingDir, "config.bin");
+            DatabasePath    = Path.Combine(WorkingDir, "database.dat");
+            CacheFolderPath = Path.Combine(WorkingDir, ".cache");
         } 
         #endregion
 
@@ -66,6 +69,7 @@ namespace SteamOrganizer
 
             ProfileOptimization.SetProfileRoot(WorkingDir);
             ProfileOptimization.StartProfile("Startup.profile");
+            CachingManager.Init();
 
             _config = GlobalStorage.Load();
 

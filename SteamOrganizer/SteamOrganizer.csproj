@@ -136,6 +136,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\CachingManager.cs" />
     <Compile Include="Helpers\FileCryptor.cs" />
     <Compile Include="Helpers\WindowMessageHandler.cs" />
     <Compile Include="Infrastructure\Models\Account.cs" />
@@ -144,7 +145,7 @@
     <Compile Include="Keys.cs" />
     <Compile Include="Log\AppExceptions.cs" />
     <Compile Include="Log\AppLogger.cs" />
-    <Compile Include="MVVM\Converters\NullOrEmptyStringConverter.cs" />
+    <Compile Include="MVVM\Converters\ToBooleanConverter.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
     <Compile Include="MVVM\Core\OvservableObject.cs" />
     <Compile Include="MVVM\ViewModels\MainWindowViewModel.cs" />
