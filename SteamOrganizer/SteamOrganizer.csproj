@@ -143,6 +143,7 @@
     <Compile Include="Infrastructure\Utils.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="Log\AppExceptions.cs" />
+    <Compile Include="Log\AppLogger.cs" />
     <Compile Include="MVVM\Converters\NullOrEmptyStringConverter.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
     <Compile Include="MVVM\Core\OvservableObject.cs" />

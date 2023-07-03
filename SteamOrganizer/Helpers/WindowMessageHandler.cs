@@ -88,7 +88,7 @@ namespace SteamOrganizer.Helpers
             catch(Exception e)
             {
                 handled = false;
-                //LOG Exception
+                App.Logger.Value.LogHandledException(e);
             }
 
 

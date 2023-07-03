@@ -70,7 +70,7 @@ namespace SteamOrganizer.Helpers
             }
             catch (Exception e)
             {
-                //LOG Exception
+                App.Logger.Value.LogHandledException(e);
                 return false;
             }
         }
@@ -98,13 +98,13 @@ namespace SteamOrganizer.Helpers
                     return true;
                 }
             }
-            catch(SerializationException e)
+            catch(SerializationException)
             {
-                //LOG Exception
+                //Decrypt or read error
             }
             catch (Exception e)
             {
-                //LOG Exception
+                App.Logger.Value.LogHandledException(e);
             }
 
             result = null;

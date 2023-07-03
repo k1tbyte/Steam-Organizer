@@ -1,5 +1,6 @@
 ﻿using SteamOrganizer.Infrastructure;
 using SteamOrganizer.Infrastructure.Models;
+using SteamOrganizer.Log;
 using SteamOrganizer.MVVM.View.Windows;
 using SteamOrganizer.Storages;
 using System;
@@ -16,7 +17,8 @@ namespace SteamOrganizer
     public sealed partial class App : Application
     {
         #region App domain info
-        private static readonly Mutex Mutex = new Mutex(true, "SteamOrganizer");
+        private static readonly Mutex Mutex             = new Mutex(true, "SteamOrganizer");
+        internal static readonly Lazy<AppLogger> Logger = new Lazy<AppLogger>();
 
         internal static readonly Version Version;
         internal static readonly string WorkingDir;
@@ -30,6 +32,7 @@ namespace SteamOrganizer
 
         internal static bool IsShuttingDown { get; private set; }
         internal static new MainWindow MainWindow { get; private set; }
+        
 
         private static GlobalStorage _config;
         internal static GlobalStorage Config => _config;
@@ -58,6 +61,9 @@ namespace SteamOrganizer
                 Current.Shutdown();
             }
 #endif
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+
             ProfileOptimization.SetProfileRoot(WorkingDir);
             ProfileOptimization.StartProfile("Startup.profile");
 
@@ -66,6 +72,18 @@ namespace SteamOrganizer
             MainWindow = new MainWindow();
             MainWindow.Loaded += OnLoadingDatabase;
             MainWindow.Show();
+        }
+
+        private void OnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            App.Logger.Value.LogUnhandledException(e?.Exception);
+            Shutdown();
+        }
+
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            App.Logger.Value.LogUnhandledException(e?.ExceptionObject as Exception);
+            Shutdown();
         }
 
         private void OnLoadingDatabase(object sender, RoutedEventArgs e)
@@ -110,11 +128,21 @@ namespace SteamOrganizer
         {
             IsShuttingDown = true;
 
-            if (Config.IsPropertiesChanged)
-                Config.Save();
+            try
+            {
+                if (Config.IsPropertiesChanged)
+                    Config.Save();
 
-            Mutex.Close();
-            App.Current.Dispatcher.InvokeShutdown();
+                Mutex.Close();
+            }
+            catch (Exception e)
+            {
+                Logger.Value.LogHandledException(e);
+            }
+            finally
+            {
+                App.Current.Dispatcher.InvokeShutdown();
+            }
         }
 
         public static void STAInvoke(Action action)
