@@ -21,7 +21,7 @@ namespace SteamOrganizer.Helpers
     internal static class CachingManager
     {
         private static string ImagesCachePath;
-        private const string SteamAvatarsHost = "https://avatars.cloudflare.steamstatic.com/";
+
         public static void Init()
         {
             var attributes = FileAttributes.Directory | FileAttributes.Hidden | FileAttributes.NotContentIndexed;
@@ -42,7 +42,7 @@ namespace SteamOrganizer.Helpers
                     return Application.Current.Dispatcher.Invoke(() =>
                     {
                         var STAbitmap       = CreateBitmap();
-                        STAbitmap.UriSource = new Uri($"{SteamAvatarsHost}{cachedName}.jpg");
+                        STAbitmap.UriSource = new Uri($"{WebBrowser.SteamAvatarsHost}{cachedName}.jpg");
                         STAbitmap.DownloadCompleted += OnBitmapAvatarLoaded;
                         STAbitmap.EndInit();
                         return STAbitmap;

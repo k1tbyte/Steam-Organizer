@@ -140,6 +140,8 @@
     <Compile Include="Helpers\FileCryptor.cs" />
     <Compile Include="Helpers\WindowMessageHandler.cs" />
     <Compile Include="Infrastructure\Models\Account.cs" />
+    <Compile Include="Infrastructure\Regexes.cs" />
+    <Compile Include="Infrastructure\WebBrowser.cs" />
     <Compile Include="Infrastructure\Win32.cs" />
     <Compile Include="Infrastructure\Utils.cs" />
     <Compile Include="Keys.cs" />

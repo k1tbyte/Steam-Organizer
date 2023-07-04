@@ -161,13 +161,24 @@
                         Content="{StaticResource NotLoggedIn}">
                    
                     </ToggleButton>
-                   
-                    <TextBlock Text="N o t   l o g g e d   i n"
+
+                    <TextBlock 
                                VerticalAlignment="Center"
                                Margin="10 0 0 0"
                                FontWeight="Medium"
                                FontSize="15"
-                               Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                               Foreground="{DynamicResource PrimaryForegroundBrush}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="{Binding LoggedInNickname}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding LoggedInNickname}" Value="{x:Null}">
+                                        <Setter Property="Text" Value="{DynamicResource mwv_notlogged}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </StackPanel>
 
 

@@ -20,12 +20,15 @@ namespace SteamOrganizer
         #region App domain info
         private static readonly Mutex Mutex             = new Mutex(true, "SteamOrganizer");
         internal static readonly Lazy<AppLogger> Logger = new Lazy<AppLogger>();
+        internal static readonly WebBrowser WebBrowser  = new WebBrowser();
 
         internal static readonly Version Version;
         internal static readonly string WorkingDir;
         internal static readonly string ConfigPath;
         internal static readonly string DatabasePath;
         internal static readonly string CacheFolderPath;
+
+        internal const string RegistryPathSteamActiveProces = @"Software\\Valve\\Steam\\ActiveProcess";
 
         internal static readonly byte[] EncryptionKey = new byte[32] 
         { 
@@ -137,6 +140,7 @@ namespace SteamOrganizer
                 if (Config.IsPropertiesChanged)
                     Config.Save();
 
+                WebBrowser?.Dispose();
                 Mutex.Close();
             }
             catch (Exception e)

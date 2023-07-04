@@ -10,9 +10,15 @@
     <v:String x:Key="word_password">Password</v:String>
     <v:String x:Key="word_language">Language</v:String>
     <v:String x:Key="word_signin">Sign in</v:String>
-    <v:String x:Key="word_confirm">Confirm</v:String>
+    <v:String x:Key="word_confirm">Confirm</v:String> 
     <v:String x:Key="word_registration">Registration</v:String>
     
+    <!--#endregion-->
+
+    <!--#region Main window view -->
+
+    <v:String x:Key="mwv_notlogged" xml:space="preserve">N o t   l o g g e d   i n</v:String>
+
     <!--#endregion-->
 
     <!--#region Settings view -->

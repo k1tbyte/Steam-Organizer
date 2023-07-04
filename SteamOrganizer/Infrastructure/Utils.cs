@@ -139,5 +139,23 @@ namespace SteamOrganizer.Infrastructure
             img.EndInit();
             return img;
         }
+
+
+        public static object GetUserRegistryValue(string path, string valueName)
+        {
+            try
+            {
+                using (var registryKey = Registry.CurrentUser.OpenSubKey(path, false))
+                {
+                    return registryKey.GetValue(valueName);
+                }
+            }
+            catch (Exception e)
+            {
+                App.Logger.Value.LogHandledException(e);
+            }
+
+            return null;
+        }
     }
 }
