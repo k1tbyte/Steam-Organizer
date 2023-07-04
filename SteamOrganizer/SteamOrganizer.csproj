@@ -138,6 +138,7 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\CachingManager.cs" />
     <Compile Include="Helpers\FileCryptor.cs" />
+    <Compile Include="Helpers\SteamIdConverter.cs" />
     <Compile Include="Helpers\WindowMessageHandler.cs" />
     <Compile Include="Infrastructure\Models\Account.cs" />
     <Compile Include="Infrastructure\Regexes.cs" />

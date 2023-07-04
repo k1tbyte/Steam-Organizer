@@ -51,7 +51,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }    
                 
-            var xmlPage = await App.WebBrowser.GetStringAsync($"{WebBrowser.SteamProfilesHost}{userId + 76561197960265728UL}?xml=1");
+            var xmlPage = await App.WebBrowser.GetStringAsync($"{WebBrowser.SteamProfilesHost}{SteamIdConverter.SteamID32ToID64(userId)}?xml=1");
 
             var imgHash  = Regexes.AvatarHashXml.Match(xmlPage)?.Groups[0]?.Value;
             var nickname = Regexes.NicknameXml.Match(xmlPage)?.Groups[0]?.Value;
@@ -60,7 +60,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
 
             LoggedInImage = CachingManager.GetCachedAvatar(imgHash, 80,80);
-            LoggedInNickname = nickname;
+            LoggedInNickname = $"{App.FindString("word_wlcbck")}, {nickname}";
         }
 
         private void InitServices()
@@ -75,7 +75,9 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         public MainWindowViewModel()
         {
+#if !DEBUG
             Utils.InBackground(InitServices);
+#endif
 
             SettingsCommand = new RelayCommand(OnOpeningSettings);
         }

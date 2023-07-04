@@ -59,12 +59,11 @@
                     BorderThickness="0 0 1.5 0"
                     BorderBrush="{DynamicResource PrimaryBorderBrush}">
                 <StackPanel>
-                    <RadioButton IsChecked="True"  Style="{StaticResource MenuRadioButton}" Tag="Accounts">
+                    <RadioButton IsChecked="True"  Style="{StaticResource MenuRadioButton}" Tag="{DynamicResource word_accs}">
                         <Icon:PackIconMaterial Kind="AccountGroupOutline" Height="23" Width="23" />
                     </RadioButton>
 
-                    <RadioButton  Style="{StaticResource MenuRadioButton}" Tag="Remote control"
-                                  Command="{Binding SettingsCommand}">
+                    <RadioButton  Style="{StaticResource MenuRadioButton}" Tag="{DynamicResource word_rmtControl}">
                         <Icon:PackIconMaterial Kind="RemoteDesktop" Height="23" Width="23" />
                     </RadioButton>
                 </StackPanel>
@@ -133,6 +132,7 @@
                     </Button>
                 </StackPanel>
 
+                <!-- Local logged user info -->
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
@@ -158,12 +158,9 @@
                         IsHitTestVisible="False"
                         IsChecked="{Binding LoggedInImage,Converter={StaticResource ToBooleanConverter}}" 
                         Tag="{StaticResource LoggedInAvatar}"
-                        Content="{StaticResource NotLoggedIn}">
-                   
-                    </ToggleButton>
+                        Content="{StaticResource NotLoggedIn}"/>
 
-                    <TextBlock 
-                               VerticalAlignment="Center"
+                    <TextBlock VerticalAlignment="Center"
                                Margin="10 0 0 0"
                                FontWeight="Medium"
                                FontSize="15"
@@ -180,7 +177,6 @@
                         </TextBlock.Style>
                     </TextBlock>
                 </StackPanel>
-
 
             </DockPanel>
 
