@@ -81,6 +81,15 @@ namespace SteamOrganizer.Properties {
         }
         
         /// <summary>
+        ///   Поиск локализованного ресурса типа System.IO.UnmanagedMemoryStream, аналогичного System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream Notification {
+            get {
+                return ResourceManager.GetStream("Notification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на WScript.Sleep(1000)
         ///Set fso = CreateObject(&quot;Scripting.FileSystemObject&quot;)
         ///FolderPath = fso.GetParentFolderName(WScript.ScriptFullName)

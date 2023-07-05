@@ -19,13 +19,14 @@ namespace SteamOrganizer.MVVM.View.Windows
         private readonly CornerRadius MainBorderCornerRadius = new CornerRadius(App.Config.MainWindowCornerRadius);
 
         private bool IsMenuExpanderWaiting = false;
+        
 
         public MainWindow()
         {
             SourceInitialized += new EventHandler(OnWindowSourceInitialize);
             InitializeComponent();
 
-            this.DataContext = new MainWindowViewModel();
+            this.DataContext = new MainWindowViewModel(this);
             Sidebar.Width = (double)App.Config.SideBarState;
             RoundOffBorders();
         }
@@ -160,26 +161,7 @@ namespace SteamOrganizer.MVVM.View.Windows
             Sidebar.CornerRadius   = SidebarCornerRadius;
             MainBorder.CornerRadius  = MainBorderCornerRadius;
         }
-
-        #region Popup window API
-        internal void OpenPopupWindow(object content, string title = null, Action onClosing = null)
-        {
-            PopupWindow.PopupContent = content;
-            PopupWindow.Closed = onClosing;
-            PopupWindow.Title.Text = title;
-            PopupWindow.IsOpen = true;
-        }
-
-        /// <summary>
-        /// Closes the popup window
-        /// </summary>
-        /// <param name="onClosing">The action is automatically cleared after execution</param>
-        internal void ClosePopupWindow()
-        {
-            PopupWindow.IsOpen = false;
-        }
-
-        #endregion
+        
 
     }
 }

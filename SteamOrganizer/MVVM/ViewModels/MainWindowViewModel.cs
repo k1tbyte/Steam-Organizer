@@ -1,65 +1,129 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Core;
+using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
+using SteamOrganizer.MVVM.View.Windows;
+using SteamOrganizer.Properties;
 using System;
 using System.Management;
 using System.Security.Principal;
-using System.Threading.Tasks;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
     internal class MainWindowViewModel : ObservableObject
     {
         private ManagementEventWatcher RegistrySteamUserWatcher;
+        private readonly MainWindow View;
+
         public RelayCommand SettingsCommand { get; }
+        public RelayCommand NotificationInvokeCommand { get; }
+        public RelayCommand NotificationRemoveCommand { get; }
+        public RelayCommand NotificationClearAll { get; }
 
         public SettingsView Settings { get; private set; }
 
 
-        private BitmapImage _loggedInImage = null;
+
+
+
+        #region Properties
+        private bool _isNotificationsRead = true;
+        public bool IsNotificationsRead
+        {
+            get => _isNotificationsRead;
+            set => SetProperty(ref _isNotificationsRead, value);
+        }
+
         private string _loggedInNickname;
         public string LoggedInNickname
         {
             get => _loggedInNickname;
             set => SetProperty(ref _loggedInNickname, value);
         }
-        public BitmapImage LoggedInImage 
+
+        private BitmapImage _loggedInImage = null;
+        public BitmapImage LoggedInImage
         {
             get => _loggedInImage;
             set => SetProperty(ref _loggedInImage, value);
+        } 
+        #endregion
+
+        #region Popup window api
+        internal void OpenPopupWindow(object content, string title = null, Action onClosing = null)
+        {
+            View.PopupWindow.PopupContent = content;
+            View.PopupWindow.Closed = onClosing;
+            View.PopupWindow.Title.Text = title;
+            View.PopupWindow.IsOpen = true;
         }
 
-        public void OnOpeningSettings(object param)
+        /// <summary>
+        /// Closes the popup window
+        /// </summary>
+        /// <param name="onClosing">The action is automatically cleared after execution</param>
+        internal void ClosePopupWindow()
+        {
+            View.PopupWindow.IsOpen = false;
+        }
+        #endregion
+
+        #region Notifications api
+        public void PushNotification(MahApps.Metro.IconPacks.PackIconMaterialKind icon,string message,Action onInvokedAction = null)
+        {
+            App.STAInvoke(() => View.NotificationsList.Items.Add(new Notification
+            {
+                Icon = icon,
+                Message = message,
+                OnClickAction = onInvokedAction
+            }));
+
+
+            using (var player = new System.Media.SoundPlayer(Resources.ResourceManager.GetStream("Notification")))
+            {
+                player.Play();
+            }
+
+            if (!View.Notifications.IsOpen && IsNotificationsRead)
+                IsNotificationsRead = false;
+        }
+
+        private void OnNotificationRemoving(object param)
+        {
+            View.NotificationsList.Items.Remove(param);
+        }
+        #endregion
+
+        #region Private
+        private void OnOpeningSettings(object param)
         {
             Settings = Settings ?? new SettingsView();
             App.Config.IsPropertiesChanged = true;
-            App.MainWindow.OpenPopupWindow(Settings, App.FindString("sv_title"));
+            OpenPopupWindow(Settings, App.FindString("sv_title"));
         }
 
         private async void OnLocalLoggedInUserChanged(object sender, EventArrivedEventArgs args)
         {
-            var userId = Convert.ToUInt32(Utils.GetUserRegistryValue(App.RegistryPathSteamActiveProces, "ActiveUser"));
+            var userId = Convert.ToUInt32(Utils.GetUserRegistryValue(@"Software\\Valve\\Steam\\ActiveProcess", "ActiveUser"));
 
             if (userId == 0)
             {
                 LoggedInImage = null;
                 LoggedInNickname = null;
                 return;
-            }    
-                
+            }
+
             var xmlPage = await App.WebBrowser.GetStringAsync($"{WebBrowser.SteamProfilesHost}{SteamIdConverter.SteamID32ToID64(userId)}?xml=1");
 
-            var imgHash  = Regexes.AvatarHashXml.Match(xmlPage)?.Groups[0]?.Value;
+            var imgHash = Regexes.AvatarHashXml.Match(xmlPage)?.Groups[0]?.Value;
             var nickname = Regexes.NicknameXml.Match(xmlPage)?.Groups[0]?.Value;
 
             if (string.IsNullOrEmpty(imgHash) || string.IsNullOrEmpty(nickname))
                 return;
 
-            LoggedInImage = CachingManager.GetCachedAvatar(imgHash, 80,80);
+            LoggedInImage = CachingManager.GetCachedAvatar(imgHash, 80, 80);
             LoggedInNickname = $"{App.FindString("word_wlcbck")}, {nickname}";
         }
 
@@ -71,15 +135,19 @@ namespace SteamOrganizer.MVVM.ViewModels
             RegistrySteamUserWatcher.EventArrived += new EventArrivedEventHandler(OnLocalLoggedInUserChanged);
             RegistrySteamUserWatcher.Start();
             OnLocalLoggedInUserChanged(null, null);
-        }
+        } 
+        #endregion
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(MainWindow owner)
         {
+            View = owner;
 #if !DEBUG
             Utils.InBackground(InitServices);
 #endif
-
-            SettingsCommand = new RelayCommand(OnOpeningSettings);
+            SettingsCommand           = new RelayCommand(OnOpeningSettings);
+            NotificationRemoveCommand = new RelayCommand(OnNotificationRemoving);
+            NotificationInvokeCommand = new RelayCommand((o) => (o as Notification)?.OnClickAction?.Invoke());
+            NotificationClearAll      = new RelayCommand((o) => View.NotificationsList.Items.Clear());
         }
     }
 }

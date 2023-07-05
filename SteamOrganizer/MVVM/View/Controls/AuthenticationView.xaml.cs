@@ -69,7 +69,7 @@ namespace SteamOrganizer.MVVM.View.Controls
                 Sign.Content           = App.FindString("av_generation");
                 App.Config.DatabaseKey = await Utils.InBackgroundAwait(() => FileCryptor.GenerateEncryptionKey(PassBox.Password, App.EncryptionKey));
                 App.Config.Save();
-                App.MainWindow.ClosePopupWindow();
+                App.MainWindowVM.ClosePopupWindow();
                 return;
             }
 
@@ -87,7 +87,7 @@ namespace SteamOrganizer.MVVM.View.Controls
             if (!System.IO.File.Exists(FilePath))
             {
                 await SetError("file_not_found");
-                App.MainWindow.ClosePopupWindow();
+                App.MainWindowVM.ClosePopupWindow();
                 return;
             }
 
@@ -99,7 +99,7 @@ namespace SteamOrganizer.MVVM.View.Controls
     
             // It's ok, we do what we want with the callback
             ActionIfSuccess?.Invoke(result, bytes);
-            App.MainWindow.ClosePopupWindow();
+            App.MainWindowVM.ClosePopupWindow();
         }
 
         private void OnReset(object sender, System.Windows.Input.MouseButtonEventArgs e)

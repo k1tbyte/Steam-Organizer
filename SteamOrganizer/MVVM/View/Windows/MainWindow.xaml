@@ -32,14 +32,103 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Popup x:Name="Notifications"  Width="240" Height="150"
+            <Popup x:Name="Notifications"  Width="280" 
                   StaysOpen="False" AllowsTransparency="True"
                    PopupAnimation="Slide" VerticalOffset="5">
-                <Border Effect="{StaticResource LightShadow}" Margin="3"
-                        CornerRadius="3" Background="{DynamicResource SecondaryBackgroundBrush}">
-                    
+                <Border Effect="{StaticResource LightShadow}" Margin="3" 
+                    CornerRadius="3" 
+                    Background="{DynamicResource SecondaryBackgroundBrush}">
+                    <StackPanel>
+                        <ListBox x:Name="NotificationsList" 
+                             Background="Transparent"
+                             VirtualizingPanel.CacheLengthUnit="Item"
+                             VirtualizingPanel.CacheLength="1,1" VirtualizingPanel.ScrollUnit="Pixel"
+                             VirtualizingPanel.VirtualizationMode="Recycling"
+                             MaxHeight="294"
+                             ScrollViewer.CanContentScroll="True"
+                             HorizontalContentAlignment="Stretch"
+                             BorderThickness="0"
+                             HorizontalAlignment="Left">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid MinHeight="70"  
+                                      Cursor="Hand" Width="280"
+                                      Background="Transparent">
+                                        <Grid.InputBindings>
+                                            <MouseBinding Gesture="LeftClick"
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.NotificationInvokeCommand}"
+                                            CommandParameter="{Binding}" />
+                                        </Grid.InputBindings>
+
+                                        <Icon:PackIconMaterial Kind="{Binding Icon}" 
+                                                           Width="20" Height="20"
+                                                           VerticalAlignment="Center"
+                                                           Margin="10" Foreground="{DynamicResource LightBlueGrad}"/>
+                                        <TextBlock Text="{Binding Message}" 
+                                               Margin="40 10 35 10" TextWrapping="Wrap"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+
+                                        <Button Style="{StaticResource FlatButton}" 
+                                            VerticalAlignment="Top" 
+                                            HorizontalAlignment="Right"
+                                            Margin="0 5 15 0" Width="12" Height="12"
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.NotificationRemoveCommand}"
+                                            CommandParameter="{Binding}">
+                                            <Icon:PackIconMaterial Kind="Close" Height="8" Width="8"/>
+                                        </Button>
+
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="border" BorderThickness="0 0 0 3" Background="Transparent"
+                                                BorderBrush="{DynamicResource PrimaryBackgroundBrush}">
+                                                    <ContentPresenter/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="border" Property="Background" Value="#25263e"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                        <Button Style="{StaticResource FlatButton}"
+                                Visibility="{Binding ElementName=NotificationsList,Path=Items.Count, Converter={StaticResource ToVisibilityConverter}}"
+                                Padding="0 12 0 14"
+                                Content="{DynamicResource mwv_hide_notif}"
+                                Command="{Binding NotificationClearAll}"
+                                FontWeight="Medium" />
+
+                        <StackPanel Margin="0 30 0 30"  HorizontalAlignment="Center"
+                              Visibility="{Binding ElementName=NotificationsList,Path=Items.Count,Converter={StaticResource ToVisibilityInvertedConverter}}">
+
+                            <Icon:PackIconMaterial Kind="BellCheck" Margin="0 0 0 10"
+                                                   Width="40" Height="40"
+                                                   HorizontalAlignment="Center"
+                                                   Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                            
+                            <TextBlock 
+                                   Text="{DynamicResource mwv_no_notifs}" FontWeight="Bold"
+                                   Foreground="{DynamicResource PrimaryForegroundBrush}"
+                                   FontSize="18"/>
+                                
+                        </StackPanel>
+
+                    </StackPanel>
                 </Border>
             </Popup>
+
+
 
 
             <Border x:Name="TopPanel" 
@@ -49,7 +138,6 @@
                     BorderBrush="{DynamicResource PrimaryBorderBrush}"
                     Background="{DynamicResource SecondaryBackgroundBrush}"
                     MouseLeftButtonDown="OnDragMove"/>
-
 
             <Border x:Name="Sidebar"
                     Width="200"
@@ -120,16 +208,27 @@
                             VerticalAlignment="Center"
                             Orientation="Horizontal">
 
-                    <Button Style="{StaticResource FlatButton}"  
-                        Margin="0 0 20 0"
+                    <Grid Margin="0 0 20 0">
+                        <Button Style="{StaticResource FlatButton}"  
+                        
                         Click="OnNotificationPopup">
-                        <Icon:PackIconMaterial Kind="Bell"/>
-                    </Button>
+                            <Icon:PackIconMaterial Kind="Bell"/>
+                        </Button>
+                        <Ellipse Fill="{DynamicResource ErrorBrush}"
+                                 Visibility="{Binding IsNotificationsRead,Mode=OneWay,Converter={StaticResource ToVisibilityInvertedConverter}}"
+                                 VerticalAlignment="Top"
+                                 HorizontalAlignment="Right"
+                                 Height="10" Width="10"
+                                 Stroke="{DynamicResource SecondaryBackgroundBrush}"
+                                 Margin="0 0 0 0"/>
+                    </Grid>
 
-                    <Button Style="{StaticResource SpinButton}" 
+
+                        <Button Style="{StaticResource SpinButton}" 
                         Command="{Binding SettingsCommand}">
-                        <Icon:PackIconMaterial Kind="Cog"/>
-                    </Button>
+                            <Icon:PackIconMaterial Kind="Cog"/>
+                        </Button>
+
                 </StackPanel>
 
                 <!-- Local logged user info -->

@@ -148,9 +148,12 @@
     <Compile Include="Keys.cs" />
     <Compile Include="Log\AppExceptions.cs" />
     <Compile Include="Log\AppLogger.cs" />
+    <Compile Include="MVVM\Converters\TemplateBooleanConverter.cs" />
     <Compile Include="MVVM\Converters\ToBooleanConverter.cs" />
+    <Compile Include="MVVM\Converters\ToVisibilityConverter.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
     <Compile Include="MVVM\Core\OvservableObject.cs" />
+    <Compile Include="MVVM\Models\Notification.cs" />
     <Compile Include="MVVM\ViewModels\MainWindowViewModel.cs" />
     <Compile Include="MVVM\ViewModels\SettingsViewModel.cs" />
     <Compile Include="MVVM\View\Controls\AuthenticationView.xaml.cs">
@@ -227,6 +230,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\RadioButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ScrollBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -400,11 +407,12 @@
     <Resource Include="Resources\Images\SteamGamesBadges\30000.png" />
     <Resource Include="Resources\Images\SteamGamesBadges\31000.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Infrastructure\Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\split.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Sounds\Notification.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -21,7 +21,8 @@
     <!--#region Main window view -->
 
     <v:String x:Key="mwv_notlogged" xml:space="preserve">N o t   l o g g e d   i n</v:String>
-
+    <v:String x:Key="mwv_hide_notif">Hide all notifications ❌</v:String>
+    <v:String x:Key="mwv_no_notifs">No notifications</v:String>
     <!--#endregion-->
 
     <!--#region Settings view -->

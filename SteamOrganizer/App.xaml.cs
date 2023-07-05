@@ -3,6 +3,7 @@ using SteamOrganizer.Infrastructure;
 using SteamOrganizer.Infrastructure.Models;
 using SteamOrganizer.Log;
 using SteamOrganizer.MVVM.View.Windows;
+using SteamOrganizer.MVVM.ViewModels;
 using SteamOrganizer.Storages;
 using System;
 using System.Collections.ObjectModel;
@@ -28,15 +29,13 @@ namespace SteamOrganizer
         internal static readonly string DatabasePath;
         internal static readonly string CacheFolderPath;
 
-        internal const string RegistryPathSteamActiveProces = @"Software\\Valve\\Steam\\ActiveProcess";
-
         internal static readonly byte[] EncryptionKey = new byte[32] 
         { 
             0x45, 0x4F, 0x74, 0x7A, 0x61, 0x6E, 0x6E, 0x58, 0x45, 0x4F, 0x53, 0x64, 0x35, 0x48, 0x47, 0x42, 0x53, 0x4A, 0x76, 0x73, 0x30, 0x6F, 0x70, 0x31, 0x42, 0x48, 0x52, 0x75, 0x76, 0x46, 0x77, 0x6C 
         };
 
         internal static bool IsShuttingDown { get; private set; }
-        internal static new MainWindow MainWindow { get; private set; }
+        internal static MainWindowViewModel MainWindowVM { get; private set; }
         
 
         private static GlobalStorage _config;
@@ -76,7 +75,8 @@ namespace SteamOrganizer
 
             _config = GlobalStorage.Load();
 
-            MainWindow = new MainWindow();
+            MainWindow   = new MainWindow();
+            MainWindowVM = MainWindow.DataContext as MainWindowViewModel;
             MainWindow.Loaded += OnLoadingDatabase;
             MainWindow.Show();
         }
@@ -102,7 +102,7 @@ namespace SteamOrganizer
             // request password for exists db
             if (!loadResult && File.Exists(DatabasePath))
             {
-                MainWindow.OpenPopupWindow(new MVVM.View.Controls.AuthenticationView(DatabasePath,OnSuccessDecrypt,true), FindString("av_title"), OnInstallationCanceled);
+                MainWindowVM.OpenPopupWindow(new MVVM.View.Controls.AuthenticationView(DatabasePath,OnSuccessDecrypt,true), FindString("av_title"), OnInstallationCanceled);
             }
 #if !DEBUG
             // request password for new db

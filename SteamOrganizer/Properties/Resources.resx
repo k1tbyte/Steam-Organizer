@@ -124,6 +124,9 @@
   <data name="grabbing" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\grabbing.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Notification" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Sounds\Notification.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="UpdateScript" xml:space="preserve">
     <value>WScript.Sleep(1000)
 Set fso = CreateObject("Scripting.FileSystemObject")
