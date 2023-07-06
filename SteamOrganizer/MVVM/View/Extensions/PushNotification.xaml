@@ -1,0 +1,100 @@
+﻿<Window x:Class="SteamOrganizer.MVVM.View.Extensions.PushNotification"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:local="clr-namespace:SteamOrganizer.MVVM.View.Extensions"
+        mc:Ignorable="d"
+        ShowInTaskbar="False"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Background="Transparent"
+        SizeToContent="Height"
+        Width="303"
+        MinHeight="80"
+        Title="PushNotification"
+        Topmost="True">
+
+    <Border d:DataContext="{d:DesignInstance local:PushNotification}" x:Name="mainArea" Background="{DynamicResource SecondaryBackgroundBrush}" 
+                CornerRadius="3" HorizontalAlignment="Left"  Padding="15" Width="300">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Icon:PackIconMaterial x:Name="PopupIcon" Kind="Information"
+                                       Foreground="{DynamicResource LightBlueGrad}"
+                                       Width="20" Height="20"/>
+
+            <Button Style="{StaticResource FlatButton}"
+                    Click="OnCloseClick"
+                        Grid.Column="1"
+                        VerticalAlignment="Top"
+                        HorizontalAlignment="Right">
+                <Icon:PackIconMaterial Kind="Close" Width="10" Height="10"/>
+            </Button>
+
+            <StackPanel Grid.Column="1" HorizontalAlignment="Left"
+                            Margin="0 -1 20 0">
+                <TextBlock x:Name="PopupTitle"
+                           Grid.Column="1"
+                           Foreground="{DynamicResource TertiaryForegroundBrush}"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Margin="0 0 0 5"
+                           TextTrimming="CharacterEllipsis"
+                           d:Text="Info"
+                           FontWeight="Medium"
+                           FontSize="15"/>
+
+                <TextBlock x:Name="PopupMessage"
+                           d:Text="This is popup text message, this is popup text message, this is popup text message "
+                           Grid.Column="1"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Bottom"
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+            </StackPanel>
+
+
+        </Grid>
+        <Border.Triggers>
+            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                <BeginStoryboard x:Name="StoryboardLoad">
+                    <Storyboard>
+                        <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                            Storyboard.TargetName="mainArea"
+                                            From="300 0 0 0" To="0" Duration="0:0:1">
+                            <ThicknessAnimation.EasingFunction>
+                                <CircleEase EasingMode="EaseInOut"/>
+                            </ThicknessAnimation.EasingFunction>
+                        </ThicknessAnimation>
+
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)"  Completed="NotificationWindowClosed">
+                            <SplineDoubleKeyFrame KeyTime="0:0:4" Value="1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+
+            <EventTrigger RoutedEvent="Mouse.MouseEnter">
+                <EventTrigger.Actions>
+                    <RemoveStoryboard BeginStoryboardName="StoryboardLoad"/>
+                    <RemoveStoryboard BeginStoryboardName="StoryboardFade"/>
+                </EventTrigger.Actions>
+            </EventTrigger>
+
+            <EventTrigger RoutedEvent="Mouse.MouseLeave">
+                <BeginStoryboard x:Name="StoryboardFade">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)"  Completed="NotificationWindowClosed">
+                            <SplineDoubleKeyFrame KeyTime="0:0:2" Value="1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+
+        </Border.Triggers>
+    </Border>
+</Window>

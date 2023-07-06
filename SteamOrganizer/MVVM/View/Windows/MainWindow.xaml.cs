@@ -3,12 +3,10 @@ using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.ViewModels;
 using SteamOrganizer.Storages;
 using System;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 
 namespace SteamOrganizer.MVVM.View.Windows
 {

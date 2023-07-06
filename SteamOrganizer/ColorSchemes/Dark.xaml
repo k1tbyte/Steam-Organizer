@@ -18,7 +18,7 @@
     <Brush x:Key="TertiaryForegroundBrush">#f7f7f7</Brush>
 
     <Brush x:Key="ErrorBrush">PaleVioletRed</Brush>
-
+    <Brush x:Key="WarningBrush">Yellow</Brush>
 
 
     <Brush x:Key="PrimaryBorderBrush">#212236</Brush>

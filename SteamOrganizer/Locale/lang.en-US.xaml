@@ -15,6 +15,9 @@
     <v:String x:Key="word_wlcbck">Welcome back</v:String>
     <v:String x:Key="word_accs">Accounts</v:String>
     <v:String x:Key="word_rmtControl">Remote control</v:String>
+    <v:String x:Key="word_info">Info</v:String>
+    <v:String x:Key="word_warn">Warning</v:String>
+    <v:String x:Key="word_err">Error</v:String>
     
     <!--#endregion-->
 
@@ -23,6 +26,8 @@
     <v:String x:Key="mwv_notlogged" xml:space="preserve">N o t   l o g g e d   i n</v:String>
     <v:String x:Key="mwv_hide_notif">Hide all notifications ❌</v:String>
     <v:String x:Key="mwv_no_notifs">No notifications</v:String>
+
+    <v:String x:Key="mwv_new_notif">You have received a new notification</v:String>
     <!--#endregion-->
 
     <!--#region Settings view -->

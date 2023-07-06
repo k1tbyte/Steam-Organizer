@@ -2,6 +2,7 @@
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.Infrastructure.Models;
 using SteamOrganizer.Log;
+using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.View.Windows;
 using SteamOrganizer.MVVM.ViewModels;
 using SteamOrganizer.Storages;

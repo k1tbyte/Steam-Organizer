@@ -171,6 +171,9 @@
     <Compile Include="MVVM\View\Extensions\PasswordBox.xaml.cs">
       <DependentUpon>PasswordBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\Extensions\PushNotification.xaml.cs">
+      <DependentUpon>PushNotification.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Storages\GlobalStorage.cs" />
     <Page Include="Locale\lang.en-US.xaml">
       <SubType>Designer</SubType>
@@ -193,6 +196,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MVVM\View\Extensions\PasswordBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Extensions\PushNotification.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -3,6 +3,7 @@ using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
+using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.View.Windows;
 using SteamOrganizer.Properties;
 using System;
@@ -71,14 +72,17 @@ namespace SteamOrganizer.MVVM.ViewModels
         #endregion
 
         #region Notifications api
-        public void PushNotification(MahApps.Metro.IconPacks.PackIconMaterialKind icon,string message,Action onInvokedAction = null)
+        public void Notification(MahApps.Metro.IconPacks.PackIconMaterialKind icon,string message, Action onInvokedAction = null)
         {
-            App.STAInvoke(() => View.NotificationsList.Items.Add(new Notification
+            View.NotificationsList.Items.Add(new Notification
             {
                 Icon = icon,
                 Message = message,
                 OnClickAction = onInvokedAction
-            }));
+            });
+
+            if (!View.IsLoaded || View.WindowState == System.Windows.WindowState.Minimized)
+                PushNotification.Open(App.FindString("mwv_new_notif"));
 
 
             using (var player = new System.Media.SoundPlayer(Resources.ResourceManager.GetStream("Notification")))

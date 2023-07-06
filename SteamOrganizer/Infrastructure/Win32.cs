@@ -28,6 +28,12 @@ namespace SteamOrganizer.Infrastructure
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern bool MoveFileEx(string existingFileName, string newFileName, int flags);
 
+        [DllImport("user32.dll")]
+        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
         #endregion
 
         #region Structs
@@ -91,6 +97,7 @@ namespace SteamOrganizer.Infrastructure
         #endregion
 
         #region Enums
+        private const int WS_EX_APPWINDOW = 262144, WS_EX_TOOLWINDOW = 128, GWL_EX_STYLE = -20;
 
         internal enum AppBarMessage : uint
         {
@@ -138,6 +145,12 @@ namespace SteamOrganizer.Infrastructure
             else
                 MoveFileEx(existingFileName, newFileName, 0x8 | 0x2);
         }
+
+        /// <summary>
+        /// Hides the window from alt-tab
+        /// </summary>
+        public static void HideWindow(IntPtr HWND) 
+            => SetWindowLong(HWND, GWL_EX_STYLE, (Win32.GetWindowLong(HWND, GWL_EX_STYLE) | WS_EX_TOOLWINDOW) & ~WS_EX_APPWINDOW);
 
     }
 }
