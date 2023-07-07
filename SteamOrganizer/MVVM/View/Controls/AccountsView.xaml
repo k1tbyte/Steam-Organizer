@@ -1,0 +1,177 @@
+﻿<UserControl x:Class="SteamOrganizer.MVVM.View.Controls.AccountsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:SteamOrganizer.MVVM.ViewModels"
+             xmlns:local="clr-namespace:SteamOrganizer.MVVM.View.Controls"
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:virtualizingPanel="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance viewModels:AccountsViewModel}">
+    <UserControl.Resources>
+        <Style x:Key="AccountInfoChip" TargetType="Border">
+            <Setter Property="Padding" Value="10 2 10 2"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Margin" Value="0 0 5 3"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <ListBox Background="Transparent"
+                 Margin="5 10 5 10"
+                 BorderThickness="0"
+                 ItemsSource="{Binding Accounts}"
+                 d:AlternationCount="10"
+                 d:ItemsSource="{d:SampleData ItemCount=3}"
+                 HorizontalContentAlignment="Stretch">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border CornerRadius="3" MinWidth="430" Height="105"
+                                Background="{DynamicResource SecondaryBackgroundBrush}"
+                            Padding="15">
+                        <DockPanel>
+
+                            <Border BorderBrush="{DynamicResource LightBlueGrad}"
+                                     HorizontalAlignment="Left" 
+                                     BorderThickness="2"
+                                    CornerRadius="50"
+                                     Width="60"
+                                     Height="60">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="https://avatars.cloudflare.steamstatic.com/c5d56249ee5d28a07db4ac9f7f60af961fab5426_full.jpg"/>
+                                </Border.Background>
+                            </Border>
+
+
+                            <DockPanel  DockPanel.Dock="Top">
+                                
+                                <TextBlock Text="Test nickname" Margin="10 0 10 0"
+                                           Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                           FontWeight="Medium"
+                                           FontSize="15"  />
+
+                                <Border Style="{StaticResource AccountInfoChip}" 
+                                        Background="{DynamicResource PrimarySubBrush}" Margin="0"
+                                        Padding="7 4 7 4">
+                                    <Icon:PackIconMaterial Kind="Login" Width="13" Height="13"
+                                                           HorizontalAlignment="Center"
+                                                           Foreground="{DynamicResource TertiaryForegroundBrush}"/>
+                                </Border>
+
+                                <Border Style="{StaticResource AccountInfoChip}" 
+                                        Background="{DynamicResource PrimarySubBrush}"
+                                        Padding="7 4 7 4" Margin="5 0 0 0">
+                                    <Icon:PackIconMaterial Kind="Pen" Width="13" Height="13"
+                                                           HorizontalAlignment="Center"
+                                                           Foreground="{DynamicResource TertiaryForegroundBrush}"/>
+                                </Border>
+
+
+
+                                <!-- If anonymous account -->
+                                <Icon:PackIconMaterial Kind="Incognito"
+                                                       Visibility="Collapsed"
+                                                       Height="13"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{DynamicResource WarningBrush}" 
+                                                       Margin="0 0 5 0"/>
+                                
+                                <!-- If linked 2fa -->
+                                <Icon:PackIconMaterial Kind="Lock" Visibility="Collapsed"
+                                                           Height="13"
+                                                           VerticalAlignment="Center"
+                                                           Foreground="SpringGreen"/>
+
+                                <Icon:PackIconMaterial HorizontalAlignment="Right"
+                                                       Kind="Pin"
+                                                       RotationAngle="30"
+                                                       Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+
+                            </DockPanel>
+
+
+                            
+
+                            <WrapPanel HorizontalAlignment="Left"
+                                       MaxWidth="230" Margin="10 7 0 0" >
+
+                                <Border Style="{StaticResource AccountInfoChip}"
+                                        Background="{DynamicResource SecondarySubBrush}" >
+                                    <TextBlock Text="Level: 1000" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
+                                </Border>
+
+                                <Border Style="{StaticResource AccountInfoChip}" 
+                                        Background="{DynamicResource SecondarySubBrush}" >
+                                    <TextBlock Text="Years: 4" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
+                                </Border>
+
+
+                                <TextBlock Foreground="{DynamicResource SecondaryForegroundBrush}"
+                                           Width="100">
+                                    <Run Text="ID:" FontWeight="Medium" Foreground="{DynamicResource PrimarySubBrush}"/>
+                                    <Run Text="144395702"/>
+                                </TextBlock>
+
+
+                            </WrapPanel>
+
+                            <WrapPanel Orientation="Horizontal" 
+                                       MaxWidth="150"
+                                       HorizontalAlignment="Left" 
+                                       Margin="10 7 0 0">
+                                <Border Background="SpringGreen" 
+                                        Style="{StaticResource AccountInfoChip}">
+                                    <TextBlock Text="VAC" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
+                                </Border>
+
+                                <Border Background="SpringGreen" 
+                                        Style="{StaticResource AccountInfoChip}">
+                                    <TextBlock Text="Game" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
+                                </Border>
+
+                                <Border Background="SpringGreen" 
+                                        Style="{StaticResource AccountInfoChip}">
+                                    <TextBlock Text="Trade" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
+                                </Border>
+
+                                <Border Background="SpringGreen" 
+                                        Style="{StaticResource AccountInfoChip}">
+                                    <TextBlock Text="Community" 
+                                               FontWeight="Bold" 
+                                               Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
+                                </Border>
+                            </WrapPanel>
+
+                            <Icon:PackIconMaterial Kind="Delete"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Bottom"
+                                                   Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                        </DockPanel>
+
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <virtualizingPanel:VirtualizingWrapPanel 
+                        
+                    Orientation="Horizontal" SpacingMode="None" StretchItems="True"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+        </ListBox>
+    </Grid>
+
+    
+</UserControl>

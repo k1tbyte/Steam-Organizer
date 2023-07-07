@@ -63,8 +63,8 @@
     <Reference Include="FlaUI.UIA3, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FlaUI.UIA3.4.0.0\lib\net48\FlaUI.UIA3.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.11.46.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.11.46\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.11.49.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.11.49\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="Interop.UIAutomationClient, Version=10.0.19041.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Interop.UIAutomationClient.10.19041.0\lib\net45\Interop.UIAutomationClient.dll</HintPath>
@@ -84,10 +84,10 @@
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net, Version=3.0.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\packages\protobuf-net.3.2.16\lib\net462\protobuf-net.dll</HintPath>
+      <HintPath>..\packages\protobuf-net.3.2.26\lib\net462\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net.Core, Version=3.0.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\packages\protobuf-net.Core.3.2.16\lib\net462\protobuf-net.Core.dll</HintPath>
+      <HintPath>..\packages\protobuf-net.Core.3.2.26\lib\net462\protobuf-net.Core.dll</HintPath>
     </Reference>
     <Reference Include="SteamKit2, Version=2.5.0.0, Culture=neutral, PublicKeyToken=ed3ce47ed5aad940, processorArchitecture=MSIL">
       <HintPath>..\packages\SteamKit2.2.5.0-Beta.1\lib\netstandard2.0\SteamKit2.dll</HintPath>
@@ -127,6 +127,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="VirtualizingWrapPanel, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtualizingWrapPanel.2.0.0-preview3\lib\net452\VirtualizingWrapPanel.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -154,8 +157,12 @@
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
     <Compile Include="MVVM\Core\OvservableObject.cs" />
     <Compile Include="MVVM\Models\Notification.cs" />
+    <Compile Include="MVVM\ViewModels\AccountsViewModel.cs" />
     <Compile Include="MVVM\ViewModels\MainWindowViewModel.cs" />
     <Compile Include="MVVM\ViewModels\SettingsViewModel.cs" />
+    <Compile Include="MVVM\View\Controls\AccountsView.xaml.cs">
+      <DependentUpon>AccountsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\Controls\AuthenticationView.xaml.cs">
       <DependentUpon>AuthenticationView.xaml</DependentUpon>
     </Compile>
@@ -176,6 +183,10 @@
     </Compile>
     <Compile Include="Storages\GlobalStorage.cs" />
     <Page Include="Locale\lang.en-US.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Controls\AccountsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

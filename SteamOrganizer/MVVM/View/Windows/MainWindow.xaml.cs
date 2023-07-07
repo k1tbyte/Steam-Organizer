@@ -135,9 +135,6 @@ namespace SteamOrganizer.MVVM.View.Windows
         }
         #endregion
 
-        private void OnNotificationPopup(object sender, RoutedEventArgs e)
-            => Notifications.OpenPopup(sender as FrameworkElement, PlacementMode.Bottom,true);
-
         #endregion
 
         /// <summary>

@@ -32,6 +32,12 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
+            <ContentPresenter Grid.Column="1" 
+                              Grid.Row="1"
+                              Content="{Binding CurrentView, Mode=OneWay}"/>
+
+            <!--#region Notifications popup -->
+            
             <Popup x:Name="Notifications"  Width="280" 
                   StaysOpen="False" AllowsTransparency="True"
                    PopupAnimation="Slide" VerticalOffset="5">
@@ -116,29 +122,22 @@
                                                    Width="40" Height="40"
                                                    HorizontalAlignment="Center"
                                                    Foreground="{DynamicResource PrimaryForegroundBrush}"/>
-                            
+
                             <TextBlock 
                                    Text="{DynamicResource mwv_no_notifs}" FontWeight="Bold"
                                    Foreground="{DynamicResource PrimaryForegroundBrush}"
                                    FontSize="18"/>
-                                
+
                         </StackPanel>
 
                     </StackPanel>
                 </Border>
             </Popup>
+            
+            <!--#endregion-->
 
-
-
-
-            <Border x:Name="TopPanel" 
-                    d:CornerRadius="9 9 0 0" 
-                    Grid.ColumnSpan="2" 
-                    BorderThickness="0 0 0 1.5"  
-                    BorderBrush="{DynamicResource PrimaryBorderBrush}"
-                    Background="{DynamicResource SecondaryBackgroundBrush}"
-                    MouseLeftButtonDown="OnDragMove"/>
-
+            <!--#region Left side menu -->
+            
             <Border x:Name="Sidebar"
                     Width="200"
                     d:CornerRadius="0 0 0 9"
@@ -174,21 +173,28 @@
                            Margin="3 0 0 0">
                 </Rectangle>
             </Border>
+            
+            <!--#endregion-->
 
-            <TextBlock x:Name="text" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Test">
-                
-            </TextBlock>
+            <!--#region Top panel -->
+            
+            <Border x:Name="TopPanel" 
+                    d:CornerRadius="9 9 0 0" 
+                    Grid.ColumnSpan="2" 
+                    BorderThickness="0 0 0 1.5"  
+                    BorderBrush="{DynamicResource PrimaryBorderBrush}"
+                    Background="{DynamicResource SecondaryBackgroundBrush}"
+                    MouseLeftButtonDown="OnDragMove"/>
 
-            <!-- Top panel -->
             <DockPanel Margin="20 0 20 0" Grid.ColumnSpan="2">
-                
+
                 <Rectangle RadiusY="50" RadiusX="50"  
                            MouseLeftButtonDown="OnCloseWindow"
                            Cursor="Hand"
                            Height="12" Width="12"
                            Fill="#EC6A5D" 
                            Margin="0 0 7 0"/>
-                
+
                 <Rectangle RadiusY="50" RadiusX="50"
                            MouseLeftButtonDown="OnMaximizeWindow"
                            Cursor="Hand"
@@ -209,9 +215,9 @@
                             Orientation="Horizontal">
 
                     <Grid Margin="0 0 20 0">
-                        <Button Style="{StaticResource FlatButton}"  
-                        
-                        Click="OnNotificationPopup">
+                        <Button Style="{StaticResource FlatButton}"
+                                Command="{Binding OpenNotificationsCommand}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
                             <Icon:PackIconMaterial Kind="Bell"/>
                         </Button>
                         <Ellipse Fill="{DynamicResource ErrorBrush}"
@@ -224,14 +230,15 @@
                     </Grid>
 
 
-                        <Button Style="{StaticResource SpinButton}" 
+                    <Button Style="{StaticResource SpinButton}" 
                         Command="{Binding SettingsCommand}">
-                            <Icon:PackIconMaterial Kind="Cog"/>
-                        </Button>
+                        <Icon:PackIconMaterial Kind="Cog"/>
+                    </Button>
 
                 </StackPanel>
 
-                <!-- Local logged user info -->
+                <!--#region Local logged user info -->
+
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
@@ -277,9 +284,16 @@
                     </TextBlock>
                 </StackPanel>
 
-            </DockPanel>
+                <!--#endregion-->
 
-            <ext:BuiltInPopup x:Name="PopupWindow" Grid.ColumnSpan="2" Grid.RowSpan="2" 
+            </DockPanel>
+            
+            <!--#endregion-->
+
+
+            <ext:BuiltInPopup x:Name="PopupWindow" 
+                              Grid.ColumnSpan="2" 
+                              Grid.RowSpan="2" 
                               CornerRadius="{Binding ElementName=MainBorder,Path=CornerRadius}"/>
 
         </Grid>

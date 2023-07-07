@@ -9,6 +9,8 @@ using SteamOrganizer.Properties;
 using System;
 using System.Management;
 using System.Security.Principal;
+using System.Windows.Controls.Primitives;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace SteamOrganizer.MVVM.ViewModels
@@ -19,6 +21,8 @@ namespace SteamOrganizer.MVVM.ViewModels
         private readonly MainWindow View;
 
         public RelayCommand SettingsCommand { get; }
+        public RelayCommand AccountsCommand { get; }
+        public RelayCommand OpenNotificationsCommand { get; }
         public RelayCommand NotificationInvokeCommand { get; }
         public RelayCommand NotificationRemoveCommand { get; }
         public RelayCommand NotificationClearAll { get; }
@@ -49,7 +53,14 @@ namespace SteamOrganizer.MVVM.ViewModels
         {
             get => _loggedInImage;
             set => SetProperty(ref _loggedInImage, value);
-        } 
+        }
+
+        private object _currentView;
+        public object CurrentView
+        {
+            get => _currentView;
+            set => SetProperty(ref _currentView, value);
+        }
         #endregion
 
         #region Popup window api
@@ -98,6 +109,12 @@ namespace SteamOrganizer.MVVM.ViewModels
         {
             View.NotificationsList.Items.Remove(param);
         }
+
+        private void OnOpeningNotifications(object param)
+        {
+            View.Notifications.OpenPopup(param as FrameworkElement, PlacementMode.Bottom, true);
+            IsNotificationsRead = true;
+        }
         #endregion
 
         #region Private
@@ -144,11 +161,14 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         public MainWindowViewModel(MainWindow owner)
         {
-            View = owner;
+            View                      = owner;
 #if !DEBUG
             Utils.InBackground(InitServices);
 #endif
+            CurrentView = new AccountsView();
             SettingsCommand           = new RelayCommand(OnOpeningSettings);
+            AccountsCommand           = new RelayCommand((o) => CurrentView = new AccountsView());
+            OpenNotificationsCommand  = new RelayCommand(OnOpeningNotifications);
             NotificationRemoveCommand = new RelayCommand(OnNotificationRemoving);
             NotificationInvokeCommand = new RelayCommand((o) => (o as Notification)?.OnClickAction?.Invoke());
             NotificationClearAll      = new RelayCommand((o) => View.NotificationsList.Items.Clear());

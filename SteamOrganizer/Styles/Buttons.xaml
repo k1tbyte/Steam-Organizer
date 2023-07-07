@@ -79,4 +79,27 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style x:Key="TemplateBorderedButton" TargetType="Button">
+        <Setter Property="Background" Value="#D32F2F" />
+        <Setter Property="Foreground" Value="#ffffff" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template" >
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}"  CornerRadius="5">
+                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#F44336" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>
