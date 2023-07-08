@@ -45,44 +45,35 @@
                     </Track.IncreaseRepeatButton>
                 </Track>
             </Border>
-
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup x:Name="CommonStates">
-                    <VisualState x:Name="MouseOver">
-                        <Storyboard>
-                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_Track" Storyboard.TargetProperty="Opacity" FillBehavior="HoldEnd">
-                                <DoubleKeyFrameCollection>
-                                    <SplineDoubleKeyFrame KeyTime="0:0:0.2" Value="0" />
-                                    <SplineDoubleKeyFrame KeyTime="0:0:0.7" Value="0.5" />
-                                </DoubleKeyFrameCollection>
-                            </DoubleAnimationUsingKeyFrames>
-                        </Storyboard>
-                    </VisualState>
-                    <VisualState x:Name="Normal">
-                        <Storyboard>
-                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_Track" Storyboard.TargetProperty="Opacity" FillBehavior="HoldEnd">
-                                <DoubleKeyFrameCollection>
-                                    <SplineDoubleKeyFrame KeyTime="0:0:0.7" Value="0.5" />
-                                    <SplineDoubleKeyFrame KeyTime="0:0:1" Value="0" />
-                                </DoubleKeyFrameCollection>
-                            </DoubleAnimationUsingKeyFrames>
-                        </Storyboard>
-                    </VisualState>
-                </VisualStateGroup>
-            </VisualStateManager.VisualStateGroups>
         </Grid>
     </ControlTemplate>
 
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="Opacity" Value="{Binding MinWidth,Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}" />
+        <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
+        <Setter Property="Width" Value="0"/>
+        <Setter Property="Height" Value="Auto" />
         <Setter Property="Background" Value="Transparent"/>
         <Style.Triggers>
-            <Trigger Property="Orientation" Value="Vertical">
-                <Setter Property="Width" Value="0"/>
-                <Setter Property="Height" Value="Auto" />
-                <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Opacity" Value="1"/>
             </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="{x:Type ScrollViewer}" TargetType="{x:Type ScrollViewer}">
+        <Setter Property="MinWidth" Value="0"/>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="ScrollChanged">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="MinWidth" To="1" Duration="0:0:0.2" />
+                        <DoubleAnimation Storyboard.TargetProperty="MinWidth" To="0" BeginTime="0:0:1" Duration="0:0:0.2" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
         </Style.Triggers>
     </Style>
     

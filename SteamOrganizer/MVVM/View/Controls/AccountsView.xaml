@@ -27,7 +27,11 @@
                  Margin="7 55 0 10"
                  Padding="0 0 7 0"
                  BorderThickness="0"
-                 ItemsSource="{Binding Accounts}"
+                 ItemsSource="{Binding Accounts,Mode=OneWay}"
+                 VirtualizingPanel.CacheLengthUnit="Page"
+                 VirtualizingPanel.CacheLength="1,1"
+                 VirtualizingPanel.VirtualizationMode="Recycling"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  d:AlternationCount="10"
                  d:ItemsSource="{d:SampleData ItemCount=3}">
             <ListBox.ItemTemplate>
@@ -52,11 +56,11 @@
                                     Cursor="Hand">
                                 <Border.InputBindings>
                                     <MouseBinding Gesture="LeftClick"
-                                                  Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.OpenProfileCommand}"
+                                                  Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.OpenProfileCommand,Mode=OneTime}"
                                                   CommandParameter="{Binding AccountID,Mode=OneWay}"/>
                                 </Border.InputBindings>
                                 <Border.Background>
-                                    <ImageBrush ImageSource="{Binding AvatarBitmap}" />
+                                    <ImageBrush ImageSource="{Binding AvatarBitmap,Mode=OneWay}" />
                                 </Border.Background>
                             </Border>
 
@@ -158,7 +162,7 @@
 
                                 <Border Background="{DynamicResource ErrorBrush}"  
                                         Style="{StaticResource AccountInfoChip}"
-                                        Visibility="{Binding GameBansCount,Converter={StaticResource ToVisibilityConverter}}">
+                                        Visibility="{Binding GameBansCount,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}">
                                     <TextBlock Text="Game" 
                                                FontWeight="Bold" 
                                                Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
@@ -167,7 +171,7 @@
                                 
                                 <Border Background="{DynamicResource ErrorBrush}" 
                                         Style="{StaticResource AccountInfoChip}"
-                                        Visibility="{Binding HaveTradeBan,Converter={StaticResource ToVisibilityConverter}}">
+                                        Visibility="{Binding HaveTradeBan,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}">
                                     <TextBlock Text="Trade" 
                                                FontWeight="Bold" 
                                                Foreground="{DynamicResource SecondaryBackgroundBrush}"/>

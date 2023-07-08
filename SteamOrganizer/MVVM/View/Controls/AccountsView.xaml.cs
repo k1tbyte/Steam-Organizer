@@ -2,6 +2,7 @@
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.ViewModels;
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,7 +30,7 @@ namespace SteamOrganizer.MVVM.View.Controls
 
         private bool IsInitialDragFeedback;
 
-        private FrameworkElement DragItem;
+        private Account DragAccount;
         private FrameworkElement DropToItem; 
 
         #endregion
@@ -70,9 +71,9 @@ namespace SteamOrganizer.MVVM.View.Controls
 
             #endregion
 
-            DragItem = dragSource;
+            DragAccount = dragSource.DataContext as Account;
 
-            DragDrop.DoDragDrop((DependencyObject)e.Source, DragItem, DragDropEffects.Move);
+            DragDrop.DoDragDrop((DependencyObject)e.Source, DragAccount, DragDropEffects.Move);
         }
 
         private void DragItemGiveFeedback(object sender, GiveFeedbackEventArgs e)
@@ -91,10 +92,11 @@ namespace SteamOrganizer.MVVM.View.Controls
         {
             var border = sender as Border;
 
-            if (DragItem.DataContext.Equals(border.DataContext))
+            if (DragAccount.Equals(border.DataContext as Account))
                 return;
 
             DropToItem = border;
+            Console.WriteLine("Drag item: " + DragAccount.AccountID + "\n To item: " + (DropToItem.DataContext as Account).AccountID);
             border.BorderThickness = ThicknessOne;
             border.Background = DragOverBackground;
         }
@@ -133,20 +135,24 @@ namespace SteamOrganizer.MVVM.View.Controls
 
             if (DropToItem != null)
             {
-                App.Config.Database.Move(App.Config.Database.IndexOf(DragItem.DataContext as Account), App.Config.Database.IndexOf(DropToItem.DataContext as Account));
+                App.Config.Database.Move(App.Config.Database.IndexOf(DragAccount), App.Config.Database.IndexOf(DropToItem.DataContext as Account));
                 App.Config.SaveDatabase();
 
                 (DropToItem as Border).BorderThickness = ThicknessZero;
                 (DropToItem as Border).Background = OriginalBackground;
             }
 
+            #region Dispose all stuff
 
             _adornerLayer.Remove(_dragAdorner);
-            _adornerLayer = null;
-            DragOverBackground = OriginalBackground = null;
-            DragItem = DropToItem = null;
+            _adornerLayer         = null;
+            DragOverBackground    = OriginalBackground = null;
+            DragAccount           = null;
+            DropToItem            = null;
             AccountsBox.AllowDrop = IsInitialDragFeedback = false;
-            AccountsBox.DragOver -= AccountsBox_DragOver;
+            AccountsBox.DragOver -= AccountsBox_DragOver; 
+
+            #endregion
         } 
 
 #endregion
