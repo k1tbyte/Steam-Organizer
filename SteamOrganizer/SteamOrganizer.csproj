@@ -140,6 +140,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\CachingManager.cs" />
+    <Compile Include="Helpers\DragAdorner.cs" />
     <Compile Include="Helpers\FileCryptor.cs" />
     <Compile Include="Helpers\SteamIdConverter.cs" />
     <Compile Include="Helpers\WindowMessageHandler.cs" />

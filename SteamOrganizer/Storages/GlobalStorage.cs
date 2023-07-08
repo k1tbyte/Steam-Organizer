@@ -102,7 +102,9 @@ namespace SteamOrganizer.Storages
         {
             _databaseKey.ThrowIfNull();
 
+#if !DEBUG
             FileCryptor.Serialize(Database, App.DatabasePath, _databaseKey);
+#endif
         }
     }
 }

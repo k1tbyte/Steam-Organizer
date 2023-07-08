@@ -16,22 +16,32 @@
             <Setter Property="CornerRadius" Value="5"/>
             <Setter Property="Margin" Value="0 0 5 3"/>
         </Style>
+
     </UserControl.Resources>
 
     <Grid>
-        <ListBox Background="Transparent"
+        <Decorator x:Name="GrabbingCur" Cursor="/SteamOrganizer;component/Resources/grabbing.cur" Visibility="Collapsed" IsEnabled="False"/>
+        
+        <ListBox x:Name="AccountsBox"
+                 Background="Transparent"
                  Margin="7 55 0 10"
                  Padding="0 0 7 0"
                  BorderThickness="0"
                  ItemsSource="{Binding Accounts}"
                  d:AlternationCount="10"
-                 d:ItemsSource="{d:SampleData ItemCount=3}"
-                 HorizontalContentAlignment="Stretch">
+                 d:ItemsSource="{d:SampleData ItemCount=3}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border CornerRadius="3" MinWidth="400" Height="105"
-                                Background="{DynamicResource SecondaryBackgroundBrush}"
-                            Padding="15">
+                            Background="{DynamicResource SecondaryBackgroundBrush}"
+                            Padding="15"
+                            Margin="3"
+                            BorderBrush="{DynamicResource PurpleGradient}"
+                            PreviewDragEnter="Border_PreviewDragEnter"
+                            PreviewDragLeave="Border_PreviewDragLeave"
+                            QueryContinueDrag="Border_QueryContinueDrag"
+                            AllowDrop="True">
+
                         <DockPanel>
 
                             <Border BorderBrush="{DynamicResource LightBlueGrad}"
@@ -88,10 +98,13 @@
                                                            VerticalAlignment="Center"
                                                            Foreground="SpringGreen"/>
 
-                                <Icon:PackIconMaterial HorizontalAlignment="Right"
-                                                       Kind="Pin"
-                                                       RotationAngle="30"
-                                                       Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                                <Icon:PackIconMaterial HorizontalAlignment ="Right"
+                                                       GiveFeedback        ="DragItemGiveFeedback"
+                                                       MouseLeftButtonDown ="OnDragItemInitilize"
+                                                       Cursor              ="/SteamOrganizer;component/Resources/grab.cur"
+                                                       Kind                ="Pin"
+                                                       RotationAngle       ="30"
+                                                       Foreground          ="{DynamicResource PrimaryForegroundBrush}"/>
 
                             </DockPanel>
 
@@ -178,7 +191,7 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
-                                <ContentPresenter Margin="3"/>
+                                <ContentPresenter />
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
