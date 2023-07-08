@@ -1,6 +1,5 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
-using SteamOrganizer.Infrastructure.Models;
 using SteamOrganizer.Log;
 using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.View.Windows;
@@ -13,6 +12,7 @@ using System.Reflection;
 using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
+using SteamOrganizer.MVVM.Models;
 using System.Windows;
 
 namespace SteamOrganizer
@@ -78,7 +78,6 @@ namespace SteamOrganizer
 
             MainWindow   = new MainWindow();
             MainWindowVM = MainWindow.DataContext as MainWindowViewModel;
-            MainWindow.Loaded += OnLoadingDatabase;
             MainWindow.Show();
         }
 
@@ -94,43 +93,6 @@ namespace SteamOrganizer
             Shutdown();
         }
 
-        private void OnLoadingDatabase(object sender, RoutedEventArgs e)
-        {
-            var loadResult = Config.LoadDatabase();
-            if (loadResult)
-                return;
-
-            // request password for exists db
-            if (!loadResult && File.Exists(DatabasePath))
-            {
-                MainWindowVM.OpenPopupWindow(new MVVM.View.Controls.AuthenticationView(DatabasePath,OnSuccessDecrypt,true), FindString("av_title"), OnInstallationCanceled);
-            }
-#if !DEBUG
-            // request password for new db
-            else if (Config.DatabaseKey == null)
-            {
-                MainWindow.OpenPopupWindow(new MVVM.View.Controls.AuthenticationView(), FindString("word_registration"), OnInstallationCanceled);
-            }
-#endif
-
-
-            void OnSuccessDecrypt(object content, byte[] key)
-            {
-                if(content is ObservableCollection<Account> db)
-                {
-                    Config.Database = db;
-                    Config.DatabaseKey = key;
-                    Config.Save();
-                    Config.SaveDatabase();
-                }
-            }
-
-            void OnInstallationCanceled()
-            {
-                if (_config.DatabaseKey == null)
-                    App.Shutdown();
-            }
-        }
 
         public static new void Shutdown()
         {

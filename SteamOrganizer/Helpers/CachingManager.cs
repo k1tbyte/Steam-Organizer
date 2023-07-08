@@ -1,10 +1,12 @@
 ﻿using SteamOrganizer.Infrastructure;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -21,6 +23,7 @@ namespace SteamOrganizer.Helpers
     internal static class CachingManager
     {
         private static string ImagesCachePath;
+        private static readonly ConcurrentDictionary<string,BitmapImage> CachedImages = new ConcurrentDictionary<string,BitmapImage>();
 
         public static void Init()
         {
@@ -28,11 +31,29 @@ namespace SteamOrganizer.Helpers
 
             Utils.CreateDirIfNotExists(App.CacheFolderPath, attributes);
             Utils.CreateDirIfNotExists(ImagesCachePath = Path.Combine(App.CacheFolderPath,"images"), attributes);
+
         }
 
-        public static BitmapImage GetCachedAvatar(string avatarHash,int decodeWidth = 0, int decodeHeight = 0, BitmapCacheOption cacheOption = BitmapCacheOption.OnLoad, EAvatarSize size = EAvatarSize.medium)
+        public static BitmapImage GetCachedAvatar(string avatarHash, int decodeWidth = 0, int decodeHeight = 0, BitmapCacheOption cacheOption = BitmapCacheOption.OnLoad, EAvatarSize size = EAvatarSize.medium)
         {
             var cachedName = $"{avatarHash}{(size == EAvatarSize.small ? "" : $"_{size}")}";
+
+            if (CachedImages.ContainsKey(cachedName))
+            {
+                return CachedImages[cachedName];
+            }
+
+            if (avatarHash == null)
+            {
+                var bitmap = CreateBitmap();
+                bitmap.StreamSource = Application.GetResourceStream(new Uri("Resources/Images/default_steam_profile.bmp", UriKind.Relative)).Stream;
+                bitmap.EndInit();
+                bitmap.Freeze();
+                CachedImages.TryAdd(cachedName, bitmap);
+                return bitmap;
+            }
+
+
             var path = $"{ImagesCachePath}\\{cachedName}";
 
             try
@@ -41,10 +62,11 @@ namespace SteamOrganizer.Helpers
                 {
                     return Application.Current.Dispatcher.Invoke(() =>
                     {
-                        var STAbitmap       = CreateBitmap();
+                        var STAbitmap = CreateBitmap();
                         STAbitmap.UriSource = new Uri($"{WebBrowser.SteamAvatarsHost}{cachedName}.jpg");
                         STAbitmap.DownloadCompleted += OnBitmapAvatarLoaded;
                         STAbitmap.EndInit();
+                        CachedImages.TryAdd(cachedName, STAbitmap);
                         return STAbitmap;
                     });
                 }
@@ -55,11 +77,12 @@ namespace SteamOrganizer.Helpers
                     bitmap.StreamSource = fstream;
                     bitmap.EndInit();
                     bitmap.Freeze();
+                    CachedImages.TryAdd(cachedName, bitmap);
                     return bitmap;
                 }
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 App.Logger.Value.LogHandledException(e);
             }
@@ -68,16 +91,19 @@ namespace SteamOrganizer.Helpers
 
             BitmapImage CreateBitmap()
             {
-                var img               = new BitmapImage();
+                var img = new BitmapImage();
                 img.BeginInit();
-                img.DecodePixelWidth  = decodeWidth;
+                img.DecodePixelWidth = decodeWidth;
                 img.DecodePixelHeight = decodeHeight;
-                img.CacheOption       = cacheOption;
+                img.CacheOption = cacheOption;
                 return img;
             }
 
             void OnBitmapAvatarLoaded(object sender, EventArgs e)
             {
+                if (File.Exists(path))
+                    return;
+
                 var bitmapSource = sender as BitmapSource;
 
                 if (bitmapSource.CanFreeze)
@@ -90,6 +116,7 @@ namespace SteamOrganizer.Helpers
                     encoder.Save(fstream);
                 }
             }
+
         }
 
 

@@ -143,7 +143,6 @@
     <Compile Include="Helpers\FileCryptor.cs" />
     <Compile Include="Helpers\SteamIdConverter.cs" />
     <Compile Include="Helpers\WindowMessageHandler.cs" />
-    <Compile Include="Infrastructure\Models\Account.cs" />
     <Compile Include="Infrastructure\Regexes.cs" />
     <Compile Include="Infrastructure\WebBrowser.cs" />
     <Compile Include="Infrastructure\Win32.cs" />
@@ -156,6 +155,7 @@
     <Compile Include="MVVM\Converters\ToVisibilityConverter.cs" />
     <Compile Include="MVVM\Core\AsyncRelayCommand.cs" />
     <Compile Include="MVVM\Core\OvservableObject.cs" />
+    <Compile Include="MVVM\Models\Account.cs" />
     <Compile Include="MVVM\Models\Notification.cs" />
     <Compile Include="MVVM\ViewModels\AccountsViewModel.cs" />
     <Compile Include="MVVM\ViewModels\MainWindowViewModel.cs" />
@@ -296,9 +296,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\default_steam_profile.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\CountriesFlags\Russia.png" />
     <Resource Include="Resources\Images\CountriesFlags\Ukraine.png" />
     <Resource Include="Resources\Images\CountriesFlags\United_Kingdom.png" />
@@ -331,28 +328,6 @@
     <Resource Include="Resources\Images\SteamYearsBadges\year7.png" />
     <Resource Include="Resources\Images\SteamYearsBadges\year8.png" />
     <Resource Include="Resources\Images\SteamYearsBadges\year9.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup1.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup10.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup11.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup12.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup13.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup14.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup15.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup16.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup17.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup18.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup2.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup3.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup4.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup5.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup6.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup7.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup8.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup9.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup_expired.png" />
-    <Resource Include="Resources\Images\RanksCSGO\skillgroup_none.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\SteamGamesBadges\1.png" />
@@ -402,9 +377,6 @@
     <Resource Include="Logo.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\default_steam_profile_small.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\SteamYearsBadges\year19.png" />
   </ItemGroup>
   <ItemGroup>
@@ -425,7 +397,9 @@
     <Resource Include="Resources\Images\SteamGamesBadges\30000.png" />
     <Resource Include="Resources\Images\SteamGamesBadges\31000.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Images\default_steam_profile.bmp" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\split.cur" />
   </ItemGroup>

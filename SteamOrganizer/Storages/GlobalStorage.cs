@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using SteamOrganizer.Infrastructure.Models;
+using SteamOrganizer.MVVM.Models;
 using System.Threading.Tasks;
 using System.IO;
 using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
+using System.ComponentModel;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SteamOrganizer.Storages
 {
@@ -24,6 +26,14 @@ namespace SteamOrganizer.Storages
     {
         [field: NonSerialized]
         public ObservableCollection<Account> Database { get; set; }
+
+
+        /// <summary>
+        /// Called only upon successful loading from a file
+        /// </summary>
+        [field: NonSerialized]
+        public event Action DatabaseLoaded;
+
 
         #region UI Meta information
         /// <summary>
@@ -71,9 +81,16 @@ namespace SteamOrganizer.Storages
 
         public bool LoadDatabase()
         {
+            if(!File.Exists(App.DatabasePath))
+            {
+                Database = new ObservableCollection<Account>();
+                return true;
+            }
+
             if (FileCryptor.Deserialize(App.DatabasePath, out ObservableCollection<Account> result, _databaseKey))
             {
                 Database = result;
+                DatabaseLoaded?.Invoke();
                 return true;
             }
 

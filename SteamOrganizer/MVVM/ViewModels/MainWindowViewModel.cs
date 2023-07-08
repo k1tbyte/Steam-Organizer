@@ -12,6 +12,7 @@ using System.Security.Principal;
 using System.Windows.Controls.Primitives;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Collections.ObjectModel;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
@@ -66,6 +67,9 @@ namespace SteamOrganizer.MVVM.ViewModels
         #region Popup window api
         internal void OpenPopupWindow(object content, string title = null, Action onClosing = null)
         {
+            if (!View.IsLoaded)
+                View.Show();
+
             View.PopupWindow.PopupContent = content;
             View.PopupWindow.Closed = onClosing;
             View.PopupWindow.Title.Text = title;
@@ -147,6 +151,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             LoggedInImage = CachingManager.GetCachedAvatar(imgHash, 80, 80);
             LoggedInNickname = $"{App.FindString("word_wlcbck")}, {nickname}";
         }
+
 
         private void InitServices()
         {
