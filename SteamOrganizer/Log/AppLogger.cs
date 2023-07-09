@@ -1,16 +1,10 @@
-﻿using FlaUI.Core.Logging;
-using SteamOrganizer.Infrastructure;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SteamOrganizer.Log
 {
-    internal class AppLogger : IDisposable
+    internal sealed class AppLogger : IDisposable
     {
         private static readonly string LogsFolderPath = $"{App.WorkingDir}\\Logs";
         private static readonly string LogPath        = $"{LogsFolderPath}\\{DateTime.Now:yyyy-MM-dd HH\\-mm\\-ss}.txt";

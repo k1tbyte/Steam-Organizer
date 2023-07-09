@@ -5,7 +5,7 @@ using System.Windows.Input;
 
 namespace SteamOrganizer.MVVM.Core
 {
-    public class AsyncRelayCommand : ICommand
+    internal sealed class AsyncRelayCommand : ICommand
     {
         private readonly Func<object, Task> _execute;
         private readonly Func<object, bool> _canExecute;

@@ -7,9 +7,9 @@ namespace SteamOrganizer.Helpers
 {
     internal class DragAdorner : Adorner
     {
-        protected UIElement _child;
-        protected double XCenter;
-        protected double YCenter;
+        protected readonly UIElement _child;
+        protected readonly double XCenter;
+        protected readonly double YCenter;
 
         public DragAdorner(UIElement owner) : base(owner) { }
 
@@ -20,8 +20,8 @@ namespace SteamOrganizer.Helpers
             var b = VisualTreeHelper.GetDescendantBounds(adornElement);
             var r = new Rectangle() { Width = b.Width, Height = b.Height };
 
-            XCenter = dragPos.X;// r.Width / 2;
-            YCenter = dragPos.Y;// r.Height / 2;
+            XCenter = dragPos.X;
+            YCenter = dragPos.Y;
 
             r.Fill = _brush;
             _child = r;
@@ -30,7 +30,7 @@ namespace SteamOrganizer.Helpers
         private Point _pointOffset;
         public Point PointOffset
         {
-            get { return _pointOffset; }
+            get => _pointOffset; 
             set
             {
                 _leftOffset = value.X - XCenter;
@@ -42,40 +42,32 @@ namespace SteamOrganizer.Helpers
         private double _leftOffset;
         public double LeftOffset
         {
-            get { return _leftOffset; }
-            set
-            {
-                _leftOffset = value - XCenter;
-            }
+            get => _leftOffset; 
+            set => _leftOffset = value - XCenter;
         }
 
         private double _topOffset;
         public double TopOffset
         {
-            get { return _topOffset; }
-            set
-            {
-                _topOffset = value - YCenter;
-            }
+            get => _topOffset;
+            set => _topOffset = value - YCenter;
         }
 
         private void UpdatePosition()
         {
-            var adorner = this.Parent as AdornerLayer;
-            if (adorner != null)
+            if (this.Parent is AdornerLayer adorner)
             {
                 adorner.Update(this.AdornedElement);
             }
         }
 
         protected override Visual GetVisualChild(int index)
-        {
-            return _child;
-        }
+            =>  _child;
+        
 
         protected override int VisualChildrenCount
         {
-            get { return 1; }
+            get =>  1;
         }
 
         protected override Size MeasureOverride(Size finalSize)

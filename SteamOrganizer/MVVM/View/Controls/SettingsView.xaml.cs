@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace SteamOrganizer.MVVM.View.Controls
 {
-    public partial class SettingsView : StackPanel
+    public sealed partial class SettingsView : StackPanel
     {
         public SettingsView()
         {

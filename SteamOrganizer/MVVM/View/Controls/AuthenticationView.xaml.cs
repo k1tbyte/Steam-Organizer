@@ -9,7 +9,7 @@ using System.Windows.Controls;
 
 namespace SteamOrganizer.MVVM.View.Controls
 {
-    public partial class AuthenticationView : StackPanel
+    public sealed partial class AuthenticationView : StackPanel
     {
         private string FilePath { get; set; }
         private Action<object, byte[]> ActionIfSuccess { get; set; }

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using SteamOrganizer.MVVM.Models;
-using System.Threading.Tasks;
-using System.IO;
-using SteamOrganizer.Helpers;
+﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
-using System.ComponentModel;
-using static System.Net.Mime.MediaTypeNames;
+using SteamOrganizer.MVVM.Models;
+using System;
+using System.Collections.ObjectModel;
+using System.IO;
 
 namespace SteamOrganizer.Storages
 {
@@ -22,7 +16,7 @@ namespace SteamOrganizer.Storages
     }
 
     [Serializable]
-    internal class GlobalStorage
+    internal sealed class GlobalStorage
     {
         [field: NonSerialized]
         public ObservableCollection<Account> Database { get; set; }

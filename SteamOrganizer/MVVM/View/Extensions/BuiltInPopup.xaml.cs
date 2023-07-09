@@ -6,7 +6,7 @@ using System.Windows.Media.Animation;
 
 namespace SteamOrganizer.MVVM.View.Extensions
 {
-    public partial class BuiltInPopup : Grid
+    public sealed partial class BuiltInPopup : Grid
     {
         internal Action Closed;
 

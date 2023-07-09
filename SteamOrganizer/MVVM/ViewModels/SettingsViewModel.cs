@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
-    internal class SettingsViewModel : ObservableObject
+    internal sealed class SettingsViewModel : ObservableObject
     {
          public GlobalStorage Config => App.Config;
     }

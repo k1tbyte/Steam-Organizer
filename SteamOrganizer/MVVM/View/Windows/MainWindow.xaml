@@ -63,7 +63,7 @@
                                       Background="Transparent">
                                         <Grid.InputBindings>
                                             <MouseBinding Gesture="LeftClick"
-                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.NotificationInvokeCommand}"
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.NotificationInvokeCommand,Mode=OneTime}"
                                             CommandParameter="{Binding}" />
                                         </Grid.InputBindings>
 
@@ -80,7 +80,7 @@
                                             VerticalAlignment="Top" 
                                             HorizontalAlignment="Right"
                                             Margin="0 5 15 0" Width="12" Height="12"
-                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.NotificationRemoveCommand}"
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.NotificationRemoveCommand,Mode=OneTime}"
                                             CommandParameter="{Binding}">
                                             <Icon:PackIconMaterial Kind="Close" Height="8" Width="8"/>
                                         </Button>
@@ -147,11 +147,15 @@
                     BorderThickness="0 0 1.5 0"
                     BorderBrush="{DynamicResource PrimaryBorderBrush}">
                 <StackPanel>
-                    <RadioButton IsChecked="True"  Style="{StaticResource MenuRadioButton}" Tag="{DynamicResource word_accs}">
+                    <RadioButton IsChecked="True"
+                                 Command="{Binding AccountsCommand,Mode=OneTime}"
+                                 Style="{StaticResource MenuRadioButton}"
+                                 Tag="{DynamicResource word_accs}">
                         <Icon:PackIconMaterial Kind="AccountGroupOutline" Height="23" Width="23" />
                     </RadioButton>
 
-                    <RadioButton  Style="{StaticResource MenuRadioButton}" Tag="{DynamicResource word_rmtControl}">
+                    <RadioButton  Style="{StaticResource MenuRadioButton}" 
+                                  Tag="{DynamicResource word_rmtControl}">
                         <Icon:PackIconMaterial Kind="RemoteDesktop" Height="23" Width="23" />
                     </RadioButton>
                 </StackPanel>
@@ -217,8 +221,8 @@
 
                     <Grid Margin="0 0 20 0">
                         <Button Style="{StaticResource FlatButton}"
-                                Command="{Binding OpenNotificationsCommand}"
-                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                                Command="{Binding OpenNotificationsCommand,Mode=OneTime}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource Self},Mode=OneWay}">
                             <Icon:PackIconMaterial Kind="Bell"/>
                         </Button>
                         <Ellipse Fill="{DynamicResource ErrorBrush}"
@@ -232,7 +236,7 @@
 
 
                     <Button Style="{StaticResource SpinButton}" 
-                        Command="{Binding SettingsCommand}">
+                        Command="{Binding SettingsCommand,Mode=OneTime}">
                         <Icon:PackIconMaterial Kind="Cog"/>
                     </Button>
 

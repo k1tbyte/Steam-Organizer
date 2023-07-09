@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-
-namespace SteamOrganizer.MVVM.Converters
+﻿namespace SteamOrganizer.MVVM.Converters
 {
-    internal class ToBooleanConverter : TemplateBooleanConverter<bool>
+    internal sealed class ToBooleanConverter : TemplateBooleanConverter<bool>
     {
         public ToBooleanConverter() :
             base(true, false)

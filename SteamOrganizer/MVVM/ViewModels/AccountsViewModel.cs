@@ -1,18 +1,16 @@
-﻿using SteamOrganizer.MVVM.Models;
-using SteamOrganizer.MVVM.Core;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using SteamOrganizer.Helpers;
+﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
-using System.ComponentModel;
-using System.Windows.Data;
-using SteamOrganizer.MVVM.ViewModels;
+using SteamOrganizer.MVVM.Core;
+using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Windows.Data;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
-    internal class AccountsViewModel : ObservableObject
+    internal sealed class AccountsViewModel : ObservableObject
     {
         public RelayCommand OpenProfileCommand { get; private set; }
         public ObservableCollection<Account> Accounts => App.Config.Database;
@@ -82,7 +80,6 @@ namespace SteamOrganizer.MVVM.ViewModels
                 App.Current.MainWindow.SourceInitialized += OnFailedDatabaseLoading;
                 return;
             }
-
         }
 
     }

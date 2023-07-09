@@ -16,7 +16,7 @@ using System.Collections.ObjectModel;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
-    internal class MainWindowViewModel : ObservableObject
+    internal sealed class MainWindowViewModel : ObservableObject
     {
         private ManagementEventWatcher RegistrySteamUserWatcher;
         private readonly MainWindow View;
@@ -29,8 +29,6 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand NotificationClearAll { get; }
 
         public SettingsView Settings { get; private set; }
-
-
 
 
 
@@ -170,7 +168,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 #if !DEBUG
             Utils.InBackground(InitServices);
 #endif
-            CurrentView = new AccountsView();
+            //CurrentView = new AccountsView();
             SettingsCommand           = new RelayCommand(OnOpeningSettings);
             AccountsCommand           = new RelayCommand((o) => CurrentView = new AccountsView());
             OpenNotificationsCommand  = new RelayCommand(OnOpeningNotifications);
