@@ -9,13 +9,13 @@
 
                 <ResourceDictionary Source="Locale/lang.en-US.xaml"/>
 
+                <ResourceDictionary Source="Styles/Misc.xaml"/>
+
                 <ResourceDictionary Source="Styles/Buttons.xaml"/>
 
                 <ResourceDictionary Source="Styles/RadioButton.xaml"/>
 
                 <ResourceDictionary Source="Styles/TextBox.xaml"/>
-
-                <ResourceDictionary Source="Styles/Misc.xaml"/>
 
                 <ResourceDictionary Source="Styles/ComboBox.xaml"/>
 
@@ -23,11 +23,14 @@
 
                 <ResourceDictionary Source="Styles/ScrollBar.xaml"/>
 
+                <ResourceDictionary Source="Styles/ContextMenu.xaml"/>
+
             </ResourceDictionary.MergedDictionaries>
 
             <converters:ToBooleanConverter x:Key="ToBooleanConverter"/>
             <converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
             <converters:ToVisibilityInvertedConverter x:Key="ToVisibilityInvertedConverter"/>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

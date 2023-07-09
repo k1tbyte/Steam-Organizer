@@ -23,7 +23,6 @@ namespace SteamOrganizer.MVVM.View.Extensions
         private readonly ThicknessAnimation MarginOpenAnimation;
         private readonly ThicknessAnimation MarginCloseAnimation;
         private readonly Duration AnimationsDuration = new Duration(TimeSpan.FromSeconds(0.4));
-        private readonly IEasingFunction EasingFunction = new CircleEase { EasingMode = EasingMode.EaseInOut };
         private bool locked = false;
 
         public bool IsOpen
@@ -87,9 +86,10 @@ namespace SteamOrganizer.MVVM.View.Extensions
                 }
             };
 
+            var func = App.Current.FindResource("BaseAnimationFunction") as IEasingFunction;
             OpacityAnimation     = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromSeconds(0.4)));
-            MarginOpenAnimation  = new ThicknessAnimation(new Thickness(0), AnimationsDuration) { EasingFunction = EasingFunction }; ;
-            MarginCloseAnimation = new ThicknessAnimation(new Thickness(0, -300, 0, 0), AnimationsDuration) { EasingFunction = EasingFunction };
+            MarginOpenAnimation  = new ThicknessAnimation(new Thickness(0), AnimationsDuration) { EasingFunction = func };
+            MarginCloseAnimation = new ThicknessAnimation(new Thickness(0, -300, 0, 0), AnimationsDuration) { EasingFunction = func };
 
             OpacityAnimation.Completed += (sender, e) =>
             {

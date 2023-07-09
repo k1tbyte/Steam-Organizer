@@ -1,6 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <CircleEase EasingMode="EaseInOut" x:Key="BaseAnimationFunction"/>
+
+    <ToolTip x:Key="CopiedToTooltip" 
+                     Content="{DynamicResource copied_info}" 
+                     StaysOpen="True"
+                     Placement="Bottom"
+                     ToolTipService.InitialShowDelay="0"/>
+    
     <Style x:Key="ChipBorder" TargetType="{x:Type Border}">
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="VerticalAlignment" Value="Center"/>

@@ -3,9 +3,11 @@ using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
+using SteamOrganizer.MVVM.View.Extensions;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Data;
 
 namespace SteamOrganizer.MVVM.ViewModels
@@ -13,8 +15,17 @@ namespace SteamOrganizer.MVVM.ViewModels
     internal sealed class AccountsViewModel : ObservableObject
     {
         public RelayCommand OpenProfileCommand { get; private set; }
+        public RelayCommand ClearSearchBar { get; private set; }
+        public RelayCommand RemoveAccountCommand { get; private set; }
         public ObservableCollection<Account> Accounts => App.Config.Database;
         private ICollectionView AccountsCollectionView;
+
+        private string _searchBarText;
+        public string SearchBarText
+        {
+            get => _searchBarText;
+            set => SetProperty(ref _searchBarText, value);
+        }
 
         #region Global DB Actions
         private void OnFailedDatabaseLoading(object sender, System.EventArgs e)
@@ -63,16 +74,26 @@ namespace SteamOrganizer.MVVM.ViewModels
                 App.STAInvoke(() =>
                 {
                     AccountsCollectionView = CollectionViewSource.GetDefaultView(Accounts);
-                    AccountsCollectionView.Refresh();
+              //      AccountsCollectionView.Refresh();
                 });
             });
         } 
         #endregion
 
+        public void OnRemovingAccount(object param)
+        {
+            var acc = (param as FrameworkElement).DataContext as Account;
+            QueryPopup.GetPopup($"{App.FindString("acv_confirmDel")} {acc.Nickname}", () => Accounts.Remove(acc))
+                .OpenPopup(param as FrameworkElement,System.Windows.Controls.Primitives.PlacementMode.Bottom);
+        }
+
         public AccountsViewModel()
         {
             OpenProfileCommand = new RelayCommand((o) 
                 => Process.Start($"{WebBrowser.SteamProfilesHost}{SteamIdConverter.SteamID32ToID64((uint)o)}").Dispose());
+
+            ClearSearchBar = new RelayCommand((o) => SearchBarText = null);
+            RemoveAccountCommand = new RelayCommand(OnRemovingAccount);
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
             if(!App.Config.LoadDatabase())
@@ -80,6 +101,13 @@ namespace SteamOrganizer.MVVM.ViewModels
                 App.Current.MainWindow.SourceInitialized += OnFailedDatabaseLoading;
                 return;
             }
+
+            for (uint i = 0; i < 18; i++)
+            {
+                Accounts.Add(new Account() { AccountID = i + 1, Nickname = "Test account" });
+            }
+
+            OnDatabaseLoaded();
         }
 
     }

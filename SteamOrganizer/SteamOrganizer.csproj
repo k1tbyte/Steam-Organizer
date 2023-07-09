@@ -140,6 +140,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\CachingManager.cs" />
+    <Compile Include="Helpers\ClipboardHelper.cs" />
     <Compile Include="Helpers\DragAdorner.cs" />
     <Compile Include="Helpers\FileCryptor.cs" />
     <Compile Include="Helpers\SteamIdConverter.cs" />
@@ -182,6 +183,9 @@
     <Compile Include="MVVM\View\Extensions\PushNotification.xaml.cs">
       <DependentUpon>PushNotification.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\Extensions\QueryPopup.xaml.cs">
+      <DependentUpon>QueryPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Storages\GlobalStorage.cs" />
     <Page Include="Locale\lang.en-US.xaml">
       <SubType>Designer</SubType>
@@ -215,6 +219,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\Extensions\QueryPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -241,6 +249,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\ComboBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ContextMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

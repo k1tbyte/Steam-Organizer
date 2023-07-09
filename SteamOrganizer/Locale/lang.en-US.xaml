@@ -6,6 +6,7 @@
     
     <v:String x:Key="file_not_found">File not found at specified path</v:String>
     <v:String x:Key="invalid_pass">The password is incorrect</v:String>
+    <v:String x:Key="copied_info">Copied to clipboard</v:String>
 
     <v:String x:Key="word_password">Password</v:String>
     <v:String x:Key="word_language">Language</v:String>
@@ -47,6 +48,12 @@
     <v:String x:Key="av_authInfo">For various reasons, the data could not be decrypted, please enter the password.</v:String>
     <v:String x:Key="av_generation">Generation ...</v:String>
     <v:String x:Key="av_decryption">Decryption ...</v:String>
+    
+    <!--#endregion-->
+
+    <!--#region Accounts view -->
+
+    <v:String x:Key="acv_confirmDel">Are you sure want to delete:</v:String>
     
     <!--#endregion-->
 

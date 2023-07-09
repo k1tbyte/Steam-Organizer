@@ -16,12 +16,24 @@
             <Setter Property="CornerRadius" Value="5"/>
             <Setter Property="Margin" Value="0 0 5 3"/>
         </Style>
-
     </UserControl.Resources>
 
     <Grid>
-        <Decorator x:Name="GrabbingCur" Cursor="/SteamOrganizer;component/Resources/grabbing.cur" Visibility="Collapsed" IsEnabled="False"/>
-        
+        <FrameworkElement x:Name="GrabbingCur" Cursor="/SteamOrganizer;component/Resources/grabbing.cur" Visibility="Collapsed" IsEnabled="False"/>
+
+        <TextBox Padding="0 0 23 0" 
+                 MaxLength="60"
+                 Uid="Search . . ." 
+                 Text="{Binding SearchBarText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                 Tag="{Binding ClearSearchBar,Mode=OneTime}"
+                 Style="{StaticResource SearchTextBox}" 
+                 HorizontalAlignment="Center"
+                 Foreground="{DynamicResource SecondaryForegroundBrush}"
+                 Background="{DynamicResource SecondaryBackgroundBrush}"
+                 MinWidth="400"
+                 Margin="0 9 0 0" 
+                 VerticalAlignment="Top"/>
+
         <ListBox x:Name="AccountsBox"
                  Background="Transparent"
                  Margin="7 55 0 10"
@@ -41,13 +53,14 @@
                             Padding="15"
                             Margin="3"
                             BorderBrush="{DynamicResource PurpleGradient}"
-                            PreviewDragEnter="Border_PreviewDragEnter"
-                            PreviewDragLeave="Border_PreviewDragLeave"
+                            DragEnter="Border_DragEnter"
+                            DragLeave="Border_DragLeave"
                             QueryContinueDrag="Border_QueryContinueDrag"
                             AllowDrop="True">
 
                         <DockPanel>
 
+                            <!--#region Avatar -->
                             <Border BorderBrush="{DynamicResource LightBlueGrad}"
                                      HorizontalAlignment="Left" 
                                      BorderThickness="2"
@@ -63,8 +76,11 @@
                                     <ImageBrush ImageSource="{Binding AvatarBitmap,Mode=OneWay}" />
                                 </Border.Background>
                             </Border>
+                            <!--#endregion-->
 
 
+                            <!--#region Top dock panel -->
+                            
                             <DockPanel  DockPanel.Dock="Top">
 
                                 <TextBlock Text="Test nickname" Margin="10 0 10 0"
@@ -73,8 +89,7 @@
                                            FontSize="15"  />
 
                                 <Button Style="{StaticResource TransparentButton}"
-                                        Background="{DynamicResource PrimarySubBrush}"
-                                        >
+                                        Background="{DynamicResource PrimarySubBrush}">
                                     <Icon:PackIconMaterial Kind="Login" Width="13" Height="13"/>
                                 </Button>
 
@@ -111,6 +126,8 @@
                                                        Foreground          ="{DynamicResource PrimaryForegroundBrush}"/>
 
                             </DockPanel>
+                            
+                            <!--#endregion-->
 
                             <WrapPanel HorizontalAlignment="Left"
                                        MaxWidth="230" Margin="10 7 0 0" >
@@ -131,7 +148,7 @@
 
 
                                 <TextBlock Foreground="{DynamicResource SecondaryForegroundBrush}"
-                                           Width="100">
+                                           Width="100" Cursor="Hand" MouseLeftButtonDown="CopyID_MouseLeftButtonDown">
                                     <Run Text="ID:" FontWeight="Medium" Foreground="{DynamicResource PrimarySubBrush}"/>
                                     <Run Text="{Binding AccountID,Mode=OneWay}"/>
                                 </TextBlock>
@@ -139,11 +156,13 @@
 
                             </WrapPanel>
 
+                            <!--#region Bans -->
+                            
                             <WrapPanel Orientation="Horizontal" 
                                        MaxWidth="150"
                                        HorizontalAlignment="Left" 
                                        Margin="10 7 0 0">
-                                
+
                                 <Border Background="{DynamicResource ErrorBrush}"
                                         Visibility="{Binding VacBansCount,Converter={StaticResource ToVisibilityConverter}}"
                                         Style="{StaticResource AccountInfoChip}">
@@ -167,8 +186,8 @@
                                                FontWeight="Bold" 
                                                Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
                                 </Border>
-                                
-                                
+
+
                                 <Border Background="{DynamicResource ErrorBrush}" 
                                         Style="{StaticResource AccountInfoChip}"
                                         Visibility="{Binding HaveTradeBan,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}">
@@ -179,11 +198,30 @@
 
 
                             </WrapPanel>
+                            
+                            <!--#endregion-->
 
-                            <Icon:PackIconMaterial Kind="Delete"
-                                                   HorizontalAlignment="Right"
-                                                   VerticalAlignment="Bottom"
-                                                   Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                            <Button HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Padding="0"
+                                    Foreground="{DynamicResource PrimaryForegroundBrush}"
+                                    Style="{StaticResource TransparentButton}"
+                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.RemoveAccountCommand,Mode=OneTime}"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
+                                <Icon:PackIconMaterial >
+                                    <Icon:PackIconMaterial.Style>
+                                        <Style TargetType="{x:Type Icon:PackIconMaterial}">
+                                            <Setter Property="Kind" Value="Delete"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Foreground" Value="PaleVioletRed"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Icon:PackIconMaterial.Style>
+                                </Icon:PackIconMaterial>
+                            </Button>
+
                         </DockPanel>
 
                     </Border>
@@ -192,6 +230,7 @@
 
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">

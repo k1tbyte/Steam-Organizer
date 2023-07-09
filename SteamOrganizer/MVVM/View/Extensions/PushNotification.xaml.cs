@@ -1,7 +1,6 @@
 ﻿using MahApps.Metro.IconPacks;
 using SteamOrganizer.Infrastructure;
 using System;
-using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -48,8 +47,11 @@ namespace SteamOrganizer.MVVM.View.Extensions
         }
 
         #region Private
+
+        private static IEasingFunction EasingFunction;
         private PushNotification() 
         {
+            EasingFunction = EasingFunction ?? App.Current.FindResource("BaseAnimationFunction") as IEasingFunction;
             InitializeComponent();
             Loaded += (sender, e) => Win32.HideWindow(new WindowInteropHelper(this).Handle);
         } 
@@ -80,7 +82,7 @@ namespace SteamOrganizer.MVVM.View.Extensions
         {
             var anim = new ThicknessAnimation(new Thickness(0), new Thickness(this.Width, 0, 0, 0), new Duration(TimeSpan.FromSeconds(1)))
             {
-                EasingFunction = new CircleEase { EasingMode = EasingMode.EaseInOut },
+                EasingFunction = EasingFunction
             };
 
             anim.Completed += (obj, ee) =>
@@ -96,7 +98,7 @@ namespace SteamOrganizer.MVVM.View.Extensions
                         {
                             var dropAnim = new DoubleAnimation(window.Top, window.Top + this.ActualHeight, new Duration(TimeSpan.FromSeconds(0.6)))
                             {
-                                EasingFunction = new CircleEase { EasingMode = EasingMode.EaseInOut }
+                                EasingFunction = EasingFunction
                             };
 
                             (window as PushNotification).BeginAnimation(TopProperty, dropAnim);

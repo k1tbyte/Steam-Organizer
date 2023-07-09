@@ -1,8 +1,11 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Models;
+using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.ViewModels;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -29,7 +32,7 @@ namespace SteamOrganizer.MVVM.View.Controls
         private bool IsInitialDragFeedback;
 
         private Account DragAccount;
-        private FrameworkElement DropToItem; 
+        private FrameworkElement DropToItem;
 
         #endregion
 
@@ -86,8 +89,11 @@ namespace SteamOrganizer.MVVM.View.Controls
             e.Handled = true;
         }
 
-        private void Border_PreviewDragEnter(object sender, DragEventArgs e)
+        private void Border_DragEnter(object sender, DragEventArgs e)
         {
+            if (!IsInitialDragFeedback)
+                return;
+
             var border = sender as Border;
 
             if (DragAccount.Equals(border.DataContext as Account))
@@ -99,8 +105,11 @@ namespace SteamOrganizer.MVVM.View.Controls
             border.Background = DragOverBackground;
         }
 
-        private void Border_PreviewDragLeave(object sender, DragEventArgs e)
+        private void Border_DragLeave(object sender, DragEventArgs e)
         {
+            if (!IsInitialDragFeedback)
+                return;
+
             DropToItem = null;
             var border = sender as Border;
             border.BorderThickness = ThicknessZero;
@@ -151,8 +160,14 @@ namespace SteamOrganizer.MVVM.View.Controls
             AccountsBox.DragOver -= AccountsBox_DragOver; 
 
             #endregion
-        } 
+        }
 
-#endregion
+        #endregion
+
+        private async void CopyID_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var o = sender as FrameworkElement;
+            await ClipboardHelper.SetText((o.DataContext as Account).AccountID.ToString(), o);
+        }
     }
 }

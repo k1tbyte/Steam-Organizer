@@ -65,12 +65,8 @@
                     <Storyboard>
                         <ThicknessAnimation Storyboard.TargetProperty="Margin"
                                             Storyboard.TargetName="mainArea"
-                                            From="300 0 0 0" To="0" Duration="0:0:1">
-                            <ThicknessAnimation.EasingFunction>
-                                <CircleEase EasingMode="EaseInOut"/>
-                            </ThicknessAnimation.EasingFunction>
-                        </ThicknessAnimation>
-
+                                            From="300 0 0 0" To="0" Duration="0:0:1"
+                                            EasingFunction="{StaticResource BaseAnimationFunction}"/>
                         <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)"  Completed="NotificationWindowClosed">
                             <SplineDoubleKeyFrame KeyTime="0:0:4" Value="1"/>
                         </DoubleAnimationUsingKeyFrames>
