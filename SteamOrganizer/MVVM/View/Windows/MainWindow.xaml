@@ -299,6 +299,7 @@
             <ext:BuiltInPopup x:Name="PopupWindow" 
                               Grid.ColumnSpan="2" 
                               Grid.RowSpan="2" 
+                              
                               CornerRadius="{Binding ElementName=MainBorder,Path=CornerRadius}"/>
 
         </Grid>

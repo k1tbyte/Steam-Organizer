@@ -9,11 +9,18 @@
       Visibility="Collapsed"
       d:Visibility="Visible"
       d:DataContext="{d:DesignInstance local:BuiltInPopup}">
-    <Border x:Name="Splash" Background="Black" CornerRadius="{Binding CornerRadius}" Opacity="0.45" MouseLeftButtonDown="HidePopup"/>
+    <Border x:Name="Splash" Background="Black" CornerRadius="{Binding CornerRadius}"
+            Opacity="0.45"
+            MouseLeftButtonDown="HidePopup"/>
 
     <Border Background="{DynamicResource SecondaryBackgroundBrush}" d:Margin="0"
-                Margin="0 -300 0 0" x:Name="PopupPresenter" Width="Auto" Height="Auto"
+                Margin="0 0 0 0" x:Name="PopupPresenter" Width="Auto" Height="Auto"
+            d:Width="400"
+            d:Height="300"
                 VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="5">
+        <Border.RenderTransform>
+            <ScaleTransform ScaleY="1"/>
+        </Border.RenderTransform>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="23"/>
@@ -35,7 +42,7 @@
                        Fill="{DynamicResource PrimaryBackgroundBrush}" Height="3"
                        VerticalAlignment="Bottom"/>
             
-            <ContentControl Grid.Row="2" Content="{Binding PopupContent}"/>
+            <ContentPresenter x:Name="Presenter" Content="{Binding PopupContent}" Grid.Row="2"/>
 
         </Grid>
     </Border>

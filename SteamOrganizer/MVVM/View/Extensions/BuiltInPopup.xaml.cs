@@ -1,7 +1,9 @@
-﻿using System;
+﻿using SteamOrganizer.Infrastructure;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace SteamOrganizer.MVVM.View.Extensions
@@ -10,42 +12,32 @@ namespace SteamOrganizer.MVVM.View.Extensions
     {
         internal Action Closed;
 
-        public static readonly DependencyProperty IsOpenProperty =
-           DependencyProperty.Register("IsOpen", typeof(bool), typeof(BuiltInPopup), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnPropertyChanged)));
-
         public static readonly DependencyProperty PopupContentProperty =
           DependencyProperty.Register("PopupContent", typeof(object), typeof(BuiltInPopup), new PropertyMetadata(null));
 
         public static readonly DependencyProperty CornerRadiusProperty =
           DependencyProperty.Register("CornerRadius", typeof(CornerRadius), typeof(BuiltInPopup));
 
-        private readonly DoubleAnimation OpacityAnimation;
-        private readonly ThicknessAnimation MarginOpenAnimation;
-        private readonly ThicknessAnimation MarginCloseAnimation;
-        private readonly Duration AnimationsDuration = new Duration(TimeSpan.FromSeconds(0.4));
+        private DoubleAnimation OpeningAnimation;
+        private DoubleAnimation ClosingAnimation;
         private bool locked = false;
 
         public bool IsOpen
         {
-            get => (bool)GetValue(IsOpenProperty);
+            get => this.Visibility == Visibility.Visible;
             set
             {
-                SetValue(IsOpenProperty, value);
                 if (value)
                 {
                     Visibility            = Visibility.Visible;
-                    OpacityAnimation.From = 0;
-                    OpacityAnimation.To   = 1;
                     cancel.Focus();
-                    PopupPresenter.BeginAnimation(MarginProperty, MarginOpenAnimation);
-                    this.BeginAnimation(OpacityProperty, OpacityAnimation);
+                    PopupPresenter.RenderTransform.BeginAnimation(ScaleTransform.ScaleYProperty, OpeningAnimation);
+                    this.BeginAnimation(OpacityProperty, OpeningAnimation);
                 }
                 else
                 {
-                    OpacityAnimation.From = 1;
-                    OpacityAnimation.To   = 0;
-                    PopupPresenter.BeginAnimation(MarginProperty, MarginCloseAnimation);
-                    this.BeginAnimation(OpacityProperty, OpacityAnimation);
+                    PopupPresenter.RenderTransform.BeginAnimation(ScaleTransform.ScaleYProperty, ClosingAnimation);
+                    this.BeginAnimation(OpacityProperty, ClosingAnimation);
                 }
 
             }
@@ -63,14 +55,16 @@ namespace SteamOrganizer.MVVM.View.Extensions
             set => SetValue(CornerRadiusProperty, value);
         }
 
-        private static void OnPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private void OnClosing(object sender, EventArgs e)
         {
-            var popup = sender as BuiltInPopup;
+            if (PopupContent == null)
+                return;
 
-            if (e.NewValue != null)
-            {
-                popup.IsOpen = (bool)e.NewValue;
-            }
+            Visibility   = Visibility.Collapsed;
+            Closed?.Invoke();
+            PopupContent = null;
+            Closed       = null;
+            locked       = false;
         }
 
         public BuiltInPopup()
@@ -86,24 +80,19 @@ namespace SteamOrganizer.MVVM.View.Extensions
                 }
             };
 
-            var func = App.Current.FindResource("BaseAnimationFunction") as IEasingFunction;
-            OpacityAnimation     = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromSeconds(0.4)));
-            MarginOpenAnimation  = new ThicknessAnimation(new Thickness(0), AnimationsDuration) { EasingFunction = func };
-            MarginCloseAnimation = new ThicknessAnimation(new Thickness(0, -300, 0, 0), AnimationsDuration) { EasingFunction = func };
 
-            OpacityAnimation.Completed += (sender, e) =>
+            Utils.InBackground(() =>
             {
-                if (IsOpen)
-                    return;
+                var func = App.Current.FindResource("BaseAnimationFunction") as IEasingFunction;
+                var timeline = new Duration(TimeSpan.FromSeconds(0.3));
 
+                OpeningAnimation = new DoubleAnimation(0, 1, timeline) { EasingFunction = func };
+                OpeningAnimation.Freeze();
 
-                Visibility   = Visibility.Collapsed;
-                Closed?.Invoke();
-                PopupContent = null;
-                Closed       = null;
-
-                locked = false;
-            };
+                ClosingAnimation = new DoubleAnimation(1, 0, timeline) { EasingFunction = func };
+                ClosingAnimation.Completed += OnClosing;
+                ClosingAnimation.Freeze();
+            });
 
 
             this.Splash.DataContext         = this;
