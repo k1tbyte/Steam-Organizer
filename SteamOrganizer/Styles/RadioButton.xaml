@@ -118,8 +118,13 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
                     <Grid Background="Transparent">
-                        <ContentPresenter x:Name="Content" Content="{TemplateBinding Content}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Visibility="Visible"/>
-                        <ContentPresenter x:Name="Content2" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Content="{TemplateBinding Tag}" Visibility="Collapsed"/>
+                        <ContentPresenter x:Name="Content" Content="{TemplateBinding Content}" Margin="{TemplateBinding Padding}"
+                                          Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
+                                          Visibility="Visible" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        
+                        <ContentPresenter x:Name="Content2" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
+                                          Content="{TemplateBinding Tag}" Visibility="Collapsed"  Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Grid>
 
                     <ControlTemplate.Triggers>

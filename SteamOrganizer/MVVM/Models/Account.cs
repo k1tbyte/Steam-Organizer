@@ -5,10 +5,24 @@ using System.Windows.Media.Imaging;
 
 namespace SteamOrganizer.MVVM.Models
 {
-    internal sealed class Account
+    internal sealed class Account : INotifyPropertyChanged
     {
         public int? SteamLevel { get; set; }
         public uint? AccountID { get; set; }
+
+        
+
+        public int UnpinIndex;
+        private bool _pinned;
+        public bool Pinned 
+        {
+            get => _pinned;
+            set
+            {
+                _pinned = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Pinned)));
+            }
+        }
 
         public string AvatarHash { get; set; }
 
@@ -35,6 +49,10 @@ namespace SteamOrganizer.MVVM.Models
 
         [field: NonSerialized]
         public BitmapImage AvatarBitmap { get; set; }
+
+        [field: NonSerialized]
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public void LoadImage()
             => AvatarBitmap = CachingManager.GetCachedAvatar(AvatarHash, 80, 80,size : EAvatarSize.full);
         

@@ -80,10 +80,11 @@ namespace SteamOrganizer.MVVM.View.Extensions
                 }
             };
 
-
+#if !DEBUG
             Utils.InBackground(() =>
             {
-                var func = App.Current.FindResource("BaseAnimationFunction") as IEasingFunction;
+#endif
+            var func = App.Current.FindResource("BaseAnimationFunction") as IEasingFunction;
                 var timeline = new Duration(TimeSpan.FromSeconds(0.3));
 
                 OpeningAnimation = new DoubleAnimation(0, 1, timeline) { EasingFunction = func };
@@ -92,7 +93,9 @@ namespace SteamOrganizer.MVVM.View.Extensions
                 ClosingAnimation = new DoubleAnimation(1, 0, timeline) { EasingFunction = func };
                 ClosingAnimation.Completed += OnClosing;
                 ClosingAnimation.Freeze();
+#if !DEBUG
             });
+#endif
 
 
             this.Splash.DataContext         = this;

@@ -21,7 +21,28 @@
     <Grid>
         <FrameworkElement x:Name="GrabbingCur" Cursor="/SteamOrganizer;component/Resources/grabbing.cur" Visibility="Collapsed" IsEnabled="False"/>
 
-        <TextBox Padding="0 0 23 0" 
+        <StackPanel Margin="0 9 0 0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal">
+            
+            <Border Margin="0 0 10 0"
+                    CornerRadius="20 12 12 20"
+                    Background="{DynamicResource SecondaryBackgroundBrush}">
+                <Border.Resources>
+                    <Icon:PackIconMaterial x:Key="Checked" Kind="CheckboxMarkedOutline"/> 
+                    <Icon:PackIconMaterial x:Key="Unchecked" Kind="SquareEditOutline"/>
+                </Border.Resources>
+                <ToggleButton x:Name="AllowChanges"
+                              Style="{StaticResource DynamicContentButton}"
+                              Content="{StaticResource Unchecked}"
+                              Padding="20 0 20 0"
+                              Tag="{StaticResource Checked}">
+                </ToggleButton>
+            </Border>
+
+
+            <TextBox Padding="0 0 23 0" 
                  MaxLength="60"
                  Uid="Search . . ." 
                  Text="{Binding SearchBarText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
@@ -30,9 +51,21 @@
                  HorizontalAlignment="Center"
                  Foreground="{DynamicResource SecondaryForegroundBrush}"
                  Background="{DynamicResource SecondaryBackgroundBrush}"
-                 MinWidth="400"
-                 Margin="0 9 0 0" 
-                 VerticalAlignment="Top"/>
+                 MinWidth="400"/>
+
+            <Button Style="{StaticResource TransparentButton}"
+                    Margin="10 0 0 0"
+                    Padding="20 0 20 0"
+                    Foreground="{DynamicResource LightBlueGrad}"
+                    Background="{DynamicResource TertiaryBackgroundBrush}">
+                <Button.Resources>
+                    <CornerRadius x:Key="Corner" TopLeft="12" TopRight="20" BottomRight="20" BottomLeft="12"/>
+                </Button.Resources>
+                <Icon:PackIconMaterial Kind="Plus"/>
+            </Button>
+            
+        </StackPanel>
+
 
         <ListBox x:Name="AccountsBox"
                  Background="Transparent"
@@ -52,11 +85,28 @@
                             Background="{DynamicResource SecondaryBackgroundBrush}"
                             Padding="15"
                             Margin="3"
-                            BorderBrush="{DynamicResource PurpleGradient}"
                             DragEnter="Border_DragEnter"
                             DragLeave="Border_DragLeave"
                             QueryContinueDrag="Border_QueryContinueDrag"
                             AllowDrop="True">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="BorderBrush" Value="{DynamicResource PurpleGradient}"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ElementName=AllowChanges,Path=IsChecked,Mode=OneWay}" Value="True"/>
+                                            <Condition Binding="{Binding Pinned,Mode=OneWay}" Value="True"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="BorderBrush" Value="Gold"/>
+                                            <Setter Property="BorderThickness" Value="1.5"/>
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
 
                         <DockPanel>
 
@@ -117,18 +167,52 @@
                                                            VerticalAlignment="Center"
                                                            Foreground="SpringGreen"/>
 
-                                <Icon:PackIconMaterial HorizontalAlignment ="Right"
-                                                       GiveFeedback        ="DragItemGiveFeedback"
-                                                       MouseLeftButtonDown ="OnDragItemInitilize"
-                                                       Cursor              ="/SteamOrganizer;component/Resources/grab.cur"
-                                                       Kind                ="Pin"
-                                                       RotationAngle       ="30"
-                                                       Foreground          ="{DynamicResource PrimaryForegroundBrush}"/>
+
+                                <Grid HorizontalAlignment="Right">
+
+                                    <Icon:PackIconMaterial
+                                       d:Visibility="Collapsed"
+                                       Visibility="{Binding ElementName=AllowChanges,Path=IsChecked,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}"
+                                       GiveFeedback        ="DragItemGiveFeedback"
+                                       MouseLeftButtonDown ="OnDragItemInitilize" 
+                                       Cursor              ="/SteamOrganizer;component/Resources/grab.cur"      
+                                       Kind                ="Drag"       
+                                       Background="Transparent"   
+                                       Foreground          ="{DynamicResource PrimaryForegroundBrush}"
+                                    />
+
+                                    <Icon:PackIconMaterial
+                                        Visibility="{Binding ElementName=AllowChanges,Path=IsChecked,Converter={StaticResource ToVisibilityInvertedConverter},Mode=OneWay}"
+                                       Kind="Pin"
+                                       Background="Transparent"
+                                       Cursor="Hand">
+                                        <Icon:PackIconMaterial.Style>
+                                            <Style TargetType="{x:Type Icon:PackIconMaterial}">
+                                                <Setter Property="RotationAngle" Value="30"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Pinned}" Value="True">
+                                                        <Setter Property="RotationAngle" Value="0"/>
+                                                        <Setter Property="Foreground" Value="Gold"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Icon:PackIconMaterial.Style>
+                                        <Icon:PackIconMaterial.InputBindings>
+                                            <MouseBinding Gesture="LeftClick"
+                                                      Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.PinAccountCommand,Mode=OneTime}"
+                                                          CommandParameter="{Binding}"/>
+                                        </Icon:PackIconMaterial.InputBindings>
+                                    </Icon:PackIconMaterial>
+                                    
+                                </Grid>
+
 
                             </DockPanel>
                             
                             <!--#endregion-->
 
+                            <!--#region Level, years, ID -->
                             <WrapPanel HorizontalAlignment="Left"
                                        MaxWidth="230" Margin="10 7 0 0" >
 
@@ -155,6 +239,7 @@
 
 
                             </WrapPanel>
+                            <!--#endregion-->
 
                             <!--#region Bans -->
                             
@@ -208,7 +293,7 @@
                                     Style="{StaticResource TransparentButton}"
                                     Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.RemoveAccountCommand,Mode=OneTime}"
                                     CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
-                                <Icon:PackIconMaterial >
+                                <Icon:PackIconMaterial>
                                     <Icon:PackIconMaterial.Style>
                                         <Style TargetType="{x:Type Icon:PackIconMaterial}">
                                             <Setter Property="Kind" Value="Delete"/>
@@ -221,7 +306,6 @@
                                     </Icon:PackIconMaterial.Style>
                                 </Icon:PackIconMaterial>
                             </Button>
-
                         </DockPanel>
 
                     </Border>
@@ -243,7 +327,6 @@
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <virtualizingPanel:VirtualizingWrapPanel 
-                        
                     Orientation="Horizontal" SpacingMode="None" StretchItems="True"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>

@@ -4,6 +4,7 @@ using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.ViewModels;
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -48,7 +49,7 @@ namespace SteamOrganizer.MVVM.View.Controls
         private void OnDragItemInitilize(object sender, MouseButtonEventArgs e)
         {
             var dragSource = sender as FrameworkElement;
-            var listboxItem = ((dragSource.Parent as FrameworkElement).Parent as FrameworkElement).Parent as Border;
+            var listboxItem = (((dragSource.Parent as FrameworkElement).Parent as FrameworkElement).Parent as FrameworkElement).Parent as Border;
 
             #region Getting colors to set and reset the background
 
@@ -95,14 +96,16 @@ namespace SteamOrganizer.MVVM.View.Controls
                 return;
 
             var border = sender as Border;
+            var acc = border.DataContext as Account;
 
-            if (DragAccount.Equals(border.DataContext as Account))
+            if (DragAccount.Equals(acc) || (acc.Pinned && !DragAccount.Pinned) || (DragAccount.Pinned && !acc.Pinned))
                 return;
 
             DropToItem = border;
-            Console.WriteLine("Drag item: " + DragAccount.AccountID + "\n To item: " + (DropToItem.DataContext as Account).AccountID);
-            border.BorderThickness = ThicknessOne;
             border.Background = DragOverBackground;
+
+            if (!(border.DataContext as Account).Pinned)
+                border.BorderThickness = ThicknessOne;
         }
 
         private void Border_DragLeave(object sender, DragEventArgs e)
@@ -111,9 +114,13 @@ namespace SteamOrganizer.MVVM.View.Controls
                 return;
 
             DropToItem = null;
+
             var border = sender as Border;
-            border.BorderThickness = ThicknessZero;
             border.Background = OriginalBackground;
+
+            if (!(border.DataContext as Account).Pinned)
+                border.BorderThickness = ThicknessZero;
+            
         }
 
         private void AccountsBox_DragOver(object sender, DragEventArgs e)
@@ -145,7 +152,9 @@ namespace SteamOrganizer.MVVM.View.Controls
                 App.Config.Database.Move(App.Config.Database.IndexOf(DragAccount), App.Config.Database.IndexOf(DropToItem.DataContext as Account));
                 App.Config.SaveDatabase();
 
-                (DropToItem as Border).BorderThickness = ThicknessZero;
+                if (!(DropToItem.DataContext as Account).Pinned)
+                    (DropToItem as Border).BorderThickness = ThicknessZero;
+
                 (DropToItem as Border).Background = OriginalBackground;
             }
 

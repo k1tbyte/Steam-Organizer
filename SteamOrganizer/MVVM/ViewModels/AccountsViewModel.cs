@@ -17,6 +17,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand OpenProfileCommand { get; private set; }
         public RelayCommand ClearSearchBar { get; private set; }
         public RelayCommand RemoveAccountCommand { get; private set; }
+        public RelayCommand PinAccountCommand { get; private set; }
         public ObservableCollection<Account> Accounts => App.Config.Database;
         private ICollectionView AccountsCollectionView;
 
@@ -80,12 +81,89 @@ namespace SteamOrganizer.MVVM.ViewModels
         } 
         #endregion
 
-        public void OnRemovingAccount(object param)
+        private void OnRemovingAccount(object param)
         {
             var acc = (param as FrameworkElement).DataContext as Account;
-            QueryPopup.GetPopup($"{App.FindString("acv_confirmDel")} {acc.Nickname}", () => Accounts.Remove(acc))
+            QueryPopup.GetPopup($"{App.FindString("acv_confirmDel")} {acc.Nickname}",Removed)
                 .OpenPopup(param as FrameworkElement,System.Windows.Controls.Primitives.PlacementMode.Bottom);
+
+            void Removed()
+            {
+                Accounts.Remove(acc);
+                App.Config.SaveDatabase();
+            }
         }
+
+        private void OnPinningAccount(object param)
+        {
+            var acc = param as Account;
+
+            var index = Accounts.IndexOf(acc);
+
+            #region Pinning
+
+            if (!acc.Pinned)
+            {
+                //Since there is a fixed element in front of it - the current one is already in its place and does not require moving
+                if (index != 0 && !Accounts[index - 1].Pinned)
+                {
+                    for (int i = 0, pinnedCount = 0; i < index; i++)
+                    {
+                        if (!Accounts[i].Pinned)
+                        {
+                            acc.UnpinIndex = index - pinnedCount;
+                            Accounts.Move(index, i);
+                            break;
+                        }
+                        pinnedCount++;
+                    }
+                }
+
+                acc.Pinned = true;
+                return;
+            }
+
+            #endregion
+
+            #region Unpin
+
+            int? minAllowedIndex = null;
+
+            for (int i = index + 1; i < Accounts.Count; i++)
+            {
+                if (!Accounts[i].Pinned)
+                {
+                    minAllowedIndex = i;
+                    break;
+                }
+            }
+
+            try
+            {
+                // If there is only 1 element in the collection or only 1 is pinned and it was the first item before pinning
+                if (Accounts.Count == 1 || (minAllowedIndex.HasValue && minAllowedIndex.Value - 1 == 0 && acc.UnpinIndex == 0))
+                {
+                    return;
+                }
+
+                //No places/all items are pinned or unpinning index greater than items count
+                if (!minAllowedIndex.HasValue || acc.UnpinIndex >= Accounts.Count)
+                {
+                    Accounts.Move(index, Accounts.Count - 1);
+                    return;
+                }
+
+                Accounts.Move(index, acc.UnpinIndex < minAllowedIndex.Value - 1 ? minAllowedIndex.Value - 1 : acc.UnpinIndex);
+            }
+            finally
+            {
+                acc.Pinned = false;
+                acc.UnpinIndex = 0;
+            } 
+
+            #endregion
+        }
+
 
         public AccountsViewModel()
         {
@@ -94,6 +172,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             ClearSearchBar = new RelayCommand((o) => SearchBarText = null);
             RemoveAccountCommand = new RelayCommand(OnRemovingAccount);
+            PinAccountCommand = new RelayCommand(OnPinningAccount);
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
             if(!App.Config.LoadDatabase())
@@ -102,7 +181,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            for (uint i = 0; i < 18; i++)
+            for (uint i = 0; i < 5; i++)
             {
                 Accounts.Add(new Account() { AccountID = i + 1, Nickname = "Test account" });
             }
