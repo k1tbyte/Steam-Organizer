@@ -8,8 +8,8 @@
         <Setter Property="Height" Value="40"/>
         <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundBrush}"/>
         <Setter Property="Background" Value="{DynamicResource TertiaryBackgroundBrush}"/>
-        <Setter Property="SelectionBrush" Value="{DynamicResource PrimarySubBrush}"/>
-        <Setter Property="CaretBrush" Value="{DynamicResource PrimaryForegroundBrush}"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource LightBlueGrad}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource LightBlueGrad}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -18,7 +18,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TextBox}">
-                    <Border x:Name="border" Cursor="IBeam" CornerRadius="8" Background="{TemplateBinding Background}" Width="{TemplateBinding Width}"
+                    <Border x:Name="border" Cursor="IBeam" CornerRadius="3" Background="{TemplateBinding Background}" Width="{TemplateBinding Width}"
                                 Height="{TemplateBinding Height}" Padding="10 5 10 5" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
                         <ScrollViewer x:Name="PART_ContentHost" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" Padding="{TemplateBinding Padding}"
                             Focusable="false" Background="Transparent" VerticalScrollBarVisibility="Hidden" />

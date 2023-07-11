@@ -31,13 +31,11 @@ namespace SteamOrganizer.MVVM.View.Extensions
                 {
                     Visibility            = Visibility.Visible;
                     cancel.Focus();
-                    PopupPresenter.RenderTransform.BeginAnimation(ScaleTransform.ScaleYProperty, OpeningAnimation);
-                    this.BeginAnimation(OpacityProperty, OpeningAnimation);
+                    PopupPresenter.BeginAnimation(OpacityProperty, OpeningAnimation);
                 }
                 else
                 {
-                    PopupPresenter.RenderTransform.BeginAnimation(ScaleTransform.ScaleYProperty, ClosingAnimation);
-                    this.BeginAnimation(OpacityProperty, ClosingAnimation);
+                    PopupPresenter.BeginAnimation(OpacityProperty, ClosingAnimation);
                 }
 
             }
@@ -84,13 +82,10 @@ namespace SteamOrganizer.MVVM.View.Extensions
             Utils.InBackground(() =>
             {
 #endif
-            var func = App.Current.FindResource("BaseAnimationFunction") as IEasingFunction;
-                var timeline = new Duration(TimeSpan.FromSeconds(0.3));
-
-                OpeningAnimation = new DoubleAnimation(0, 1, timeline) { EasingFunction = func };
+                OpeningAnimation = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromSeconds(0.4))) { EasingFunction = App.Current.FindResource("BaseAnimationFunction") as IEasingFunction };
                 OpeningAnimation.Freeze();
 
-                ClosingAnimation = new DoubleAnimation(1, 0, timeline) { EasingFunction = func };
+                ClosingAnimation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromSeconds(0.2)));
                 ClosingAnimation.Completed += OnClosing;
                 ClosingAnimation.Freeze();
 #if !DEBUG

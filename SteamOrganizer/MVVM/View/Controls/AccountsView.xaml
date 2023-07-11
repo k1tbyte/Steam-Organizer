@@ -54,6 +54,7 @@
                  MinWidth="400"/>
 
             <Button Style="{StaticResource TransparentButton}"
+                    Command="{Binding AddAccountCommand,Mode=OneTime}"
                     Margin="10 0 0 0"
                     Padding="20 0 20 0"
                     Foreground="{DynamicResource LightBlueGrad}"
@@ -133,7 +134,7 @@
                             
                             <DockPanel  DockPanel.Dock="Top">
 
-                                <TextBlock Text="Test nickname" Margin="10 0 10 0"
+                                <TextBlock Text="{Binding Nickname,Mode=OneWay}" Margin="10 0 10 0"
                                            Foreground="{DynamicResource TertiaryForegroundBrush}"
                                            FontWeight="Medium"
                                            FontSize="15"  />
@@ -232,9 +233,10 @@
 
 
                                 <TextBlock Foreground="{DynamicResource SecondaryForegroundBrush}"
+                                           IsHitTestVisible="{Binding IsFullyParsed,Mode=OneWay}"
                                            Width="100" Cursor="Hand" MouseLeftButtonDown="CopyID_MouseLeftButtonDown">
                                     <Run Text="ID:" FontWeight="Medium" Foreground="{DynamicResource PrimarySubBrush}"/>
-                                    <Run Text="{Binding AccountID,Mode=OneWay}"/>
+                                    <Run Text="{Binding AccountID,Mode=OneWay,TargetNullValue=—}"/>
                                 </TextBlock>
 
 

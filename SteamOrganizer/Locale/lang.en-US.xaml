@@ -56,5 +56,11 @@
     <v:String x:Key="acv_confirmDel">Are you sure want to delete:</v:String>
     
     <!--#endregion-->
+    
+    <!--#region Account adding view -->
+
+    <v:String x:Key="adv_idTip">Leave the ID field blank if you don't know it. In case of successful login to this account, information will be received automatically</v:String>
+    
+    <!--#endregion-->
 
 </ResourceDictionary>

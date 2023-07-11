@@ -15,11 +15,15 @@ namespace SteamOrganizer.MVVM.View.Extensions
         public static readonly DependencyProperty IsPaswordShownProperty =
          DependencyProperty.Register("IsPasswordShown", typeof(bool), typeof(PasswordBox), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnPasswordStateChanged)));
 
+        public static readonly DependencyProperty PasswordProperty =
+            DependencyProperty.Register("Password", typeof(string), typeof(PasswordBox), new FrameworkPropertyMetadata(null,FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnPasswordPropertyChanged)));
 
+        private static bool AllowCallback = true;
         public string Password
         {
-            get => PassBox.Password;
-            set => PassTextBox.Text = PassBox.Password = value;
+            get => (string)GetValue(PasswordProperty);
+            set => SetValue(PasswordProperty, value);
+            
         }
 
         public Brush Foreground
@@ -50,16 +54,34 @@ namespace SteamOrganizer.MVVM.View.Extensions
         private static void OnPasswordStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var passBox = (PasswordBox)d;
-            if (passBox.IsPasswordShown)
+
+            
+            if(e.NewValue is bool show)
             {
-                passBox.PassTextBox.Visibility = Visibility.Visible;
-                passBox.PassBox.Visibility     = Visibility.Collapsed;
+                if (show)
+                {
+                    passBox.PassTextBox.Visibility = Visibility.Visible;
+                    passBox.PassBox.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    passBox.PassTextBox.Visibility = Visibility.Collapsed;
+                    passBox.PassBox.Visibility = Visibility.Visible;
+                }
             }
-            else
-            {
-                passBox.PassTextBox.Visibility = Visibility.Collapsed;
-                passBox.PassBox.Visibility     = Visibility.Visible;
-            }
+        }
+
+        private static void OnPasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var passBox = d as PasswordBox;
+
+            if (!AllowCallback)
+                return;
+
+            AllowCallback = false;
+            passBox.PassBox.Password = e.NewValue as string;
+            AllowCallback = true;
+            return;
         }
 
         public PasswordBox()
@@ -67,9 +89,14 @@ namespace SteamOrganizer.MVVM.View.Extensions
             InitializeComponent();
             Area.DataContext = this;
 
-            PassBox.PasswordChanged += (sender, e) =>
+            PassBox.PasswordChanged += (sender,e) =>
             {
-                this.PassTextBox.Text = PassBox.Password;
+                if (!AllowCallback)
+                    return;
+
+                AllowCallback = false;
+                Password = PassBox.Password;
+                AllowCallback = true;
             };
         }
 

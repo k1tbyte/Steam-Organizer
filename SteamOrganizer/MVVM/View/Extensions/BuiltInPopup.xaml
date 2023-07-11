@@ -18,9 +18,6 @@
             d:Width="400"
             d:Height="300"
                 VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="5">
-        <Border.RenderTransform>
-            <ScaleTransform ScaleY="1"/>
-        </Border.RenderTransform>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="23"/>

@@ -4,9 +4,12 @@ using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
 using SteamOrganizer.MVVM.View.Extensions;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
@@ -18,6 +21,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand ClearSearchBar { get; private set; }
         public RelayCommand RemoveAccountCommand { get; private set; }
         public RelayCommand PinAccountCommand { get; private set; }
+        public RelayCommand AddAccountCommand { get; private set; }
         public ObservableCollection<Account> Accounts => App.Config.Database;
         private ICollectionView AccountsCollectionView;
 
@@ -164,15 +168,20 @@ namespace SteamOrganizer.MVVM.ViewModels
             #endregion
         }
 
+        private void OnAddingAccount(object param)
+        {
+            App.MainWindowVM.OpenPopupWindow(new AccountAddingView(),"New account");
+        }
 
         public AccountsViewModel()
         {
             OpenProfileCommand = new RelayCommand((o) 
                 => Process.Start($"{WebBrowser.SteamProfilesHost}{SteamIdConverter.SteamID32ToID64((uint)o)}").Dispose());
 
-            ClearSearchBar = new RelayCommand((o) => SearchBarText = null);
+            ClearSearchBar       = new RelayCommand((o) => SearchBarText = null);
             RemoveAccountCommand = new RelayCommand(OnRemovingAccount);
-            PinAccountCommand = new RelayCommand(OnPinningAccount);
+            PinAccountCommand    = new RelayCommand(OnPinningAccount);
+            AddAccountCommand    = new RelayCommand(OnAddingAccount);
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
             if(!App.Config.LoadDatabase())
@@ -181,7 +190,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            for (uint i = 0; i < 5; i++)
+            for (uint i = 0; i < 20; i++)
             {
                 Accounts.Add(new Account() { AccountID = i + 1, Nickname = "Test account" });
             }

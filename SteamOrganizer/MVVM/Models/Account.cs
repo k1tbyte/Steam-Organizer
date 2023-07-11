@@ -5,12 +5,14 @@ using System.Windows.Media.Imaging;
 
 namespace SteamOrganizer.MVVM.Models
 {
+    [Serializable]
     internal sealed class Account : INotifyPropertyChanged
     {
         public int? SteamLevel { get; set; }
         public uint? AccountID { get; set; }
 
-        
+        public DateTime? LastUpdateDate { get; set; }
+        public DateTime AddedDate { get; set; }
 
         public int UnpinIndex;
         private bool _pinned;
@@ -52,6 +54,8 @@ namespace SteamOrganizer.MVVM.Models
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool IsFullyParsed => AccountID != null;
 
         public void LoadImage()
             => AvatarBitmap = CachingManager.GetCachedAvatar(AvatarHash, 80, 80,size : EAvatarSize.full);
