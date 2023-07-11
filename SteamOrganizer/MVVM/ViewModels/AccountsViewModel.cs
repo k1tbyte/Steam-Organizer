@@ -192,7 +192,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             for (uint i = 0; i < 20; i++)
             {
-                Accounts.Add(new Account() { AccountID = i + 1, Nickname = "Test account" });
+                Accounts.Add(new Account("Test account", "Password",i + 1));
             }
 
             OnDatabaseLoaded();

@@ -156,17 +156,26 @@
 
                                 <!-- If anonymous account -->
                                 <Icon:PackIconMaterial Kind="Incognito"
-                                                       Visibility="Collapsed"
+                                                       Background="Transparent"
+                                                       ToolTipService.InitialShowDelay="200"
+                                                       ToolTip="{DynamicResource acv_anonBadgeTip}"
+                                                       Visibility="{Binding AccountID,Converter={StaticResource ToVisibilityInvertedConverter}}"
                                                        Height="13"
                                                        VerticalAlignment="Center"
                                                        Foreground="{DynamicResource WarningBrush}" 
-                                                       Margin="0 0 5 0"/>
+                                                       Margin="10 0 -5 0"/>
 
                                 <!-- If linked 2fa -->
-                                <Icon:PackIconMaterial Kind="Lock" Visibility="Collapsed"
-                                                           Height="13"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="SpringGreen"/>
+                                <Icon:PackIconMaterial Kind="Lock" 
+                                                       Cursor="Hand"
+                                                       Visibility="Collapsed"
+                                                       ToolTipService.InitialShowDelay="200"
+                                                       ToolTip="{DynamicResource acv_2faBadgeTip}"
+                                                       Margin="10 0 0 0"
+                                                       Height="13"
+                                                       Background="Transparent"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="SpringGreen"/>
 
 
                                 <Grid HorizontalAlignment="Right">

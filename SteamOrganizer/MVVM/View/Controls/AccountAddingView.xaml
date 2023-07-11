@@ -20,12 +20,13 @@
     <ext:TemplateDecorator Margin="10 0 10 10" Title="Login" Icon="TextAccount">
         <TextBox Style="{StaticResource ModernTextBox}" Height="35"
                  FontSize="13"
+                 Text="{Binding Login,Mode=OneWayToSource}"
                  Foreground="{DynamicResource SecondaryForegroundBrush}"/>
     </ext:TemplateDecorator>
 
     <ext:TemplateDecorator Margin="10 0 10 10" Icon="Key" Title="{DynamicResource word_password}">
         <ext:PasswordBox  CornerRadius="5"
-                          Password="{Binding Password,Mode=TwoWay}"
+                          Password="{Binding Password,Mode=OneWayToSource}"
                          SelectionBrush="{DynamicResource LightBlueGrad}"
                          Background="{DynamicResource TertiaryBackgroundBrush}"
                          Foreground="{DynamicResource SecondaryForegroundBrush}"/>
@@ -33,13 +34,19 @@
 
     <ext:TemplateDecorator Margin="10 0 10 10" Title="Account ID/URL/CS:GO Friend code" Icon="Identifier">
         <TextBox Style="{StaticResource ModernTextBox}" Height="35"
-                 FontSize="13" Text="{Binding ID,Mode=OneWay}"
+                 FontSize="13" Text="{Binding ID,Mode=OneWayToSource}"
                  Foreground="{DynamicResource SecondaryForegroundBrush}"/>
     </ext:TemplateDecorator>
 
-    <ext:HoverButton Command="{Binding AddCommand,Mode=OneTime}"
+    <TextBlock x:Name="Error"
+               TextWrapping="Wrap"
+               FontSize="11"
+               Padding="10 0 10 0"
+               Foreground="{DynamicResource ErrorBrush}"/>
+
+    <ext:HoverButton x:Name="AddButton" Command="{Binding AddCommand,Mode=OneTime}"
                      HorizontalAlignment="Center" Margin="0 12 0 0"
-                     Content="Add" MinWidth="100" 
+                     Content="{DynamicResource word_add}" MinWidth="100" 
                      IsDefault="True" Padding="10 4 10 4"
                      HoverBackground="{DynamicResource TertiaryForegroundBrush}"/>
 

@@ -9,7 +9,7 @@ namespace SteamOrganizer.Helpers
 {
     internal class SteamIdConverter
     {
-        private const ulong SteamID64Ident = 76561197960265728;
+        public const ulong SteamID64Indent = 76561197960265728U;
         private const string Base32 = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
         /// <summary>
@@ -41,8 +41,8 @@ namespace SteamOrganizer.Helpers
         }
 
         #region ToSteamID64
-        public static ulong SteamID32ToID64(UInt32 steamId32) => steamId32 + SteamID64Ident;
-        public static ulong SteamID32ToID64(string steamId32) => ulong.Parse(steamId32) + SteamID64Ident;
+        public static ulong SteamID32ToID64(UInt32 steamId32) => steamId32 + SteamID64Indent;
+        public static ulong SteamID32ToID64(string steamId32) => ulong.Parse(steamId32) + SteamID64Indent;
         public static ulong SteamIDToID64(string steamID)
         {
             var chunks = steamID.Split(':');
@@ -66,7 +66,7 @@ namespace SteamOrganizer.Helpers
                 id |= idNibble;
             }
 
-            return id + SteamID64Ident;
+            return id + SteamID64Indent;
         }
 
         public static ulong LinkID64ToID64(string linkID64) => ulong.Parse(IDFromLink(linkID64));
@@ -76,15 +76,15 @@ namespace SteamOrganizer.Helpers
         #endregion
 
         #region FromSteamID64
-        public static UInt32? SteamID64To32(ulong? steamID64) => steamID64.HasValue ? (UInt32?)(steamID64 - SteamID64Ident) : null;
+        public static UInt32? SteamID64To32(ulong? steamID64) => steamID64.HasValue ? (UInt32?)(steamID64 - SteamID64Indent) : null;
         public static string SteamID64ToSteamID(ulong? steamId64)
         {
             if (!steamId64.HasValue) return null;
-            var steamAccId = steamId64 - SteamID64Ident;
+            var steamAccId = steamId64 - SteamID64Indent;
             return $"STEAM_0:{(steamAccId % 2 == 0 ? 0 : 1)}:{steamAccId / 2}";
         }
 
-        public static string SteamID64ToSteamID3(ulong? steamId64) => steamId64.HasValue ? $"[U:1:{steamId64 - SteamID64Ident}]" : null;
+        public static string SteamID64ToSteamID3(ulong? steamId64) => steamId64.HasValue ? $"[U:1:{steamId64 - SteamID64Indent}]" : null;
         public static string SteamID64ToFiveM(ulong? steamID64) => steamID64.HasValue ? $"steam:{steamID64:x2}" : null;
 
         public static string SteamID64ToCsgoFriendCode(ulong? steamId64)
@@ -197,7 +197,9 @@ namespace SteamOrganizer.Helpers
         {
             var xmlPage = await App.WebBrowser.GetStringAsync($"{(steamWebProfileLink.StartsWith("https://") ? steamWebProfileLink : steamWebProfileLink.Insert(0, "https://"))}/?xml=1");
 
-            return Convert.ToUInt64(Regexes.SteamId64Xml.Match(xmlPage)?.Groups[0]?.Value);
+            var value = Regexes.SteamId64Xml.Match(xmlPage)?.Groups[0]?.Value;
+
+            return string.IsNullOrEmpty(value) ? 0 : Convert.ToUInt64(value);
         }
 
         private static string Encode(UInt64 input)

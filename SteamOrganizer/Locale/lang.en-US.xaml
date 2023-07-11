@@ -19,6 +19,7 @@
     <v:String x:Key="word_info">Info</v:String>
     <v:String x:Key="word_warn">Warning</v:String>
     <v:String x:Key="word_err">Error</v:String>
+    <v:String x:Key="word_add">Add</v:String>
     
     <!--#endregion-->
 
@@ -54,13 +55,23 @@
     <!--#region Accounts view -->
 
     <v:String x:Key="acv_confirmDel">Are you sure want to delete:</v:String>
+    <v:String x:Key="acv_anonBadgeTip">This is an anonymous account and does not contain any information</v:String>
+    <v:String x:Key="acv_2faBadgeTip">This account is 2FA protected. Click to copy the code</v:String>
+    
     
     <!--#endregion-->
     
     <!--#region Account adding view -->
 
     <v:String x:Key="adv_idTip">Leave the ID field blank if you don't know it. In case of successful login to this account, information will be received automatically</v:String>
-    
+    <v:String x:Key="adv_err_login_empty">The login field is empty!</v:String>
+    <v:String x:Key="adv_err_login_spaces">Login cannot contain spaces!</v:String>
+    <v:String x:Key="adv_err_login_len">Login length must be at least 3 and not more than 32 characters!</v:String>
+    <v:String x:Key="adv_err_pass_empty">The password field is empty!</v:String>
+    <v:String x:Key="adv_err_pass_len">Password length must be at least 6 and not more than 50 characters!</v:String>
+    <v:String x:Key="adv_err_invalid_id">Invalid steam id!</v:String>
+    <v:String x:Key="adv_err_id_exists">An account with this ID has already been added</v:String>
+
     <!--#endregion-->
 
 </ResourceDictionary>

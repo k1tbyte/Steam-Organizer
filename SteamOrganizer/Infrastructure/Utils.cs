@@ -10,6 +10,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.Windows.Media;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace SteamOrganizer.Infrastructure
 {
@@ -29,6 +31,33 @@ namespace SteamOrganizer.Infrastructure
             {
                 throw new ArgumentNullException(nameof(str));
             }
+        }
+
+        public static bool Exists<T>(this ObservableCollection<T> collection, Func<T, bool> match)
+        {
+            foreach (var item in collection)
+            {
+                if(match(item))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool Exists<T>(this ObservableCollection<T> collection, Func<T, bool> match, out int index)
+        {
+            for (int i = 0; i < collection.Count; i++)
+            {
+                if (match(collection[i]))
+                {
+                    index = i;
+                    return true;
+                }
+            }
+
+            index = -1;
+            return false;
         }
 
         public static byte[] XorData(byte[] key, byte[] input)

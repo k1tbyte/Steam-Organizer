@@ -8,7 +8,7 @@ namespace SteamOrganizer.MVVM.View.Controls
         public AccountAddingView()
         {
             InitializeComponent();
-            DataContext = new AccountAddingViewModel();
+            DataContext = new AccountAddingViewModel(this);
         }
     }
 }
