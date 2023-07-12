@@ -11,6 +11,7 @@ namespace SteamOrganizer.MVVM.Models
     {
         public int? SteamLevel { get; set; }
         public uint? AccountID { get; set; }
+        public ulong? SteamID64 => AccountID.HasValue ? AccountID + SteamIdConverter.SteamID64Indent : null;
 
         public DateTime? LastUpdateDate { get; set; }
         public DateTime AddedDate { get; set; }

@@ -144,6 +144,7 @@
     <Compile Include="Helpers\DragAdorner.cs" />
     <Compile Include="Helpers\FileCryptor.cs" />
     <Compile Include="Helpers\SteamIdConverter.cs" />
+    <Compile Include="Helpers\SteamParser.cs" />
     <Compile Include="Helpers\WindowMessageHandler.cs" />
     <Compile Include="Infrastructure\Regexes.cs" />
     <Compile Include="Infrastructure\WebBrowser.cs" />

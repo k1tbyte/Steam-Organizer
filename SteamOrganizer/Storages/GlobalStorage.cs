@@ -43,6 +43,7 @@ namespace SteamOrganizer.Storages
 
         public bool MinimizeOnStart { get; set; }
         public bool MinimizeToTray { get; set; }
+        public string SteamApiKey { get; set; }
 
         private byte[] _databaseKey;
         public byte[] DatabaseKey
