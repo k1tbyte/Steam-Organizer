@@ -53,11 +53,15 @@
     <!--#endregion-->
 
     <!--#region Accounts view -->
-
+    <v:String x:Key="acv_yearsOf">Years:</v:String>
     <v:String x:Key="acv_confirmDel">Are you sure want to delete:</v:String>
     <v:String x:Key="acv_anonBadgeTip">This is an anonymous account and does not contain any information</v:String>
     <v:String x:Key="acv_2faBadgeTip">This account is 2FA protected. Click to copy the code</v:String>
-    
+    <v:String x:Key="acv_communityBannedTip">This account is completely banned from interacting with Steam</v:String>
+    <v:String x:Key="acv_regDate">Registration:</v:String>
+    <v:String x:Key="acv_addDate">Account added:</v:String>
+    <v:String x:Key="acv_updDate">Last account update:</v:String>
+    <v:String x:Key="acv_regDateUnknown">The information is unknown, perhaps this is due to restrictions imposed on the account</v:String>
     
     <!--#endregion-->
     

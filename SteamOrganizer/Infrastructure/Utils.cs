@@ -209,5 +209,13 @@ namespace SteamOrganizer.Infrastructure
 
             return null;
         }
+
+        public static DateTime? UnixTimeToDateTime(long unixtime)
+        {
+            if (unixtime == 0)
+                return null;
+            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0);
+            return origin.AddSeconds(unixtime);
+        }
     }
 }

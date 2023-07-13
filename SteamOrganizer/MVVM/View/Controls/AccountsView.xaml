@@ -15,6 +15,7 @@
             <Setter Property="Padding" Value="10 2 10 2"/>
             <Setter Property="CornerRadius" Value="5"/>
             <Setter Property="Margin" Value="0 0 5 3"/>
+            <Setter Property="ToolTipService.InitialShowDelay" Value="200"/>
         </Style>
     </UserControl.Resources>
 
@@ -75,10 +76,8 @@
                  BorderThickness="0"
                  ItemsSource="{Binding Accounts,Mode=OneWay}"
                  VirtualizingPanel.CacheLengthUnit="Page"
-                 VirtualizingPanel.CacheLength="1,1"
                  VirtualizingPanel.VirtualizationMode="Recycling"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 d:AlternationCount="10"
                  d:ItemsSource="{d:SampleData ItemCount=3}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -113,11 +112,13 @@
 
                             <!--#region Avatar -->
                             <Border BorderBrush="{DynamicResource LightBlueGrad}"
+                                    ToolTipService.InitialShowDelay="400"
                                      HorizontalAlignment="Left" 
                                      BorderThickness="2"
                                      CornerRadius="50"
                                      Width="60" Height="60"
-                                    Cursor="Hand">
+                                    Cursor="Hand"
+                                    MouseEnter="AvatarMouseOver">
                                 <Border.InputBindings>
                                     <MouseBinding Gesture="LeftClick"
                                                   Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.OpenProfileCommand,Mode=OneTime}"
@@ -228,16 +229,21 @@
 
                                 <Border Style="{StaticResource AccountInfoChip}"
                                         Background="{DynamicResource SecondarySubBrush}" >
-                                    <TextBlock Text="Level: 1000" 
-                                               FontWeight="Bold" 
-                                               Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
+                                    <TextBlock FontWeight="Bold" 
+                                               Foreground="{DynamicResource SecondaryBackgroundBrush}">
+                                        <Run Text="Level:"/>
+                                        <Run Text="{Binding SteamLevel,TargetNullValue=N/A,Mode=OneWay}"/>
+                                    </TextBlock>
                                 </Border>
 
                                 <Border Style="{StaticResource AccountInfoChip}" 
-                                        Background="{DynamicResource SecondarySubBrush}" >
-                                    <TextBlock Text="Years: 4" 
-                                               FontWeight="Bold" 
-                                               Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
+                                        Background="{DynamicResource SecondarySubBrush}" 
+                                        MouseEnter="YearsOfServiceMouseOver">
+                                    <TextBlock FontWeight="Bold" 
+                                               Foreground="{DynamicResource SecondaryBackgroundBrush}">
+                                        <Run Text="{DynamicResource acv_yearsOf}"/>
+                                        <Run Text="{Binding YearsOfService,TargetNullValue=N/A,Mode=OneWay,StringFormat={}{0:0.0}}"/>
+                                    </TextBlock>
                                 </Border>
 
 
@@ -269,6 +275,7 @@
 
                                 <Border Background="{DynamicResource ErrorBrush}"
                                         Style="{StaticResource AccountInfoChip}"
+                                        ToolTip="{DynamicResource acv_communityBannedTip}"
                                         Visibility="{Binding HaveCommunityBan,Converter={StaticResource ToVisibilityConverter}}">
                                     <TextBlock Text="Community" 
                                                FontWeight="Bold" 
@@ -286,8 +293,8 @@
 
                                 <Border Background="{DynamicResource ErrorBrush}" 
                                         Style="{StaticResource AccountInfoChip}"
-                                        Visibility="{Binding HaveTradeBan,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}">
-                                    <TextBlock Text="Trade" 
+                                        Visibility="{Binding EconomyBan,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}">
+                                    <TextBlock Text="Economy" 
                                                FontWeight="Bold" 
                                                Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
                                 </Border>

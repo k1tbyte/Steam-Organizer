@@ -178,5 +178,21 @@ namespace SteamOrganizer.MVVM.View.Controls
             var o = sender as FrameworkElement;
             await ClipboardHelper.SetText((o.DataContext as Account).AccountID.ToString(), o);
         }
+
+        private void YearsOfServiceMouseOver(object sender, MouseEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+            var acc = element.DataContext as Account;
+            element.ToolTip =
+                acc.YearsOfService != null ? $"{App.FindString("acv_regDate")} {acc.CreatedDate:f}" : App.FindString("acv_regDateUnknown");
+        }
+
+        private void AvatarMouseOver(object sender, MouseEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+            var acc = element.DataContext as Account;
+            element.ToolTip =
+                $"{App.FindString("acv_addDate")} {acc.AddedDate:f}{(acc.LastUpdateDate != null ? $"\n{App.FindString("acv_updDate")} {acc.LastUpdateDate:f}" : null)}";
+        }
     }
 }

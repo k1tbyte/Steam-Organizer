@@ -190,12 +190,12 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            for (uint i = 0; i < 20; i++)
+/*            for (uint i = 0; i < 20; i++)
             {
                 Accounts.Add(new Account("Test account", "Password",i + 1));
             }
 
-            OnDatabaseLoaded();
+            OnDatabaseLoaded();*/
         }
 
     }

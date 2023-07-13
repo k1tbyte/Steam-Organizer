@@ -46,17 +46,17 @@ namespace SteamOrganizer.MVVM.ViewModels
             else if (!string.IsNullOrEmpty(ID))
             {
                 LoadingAnimation();
-                if ((id = await SteamIdConverter.ToSteamID64(ID.Replace(" ", "")).ConfigureAwait(false)) == 0)
+                if ((id = await SteamIdConverter.ToSteamID64(ID.Replace(" ", ""))) == 0)
                 {
                     View.Error.Text = App.FindString("adv_err_invalid_id");
                 }
-                else if (App.Config.Database.Exists(o => o.AccountID.HasValue && o.AccountID.Value == id))
+                else if (App.Config.Database.Exists(o => o.SteamID64.HasValue && o.SteamID64.Value == id))
                 {
                     View.Error.Text = App.FindString("adv_err_id_exists");
                 }
             }
 
-            return string.IsNullOrEmpty(View.Error.Text) ? (true, id) : (false, 0u);
+            return string.IsNullOrEmpty(View.Error?.Text) ? (true, id) : (false, 0u);
         }
 
         private async void LoadingAnimation()
@@ -72,7 +72,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 if (i == 2)
                     i = -1;
 
-                await Task.Delay(300).ConfigureAwait(false);
+                await Task.Delay(300);
             }            
         }
 
@@ -80,7 +80,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         {
             try
             {
-                var result = await ValidateData().ConfigureAwait(false);
+                var result = await ValidateData();
                 if (!result.Item1)
                 {
                     return;
@@ -91,14 +91,19 @@ namespace SteamOrganizer.MVVM.ViewModels
                 if (result.Item2 == 0L)
                 {
                     App.Config.Database.Add(new Account(Login, Password));
+                    App.Config.SaveDatabase();
                     App.MainWindowVM.ClosePopupWindow();
                     return;
                 }
 
-                var acc = new Account(Login,Password,result.Item2);
+                var acc       = new Account(Login,Password,result.Item2);
 
-                /// Parsing
+                if (!await acc.RetrieveInfo())
+                    return;
 
+                App.Config.Database.Add(acc);
+                App.Config.SaveDatabase();
+                App.MainWindowVM.ClosePopupWindow();
             }
             catch (Exception e)
             {
@@ -114,7 +119,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
                 if (!string.IsNullOrEmpty(View.Error.Text))
                 {
-                    await Task.Delay(2500).ConfigureAwait(false);
+                    await Task.Delay(2500);
                     View.Error.Text = null;
                 }
             }

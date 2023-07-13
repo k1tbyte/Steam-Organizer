@@ -1,4 +1,7 @@
 ﻿using Newtonsoft.Json;
+using SteamOrganizer.Infrastructure;
+using SteamOrganizer.MVVM.Models;
+using SteamOrganizer.MVVM.View.Controls;
 using System;
 using System.Threading.Tasks;
 
@@ -8,7 +11,7 @@ namespace SteamOrganizer.Helpers
     {
         #region Responses
         #region Bans
-        internal enum TradeBanType
+        internal enum EconomyBanType : byte
         {
             none,
             probation,
@@ -21,8 +24,9 @@ namespace SteamOrganizer.Helpers
                 public ulong SteamId;
                 public bool CommunityBanned;
                 public int NumberOfVacBans;
+                public int NumberOfGameBans;
                 public int DaysSinceLastBan;
-                public TradeBanType EconomyBan;
+                public EconomyBanType EconomyBan;
             }
 
             public Player[] Players;
@@ -101,10 +105,51 @@ namespace SteamOrganizer.Helpers
         #endregion 
         #endregion
 
+        internal static async Task<bool> ParseInfo(Account account)
+        {
+            if (account == null || account.SteamID64 == null)
+                return false;
+
+            var summaries = await GetPlayersSummaries(account.SteamID64.Value).ConfigureAwait(false);
+
+            if(summaries == null)
+                return false;
+
+            var bansTask      = GetPlayersBans(account.SteamID64.Value).ConfigureAwait(false);
+            var levelTask     = GetPlayerLevel(account.SteamID64.Value).ConfigureAwait(false);
+            //var gamesTask     = GetPlayerOwnedGames(account.SteamID64.Value);
+
+            var bans      = await bansTask;
+            var level     = await levelTask;
+        //    var games     = await gamesTask;
+
+            account.AvatarHash      = summaries[0].Avatarhash;
+            account.Nickname        = summaries[0].Personaname;
+            account.VisibilityState = summaries[0].CommunityVisibilityState;
+            var id                  = summaries[0].ProfileURL.Split('/');
+            account.VanityURL       = id[3] == "id" ? id[4] : null;
+            account.CreatedDate     = Utils.UnixTimeToDateTime(summaries[0].TimeCreated ?? 0);
+
+            account.SteamLevel = level;
+
+            if(bans.Length >= 1)
+            {
+                account.GameBansCount    = bans[0].NumberOfGameBans;
+                account.VacBansCount     = bans[0].NumberOfVacBans;
+                account.HaveCommunityBan = bans[0].CommunityBanned;
+                account.DaysSinceLastBan = bans[0].DaysSinceLastBan;
+                account.EconomyBan       = (int)bans[0].EconomyBan;
+            }
+            
+
+            return true;
+        }
+
         internal static async Task<int?> GetPlayerLevel(ulong steamId64)
         {
             var response =  await App.WebBrowser.GetStringAsync(
-                $"http://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId64}");
+                $"http://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId64}")
+                .ConfigureAwait(false);
 
             return response == null ? null : JsonConvert.DeserializeObject<UserLevelObject>(response).Response.Player_level;
         }
@@ -114,7 +159,9 @@ namespace SteamOrganizer.Helpers
             if (steamIds.Length > 100)
                 throw new InvalidOperationException(nameof(steamIds));
 
-            var response = await App.WebBrowser.GetStringAsync($"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamids={string.Join(",", steamIds)}");
+            var response = await App.WebBrowser.GetStringAsync(
+                $"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamids={string.Join(",", steamIds)}")
+                .ConfigureAwait(false);
 
             return response == null ? null : JsonConvert.DeserializeObject<UserSummariesObject>(response).Response.Players;
         }
@@ -124,21 +171,27 @@ namespace SteamOrganizer.Helpers
             if (steamIds.Length > 100)
                 throw new InvalidOperationException(nameof(steamIds));
 
-            var response = await App.WebBrowser.GetStringAsync($"http://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamids={string.Join(",", steamIds)}");
+            var response = await App.WebBrowser.GetStringAsync(
+                $"http://api.steampowered.com/ISteamUser/GetPlayerBans/v1/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamids={string.Join(",", steamIds)}")
+                .ConfigureAwait(false);
 
             return response == null ? null : JsonConvert.DeserializeObject<UserBansObject>(response).Players;
         }
 
         internal static async Task<UserOwnedGamesObject.Game[]> GetPlayerOwnedGames(ulong steamId)
         {
-            var response = await App.WebBrowser.GetStringAsync($"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId}&include_appinfo=true&include_played_free_games=1&format=json");
+            var response = await App.WebBrowser.GetStringAsync(
+                $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId}&include_appinfo=true&include_played_free_games=1&format=json")
+                .ConfigureAwait(false);
 
             return response == null ? null : JsonConvert.DeserializeObject<UserOwnedGamesObject>(response).Response.Games;
         }
 
         internal static async Task<UserFriendsObject.Friend[]> GetPlayerFriends(ulong steamId)
         {
-            var response = await App.WebBrowser.GetStringAsync($"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId}");
+            var response = await App.WebBrowser.GetStringAsync(
+                $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId}")
+                .ConfigureAwait(false);
 
             return response == null ? null : JsonConvert.DeserializeObject<UserFriendsObject>(response).FriendsList.Friends;
         }
