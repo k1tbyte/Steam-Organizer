@@ -62,6 +62,10 @@
     <v:String x:Key="acv_addDate">Account added:</v:String>
     <v:String x:Key="acv_updDate">Last account update:</v:String>
     <v:String x:Key="acv_regDateUnknown">The information is unknown, perhaps this is due to restrictions imposed on the account</v:String>
+    <v:String x:Key="acv_noAccounts" xml:space="preserve">No accounts yet...&#13;Click to add a new one!</v:String>
+    <v:String x:Key="acv_sortDesc">Sort descending</v:String>
+    <v:String x:Key="acv_sortAsc">Sort ascending</v:String>
+    <v:String x:Key="acv_editWithSort">Turn off sorting to see the changes</v:String>
     
     <!--#endregion-->
     

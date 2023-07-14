@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SteamOrganizer.Infrastructure;
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,13 +35,7 @@ namespace SteamOrganizer.Helpers
                     if(copiedFrom != null)
                     {
                         await ClipboardLocker.WaitAsync(1000);
-                        var toolTip             = App.Current.FindResource("CopiedToTooltip") as ToolTip;
-                        toolTip.PlacementTarget = copiedFrom;
-                        toolTip.IsOpen          = true;
-
-                        await Task.Delay(1000);
-
-                        toolTip.IsOpen          = false;
+                        await Utils.OpenAutoClosableToolTip(copiedFrom, App.FindString("copied_info"));
                         ClipboardLocker.Release();
                     }
                     

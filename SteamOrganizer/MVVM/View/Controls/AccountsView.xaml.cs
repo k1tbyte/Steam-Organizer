@@ -40,7 +40,7 @@ namespace SteamOrganizer.MVVM.View.Controls
         public AccountsView()
         {
             InitializeComponent();
-            this.DataContext = new AccountsViewModel();
+            this.DataContext = new AccountsViewModel(this);
             Loaded += (sender,e) => AccountsScrollViewer = Utils.FindVisualChild<ScrollViewer>(AccountsBox);
         }
 
@@ -156,6 +156,9 @@ namespace SteamOrganizer.MVVM.View.Controls
                     (DropToItem as Border).BorderThickness = ThicknessZero;
 
                 (DropToItem as Border).Background = OriginalBackground;
+
+                if(SortComboBox.SelectedIndex != -1)
+                    _ = Utils.OpenAutoClosableToolTip(DropToItem, App.FindString("acv_editWithSort"), 2000);
             }
 
             #region Dispose all stuff

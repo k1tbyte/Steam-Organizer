@@ -12,6 +12,7 @@ using System.IO;
 using System.Windows.Media;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Controls;
 
 namespace SteamOrganizer.Infrastructure
 {
@@ -208,6 +209,18 @@ namespace SteamOrganizer.Infrastructure
             }
 
             return null;
+        }
+
+        public static async Task OpenAutoClosableToolTip(FrameworkElement target, object content, int delay = 1000)
+        {
+            var toolTip             = App.Current.FindResource("AutoClosableToolTip") as ToolTip;
+            toolTip.Content         = content;
+            toolTip.PlacementTarget = target;
+            toolTip.IsOpen          = true;
+
+            await Task.Delay(delay);
+
+            toolTip.IsOpen = false;
         }
 
         public static DateTime? UnixTimeToDateTime(long unixtime)

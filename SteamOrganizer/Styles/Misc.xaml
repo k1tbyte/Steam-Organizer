@@ -3,8 +3,7 @@
 
     <CircleEase EasingMode="EaseInOut" x:Key="BaseAnimationFunction"/>
 
-    <ToolTip x:Key="CopiedToTooltip" 
-                     Content="{DynamicResource copied_info}" 
+    <ToolTip x:Key="AutoClosableToolTip" 
                      StaysOpen="True"
                      Placement="Bottom"
                      ToolTipService.InitialShowDelay="0"/>

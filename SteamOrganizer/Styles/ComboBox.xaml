@@ -17,13 +17,12 @@
                 <VisualStateGroup x:Name="CheckStates">
                     <VisualState x:Name="Checked">
                         <Storyboard>
-                            <ColorAnimation Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="{DynamicResource  TertiarySubColor}" Duration="0:0:0.125"/>
-                            <DoubleAnimation Storyboard.TargetName="Icon" Storyboard.TargetProperty="RotationAngle" To="180" Duration="0:0:0.3"/>
+                            <DoubleAnimation Storyboard.TargetName="Icon" Storyboard.TargetProperty="RotationAngle" To="180" Duration="0:0:0.2"/>
                         </Storyboard>
                     </VisualState>
                     <VisualState x:Name="Unchecked">
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="Icon" Storyboard.TargetProperty="RotationAngle" To="0" Duration="0:0:0.3"/>
+                            <DoubleAnimation Storyboard.TargetName="Icon" Storyboard.TargetProperty="RotationAngle" To="0" Duration="0:0:0.2"/>
                         </Storyboard>
                     </VisualState>
 
@@ -32,7 +31,7 @@
             </VisualStateManager.VisualStateGroups>
             <Border x:Name="Border"
                     Grid.ColumnSpan="2"
-                    CornerRadius="4" Background="{DynamicResource TertiaryBackgroundBrush}" >
+                    CornerRadius="4" Background="{TemplateBinding Background}" >
             </Border>
 
             <Icon:PackIconMaterial x:Name="Icon"  Kind="ChevronDown" Foreground="{DynamicResource SecondaryForegroundBrush}" HorizontalAlignment="Center"
@@ -58,31 +57,40 @@
         <Setter Property="MinHeight" Value="15" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontWeight" Value="Medium" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource SecondaryForegroundBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBox}">
                     <Grid>
                         <ToggleButton Template="{StaticResource ComboBoxToggleButton}"
+                                      Background="{TemplateBinding Background}"
                                       Focusable="false"
                                       ClickMode="Press"
                                       IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
                         <ContentPresenter x:Name="ContentSite"
-                                          IsHitTestVisible="False"
+                                          IsHitTestVisible="False" 
                                           Content="{TemplateBinding SelectionBoxItem}"
                                           ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                           ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                          Margin="5,3,23,3"
+                                          Margin="7,3,22,3"
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Left"/>
+
+                        <TextBlock x:Name="Hint" Text="{TemplateBinding Tag}"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center" IsHitTestVisible="False"
+                                   Margin="7 0 0 0" Visibility="Collapsed"
+                                   Foreground="{DynamicResource PrimaryForegroundBrush}" />
+
                         <Popup 
                                Placement="Bottom"  IsOpen="{TemplateBinding IsDropDownOpen}"
                                AllowsTransparency="True" Focusable="False"
                                PopupAnimation="Slide">
-                            <Border x:Name="DropDownBorder"  MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                            <Border x:Name="DropDownBorder" Effect="{StaticResource LightShadow}"  MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                     CornerRadius="0 0 4 4" MinWidth="{TemplateBinding ActualWidth}" Opacity="0.9"
-                                        Background="{DynamicResource TertiaryBackgroundBrush}">
+                                        Background="{TemplateBinding Background}" Margin="3 0 3 3">
                                 <ScrollViewer Margin="0,3,0,5" SnapsToDevicePixels="True">
                                     <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" VirtualizingStackPanel.IsVirtualizing="True" />
                                 </ScrollViewer>
@@ -96,6 +104,10 @@
                         <Trigger Property="IsGrouping" Value="true">
                             <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
                         </Trigger>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},Path=SelectedIndex}" Value="-1">
+                            <Setter TargetName="Hint" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="ContentSite" Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -121,7 +133,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource SecondarySubBrush}"/>
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource PrimarySubBrush}"/>
                             <Setter Property="Foreground" Value="{DynamicResource TertiaryForegroundBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>

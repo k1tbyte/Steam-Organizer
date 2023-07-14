@@ -4,12 +4,10 @@ using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
 using SteamOrganizer.MVVM.View.Extensions;
-using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
@@ -22,8 +20,16 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand RemoveAccountCommand { get; private set; }
         public RelayCommand PinAccountCommand { get; private set; }
         public RelayCommand AddAccountCommand { get; private set; }
+        public RelayCommand SortCommand { get; private set; }
         public ObservableCollection<Account> Accounts => App.Config.Database;
         private ICollectionView AccountsCollectionView;
+
+        private readonly string[] SortTypes = new string[]
+        {
+            nameof(Account.SteamID64), nameof(Account.AddedDate), nameof(Account.LastUpdateDate), nameof(Account.SteamLevel)
+        };
+
+        private readonly AccountsView View;
 
         private string _searchBarText;
         public string SearchBarText
@@ -31,6 +37,57 @@ namespace SteamOrganizer.MVVM.ViewModels
             get => _searchBarText;
             set => SetProperty(ref _searchBarText, value);
         }
+
+        #region Sorting
+
+        private bool _sortDirection;
+        public bool SortDirection
+        {
+            get => _sortDirection;
+            set
+            {
+                _sortDirection = value;
+                Sort();
+            }
+
+        }
+        private int _sortByIndex = -1;
+        public int SortByIndex
+        {
+            set
+            {
+                if (value.Equals(_sortByIndex))
+                {
+                    return;
+                }
+
+                if (value == 0)
+                {
+                    View.SortComboBox.SelectedIndex = -1;
+                    return;
+                }
+
+                _sortByIndex = value;
+                Sort();
+            }
+        }
+
+        private void Sort()
+        {
+            if (AccountsCollectionView.SortDescriptions.Count != 0)
+            {
+                AccountsCollectionView.SortDescriptions.Clear();
+            }
+
+            if (_sortByIndex == -1)
+            {
+                return;
+            }
+
+            AccountsCollectionView.SortDescriptions.Add(new SortDescription(SortTypes[_sortByIndex - 1], _sortDirection ? ListSortDirection.Descending : ListSortDirection.Ascending));
+        } 
+
+        #endregion
 
         #region Global DB Actions
         private void OnFailedDatabaseLoading(object sender, System.EventArgs e)
@@ -79,7 +136,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 App.STAInvoke(() =>
                 {
                     AccountsCollectionView = CollectionViewSource.GetDefaultView(Accounts);
-              //      AccountsCollectionView.Refresh();
+                   // AccountsCollectionView.Refresh();
                 });
             });
         } 
@@ -173,8 +230,9 @@ namespace SteamOrganizer.MVVM.ViewModels
             App.MainWindowVM.OpenPopupWindow(new AccountAddingView(),"New account");
         }
 
-        public AccountsViewModel()
+        public AccountsViewModel(AccountsView owner)
         {
+            View = owner;
             OpenProfileCommand = new RelayCommand((o) 
                 => Process.Start($"{WebBrowser.SteamProfilesHost}{SteamIdConverter.SteamID32ToID64((uint)o)}").Dispose());
 
@@ -183,19 +241,17 @@ namespace SteamOrganizer.MVVM.ViewModels
             PinAccountCommand    = new RelayCommand(OnPinningAccount);
             AddAccountCommand    = new RelayCommand(OnAddingAccount);
 
+            SortCommand = new RelayCommand((o) =>
+            {
+                SortByIndex = -1;
+            });
+
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
-            if(!App.Config.LoadDatabase())
+            if (!App.Config.LoadDatabase())
             {
                 App.Current.MainWindow.SourceInitialized += OnFailedDatabaseLoading;
                 return;
             }
-
-/*            for (uint i = 0; i < 20; i++)
-            {
-                Accounts.Add(new Account("Test account", "Password",i + 1));
-            }
-
-            OnDatabaseLoaded();*/
         }
 
     }

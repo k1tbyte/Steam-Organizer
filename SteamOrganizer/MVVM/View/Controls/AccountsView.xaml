@@ -20,11 +20,14 @@
     </UserControl.Resources>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="55"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
         <FrameworkElement x:Name="GrabbingCur" Cursor="/SteamOrganizer;component/Resources/grabbing.cur" Visibility="Collapsed" IsEnabled="False"/>
 
-        <StackPanel Margin="0 9 0 0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Top"
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
                     Orientation="Horizontal">
             
             <Border Margin="0 0 10 0"
@@ -65,26 +68,60 @@
                 </Button.Resources>
                 <Icon:PackIconMaterial Kind="Plus"/>
             </Button>
-            
+
+        </StackPanel>
+
+        <StackPanel Margin="0 0 5 0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+            <StackPanel.Resources>
+
+                <Icon:PackIconMaterial x:Key="Descending" Kind="SortAscending" />
+                <Icon:PackIconMaterial RenderTransformOrigin="0.5 0.5" x:Key="Ascending" Kind="SortAscending" RotationAngle="180">
+                    <Icon:PackIconMaterial.RenderTransform>
+                        <ScaleTransform ScaleX="-1"/>
+                    </Icon:PackIconMaterial.RenderTransform>
+                </Icon:PackIconMaterial>
+            </StackPanel.Resources>
+            <ComboBox x:Name="SortComboBox" 
+                      Width="105" Height="30" 
+                      Tag="Sort by"
+                     SelectedIndex="{Binding SortByIndex,Mode=OneWayToSource}">
+                <ComboBoxItem Content="None"/>
+                <ComboBoxItem Content="Creation date"/>
+                <ComboBoxItem Content="Date added"/>
+                <ComboBoxItem Content="Last update"/>
+                <ComboBoxItem Content="Level"/>
+            </ComboBox>
+
+            <ToggleButton Width="30" Style="{StaticResource DynamicContentButton}"
+                          IsChecked="{Binding SortDirection}"
+                          Content="{StaticResource Descending}"
+                          Tag="{StaticResource Ascending}" Margin="10 2 0 0">
+            </ToggleButton>
+
         </StackPanel>
 
 
         <ListBox x:Name="AccountsBox"
+                 Grid.Row="1"
                  Background="Transparent"
-                 Margin="7 55 0 10"
+                 Margin="7 0 0 10"
                  Padding="0 0 7 0"
                  BorderThickness="0"
                  ItemsSource="{Binding Accounts,Mode=OneWay}"
                  VirtualizingPanel.CacheLengthUnit="Page"
                  VirtualizingPanel.VirtualizationMode="Recycling"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 d:ItemsSource="{d:SampleData ItemCount=3}">
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <!-- d:ItemsSource="{d:SampleData ItemCount=3}"> -->
+            
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border CornerRadius="3" MinWidth="400" Height="105"
                             Background="{DynamicResource SecondaryBackgroundBrush}"
                             Padding="15"
-                            Margin="3"
+                            Margin="3 0 3 6"
                             DragEnter="Border_DragEnter"
                             DragLeave="Border_DragLeave"
                             QueryContinueDrag="Border_QueryContinueDrag"
@@ -349,6 +386,23 @@
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
         </ListBox>
+
+        <Grid HorizontalAlignment="Center" 
+              VerticalAlignment="Top"
+              Grid.Row="1"
+              Margin="0 60 0 0"
+              Visibility="{Binding Accounts.Count,Converter={StaticResource ToVisibilityInvertedConverter}}">
+            <Icon:PackIconMaterial Kind="ArrowUpRight" Margin="440 0 0 0"
+                                   Width="100" Height="100"
+                                   Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+            <TextBlock 
+                Foreground="{DynamicResource PrimaryForegroundBrush}"
+                FontSize="35" Width="330" TextWrapping="Wrap"
+                TextAlignment="Center" VerticalAlignment="Top"
+                FontWeight="Bold" Margin="0 40 0 0"
+                Text="{DynamicResource acv_noAccounts}"/>
+        </Grid>
+        
     </Grid>
 
     
