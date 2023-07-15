@@ -168,7 +168,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 #if !DEBUG
             Utils.InBackground(InitServices);
 #endif
-            CurrentView = new AccountsView();
+            CurrentView = new AccountPageView();
             SettingsCommand           = new RelayCommand(OnOpeningSettings);
             AccountsCommand           = new RelayCommand((o) => CurrentView = new AccountsView());
             OpenNotificationsCommand  = new RelayCommand(OnOpeningNotifications);

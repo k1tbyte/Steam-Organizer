@@ -1,4 +1,5 @@
-﻿using SteamOrganizer.Helpers;
+﻿using FlaUI.Core.Tools;
+using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
@@ -15,19 +16,14 @@ namespace SteamOrganizer.MVVM.ViewModels
 {
     internal sealed class AccountsViewModel : ObservableObject
     {
-        public RelayCommand OpenProfileCommand { get; private set; }
-        public RelayCommand ClearSearchBar { get; private set; }
-        public RelayCommand RemoveAccountCommand { get; private set; }
-        public RelayCommand PinAccountCommand { get; private set; }
-        public RelayCommand AddAccountCommand { get; private set; }
-        public RelayCommand SortCommand { get; private set; }
+        public RelayCommand OpenProfileCommand { get; }
+        public RelayCommand ClearSearchBar { get; }
+        public RelayCommand RemoveAccountCommand { get; }
+        public RelayCommand PinAccountCommand { get; }
+        public RelayCommand AddAccountCommand { get; }
+
         public ObservableCollection<Account> Accounts => App.Config.Database;
         private ICollectionView AccountsCollectionView;
-
-        private readonly string[] SortTypes = new string[]
-        {
-            nameof(Account.SteamID64), nameof(Account.AddedDate), nameof(Account.LastUpdateDate), nameof(Account.SteamLevel)
-        };
 
         private readonly AccountsView View;
 
@@ -35,10 +31,35 @@ namespace SteamOrganizer.MVVM.ViewModels
         public string SearchBarText
         {
             get => _searchBarText;
-            set => SetProperty(ref _searchBarText, value);
+            set 
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    AccountsCollectionView.Filter = null;
+                }
+                    
+                else if (AccountsCollectionView.Filter == null)
+                {
+                    AccountsCollectionView.Filter = OnCollectionFiltering;
+                }
+                    
+                _searchBarText = value;
+
+                if (value == null)
+                {
+                    OnPropertyChanged();
+                }
+                    
+                AccountsCollectionView.Refresh();
+            } 
         }
 
         #region Sorting
+
+        private readonly string[] SortTypes = new string[]
+{
+            nameof(Account.SteamID64), nameof(Account.AddedDate), nameof(Account.LastUpdateDate), nameof(Account.SteamLevel)
+};
 
         private bool _sortDirection;
         public bool SortDirection
@@ -120,7 +141,9 @@ namespace SteamOrganizer.MVVM.ViewModels
             void OnInstallationCanceled()
             {
                 if (App.Config.DatabaseKey == null)
+                {
                     App.Shutdown();
+                }
             }
         }
         private void OnDatabaseLoaded()
@@ -141,6 +164,16 @@ namespace SteamOrganizer.MVVM.ViewModels
             });
         } 
         #endregion
+
+        private bool OnCollectionFiltering(object param)
+        {
+            if (!(param is Account acc))
+            {
+                return false;
+            }
+
+            return acc.Nickname.IndexOf(_searchBarText, System.StringComparison.InvariantCultureIgnoreCase) >= 0;
+        }
 
         private void OnRemovingAccount(object param)
         {
@@ -240,11 +273,6 @@ namespace SteamOrganizer.MVVM.ViewModels
             RemoveAccountCommand = new RelayCommand(OnRemovingAccount);
             PinAccountCommand    = new RelayCommand(OnPinningAccount);
             AddAccountCommand    = new RelayCommand(OnAddingAccount);
-
-            SortCommand = new RelayCommand((o) =>
-            {
-                SortByIndex = -1;
-            });
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
             if (!App.Config.LoadDatabase())

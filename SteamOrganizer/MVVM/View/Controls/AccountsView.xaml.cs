@@ -1,12 +1,7 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Models;
-using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.ViewModels;
-using System;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -93,40 +88,52 @@ namespace SteamOrganizer.MVVM.View.Controls
         private void Border_DragEnter(object sender, DragEventArgs e)
         {
             if (!IsInitialDragFeedback)
+            {
                 return;
-
+            }
+                
             var border = sender as Border;
             var acc = border.DataContext as Account;
 
             if (DragAccount.Equals(acc) || (acc.Pinned && !DragAccount.Pinned) || (DragAccount.Pinned && !acc.Pinned))
+            {
                 return;
+            }
 
             DropToItem = border;
             border.Background = DragOverBackground;
 
             if (!(border.DataContext as Account).Pinned)
+            {
                 border.BorderThickness = ThicknessOne;
+            }
         }
 
         private void Border_DragLeave(object sender, DragEventArgs e)
         {
             if (!IsInitialDragFeedback)
+            {
                 return;
-
+            }
+                
             DropToItem = null;
 
             var border = sender as Border;
             border.Background = OriginalBackground;
 
             if (!(border.DataContext as Account).Pinned)
+            {
                 border.BorderThickness = ThicknessZero;
+            }
             
         }
 
         private void AccountsBox_DragOver(object sender, DragEventArgs e)
         {
             if (_dragAdorner != null)
+            {
                 _dragAdorner.PointOffset = e.GetPosition(AccountsBox);
+            }
 
             double mouseYRelativeToContainer = e.GetPosition(AccountsBox).Y;
 
@@ -145,20 +152,26 @@ namespace SteamOrganizer.MVVM.View.Controls
         private void Border_QueryContinueDrag(object sender, QueryContinueDragEventArgs e)
         {
             if (e.KeyStates.HasFlag(DragDropKeyStates.LeftMouseButton))
+            {
                 return;
-
+            }
+                
             if (DropToItem != null)
             {
                 App.Config.Database.Move(App.Config.Database.IndexOf(DragAccount), App.Config.Database.IndexOf(DropToItem.DataContext as Account));
                 App.Config.SaveDatabase();
 
                 if (!(DropToItem.DataContext as Account).Pinned)
+                {
                     (DropToItem as Border).BorderThickness = ThicknessZero;
+                }
 
                 (DropToItem as Border).Background = OriginalBackground;
 
                 if(SortComboBox.SelectedIndex != -1)
+                {
                     _ = Utils.OpenAutoClosableToolTip(DropToItem, App.FindString("acv_editWithSort"), 2000);
+                }
             }
 
             #region Dispose all stuff

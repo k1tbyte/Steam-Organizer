@@ -161,11 +161,15 @@
     <Compile Include="MVVM\Models\Account.cs" />
     <Compile Include="MVVM\Models\Notification.cs" />
     <Compile Include="MVVM\ViewModels\AccountAddingViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\AccountPageViewModel.cs" />
     <Compile Include="MVVM\ViewModels\AccountsViewModel.cs" />
     <Compile Include="MVVM\ViewModels\MainWindowViewModel.cs" />
     <Compile Include="MVVM\ViewModels\SettingsViewModel.cs" />
     <Compile Include="MVVM\View\Controls\AccountAddingView.xaml.cs">
       <DependentUpon>AccountAddingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Controls\AccountPageView.xaml.cs">
+      <DependentUpon>AccountPageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\Controls\AccountsView.xaml.cs">
       <DependentUpon>AccountsView.xaml</DependentUpon>
@@ -200,6 +204,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\Controls\AccountAddingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Controls\AccountPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

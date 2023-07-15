@@ -14,7 +14,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         private readonly AccountAddingView View;
         
         private bool IsLoading = false;
-        public AsyncRelayCommand AddCommand { get; private set; }
+        public AsyncRelayCommand AddCommand { get; }
             
         public string Login { get; set; }
         public string Password { get; set; }

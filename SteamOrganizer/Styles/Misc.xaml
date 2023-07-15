@@ -1,5 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks">
 
     <CircleEase EasingMode="EaseInOut" x:Key="BaseAnimationFunction"/>
 
@@ -42,6 +42,72 @@
                 </BeginStoryboard>
             </EventTrigger>
         </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type TabItem}">
+        <Setter Property="Foreground" Value="{DynamicResource SecondaryForegroundBrush}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Grid Background="Transparent">
+                        <StackPanel Orientation="Horizontal" Name="Border"
+                                    Margin="10 0 10 0">
+
+                            <Icon:PackIconMaterial x:Name="Icon" Kind="{TemplateBinding Tag}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                            <ContentPresenter x:Name="ContentSite"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        Margin="5 0 0 0"/>
+                        </StackPanel>
+
+                        <Rectangle x:Name="Effect"
+                                       Visibility="Collapsed"
+                                       Height="2" Margin="-30 0 -30 -10"
+                                       Fill="{DynamicResource EffectGrad}"
+                                       VerticalAlignment="Bottom"/>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Border" Property="TextBlock.Foreground" Value="{DynamicResource LightBlueGrad}"/>
+                            <Setter TargetName="Effect" Property="Visibility" Value="Visible"/>
+
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type TabControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabControl">
+                    <Grid >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Rectangle Height="2" Fill="{DynamicResource PrimaryBackgroundBrush}"
+                                        VerticalAlignment="Bottom"/>
+
+                        <TabPanel IsItemsHost="True" Margin="0 10 0 10"
+                                      HorizontalAlignment="Center"/>
+
+                        <ContentPresenter  ContentSource="SelectedContent" Grid.Row="1"  />
+
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 
