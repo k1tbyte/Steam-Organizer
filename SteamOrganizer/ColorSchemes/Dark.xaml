@@ -32,7 +32,12 @@
         <GradientStop Offset="0" Color="#292848" />
         <GradientStop Offset="0.7" Color="#2f2f4b"/>
     </LinearGradientBrush>
-    
+
+    <LinearGradientBrush x:Key="SuccessGrad" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#26F596" Offset="0" />
+        <GradientStop Color="#0499F2" Offset="1" />
+    </LinearGradientBrush>
+
     <LinearGradientBrush x:Key="EffectGrad" >
         <GradientStop Color="Transparent" Offset="0.1"/>
         <GradientStop Color="#6c5ecf" Offset="0.5"/>

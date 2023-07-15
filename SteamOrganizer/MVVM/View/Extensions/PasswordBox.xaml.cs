@@ -99,6 +99,5 @@ namespace SteamOrganizer.MVVM.View.Extensions
                 AllowCallback = true;
             };
         }
-
     }
 }

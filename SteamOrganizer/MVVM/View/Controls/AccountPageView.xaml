@@ -24,6 +24,46 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+
+        <ControlTemplate x:Key="BanChipTemplate" TargetType="ContentControl">
+            <Border Background="{DynamicResource BackgroundGrad}"
+                    Padding="15 13 15 13" MinHeight="50"
+                    CornerRadius="12" Width="225">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock  Text="{TemplateBinding Uid}"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Left"/>
+                    <Icon:PackIconMaterial x:Name="Icon" 
+                                           Kind="CheckDecagram" 
+                                           VerticalAlignment="Center"   
+                                           Foreground="{DynamicResource SuccessGrad}"
+                                           HorizontalAlignment="Right" 
+                                           Width="25" Height="25"/>
+
+                    <TextBlock x:Name="BanDescription"
+                               Visibility="Collapsed"
+                               Text="{TemplateBinding Content}"
+                               TextWrapping="Wrap"
+                               Grid.Row="1"
+                               Foreground="{DynamicResource PrimarySubBrush}"
+                               Margin="0 7 0 0"
+                               FontWeight="Normal" FontSize="12"/>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <DataTrigger Binding="{Binding Tag,RelativeSource={RelativeSource Self},Converter={StaticResource ToBooleanConverter}}" Value="True">
+                    <Setter TargetName="BanDescription" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="Icon" Property="Kind" Value="{x:Static Icon:PackIconMaterialKind.AlertDecagram}"/>
+                    <Setter TargetName="Icon" Property="Foreground" Value="PaleVioletRed"/>
+                </DataTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        
     </ScrollViewer.Resources>
 
     <DockPanel VerticalAlignment="Top" Margin="0 10 0 10"
@@ -183,56 +223,60 @@
             <TabControl>
 
                 <TabItem Header="Profile" Tag="{x:Static Icon:PackIconMaterialKind.AccountCircleOutline}">
-                    <DockPanel VerticalAlignment="Top" Margin="15 25 15 15">
-                        
-                        <Border Background="{DynamicResource BackgroundGrad}"
-                                Width="220" Height="150"
+
+                    <StackPanel>
+
+                        <!--#region Badges -->
+                        <DockPanel VerticalAlignment="Top" Margin="15 25 15 15">
+
+                            <Border Background="{DynamicResource BackgroundGrad}"
+                                Width="225" Height="150"
                                 CornerRadius="12"
                                 Padding="15">
-                            <Grid >
-                                <Icon:PackIconMaterial Kind="Steam" Height="40" Width="40"
+                                <Grid>
+                                    <Icon:PackIconMaterial Kind="Steam" Height="40" Width="40"
                                                        Foreground="{DynamicResource PrimarySubBrush}"/>
-                                
-                                <TextBlock Margin="50 10 0 0" VerticalAlignment="Top"
+
+                                    <TextBlock Margin="50 10 0 0" VerticalAlignment="Top"
                                            FontSize="15" Text="Years of service"/>
 
-                                <TextBlock VerticalAlignment="Bottom"
+                                    <TextBlock VerticalAlignment="Bottom"
                                            FontSize="13"
                                            HorizontalAlignment="Left"
                                            Margin="0 0 0 15">
                                     <Run Text="Account registered"                                            FontWeight="Normal"/>
                                     <LineBreak/>
                                     <Run Text="12.11.2013 18:22" Foreground="{DynamicResource PrimarySubBrush}"/>
-                                </TextBlock>
+                                    </TextBlock>
 
 
-                                <Rectangle HorizontalAlignment="Right"
+                                    <Rectangle HorizontalAlignment="Right"
                                            RadiusY="5" RadiusX="5"
                                            Stroke="{DynamicResource PrimarySubBrush}"
-                                           StrokeThickness="1.5"
+                                           StrokeThickness="1"
                                            VerticalAlignment="Bottom"
                                            Height="50" Width="50">
-                                    <Rectangle.Fill>
-                                        <ImageBrush Opacity="0.7" ImageSource="/Resources/Images/SteamYearsBadges/year10.png"/>
-                                    </Rectangle.Fill>
-                                </Rectangle>
+                                        <Rectangle.Fill>
+                                            <ImageBrush Opacity="0.7" ImageSource="/Resources/Images/SteamYearsBadges/year10.png"/>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
 
-                            </Grid>
-                        </Border>
+                                </Grid>
+                            </Border>
 
-                        <Border Background="{DynamicResource BackgroundGrad}"
-                                Width="220" Height="150"
+                            <Border Background="{DynamicResource BackgroundGrad}"
+                                Width="225" Height="150"
                                 HorizontalAlignment="Right"
                                 CornerRadius="12"
                                 Padding="15">
-                            <Grid>
-                                <Icon:PackIconMaterial Kind="GoogleController" Height="40" Width="40"
+                                <Grid>
+                                    <Icon:PackIconMaterial Kind="GoogleController" Height="40" Width="40"
                                                        Foreground="{DynamicResource PrimarySubBrush}"/>
 
-                                <TextBlock Margin="50 10 0 0" VerticalAlignment="Top"
+                                    <TextBlock Margin="50 10 0 0" VerticalAlignment="Top"
                                            FontSize="15" Text="Game collection"/>
 
-                                <TextBlock VerticalAlignment="Bottom"
+                                    <TextBlock VerticalAlignment="Bottom"
                                            FontSize="13"
                                            HorizontalAlignment="Left"
                                            Margin="0 0 0 0">
@@ -243,19 +287,95 @@
                                     <Run Text="Of them played"                                            FontWeight="Normal"/>
                                     <LineBreak/>
                                     <Run Text="64 (50.0%) 12,851 h" Foreground="{DynamicResource PrimarySubBrush}"/>
-                                </TextBlock>
+                                    </TextBlock>
 
-                                <Rectangle HorizontalAlignment="Right"
+                                    <Rectangle HorizontalAlignment="Right"
                                            VerticalAlignment="Bottom"
                                            Height="50" Width="50">
-                                    <Rectangle.Fill>
-                                        <ImageBrush Opacity="0.8" ImageSource="/Resources/Images/SteamGamesBadges/100.png"/>
-                                    </Rectangle.Fill>
-                                </Rectangle>
-                                
-                            </Grid>
-                        </Border>
-                    </DockPanel>
+                                        <Rectangle.Fill>
+                                            <ImageBrush Opacity="0.8" ImageSource="/Resources/Images/SteamGamesBadges/100.png"/>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+
+                                </Grid>
+                            </Border>
+                        </DockPanel>
+                        <!--#endregion-->
+
+                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
+
+                        <!--#region Bans -->
+                        <Grid Margin="15">
+
+                            <StackPanel  HorizontalAlignment="Left">
+                                <ContentControl Uid="VAC ban"
+                                                Margin="0 0 0 15"
+                                                Tag="{Binding Test,Mode=OneWay}"
+                                                Template="{StaticResource BanChipTemplate}"/>
+
+                                <ContentControl Uid="Community ban"
+                                                Tag="{Binding Test,Mode=OneWay}" 
+                                                Template="{StaticResource BanChipTemplate}"/>
+                            </StackPanel>
+
+
+                            <StackPanel HorizontalAlignment="Right">
+
+                                <ContentControl Uid="Game ban"
+                                                Margin="0 0 0 15"
+                                                d:Content="Bans received in some games: Counter Strike Global Offensive, Naraka Bladepoint"
+                                                Tag="{Binding Test,Mode=OneWay}" d:Tag=""
+                                                Template="{StaticResource BanChipTemplate}"/>
+
+                                <ContentControl Uid="Economy ban"
+                                                Tag="{Binding Test,Mode=OneWay}"
+                                                Template="{StaticResource BanChipTemplate}"/>
+
+                            </StackPanel>
+
+                        </Grid>
+                        <!--#endregion-->
+
+                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
+
+                        <Grid Margin="15 5 15 5" TextBlock.FontWeight="Normal">
+
+                            <StackPanel Width="225" HorizontalAlignment="Left">
+
+                                <ext:TemplateDecorator Title="Steam login" Icon="{x:Static Icon:PackIconMaterialKind.Account}">
+                                    <TextBox Style="{StaticResource ModernTextBox}"
+                                     Height="35"
+                                     Foreground="{DynamicResource SecondaryForegroundBrush}"
+                                     Background="{DynamicResource TertiaryBackgroundBrush}"/>
+                                </ext:TemplateDecorator>
+
+                                <ext:TemplateDecorator Title="Steam password" Icon="{x:Static Icon:PackIconMaterialKind.Key}">
+                                    <ext:PasswordBox CornerRadius="5"
+                                                     SelectionBrush="{DynamicResource LightBlueGrad}"
+                                                     Foreground="{DynamicResource SecondaryForegroundBrush}"
+                                                     Background="{DynamicResource TertiaryBackgroundBrush}"/>
+                                </ext:TemplateDecorator>
+                            </StackPanel>
+
+                            <StackPanel Width="225" HorizontalAlignment="Right">
+                                <ext:TemplateDecorator Title="Steam email" Icon="{x:Static Icon:PackIconMaterialKind.Account}">
+                                    <TextBox Style="{StaticResource ModernTextBox}"
+                                     Height="35"
+                                     Foreground="{DynamicResource SecondaryForegroundBrush}"
+                                     Background="{DynamicResource TertiaryBackgroundBrush}"/>
+                                </ext:TemplateDecorator>
+
+                                <ext:TemplateDecorator Title="Steam email password" Icon="{x:Static Icon:PackIconMaterialKind.Key}">
+                                    <ext:PasswordBox CornerRadius="5"
+                                                     SelectionBrush="{DynamicResource LightBlueGrad}"
+                                                     Foreground="{DynamicResource SecondaryForegroundBrush}"
+                                                     Background="{DynamicResource TertiaryBackgroundBrush}"/>
+                                </ext:TemplateDecorator>
+                            </StackPanel>
+                        </Grid>
+
+                    </StackPanel>
+
                 </TabItem>
                 <TabItem Header="Games" Tag="{x:Static Icon:PackIconMaterialKind.GamepadVariantOutline}">
 

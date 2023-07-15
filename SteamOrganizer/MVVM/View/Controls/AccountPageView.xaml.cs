@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using SteamOrganizer.MVVM.ViewModels;
+using System.Windows.Controls;
 
 namespace SteamOrganizer.MVVM.View.Controls
 {
@@ -7,6 +8,7 @@ namespace SteamOrganizer.MVVM.View.Controls
         public AccountPageView()
         {
             InitializeComponent();
+            this.DataContext = new AccountPageViewModel();
         }
     }
 }
