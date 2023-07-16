@@ -24,7 +24,7 @@ namespace SteamOrganizer.MVVM.View.Windows
             InitializeComponent();
 
             this.DataContext = new MainWindowViewModel(this);
-            Sidebar.Width = (double)App.Config.SideBarState;
+            SetMenuState(((double)App.Config.SideBarState)-1d);
             RoundOffBorders();
         }
 
@@ -88,23 +88,30 @@ namespace SteamOrganizer.MVVM.View.Windows
 
             var offsetY = Win32.GetMousePosition().X - (this.WindowState == WindowState.Maximized ? 0 : this.Left);
 
-            //TODO: Enum of panel positions and save to config
-            if (offsetY < 30 && Sidebar.Width != 0)
-            {
-                Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Hidden);
-            }
-            else if (offsetY > 60 && offsetY < 100 && Sidebar.Width != 70)
-            {
-                Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Open);
-            }
-            else if (offsetY > 180 && Sidebar.Width != 200)
-            {
-                Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Expanded);
-            }
+            SetMenuState(offsetY);
 
             App.Config.IsPropertiesChanged = true;
             MenuExpanderOnMouseLeave(sender, null);
             e.Handled = true;
+        }
+
+        private void SetMenuState(double offsetY)
+        {
+            if (offsetY < 30 && Sidebar.Width != 0)
+            {
+                Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Hidden);
+                this.MinWidth = 780d;
+            }
+            else if (offsetY > 60 && offsetY < 100 && Sidebar.Width != 70)
+            {
+                Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Open);
+                this.MinWidth = 850d;
+            }
+            else if (offsetY > 180 && Sidebar.Width != 200)
+            {
+                Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Expanded);
+                this.MinWidth = 980d;
+            }
         }
 
         private void MenuExpanderOnLeftMouseDown(object sender, MouseButtonEventArgs e)

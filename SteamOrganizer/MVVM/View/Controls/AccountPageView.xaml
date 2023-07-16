@@ -4,12 +4,11 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:viewModel="clr-namespace:SteamOrganizer.MVVM.ViewModels"
-      xmlns:local="clr-namespace:SteamOrganizer.MVVM.View.Controls"
       xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
       xmlns:ext="clr-namespace:SteamOrganizer.MVVM.View.Extensions"
       Style="{StaticResource OpacityScroll}"
       mc:Ignorable="d" 
-      d:DesignHeight="900" d:DesignWidth="1200"
+      d:DesignHeight="830" d:DesignWidth="780"
       d:Background="{DynamicResource PrimaryBackgroundBrush}"
       d:DataContext="{d:DesignInstance viewModel:AccountPageViewModel}">
     <ScrollViewer.Resources>
@@ -24,7 +23,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
 
         <ControlTemplate x:Key="BanChipTemplate" TargetType="ContentControl">
             <Border Background="{DynamicResource BackgroundGrad}"
@@ -63,7 +61,7 @@
                 </DataTrigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
-        
+
     </ScrollViewer.Resources>
 
     <DockPanel VerticalAlignment="Top" Margin="0 10 0 10"
@@ -176,6 +174,32 @@
             </Border>
             
             <!--#endregion-->
+
+            <Border CornerRadius="5"
+                    Background="{DynamicResource SecondaryBackgroundBrush}"
+                    Margin="0 10 0 0" Padding="10">
+                <Grid>
+                    <Icon:PackIconMaterial Kind="TwoFactorAuthentication"
+                                           Width="30"
+                                           Height="30"
+                                           Foreground="{DynamicResource PrimarySubBrush}"/>
+                    <TextBlock Text="Code generator"
+                               VerticalAlignment="Top"
+                               Margin="40 7 0 0"
+                               FontWeight="Medium"
+                               Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+
+                    <Icon:PackIconMaterial Cursor="Hand"
+                                           Background="Transparent"
+                                           Kind="PlusCircle" 
+                                           VerticalAlignment="Center"   
+                                           Foreground="{DynamicResource LightBlueGrad}"
+                                           HorizontalAlignment="Right" 
+                                           Width="25" Height="25"/>
+
+
+                </Grid>
+            </Border>
 
             <!--#region Links -->
             
@@ -338,11 +362,15 @@
 
                         <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
 
-                        <Grid Margin="15 5 15 5" TextBlock.FontWeight="Normal">
 
-                            <StackPanel Width="225" HorizontalAlignment="Left">
-
-                                <ext:TemplateDecorator Title="Steam login" Icon="{x:Static Icon:PackIconMaterialKind.Account}">
+                        <!--#region Credentials -->
+                        <Expander Margin="15 10" 
+                                  Tag="{x:Static Icon:PackIconMaterialKind.Fingerprint}"
+                                  Uid="Steam credentials"
+                                  OverridesDefaultStyle="True" Template="{StaticResource  ExpanderTemplate}">
+                            <StackPanel HorizontalAlignment="Left" Width="300">
+                                <ext:TemplateDecorator Title="Steam login" Icon="{x:Static Icon:PackIconMaterialKind.Account}"
+                                                       Margin="0 0 0 10">
                                     <TextBox Style="{StaticResource ModernTextBox}"
                                      Height="35"
                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
@@ -356,23 +384,65 @@
                                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
                                 </ext:TemplateDecorator>
                             </StackPanel>
+                        </Expander>
 
-                            <StackPanel Width="225" HorizontalAlignment="Right">
-                                <ext:TemplateDecorator Title="Steam email" Icon="{x:Static Icon:PackIconMaterialKind.Account}">
-                                    <TextBox Style="{StaticResource ModernTextBox}"
-                                     Height="35"
+                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
+
+                        <Expander Margin="15 10" 
+                                  Tag="{x:Static Icon:PackIconMaterialKind.LinkVariant}"
+                                  Uid="Credentials of external links"
+                                  OverridesDefaultStyle="True" Template="{StaticResource  ExpanderTemplate}">
+                            <StackPanel  HorizontalAlignment="Left" Width="300">
+
+                                <ext:TemplateDecorator Title="E-mail adress" Icon="{x:Static Icon:PackIconMaterialKind.At}"
+                                                       Margin="0 0 0 10" >
+                                    <TextBox Style="{StaticResource ModernTextBox}" Height="35"
                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
                                 </ext:TemplateDecorator>
 
-                                <ext:TemplateDecorator Title="Steam email password" Icon="{x:Static Icon:PackIconMaterialKind.Key}">
+                                <ext:TemplateDecorator Title="Pasword" Icon="{x:Static Icon:PackIconMaterialKind.KeyLink}">
                                     <ext:PasswordBox CornerRadius="5"
                                                      SelectionBrush="{DynamicResource LightBlueGrad}"
                                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
                                 </ext:TemplateDecorator>
                             </StackPanel>
-                        </Grid>
+                        </Expander>
+                        <!--#endregion-->
+
+                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
+
+                        <!--#region Note -->
+                        <Border Margin="15" Background="{DynamicResource BackgroundGrad}" 
+                                CornerRadius="10" Padding="8">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Icon:PackIconMaterial Kind="NoteEdit"
+                                                       Margin="5" Width="20"
+                                                       Height="20"
+                                                       Foreground="{DynamicResource PrimarySubBrush}"/>
+
+                                <TextBlock  Margin="35 -2 0 0" Text="Note abount account"
+                                            VerticalAlignment="Center"/>
+
+                                <TextBox Grid.Row="1" Background="Transparent" BorderThickness="0"
+                                         FontWeight="Normal" MinHeight="80" MaxHeight="280"
+                                         AcceptsReturn="True"
+                                         VerticalScrollBarVisibility="Auto"
+                                         AcceptsTab="True"
+                                         Padding="3" MaxLength="300"
+                                         FontSize="12"
+                                         TextWrapping="Wrap" CaretBrush="{DynamicResource LightBlueGrad}"
+                                         SelectionBrush="{DynamicResource LightBlueGrad}"
+                                         Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+
+                            </Grid>
+                        </Border>
+                        <!--#endregion-->
 
                     </StackPanel>
 

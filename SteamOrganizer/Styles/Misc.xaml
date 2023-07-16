@@ -3,6 +3,62 @@
 
     <CircleEase EasingMode="EaseInOut" x:Key="BaseAnimationFunction"/>
 
+    <ControlTemplate x:Key="ExpanderTemplate" TargetType="Expander">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Background="{DynamicResource BackgroundGrad}"
+                                    CornerRadius="10" Width="40" Height="40"
+                                    HorizontalAlignment="Left">
+                <Icon:PackIconMaterial Kind="{TemplateBinding Tag}" Width="20" Height="20"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Border>
+
+            <TextBlock Text="{TemplateBinding Uid}" 
+                                       VerticalAlignment="Center"
+                                       Margin="50 0 0 0"
+                                       FontSize="15"/>
+
+            <ToggleButton  x:Name="ExpanderButton" DockPanel.Dock="Right" Width="50" Cursor="Hand"
+                                           HorizontalAlignment="Right" FocusVisualStyle="{x:Null}"
+                                           IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
+                <ToggleButton.Template>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Icon:PackIconMaterial x:Name="Icon" Kind="ChevronDown" 
+                                                               Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CheckStates">
+                                    <VisualState x:Name="Checked">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="Icon" Storyboard.TargetProperty="RotationAngle" To="180" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Unchecked">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="Icon" Storyboard.TargetProperty="RotationAngle" To="0" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </Icon:PackIconMaterial>
+                    </ControlTemplate>
+                </ToggleButton.Template>
+            </ToggleButton>
+
+            <ContentPresenter  x:Name="Content" Visibility="Collapsed" Grid.Row="1" Margin="15 10 15 0" Content="{TemplateBinding Content}"/>
+
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsExpanded" Value="True">
+                <Setter Property="Background" Value="White"/>
+                <Setter TargetName="Content" Property="Visibility" Value="Visible"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
     <ToolTip x:Key="AutoClosableToolTip" 
                      StaysOpen="True"
                      Placement="Bottom"
@@ -52,7 +108,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabItem">
-                    <Grid Background="Transparent">
+                    <Grid Background="Transparent" Cursor="Hand">
                         <StackPanel Orientation="Horizontal" Name="Border"
                                     Margin="10 0 10 0">
 

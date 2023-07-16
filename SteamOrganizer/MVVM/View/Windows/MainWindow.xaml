@@ -13,8 +13,7 @@
         AllowsTransparency="True"
         Background="Transparent"
         WindowState="Normal"
-        MinHeight="550" MinWidth="900"
-        Width="1100"
+        MinHeight="550" MinWidth="980"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="1"/>
