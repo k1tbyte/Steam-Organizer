@@ -1,14 +1,15 @@
 ﻿using SteamOrganizer.MVVM.ViewModels;
 using System.Windows.Controls;
+using SteamOrganizer.MVVM.Models;
 
 namespace SteamOrganizer.MVVM.View.Controls
 {
     public partial class AccountPageView : ScrollViewer
     {
-        public AccountPageView()
+        internal AccountPageView(Account account)
         {
             InitializeComponent();
-            this.DataContext = new AccountPageViewModel();
+            this.DataContext = new AccountPageViewModel(account);
         }
     }
 }

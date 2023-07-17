@@ -88,7 +88,7 @@
 
                     <TextBlock Margin="0 10 0 0" 
                            HorizontalAlignment="Center"
-                           Text="Design nickname"
+                           Text="{Binding CurrentAccount.Nickname,Mode=OneWay}"
                            Foreground="{DynamicResource TertiaryForegroundBrush}"
                            FontWeight="Medium"
                            Opacity="0.9"
@@ -114,6 +114,7 @@
             <!--#region Summaries -->
             
             <Border CornerRadius="5"
+                    Visibility="{Binding AdditionalControlsVis,Mode=OneWay}"
                     Background="{DynamicResource SecondaryBackgroundBrush}"
                     Padding="0 20 0 15"
                     Margin="0 10 0 0" TextBlock.FontSize="14"
@@ -208,7 +209,7 @@
                     Margin="0 10 0 0" TextBlock.FontSize="14"
                     TextBlock.FontWeight="Medium">
 
-                <StackPanel>
+                <StackPanel Visibility="{Binding AdditionalControlsVis,Mode=OneWay}">
 
                     <TextBlock Text="Games"  Style="{StaticResource Links}"/>
 
@@ -251,7 +252,7 @@
                     <StackPanel>
 
                         <!--#region Badges -->
-                        <DockPanel VerticalAlignment="Top" Margin="15 25 15 15">
+                        <DockPanel Visibility="{Binding AdditionalControlsVis,Mode=OneWay}" VerticalAlignment="Top" Margin="15 25 15 15">
 
                             <Border Background="{DynamicResource BackgroundGrad}"
                                 Width="225" Height="150"
@@ -326,10 +327,11 @@
                         </DockPanel>
                         <!--#endregion-->
 
-                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
+                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"
+                                   Visibility="{Binding AdditionalControlsVis,Mode=OneWay}"/>
 
                         <!--#region Bans -->
-                        <Grid Margin="15">
+                        <Grid Margin="15" Visibility="{Binding AdditionalControlsVis,Mode=OneWay}">
 
                             <StackPanel  HorizontalAlignment="Left">
                                 <ContentControl Uid="VAC ban"
@@ -360,7 +362,8 @@
                         </Grid>
                         <!--#endregion-->
 
-                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
+                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"
+                                   Visibility="{Binding AdditionalControlsVis,Mode=OneWay}"/>
 
 
                         <!--#region Credentials -->

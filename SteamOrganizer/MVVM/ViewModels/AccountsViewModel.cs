@@ -21,6 +21,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand RemoveAccountCommand { get; }
         public RelayCommand PinAccountCommand { get; }
         public RelayCommand AddAccountCommand { get; }
+        public RelayCommand OpenAccountPageCommand { get; }
 
         public ObservableCollection<Account> Accounts => App.Config.Database;
         private ICollectionView AccountsCollectionView;
@@ -273,6 +274,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             RemoveAccountCommand = new RelayCommand(OnRemovingAccount);
             PinAccountCommand    = new RelayCommand(OnPinningAccount);
             AddAccountCommand    = new RelayCommand(OnAddingAccount);
+            OpenAccountPageCommand = new RelayCommand((o) => App.MainWindowVM.CurrentView = new AccountPageView(o as Account));
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
             if (!App.Config.LoadDatabase())

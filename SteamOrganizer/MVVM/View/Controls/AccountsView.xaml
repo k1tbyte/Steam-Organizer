@@ -178,6 +178,8 @@
                                            FontSize="15"  />
 
                                 <Button Style="{StaticResource TransparentButton}"
+                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.OpenAccountPageCommand,Mode=OneTime}"
+                                        CommandParameter="{Binding}"
                                         Background="{DynamicResource PrimarySubBrush}">
                                     <Icon:PackIconMaterial Kind="Pen" Width="13" Height="13"
                                                            Foreground="{DynamicResource TertiaryForegroundBrush}"/>
