@@ -16,10 +16,14 @@
                                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
 
-            <TextBlock Text="{TemplateBinding Uid}" 
+            <StackPanel Margin="50 0 0 0" Orientation="Horizontal">
+                <TextBlock Text="{TemplateBinding Uid}" 
                                        VerticalAlignment="Center"
-                                       Margin="50 0 0 0"
+                                       
                                        FontSize="15"/>
+                <ContentPresenter Content="{TemplateBinding Header}" Margin="10 0 0 0" VerticalAlignment="Center"/>
+            </StackPanel>
+
 
             <ToggleButton  x:Name="ExpanderButton" DockPanel.Dock="Right" Width="50" Cursor="Hand"
                                            HorizontalAlignment="Right" FocusVisualStyle="{x:Null}"

@@ -1,17 +1,31 @@
-﻿using SteamOrganizer.MVVM.ViewModels;
-using System.Windows.Controls;
+﻿using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Models;
-using System.Diagnostics;
+using SteamOrganizer.MVVM.ViewModels;
+using System.Windows.Controls;
 
 namespace SteamOrganizer.MVVM.View.Controls
 {
-    public partial class AccountPageView : ScrollViewer
+    public partial class AccountPageView : Grid
     {
-        private readonly AccountPageViewModel ViewModel;
-        internal AccountPageView(Account account)
+        private AccountPageViewModel ViewModel;
+        internal AccountPageView()
         {
             InitializeComponent();
-            this.DataContext = ViewModel = new AccountPageViewModel(account);
+        }
+
+        internal void OpenPage(Account account)
+        {
+            account.ThrowIfNull();
+
+            if(ViewModel == null || !ViewModel.CurrentAccount.Equals(account))
+            {
+                this.DataContext             = ViewModel = new AccountPageViewModel(account);
+                IDComboBox.SelectedIndex = 0;
+                SteamExpander.IsExpanded = LinksExpander.IsExpanded = false;
+                Scroll.ScrollToTop();
+            }
+
+            App.MainWindowVM.CurrentView = this;
         }
 
         private void OpenOtherLink(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -21,6 +35,12 @@ namespace SteamOrganizer.MVVM.View.Controls
                 ViewModel.CurrentAccount.OpenInBrowser($"/{block.Text.ToLowerInvariant()}");
             }
 
+        }
+
+        ~AccountPageView()
+        {
+            System.Windows.MessageBox.Show("Disposed");
+            System.IO.File.WriteAllText("D:\\test.txt", "disposed");
         }
     }
 }

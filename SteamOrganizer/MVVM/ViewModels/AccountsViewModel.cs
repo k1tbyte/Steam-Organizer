@@ -16,15 +16,19 @@ namespace SteamOrganizer.MVVM.ViewModels
 {
     internal sealed class AccountsViewModel : ObservableObject
     {
+        #region Commands
         public RelayCommand OpenProfileCommand { get; }
         public RelayCommand ClearSearchBar { get; }
         public RelayCommand RemoveAccountCommand { get; }
         public RelayCommand PinAccountCommand { get; }
         public RelayCommand AddAccountCommand { get; }
         public RelayCommand OpenAccountPageCommand { get; }
+        #endregion
 
+        #region Properties
         public ObservableCollection<Account> Accounts => App.Config.Database;
         private ICollectionView AccountsCollectionView;
+        private AccountPageView AccountPageV;
 
         private readonly AccountsView View;
 
@@ -32,28 +36,29 @@ namespace SteamOrganizer.MVVM.ViewModels
         public string SearchBarText
         {
             get => _searchBarText;
-            set 
+            set
             {
                 if (string.IsNullOrEmpty(value))
                 {
                     AccountsCollectionView.Filter = null;
                 }
-                    
+
                 else if (AccountsCollectionView.Filter == null)
                 {
                     AccountsCollectionView.Filter = OnCollectionFiltering;
                 }
-                    
+
                 _searchBarText = value;
 
                 if (value == null)
                 {
                     OnPropertyChanged();
                 }
-                    
+
                 AccountsCollectionView.Refresh();
-            } 
-        }
+            }
+        } 
+        #endregion
 
         #region Sorting
 
@@ -264,16 +269,24 @@ namespace SteamOrganizer.MVVM.ViewModels
             App.MainWindowVM.OpenPopupWindow(new AccountAddingView(),"New account");
         }
 
+        private void OnOpeningAccountPage(object param)
+        {
+            if(AccountPageV == null)
+            {
+                AccountPageV = new AccountPageView();
+            }
+            AccountPageV.OpenPage(param as Account);
+        }
+
         public AccountsViewModel(AccountsView owner)
         {
             View = owner;
-            
 
             ClearSearchBar         = new RelayCommand((o) => SearchBarText = null);
             RemoveAccountCommand   = new RelayCommand(OnRemovingAccount);
             PinAccountCommand      = new RelayCommand(OnPinningAccount);
             AddAccountCommand      = new RelayCommand(OnAddingAccount);
-            OpenAccountPageCommand = new RelayCommand((o) => App.MainWindowVM.CurrentView = new AccountPageView(o as Account));
+            OpenAccountPageCommand = new RelayCommand(OnOpeningAccountPage);
             OpenProfileCommand     = new RelayCommand((o) => (o as Account).OpenInBrowser());
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;

@@ -12,8 +12,8 @@ namespace SteamOrganizer.MVVM.View.Extensions
         public static readonly DependencyProperty SelectionBrushProperty =
           DependencyProperty.Register("SelectionBrush", typeof(Brush), typeof(PasswordBox), new PropertyMetadata(new SolidColorBrush(Colors.White)));
 
-        public static readonly DependencyProperty IsPaswordShownProperty =
-         DependencyProperty.Register("IsPasswordShown", typeof(bool), typeof(PasswordBox), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnPasswordStateChanged)));
+        public static readonly DependencyProperty IsPasswordShownProperty =
+         DependencyProperty.Register("IsPasswordShown", typeof(bool), typeof(PasswordBox), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnPasswordStateChanged));
 
         public static readonly DependencyProperty PasswordProperty =
             DependencyProperty.Register("Password", typeof(string), typeof(PasswordBox), new FrameworkPropertyMetadata(null,FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnPasswordPropertyChanged)));
@@ -41,8 +41,8 @@ namespace SteamOrganizer.MVVM.View.Extensions
 
         public bool IsPasswordShown
         {
-            get => (bool)GetValue(IsPaswordShownProperty);
-            set => SetValue(IsPaswordShownProperty, value);
+            get => (bool)GetValue(IsPasswordShownProperty);
+            set => SetValue(IsPasswordShownProperty, value);
         }
 
         public void Clear()

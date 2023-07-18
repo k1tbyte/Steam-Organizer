@@ -100,17 +100,17 @@ namespace SteamOrganizer.MVVM.View.Windows
             if (offsetY < 30 && Sidebar.Width != 0)
             {
                 Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Hidden);
-                this.MinWidth = 780d;
+                this.MinWidth = 850d;
             }
             else if (offsetY > 60 && offsetY < 100 && Sidebar.Width != 70)
             {
                 Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Open);
-                this.MinWidth = 850d;
+                this.MinWidth = 920;
             }
             else if (offsetY > 180 && Sidebar.Width != 200)
             {
                 Sidebar.Width = (double)(App.Config.SideBarState = ESideBarState.Expanded);
-                this.MinWidth = 980d;
+                this.MinWidth = 1050d;
             }
         }
 

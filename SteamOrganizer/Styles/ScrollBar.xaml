@@ -63,7 +63,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="OpacityScroll" TargetType="{x:Type ScrollViewer}">
+    <Style TargetType="{x:Type ScrollViewer}">
         <Setter Property="MinWidth" Value="0"/>
         <Style.Triggers>
             <EventTrigger RoutedEvent="ScrollChanged">
@@ -76,10 +76,6 @@
             </EventTrigger>
         </Style.Triggers>
     </Style>
-
-    <Style x:Key="{x:Type ScrollViewer}" TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource OpacityScroll}"/>
-
-
 
 
 </ResourceDictionary>

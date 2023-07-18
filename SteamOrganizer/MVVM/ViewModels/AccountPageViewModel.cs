@@ -2,10 +2,12 @@
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -17,6 +19,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand CopyAccountURLCommand { get; }
         public RelayCommand OpenAccountURLCommand { get; }
         public RelayCommand OpenOtherURLCommand { get; }
+        public RelayCommand BackCommand { get; }
         public AsyncRelayCommand CopySteamIDCommand { get; }
         #endregion
 
@@ -31,6 +34,8 @@ namespace SteamOrganizer.MVVM.ViewModels
         public BitmapImage FullAvatar { get; private set; }
         public string YearImagePath { get; private set; }
         public string GamesImagePath { get; private set; }
+        public int SelectedTabIndex { get; set; }
+        public bool IsPasswordsShown { get; set; } = true;
 
         public Visibility AdditionalControlsVis { get; private set; } = Visibility.Visible;
         public string GamesDetails { get; private set; }
@@ -43,8 +48,10 @@ namespace SteamOrganizer.MVVM.ViewModels
         {
             set
             {
-                if (CurrentAccount.SteamID64 == null)
+                if (CurrentAccount.SteamID64 == null || value < 0)
+                {
                     return;
+                }
 
                 if (value >= 6)
                 {
@@ -57,10 +64,74 @@ namespace SteamOrganizer.MVVM.ViewModels
 
                 OnPropertyChanged(nameof(SteamIDField));
             }
-        } 
-        #endregion
+        }
+
+        private string _steamCredentialsErr;
+        public string SteamCrenetialsErr
+        {
+            get => _steamCredentialsErr;
+            set => SetProperty(ref _steamCredentialsErr,value);
+        }
+
+        private string _passwordTemp;
+        public string Password
+        {
+            get => _passwordTemp;
+            set
+            {
+                _passwordTemp = value;
+                ValidateCredentials();
+            }
+        }
+
+        private string _loginTemp;
+        public string Login
+        {
+            get => _loginTemp;
+            set
+            {
+                _loginTemp = value;
+                ValidateCredentials();
+            }
+
+        }
 
         public Account CurrentAccount { get; }
+        #endregion
+
+        private void ValidateCredentials()
+        {
+            if (string.IsNullOrEmpty(_loginTemp))
+            {
+                SteamCrenetialsErr = App.FindString("adv_err_login_empty");
+            }
+            else if (_loginTemp.Contains(" "))
+            {
+                SteamCrenetialsErr = App.FindString("adv_err_login_spaces");
+            }
+            else if (_loginTemp.Length < 3 || _loginTemp.Length > 32)
+            {
+                SteamCrenetialsErr = App.FindString("adv_err_login_len");
+            }
+            else if (string.IsNullOrEmpty(_passwordTemp))
+            {
+                SteamCrenetialsErr = App.FindString("adv_err_pass_empty");
+            }
+            else if (_passwordTemp.Length < 6 || _passwordTemp.Length > 50)
+            {
+                SteamCrenetialsErr = App.FindString("adv_err_pass_len");
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(_steamCredentialsErr))
+                {
+                    SteamCrenetialsErr = null;
+                }
+
+                CurrentAccount.Password = _passwordTemp;
+                CurrentAccount.Login    = _loginTemp;
+            }
+        }
 
         private void UpdateGamesImage()
         {
@@ -82,7 +153,12 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private void Init()
         {
-            Utils.InBackground(() => FullAvatar = CachingManager.GetCachedAvatar(CurrentAccount.AvatarHash, 0, 0, size: EAvatarSize.full));
+            Utils.InBackground(() => 
+            {
+                FullAvatar = CachingManager.GetCachedAvatar(CurrentAccount.AvatarHash, 0, 0, size: EAvatarSize.full);
+                App.STAInvoke(() => OnPropertyChanged(nameof(FullAvatar)));
+            });
+
             if(CurrentAccount.AccountID == null)
             {
                 AdditionalControlsVis = Visibility.Collapsed;
@@ -121,7 +197,12 @@ namespace SteamOrganizer.MVVM.ViewModels
                 EconomyBanDetails = (CurrentAccount.EconomyBan == 1 ? "The account is temporarily blocked." :
                     "The account is permanently banned.") + " Trade/exchange/sending of gifts is prohibited on this account";
             }
-             
+
+            _passwordTemp = CurrentAccount.Password;
+            _loginTemp    = CurrentAccount.Login;
+
+            IsPasswordsShown = false;
+            OnPropertyChanged(nameof(IsPasswordsShown));
         }
 
         private async Task OnCopyingSteamID(object param)
@@ -135,6 +216,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             this.CurrentAccount = account;
             Init();
 
+            BackCommand           = new RelayCommand((o) => App.MainWindowVM.CurrentView = App.MainWindowVM.Accounts);
             CopyAccountURLCommand = new RelayCommand((o) => Clipboard.SetDataObject(CurrentAccount.GetProfileUrl()));
             OpenAccountURLCommand = new RelayCommand((o) => CurrentAccount.OpenInBrowser());
             OpenOtherURLCommand   = new RelayCommand((o) => CurrentAccount.OpenInBrowser($"/{o}"));

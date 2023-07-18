@@ -46,7 +46,7 @@ namespace SteamOrganizer.MVVM.Models
         /// <summary>
         /// Required
         /// </summary>
-        public string Username { get; set; }
+        public string Login { get; set; }
 
         /// <summary>
         /// Required
@@ -102,14 +102,14 @@ namespace SteamOrganizer.MVVM.Models
         {
             LoadImage();
             this.AddedDate = DateTime.Now;
-            this.Nickname  = this.Username = login;
+            this.Nickname  = this.Login = login;
             this.Password  = password;
         }
 
         public Account(string login, string password, uint accountId)
         {
             this.AddedDate = DateTime.Now;
-            this.Nickname  = this.Username = login;
+            this.Nickname  = this.Login = login;
             this.Password  = password;
             this.AccountID = accountId;
         }

@@ -29,6 +29,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand NotificationClearAll { get; }
 
         public SettingsView Settings { get; private set; }
+        public AccountsView Accounts { get; }
 
 
 
@@ -168,9 +169,9 @@ namespace SteamOrganizer.MVVM.ViewModels
 #if !DEBUG
             Utils.InBackground(InitServices);
 #endif
-            CurrentView = new AccountsView();
-            SettingsCommand           = new RelayCommand((o) => System.Windows.MessageBox.Show(View.ActualWidth.ToString()));
-            AccountsCommand           = new RelayCommand((o) => CurrentView = new AccountsView());
+            CurrentView = Accounts =  new AccountsView();
+            SettingsCommand           = new RelayCommand((o) => MessageBox.Show(View.ActualWidth.ToString()));
+            AccountsCommand           = new RelayCommand((o) => CurrentView = Accounts);
             OpenNotificationsCommand  = new RelayCommand(OnOpeningNotifications);
             NotificationRemoveCommand = new RelayCommand(OnNotificationRemoving);
             NotificationInvokeCommand = new RelayCommand((o) => (o as Notification)?.OnClickAction?.Invoke());
