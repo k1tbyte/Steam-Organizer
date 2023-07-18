@@ -267,14 +267,14 @@ namespace SteamOrganizer.MVVM.ViewModels
         public AccountsViewModel(AccountsView owner)
         {
             View = owner;
-            OpenProfileCommand = new RelayCommand((o) 
-                => Process.Start($"{WebBrowser.SteamProfilesHost}{SteamIdConverter.SteamID32ToID64((uint)o)}").Dispose());
+            
 
-            ClearSearchBar       = new RelayCommand((o) => SearchBarText = null);
-            RemoveAccountCommand = new RelayCommand(OnRemovingAccount);
-            PinAccountCommand    = new RelayCommand(OnPinningAccount);
-            AddAccountCommand    = new RelayCommand(OnAddingAccount);
+            ClearSearchBar         = new RelayCommand((o) => SearchBarText = null);
+            RemoveAccountCommand   = new RelayCommand(OnRemovingAccount);
+            PinAccountCommand      = new RelayCommand(OnPinningAccount);
+            AddAccountCommand      = new RelayCommand(OnAddingAccount);
             OpenAccountPageCommand = new RelayCommand((o) => App.MainWindowVM.CurrentView = new AccountPageView(o as Account));
+            OpenProfileCommand     = new RelayCommand((o) => (o as Account).OpenInBrowser());
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
             if (!App.Config.LoadDatabase())

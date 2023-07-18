@@ -82,4 +82,12 @@
 
     <!--#endregion-->
 
+    <!--#region Account page view -->
+
+    <v:String x:Key="apv_private">Private</v:String>
+    <v:String x:Key="apv_forFriends">For friends</v:String>
+    <v:String x:Key="apv_public">Public</v:String>
+
+    <!--#endregion-->
+
 </ResourceDictionary>

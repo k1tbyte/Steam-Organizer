@@ -7,8 +7,9 @@ namespace SteamOrganizer.Infrastructure
 {
     internal sealed class WebBrowser : IDisposable
     {
-        internal const string SteamAvatarsHost = "https://avatars.cloudflare.steamstatic.com/";
+        internal const string SteamAvatarsHost  = "https://avatars.cloudflare.steamstatic.com/";
         internal const string SteamProfilesHost = "https://steamcommunity.com/profiles/";
+        internal const string SteamHost         = "https://steamcommunity.com/";
 
         internal const byte MaxConnections = 5;
 

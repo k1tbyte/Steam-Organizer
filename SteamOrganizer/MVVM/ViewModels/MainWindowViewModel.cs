@@ -138,7 +138,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            var xmlPage = await App.WebBrowser.GetStringAsync($"{WebBrowser.SteamProfilesHost}{SteamIdConverter.SteamID32ToID64(userId)}?xml=1");
+            var xmlPage = await App.WebBrowser.GetStringAsync($"{WebBrowser.SteamProfilesHost}{SteamIdConverter.AccountIDToID64(userId)}?xml=1");
 
             var imgHash = Regexes.AvatarHashXml.Match(xmlPage)?.Groups[0]?.Value;
             var nickname = Regexes.NicknameXml.Match(xmlPage)?.Groups[0]?.Value;

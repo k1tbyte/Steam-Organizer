@@ -17,8 +17,8 @@ namespace SteamOrganizer.Helpers
         /// </summary>
         private static readonly Regex[] IDRegexes = new Regex[]
         {
-            new Regex("^[0-9]{17}$"),
             new Regex("^[0-9]{1,10}$"),
+            new Regex("^[0-9]{17}$"),
             new Regex("STEAM_[0-5]:[01]:\\d+$"),
             new Regex("\\[U:1:[0-9]+\\]$"),
             new Regex("^(?=^.{10}$)([A-Za-z\\d]+)\\-([A-Za-z\\d]{4})$"),
@@ -27,9 +27,9 @@ namespace SteamOrganizer.Helpers
 
         public enum ESteamIDType : byte
         {
+            AccountID,
             SteamID64,
-            SteamID32,
-            SteamID,
+            SteamID2,
             SteamID3,
             CSGOFriendID,
             FiveM,
@@ -41,14 +41,14 @@ namespace SteamOrganizer.Helpers
         }
 
         #region ToSteamID64
-        public static ulong SteamID32ToID64(UInt32 steamId32) => steamId32 + SteamID64Indent;
-        public static ulong SteamID32ToID64(string steamId32) => ulong.Parse(steamId32) + SteamID64Indent;
+        public static ulong AccountIDToID64(UInt32 steamId32) => steamId32 + SteamID64Indent;
+        public static ulong AccountIDToID64(string steamId32) => ulong.Parse(steamId32) + SteamID64Indent;
         public static ulong SteamIDToID64(string steamID)
         {
             var chunks = steamID.Split(':');
             return (Convert.ToUInt64(chunks[2]) * 2) + 76561197960265728 + Convert.ToByte(chunks[1]);
         }
-        public static ulong SteamID3ToID64(string steamID3) => SteamID32ToID64(steamID3.Split(':').Last().Replace("]", ""));
+        public static ulong SteamID3ToID64(string steamID3) => AccountIDToID64(steamID3.Split(':').Last().Replace("]", ""));
         public static ulong FiveMToID64(string fiveM) => Convert.ToUInt64(fiveM.Split(':').Last(), 16);
         public static ulong CsgoFriendCodeToID64(string code)
         {
@@ -116,9 +116,9 @@ namespace SteamOrganizer.Helpers
             {
                 case ESteamIDType.SteamID64:
                     return ulong.Parse(steamID);
-                case ESteamIDType.SteamID32:
-                    return SteamID32ToID64(steamID);
-                case ESteamIDType.SteamID:
+                case ESteamIDType.AccountID:
+                    return AccountIDToID64(steamID);
+                case ESteamIDType.SteamID2:
                     return SteamIDToID64(steamID);
                 case ESteamIDType.SteamID3:
                     return SteamID3ToID64(steamID);
@@ -146,9 +146,9 @@ namespace SteamOrganizer.Helpers
 
             switch (to)
             {
-                case ESteamIDType.SteamID32:
+                case ESteamIDType.AccountID:
                     return SteamID64To32(steamID64).ToString();
-                case ESteamIDType.SteamID:
+                case ESteamIDType.SteamID2:
                     return SteamID64ToSteamID(steamID64);
                 case ESteamIDType.SteamID3:
                     return SteamID64ToSteamID3(steamID64);

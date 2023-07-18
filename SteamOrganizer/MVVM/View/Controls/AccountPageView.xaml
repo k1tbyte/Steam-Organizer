@@ -6,6 +6,7 @@
       xmlns:viewModel="clr-namespace:SteamOrganizer.MVVM.ViewModels"
       xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
       xmlns:ext="clr-namespace:SteamOrganizer.MVVM.View.Extensions"
+      xmlns:glob="clr-namespace:System.Globalization;assembly=mscorlib"
       Style="{StaticResource OpacityScroll}"
       mc:Ignorable="d" 
       d:DesignHeight="830" d:DesignWidth="780"
@@ -14,7 +15,10 @@
     <ScrollViewer.Resources>
         <Style x:Key="Links" TargetType="TextBlock">
             <Setter Property="Padding" Value="0 10 0 10"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Foreground" Value="{DynamicResource SecondaryForegroundBrush}"/>
             <Style.Triggers>
@@ -26,6 +30,7 @@
 
         <ControlTemplate x:Key="BanChipTemplate" TargetType="ContentControl">
             <Border Background="{DynamicResource BackgroundGrad}"
+                    FocusVisualStyle="{x:Null}"
                     Padding="15 13 15 13" MinHeight="50"
                     CornerRadius="12" Width="225">
                 <Grid>
@@ -82,7 +87,7 @@
                         BorderThickness="3"
                         HorizontalAlignment="Center">
                         <Border.Background>
-                            <ImageBrush ImageSource="https://avatars.cloudflare.steamstatic.com/0bfd1ae51c17d14c73c5df6c3cefe485c22d3d3b_full.jpg"/>
+                            <ImageBrush ImageSource="{Binding FullAvatar,Mode=OneWay}"/>
                         </Border.Background>
                     </Border>
 
@@ -97,14 +102,18 @@
                     <Rectangle Margin="-15 10 -15 10"
                            Height="3" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
 
-                    <TextBlock Text="Added: 23.11.2020 11:36"
+                    <TextBlock Text="Added: "
                            Foreground="{DynamicResource SecondaryForegroundBrush}"
-                           FontSize="12" />
+                           FontSize="12">
+                        <Run Text="{Binding CurrentAccount.AddedDate,Mode=OneWay,StringFormat=f,ConverterCulture={x:Static glob:CultureInfo.CurrentCulture}}"/>
+                    </TextBlock>
 
-                    <TextBlock Text="Updated: 10.04.2021 16:54"
+                    <TextBlock Text="Updated: "
                            Margin="0 5 0 0"
                            Foreground="{DynamicResource SecondaryForegroundBrush}"
-                           FontSize="12"/>
+                           FontSize="12">
+                        <Run Text="{Binding CurrentAccount.LastUpdateDate,Mode=OneWay,TargetNullValue=—,StringFormat=f,ConverterCulture={x:Static glob:CultureInfo.CurrentCulture}}" />
+                    </TextBlock>
                 </StackPanel>
 
             </Border>
@@ -124,17 +133,31 @@
                     <TextBlock Foreground="{DynamicResource SecondaryForegroundBrush}"
                                Margin="0 0 0 5">
                         <Run Text="Steam level:" FontWeight="Normal"/>
-                        <Run Text="21" Foreground="{DynamicResource PrimarySubBrush}"/>
+                        <Run Text="{Binding CurrentAccount.SteamLevel,TargetNullValue=—}" Foreground="{DynamicResource PrimarySubBrush}"/>
                     </TextBlock>
 
                     <TextBlock Foreground="{DynamicResource SecondaryForegroundBrush}"
                                Margin="0 0 0 10">
                         <Run Text="Profile visibility:" FontWeight="Normal"/>
-                        <Run Text="Private" Foreground="{DynamicResource PrimarySubBrush}"/>
+                        <Run Foreground="{DynamicResource PrimarySubBrush}">
+                            <Run.Style>
+                                <Style TargetType="Run">
+                                    <Setter Property="Text" Value="{DynamicResource apv_private}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CurrentAccount.VisibilityState}" Value="2">
+                                            <Setter Property="Text" Value="{DynamicResource apv_forFriends}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding CurrentAccount.VisibilityState}" Value="3">
+                                            <Setter Property="Text" Value="{DynamicResource apv_public}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Run.Style>
+                        </Run>
                     </TextBlock>
 
                     <Grid>
-                        <ext:HoverButton Margin="0 0 30 0" >
+                        <ext:HoverButton Margin="0 0 30 0" Command="{Binding OpenAccountURLCommand,Mode=OneTime}" >
                             <TextBlock>
                             <Run Text="Steam profile"/>
                             <Icon:PackIconMaterial Kind="OpenInNew"
@@ -145,6 +168,7 @@
                         </ext:HoverButton>
 
                         <Button Style="{StaticResource CopyButton}"
+                                Command="{Binding CopyAccountURLCommand,Mode=OneTime}"
                                 HorizontalAlignment="Right"/>
                     </Grid>
 
@@ -159,18 +183,32 @@
                                    Foreground="{DynamicResource SecondaryForegroundBrush}"/>
 
                         <ComboBox HorizontalAlignment="Right"
-                                  Height="30"
-                                  Width="150"
+                                  Height="30" 
+                                  Width="150" SelectedIndex="{Binding SelectedSteamIDType,Mode=OneWayToSource}"
+                                  d:SelectedIndex="0"
                                   Background="{DynamicResource TertiaryBackgroundBrush}">
+                            <ComboBoxItem IsSelected="True" Content="Account ID"/>
+                            <ComboBoxItem Content="Steam ID"/>
+                            <ComboBoxItem Content="Steam2 ID"/>
+                            <ComboBoxItem Content="Steam3 ID"/>
                             <ComboBoxItem Content="CS:GO Friend code"/>
+                            <ComboBoxItem Content="FiveM"/>
+                            <ComboBoxItem Content="Vanity URL" Visibility="{Binding CurrentAccount.VanityURL,Converter={StaticResource ToVisibilityConverter}}"/>
                         </ComboBox>
                     </DockPanel>
 
-                    <TextBlock Text="76561199051937995"
+                    <TextBlock Text="{Binding SteamIDField,Mode=OneWay}"
+                               Cursor="Hand" Background="Transparent"
                                Margin="0 10 0 0"
                                HorizontalAlignment="Center"
                                FontWeight="Medium"
-                               Foreground="{DynamicResource LightBlueGrad}"/>
+                               Foreground="{DynamicResource LightBlueGrad}">
+                        <TextBlock.InputBindings>
+                            <MouseBinding Gesture="LeftClick" 
+                                          Command="{Binding CopySteamIDCommand}"
+                                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorLevel=1,AncestorType=TextBlock}}"/>
+                        </TextBlock.InputBindings>
+                    </TextBlock>
                 </StackPanel>
             </Border>
             
@@ -211,23 +249,23 @@
 
                 <StackPanel Visibility="{Binding AdditionalControlsVis,Mode=OneWay}">
 
-                    <TextBlock Text="Games"  Style="{StaticResource Links}"/>
+                    <TextBlock Text="Games" Style="{StaticResource Links}" MouseLeftButtonDown="OpenOtherLink"/>
 
                     <Rectangle Height="2" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
 
-                    <TextBlock Text="Inventory"   Style="{StaticResource Links}"/>
+                    <TextBlock Text="Inventory"   Style="{StaticResource Links}"  MouseLeftButtonDown="OpenOtherLink"/>
 
                     <Rectangle Height="2" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
 
-                    <TextBlock Text="Friends" Style="{StaticResource Links}"/>
+                    <TextBlock Text="Friends" Style="{StaticResource Links}"  MouseLeftButtonDown="OpenOtherLink"/>
 
                     <Rectangle Height="2" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
 
-                    <TextBlock Text="Badges"  Style="{StaticResource Links}"/>
+                    <TextBlock Text="Badges"  Style="{StaticResource Links}"  MouseLeftButtonDown="OpenOtherLink"/>
 
                     <Rectangle Height="2" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
 
-                    <TextBlock Text="Groups"  Style="{StaticResource Links}"/>
+                    <TextBlock Text="Groups"  Style="{StaticResource Links}"  MouseLeftButtonDown="OpenOtherLink"/>
 
                 </StackPanel>
 
@@ -241,7 +279,7 @@
 
         <Border Margin="10 0 0 0"
                 CornerRadius="5"
-                MaxWidth="600"
+                MaxWidth="600" VerticalAlignment="Top"
                 Width="500"
                 Background="{DynamicResource SecondaryBackgroundBrush}">
 
@@ -252,7 +290,7 @@
                     <StackPanel>
 
                         <!--#region Badges -->
-                        <DockPanel Visibility="{Binding AdditionalControlsVis,Mode=OneWay}" VerticalAlignment="Top" Margin="15 25 15 15">
+                        <DockPanel x:Name="BadgesDock" Visibility="{Binding CurrentAccount.CreatedDate,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}" VerticalAlignment="Top" Margin="15 25 15 15">
 
                             <Border Background="{DynamicResource BackgroundGrad}"
                                 Width="225" Height="150"
@@ -265,24 +303,26 @@
                                     <TextBlock Margin="50 10 0 0" VerticalAlignment="Top"
                                            FontSize="15" Text="Years of service"/>
 
-                                    <TextBlock VerticalAlignment="Bottom"
-                                           FontSize="13"
+                                    <TextBlock VerticalAlignment="Top"
+                                           FontSize="13" TextWrapping="Wrap"
+                                           MaxWidth="130"
                                            HorizontalAlignment="Left"
-                                           Margin="0 0 0 15">
+                                           Margin="0 68 0 0">
                                     <Run Text="Account registered"                                            FontWeight="Normal"/>
                                     <LineBreak/>
-                                    <Run Text="12.11.2013 18:22" Foreground="{DynamicResource PrimarySubBrush}"/>
+                                    <Run Text="{Binding CurrentAccount.CreatedDate,Mode=OneWay,StringFormat=f,ConverterCulture={x:Static glob:CultureInfo.CurrentCulture}}" Foreground="{DynamicResource PrimarySubBrush}"/>
                                     </TextBlock>
 
 
                                     <Rectangle HorizontalAlignment="Right"
+                                               Visibility="{Binding YearImagePath,Mode=OneWay,Converter={StaticResource ToVisibilityConverter}}"
                                            RadiusY="5" RadiusX="5"
                                            Stroke="{DynamicResource PrimarySubBrush}"
                                            StrokeThickness="1"
                                            VerticalAlignment="Bottom"
                                            Height="50" Width="50">
                                         <Rectangle.Fill>
-                                            <ImageBrush Opacity="0.7" ImageSource="/Resources/Images/SteamYearsBadges/year10.png"/>
+                                            <ImageBrush Opacity="0.7" ImageSource="{Binding YearImagePath,Mode=OneWay}"/>
                                         </Rectangle.Fill>
                                     </Rectangle>
 
@@ -290,6 +330,7 @@
                             </Border>
 
                             <Border Background="{DynamicResource BackgroundGrad}"
+                                    Visibility="{Binding CurrentAccount.GamesCount,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}"
                                 Width="225" Height="150"
                                 HorizontalAlignment="Right"
                                 CornerRadius="12"
@@ -301,25 +342,35 @@
                                     <TextBlock Margin="50 10 0 0" VerticalAlignment="Top"
                                            FontSize="15" Text="Game collection"/>
 
-                                    <TextBlock VerticalAlignment="Bottom"
-                                           FontSize="13"
+                                    <TextBlock x:Name="GamesText" VerticalAlignment="Bottom"
+                                           FontSize="13" MinWidth="140"
                                            HorizontalAlignment="Left"
                                            Margin="0 0 0 0">
                                     <Run Text="Games on account"                                            FontWeight="Normal"/>
                                     <LineBreak/>
-                                    <Run Text="128" Foreground="{DynamicResource PrimarySubBrush}"/>
+                                    <Run Text="{Binding CurrentAccount.GamesCount,Mode=OneWay}" Foreground="{DynamicResource PrimarySubBrush}"/>
                                      <LineBreak/>
                                     <Run Text="Of them played"                                            FontWeight="Normal"/>
                                     <LineBreak/>
-                                    <Run Text="64 (50.0%) 12,851 h" Foreground="{DynamicResource PrimarySubBrush}"/>
+                                    <Run Text="{Binding GamesDetails,Mode=OneWay}" Foreground="{DynamicResource PrimarySubBrush}"/>
                                     </TextBlock>
 
                                     <Rectangle HorizontalAlignment="Right"
                                            VerticalAlignment="Bottom"
                                            Height="50" Width="50">
                                         <Rectangle.Fill>
-                                            <ImageBrush Opacity="0.8" ImageSource="/Resources/Images/SteamGamesBadges/100.png"/>
+                                            <ImageBrush Opacity="0.8" ImageSource="{Binding GamesImagePath,Mode=OneWay}"/>
                                         </Rectangle.Fill>
+                                        <Rectangle.Style>
+                                            <Style TargetType="Rectangle">
+                                                <Setter Property="Margin" Value="0 0 0 20"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ElementName=GamesText,Path=ActualWidth}" Value="140">
+                                                        <Setter Property="Margin" Value="0"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Rectangle.Style>
                                     </Rectangle>
 
                                 </Grid>
@@ -328,33 +379,37 @@
                         <!--#endregion-->
 
                         <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"
-                                   Visibility="{Binding AdditionalControlsVis,Mode=OneWay}"/>
+                                   Visibility="{Binding ElementName=BadgesDock,Path=Visibility,Mode=OneWay}"/>
 
                         <!--#region Bans -->
                         <Grid Margin="15" Visibility="{Binding AdditionalControlsVis,Mode=OneWay}">
 
                             <StackPanel  HorizontalAlignment="Left">
-                                <ContentControl Uid="VAC ban"
+                                <ContentControl Uid="VAC ban" FocusVisualStyle="{x:Null}"
                                                 Margin="0 0 0 15"
-                                                Tag="{Binding Test,Mode=OneWay}"
+                                                Content="{Binding VacBanDetails,Mode=OneWay}"
+                                                Tag="{Binding CurrentAccount.VacBansCount,Mode=OneWay}"
                                                 Template="{StaticResource BanChipTemplate}"/>
 
-                                <ContentControl Uid="Community ban"
-                                                Tag="{Binding Test,Mode=OneWay}" 
+                                <ContentControl Uid="Community ban" FocusVisualStyle="{x:Null}"
+                                                Content="The account is not allowed to interact with the Steam community. The details or date of the unban are unknown"
+                                                Tag="{Binding CurrentAccount.HaveCommunityBan,Mode=OneWay}" 
                                                 Template="{StaticResource BanChipTemplate}"/>
                             </StackPanel>
 
 
                             <StackPanel HorizontalAlignment="Right">
 
-                                <ContentControl Uid="Game ban"
+                                <ContentControl Uid="Game ban" FocusVisualStyle="{x:Null}"
                                                 Margin="0 0 0 15"
                                                 d:Content="Bans received in some games: Counter Strike Global Offensive, Naraka Bladepoint"
-                                                Tag="{Binding Test,Mode=OneWay}" d:Tag=""
+                                                 Content="{Binding GameBanDetails,Mode=OneWay}"
+                                                Tag="{Binding CurrentAccount.GameBansCount,Mode=OneWay}" d:Tag=""
                                                 Template="{StaticResource BanChipTemplate}"/>
 
-                                <ContentControl Uid="Economy ban"
-                                                Tag="{Binding Test,Mode=OneWay}"
+                                <ContentControl Uid="Economy ban" FocusVisualStyle="{x:Null}"
+                                                 Content="{Binding EconomyBanDetails,Mode=OneWay}"
+                                                Tag="{Binding CurrentAccount.EconomyBan,Mode=OneWay}"
                                                 Template="{StaticResource BanChipTemplate}"/>
 
                             </StackPanel>

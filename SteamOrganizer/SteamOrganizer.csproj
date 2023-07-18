@@ -140,7 +140,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\CachingManager.cs" />
-    <Compile Include="Helpers\ClipboardHelper.cs" />
     <Compile Include="Helpers\DragAdorner.cs" />
     <Compile Include="Helpers\FileCryptor.cs" />
     <Compile Include="Helpers\SteamIdConverter.cs" />
@@ -347,26 +346,6 @@
     <Resource Include="Resources\Images\dark_preview.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\SteamYearsBadges\year1.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year10.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year11.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year12.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year13.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year14.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year15.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year16.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year17.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year18.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year2.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year3.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year4.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year5.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year6.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year7.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year8.png" />
-    <Resource Include="Resources\Images\SteamYearsBadges\year9.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\SteamGamesBadges\1.png" />
     <Resource Include="Resources\Images\SteamGamesBadges\10.png" />
     <Resource Include="Resources\Images\SteamGamesBadges\100.png" />
@@ -405,12 +384,6 @@
     <Resource Include="Resources\Images\SteamGamesBadges\9000.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\SteamGamesBadges\unknown.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\SteamYearsBadges\year0.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Logo.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -442,6 +415,30 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Sounds\Notification.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\SteamYearsBadges\year1.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year10.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year11.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year12.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year13.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year14.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year15.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year16.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year17.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year18.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year19.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year2.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year3.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year4.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year5.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year6.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year7.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year8.bmp" />
+    <Resource Include="Resources\Images\SteamYearsBadges\year9.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\SteamGamesBadges\32000.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

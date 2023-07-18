@@ -1,6 +1,9 @@
 ﻿using SteamOrganizer.Helpers;
+using SteamOrganizer.Infrastructure;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using static SteamOrganizer.Helpers.SteamParser;
@@ -19,7 +22,7 @@ namespace SteamOrganizer.MVVM.Models
         public DateTime? LastUpdateDate { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime AddedDate { get; }
-        public float? YearsOfService => CreatedDate == null ? null : (float?)((DateTime.Now - CreatedDate.Value).TotalDays / 365);
+        public float? YearsOfService => CreatedDate == null ? null : (float?)((DateTime.Now - CreatedDate.Value).TotalDays / 365.25);
 
         public int UnpinIndex;
         private bool _pinned;
@@ -56,6 +59,10 @@ namespace SteamOrganizer.MVVM.Models
         public int DaysSinceLastBan { get; set; }
         public int EconomyBan { get; set; }
 
+        public int GamesCount { get; set; }
+        public int PlayedGamesCount { get; set; }
+        public float HoursOnPlayed { get; set; }
+
 
         [field: NonSerialized]
         public BitmapImage AvatarBitmap { get; set; }
@@ -64,9 +71,16 @@ namespace SteamOrganizer.MVVM.Models
         public event PropertyChangedEventHandler PropertyChanged;
 
         public bool IsFullyParsed => AccountID != null;
+        
 
         public void LoadImage()
-            => AvatarBitmap = CachingManager.GetCachedAvatar(AvatarHash, 80, 80,size : EAvatarSize.full);
+            => AvatarBitmap = CachingManager.GetCachedAvatar(AvatarHash, 0, 0,size : EAvatarSize.medium);
+
+        public string GetProfileUrl() 
+            => SteamID64 == null ? WebBrowser.SteamHost : WebBrowser.SteamProfilesHost + SteamID64.ToString();
+
+        public void OpenInBrowser(string hostPath = null)
+            => Process.Start(GetProfileUrl() + hostPath).Dispose();
 
         public async Task<bool> RetrieveInfo()
         {

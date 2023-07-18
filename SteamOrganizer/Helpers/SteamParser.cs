@@ -78,7 +78,7 @@ namespace SteamOrganizer.Helpers
             internal class Game
             {
                 public int AppID;
-                public long Playtime_forever;
+                public float Playtime_forever;
                 public long Rtime_last_played;
             }
 
@@ -117,11 +117,11 @@ namespace SteamOrganizer.Helpers
 
             var bansTask      = GetPlayersBans(account.SteamID64.Value).ConfigureAwait(false);
             var levelTask     = GetPlayerLevel(account.SteamID64.Value).ConfigureAwait(false);
-            //var gamesTask     = GetPlayerOwnedGames(account.SteamID64.Value);
+            var gamesTask     = GetPlayerOwnedGames(account.SteamID64.Value);
 
             var bans      = await bansTask;
             var level     = await levelTask;
-        //    var games     = await gamesTask;
+            var games     = await gamesTask;
 
             account.AvatarHash      = summaries[0].Avatarhash;
             account.Nickname        = summaries[0].Personaname;
@@ -139,6 +139,21 @@ namespace SteamOrganizer.Helpers
                 account.HaveCommunityBan = bans[0].CommunityBanned;
                 account.DaysSinceLastBan = bans[0].DaysSinceLastBan;
                 account.EconomyBan       = (int)bans[0].EconomyBan;
+            }
+
+            account.HoursOnPlayed = account.PlayedGamesCount = 0;
+            if (games.Length >= 1)
+            {
+                account.GamesCount = games.Length;
+                for (int i = 0; i < games.Length; i++)
+                {
+                    if (games[i].Playtime_forever != 0)
+                    {
+                        games[i].Playtime_forever /= 60;
+                        account.HoursOnPlayed += games[i].Playtime_forever;
+                        account.PlayedGamesCount++;
+                    }
+                }
             }
             
 
