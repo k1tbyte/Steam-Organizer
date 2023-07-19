@@ -37,10 +37,9 @@ namespace SteamOrganizer.MVVM.View.Controls
 
         }
 
-        ~AccountPageView()
+        private void AutoSaveTextChanged(object sender, TextChangedEventArgs e)
         {
-            System.Windows.MessageBox.Show("Disposed");
-            System.IO.File.WriteAllText("D:\\test.txt", "disposed");
+            App.Config.SaveDatabase(3000);
         }
     }
 }

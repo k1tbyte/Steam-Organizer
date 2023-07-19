@@ -20,29 +20,68 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand OpenAccountURLCommand { get; }
         public RelayCommand OpenOtherURLCommand { get; }
         public RelayCommand BackCommand { get; }
+        public AsyncRelayCommand UpdateCommand { get; }
         public AsyncRelayCommand CopySteamIDCommand { get; }
         #endregion
 
 
         #region Properties
-        private static readonly ushort[] GamesBadgeBoundaries = {
-                1,5,10,25,50,100,250,500,1000,2000,3000,4000,5000,6000,7000,8000,8000,9000,10000,11000,13000,14000,15000,16000,17000,18000,20000,21000,
-                22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000
-             };
-
 
         public BitmapImage FullAvatar { get; private set; }
-        public string YearImagePath { get; private set; }
-        public string GamesImagePath { get; private set; }
         public int SelectedTabIndex { get; set; }
-        public bool IsPasswordsShown { get; set; } = true;
+        public bool IsPasswordShown { get; set; }
 
         public Visibility AdditionalControlsVis { get; private set; } = Visibility.Visible;
-        public string GamesDetails { get; private set; }
-        public string GameBanDetails { get; private set; }
-        public string EconomyBanDetails { get; private set; }
-        public string VacBanDetails { get; private set; }
-        public string SteamIDField { get; private set; }
+
+        private string _yearImagePath;
+        public string YearImagePath
+        {
+            get => _yearImagePath;
+            private set => SetProperty(ref _yearImagePath, value);
+        }
+
+        private string _gamesImagePath;
+        public string GamesImagePath
+        {
+            get => _gamesImagePath;
+            private set => SetProperty(ref _gamesImagePath, value);
+        }
+
+        private string _gamesDetails;
+        public string GamesDetails 
+        {
+            get => _gamesDetails;
+            private set => SetProperty(ref _gamesDetails, value);
+        }
+
+        private string _gameBanDetails;
+        public string GameBanDetails 
+        {
+            get => _gameBanDetails;
+            private set => SetProperty(ref _gameBanDetails, value);
+        }
+
+        private string _economyBanDetails;
+        public string EconomyBanDetails
+        {
+            get => _economyBanDetails;
+            private set => SetProperty(ref _economyBanDetails, value);
+        }
+
+        private string _vacBanDetails;
+        public string VacBanDetails
+        {
+            get => _vacBanDetails;
+            private set => SetProperty(ref _vacBanDetails, value);
+        }
+
+        private string _steamCredentialsErr;
+        public string SteamCrenetialsErr
+        {
+            get => _steamCredentialsErr;
+            set => SetProperty(ref _steamCredentialsErr, value);
+        }
+
 
         public int SelectedSteamIDType
         {
@@ -65,13 +104,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 OnPropertyChanged(nameof(SteamIDField));
             }
         }
-
-        private string _steamCredentialsErr;
-        public string SteamCrenetialsErr
-        {
-            get => _steamCredentialsErr;
-            set => SetProperty(ref _steamCredentialsErr,value);
-        }
+        public string SteamIDField { get; private set; }
 
         private string _passwordTemp;
         public string Password
@@ -98,6 +131,8 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         public Account CurrentAccount { get; }
         #endregion
+
+
 
         private void ValidateCredentials()
         {
@@ -130,79 +165,78 @@ namespace SteamOrganizer.MVVM.ViewModels
 
                 CurrentAccount.Password = _passwordTemp;
                 CurrentAccount.Login    = _loginTemp;
+
+                App.Config.SaveDatabase(3000);
             }
         }
 
-        private void UpdateGamesImage()
+        private void InitBansInfo()
         {
-            if (CurrentAccount.GamesCount > GamesBadgeBoundaries[GamesBadgeBoundaries.Length - 2])
+            if(CurrentAccount.DaysSinceLastBan == 0)
             {
-                GamesImagePath = $"/Resources/Images/SteamGamesBadges/{GamesBadgeBoundaries[GamesBadgeBoundaries.Length - 1]}.png";
                 return;
             }
 
-            for (int i = 0; i < GamesBadgeBoundaries.Length-1; i++)
+            if (CurrentAccount.GameBansCount >= 1)
             {
-                if(CurrentAccount.GamesCount == GamesBadgeBoundaries[i] || CurrentAccount.GamesCount < GamesBadgeBoundaries[i + 1])
-                {
-                    GamesImagePath = $"/Resources/Images/SteamGamesBadges/{GamesBadgeBoundaries[i]}.png";
-                    break;
-                }
-            }
-        }
-
-        private void Init()
-        {
-            Utils.InBackground(() => 
-            {
-                FullAvatar = CachingManager.GetCachedAvatar(CurrentAccount.AvatarHash, 0, 0, size: EAvatarSize.full);
-                App.STAInvoke(() => OnPropertyChanged(nameof(FullAvatar)));
-            });
-
-            if(CurrentAccount.AccountID == null)
-            {
-                AdditionalControlsVis = Visibility.Collapsed;
-                return;
-            }
-
-            if (CurrentAccount.YearsOfService >= 1f)
-            {
-                YearImagePath = $"/Resources/Images/SteamYearsBadges/year{(int)CurrentAccount.YearsOfService}.bmp";
-            }
-
-            if (CurrentAccount.GamesCount > 0)
-            {
-                UpdateGamesImage();
-                GamesDetails = CurrentAccount.PlayedGamesCount <= 0 ? "0" :
-                    new StringBuilder().Append(CurrentAccount.PlayedGamesCount).Append(" (")
-                    .AppendFormat(CultureInfo.InvariantCulture, "{0:P1}", (float)CurrentAccount.PlayedGamesCount / CurrentAccount.GamesCount).Append(") ")
-                    .AppendFormat(CultureInfo.InvariantCulture, "{0:n1}", CurrentAccount.HoursOnPlayed).Append(" h").ToString();
-            }
-
-
-            if(CurrentAccount.GameBansCount >= 1)
-            {
-                GameBanDetails = "This account has a game ban" 
+                GameBanDetails = "This account has a game ban"
                     + (CurrentAccount.GameBansCount == 1 ? null : $" in several games ({CurrentAccount.GameBansCount})");
             }
 
             if (CurrentAccount.VacBansCount >= 1)
             {
                 VacBanDetails = "This account has been banned by VAC"
-                    + (CurrentAccount.VacBansCount == 1 ? null : $" in several games ({CurrentAccount.VacBansCount})"); 
+                    + (CurrentAccount.VacBansCount == 1 ? null : $" in several games ({CurrentAccount.VacBansCount})");
             }
 
-            if(CurrentAccount.EconomyBan != 0)
+            if (CurrentAccount.EconomyBan != 0)
             {
                 EconomyBanDetails = (CurrentAccount.EconomyBan == 1 ? "The account is temporarily blocked." :
                     "The account is permanently banned.") + " Trade/exchange/sending of gifts is prohibited on this account";
             }
+        }
 
-            _passwordTemp = CurrentAccount.Password;
-            _loginTemp    = CurrentAccount.Login;
+        private void InitGamesInfo()
+        {
+            if (CurrentAccount.GamesCount <= 0)
+                return;
 
-            IsPasswordsShown = false;
-            OnPropertyChanged(nameof(IsPasswordsShown));
+            GamesImagePath = $"/Resources/Images/SteamGamesBadges/{CurrentAccount.GamesBadgeBoundary}.png";
+            GamesDetails = CurrentAccount.PlayedGamesCount <= 0 ? "0" :
+                new StringBuilder().Append(CurrentAccount.PlayedGamesCount).Append(" (")
+                .AppendFormat(CultureInfo.InvariantCulture, "{0:P1}", (float)CurrentAccount.PlayedGamesCount / CurrentAccount.GamesCount).Append(") ")
+                .AppendFormat(CultureInfo.InvariantCulture, "{0:n1}", CurrentAccount.HoursOnPlayed).Append(" h").ToString();
+        }
+
+        private void InitAvatar()
+        {
+            Utils.InBackground(() =>
+            {
+                FullAvatar = CachingManager.GetCachedAvatar(CurrentAccount.AvatarHash, 0, 0, size: EAvatarSize.full);
+                App.STAInvoke(() => OnPropertyChanged(nameof(FullAvatar)));
+            });
+        }
+
+        private void Init()
+        {
+            if (CurrentAccount.AccountID == null)
+            {
+                AdditionalControlsVis = Visibility.Collapsed;
+                return;
+            }
+
+            InitAvatar();
+            InitYearsOfService();
+            InitGamesInfo();
+            InitBansInfo();
+        }
+
+        private void InitYearsOfService()
+        {
+            if (CurrentAccount.YearsOfService >= 1f)
+            {
+                YearImagePath = $"/Resources/Images/SteamYearsBadges/year{(int)CurrentAccount.YearsOfService}.bmp";
+            }
         }
 
         private async Task OnCopyingSteamID(object param)
@@ -211,16 +245,32 @@ namespace SteamOrganizer.MVVM.ViewModels
             await Utils.OpenAutoClosableToolTip(param as FrameworkElement, App.FindString("copied_info"));
         }
 
+        private async Task OnAccountUpdating(object param)
+        {
+            if (!await CurrentAccount.RetrieveInfo(true))
+            {
+                return;
+            }
+
+            Init();
+            OnPropertyChanged(nameof(CurrentAccount));
+            App.Config.SaveDatabase();
+        }
+
         public AccountPageViewModel(Account account)
         {
-            this.CurrentAccount = account;
-            Init();
-
             BackCommand           = new RelayCommand((o) => App.MainWindowVM.CurrentView = App.MainWindowVM.Accounts);
             CopyAccountURLCommand = new RelayCommand((o) => Clipboard.SetDataObject(CurrentAccount.GetProfileUrl()));
             OpenAccountURLCommand = new RelayCommand((o) => CurrentAccount.OpenInBrowser());
             OpenOtherURLCommand   = new RelayCommand((o) => CurrentAccount.OpenInBrowser($"/{o}"));
             CopySteamIDCommand    = new AsyncRelayCommand(OnCopyingSteamID);
+            UpdateCommand         = new AsyncRelayCommand(OnAccountUpdating);
+
+
+            this.CurrentAccount = account;
+            _passwordTemp       = CurrentAccount.Password;
+            _loginTemp          = CurrentAccount.Login;
+            Init();
         }
     }
 }

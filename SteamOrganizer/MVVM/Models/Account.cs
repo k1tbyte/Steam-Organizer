@@ -3,7 +3,6 @@ using SteamOrganizer.Infrastructure;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using static SteamOrganizer.Helpers.SteamParser;
@@ -13,10 +12,23 @@ namespace SteamOrganizer.MVVM.Models
     [Serializable]
     internal sealed class Account : INotifyPropertyChanged
     {
-        public int? SteamLevel { get; set; }
+        /// <summary> Required </summary>
+        public string Nickname { get; set; }
+
+        /// <summary> Required </summary>
+        public string Login { get; set; }
+
+        /// <summary> Required </summary>
+        public string Password { get; set; }
+
+
         public uint? AccountID { get; set; }
+        public ulong? SteamID64   => AccountID.HasValue ? AccountID + SteamIdConverter.SteamID64Indent : null;
+        public bool IsFullyParsed => AccountID != null;
+
+
+        public int? SteamLevel { get; set; }
         public byte VisibilityState { get; set; }
-        public ulong? SteamID64 => AccountID.HasValue ? AccountID + SteamIdConverter.SteamID64Indent : null;
         public string VanityURL { get; set; }
 
         public DateTime? LastUpdateDate { get; set; }
@@ -38,20 +50,6 @@ namespace SteamOrganizer.MVVM.Models
 
         public string AvatarHash { get; set; }
 
-        /// <summary>
-        /// Required
-        /// </summary>
-        public string Nickname { get; set; }
-
-        /// <summary>
-        /// Required
-        /// </summary>
-        public string Login { get; set; }
-
-        /// <summary>
-        /// Required
-        /// </summary>
-        public string Password { get; set; }
 
         public bool HaveCommunityBan { get; set; }
         public int VacBansCount { get; set; }
@@ -59,9 +57,14 @@ namespace SteamOrganizer.MVVM.Models
         public int DaysSinceLastBan { get; set; }
         public int EconomyBan { get; set; }
 
+
         public int GamesCount { get; set; }
         public int PlayedGamesCount { get; set; }
+        public ushort GamesBadgeBoundary { get; set; }
         public float HoursOnPlayed { get; set; }
+
+
+        public string Note { get; set; }
 
 
         [field: NonSerialized]
@@ -69,8 +72,6 @@ namespace SteamOrganizer.MVVM.Models
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public bool IsFullyParsed => AccountID != null;
         
 
         public void LoadImage()
@@ -82,14 +83,18 @@ namespace SteamOrganizer.MVVM.Models
         public void OpenInBrowser(string hostPath = null)
             => Process.Start(GetProfileUrl() + hostPath).Dispose();
 
-        public async Task<bool> RetrieveInfo()
+        public async Task<bool> RetrieveInfo(bool markUpdate = false)
         {
             var prevHash = this.AvatarHash;
+
             if(!await ParseInfo(this))
                 return false;
 
             if (prevHash != this.AvatarHash)
                 LoadImage();
+
+            if (markUpdate)
+                LastUpdateDate = DateTime.Now;
 
             return true;
         }

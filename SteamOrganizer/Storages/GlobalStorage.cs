@@ -4,6 +4,7 @@ using SteamOrganizer.MVVM.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace SteamOrganizer.Storages
 {
@@ -20,7 +21,6 @@ namespace SteamOrganizer.Storages
     {
         [field: NonSerialized]
         public ObservableCollection<Account> Database { get; set; }
-
 
         /// <summary>
         /// Called only upon successful loading from a file
@@ -58,14 +58,15 @@ namespace SteamOrganizer.Storages
             }
         }
 
+        #region Storing/restoring
         public bool Save()
-            =>  FileCryptor.Serialize(this, App.ConfigPath, Utils.GetLocalMachineGUID());
-        
+            => FileCryptor.Serialize(this, App.ConfigPath, Utils.GetLocalMachineGUID());
+
 
         public static GlobalStorage Load()
         {
             if (File.Exists(App.ConfigPath) &&
-                FileCryptor.Deserialize(App.ConfigPath,out GlobalStorage result,Utils.GetLocalMachineGUID()))
+                FileCryptor.Deserialize(App.ConfigPath, out GlobalStorage result, Utils.GetLocalMachineGUID()))
             {
                 return result;
             }
@@ -76,7 +77,7 @@ namespace SteamOrganizer.Storages
 
         public bool LoadDatabase()
         {
-            if(!File.Exists(App.DatabasePath))
+            if (!File.Exists(App.DatabasePath))
             {
                 Database = new ObservableCollection<Account>();
                 return true;
@@ -93,13 +94,36 @@ namespace SteamOrganizer.Storages
             return false;
         }
 
-        public void SaveDatabase()
+        private int _waitingCounter = 0;
+
+        /// <param name="timeout">Useful for frequent save prompts like textboxes</param>
+        public async void SaveDatabase(int timeout = 0)
         {
+
+            // We need to check the counter to know about the calls that happen while waiting.
+            if (_waitingCounter != 0)
+            {
+                // Maximum 2 wait cycles so it's not too long
+                if (_waitingCounter < 2)
+                {
+                    _waitingCounter++;
+                }
+
+                return;
+            }
+
+            if (timeout != 0)
+            {
+                for (_waitingCounter = 1; _waitingCounter > 0; _waitingCounter--)
+                {
+                    await Task.Delay(timeout);
+                }
+            }
+
             _databaseKey.ThrowIfNull();
 
-//#if !DEBUG
             FileCryptor.Serialize(Database, App.DatabasePath, _databaseKey);
-//#endif
-        }
+        } 
+        #endregion
     }
 }

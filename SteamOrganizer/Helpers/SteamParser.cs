@@ -9,6 +9,11 @@ namespace SteamOrganizer.Helpers
 {
     internal static class SteamParser
     {
+        private static readonly ushort[] GamesBadgeBoundaries = {
+                1,5,10,25,50,100,250,500,1000,2000,3000,4000,5000,6000,7000,8000,8000,9000,10000,11000,13000,14000,15000,16000,17000,18000,20000,21000,
+                22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000
+             };
+
         #region Responses
         #region Bans
         internal enum EconomyBanType : byte
@@ -152,6 +157,22 @@ namespace SteamOrganizer.Helpers
                         games[i].Playtime_forever /= 60;
                         account.HoursOnPlayed += games[i].Playtime_forever;
                         account.PlayedGamesCount++;
+                    }
+                }
+
+                if (account.GamesCount > GamesBadgeBoundaries[GamesBadgeBoundaries.Length - 2])
+                {
+                    account.GamesBadgeBoundary = GamesBadgeBoundaries[GamesBadgeBoundaries.Length - 1];
+                }
+                else
+                {
+                    for (int i = 0; i < GamesBadgeBoundaries.Length - 1; i++)
+                    {
+                        if (account.GamesCount == GamesBadgeBoundaries[i] || account.GamesCount < GamesBadgeBoundaries[i + 1])
+                        {
+                            account.GamesBadgeBoundary = GamesBadgeBoundaries[i];
+                            break;
+                        }
                     }
                 }
             }

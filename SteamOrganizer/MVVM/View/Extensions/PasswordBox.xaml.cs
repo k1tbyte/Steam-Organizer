@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -19,11 +20,18 @@ namespace SteamOrganizer.MVVM.View.Extensions
             DependencyProperty.Register("Password", typeof(string), typeof(PasswordBox), new FrameworkPropertyMetadata(null,FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnPasswordPropertyChanged)));
 
         private static bool AllowCallback = true;
+
+        public Action<object, TextChangedEventArgs> PasswordChanged { get; set; }
         public string Password
         {
             get => (string)GetValue(PasswordProperty);
             set => SetValue(PasswordProperty, value);
-            
+        }
+
+        public int MaxLength
+        {
+            get => PassBox.MaxLength;
+            set => PassBox.MaxLength = PassTextBox.MaxLength = value;
         }
 
         public Brush Foreground
@@ -74,6 +82,7 @@ namespace SteamOrganizer.MVVM.View.Extensions
         private static void OnPasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var passBox = d as PasswordBox;
+            passBox.PasswordChanged?.Invoke(passBox,null);
 
             if (!AllowCallback)
                 return;

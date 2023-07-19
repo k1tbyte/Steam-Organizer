@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:viewModel="clr-namespace:SteamOrganizer.MVVM.ViewModels"
-      xmlns:local="clr-namespace:SteamOrganizer.MVVM.View.Controls"
       xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
       xmlns:ext="clr-namespace:SteamOrganizer.MVVM.View.Extensions"
       xmlns:glob="clr-namespace:System.Globalization;assembly=mscorlib"
@@ -69,9 +68,9 @@
 
     </Grid.Resources>
 
-    <ScrollViewer>
+    <ScrollViewer x:Name="Scroll">
         <DockPanel VerticalAlignment="Top" Margin="0 10 0 10"
-               HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True">
+               HorizontalAlignment="Center">
 
         <StackPanel Width="250">
 
@@ -115,7 +114,13 @@
                            FontSize="12">
                         <Run Text="{Binding CurrentAccount.LastUpdateDate,Mode=OneWay,TargetNullValue=—,StringFormat=f,ConverterCulture={x:Static glob:CultureInfo.CurrentCulture}}" />
                     </TextBlock>
-                </StackPanel>
+
+                        <ext:HoverButton Margin="0 10 0 0"
+                                         Command="{Binding UpdateCommand,Mode=OneTime}"
+                                         Content="Update"
+                                         HorizontalAlignment="Center"
+                                         MinWidth="140"/>
+                    </StackPanel>
 
             </Border>
 
@@ -440,16 +445,17 @@
 
                                 <ext:TemplateDecorator Title="Steam login" Icon="{x:Static Icon:PackIconMaterialKind.Account}"
                                                        Margin="0 0 0 10">
-                                    <TextBox Style="{StaticResource ModernTextBox}"
+                                        <TextBox Style="{StaticResource ModernTextBox}" MaxLength="32"
                                      Height="35" Text="{Binding Login,UpdateSourceTrigger=PropertyChanged}"
                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
                                 </ext:TemplateDecorator>
 
                                 <ext:TemplateDecorator Title="Steam password" Icon="{x:Static Icon:PackIconMaterialKind.Key}">
-                                    <ext:PasswordBox CornerRadius="5"
+                                        <ext:PasswordBox CornerRadius="5" MaxLength="50"
                                                      Password="{Binding Password,UpdateSourceTrigger=PropertyChanged}"
                                                      SelectionBrush="{DynamicResource LightBlueGrad}"
+                                                     IsPasswordShown="{Binding IsPasswordShown}"
                                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
                                 </ext:TemplateDecorator>
@@ -462,17 +468,21 @@
                                   Tag="{x:Static Icon:PackIconMaterialKind.LinkVariant}"
                                   Uid="Credentials of external links"
                                   OverridesDefaultStyle="True" Template="{StaticResource  ExpanderTemplate}">
-                            <StackPanel  HorizontalAlignment="Left" Width="300">
+                            <StackPanel  HorizontalAlignment="Left" Width="300" TextBlock.FontWeight="Normal">
 
                                 <ext:TemplateDecorator Title="E-mail adress" Icon="{x:Static Icon:PackIconMaterialKind.At}"
                                                        Margin="0 0 0 10" >
                                     <TextBox Style="{StaticResource ModernTextBox}" Height="35"
+                                             TextChanged="AutoSaveTextChanged" MaxLength="50"
                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
                                 </ext:TemplateDecorator>
 
                                 <ext:TemplateDecorator Title="Pasword" Icon="{x:Static Icon:PackIconMaterialKind.KeyLink}">
-                                    <ext:PasswordBox CornerRadius="5" 
+                                    <ext:PasswordBox CornerRadius="5"
+                                                     MaxLength="50"
+                                                     PasswordChanged="AutoSaveTextChanged"
+                                                     IsPasswordShown="{Binding IsPasswordShown}"
                                                      SelectionBrush="{DynamicResource LightBlueGrad}"
                                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
@@ -500,6 +510,8 @@
                                             VerticalAlignment="Center"/>
 
                                 <TextBox Grid.Row="1" Background="Transparent" BorderThickness="0"
+                                         Text="{Binding CurrentAccount.Note ,UpdateSourceTrigger=PropertyChanged}"
+                                         TextChanged="AutoSaveTextChanged"
                                          FontWeight="Normal" MinHeight="80" MaxHeight="280"
                                          AcceptsReturn="True"
                                          VerticalScrollBarVisibility="Auto"
