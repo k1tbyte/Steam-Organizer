@@ -53,6 +53,19 @@ namespace SteamOrganizer.Infrastructure
             }
             return null;
         }
+
+        public async Task<string> PostStringAsync(string url, string content)
+        {
+            try
+            {
+                return await (await HttpClient.PostAsync(url, new StringContent(content))).Content.ReadAsStringAsync();
+            }
+            catch(Exception e)
+            {
+                App.Logger.Value.LogHandledException(e);
+            }
+            return null;
+        }
         
     }
 }

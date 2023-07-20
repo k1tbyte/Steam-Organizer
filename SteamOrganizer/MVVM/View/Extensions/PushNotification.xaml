@@ -45,7 +45,7 @@
                            VerticalAlignment="Top"
                            Margin="0 0 0 5"
                            TextTrimming="CharacterEllipsis"
-                           d:Text="Info"
+                           Text="{DynamicResource word_info}"
                            FontWeight="Medium"
                            FontSize="15"/>
 

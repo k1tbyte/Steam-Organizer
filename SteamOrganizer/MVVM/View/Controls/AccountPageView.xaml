@@ -10,6 +10,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="830" d:DesignWidth="780"
       d:Background="{DynamicResource PrimaryBackgroundBrush}"
+      FocusVisualStyle="{x:Null}"
       d:DataContext="{d:DesignInstance viewModel:AccountPageViewModel}">
     <Grid.Resources>
         <Style x:Key="Links" TargetType="TextBlock">
@@ -115,7 +116,8 @@
                         <Run Text="{Binding CurrentAccount.LastUpdateDate,Mode=OneWay,TargetNullValue=—,StringFormat=f,ConverterCulture={x:Static glob:CultureInfo.CurrentCulture}}" />
                     </TextBlock>
 
-                        <ext:HoverButton Margin="0 10 0 0"
+                        <ext:HoverButton x:Name="UpdateButton"
+                                         Margin="0 10 0 0"
                                          Command="{Binding UpdateCommand,Mode=OneTime}"
                                          Content="Update"
                                          HorizontalAlignment="Center"
@@ -223,28 +225,103 @@
             <Border CornerRadius="5"
                     Background="{DynamicResource SecondaryBackgroundBrush}"
                     Margin="0 10 0 0" Padding="10">
-                <Grid>
-                    <Icon:PackIconMaterial Kind="TwoFactorAuthentication"
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        
+                        <Icon:PackIconMaterial Kind="TwoFactorAuthentication"
                                            Width="30"
                                            Height="30"
                                            Foreground="{DynamicResource PrimarySubBrush}"/>
-                    <TextBlock Text="Code generator"
+                       
+                        <TextBlock Text="Auth code generator"
                                VerticalAlignment="Top"
                                Margin="40 7 0 0"
                                FontWeight="Medium"
                                Foreground="{DynamicResource SecondaryForegroundBrush}"/>
 
-                    <Icon:PackIconMaterial Cursor="Hand"
-                                           Background="Transparent"
-                                           Kind="PlusCircle" 
+                        <Button Style="{StaticResource TransparentButton}" 
+                                Command="{Binding LoadAuthenticatorCommand,Mode=OneTime}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                HorizontalAlignment="Right" Padding="0">
+                            <Icon:PackIconMaterial Cursor="Hand"
+                                           IsHitTestVisible="False"
                                            VerticalAlignment="Center"   
                                            Foreground="{DynamicResource LightBlueGrad}"
                                            HorizontalAlignment="Right" 
-                                           Width="25" Height="25"/>
+                                           Width="25" Height="25">
+                                <Icon:PackIconMaterial.Style>
+                                    <Style TargetType="Icon:PackIconMaterial">
+                                        <Setter Property="Kind" Value="MinusCircle"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CurrentAccount.Authenticator}" Value="{x:Null}">
+                                                <Setter Property="Kind" Value="PlusCircle"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Icon:PackIconMaterial.Style>
+                            </Icon:PackIconMaterial>
+                        </Button>
 
 
-                </Grid>
-            </Border>
+                        <StackPanel Orientation="Vertical"
+                                    Visibility="{Binding CurrentAccount.Authenticator,Mode=OneWay,Converter={StaticResource ToVisibilityConverter}}"
+                                    Grid.Row="1" Margin="0 10 0 0"
+                                    TextBlock.FontWeight="Medium">
+
+                            <StackPanel Orientation="Horizontal" Margin="5 0 0 0">
+                                <TextBlock Text="Revocation code:" Foreground="{DynamicResource SecondaryForegroundBrush}"
+                                           VerticalAlignment="Center" FontWeight="Normal" Margin="0 0 5 0"/>
+                                <TextBlock Text="{Binding CurrentAccount.Authenticator.Revocation_code,Mode=OneWay}" 
+                                           Cursor="Hand"
+                                           MouseLeftButtonDown="ShowRevocationCode"
+                                           Foreground="{DynamicResource  PrimarySubBrush}"
+                                           FontSize="15">
+                                    <TextBlock.Effect>
+                                        <BlurEffect Radius="15"/>
+                                    </TextBlock.Effect>
+                                </TextBlock>
+                            </StackPanel>
+
+                            
+                            <Rectangle Margin="-10 10 -10 10"
+                           Height="3" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
+
+                            <ItemsControl Margin="0 0 0 7"
+                                          Cursor="Hand" Background="Transparent"
+                                          d:ItemsSource="{d:SampleData ItemCount=1}"
+                                          HorizontalAlignment="Center"
+                                          ItemsSource="{Binding AuthenticatorCode,Mode=OneWay}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{DynamicResource BackgroundGrad}" 
+                                                CornerRadius="3" Padding="10 1 10 2"
+                                                Margin="3,0,3,0" >
+                                            <TextBlock Text="{Binding}" 
+                                                   FontSize="22" 
+                                                   Foreground="{DynamicResource PrimarySubBrush}"/>
+                                        </Border>
+
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.InputBindings>
+                                    <MouseBinding Gesture="LeftClick" 
+                                          Command="{Binding CopyAuthCodeCommand,Mode=OneTime}"
+                                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorLevel=1,AncestorType=ItemsControl}}"/>
+                                </ItemsControl.InputBindings>
+                            </ItemsControl>
+
+                            <ProgressBar x:Name="TokensGenProgress" Maximum="30" d:Value="20" Height="8"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
             <!--#region Links -->
             

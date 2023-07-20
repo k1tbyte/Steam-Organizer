@@ -110,6 +110,25 @@ namespace SteamOrganizer.Helpers
         #endregion 
         #endregion
 
+        internal static void GetGamesBadgeBoundary(Account account)
+        {
+            if (account.GamesCount > GamesBadgeBoundaries[GamesBadgeBoundaries.Length - 2])
+            {
+                account.GamesBadgeBoundary = GamesBadgeBoundaries[GamesBadgeBoundaries.Length - 1];
+                return;
+            }
+
+            for (int i = 0; i < GamesBadgeBoundaries.Length - 1; i++)
+            {
+                if (account.GamesCount == GamesBadgeBoundaries[i] || account.GamesCount < GamesBadgeBoundaries[i + 1])
+                {
+                    account.GamesBadgeBoundary = GamesBadgeBoundaries[i];
+                    break;
+                }
+            }   
+        }
+
+
         internal static async Task<bool> ParseInfo(Account account)
         {
             if (account == null || account.SteamID64 == null)
@@ -132,10 +151,9 @@ namespace SteamOrganizer.Helpers
             account.Nickname        = summaries[0].Personaname;
             account.VisibilityState = summaries[0].CommunityVisibilityState;
             var id                  = summaries[0].ProfileURL.Split('/');
-            account.VanityURL       = id[3] == "id" ? id[4] : null;
-            account.CreatedDate     = Utils.UnixTimeToDateTime(summaries[0].TimeCreated ?? 0);
-
-            account.SteamLevel = level;
+            account.VanityURL       = id[3] == "id" ? id[4] : account.VanityURL;
+            account.CreatedDate     = summaries[0].TimeCreated == null ? account.CreatedDate : Utils.UnixTimeToDateTime(summaries[0].TimeCreated.Value);
+            account.SteamLevel      = level ?? account.SteamLevel;
 
             if(bans.Length >= 1)
             {
@@ -160,21 +178,7 @@ namespace SteamOrganizer.Helpers
                     }
                 }
 
-                if (account.GamesCount > GamesBadgeBoundaries[GamesBadgeBoundaries.Length - 2])
-                {
-                    account.GamesBadgeBoundary = GamesBadgeBoundaries[GamesBadgeBoundaries.Length - 1];
-                }
-                else
-                {
-                    for (int i = 0; i < GamesBadgeBoundaries.Length - 1; i++)
-                    {
-                        if (account.GamesCount == GamesBadgeBoundaries[i] || account.GamesCount < GamesBadgeBoundaries[i + 1])
-                        {
-                            account.GamesBadgeBoundary = GamesBadgeBoundaries[i];
-                            break;
-                        }
-                    }
-                }
+                GetGamesBadgeBoundary(account);
             }
             
 

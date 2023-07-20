@@ -20,6 +20,7 @@ namespace SteamOrganizer.MVVM.ViewModels
     {
         private ManagementEventWatcher RegistrySteamUserWatcher;
         private readonly MainWindow View;
+        internal Action PreviewWindowViewChanged;
 
         public RelayCommand SettingsCommand { get; }
         public RelayCommand AccountsCommand { get; }
@@ -29,6 +30,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand NotificationClearAll { get; }
 
         public SettingsView Settings { get; private set; }
+        public AccountPageView AccountPage { get; private set; }
         public AccountsView Accounts { get; }
 
 
@@ -58,8 +60,13 @@ namespace SteamOrganizer.MVVM.ViewModels
         private object _currentView;
         public object CurrentView
         {
-            get => _currentView;
-            set => SetProperty(ref _currentView, value);
+            get         => _currentView;
+            private set
+            {
+                PreviewWindowViewChanged?.Invoke();
+                SetProperty(ref _currentView, value);
+            }
+            
         }
         #endregion
 
@@ -120,11 +127,33 @@ namespace SteamOrganizer.MVVM.ViewModels
         }
         #endregion
 
+        internal void OpenAccountPage(Account account)
+        {
+            account.ThrowIfNull();
+
+            AccountPage = AccountPage ?? new AccountPageView();
+            AccountPage.OpenPage(account);
+            CurrentView = AccountPage;
+
+            // We need to stop all timers and background work on page close
+            // Since we do not know how the page will be closed (via the "back" button or the menu).
+            // We need to bind an action when changing the view
+            PreviewWindowViewChanged += OnAccountPageClosing;
+
+            void OnAccountPageClosing()
+            {
+                AccountPage.Dispose();
+
+                //After closing the page, we must free resources 1 time, so we unbind the action
+                PreviewWindowViewChanged -= OnAccountPageClosing;
+            }
+        }
+
         #region Private
         private void OnOpeningSettings(object param)
         {
             Settings = Settings ?? new SettingsView();
-     //       App.Config.IsPropertiesChanged = true;
+            App.Config.IsPropertiesChanged = true;
             OpenPopupWindow(Settings, App.FindString("sv_title"));
         }
 

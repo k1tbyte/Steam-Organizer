@@ -159,6 +159,7 @@
     <Compile Include="MVVM\Core\OvservableObject.cs" />
     <Compile Include="MVVM\Models\Account.cs" />
     <Compile Include="MVVM\Models\Notification.cs" />
+    <Compile Include="MVVM\Models\SteamAuth.cs" />
     <Compile Include="MVVM\ViewModels\AccountAddingViewModel.cs" />
     <Compile Include="MVVM\ViewModels\AccountPageViewModel.cs" />
     <Compile Include="MVVM\ViewModels\AccountsViewModel.cs" />
@@ -439,6 +440,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\SteamGamesBadges\32000.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure\Steam\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

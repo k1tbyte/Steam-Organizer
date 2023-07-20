@@ -30,7 +30,7 @@ namespace SteamOrganizer.Helpers
 
         public static BitmapImage GetCachedAvatar(string avatarHash, int decodeWidth = 0, int decodeHeight = 0, BitmapCacheOption cacheOption = BitmapCacheOption.OnLoad, EAvatarSize size = EAvatarSize.medium)
         {
-            var cachedName = $"{avatarHash}{(size == EAvatarSize.small ? "" : $"_{size}")}";
+            var cachedName = $"{avatarHash}_{size}";
 
             if (CachedImages.ContainsKey(cachedName))
             {

@@ -1,13 +1,16 @@
-﻿using SteamOrganizer.Helpers;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
+using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
+using SteamOrganizer.MVVM.View.Controls;
+using SteamOrganizer.MVVM.View.Extensions;
 using System;
-using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -16,16 +19,21 @@ namespace SteamOrganizer.MVVM.ViewModels
     internal sealed class AccountPageViewModel : ObservableObject
     {
         #region Commands
+        public RelayCommand LoadAuthenticatorCommand { get; }
         public RelayCommand CopyAccountURLCommand { get; }
         public RelayCommand OpenAccountURLCommand { get; }
         public RelayCommand OpenOtherURLCommand { get; }
         public RelayCommand BackCommand { get; }
         public AsyncRelayCommand UpdateCommand { get; }
         public AsyncRelayCommand CopySteamIDCommand { get; }
+        public AsyncRelayCommand CopyAuthCodeCommand { get; }
         #endregion
 
 
         #region Properties
+
+        private bool IsSteamCodeGenerating = false;
+        private readonly AccountPageView View;
 
         public BitmapImage FullAvatar { get; private set; }
         public int SelectedTabIndex { get; set; }
@@ -129,11 +137,12 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         }
 
+        public string AuthenticatorCode { get; set; } = ".....";
         public Account CurrentAccount { get; }
         #endregion
 
 
-
+        #region Initialize
         private void ValidateCredentials()
         {
             if (string.IsNullOrEmpty(_loginTemp))
@@ -164,7 +173,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 }
 
                 CurrentAccount.Password = _passwordTemp;
-                CurrentAccount.Login    = _loginTemp;
+                CurrentAccount.Login = _loginTemp;
 
                 App.Config.SaveDatabase(3000);
             }
@@ -172,7 +181,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private void InitBansInfo()
         {
-            if(CurrentAccount.DaysSinceLastBan == 0)
+            if (CurrentAccount.DaysSinceLastBan == 0)
             {
                 return;
             }
@@ -193,6 +202,14 @@ namespace SteamOrganizer.MVVM.ViewModels
             {
                 EconomyBanDetails = (CurrentAccount.EconomyBan == 1 ? "The account is temporarily blocked." :
                     "The account is permanently banned.") + " Trade/exchange/sending of gifts is prohibited on this account";
+            }
+        }
+
+        private void InitYearsOfService()
+        {
+            if (CurrentAccount.YearsOfService >= 1f)
+            {
+                YearImagePath = $"/Resources/Images/SteamYearsBadges/year{(int)CurrentAccount.YearsOfService}.bmp";
             }
         }
 
@@ -219,58 +236,144 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private void Init()
         {
+            InitAvatar();
+
             if (CurrentAccount.AccountID == null)
             {
                 AdditionalControlsVis = Visibility.Collapsed;
                 return;
             }
 
-            InitAvatar();
             InitYearsOfService();
             InitGamesInfo();
             InitBansInfo();
         }
+        #endregion
 
-        private void InitYearsOfService()
+
+        internal void ResumeBackgroundWorkers()
         {
-            if (CurrentAccount.YearsOfService >= 1f)
+            if(CurrentAccount.Authenticator != null)
             {
-                YearImagePath = $"/Resources/Images/SteamYearsBadges/year{(int)CurrentAccount.YearsOfService}.bmp";
+                GenerateSteamGuardTokens();
             }
         }
 
-        private async Task OnCopyingSteamID(object param)
+        internal void StopBackgroundWorkers()
         {
-            Clipboard.SetDataObject(SteamIDField);
-            await Utils.OpenAutoClosableToolTip(param as FrameworkElement, App.FindString("copied_info"));
+            if (IsSteamCodeGenerating)
+            {
+                IsSteamCodeGenerating = false;
+            }
+        }
+        
+
+        private async Task OnCopying(object data,object target)
+        {
+            Clipboard.SetDataObject(data);
+            await Utils.OpenAutoClosableToolTip(target as FrameworkElement, App.FindString("copied_info"));
         }
 
         private async Task OnAccountUpdating(object param)
         {
             if (!await CurrentAccount.RetrieveInfo(true))
             {
+                PushNotification.Open("An error occurred while trying to update account", type: PushNotification.EPushNotificationType.Error);
                 return;
             }
 
             Init();
             OnPropertyChanged(nameof(CurrentAccount));
+            (App.MainWindowVM.Accounts.DataContext as AccountsViewModel).RefreshCollection();
             App.Config.SaveDatabase();
+            View.UpdateButton.Visibility = Visibility.Collapsed;
         }
 
-        public AccountPageViewModel(Account account)
+        private void OnLoadingAuthenticator(object param)
         {
-            BackCommand           = new RelayCommand((o) => App.MainWindowVM.CurrentView = App.MainWindowVM.Accounts);
-            CopyAccountURLCommand = new RelayCommand((o) => Clipboard.SetDataObject(CurrentAccount.GetProfileUrl()));
-            OpenAccountURLCommand = new RelayCommand((o) => CurrentAccount.OpenInBrowser());
-            OpenOtherURLCommand   = new RelayCommand((o) => CurrentAccount.OpenInBrowser($"/{o}"));
-            CopySteamIDCommand    = new AsyncRelayCommand(OnCopyingSteamID);
-            UpdateCommand         = new AsyncRelayCommand(OnAccountUpdating);
+            if(CurrentAccount.Authenticator != null)
+            {
+                QueryPopup.GetPopup(App.FindString("apv_auth_remove"), () =>
+                {
+                    IsSteamCodeGenerating        = false;
+                    CurrentAccount.Authenticator = null;
+                    App.Config.SaveDatabase();
+                }).OpenPopup(param as FrameworkElement, System.Windows.Controls.Primitives.PlacementMode.Bottom);
+                return;
+            }
+
+            var fileDialog = new OpenFileDialog
+            {
+                Filter = "Mobile authenticator File (.maFile)|*.maFile",
+            };
+
+            if (fileDialog.ShowDialog() != true)
+                return;
+
+            try
+            {
+                var auth = JsonConvert.DeserializeObject<SteamAuth>(File.ReadAllText(fileDialog.FileName));
+
+                if(auth.Account_name != CurrentAccount.Login.ToLower())
+                {
+                    PushNotification.Open("Failed to load authenticator. You are trying to add an authenticator from another account, please check your steam credentials", type: PushNotification.EPushNotificationType.Error);
+                    return;
+                }
+
+                auth.Secret                  = auth.Uri.Split('=')[1].Split('&')[0];
+                CurrentAccount.Authenticator = auth;
+                App.Config.SaveDatabase();
+                GenerateSteamGuardTokens();
+            }
+            catch 
+            {
+                PushNotification.Open("Failed to load authenticator. Invalid format",type: PushNotification.EPushNotificationType.Error);
+                return;
+            }
+            
+        }
+
+        private async void GenerateSteamGuardTokens()
+        {
+            if (IsSteamCodeGenerating)
+                return;
+
+            IsSteamCodeGenerating = true;
+            for (View.TokensGenProgress.Value = 0d; IsSteamCodeGenerating; View.TokensGenProgress.Value--)
+            {
+                if (View.TokensGenProgress.Value == 0d)
+                {
+                    View.TokensGenProgress.Value = 30d;
+                    AuthenticatorCode = await CurrentAccount.Authenticator.GenerateCode();
+                    OnPropertyChanged(nameof(AuthenticatorCode));
+                }
+
+                await Task.Delay(1000);
+            }
+        }
 
 
+        public AccountPageViewModel(AccountPageView owner,Account account)
+        {
+            BackCommand              = new RelayCommand((o) => App.MainWindowVM.AccountsCommand.Execute(null));
+            CopyAccountURLCommand    = new RelayCommand((o) => Clipboard.SetDataObject(CurrentAccount.GetProfileUrl()));
+            LoadAuthenticatorCommand = new RelayCommand(OnLoadingAuthenticator);
+            OpenAccountURLCommand    = new RelayCommand((o) => CurrentAccount.OpenInBrowser());
+            OpenOtherURLCommand      = new RelayCommand((o) => CurrentAccount.OpenInBrowser($"/{o}"));
+            CopySteamIDCommand       = new AsyncRelayCommand(async(o) => await OnCopying(SteamIDField,o));
+            UpdateCommand            = new AsyncRelayCommand(OnAccountUpdating);
+            CopyAuthCodeCommand = new AsyncRelayCommand(async (o) => await OnCopying(AuthenticatorCode, o));
+
+            View                = owner;
             this.CurrentAccount = account;
             _passwordTemp       = CurrentAccount.Password;
             _loginTemp          = CurrentAccount.Login;
             Init();
+
+            if(account.Authenticator != null)
+            {
+                GenerateSteamGuardTokens();
+            }
         }
     }
 }

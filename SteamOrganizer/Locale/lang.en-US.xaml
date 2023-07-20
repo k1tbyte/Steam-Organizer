@@ -87,6 +87,7 @@
     <v:String x:Key="apv_private">Private</v:String>
     <v:String x:Key="apv_forFriends">For friends</v:String>
     <v:String x:Key="apv_public">Public</v:String>
+    <v:String x:Key="apv_auth_remove">Remove authenticator (not deactivate)? If you do not have backups of this authenticator, you will lose access to your account</v:String>
 
     <!--#endregion-->
 

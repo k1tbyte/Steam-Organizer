@@ -1,6 +1,9 @@
 ﻿using SteamOrganizer.Infrastructure;
+using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.ViewModels;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SteamOrganizer.MVVM.View.Controls
@@ -15,17 +18,22 @@ namespace SteamOrganizer.MVVM.View.Controls
 
         internal void OpenPage(Account account)
         {
-            account.ThrowIfNull();
-
             if(ViewModel == null || !ViewModel.CurrentAccount.Equals(account))
             {
-                this.DataContext             = ViewModel = new AccountPageViewModel(account);
-                IDComboBox.SelectedIndex = 0;
-                SteamExpander.IsExpanded = LinksExpander.IsExpanded = false;
+                this.DataContext             = ViewModel = new AccountPageViewModel(this,account);
+                IDComboBox.SelectedIndex     = 0;
+                SteamExpander.IsExpanded     = LinksExpander.IsExpanded = false;
                 Scroll.ScrollToTop();
+                return;
             }
 
-            App.MainWindowVM.CurrentView = this;
+            //We use an already existing data context. So we need to resume background work
+            ViewModel.ResumeBackgroundWorkers();
+        }
+
+        internal void Dispose()
+        {
+            ViewModel.StopBackgroundWorkers();
         }
 
         private void OpenOtherLink(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -41,5 +49,19 @@ namespace SteamOrganizer.MVVM.View.Controls
         {
             App.Config.SaveDatabase(3000);
         }
+
+        private async void ShowRevocationCode(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var control    = sender as FrameworkElement;
+
+            if (control.Effect == null)
+                return;
+
+            var effect     = control.Effect;
+            control.Effect = null;
+            await Task.Delay(3000);
+            control.Effect = effect;
+        }
+
     }
 }

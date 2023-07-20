@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
@@ -19,7 +20,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         #region Commands
         public RelayCommand OpenProfileCommand { get; }
         public RelayCommand ClearSearchBar { get; }
-        public RelayCommand RemoveAccountCommand { get; }
+        public AsyncRelayCommand RemoveAccountCommand { get; }
         public RelayCommand PinAccountCommand { get; }
         public RelayCommand AddAccountCommand { get; }
         public RelayCommand OpenAccountPageCommand { get; }
@@ -28,7 +29,6 @@ namespace SteamOrganizer.MVVM.ViewModels
         #region Properties
         public ObservableCollection<Account> Accounts => App.Config.Database;
         private ICollectionView AccountsCollectionView;
-        private AccountPageView AccountPageV;
 
         private readonly AccountsView View;
 
@@ -181,9 +181,16 @@ namespace SteamOrganizer.MVVM.ViewModels
             return acc.Nickname.IndexOf(_searchBarText, System.StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
 
-        private void OnRemovingAccount(object param)
+        private async Task OnRemovingAccount(object param)
         {
             var acc = (param as FrameworkElement).DataContext as Account;
+
+            if(acc.IsCurrentlyUpdating)
+            {
+                await Utils.OpenAutoClosableToolTip(param as FrameworkElement, "Account is being updated...", 2000);
+                return;
+            }
+
             QueryPopup.GetPopup($"{App.FindString("acv_confirmDel")} {acc.Nickname}",Removed)
                 .OpenPopup(param as FrameworkElement,System.Windows.Controls.Primitives.PlacementMode.Bottom);
 
@@ -269,24 +276,17 @@ namespace SteamOrganizer.MVVM.ViewModels
             App.MainWindowVM.OpenPopupWindow(new AccountAddingView(),"New account");
         }
 
-        private void OnOpeningAccountPage(object param)
-        {
-            if(AccountPageV == null)
-            {
-                AccountPageV = new AccountPageView();
-            }
-            AccountPageV.OpenPage(param as Account);
-        }
+        internal void RefreshCollection() => AccountsCollectionView.Refresh();
 
         public AccountsViewModel(AccountsView owner)
         {
             View = owner;
 
             ClearSearchBar         = new RelayCommand((o) => SearchBarText = null);
-            RemoveAccountCommand   = new RelayCommand(OnRemovingAccount);
+            RemoveAccountCommand   = new AsyncRelayCommand(OnRemovingAccount);
             PinAccountCommand      = new RelayCommand(OnPinningAccount);
             AddAccountCommand      = new RelayCommand(OnAddingAccount);
-            OpenAccountPageCommand = new RelayCommand(OnOpeningAccountPage);
+            OpenAccountPageCommand = new RelayCommand((o) => App.MainWindowVM.OpenAccountPage(o as Account));
             OpenProfileCommand     = new RelayCommand((o) => (o as Account).OpenInBrowser());
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;

@@ -22,19 +22,48 @@ namespace SteamOrganizer.MVVM.Models
         public string Password { get; set; }
 
 
+        #region Summaries
         public uint? AccountID { get; set; }
-        public ulong? SteamID64   => AccountID.HasValue ? AccountID + SteamIdConverter.SteamID64Indent : null;
+        public ulong? SteamID64 => AccountID.HasValue ? AccountID + SteamIdConverter.SteamID64Indent : null;
         public bool IsFullyParsed => AccountID != null;
-
-
-        public int? SteamLevel { get; set; }
+        public string AvatarHash { get; set; }
         public byte VisibilityState { get; set; }
         public string VanityURL { get; set; }
-
+        public int? SteamLevel { get; set; }
         public DateTime? LastUpdateDate { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime AddedDate { get; }
         public float? YearsOfService => CreatedDate == null ? null : (float?)((DateTime.Now - CreatedDate.Value).TotalDays / 365.25);
+        #endregion
+
+        #region Bans
+        public bool HaveCommunityBan { get; set; }
+        public int VacBansCount { get; set; }
+        public int GameBansCount { get; set; }
+        public int DaysSinceLastBan { get; set; }
+        public int EconomyBan { get; set; }
+        #endregion
+
+        #region Games
+        public int GamesCount { get; set; }
+        public int PlayedGamesCount { get; set; }
+        public ushort GamesBadgeBoundary { get; set; }
+        public float HoursOnPlayed { get; set; }
+        #endregion
+
+        public string Note { get; set; }
+
+
+        private SteamAuth _authenticator;
+        public SteamAuth Authenticator 
+        {
+            get => _authenticator;
+            set
+            {
+                _authenticator = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Authenticator)));
+            }
+        }
 
         public int UnpinIndex;
         private bool _pinned;
@@ -48,31 +77,15 @@ namespace SteamOrganizer.MVVM.Models
             }
         }
 
-        public string AvatarHash { get; set; }
-
-
-        public bool HaveCommunityBan { get; set; }
-        public int VacBansCount { get; set; }
-        public int GameBansCount { get; set; }
-        public int DaysSinceLastBan { get; set; }
-        public int EconomyBan { get; set; }
-
-
-        public int GamesCount { get; set; }
-        public int PlayedGamesCount { get; set; }
-        public ushort GamesBadgeBoundary { get; set; }
-        public float HoursOnPlayed { get; set; }
-
-
-        public string Note { get; set; }
-
-
         [field: NonSerialized]
         public BitmapImage AvatarBitmap { get; set; }
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
-        
+
+        [field: NonSerialized]
+        public bool IsCurrentlyUpdating { get; private set; }
+
 
         public void LoadImage()
             => AvatarBitmap = CachingManager.GetCachedAvatar(AvatarHash, 0, 0,size : EAvatarSize.medium);
@@ -83,20 +96,32 @@ namespace SteamOrganizer.MVVM.Models
         public void OpenInBrowser(string hostPath = null)
             => Process.Start(GetProfileUrl() + hostPath).Dispose();
 
+        public void InvokePropertyChanged(string property)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+
         public async Task<bool> RetrieveInfo(bool markUpdate = false)
         {
-            var prevHash = this.AvatarHash;
+            try
+            {
+                IsCurrentlyUpdating = true;
 
-            if(!await ParseInfo(this))
-                return false;
+                var prevHash = this.AvatarHash;
 
-            if (prevHash != this.AvatarHash)
-                LoadImage();
+                if (!await ParseInfo(this))
+                    return false;
 
-            if (markUpdate)
-                LastUpdateDate = DateTime.Now;
+                if (prevHash != this.AvatarHash)
+                    LoadImage();
 
-            return true;
+                if (markUpdate)
+                    LastUpdateDate = DateTime.Now;
+
+                return true;
+            }
+            finally
+            {
+                IsCurrentlyUpdating = false;
+            }
         }
 
         #region Constructors

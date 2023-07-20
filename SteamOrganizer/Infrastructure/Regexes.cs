@@ -12,6 +12,5 @@ namespace SteamOrganizer.Infrastructure
         internal static readonly Regex AvatarHashXml = new Regex("(?<=https:\\/\\/avatars\\.akamai\\.steamstatic\\.com\\/)[a-zA-Z0-9]+");
         internal static readonly Regex NicknameXml   = new Regex("(?<=<steamID><!\\[CDATA\\[).*?(?=\\]\\]>)");
         internal static readonly Regex SteamId64Xml  = new Regex("(?<=<steamID64>).*?(?=</steamID64>)");
-
     }
 }
