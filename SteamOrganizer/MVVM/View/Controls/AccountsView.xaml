@@ -115,8 +115,21 @@
                  VirtualizingPanel.VirtualizationMode="Recycling"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  d:ItemsSource="{d:SampleData ItemCount=3}">
-            <!-- d:ItemsSource="{d:SampleData ItemCount=3}"> -->
-            
+            <ListBox.Resources>
+                <Style x:Key="Badge" TargetType="Icon:PackIconMaterial">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Height" Value="13"/>
+                    <Setter Property="ToolTipService.InitialShowDelay" Value="200"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Tag,RelativeSource={RelativeSource Self},Mode=OneWay}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.Resources>
+
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border CornerRadius="3" MinWidth="400" Height="105"
@@ -193,26 +206,22 @@
                                 </Button>
 
                                 <!-- If anonymous account -->
-                                <Icon:PackIconMaterial Kind="Incognito"
-                                                       Background="Transparent"
-                                                       ToolTipService.InitialShowDelay="200"
+                                <Icon:PackIconMaterial Kind="Incognito" Height="13" VerticalAlignment="Center"
                                                        ToolTip="{DynamicResource acv_anonBadgeTip}"
+                                                       ToolTipService.InitialShowDelay="200"
                                                        Visibility="{Binding AccountID,Converter={StaticResource ToVisibilityInvertedConverter}}"
-                                                       Height="13"
-                                                       VerticalAlignment="Center"
                                                        Foreground="{DynamicResource WarningBrush}" 
                                                        Margin="10 0 -5 0"/>
 
                                 <!-- If linked 2fa -->
                                 <Icon:PackIconMaterial Kind="Lock" 
+                                                       Style="{StaticResource Badge}"
+                                                       Tag="{Binding Authenticator,Mode=OneWay}"
                                                        Cursor="Hand"
-                                                       Visibility="Collapsed"
-                                                       ToolTipService.InitialShowDelay="200"
+                                                       MouseLeftButtonDown="CopyAuthCode_MouseLeftButtonDown"
+                                                       d:Visibility="Collapsed"
                                                        ToolTip="{DynamicResource acv_2faBadgeTip}"
                                                        Margin="10 0 0 0"
-                                                       Height="13"
-                                                       Background="Transparent"
-                                                       VerticalAlignment="Center"
                                                        Foreground="SpringGreen"/>
 
 

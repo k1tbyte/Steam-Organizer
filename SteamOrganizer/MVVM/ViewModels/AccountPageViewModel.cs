@@ -181,11 +181,15 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private void InitBansInfo()
         {
-            if (CurrentAccount.DaysSinceLastBan == 0)
+            if (CurrentAccount.EconomyBan != 0)
             {
-                return;
+                EconomyBanDetails = (CurrentAccount.EconomyBan == 1 ? "The account is temporarily blocked." :
+                    "The account is permanently banned.") + " Trade/exchange/sending of gifts is prohibited on this account";
             }
 
+            if (CurrentAccount.DaysSinceLastBan == 0)
+                return;
+            
             if (CurrentAccount.GameBansCount >= 1)
             {
                 GameBanDetails = "This account has a game ban"
@@ -196,12 +200,6 @@ namespace SteamOrganizer.MVVM.ViewModels
             {
                 VacBanDetails = "This account has been banned by VAC"
                     + (CurrentAccount.VacBansCount == 1 ? null : $" in several games ({CurrentAccount.VacBansCount})");
-            }
-
-            if (CurrentAccount.EconomyBan != 0)
-            {
-                EconomyBanDetails = (CurrentAccount.EconomyBan == 1 ? "The account is temporarily blocked." :
-                    "The account is permanently banned.") + " Trade/exchange/sending of gifts is prohibited on this account";
             }
         }
 
@@ -314,7 +312,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             {
                 var auth = JsonConvert.DeserializeObject<SteamAuth>(File.ReadAllText(fileDialog.FileName));
 
-                if(auth.Account_name != CurrentAccount.Login.ToLower())
+                if(auth.Account_name != CurrentAccount.Login.ToLower() || App.Config.Database.Exists(o => o.Authenticator?.Shared_secret.Equals(auth.Shared_secret) == true))
                 {
                     PushNotification.Open("Failed to load authenticator. You are trying to add an authenticator from another account, please check your steam credentials", type: PushNotification.EPushNotificationType.Error);
                     return;

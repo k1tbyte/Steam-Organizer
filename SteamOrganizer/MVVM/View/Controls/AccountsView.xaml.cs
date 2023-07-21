@@ -3,6 +3,7 @@ using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.ViewModels;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -192,6 +193,7 @@ namespace SteamOrganizer.MVVM.View.Controls
 
         #endregion
 
+
         private async void CopyID_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var o = sender as FrameworkElement;
@@ -199,6 +201,24 @@ namespace SteamOrganizer.MVVM.View.Controls
             Clipboard.SetDataObject((o.DataContext as Account).AccountID.ToString());
             await Utils.OpenAutoClosableToolTip(o, App.FindString("copied_info"));
             ClipboardLocker.Release();
+        }
+
+        private async void CopyAuthCode_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var o = sender as FrameworkElement;
+            await ClipboardLocker.WaitAsync(1000);
+
+            var code = await (o.DataContext as Account).Authenticator.GenerateCode();
+
+            if(code == null)
+            {
+                return;
+            }
+
+            Clipboard.SetDataObject(code);
+            await Utils.OpenAutoClosableToolTip(o, App.FindString("copied_info"));
+            ClipboardLocker.Release();
+
         }
 
         private void YearsOfServiceMouseOver(object sender, MouseEventArgs e)
