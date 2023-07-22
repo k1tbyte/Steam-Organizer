@@ -80,7 +80,7 @@ namespace SteamOrganizer.Storages
             if (!File.Exists(App.DatabasePath))
             {
                 Database = new ObservableCollection<Account>();
-                return true;
+                return DatabaseKey != null;
             }
 
             if (FileCryptor.Deserialize(App.DatabasePath, out ObservableCollection<Account> result, _databaseKey))

@@ -523,7 +523,9 @@
                                 <ext:TemplateDecorator Title="Steam login" Icon="{x:Static Icon:PackIconMaterialKind.Account}"
                                                        Margin="0 0 0 10">
                                         <TextBox Style="{StaticResource ModernTextBox}" MaxLength="32"
-                                     Height="35" Text="{Binding Login,UpdateSourceTrigger=PropertyChanged}"
+                                                 Height="35" PreviewTextInput="LoginPreviewTextInput"
+                                                 Text="{Binding CurrentAccount.Login,Mode=OneTime}" 
+                                                 IsReadOnly="True" IsReadOnlyCaretVisible="False"
                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
                                 </ext:TemplateDecorator>

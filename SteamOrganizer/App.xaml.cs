@@ -1,18 +1,15 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.Log;
-using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.View.Windows;
 using SteamOrganizer.MVVM.ViewModels;
 using SteamOrganizer.Storages;
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
-using SteamOrganizer.MVVM.Models;
 using System.Windows;
 
 namespace SteamOrganizer
@@ -51,7 +48,7 @@ namespace SteamOrganizer
             WorkingDir      = Path.GetDirectoryName(Assembly.GetExecutingAssembly()?.Location) ?? throw new ArgumentNullException(nameof(WorkingDir));
             Version         = Assembly.GetExecutingAssembly()?.GetName()?.Version ?? throw new ArgumentNullException(nameof(Version));
             ConfigPath      = Path.Combine(WorkingDir, "config.bin");
-            DatabasePath    = Path.Combine(WorkingDir, "database.dat");
+            DatabasePath    = Path.Combine(WorkingDir, "database.bin");
             CacheFolderPath = Path.Combine(WorkingDir, ".cache");
         } 
         #endregion

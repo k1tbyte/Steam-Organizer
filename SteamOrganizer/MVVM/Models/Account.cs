@@ -99,6 +99,20 @@ namespace SteamOrganizer.MVVM.Models
         public void InvokePropertyChanged(string property)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
 
+        public void InvokeBannerPropertiesChanged()
+        {
+            InvokePropertyChanged(nameof(Nickname));
+            InvokePropertyChanged(nameof(AccountID));
+            InvokePropertyChanged(nameof(CreatedDate));
+            InvokePropertyChanged(nameof(SteamLevel));
+            InvokePropertyChanged(nameof(YearsOfService));
+            InvokePropertyChanged(nameof(HaveCommunityBan));
+            InvokePropertyChanged(nameof(VacBansCount));
+            InvokePropertyChanged(nameof(GameBansCount));
+            InvokePropertyChanged(nameof(EconomyBan));
+            InvokePropertyChanged(nameof(AvatarBitmap));
+        }
+
         public async Task<bool> RetrieveInfo(bool markUpdate = false)
         {
             try

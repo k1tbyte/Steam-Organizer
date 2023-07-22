@@ -46,18 +46,19 @@ namespace SteamOrganizer.Infrastructure
             return false;
         }
 
-        public static bool Exists<T>(this ObservableCollection<T> collection, Func<T, bool> match, out int index)
+        public static bool Exists<T>(this ObservableCollection<T> collection, Func<T, bool> match, out T element) where T : class
         {
-            for (int i = 0; i < collection.Count; i++)
+            element = null;
+
+            foreach (var item in collection)
             {
-                if (match(collection[i]))
+                if(match(item))
                 {
-                    index = i;
+                    element = item;
                     return true;
                 }
             }
 
-            index = -1;
             return false;
         }
 

@@ -67,7 +67,11 @@ namespace SteamOrganizer.MVVM.View.Controls
                 }
 
                 Sign.Content           = App.FindString("av_generation");
-                App.Config.DatabaseKey = await Utils.InBackgroundAwait(() => FileCryptor.GenerateEncryptionKey(PassBox.Password, App.EncryptionKey));
+
+                var password = PassBox.Password;
+                App.Config.DatabaseKey = await Utils.InBackgroundAwait(() => FileCryptor.GenerateEncryptionKey(password, App.EncryptionKey));
+                password = null;
+                PassBox.Clear();
                 App.Config.Save();
                 App.MainWindowVM.ClosePopupWindow();
                 return;

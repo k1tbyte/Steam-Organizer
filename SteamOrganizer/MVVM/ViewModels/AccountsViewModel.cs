@@ -124,13 +124,11 @@ namespace SteamOrganizer.MVVM.ViewModels
             {
                 App.MainWindowVM.OpenPopupWindow(new AuthenticationView(App.DatabasePath, OnSuccessDecrypt, true), App.FindString("av_title"), OnInstallationCanceled);
             }
-#if !DEBUG
             // request password for new db
-            else if (Config.DatabaseKey == null)
+            else if (App.Config.DatabaseKey == null)
             {
-                MainWindow.OpenPopupWindow(new MVVM.View.Controls.AuthenticationView(), FindString("word_registration"), OnInstallationCanceled);
+                App.MainWindowVM.OpenPopupWindow(new AuthenticationView(), App.FindString("word_registration"), OnInstallationCanceled);
             }
-#endif
 
 
             void OnSuccessDecrypt(object content, byte[] key)

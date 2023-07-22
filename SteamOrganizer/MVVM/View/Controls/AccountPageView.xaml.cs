@@ -11,6 +11,8 @@ namespace SteamOrganizer.MVVM.View.Controls
     public partial class AccountPageView : Grid
     {
         private AccountPageViewModel ViewModel;
+        private bool isLoginToolTipShown;
+
         internal AccountPageView()
         {
             InitializeComponent();
@@ -63,5 +65,18 @@ namespace SteamOrganizer.MVVM.View.Controls
             control.Effect = effect;
         }
 
+
+        private async void LoginPreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = true;
+            if (isLoginToolTipShown)
+            {
+                return;
+            }
+
+            isLoginToolTipShown = true;
+            await Utils.OpenAutoClosableToolTip(sender as FrameworkElement, App.FindString("apv_uniq_login_tip"), 3000);
+            isLoginToolTipShown = false;
+        }
     }
 }

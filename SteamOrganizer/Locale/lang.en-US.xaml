@@ -46,7 +46,7 @@
     <v:String x:Key="av_newPassword">Enter a new password to encrypt your accounts, this is a required step. Enter a password that you 100% remember. If you forget your password, you will permanently lose access to your data.</v:String>
     <v:String x:Key="av_tooShortPass">Password must be at least 8 characters</v:String>
     <v:String x:Key="av_resetInfo">To confirm, press the reset button twice again, all data will be deleted</v:String>
-    <v:String x:Key="av_authInfo">For various reasons, the data could not be decrypted, please enter the password.</v:String>
+    <v:String x:Key="av_authInfo">For various reasons, the data could not be decrypted, please enter the password or double click on reset.</v:String>
     <v:String x:Key="av_generation">Generation ...</v:String>
     <v:String x:Key="av_decryption">Decryption ...</v:String>
     
@@ -72,13 +72,12 @@
     <!--#region Account adding view -->
 
     <v:String x:Key="adv_idTip">Leave the ID field blank if you don't know it. In case of successful login to this account, information will be received automatically</v:String>
-    <v:String x:Key="adv_err_login_empty">The login field is empty!</v:String>
-    <v:String x:Key="adv_err_login_spaces">Login cannot contain spaces!</v:String>
-    <v:String x:Key="adv_err_login_len">Login length must be at least 3 and not more than 32 characters!</v:String>
+    <v:String x:Key="adv_err_login">Login must be in Latin and not less than 3 and not more than 64 characters</v:String>
     <v:String x:Key="adv_err_pass_empty">The password field is empty!</v:String>
     <v:String x:Key="adv_err_pass_len">Password length must be at least 6 and not more than 50 characters!</v:String>
     <v:String x:Key="adv_err_invalid_id">Invalid steam id!</v:String>
-    <v:String x:Key="adv_err_id_exists">An account with this ID has already been added</v:String>
+    <v:String x:Key="adv_err_id_exists">An account with the same ID has already been added</v:String>
+    <v:String x:Key="adv_err_login_exists">An account with the same login has already been added</v:String>
 
     <!--#endregion-->
 
@@ -88,7 +87,8 @@
     <v:String x:Key="apv_forFriends">For friends</v:String>
     <v:String x:Key="apv_public">Public</v:String>
     <v:String x:Key="apv_auth_remove">Remove authenticator (not deactivate)? If you do not have backups of this authenticator, you will lose access to your account</v:String>
-
+    <v:String x:Key="apv_uniq_login_tip">The login is unique and must match the ID, so you cannot change the login. If you entered the wrong username, just re-create account</v:String>
+    
     <!--#endregion-->
 
 </ResourceDictionary>

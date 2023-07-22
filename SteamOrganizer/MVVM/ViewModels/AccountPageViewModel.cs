@@ -121,20 +121,25 @@ namespace SteamOrganizer.MVVM.ViewModels
             set
             {
                 _passwordTemp = value;
-                ValidateCredentials();
-            }
-        }
+                if (string.IsNullOrEmpty(_passwordTemp))
+                {
+                    SteamCrenetialsErr = App.FindString("adv_err_pass_empty");
+                }
+                else if (_passwordTemp.Length < 6 || _passwordTemp.Length > 50)
+                {
+                    SteamCrenetialsErr = App.FindString("adv_err_pass_len");
+                }
+                else
+                {
+                    if (!String.IsNullOrEmpty(_steamCredentialsErr))
+                    {
+                        SteamCrenetialsErr = null;
+                    }
 
-        private string _loginTemp;
-        public string Login
-        {
-            get => _loginTemp;
-            set
-            {
-                _loginTemp = value;
-                ValidateCredentials();
+                    CurrentAccount.Password = _passwordTemp;
+                    App.Config.SaveDatabase(3000);
+                }
             }
-
         }
 
         public string AuthenticatorCode { get; set; } = ".....";
@@ -143,41 +148,6 @@ namespace SteamOrganizer.MVVM.ViewModels
 
 
         #region Initialize
-        private void ValidateCredentials()
-        {
-            if (string.IsNullOrEmpty(_loginTemp))
-            {
-                SteamCrenetialsErr = App.FindString("adv_err_login_empty");
-            }
-            else if (_loginTemp.Contains(" "))
-            {
-                SteamCrenetialsErr = App.FindString("adv_err_login_spaces");
-            }
-            else if (_loginTemp.Length < 3 || _loginTemp.Length > 32)
-            {
-                SteamCrenetialsErr = App.FindString("adv_err_login_len");
-            }
-            else if (string.IsNullOrEmpty(_passwordTemp))
-            {
-                SteamCrenetialsErr = App.FindString("adv_err_pass_empty");
-            }
-            else if (_passwordTemp.Length < 6 || _passwordTemp.Length > 50)
-            {
-                SteamCrenetialsErr = App.FindString("adv_err_pass_len");
-            }
-            else
-            {
-                if (!String.IsNullOrEmpty(_steamCredentialsErr))
-                {
-                    SteamCrenetialsErr = null;
-                }
-
-                CurrentAccount.Password = _passwordTemp;
-                CurrentAccount.Login = _loginTemp;
-
-                App.Config.SaveDatabase(3000);
-            }
-        }
 
         private void InitBansInfo()
         {
@@ -360,12 +330,11 @@ namespace SteamOrganizer.MVVM.ViewModels
             OpenOtherURLCommand      = new RelayCommand((o) => CurrentAccount.OpenInBrowser($"/{o}"));
             CopySteamIDCommand       = new AsyncRelayCommand(async(o) => await OnCopying(SteamIDField,o));
             UpdateCommand            = new AsyncRelayCommand(OnAccountUpdating);
-            CopyAuthCodeCommand = new AsyncRelayCommand(async (o) => await OnCopying(AuthenticatorCode, o));
+            CopyAuthCodeCommand      = new AsyncRelayCommand(async (o) => await OnCopying(AuthenticatorCode, o));
 
             View                = owner;
             this.CurrentAccount = account;
             _passwordTemp       = CurrentAccount.Password;
-            _loginTemp          = CurrentAccount.Login;
             Init();
 
             if(account.Authenticator != null)

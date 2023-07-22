@@ -53,11 +53,8 @@ namespace SteamOrganizer.MVVM.View.Extensions
             set => SetValue(IsPasswordShownProperty, value);
         }
 
-        public void Clear()
-        {
-            PassBox.Clear();
-            PassTextBox.Clear();
-        }
+        public void Clear() => PassBox.Clear();
+        
 
         private static void OnPasswordStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

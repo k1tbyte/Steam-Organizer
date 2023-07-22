@@ -23,17 +23,9 @@ namespace SteamOrganizer.MVVM.ViewModels
         private async Task<(bool,ulong)> ValidateData()
         {
             ulong id = 0;
-            if (string.IsNullOrEmpty(Login))
+            if (!Regexes.SteamLogin.IsMatch(Login))
             {
-                View.Error.Text = App.FindString("adv_err_login_empty");
-            }
-            else if (Login.Contains(" "))
-            {
-                View.Error.Text = App.FindString("adv_err_login_spaces");
-            }
-            else if (Login.Length < 3 || Login.Length > 32)
-            {
-                View.Error.Text = App.FindString("adv_err_login_len");
+                View.Error.Text = App.FindString("adv_err_login");
             }
             else if (string.IsNullOrEmpty(Password))
             {
@@ -42,6 +34,10 @@ namespace SteamOrganizer.MVVM.ViewModels
             else if (Password.Length < 6 || Password.Length > 50)
             {
                 View.Error.Text = App.FindString("adv_err_pass_len");
+            }
+            else if (App.Config.Database.Exists(o => o.Login == Login))
+            {
+                View.Error.Text = App.FindString("adv_err_login_exists");
             }
             else if (!string.IsNullOrEmpty(ID))
             {

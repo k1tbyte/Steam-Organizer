@@ -168,6 +168,17 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
+            var login = Utils.GetUserRegistryValue(@"Software\\Valve\\Steam", "AutoLoginUser") as string;
+            if (!string.IsNullOrEmpty(login) && App.Config.Database.Exists(o => o.AccountID == null && o.Login == login,out Account anonym))
+            {
+                anonym.AccountID = userId;
+                if (await anonym.RetrieveInfo())
+                {
+                    anonym.InvokeBannerPropertiesChanged();
+                    App.Config.SaveDatabase();
+                }
+            }
+
             var xmlPage = await App.WebBrowser.GetStringAsync($"{WebBrowser.SteamProfilesHost}{SteamIdConverter.AccountIDToID64(userId)}?xml=1");
 
             var imgHash = Regexes.AvatarHashXml.Match(xmlPage)?.Groups[0]?.Value;
