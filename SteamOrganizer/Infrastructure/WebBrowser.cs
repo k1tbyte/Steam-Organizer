@@ -11,11 +11,18 @@ namespace SteamOrganizer.Infrastructure
         internal const string SteamProfilesHost = "https://steamcommunity.com/profiles/";
         internal const string SteamHost         = "https://steamcommunity.com/";
 
-        internal const byte MaxConnections = 5;
+        internal const byte MaxConnections        = 5;
+        internal const byte MaxAttempts           = 5;
+
+        /// <summary>
+        /// Time in ms
+        /// </summary>
+        internal const int RetryRequestDelay      = 5000;
 
         private readonly HttpClient HttpClient;
         private readonly HttpClientHandler HttpClientHandler;
 
+        internal HttpStatusCode? LastStatusCode { get; private set; } = null;
 
         public WebBrowser()
         {
@@ -41,11 +48,22 @@ namespace SteamOrganizer.Infrastructure
             HttpClient.Dispose();
         }
 
+        private async Task<HttpResponseMessage> GetAsync(string url)
+        {
+            var response = await HttpClient.GetAsync(url).ConfigureAwait(false);
+            LastStatusCode = response.StatusCode;
+            return response;
+        }
+
         public async Task<string> GetStringAsync(string url)
         {
             try
             {
-                return await HttpClient.GetStringAsync(url).ConfigureAwait(false);
+                using (var response = await GetAsync(url).ConfigureAwait(false))
+                {
+                    return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                }
+                    
             }
             catch (Exception e)
             {

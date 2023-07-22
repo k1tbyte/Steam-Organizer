@@ -121,7 +121,7 @@ namespace SteamOrganizer.MVVM.Models
 
                 var prevHash = this.AvatarHash;
 
-                if (!await ParseInfo(this))
+                if (await ParseInfo(this) != EParseResult.OK)
                     return false;
 
                 if (prevHash != this.AvatarHash)
@@ -137,7 +137,6 @@ namespace SteamOrganizer.MVVM.Models
                 IsCurrentlyUpdating = false;
             }
         }
-
         #region Constructors
 
         private Account() { }

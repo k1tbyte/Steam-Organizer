@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Models;
-using SteamOrganizer.MVVM.View.Controls;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SteamOrganizer.Helpers
@@ -12,7 +13,15 @@ namespace SteamOrganizer.Helpers
         private static readonly ushort[] GamesBadgeBoundaries = {
                 1,5,10,25,50,100,250,500,1000,2000,3000,4000,5000,6000,7000,8000,8000,9000,10000,11000,13000,14000,15000,16000,17000,18000,20000,21000,
                 22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000
-             };
+             }; 
+
+        internal enum EParseResult : byte
+        {
+            OK,
+            NoValidAccounts,
+            NoAccountsWithID,
+            AttemptsExceeded,
+        }
 
         #region Responses
         #region Bans
@@ -128,61 +137,177 @@ namespace SteamOrganizer.Helpers
             }   
         }
 
-
-        internal static async Task<bool> ParseInfo(Account account)
+        private static bool SetSummaries(this Account acc,UserSummariesObject.Player summary)
         {
-            if (account == null || account.SteamID64 == null)
-                return false;
-
-            var summaries = await GetPlayersSummaries(account.SteamID64.Value).ConfigureAwait(false);
-
-            if(summaries == null)
-                return false;
-
-            var bansTask      = GetPlayersBans(account.SteamID64.Value).ConfigureAwait(false);
-            var levelTask     = GetPlayerLevel(account.SteamID64.Value).ConfigureAwait(false);
-            var gamesTask     = GetPlayerOwnedGames(account.SteamID64.Value);
-
-            var bans      = await bansTask;
-            var level     = await levelTask;
-            var games     = await gamesTask;
-
-            account.AvatarHash      = summaries[0].Avatarhash;
-            account.Nickname        = summaries[0].Personaname;
-            account.VisibilityState = summaries[0].CommunityVisibilityState;
-            var id                  = summaries[0].ProfileURL.Split('/');
-            account.VanityURL       = id[3] == "id" ? id[4] : account.VanityURL;
-            account.CreatedDate     = summaries[0].TimeCreated == null ? account.CreatedDate : Utils.UnixTimeToDateTime(summaries[0].TimeCreated.Value);
-            account.SteamLevel      = level ?? account.SteamLevel;
-
-            if(bans.Length >= 1)
+            if (summary == null)
             {
-                account.GameBansCount    = bans[0].NumberOfGameBans;
-                account.VacBansCount     = bans[0].NumberOfVacBans;
-                account.HaveCommunityBan = bans[0].CommunityBanned;
-                account.DaysSinceLastBan = bans[0].DaysSinceLastBan;
-                account.EconomyBan       = (int)bans[0].EconomyBan;
+                return false;
             }
 
-            account.HoursOnPlayed = account.PlayedGamesCount = 0;
-            if (games.Length >= 1)
-            {
-                account.GamesCount = games.Length;
-                for (int i = 0; i < games.Length; i++)
-                {
-                    if (games[i].Playtime_forever != 0)
-                    {
-                        games[i].Playtime_forever /= 60;
-                        account.HoursOnPlayed += games[i].Playtime_forever;
-                        account.PlayedGamesCount++;
-                    }
-                }
 
-                GetGamesBadgeBoundary(account);
-            }
-            
+            acc.AvatarHash      = summary.Avatarhash;
+            acc.Nickname        = summary.Personaname;
+            acc.VisibilityState = summary.CommunityVisibilityState;
+            var id              = summary.ProfileURL.Split('/');
+            acc.VanityURL       = id[3] == "id" ? id[4] : acc.VanityURL;
+            acc.CreatedDate     = summary.TimeCreated == null ? acc.CreatedDate : Utils.UnixTimeToDateTime(summary.TimeCreated.Value);
 
             return true;
+        }
+
+        private static bool SetBansInfo(this Account acc, UserBansObject.Player bans)
+        {
+            if (bans == null)
+            {
+                return false;
+            }
+
+
+            acc.GameBansCount    = bans.NumberOfGameBans;
+            acc.VacBansCount     = bans.NumberOfVacBans;
+            acc.HaveCommunityBan = bans.CommunityBanned;
+            acc.DaysSinceLastBan = bans.DaysSinceLastBan;
+            acc.EconomyBan       = (int)bans.EconomyBan;
+            return true;
+        }
+        
+        private static bool SetGamesInfo(this Account acc, UserOwnedGamesObject.Game[] games)
+        {
+            if (games == null)
+            {
+                return false;
+            }
+
+            if(games.Length < 1)
+            {
+                return true;
+            }
+                
+
+            acc.HoursOnPlayed = acc.PlayedGamesCount = 0;
+            acc.GamesCount    = games.Length;
+
+            for (int i = 0; i < games.Length; i++)
+            {
+                if (games[i].Playtime_forever != 0)
+                {
+                    games[i].Playtime_forever /= 60;
+                    acc.HoursOnPlayed += games[i].Playtime_forever;
+                    acc.PlayedGamesCount++;
+                }
+            }
+
+            GetGamesBadgeBoundary(acc);
+            return true;
+        }
+
+
+        /// <returns>Returns a list of accounts whose information could not be retrieved due to an error. Or null if internal error</returns>
+        internal static async Task<(List<Account>,EParseResult)> ParseInfo(IList<Account> accounts)
+        {
+            if (accounts == null || accounts.Count == 0)
+            {
+                return (null,EParseResult.NoValidAccounts);
+            }
+                
+            var valid = accounts.Where(o => o.SteamID64 != null).ToDictionary(o => o.SteamID64.Value);
+
+            if (!valid.Any())
+            {
+                return (null, EParseResult.NoAccountsWithID);
+            }
+
+            var errorAccsList = new List<Account>();
+
+            // A chunk consists of a maximum of 100 accounts because
+            // the maximum number of IDs that GetPlayerSummaries and GetPlayerBans accepts
+            for (int i = 0,attempt = 0; i < valid.Count(); i += 100)
+            {
+                var chunk = valid
+                    .Skip(i)
+                    .Take(100)
+                    .Select(o => o.Key).ToArray();
+
+                var summariesTask = GetPlayersSummaries(chunk).ConfigureAwait(false);
+                var bansTask      = GetPlayersBans(chunk).ConfigureAwait(false);
+
+                var summaries = await summariesTask;
+                var bans      = (await bansTask).ToDictionary(o => o.SteamId);
+
+                if((summaries == null || bans == null) && App.WebBrowser.LastStatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    if(++attempt >= WebBrowser.MaxAttempts)
+                    {
+                        return (null, EParseResult.AttemptsExceeded);
+                    }
+
+                    await Task.Delay(WebBrowser.RetryRequestDelay);
+                    i -= 100;
+                    continue;
+                }
+
+                // We don't have Parallel.ForEachAsync and need to somehow wait for all tasks to complete, so we use this
+                var pool     = new List<Task>(chunk.Length);
+
+                Parallel.ForEach(summaries,async (accSummary,state) =>
+                {
+                    var acc = valid[accSummary.SteamId];
+                    acc.SetSummaries(accSummary);
+                    acc.SetBansInfo(bans[accSummary.SteamId]);
+
+                    // It is useless to receive further information - private profile
+                    if (acc.VisibilityState != 3)
+                    {
+                        acc.LastUpdateDate = DateTime.Now;
+                        return;
+                    }    
+
+                    var levelTask = GetPlayerLevel(accSummary.SteamId);
+                    var gamesTask = GetPlayerOwnedGames(accSummary.SteamId);
+                    pool.Add(gamesTask);
+
+                    // If we received the GamesResponse as null, then most likely
+                    // the level could not be obtained either, so we add the account to the list with an error
+                    if (acc.SetGamesInfo(await gamesTask))
+                    {
+                        errorAccsList.Add(acc);
+                        return;
+                    }
+
+                    acc.SteamLevel     = (await levelTask) ?? acc.SteamLevel;
+                    acc.LastUpdateDate = DateTime.Now;
+                });
+
+                await Task.WhenAll(pool).ConfigureAwait(false);
+            }
+
+            return  (errorAccsList.Count > 0 ? errorAccsList : null,EParseResult.OK);
+        }
+
+        internal static async Task<EParseResult> ParseInfo(Account account)
+        {
+            if (account == null)
+                return EParseResult.NoValidAccounts;
+
+            if (account.SteamID64 == null)
+                return EParseResult.NoAccountsWithID;
+
+            if (!account.SetSummaries((await GetPlayersSummaries(account.SteamID64.Value).ConfigureAwait(false))?[0]))
+                return EParseResult.AttemptsExceeded;
+
+            var bansTask = GetPlayersBans(account.SteamID64.Value).ConfigureAwait(false);
+            var levelTask = GetPlayerLevel(account.SteamID64.Value).ConfigureAwait(false);
+            var gamesTask = GetPlayerOwnedGames(account.SteamID64.Value);
+
+            var bans = await bansTask;
+            var level = await levelTask;
+            var games = await gamesTask;
+
+            account.SteamLevel = level ?? account.SteamLevel;
+            account.SetBansInfo(bans?[0]);
+            account.SetGamesInfo(games);
+
+            return EParseResult.OK;
         }
 
         internal static async Task<int?> GetPlayerLevel(ulong steamId64)
