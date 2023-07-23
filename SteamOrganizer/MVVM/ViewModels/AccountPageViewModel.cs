@@ -206,7 +206,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         {
             InitAvatar();
 
-            if (CurrentAccount.AccountID == null)
+            if (CurrentAccount.SteamID64 == null)
             {
                 AdditionalControlsVis = Visibility.Collapsed;
                 return;

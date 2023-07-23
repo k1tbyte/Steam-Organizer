@@ -20,11 +20,11 @@
         <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
             <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}" Kind="Earth" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Border>
-        
+
         <TextBlock Text="{DynamicResource word_language}" VerticalAlignment="Center" 
                        Foreground="{DynamicResource SecondaryForegroundBrush}" FontSize="14"
                        FontWeight="Medium"/>
-        
+
     </DockPanel>
 
     <DockPanel Margin="10 0 10 10">
@@ -40,6 +40,26 @@
                 Value="{Binding Config.MainWindowCornerRadius}"
                 Uid="{Binding RelativeSource={RelativeSource Self}, Path=Value,StringFormat={}{0:0 px}}"
                 Height="12" Margin="0 17 0 0"/>
+    </DockPanel>
+
+    <DockPanel Margin="10 0 10 10">
+        <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
+            <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                   Kind="Sync" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Border>
+
+        <TextBlock Text="Automatic account updates" VerticalAlignment="Center" 
+                       Foreground="{DynamicResource SecondaryForegroundBrush}" FontSize="14"
+                       FontWeight="Medium"/>
+
+        <ComboBox Background="{DynamicResource TertiaryBackgroundBrush}"
+                  Width="120" HorizontalAlignment="Right" Height="27"
+                  SelectedIndex="{Binding Config.AutoUpdateDbDelay,Mode=TwoWay}">
+            <ComboBoxItem Content="Never"/>
+            <ComboBoxItem Content="Every day"/>
+            <ComboBoxItem Content="Every weak"/>
+            <ComboBoxItem Content="Every month"/>
+        </ComboBox>
 
     </DockPanel>
 

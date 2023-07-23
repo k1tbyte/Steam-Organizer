@@ -16,6 +16,7 @@ namespace SteamOrganizer.Storages
         Expanded = 200
     }
 
+
     [Serializable]
     internal sealed class GlobalStorage
     {
@@ -42,8 +43,18 @@ namespace SteamOrganizer.Storages
         #endregion
 
         public bool MinimizeOnStart { get; set; }
+
+        public long LastDatabaseUpdateTime { get; set; }
         public bool MinimizeToTray { get; set; }
         public string SteamApiKey { get; set; }
+
+        /// <summary>
+        /// Never = 0,
+        /// Everyday = 1,
+        /// EveryWeak = 2,
+        /// EveryMonth = 3
+        /// </summary>
+        public byte AutoUpdateDbDelay { get; set; }
 
         private byte[] _databaseKey;
         public byte[] DatabaseKey

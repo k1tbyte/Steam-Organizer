@@ -23,9 +23,9 @@ namespace SteamOrganizer.MVVM.Models
 
 
         #region Summaries
-        public uint? AccountID { get; set; }
-        public ulong? SteamID64 => AccountID.HasValue ? AccountID + SteamIdConverter.SteamID64Indent : null;
-        public bool IsFullyParsed => AccountID != null;
+        public uint? AccountID => SteamID64.HasValue ? (uint?)(SteamID64 - SteamIdConverter.SteamID64Indent) : null;
+        public ulong? SteamID64 { get; set; }
+        public bool IsFullyParsed => SteamID64 != null;
         public string AvatarHash { get; set; }
         public byte VisibilityState { get; set; }
         public string VanityURL { get; set; }
@@ -84,11 +84,11 @@ namespace SteamOrganizer.MVVM.Models
         public event PropertyChangedEventHandler PropertyChanged;
 
         [field: NonSerialized]
-        public bool IsCurrentlyUpdating { get; private set; }
+        public bool IsCurrentlyUpdating { get; set; }
 
 
-        public void LoadImage()
-            => AvatarBitmap = CachingManager.GetCachedAvatar(AvatarHash, 0, 0,size : EAvatarSize.medium);
+        public void LoadImage(string hash = null)
+            => AvatarBitmap = CachingManager.GetCachedAvatar(hash ?? AvatarHash, 0, 0,size : EAvatarSize.medium);
 
         public string GetProfileUrl() 
             => SteamID64 == null ? WebBrowser.SteamHost : WebBrowser.SteamProfilesHost + SteamID64.ToString();
@@ -149,16 +149,16 @@ namespace SteamOrganizer.MVVM.Models
             this.Password  = password;
         }
 
-        public Account(string login, string password, uint accountId)
+        public Account(string login, string password, ulong steamID64)
         {
             this.AddedDate = DateTime.Now;
             this.Nickname  = this.Login = login;
             this.Password  = password;
-            this.AccountID = accountId;
+            this.SteamID64 = steamID64;
         }
 
-        public Account(string login, string password, ulong steamId64) :
-            this(login, password, (uint)(steamId64 - SteamIdConverter.SteamID64Indent))
+        public Account(string login, string password, uint accountId) :
+            this(login, password, accountId + SteamIdConverter.SteamID64Indent)
         { }
 
         #endregion

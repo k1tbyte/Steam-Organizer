@@ -169,9 +169,9 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
 
             var login = Utils.GetUserRegistryValue(@"Software\\Valve\\Steam", "AutoLoginUser") as string;
-            if (!string.IsNullOrEmpty(login) && App.Config.Database.Exists(o => o.AccountID == null && o.Login == login,out Account anonym))
+            if (!string.IsNullOrEmpty(login) && App.Config.Database.Exists(o => o.SteamID64 == null && string.Equals(o.Login,login,StringComparison.OrdinalIgnoreCase),out Account anonym))
             {
-                anonym.AccountID = userId;
+                anonym.SteamID64 = userId + SteamIdConverter.SteamID64Indent;
                 if (await anonym.RetrieveInfo())
                 {
                     anonym.InvokeBannerPropertiesChanged();
@@ -206,11 +206,11 @@ namespace SteamOrganizer.MVVM.ViewModels
         public MainWindowViewModel(MainWindow owner)
         {
             View                      = owner;
-#if !DEBUG
+#if DEBUG
             Utils.InBackground(InitServices);
 #endif
             CurrentView = Accounts =  new AccountsView();
-            SettingsCommand           = new RelayCommand((o) => MessageBox.Show(View.ActualWidth.ToString()));
+            SettingsCommand           = new RelayCommand(OnOpeningSettings);
             AccountsCommand           = new RelayCommand((o) => CurrentView = Accounts);
             OpenNotificationsCommand  = new RelayCommand(OnOpeningNotifications);
             NotificationRemoveCommand = new RelayCommand(OnNotificationRemoving);

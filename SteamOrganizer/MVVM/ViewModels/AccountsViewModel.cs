@@ -5,10 +5,14 @@ using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
 using SteamOrganizer.MVVM.View.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -21,6 +25,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand OpenProfileCommand { get; }
         public RelayCommand ClearSearchBar { get; }
         public AsyncRelayCommand RemoveAccountCommand { get; }
+        public RelayCommand UpdateAccountsCommand { get; }
         public RelayCommand PinAccountCommand { get; }
         public RelayCommand AddAccountCommand { get; }
         public RelayCommand OpenAccountPageCommand { get; }
@@ -29,6 +34,8 @@ namespace SteamOrganizer.MVVM.ViewModels
         #region Properties
         public ObservableCollection<Account> Accounts => App.Config.Database;
         private ICollectionView AccountsCollectionView;
+        private CancellationTokenSource updateCancellation;
+        private DateTime buttonSpamStub;
 
         private readonly AccountsView View;
 
@@ -112,12 +119,19 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
 
             AccountsCollectionView.SortDescriptions.Add(new SortDescription(SortTypes[_sortByIndex - 1], _sortDirection ? ListSortDirection.Descending : ListSortDirection.Ascending));
-        } 
+        }
 
         #endregion
 
+        private int? _remainingUpdateCount;
+        public int? RemainingUpdateCount
+        {
+            get => _remainingUpdateCount;
+            set => SetProperty(ref _remainingUpdateCount, value);
+        }
+
         #region Global DB Actions
-        private void OnFailedDatabaseLoading(object sender, System.EventArgs e)
+        private void OnFailedDatabaseLoading(object sender, EventArgs e)
         {
             // request password for exists db
             if (System.IO.File.Exists(App.DatabasePath))
@@ -150,14 +164,53 @@ namespace SteamOrganizer.MVVM.ViewModels
                 }
             }
         }
-        private void OnDatabaseLoaded()
+
+        private async Task CheckPlannedDatabaseUpdate()
         {
+            if (App.Config.AutoUpdateDbDelay == 0 || Accounts.Count == 0)
+                return;
+
+            var delay = App.Config.AutoUpdateDbDelay == 1 ? 1 : App.Config.AutoUpdateDbDelay == 2 ? 7 : 30;
+
+            var now = DateTime.Now;
+
+            var planned = Accounts.Where(o => o.SteamID64 != null &&
+            ((o.LastUpdateDate != null && (now - o.LastUpdateDate.Value).Days >= delay) ||
+            (o.LastUpdateDate == null && (now - o.AddedDate).Days >= delay))).ToList();
+
+            if (planned.Count == 0)
+                return;
+
+            if(planned.Count == 1)
+            {
+               await planned[0].RetrieveInfo(true);
+               return;
+            }
+
+            using (updateCancellation = new CancellationTokenSource())
+            {
+                if (await SteamParser.ParseInfo(planned, updateCancellation.Token) == SteamParser.EParseResult.OK)
+                {
+                    App.MainWindowVM.Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.DatabaseClockOutline,
+                        $"Some accounts have not been updated for a long time and were updated in the background. ({planned.Count})");
+                    App.Config.SaveDatabase();
+                    App.Config.LastDatabaseUpdateTime = Utils.GetUnixTime();
+                    App.Config.Save();
+                }
+            }
+
+        }
+
+        private async void OnDatabaseLoaded()
+        {
+            await CheckPlannedDatabaseUpdate();
             //We load images in another thread so as not to block the UI thread
             Utils.InBackground(() =>
             {
-                for (int i = 0; i < Accounts.Count; i++)
+                foreach (var account in Accounts)
                 {
-                    Accounts[i].LoadImage();
+                    if(account.AvatarBitmap == null)
+                        account.LoadImage();
                 }
 
                 App.STAInvoke(() =>
@@ -183,7 +236,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         {
             var acc = (param as FrameworkElement).DataContext as Account;
 
-            if(acc.IsCurrentlyUpdating)
+            if(acc.IsCurrentlyUpdating || _remainingUpdateCount != null)
             {
                 await Utils.OpenAutoClosableToolTip(param as FrameworkElement, "Account is being updated...", 2000);
                 return;
@@ -274,6 +327,99 @@ namespace SteamOrganizer.MVVM.ViewModels
             App.MainWindowVM.OpenPopupWindow(new AccountAddingView(),"New account");
         }
 
+
+        private async void OnUpdatingAccounts(object param)
+        {
+            if (updateCancellation != null)
+            {
+                if(!updateCancellation.IsCancellationRequested)
+                {
+                    updateCancellation.Cancel();
+                }
+
+                return;
+            }
+
+            if((DateTime.Now - buttonSpamStub).Ticks < 50000000)
+            {
+                return;
+            }
+
+            if((Utils.GetUnixTime() - App.Config.LastDatabaseUpdateTime) < 83200)
+            {
+                PushNotification.Open("The accounts have already been updated recently");
+                buttonSpamStub = DateTime.Now;
+                return;
+            }
+
+            var accsWithError = new List<Account>();
+            int availableAccounts = 0;
+            
+            using (updateCancellation = new CancellationTokenSource())
+            {
+                var result = await SteamParser.ParseInfo(App.Config.Database, updateCancellation.Token, (account, remainings, success) =>
+                {
+                    if(!success)
+                    {
+                        accsWithError.Add(account);
+                    }
+
+                    if(availableAccounts == 0)
+                    {
+                        availableAccounts = remainings;
+                    }
+
+                    RemainingUpdateCount = remainings;
+                });
+
+                #region Check result
+                if (result == SteamParser.EParseResult.NoAccountsWithID)
+                {
+                    PushNotification.Open("There are no accounts available to update");
+                }
+                else if (result == SteamParser.EParseResult.AttemptsExceeded)
+                {
+                    App.MainWindowVM.Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.DatabaseAlertOutline,
+                        "The maximum number of attempts was exceeded when updating the account database, please try again later");
+                }
+                else if (result == SteamParser.EParseResult.InternalError)
+                {
+                    App.MainWindowVM.Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.DatabaseRemoveOutline,
+                        "An unexpected error occurred while updating the account database");
+                }
+                else
+                {
+                    var msg = new StringBuilder("Account database update completed. Total accounts updated: ")
+                        .Append(availableAccounts);
+
+                    if (accsWithError.Count > 0)
+                    {
+                        msg.Append(". The following accounts have only been partially updated: ");
+
+                        if (accsWithError.Count <= 10)
+                        {
+                            msg.Append(string.Join(", ", accsWithError.Select(o => o.Nickname)));
+                        }
+                        else
+                        {
+                            msg.Append(string.Join(", ", accsWithError.Take(10).Select(o => o.Nickname)))
+                                .Append("... and more (").Append(accsWithError.Count - 10).Append(')');
+                        }
+                    }
+
+                    App.MainWindowVM.Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.DatabaseCheckOutline, msg.ToString());
+                    App.Config.SaveDatabase();
+                    App.Config.LastDatabaseUpdateTime = Utils.GetUnixTime();
+                    App.Config.Save();
+                    AccountsCollectionView.Refresh();
+                } 
+                #endregion
+            }
+
+            RemainingUpdateCount = null;
+            updateCancellation = null;
+        }
+
         internal void RefreshCollection() => AccountsCollectionView.Refresh();
 
         public AccountsViewModel(AccountsView owner)
@@ -282,6 +428,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             ClearSearchBar         = new RelayCommand((o) => SearchBarText = null);
             RemoveAccountCommand   = new AsyncRelayCommand(OnRemovingAccount);
+            UpdateAccountsCommand  = new RelayCommand(OnUpdatingAccounts);
             PinAccountCommand      = new RelayCommand(OnPinningAccount);
             AddAccountCommand      = new RelayCommand(OnAddingAccount);
             OpenAccountPageCommand = new RelayCommand((o) => App.MainWindowVM.OpenAccountPage(o as Account));

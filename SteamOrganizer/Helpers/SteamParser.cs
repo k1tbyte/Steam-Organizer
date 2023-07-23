@@ -4,6 +4,7 @@ using SteamOrganizer.MVVM.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SteamOrganizer.Helpers
@@ -21,6 +22,8 @@ namespace SteamOrganizer.Helpers
             NoValidAccounts,
             NoAccountsWithID,
             AttemptsExceeded,
+            OperationCanceled,
+            InternalError,
         }
 
         #region Responses
@@ -202,86 +205,101 @@ namespace SteamOrganizer.Helpers
         }
 
 
-        /// <returns>Returns a list of accounts whose information could not be retrieved due to an error. Or null if internal error</returns>
-        internal static async Task<(List<Account>,EParseResult)> ParseInfo(IList<Account> accounts)
+        /// <param name="accounts">list of accounts to update</param>
+        /// <param name="processingCallback">Args: Current account, Remaining accounts count, Completed successfully </param>
+        internal static async Task<EParseResult> ParseInfo(IList<Account> accounts,CancellationToken cancelToken, Action<Account,int,bool> processingCallback = null)
         {
             if (accounts == null || accounts.Count == 0)
             {
-                return (null,EParseResult.NoValidAccounts);
+                return EParseResult.NoValidAccounts;
             }
                 
             var valid = accounts.Where(o => o.SteamID64 != null).ToDictionary(o => o.SteamID64.Value);
 
             if (!valid.Any())
             {
-                return (null, EParseResult.NoAccountsWithID);
+                return EParseResult.NoAccountsWithID;
             }
 
-            var errorAccsList = new List<Account>();
+            processingCallback?.Invoke(null, valid.Count,true);
 
-            // A chunk consists of a maximum of 100 accounts because
-            // the maximum number of IDs that GetPlayerSummaries and GetPlayerBans accepts
-            for (int i = 0,attempt = 0; i < valid.Count(); i += 100)
+            try
             {
-                var chunk = valid
-                    .Skip(i)
-                    .Take(100)
-                    .Select(o => o.Key).ToArray();
-
-                var summariesTask = GetPlayersSummaries(chunk).ConfigureAwait(false);
-                var bansTask      = GetPlayersBans(chunk).ConfigureAwait(false);
-
-                var summaries = await summariesTask;
-                var bans      = (await bansTask).ToDictionary(o => o.SteamId);
-
-                if((summaries == null || bans == null) && App.WebBrowser.LastStatusCode != System.Net.HttpStatusCode.OK)
+                // A chunk consists of a maximum of 100 accounts because
+                // the maximum number of IDs that GetPlayerSummaries and GetPlayerBans accepts
+                for (int i = 0, attempt = 0,remainingCount = valid.Count; i < valid.Count; i += 100)
                 {
-                    if(++attempt >= WebBrowser.MaxAttempts)
+                    var chunk = valid
+                        .Skip(i)
+                        .Take(100)
+                        .Select(o => o.Key).ToArray();
+
+                    var summariesTask = GetPlayersSummaries(chunk).ConfigureAwait(false);
+                    var bansTask      = GetPlayersBans(chunk).ConfigureAwait(false);
+
+                    var summaries = await summariesTask;
+                    var bans      = (await bansTask).ToDictionary(o => o.SteamId);
+
+                    if (summaries == null || bans == null)
                     {
-                        return (null, EParseResult.AttemptsExceeded);
+                        if (++attempt >= WebBrowser.MaxAttempts)
+                        {
+                            return EParseResult.AttemptsExceeded;
+                        }
+
+                        await Task.Delay(WebBrowser.RetryRequestDelay);
+                        i -= 100;
+                        continue;
                     }
 
-                    await Task.Delay(WebBrowser.RetryRequestDelay);
-                    i -= 100;
-                    continue;
-                }
-
-                // We don't have Parallel.ForEachAsync and need to somehow wait for all tasks to complete, so we use this
-                var pool     = new List<Task>(chunk.Length);
-
-                Parallel.ForEach(summaries,async (accSummary,state) =>
-                {
-                    var acc = valid[accSummary.SteamId];
-                    acc.SetSummaries(accSummary);
-                    acc.SetBansInfo(bans[accSummary.SteamId]);
-
-                    // It is useless to receive further information - private profile
-                    if (acc.VisibilityState != 3)
+                    Parallel.ForEach(summaries,new ParallelOptions{ CancellationToken = cancelToken },
+                    (accSummary, state) =>
                     {
+                        var success = true;
+                        var acc = valid[accSummary.SteamId];
+                        acc.IsCurrentlyUpdating = true;
+
+                        if(acc.AvatarHash != accSummary.Avatarhash)
+                        {
+                            acc.LoadImage(accSummary.Avatarhash);
+                        }
+
+                        acc.SetSummaries(accSummary);
+                        acc.SetBansInfo(bans[accSummary.SteamId]);
                         acc.LastUpdateDate = DateTime.Now;
-                        return;
-                    }    
 
-                    var levelTask = GetPlayerLevel(accSummary.SteamId);
-                    var gamesTask = GetPlayerOwnedGames(accSummary.SteamId);
-                    pool.Add(gamesTask);
+                        // It is useless to receive further information - private profile
+                        if (acc.VisibilityState == 3)
+                        {
+                            var levelTask = GetPlayerLevel(accSummary.SteamId);
+                            var gamesTask = GetPlayerOwnedGames(accSummary.SteamId);
 
-                    // If we received the GamesResponse as null, then most likely
-                    // the level could not be obtained either, so we add the account to the list with an error
-                    if (acc.SetGamesInfo(await gamesTask))
-                    {
-                        errorAccsList.Add(acc);
-                        return;
-                    }
-
-                    acc.SteamLevel     = (await levelTask) ?? acc.SteamLevel;
-                    acc.LastUpdateDate = DateTime.Now;
-                });
-
-                await Task.WhenAll(pool).ConfigureAwait(false);
+                            // If we received the GamesResponse as null, then most likely
+                            // the level could not be obtained either, so we add the account to the list with an error
+                            if (!acc.SetGamesInfo(gamesTask.Result))
+                            {
+                                success = false;
+                            }
+                            else
+                            {
+                                acc.SteamLevel = levelTask.Result ?? acc.SteamLevel;
+                            }
+                        }
+                        processingCallback?.Invoke(acc, --remainingCount, success);
+                        acc.IsCurrentlyUpdating = false;
+                    });
+                }
+            }
+            catch(OperationCanceledException)
+            {
+                return EParseResult.OperationCanceled;
+            }
+            catch
+            {
+                return EParseResult.InternalError;
             }
 
-            return  (errorAccsList.Count > 0 ? errorAccsList : null,EParseResult.OK);
+            return  EParseResult.OK;
         }
 
         internal static async Task<EParseResult> ParseInfo(Account account)
