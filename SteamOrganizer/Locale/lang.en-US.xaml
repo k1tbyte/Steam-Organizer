@@ -93,7 +93,9 @@
     <v:String x:Key="av_accRestoredFromFile">The account was restored from the file, all data was saved</v:String>
     <v:String x:Key="av_searchFilterName">Name</v:String>
     <v:String x:Key="av_searchFilterNote">Note</v:String>
-
+    <v:String x:Key="av_exportEncryptTitle">Encryption</v:String>
+    <v:String x:Key="av_exportEncryptMsg">Encrypt data with your encryption key? Select "No" if you want the data to be available for use outside of the Steam Organizer</v:String>
+    
     <!--#endregion-->
 
 

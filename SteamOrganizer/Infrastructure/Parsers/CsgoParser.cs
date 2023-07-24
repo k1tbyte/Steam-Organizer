@@ -13,7 +13,7 @@ namespace SteamOrganizer.Infrastructure.Parsers
     internal sealed class CsgoParser
     {
 
-        private readonly string _apiKey = Keys.STEAM_API_KEY;
+        private readonly string _apiKey = App.STEAM_API_KEY;
 
         private readonly ulong _steamId64;
 

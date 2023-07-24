@@ -176,7 +176,12 @@ namespace SteamOrganizer.MVVM.ViewModels
                 };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    Config.Serialize(JsonConvert.SerializeObject(Config.Accounts), fileDialog.FileName, Config.Properties.UserCryptoKey);
+                    if (Utils.Presentation.OpenQueryMessageBox(App.FindString("av_exportEncryptMsg"), App.FindString("av_exportEncryptTitle")))
+                    {
+                        Config.Serialize(JsonConvert.SerializeObject(Config.Accounts), fileDialog.FileName, Config.Properties.UserCryptoKey);
+                    }
+                    else Utils.Common.BinarySerialize(JsonConvert.SerializeObject(Config.Accounts), fileDialog.FileName);
+                    
                 }
             });
 

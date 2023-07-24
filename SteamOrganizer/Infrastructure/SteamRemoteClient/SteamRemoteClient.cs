@@ -607,7 +607,7 @@ namespace SteamOrganizer.Infrastructure.SteamRemoteClient
 
             using (var webClient = new WebClient { Encoding = Encoding.UTF8 })
             {
-                var link = $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={(String.IsNullOrWhiteSpace(Config.Properties.WebApiKey) == true ? Keys.STEAM_API_KEY : Config.Properties.WebApiKey)}&steamid={CurrentUser.SteamID64}";
+                var link = $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={(String.IsNullOrWhiteSpace(Config.Properties.WebApiKey) == true ? App.STEAM_API_KEY : Config.Properties.WebApiKey)}&steamid={CurrentUser.SteamID64}";
                 string json = await Common.DownloadStringSync(link);
                 JToken node = JObject.Parse(json)?.SelectToken("*.friends");
                 sinces = node?.SelectTokens(@"$.[?(@.friend_since)].friend_since");

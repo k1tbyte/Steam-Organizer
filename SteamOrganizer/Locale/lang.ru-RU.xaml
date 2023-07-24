@@ -92,6 +92,8 @@
     <v:String x:Key="av_accRestoredFromFile">Аккаунт был восстановлен из файла, все данные сохранены</v:String>
     <v:String x:Key="av_searchFilterName">Никнейму</v:String>
     <v:String x:Key="av_searchFilterNote">Заметке</v:String>
+    <v:String x:Key="av_exportEncryptTitle">Шифрование</v:String>
+    <v:String x:Key="av_exportEncryptMsg">Зашифровать данные с помощью вашего ключа шифрования? Выберите «Нет», если хотите, чтобы данные были доступны для использования за пределами Steam Organizer</v:String>
     <!--#endregion-->
 
 

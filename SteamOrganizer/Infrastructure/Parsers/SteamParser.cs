@@ -15,7 +15,7 @@ namespace SteamOrganizer.Infrastructure.Parsers
     internal sealed class SteamParser
     {
 
-        private readonly string _apiKey = Keys.STEAM_API_KEY;
+        private readonly string _apiKey = App.STEAM_API_KEY;
         private readonly ulong _steamId64;
 
 
@@ -73,7 +73,7 @@ namespace SteamOrganizer.Infrastructure.Parsers
         {
             using (var wc = new WebClient() { Encoding = Encoding.UTF8 })
             {
-                var key = String.IsNullOrEmpty(Config.Properties.WebApiKey) ? Keys.STEAM_API_KEY : Config.Properties.WebApiKey;
+                var key = String.IsNullOrEmpty(Config.Properties.WebApiKey) ? App.STEAM_API_KEY : Config.Properties.WebApiKey;
                 string json = await wc.DownloadStringTaskAsync($"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={key}&steamid={steamId64}");
 
                 if (json == null) return null;

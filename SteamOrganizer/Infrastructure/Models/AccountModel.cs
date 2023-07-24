@@ -1,4 +1,5 @@
-﻿using SteamOrganizer.Infrastructure.Converters;
+﻿using Newtonsoft.Json;
+using SteamOrganizer.Infrastructure.Converters;
 using SteamOrganizer.Infrastructure.Parsers;
 using SteamOrganizer.Utils;
 using System;
@@ -86,6 +87,7 @@ namespace SteamOrganizer.Infrastructure.Models
 
         #region Other info properties
         public string Note { get; set; } = "";
+
         public string EmailLogin { get; set; }
         public string EmailPass { get; set; }
         public string RockstarEmail { get; set; }
