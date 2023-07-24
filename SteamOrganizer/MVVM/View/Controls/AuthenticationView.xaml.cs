@@ -17,13 +17,13 @@ namespace SteamOrganizer.MVVM.View.Controls
         private bool IsInitialSetup;
         private bool IsReset;
 
-        public AuthenticationView(string filePath, Action<object, byte[]> successLoadAction,bool allowReset)
+        public AuthenticationView(string filePath, Action<object, byte[]> successLoadAction,bool allowReset,string tipMsg = null)
         {
             this.ActionIfSuccess      = successLoadAction;
             this.FilePath             = filePath;
 
             InitializeComponent();
-            Tip.Text = App.FindString("av_authInfo");
+            Tip.Text = tipMsg ?? App.FindString("av_authInfo");
             if (allowReset)
                 Reset.Visibility = System.Windows.Visibility.Visible;
         }
@@ -36,10 +36,10 @@ namespace SteamOrganizer.MVVM.View.Controls
 
         private void SetupNew()
         {
-            Sign.Content = App.FindString("word_confirm");
-            Tip.Text = App.FindString("av_newPassword");
+            Sign.Content     = App.FindString("word_confirm");
+            Tip.Text         = App.FindString("av_newPassword");
             Reset.Visibility = System.Windows.Visibility.Collapsed;
-            IsInitialSetup = true;
+            IsInitialSetup   = true;
         }
 
         private async Task SetError(string key)
@@ -57,6 +57,8 @@ namespace SteamOrganizer.MVVM.View.Controls
             if (string.IsNullOrEmpty(PassBox.Password))
                 return;
 
+            var password = PassBox.Password;
+
             // We just need to initialize the key for future database saves.
             if (IsInitialSetup)
             {
@@ -68,7 +70,7 @@ namespace SteamOrganizer.MVVM.View.Controls
 
                 Sign.Content           = App.FindString("av_generation");
 
-                var password = PassBox.Password;
+
                 App.Config.DatabaseKey = await Utils.InBackgroundAwait(() => FileCryptor.GenerateEncryptionKey(password, App.EncryptionKey));
                 password = null;
                 PassBox.Clear();
@@ -82,7 +84,7 @@ namespace SteamOrganizer.MVVM.View.Controls
             var tmpTitle = Sign.Content;
             Sign.Content = App.FindString("av_decryption");
 
-            var bytes = await Utils.InBackgroundAwait(() => FileCryptor.GenerateEncryptionKey(PassBox.Password, App.EncryptionKey));
+            var bytes = await Utils.InBackgroundAwait(() => FileCryptor.GenerateEncryptionKey(password, App.EncryptionKey));
             PassBox.Clear();
 
             Sign.Content = tmpTitle;

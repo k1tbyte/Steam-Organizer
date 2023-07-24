@@ -66,6 +66,7 @@
     <v:String x:Key="acv_sortDesc">Sort descending</v:String>
     <v:String x:Key="acv_sortAsc">Sort ascending</v:String>
     <v:String x:Key="acv_editWithSort">Turn off sorting to see the changes</v:String>
+    <v:String x:Key="acv_exportTip">Enter a password to encrypt the database, or leave the field blank for the data to be public (Not recommended!)</v:String>
     
     <!--#endregion-->
     

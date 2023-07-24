@@ -134,6 +134,13 @@ namespace SteamOrganizer.Infrastructure
             return await Task.Run(action);
         }
 
+        public static async Task InBackgroundAwait(Action action)
+        {
+            action.ThrowIfNull();
+
+            await Task.Run(action);
+        }
+
         public static void CreateDirIfNotExists(string path, FileAttributes? attributes = null)
         {
             if (Directory.Exists(path))

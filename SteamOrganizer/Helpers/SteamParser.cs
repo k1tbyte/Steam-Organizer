@@ -14,7 +14,9 @@ namespace SteamOrganizer.Helpers
         private static readonly ushort[] GamesBadgeBoundaries = {
                 1,5,10,25,50,100,250,500,1000,2000,3000,4000,5000,6000,7000,8000,8000,9000,10000,11000,13000,14000,15000,16000,17000,18000,20000,21000,
                 22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000
-             }; 
+             };
+
+        private static readonly UserOwnedGamesObject.Game[] GamesDummy = new UserOwnedGamesObject.Game[0];
 
         internal enum EParseResult : byte
         {
@@ -294,8 +296,9 @@ namespace SteamOrganizer.Helpers
             {
                 return EParseResult.OperationCanceled;
             }
-            catch
+            catch(Exception e)
             {
+                App.Logger.Value.LogHandledException(e);
                 return EParseResult.InternalError;
             }
 
@@ -367,7 +370,7 @@ namespace SteamOrganizer.Helpers
                 $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId}&include_appinfo=true&include_played_free_games=1&format=json")
                 .ConfigureAwait(false);
 
-            return response == null ? null : JsonConvert.DeserializeObject<UserOwnedGamesObject>(response).Response.Games;
+            return response == null ? null : JsonConvert.DeserializeObject<UserOwnedGamesObject>(response).Response.Games ?? GamesDummy;
         }
 
         internal static async Task<UserFriendsObject.Friend[]> GetPlayerFriends(ulong steamId)

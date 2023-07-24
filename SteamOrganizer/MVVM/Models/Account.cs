@@ -13,6 +13,8 @@ namespace SteamOrganizer.MVVM.Models
     [Serializable]
     internal sealed class Account : INotifyPropertyChanged
     {
+        private static readonly PropertyChangedEventArgs AvatarChangedEventArgs = new PropertyChangedEventArgs(nameof(AvatarBitmap));
+
         [JsonProperty(Required = Required.Always)]
         public string Nickname { get; set; }
 
@@ -23,8 +25,10 @@ namespace SteamOrganizer.MVVM.Models
 
 
         #region Summaries
+        [JsonIgnore]
         public uint? AccountID => SteamID64.HasValue ? (uint?)(SteamID64 - SteamIdConverter.SteamID64Indent) : null;
         public ulong? SteamID64 { get; set; }
+        [JsonIgnore]
         public bool IsFullyParsed => SteamID64 != null;
         public string AvatarHash { get; set; }
         public byte VisibilityState { get; set; }
@@ -32,7 +36,10 @@ namespace SteamOrganizer.MVVM.Models
         public int? SteamLevel { get; set; }
         public DateTime? LastUpdateDate { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public DateTime AddedDate { get; }
+
+        public DateTime AddedDate { get; set; }
+
+        [JsonIgnore]
         public float? YearsOfService => CreatedDate == null ? null : (float?)((DateTime.Now - CreatedDate.Value).TotalDays / 365.25);
         #endregion
 
@@ -77,18 +84,27 @@ namespace SteamOrganizer.MVVM.Models
             }
         }
 
+        [JsonIgnore]
         [field: NonSerialized]
         public BitmapImage AvatarBitmap { get; set; }
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [JsonIgnore]
         [field: NonSerialized]
         public bool IsCurrentlyUpdating { get; set; }
 
 
-        public void LoadImage(string hash = null)
-            => AvatarBitmap = CachingManager.GetCachedAvatar(hash ?? AvatarHash, 0, 0,size : EAvatarSize.medium);
+        public void LoadImage(string hash = null,bool propertyChanged = true)
+        {
+            AvatarBitmap = CachingManager.GetCachedAvatar(hash ?? AvatarHash, 0, 0, size: EAvatarSize.medium);
+
+            if(propertyChanged)
+            {
+                InvokePropertyChanged(AvatarChangedEventArgs);
+            }
+        }
 
         public string GetProfileUrl() 
             => SteamID64 == null ? WebBrowser.SteamHost : WebBrowser.SteamProfilesHost + SteamID64.ToString();
@@ -98,6 +114,9 @@ namespace SteamOrganizer.MVVM.Models
 
         public void InvokePropertyChanged(string property)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+
+        public void InvokePropertyChanged(PropertyChangedEventArgs args)
+            => PropertyChanged?.Invoke(this, args);
 
         public void InvokeBannerPropertiesChanged()
         {
@@ -110,7 +129,6 @@ namespace SteamOrganizer.MVVM.Models
             InvokePropertyChanged(nameof(VacBansCount));
             InvokePropertyChanged(nameof(GameBansCount));
             InvokePropertyChanged(nameof(EconomyBan));
-            InvokePropertyChanged(nameof(AvatarBitmap));
         }
 
         public async Task<bool> RetrieveInfo(bool markUpdate = false)
@@ -119,13 +137,8 @@ namespace SteamOrganizer.MVVM.Models
             {
                 IsCurrentlyUpdating = true;
 
-                var prevHash = this.AvatarHash;
-
                 if (await ParseInfo(this) != EParseResult.OK)
                     return false;
-
-                if (prevHash != this.AvatarHash)
-                    LoadImage();
 
                 if (markUpdate)
                     LastUpdateDate = DateTime.Now;
@@ -144,7 +157,7 @@ namespace SteamOrganizer.MVVM.Models
 
         public Account(string login, string password)
         {
-            LoadImage();
+            LoadImage(propertyChanged: false);
             this.AddedDate = DateTime.Now;
             this.Nickname  = this.Login = login;
             this.Password  = password;

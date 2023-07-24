@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SteamOrganizer.Infrastructure;
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 
@@ -31,7 +32,7 @@ namespace SteamOrganizer.Log
 
         private void Log(string level, object message, string previousMethodName)
         {
-#if !DEBUG
+#if DEBUG
             message.ThrowIfNull();
             previousMethodName.ThrowIfNullOrEmpty();
             logStream.WriteLine($"{DateTime.Now:yyyy-MM-dd HH\\:mm\\:ss}|{level}|{previousMethodName}() | {message}");

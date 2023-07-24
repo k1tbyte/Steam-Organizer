@@ -32,7 +32,7 @@
         <StackPanel HorizontalAlignment="Left" Margin="20 0 0 0"
                     VerticalAlignment="Center" Orientation="Horizontal">
             <Grid>
-                <Icon:PackIconMaterial d:Spin="False">
+                <Icon:PackIconMaterial x:Name="RefredhDbButton" d:Spin="False">
                     <Icon:PackIconMaterial.Style>
                         <Style TargetType="Icon:PackIconMaterial">
                             <Setter Property="ToolTipService.InitialShowDelay" Value="200"/>
@@ -80,13 +80,22 @@
                        TextTrimming="CharacterEllipsis"/>
             </Grid>
 
-            
-            <Icon:PackIconMaterial Kind="DatabaseArrowDownOutline" 
-                                    Background="Transparent" Cursor="Hand"
-                                   Margin="5 0 0 0" Height="20" Width="20"
-                                   Foreground="{DynamicResource SecondaryForegroundBrush}"/>
 
-            <Icon:PackIconMaterial Kind="DatabaseArrowUpOutline" 
+            <Icon:PackIconMaterial Kind="DatabaseArrowDownOutline" 
+                                   ToolTipService.InitialShowDelay="200"
+                                   ToolTip="Export accounts database"
+                                   Visibility="{Binding ElementName=RefredhDbButton,Path=Visibility,Mode=OneWay}"
+                                   Background="Transparent" Cursor="Hand"
+                                   Margin="5 0 0 0" Height="20" Width="20"
+                                   Foreground="{DynamicResource SecondaryForegroundBrush}">
+                <Icon:PackIconMaterial.InputBindings>
+                    <MouseBinding Gesture="LeftClick" Command="{Binding ExportDatabaseCommand,Mode=OneTime}"/>
+                </Icon:PackIconMaterial.InputBindings>
+            </Icon:PackIconMaterial>
+
+            <Icon:PackIconMaterial Kind="DatabaseArrowUpOutline"
+                                   ToolTipService.InitialShowDelay="200"
+                                   ToolTip="Import accounts database"
                                    Background="Transparent" Cursor="Hand"
                                    Margin="5 0 0 0" Height="20" Width="20"
                                    Foreground="{DynamicResource SecondaryForegroundBrush}">

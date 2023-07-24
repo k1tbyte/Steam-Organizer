@@ -552,15 +552,14 @@
                                 <ext:TemplateDecorator Title="E-mail adress" Icon="{x:Static Icon:PackIconMaterialKind.At}"
                                                        Margin="0 0 0 10" >
                                     <TextBox Style="{StaticResource ModernTextBox}" Height="35"
-                                             TextChanged="AutoSaveTextChanged" MaxLength="50"
+                                             TextInput="AutoSaveTextInput" MaxLength="50"
                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
                                 </ext:TemplateDecorator>
 
                                 <ext:TemplateDecorator Title="Pasword" Icon="{x:Static Icon:PackIconMaterialKind.KeyLink}">
-                                    <ext:PasswordBox CornerRadius="5"
+                                    <ext:PasswordBox CornerRadius="5" LostFocus="PasswordBox_LostFocus"
                                                      MaxLength="50"
-                                                     PasswordChanged="AutoSaveTextChanged"
                                                      IsPasswordShown="{Binding IsPasswordShown}"
                                                      SelectionBrush="{DynamicResource LightBlueGrad}"
                                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
@@ -590,7 +589,7 @@
 
                                 <TextBox Grid.Row="1" Background="Transparent" BorderThickness="0"
                                          Text="{Binding CurrentAccount.Note ,UpdateSourceTrigger=PropertyChanged}"
-                                         TextChanged="AutoSaveTextChanged"
+                                         TextInput="AutoSaveTextInput"
                                          FontWeight="Normal" MinHeight="80" MaxHeight="280"
                                          AcceptsReturn="True"
                                          VerticalScrollBarVisibility="Auto"

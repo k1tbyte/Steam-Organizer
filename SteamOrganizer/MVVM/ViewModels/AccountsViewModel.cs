@@ -1,5 +1,6 @@
 ﻿using FlaUI.Core.Tools;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Core;
@@ -17,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using static FlaUI.Core.FrameworkAutomationElementBase;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
@@ -31,6 +33,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand AddAccountCommand { get; }
         public RelayCommand OpenAccountPageCommand { get; }
         public RelayCommand ImportDatabaseCommand { get; }
+        public RelayCommand ExportDatabaseCommand { get; }
         #endregion
 
         #region Properties
@@ -198,6 +201,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                     App.Config.SaveDatabase();
                     App.Config.LastDatabaseUpdateTime = Utils.GetUnixTime();
                     App.Config.Save();
+                    AccountsCollectionView.Refresh();
                 }
             }
 
@@ -297,22 +301,17 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async void OnDatabaseLoaded()
         {
-            await CheckPlannedDatabaseUpdate();
             //We load images in another thread so as not to block the UI thread
-            Utils.InBackground(() =>
+            await Utils.InBackgroundAwait(() =>
             {
                 foreach (var account in Accounts)
                 {
-                    if(account.AvatarBitmap == null)
-                        account.LoadImage();
+                    account.LoadImage();    
                 }
-
-                App.STAInvoke(() =>
-                {
-                    AccountsCollectionView = CollectionViewSource.GetDefaultView(Accounts);
-                    AccountsCollectionView.Refresh();
-                });
             });
+
+            AccountsCollectionView = CollectionViewSource.GetDefaultView(Accounts);
+            await CheckPlannedDatabaseUpdate();
         } 
         #endregion
 
@@ -323,7 +322,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return false;
             }
 
-            return acc.Nickname.IndexOf(_searchBarText, System.StringComparison.InvariantCultureIgnoreCase) >= 0;
+            return acc.Nickname.IndexOf(_searchBarText, StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
 
         private async Task OnRemovingAccount(object param)
@@ -431,9 +430,92 @@ namespace SteamOrganizer.MVVM.ViewModels
             if (fileDialog.ShowDialog() != true)
                 return;
 
-            if(!FileCryptor.Deserialize(fileDialog.FileName, out string accounts))
+            if(!FileCryptor.Deserialize(fileDialog.FileName, out string json))
             {
+                App.MainWindowVM.OpenPopupWindow(
+                    new AuthenticationView(
+                        fileDialog.FileName, OnImporting, false, "Enter the password to import the database"), App.FindString("av_title"));
                 return;
+            }
+
+            OnImporting(json, null);
+
+            void OnImporting(object content, byte[] keyCallback)
+            {
+                try
+                {
+                    var accounts = JsonConvert.DeserializeObject<ObservableCollection<Account>>(content as string, new JsonSerializerSettings()
+                    { NullValueHandling = NullValueHandling.Ignore });
+
+                    if (accounts == null || accounts.Count == 0)
+                        return;
+
+                    foreach (var acc in accounts)
+                    {
+                        if (string.IsNullOrEmpty(acc.Login))
+                        {
+                            accounts.Remove(acc);
+                            continue;
+                        }
+
+                        if (acc.AddedDate == default)
+                        {
+                            acc.AddedDate = DateTime.Now;
+                        }
+                    }
+
+                    FileCryptor.Serialize(accounts, App.DatabasePath, App.Config.DatabaseKey);
+                    App.Config.LoadDatabase();
+                    OnPropertyChanged(nameof(Accounts));
+                }
+                catch (Exception e)
+                {
+                    App.Logger.Value.LogHandledException(e);
+                    PushNotification.Open("The selected database could not be loaded, the data may be corrupted", type: PushNotification.EPushNotificationType.Error);
+                }
+            }
+        }
+
+        private void OnDatabaseExport(object param)
+        {
+            App.MainWindowVM.OpenPopupWindow(
+                new TextInputView(OnExporting, App.FindString("acv_exportTip"), true), "Export accounts");
+
+            void OnExporting(string password)
+            {
+                var withCrypt = !string.IsNullOrEmpty(password);
+                var fileDialog = new SaveFileDialog
+                {
+                    Filter = withCrypt ? "Steam Organizer Database (.sodb)|*.sodb" : "Java Script Object Notation (.json)|*.json",
+                    FileName = $"DatabaseBackup {DateTime.Now:yyyy-MM-dd HH\\-mm\\-ss}"
+                };
+
+                if (fileDialog.ShowDialog() != true)
+                    return;
+
+                var jObject = JsonConvert.SerializeObject(App.Config.Database,new JsonSerializerSettings
+                {
+                    DefaultValueHandling = DefaultValueHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = withCrypt ? Formatting.None : Formatting.Indented
+                });
+
+                if (string.IsNullOrEmpty(password))
+                {
+                    System.IO.File.WriteAllText(fileDialog.FileName,jObject);
+                }
+                else
+                {
+                    Utils.InBackground(() =>
+                    {
+                        var key = FileCryptor.GenerateEncryptionKey(password, App.EncryptionKey);
+                        FileCryptor.Serialize(jObject, fileDialog.FileName, key);
+                    });
+                }
+
+                PushNotification.Open(
+                    "Account database successfully exported, click to open in explorer",
+                    () => Process.Start(new ProcessStartInfo { Arguments = System.IO.Path.GetPathRoot(fileDialog.FileName),FileName = "explorer.exe" }).Dispose());
             }
         }
 
@@ -450,6 +532,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             PinAccountCommand      = new RelayCommand(OnPinningAccount);
             AddAccountCommand      = new RelayCommand(OnAddingAccount);
             ImportDatabaseCommand  = new RelayCommand(OnDatabaseImport);
+            ExportDatabaseCommand  = new RelayCommand(OnDatabaseExport);
             OpenAccountPageCommand = new RelayCommand((o) => App.MainWindowVM.OpenAccountPage(o as Account));
             OpenProfileCommand     = new RelayCommand((o) => (o as Account).OpenInBrowser());
 

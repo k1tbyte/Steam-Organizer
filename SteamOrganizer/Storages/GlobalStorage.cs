@@ -105,19 +105,19 @@ namespace SteamOrganizer.Storages
             return false;
         }
 
-        private int _waitingCounter = 0;
+        private int WaitingCounter = 0;
 
         /// <param name="timeout">Useful for frequent save prompts like textboxes</param>
         public async void SaveDatabase(int timeout = 0)
         {
 
             // We need to check the counter to know about the calls that happen while waiting.
-            if (_waitingCounter != 0)
+            if (WaitingCounter != 0)
             {
                 // Maximum 2 wait cycles so it's not too long
-                if (_waitingCounter < 2)
+                if (WaitingCounter < 2)
                 {
-                    _waitingCounter++;
+                    WaitingCounter++;
                 }
 
                 return;
@@ -125,7 +125,7 @@ namespace SteamOrganizer.Storages
 
             if (timeout != 0)
             {
-                for (_waitingCounter = 1; _waitingCounter > 0; _waitingCounter--)
+                for (WaitingCounter = 1; WaitingCounter > 0; WaitingCounter--)
                 {
                     await Task.Delay(timeout);
                 }

@@ -47,10 +47,13 @@ namespace SteamOrganizer.MVVM.View.Controls
 
         }
 
-        private void AutoSaveTextChanged(object sender, TextChangedEventArgs e)
-        {
-            App.Config.SaveDatabase(3000);
-        }
+        private void AutoSaveTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+            => App.Config.SaveDatabase(3000);
+        
+
+        private void PasswordBox_LostFocus(object sender, RoutedEventArgs e)
+            => App.Config.SaveDatabase(3000);
+        
 
         private async void ShowRevocationCode(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -78,5 +81,7 @@ namespace SteamOrganizer.MVVM.View.Controls
             await Utils.OpenAutoClosableToolTip(sender as FrameworkElement, App.FindString("apv_uniq_login_tip"), 3000);
             isLoginToolTipShown = false;
         }
+
+
     }
 }

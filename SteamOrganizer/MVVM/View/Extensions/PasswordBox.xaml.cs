@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace SteamOrganizer.MVVM.View.Extensions
@@ -21,7 +22,7 @@ namespace SteamOrganizer.MVVM.View.Extensions
 
         private static bool AllowCallback = true;
 
-        public Action<object, TextChangedEventArgs> PasswordChanged { get; set; }
+   //     public Action<object, TextCompositionEventArgs> PasswordChanged { get; set; }
         public string Password
         {
             get => (string)GetValue(PasswordProperty);
@@ -32,6 +33,12 @@ namespace SteamOrganizer.MVVM.View.Extensions
         {
             get => PassBox.MaxLength;
             set => PassBox.MaxLength = PassTextBox.MaxLength = value;
+        }
+
+        public Visibility ShowButtonVisibility
+        {
+            get => ShowButton.Visibility;
+            set => ShowButton.Visibility = value;
         }
 
         public Brush Foreground
@@ -79,7 +86,7 @@ namespace SteamOrganizer.MVVM.View.Extensions
         private static void OnPasswordPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var passBox = d as PasswordBox;
-            passBox.PasswordChanged?.Invoke(passBox,null);
+          //  passBox.PasswordChanged?.Invoke(passBox,null);
 
             if (!AllowCallback)
                 return;
