@@ -28,7 +28,11 @@ namespace SteamOrganizer.MVVM.Converters
 
             if(value is int intValue)
             {
-                return intValue == 0 ? False : True;
+                if(parameter is null)
+                    return intValue == 0 ? False : True;
+
+                if(parameter is int param)
+                    return intValue > param ? True : False;
             }
                 
 

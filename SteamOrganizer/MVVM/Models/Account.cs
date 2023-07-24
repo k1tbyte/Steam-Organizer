@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using Newtonsoft.Json;
 using static SteamOrganizer.Helpers.SteamParser;
 
 namespace SteamOrganizer.MVVM.Models
@@ -12,13 +13,12 @@ namespace SteamOrganizer.MVVM.Models
     [Serializable]
     internal sealed class Account : INotifyPropertyChanged
     {
-        /// <summary> Required </summary>
+        [JsonProperty(Required = Required.Always)]
         public string Nickname { get; set; }
 
-        /// <summary> Required </summary>
+        [JsonProperty(Required = Required.Always)]
         public string Login { get; set; }
 
-        /// <summary> Required </summary>
         public string Password { get; set; }
 
 
@@ -139,6 +139,7 @@ namespace SteamOrganizer.MVVM.Models
         }
         #region Constructors
 
+        [JsonConstructor]
         private Account() { }
 
         public Account(string login, string password)

@@ -7,6 +7,7 @@
              xmlns:local="clr-namespace:SteamOrganizer.MVVM.View.Controls"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:virtualizingPanel="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="900"
              d:DataContext="{d:DesignInstance viewModels:AccountsViewModel}">
@@ -17,6 +18,8 @@
             <Setter Property="Margin" Value="0 0 5 3"/>
             <Setter Property="ToolTipService.InitialShowDelay" Value="200"/>
         </Style>
+
+        <sys:Int32 x:Key="MoreTheAccs">1</sys:Int32>
     </UserControl.Resources>
 
     <Grid>
@@ -26,56 +29,74 @@
         </Grid.RowDefinitions>
         <FrameworkElement x:Name="GrabbingCur" Cursor="/SteamOrganizer;component/Resources/grabbing.cur" Visibility="Collapsed" IsEnabled="False"/>
 
-        <Grid HorizontalAlignment="Left" Margin="20 0 0 0"
-                    VerticalAlignment="Center" >
-            <Icon:PackIconMaterial d:Spin="False">
-                <Icon:PackIconMaterial.Style>
-                    <Style TargetType="Icon:PackIconMaterial">
-                        <Setter Property="ToolTipService.InitialShowDelay" Value="200"/>
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="Spin" Value="True"/>
-                        <Setter Property="Visibility" Value="Visible"/>
-                        <Setter Property="Cursor" Value="Hand"/>
-                        <Setter Property="ToolTip" Value="Accounts are being updated... Click to cancel"/>
-                        <Setter Property="Kind" Value="Autorenew"/>
-                        <Setter Property="Width" Value="35"/>
-                        <Setter Property="Height" Value="35"/>
-                        <Setter Property="SpinDuration" Value="1.5"/>
-                        <Setter Property="Foreground" Value="{DynamicResource SuccessGrad}"/>
-                        <Setter Property="SpinEasingFunction" Value="{StaticResource BaseAnimationFunction}"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding RemainingUpdateCount,Mode=OneWay}" Value="{x:Null}">
-                                <Setter Property="Height" Value="20"/>
-                                <Setter Property="Width" Value="20"/>
-                                <Setter Property="Kind" Value="DatabaseRefreshOutline"/>
-                                <Setter Property="ToolTip" Value="Click for update all accounts"/>
-                                <Setter Property="Spin" Value="False"/>
-                                <Setter Property="Foreground" Value="{DynamicResource SecondaryForegroundBrush}"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Accounts.Count,Mode=OneWay}" Value="0">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Accounts.Count,Mode=OneWay}" Value="1">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Icon:PackIconMaterial.Style>
-                <Icon:PackIconMaterial.InputBindings>
-                    <MouseBinding Gesture="LeftClick"
+        <StackPanel HorizontalAlignment="Left" Margin="20 0 0 0"
+                    VerticalAlignment="Center" Orientation="Horizontal">
+            <Grid>
+                <Icon:PackIconMaterial d:Spin="False">
+                    <Icon:PackIconMaterial.Style>
+                        <Style TargetType="Icon:PackIconMaterial">
+                            <Setter Property="ToolTipService.InitialShowDelay" Value="200"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Spin" Value="True"/>
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="ToolTip" Value="Accounts are being updated... Click to cancel"/>
+                            <Setter Property="Kind" Value="Autorenew"/>
+                            <Setter Property="Width" Value="35"/>
+                            <Setter Property="Height" Value="35"/>
+                            <Setter Property="SpinDuration" Value="1.5"/>
+                            <Setter Property="Foreground" Value="{DynamicResource SuccessGrad}"/>
+                            <Setter Property="SpinEasingFunction" Value="{StaticResource BaseAnimationFunction}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RemainingUpdateCount,Mode=OneWay}" Value="{x:Null}">
+                                    <Setter Property="Height" Value="20"/>
+                                    <Setter Property="Width" Value="20"/>
+                                    <Setter Property="Kind" Value="DatabaseRefreshOutline"/>
+                                    <Setter Property="ToolTip" Value="Click for update all accounts"/>
+                                    <Setter Property="Spin" Value="False"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource SecondaryForegroundBrush}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Accounts.Count,Mode=OneWay}" Value="0">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Accounts.Count,Mode=OneWay}" Value="1">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Icon:PackIconMaterial.Style>
+                    <Icon:PackIconMaterial.InputBindings>
+                        <MouseBinding Gesture="LeftClick"
                                   Command="{Binding UpdateAccountsCommand,Mode=OneTime}"/>
-                </Icon:PackIconMaterial.InputBindings>
-            </Icon:PackIconMaterial>
+                    </Icon:PackIconMaterial.InputBindings>
+                </Icon:PackIconMaterial>
 
-            <TextBlock HorizontalAlignment="Center"
+                <TextBlock HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        IsHitTestVisible="False"
                        Foreground="{DynamicResource TertiaryForegroundBrush}"
                        FontSize="8" Text="{Binding RemainingUpdateCount,Mode=OneWay}"
                        MaxWidth="17"
-                       TextTrimming="CharacterEllipsis"
-                       />
-        </Grid>
+                       TextTrimming="CharacterEllipsis"/>
+            </Grid>
+
+            
+            <Icon:PackIconMaterial Kind="DatabaseArrowDownOutline" 
+                                    Background="Transparent" Cursor="Hand"
+                                   Margin="5 0 0 0" Height="20" Width="20"
+                                   Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+
+            <Icon:PackIconMaterial Kind="DatabaseArrowUpOutline" 
+                                   Background="Transparent" Cursor="Hand"
+                                   Margin="5 0 0 0" Height="20" Width="20"
+                                   Foreground="{DynamicResource SecondaryForegroundBrush}">
+                <Icon:PackIconMaterial.InputBindings>
+                    <MouseBinding Gesture="LeftClick" Command="{Binding ImportDatabaseCommand,Mode=OneTime}"/>
+                </Icon:PackIconMaterial.InputBindings>
+            </Icon:PackIconMaterial>
+
+        </StackPanel>
+
 
 
 
@@ -91,6 +112,7 @@
                     <Icon:PackIconMaterial x:Key="Unchecked" Kind="SquareEditOutline"/>
                 </Border.Resources>
                 <ToggleButton x:Name="AllowChanges"
+                              IsHitTestVisible="{Binding Accounts.Count,Converter={StaticResource ToBooleanConverter},ConverterParameter={StaticResource MoreTheAccs}}"
                               Style="{StaticResource DynamicContentButton}"
                               Content="{StaticResource Unchecked}"
                               Padding="20 0 20 0"

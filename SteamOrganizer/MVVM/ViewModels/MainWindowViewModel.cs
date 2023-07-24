@@ -9,33 +9,33 @@ using SteamOrganizer.Properties;
 using System;
 using System.Management;
 using System.Security.Principal;
-using System.Windows.Controls.Primitives;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
-using System.Collections.ObjectModel;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
     internal sealed class MainWindowViewModel : ObservableObject
     {
-        private ManagementEventWatcher RegistrySteamUserWatcher;
-        private readonly MainWindow View;
-        internal Action PreviewWindowViewChanged;
 
+        #region Commands
         public RelayCommand SettingsCommand { get; }
         public RelayCommand AccountsCommand { get; }
         public RelayCommand OpenNotificationsCommand { get; }
         public RelayCommand NotificationInvokeCommand { get; }
         public RelayCommand NotificationRemoveCommand { get; }
         public RelayCommand NotificationClearAll { get; }
+        #endregion
+
+        #region Properties
+        private ManagementEventWatcher RegistrySteamUserWatcher;
+        private readonly MainWindow View;
+        internal Action PreviewWindowViewChanged;
 
         public SettingsView Settings { get; private set; }
         public AccountPageView AccountPage { get; private set; }
         public AccountsView Accounts { get; }
 
-
-
-        #region Properties
         private bool _isNotificationsRead = true;
         public bool IsNotificationsRead
         {
@@ -206,7 +206,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public MainWindowViewModel(MainWindow owner)
         {
             View                      = owner;
-#if DEBUG
+#if !DEBUG
             Utils.InBackground(InitServices);
 #endif
             CurrentView = Accounts =  new AccountsView();
