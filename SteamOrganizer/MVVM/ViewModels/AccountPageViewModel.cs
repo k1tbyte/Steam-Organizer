@@ -244,8 +244,6 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async Task OnAccountUpdating(object param)
         {
-            await SteamParser.ParseGamesPriceDetails(CurrentAccount);
-            return;
             if (!await CurrentAccount.RetrieveInfo(true))
             {
                 PushNotification.Open("An error occurred while trying to update account", type: PushNotification.EPushNotificationType.Error);

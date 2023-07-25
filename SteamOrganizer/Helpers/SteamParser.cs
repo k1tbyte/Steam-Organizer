@@ -77,7 +77,6 @@ namespace SteamOrganizer.Helpers
                 public string ProfileURL;
                 public long? TimeCreated;
                 public byte CommunityVisibilityState;
-                public ERegionCode LocCountryCode;
             }
 
             internal class SummariesResponse
@@ -97,11 +96,15 @@ namespace SteamOrganizer.Helpers
                 public Game[] Games;
             }
 
+            [Serializable]
             internal class Game
             {
-                public int AppID;
+                public uint AppID;
                 public float Playtime_forever;
-                public long Rtime_last_played;
+                public string Name;
+
+                [JsonIgnore]
+                public uint? Price;
             }
 
             public OwnedGamesResponse Response;
@@ -112,7 +115,7 @@ namespace SteamOrganizer.Helpers
             internal class AppPrice
             {
                 public ECurrencyCode Currency;
-                public uint Final;
+                public uint Initial;
             }
             internal class AppData
             {
@@ -143,7 +146,7 @@ namespace SteamOrganizer.Helpers
         #endregion 
         #endregion
 
-        internal static void GetGamesBadgeBoundary(Account account)
+        internal static void SetGamesBadgeBoundary(Account account)
         {
             if (account.GamesCount > GamesBadgeBoundaries[GamesBadgeBoundaries.Length - 2])
             {
@@ -196,36 +199,6 @@ namespace SteamOrganizer.Helpers
             acc.HaveCommunityBan = bans.CommunityBanned;
             acc.DaysSinceLastBan = bans.DaysSinceLastBan;
             acc.EconomyBan       = (int)bans.EconomyBan;
-            return true;
-        }
-        
-        private static bool SetGamesInfo(this Account acc, UserOwnedGamesObject.Game[] games)
-        {
-            if (games == null)
-            {
-                return false;
-            }
-
-            if(games.Length < 1)
-            {
-                return true;
-            }
-                
-
-            acc.HoursOnPlayed = acc.PlayedGamesCount = 0;
-            acc.GamesCount    = games.Length;
-
-            for (int i = 0; i < games.Length; i++)
-            {
-                if (games[i].Playtime_forever != 0)
-                {
-                    games[i].Playtime_forever /= 60;
-                    acc.HoursOnPlayed += games[i].Playtime_forever;
-                    acc.PlayedGamesCount++;
-                }
-            }
-
-            GetGamesBadgeBoundary(acc);
             return true;
         }
 
@@ -292,11 +265,10 @@ namespace SteamOrganizer.Helpers
                         if (acc.VisibilityState == 3)
                         {
                             var levelTask = GetPlayerLevel(accSummary.SteamId);
-                            var gamesTask = GetPlayerOwnedGames(accSummary.SteamId);
 
                             // If we received the GamesResponse as null, then most likely
                             // the level could not be obtained either, so we add the account to the list with an error
-                            if (!acc.SetGamesInfo(gamesTask.Result))
+                            if (!ParseGames(acc).Result)
                             {
                                 success = false;
                             }
@@ -338,18 +310,77 @@ namespace SteamOrganizer.Helpers
                 return EParseResult.AttemptsExceeded;
 
             var bansTask  = GetPlayersBans(account.SteamID64.Value).ConfigureAwait(false);
+            var gamesTask = ParseGames(account);
             var levelTask = GetPlayerLevel(account.SteamID64.Value).ConfigureAwait(false);
-            var gamesTask = GetPlayerOwnedGames(account.SteamID64.Value);
 
             var bans  = await bansTask;
             var level = await levelTask;
-            var games = await gamesTask;
+            _ = await gamesTask;
 
             account.SteamLevel = level ?? account.SteamLevel;
             account.SetBansInfo(bans?[0]);
-            account.SetGamesInfo(games);
 
             return EParseResult.OK;
+        }
+
+        internal static async Task<bool> ParseGames(Account acc, bool withDetails = true)
+        {
+            UserOwnedGamesObject.Game[] games = null;
+            Dictionary<uint, AppDetailsObject> gamesPrices = null;
+
+            try
+            {
+                if (acc.SteamID64 == null || acc.VisibilityState != 3 || (games = await GetPlayerOwnedGames(acc.SteamID64.Value)) == null)
+                    return false;
+
+                if (games.Length < 1 || !withDetails)
+                    return true;
+
+                var response = (await App.WebBrowser.GetStringAsync(
+                    $"https://store.steampowered.com/api/appdetails/?appids={string.Join(",", games.Select(o => o.AppID))}&l=en&filters=price_overview")
+                    )?.InjectionReplace(']', '}')?.InjectionReplace('[', '{');
+
+                if (response == null)
+                    return false;
+
+                gamesPrices = JsonConvert.DeserializeObject<Dictionary<uint, AppDetailsObject>>(response)?
+                    .Where(o => o.Value.Success && o.Value.Data?.Price_overview != null)?.ToDictionary(o => o.Key, o => o.Value);
+
+                gamesPrices = gamesPrices?.Any() == true ? gamesPrices : null;
+            }
+            finally
+            {
+                if (games?.Length >= 1)
+                {
+                    acc.HoursOnPlayed = acc.PlayedGamesCount = 0;
+                    acc.GamesCount = games.Length;
+                    acc.TotalGamesPrice = 0UL;
+                    acc.GamesCurrency = gamesPrices == null ? ECurrencyCode.Invalid : gamesPrices.First().Value.Data.Price_overview.Currency;
+
+                    for (int i = 0; i < games.Length; i++)
+                    {
+                        if (games[i].Playtime_forever != 0f)
+                        {
+                            games[i].Playtime_forever /= 60f;
+                            acc.HoursOnPlayed += games[i].Playtime_forever;
+                            acc.PlayedGamesCount++;
+                        }
+
+                        if (gamesPrices == null || !gamesPrices.TryGetValue(games[i].AppID, out AppDetailsObject details))
+                            continue;
+
+                        var formattedPrice = details.Data.Price_overview.Initial / 100;
+                        games[i].Price = formattedPrice;
+                        acc.TotalGamesPrice += formattedPrice;
+                    }
+
+                    SetGamesBadgeBoundary(acc);
+                    FileCryptor.Serialize(games, System.IO.Path.Combine(CachingManager.GamesCachePath, acc.SteamID64.ToString()));
+                }
+
+            }
+
+            return true;
         }
 
         internal static async Task<int?> GetPlayerLevel(ulong steamId64)
@@ -385,51 +416,10 @@ namespace SteamOrganizer.Helpers
             return response == null ? null : JsonConvert.DeserializeObject<UserBansObject>(response).Players;
         }
 
-        internal static async Task<bool> ParseGamesWithDetails(Account acc)
-        {
-            UserOwnedGamesObject.Game[] games = null;
-
-            if (acc.SteamID64 == null || acc.VisibilityState != 3 || (games = await GetPlayerOwnedGames(acc.SteamID64.Value)) == null || games.Length == 0)
-                return false;
-
-            var response = (await App.WebBrowser.GetStringAsync(
-                $"https://store.steampowered.com/api/appdetails/?appids={string.Join(",", games.Select(o => o.AppID))}&l=en&filters=price_overview")
-                )?.InjectionReplace(']', '}')?.InjectionReplace('[','{');
-
-            if (response == null)
-                return false;
-
-            var gamesPrices = JsonConvert.DeserializeObject<Dictionary<uint, AppDetailsObject>>(response);
-
-            if (gamesPrices.Count == 0)
-                return true;
-
-
-            var valid = gamesPrices.Where(o => o.Value.Success && o.Value.Data?.Price_overview != null);
-
-            if (!valid.Any())
-                return true;
-
-            ulong totalPrice = 0;
-            valid.AsParallel().ForAll(o =>
-            {
-                totalPrice += o.Value.Data.Price_overview.Final;
-            });
-
-            if(totalPrice != 0)
-            {
-                acc.TotalGamesPrice = totalPrice/100;
-                acc.GamesCurrency = valid.First().Value.Data.Price_overview.Currency;
-            }
-
-
-            return true;
-        }
-
         internal static async Task<UserOwnedGamesObject.Game[]> GetPlayerOwnedGames(ulong steamId)
         {
             var response = await App.WebBrowser.GetStringAsync(
-                $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId}&include_appinfo=true&include_played_free_games=1&format=json")
+                $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId}&include_appinfo=true&include_played_free_games=1")
                 .ConfigureAwait(false);
 
             return response == null ? null : JsonConvert.DeserializeObject<UserOwnedGamesObject>(response).Response.Games ?? GamesDummy;

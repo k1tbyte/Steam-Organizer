@@ -25,6 +25,7 @@ namespace SteamOrganizer.MVVM.View.Controls
                 this.DataContext             = ViewModel = new AccountPageViewModel(this,account);
                 IDComboBox.SelectedIndex     = 0;
                 SteamExpander.IsExpanded     = LinksExpander.IsExpanded = false;
+                UpdateButton.Visibility      = Visibility.Visible;
                 Scroll.ScrollToTop();
                 return;
             }

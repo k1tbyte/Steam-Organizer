@@ -16,7 +16,8 @@ namespace SteamOrganizer.Helpers
 
     internal static class CachingManager
     {
-        private static string ImagesCachePath;
+        internal static string ImagesCachePath;
+        internal static string GamesCachePath;
         private static readonly ConcurrentDictionary<string,BitmapImage> CachedImages = new ConcurrentDictionary<string,BitmapImage>();
 
         public static void Init()
@@ -25,6 +26,7 @@ namespace SteamOrganizer.Helpers
 
             Utils.CreateDirIfNotExists(App.CacheFolderPath, attributes);
             Utils.CreateDirIfNotExists(ImagesCachePath = Path.Combine(App.CacheFolderPath,"images"), attributes);
+            Utils.CreateDirIfNotExists(GamesCachePath = Path.Combine(App.CacheFolderPath, "games"), attributes);
 
         }
 
