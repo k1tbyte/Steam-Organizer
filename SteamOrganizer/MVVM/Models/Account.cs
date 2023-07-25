@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
 using static SteamOrganizer.Helpers.SteamParser;
+using SteamKit2;
 
 namespace SteamOrganizer.MVVM.Models
 {
@@ -56,6 +57,8 @@ namespace SteamOrganizer.MVVM.Models
         public int PlayedGamesCount { get; set; }
         public ushort GamesBadgeBoundary { get; set; }
         public float HoursOnPlayed { get; set; }
+        public ulong TotalGamesPrice { get; set; }
+        public ECurrencyCode GamesCurrency { get; set; }
         #endregion
 
         public string Note { get; set; }
@@ -86,7 +89,7 @@ namespace SteamOrganizer.MVVM.Models
 
         [JsonIgnore]
         [field: NonSerialized]
-        public BitmapImage AvatarBitmap { get; set; }
+        public BitmapImage AvatarBitmap { get; private set; }
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
@@ -96,9 +99,9 @@ namespace SteamOrganizer.MVVM.Models
         public bool IsCurrentlyUpdating { get; set; }
 
 
-        public void LoadImage(string hash = null,bool propertyChanged = true)
+        public void LoadImage(bool propertyChanged = true)
         {
-            AvatarBitmap = CachingManager.GetCachedAvatar(hash ?? AvatarHash, 0, 0, size: EAvatarSize.medium);
+            AvatarBitmap = CachingManager.GetCachedAvatar(AvatarHash, 0, 0, size: EAvatarSize.medium);
 
             if(propertyChanged)
             {

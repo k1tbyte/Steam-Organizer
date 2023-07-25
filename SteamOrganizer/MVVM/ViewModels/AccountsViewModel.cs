@@ -496,8 +496,8 @@ namespace SteamOrganizer.MVVM.ViewModels
                 var jObject = JsonConvert.SerializeObject(App.Config.Database,new JsonSerializerSettings
                 {
                     DefaultValueHandling = DefaultValueHandling.Ignore,
-                    NullValueHandling = NullValueHandling.Ignore,
-                    Formatting = withCrypt ? Formatting.None : Formatting.Indented
+                    NullValueHandling    = NullValueHandling.Ignore,
+                    Formatting           = withCrypt ? Formatting.None : Formatting.Indented
                 });
 
                 if (string.IsNullOrEmpty(password))
