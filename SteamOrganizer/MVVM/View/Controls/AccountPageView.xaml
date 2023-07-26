@@ -373,11 +373,15 @@
                     <StackPanel>
 
                         <!--#region Badges -->
-                        <DockPanel x:Name="BadgesDock" Visibility="{Binding CurrentAccount.CreatedDate,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}" VerticalAlignment="Top" Margin="15 25 15 15">
+                        <Grid x:Name="BadgesDock" Visibility="{Binding CurrentAccount.CreatedDate,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}" VerticalAlignment="Top" Margin="15 25 15 15">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
 
                             <Border Background="{DynamicResource BackgroundGrad}"
-                                Width="225" Height="150"
-                                CornerRadius="12"
+                                Width="225" Height="150" HorizontalAlignment="Left"
+                                CornerRadius="12" Margin="0 0 20 0"
                                 Padding="15">
                                 <Grid>
                                     <Icon:PackIconMaterial Kind="Steam" Height="40" Width="40"
@@ -458,7 +462,38 @@
 
                                 </Grid>
                             </Border>
-                        </DockPanel>
+
+                                <Border Background="{DynamicResource BackgroundGrad}"
+                                        Visibility="{Binding CurrentAccount.PaidGames,Mode=OneWay,Converter={StaticResource ToVisibilityConverter}}"
+                                        Margin="0 15 0 0" Grid.Row="1"
+                                        CornerRadius="12"
+                                        Width="470" Height="90" Padding="15">
+                                    <Grid>
+                                        <Icon:PackIconMaterial Kind="Sack" Height="30" Width="30"
+                                                       Foreground="{DynamicResource PrimarySubBrush}"/>
+
+                                        <TextBlock Margin="40 5 0 0" VerticalAlignment="Top"
+                                           FontSize="14" Text="Cost of games"/>
+
+                                        <TextBlock VerticalAlignment="Bottom"
+                                           FontSize="13"
+                                           HorizontalAlignment="Left">
+                                            <Run Text="Paid games" FontWeight="Normal"/>
+                                            <Run Text="{Binding CurrentAccount.PaidGames,Mode=OneWay}" Foreground="{DynamicResource PrimarySubBrush}"/>
+                                        </TextBlock>
+
+                                        <TextBlock VerticalAlignment="Bottom"
+                                           ToolTip="Without discounts"
+                                           ToolTipService.InitialShowDelay="200"
+                                           FontSize="20"
+                                           HorizontalAlignment="Right"
+                                           Text="{Binding AppsPriceFormat,Mode=OneWay}"
+                                           Foreground="{DynamicResource SuccessGrad}"
+                                           Margin="0 0 0 0"/>
+                                    </Grid>
+                                </Border>
+                        
+                        </Grid>
                         <!--#endregion-->
 
                         <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"

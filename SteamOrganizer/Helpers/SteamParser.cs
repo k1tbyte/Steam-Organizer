@@ -352,7 +352,7 @@ namespace SteamOrganizer.Helpers
             {
                 if (games?.Length >= 1)
                 {
-                    acc.HoursOnPlayed = acc.PlayedGamesCount = 0;
+                    acc.HoursOnPlayed = acc.PlayedGamesCount = acc.PaidGames = 0;
                     acc.GamesCount = games.Length;
                     acc.TotalGamesPrice = 0UL;
                     acc.GamesCurrency = gamesPrices == null ? ECurrencyCode.Invalid : gamesPrices.First().Value.Data.Price_overview.Currency;
@@ -372,6 +372,7 @@ namespace SteamOrganizer.Helpers
                         var formattedPrice = details.Data.Price_overview.Initial / 100;
                         games[i].Price = formattedPrice;
                         acc.TotalGamesPrice += formattedPrice;
+                        acc.PaidGames++;
                     }
 
                     SetGamesBadgeBoundary(acc);

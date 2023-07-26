@@ -58,6 +58,7 @@ namespace SteamOrganizer.MVVM.Models
         public ushort GamesBadgeBoundary { get; set; }
         public float HoursOnPlayed { get; set; }
         public ulong TotalGamesPrice { get; set; }
+        public int PaidGames { get; set; }
         public ECurrencyCode GamesCurrency { get; set; }
         #endregion
 

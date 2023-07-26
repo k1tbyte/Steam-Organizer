@@ -41,6 +41,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         public Visibility AdditionalControlsVis { get; private set; } = Visibility.Visible;
 
+
         private string _yearImagePath;
         public string YearImagePath
         {
@@ -88,6 +89,13 @@ namespace SteamOrganizer.MVVM.ViewModels
         {
             get => _steamCredentialsErr;
             set => SetProperty(ref _steamCredentialsErr, value);
+        }
+
+        private string _appsPriceFormat;
+        public string AppsPriceFormat
+        {
+            get => _appsPriceFormat;
+            set => SetProperty(ref _appsPriceFormat, value);
         }
 
 
@@ -178,13 +186,23 @@ namespace SteamOrganizer.MVVM.ViewModels
             if (CurrentAccount.YearsOfService >= 1f)
             {
                 YearImagePath = $"/Resources/Images/SteamYearsBadges/year{(int)CurrentAccount.YearsOfService}.bmp";
+                return;
             }
+            YearImagePath = "/Resources/Images/Transparent.bmp";
         }
 
         private void InitGamesInfo()
         {
             if (CurrentAccount.GamesCount <= 0)
+            {
+                GamesImagePath = "/Resources/Images/Transparent.bmp";
                 return;
+            }
+
+            if(CurrentAccount.PaidGames != 0 && CurrencyHelper.TryGetCurrencySymbol(CurrentAccount.GamesCurrency.ToString(),out string symbol))
+            {
+                AppsPriceFormat = $"{CurrentAccount.TotalGamesPrice.ToString("N0",CultureInfo.InvariantCulture)} {symbol} ({CurrentAccount.GamesCurrency})";
+            }
 
             GamesImagePath = $"/Resources/Images/SteamGamesBadges/{CurrentAccount.GamesBadgeBoundary}.png";
             GamesDetails = CurrentAccount.PlayedGamesCount <= 0 ? "0" :
@@ -336,11 +354,6 @@ namespace SteamOrganizer.MVVM.ViewModels
             this.CurrentAccount = account;
             _passwordTemp       = CurrentAccount.Password;
             Init();
-
-            if(account.Authenticator != null)
-            {
-                GenerateSteamGuardTokens();
-            }
         }
     }
 }

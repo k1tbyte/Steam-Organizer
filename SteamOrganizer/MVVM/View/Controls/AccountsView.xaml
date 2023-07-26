@@ -84,6 +84,7 @@
             <Icon:PackIconMaterial Kind="DatabaseArrowDownOutline" 
                                    ToolTipService.InitialShowDelay="200"
                                    ToolTip="Export accounts database"
+                                   VerticalAlignment="Center"
                                    Visibility="{Binding ElementName=RefredhDbButton,Path=Visibility,Mode=OneWay}"
                                    Background="Transparent" Cursor="Hand"
                                    Margin="5 0 0 0" Height="20" Width="20"
@@ -95,6 +96,7 @@
 
             <Icon:PackIconMaterial Kind="DatabaseArrowUpOutline"
                                    ToolTipService.InitialShowDelay="200"
+                                   VerticalAlignment="Center"
                                    ToolTip="Import accounts database"
                                    Background="Transparent" Cursor="Hand"
                                    Margin="5 0 0 0" Height="20" Width="20"

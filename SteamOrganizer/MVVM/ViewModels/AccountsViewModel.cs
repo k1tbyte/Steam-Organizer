@@ -1,5 +1,4 @@
-﻿using FlaUI.Core.Tools;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
@@ -18,7 +17,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using static FlaUI.Core.FrameworkAutomationElementBase;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
@@ -224,12 +222,12 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            if ((Utils.GetUnixTime() - App.Config.LastDatabaseUpdateTime) < 83200)
+/*            if ((Utils.GetUnixTime() - App.Config.LastDatabaseUpdateTime) < 21600)
             {
                 PushNotification.Open("The accounts have already been updated recently");
                 buttonSpamStub = DateTime.Now;
                 return;
-            }
+            }*/
 
             var accsWithError = new List<Account>();
             int availableAccounts = 0;

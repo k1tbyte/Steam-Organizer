@@ -27,7 +27,6 @@ namespace SteamOrganizer.MVVM.View.Controls
                 SteamExpander.IsExpanded     = LinksExpander.IsExpanded = false;
                 UpdateButton.Visibility      = Visibility.Visible;
                 Scroll.ScrollToTop();
-                return;
             }
 
             //We use an already existing data context. So we need to resume background work
