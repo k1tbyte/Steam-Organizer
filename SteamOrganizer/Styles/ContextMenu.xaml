@@ -21,9 +21,9 @@
                         <EventTrigger RoutedEvent="Loaded">
                             <BeginStoryboard>
                                 <Storyboard>
-                                    <DoubleAnimation Duration="0:0:0.23" Storyboard.TargetName="Content" EasingFunction="{StaticResource DefaultAnimationFunction}"
+                                    <DoubleAnimation Duration="0:0:0.23" Storyboard.TargetName="Content" EasingFunction="{StaticResource BaseAnimationFunction}"
                                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" From="0" To="1"/>
-                                    <DoubleAnimation Duration="0:0:0.23" Storyboard.TargetName="Content" EasingFunction="{StaticResource DefaultAnimationFunction}"
+                                    <DoubleAnimation Duration="0:0:0.23" Storyboard.TargetName="Content" EasingFunction="{StaticResource BaseAnimationFunction}"
                                                                     Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" From="0" To="1"/>
                                 </Storyboard>
                             </BeginStoryboard>

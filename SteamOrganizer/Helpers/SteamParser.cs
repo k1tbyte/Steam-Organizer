@@ -4,7 +4,6 @@ using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Models;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -253,13 +252,17 @@ namespace SteamOrganizer.Helpers
                     Parallel.ForEach(summaries,new ParallelOptions{ CancellationToken = cancelToken },
                     (accSummary, state) =>
                     {
-                        var success = true;
-                        var acc = valid[accSummary.SteamId];
+                        var success             = true;
+                        var acc                 = valid[accSummary.SteamId];
                         acc.IsCurrentlyUpdating = true;
+
+                        if (acc.AvatarHash != null)
+                            acc.LastUpdateDate = DateTime.Now;
 
                         acc.SetSummaries(accSummary);
                         acc.SetBansInfo(bans[accSummary.SteamId]);
-                        acc.LastUpdateDate = DateTime.Now;
+
+
 
                         // It is useless to receive further information - private profile
                         if (acc.VisibilityState == 3)

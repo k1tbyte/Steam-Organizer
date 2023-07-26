@@ -202,6 +202,9 @@
     <Compile Include="MVVM\View\Extensions\TemplateDecorator.xaml.cs">
       <DependentUpon>TemplateDecorator.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\Extensions\TrayPopup.xaml.cs">
+      <DependentUpon>TrayPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Storages\GlobalStorage.cs" />
     <Page Include="Locale\lang.en-US.xaml">
       <SubType>Designer</SubType>
@@ -252,6 +255,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\Extensions\TemplateDecorator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Extensions\TrayPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
