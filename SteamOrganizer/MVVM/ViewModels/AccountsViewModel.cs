@@ -222,12 +222,12 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-/*            if ((Utils.GetUnixTime() - App.Config.LastDatabaseUpdateTime) < 21600)
+            if ((Utils.GetUnixTime() - App.Config.LastDatabaseUpdateTime) < 21600)
             {
                 PushNotification.Open("The accounts have already been updated recently");
                 buttonSpamStub = DateTime.Now;
                 return;
-            }*/
+            }
 
             var accsWithError = new List<Account>();
             int availableAccounts = 0;

@@ -82,7 +82,6 @@ namespace SteamOrganizer.Helpers
                         OnCopyData(lParam);
                         handled = true;
                         break;
-
                 }
             }
             catch(Exception e)

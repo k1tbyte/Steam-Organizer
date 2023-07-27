@@ -1,6 +1,7 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.Log;
+using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.View.Windows;
 using SteamOrganizer.MVVM.ViewModels;
 using SteamOrganizer.Storages;
@@ -34,7 +35,8 @@ namespace SteamOrganizer
 
         internal static bool IsShuttingDown { get; private set; }
         internal static MainWindowViewModel MainWindowVM { get; private set; }
-        
+        internal static TrayPopup TrayMenu { get; private set; }
+
 
         private static GlobalStorage _config;
         internal static GlobalStorage Config => _config;
@@ -73,6 +75,7 @@ namespace SteamOrganizer
 
             _config = GlobalStorage.Load();
 
+            TrayMenu     = new TrayPopup();
             MainWindow   = new MainWindow();
             MainWindowVM = MainWindow.DataContext as MainWindowViewModel;
             MainWindow.Show();
@@ -100,6 +103,7 @@ namespace SteamOrganizer
                 if (Config.IsPropertiesChanged)
                     Config.Save();
 
+                TrayMenu?.Dispose();
                 WebBrowser?.Dispose();
                 Mutex.Close();
             }

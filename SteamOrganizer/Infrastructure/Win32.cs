@@ -6,6 +6,7 @@ namespace SteamOrganizer.Infrastructure
 {
     internal static class Win32
     {
+
         #region Imports
 
         [DllImport("user32.dll")]
@@ -34,9 +35,23 @@ namespace SteamOrganizer.Infrastructure
         [DllImport("user32.dll")]
         public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hMod, uint dwThreadId);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr GetModuleHandle(string lpModuleName);
+
         #endregion
 
         #region Structs
+        internal delegate IntPtr HookProc(int code, IntPtr wParam, IntPtr lParam);
 
         [StructLayout(LayoutKind.Sequential)]
         internal struct Point
@@ -151,6 +166,5 @@ namespace SteamOrganizer.Infrastructure
         /// </summary>
         public static void HideWindow(IntPtr HWND) 
             => SetWindowLong(HWND, GWL_EX_STYLE, (Win32.GetWindowLong(HWND, GWL_EX_STYLE) | WS_EX_TOOLWINDOW) & ~WS_EX_APPWINDOW);
-
     }
 }

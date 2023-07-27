@@ -1,5 +1,6 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
+using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.ViewModels;
 using SteamOrganizer.Storages;
 using System;
@@ -38,6 +39,21 @@ namespace SteamOrganizer.MVVM.View.Windows
 
         private void OnCloseWindow(object sender, MouseButtonEventArgs e)
             => App.Shutdown();
+
+        public new void Hide()
+        {
+            base.Hide();
+            WindowState = WindowState.Minimized;
+        }
+
+        public new void Show()
+        {
+            if (WindowState != WindowState.Minimized)
+                return;
+
+            base.Show();
+            WindowState = WindowState.Normal;
+        }
 
 
         private void OnMaximizeWindow(object sender, MouseButtonEventArgs e)

@@ -119,7 +119,7 @@
         <Setter Property="Background" Value="{DynamicResource PrimaryBackgroundBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBackgroundBrush}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Width" Value="55"/>
+        <Setter Property="Width" Value="52"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -130,11 +130,11 @@
                         <Border x:Name="Border"
                                     Background="{TemplateBinding Background}"
                                     CornerRadius="7" 
-                                    Height="15" Margin="10 0 0 0"
-                                    Width="30" HorizontalAlignment="Left"
+                                    Height="13" Margin="10 0 0 0"
+                                    Width="27" HorizontalAlignment="Left"
                                     VerticalAlignment="Center" >
                         </Border>
-                        <Ellipse x:Name="Ellipse" Height="23" Width="23"
+                        <Ellipse x:Name="Ellipse" Height="20" Width="20"
                                      HorizontalAlignment="Left" VerticalAlignment="Center"
                                      Fill="{DynamicResource SecondaryForegroundBrush}"
                                      Stroke="{TemplateBinding BorderBrush}"

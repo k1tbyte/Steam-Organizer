@@ -29,9 +29,9 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         #region Properties
         private ManagementEventWatcher RegistrySteamUserWatcher;
-        private readonly MainWindow View;
         internal Action PreviewWindowViewChanged;
 
+        internal MainWindow View { get; }
         public SettingsView Settings { get; private set; }
         public AccountPageView AccountPage { get; private set; }
         public AccountsView Accounts { get; }
