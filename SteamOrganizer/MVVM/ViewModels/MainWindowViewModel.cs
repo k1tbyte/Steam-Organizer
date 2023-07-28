@@ -1,5 +1,6 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
+using SteamOrganizer.Infrastructure.Steam;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
@@ -159,19 +160,19 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async void OnLocalLoggedInUserChanged(object sender, EventArrivedEventArgs args)
         {
-            var userId = Convert.ToUInt32(Utils.GetUserRegistryValue(@"Software\\Valve\\Steam\\ActiveProcess", "ActiveUser"));
+            var activeId = SteamRegistry.GetActiveUserSteamID();
 
-            if (userId == 0)
+            if (activeId == 0)
             {
                 LoggedInImage = null;
                 LoggedInNickname = null;
                 return;
             }
 
-            var login = Utils.GetUserRegistryValue(@"Software\\Valve\\Steam", "AutoLoginUser") as string;
+            var login = SteamRegistry.GetActiveUserLogin();
             if (!string.IsNullOrEmpty(login) && App.Config.Database.Exists(o => o.SteamID64 == null && string.Equals(o.Login,login,StringComparison.OrdinalIgnoreCase),out Account anonym))
             {
-                anonym.SteamID64 = userId + SteamIdConverter.SteamID64Indent;
+                anonym.SteamID64 = activeId;
                 if (await anonym.RetrieveInfo())
                 {
                     anonym.InvokeBannerPropertiesChanged();
@@ -179,7 +180,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 }
             }
 
-            var xmlPage = await App.WebBrowser.GetStringAsync($"{WebBrowser.SteamProfilesHost}{SteamIdConverter.AccountIDToID64(userId)}?xml=1");
+            var xmlPage = await App.WebBrowser.GetStringAsync($"{WebBrowser.SteamProfilesHost}{activeId}?xml=1");
 
             var imgHash = Regexes.AvatarHashXml.Match(xmlPage)?.Groups[0]?.Value;
             var nickname = Regexes.NicknameXml.Match(xmlPage)?.Groups[0]?.Value;

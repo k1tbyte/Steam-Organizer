@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using Steam =  SteamOrganizer.Infrastructure.Steam;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
@@ -26,6 +27,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand OpenProfileCommand { get; }
         public RelayCommand ClearSearchBar { get; }
         public AsyncRelayCommand RemoveAccountCommand { get; }
+        public RelayCommand LoginCommand { get; }
         public RelayCommand UpdateAccountsCommand { get; }
         public RelayCommand PinAccountCommand { get; }
         public RelayCommand AddAccountCommand { get; }
@@ -67,7 +69,14 @@ namespace SteamOrganizer.MVVM.ViewModels
 
                 AccountsCollectionView.Refresh();
             }
-        } 
+        }
+
+        private int? _remainingUpdateCount;
+        public int? RemainingUpdateCount
+        {
+            get => _remainingUpdateCount;
+            set => SetProperty(ref _remainingUpdateCount, value);
+        }
         #endregion
 
         #region Sorting
@@ -125,13 +134,6 @@ namespace SteamOrganizer.MVVM.ViewModels
         }
 
         #endregion
-
-        private int? _remainingUpdateCount;
-        public int? RemainingUpdateCount
-        {
-            get => _remainingUpdateCount;
-            set => SetProperty(ref _remainingUpdateCount, value);
-        }
 
         #region Global DB Actions
         private void OnFailedDatabaseLoading(object sender, EventArgs e)
@@ -517,6 +519,10 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
         }
 
+        private async void OnLoginAccount(object param)
+        {
+            await  new Steam.LoginEmulator(param as Account).Login();
+        }
 
         internal void RefreshCollection() => AccountsCollectionView.Refresh();
 
@@ -533,6 +539,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             ExportDatabaseCommand  = new RelayCommand(OnDatabaseExport);
             OpenAccountPageCommand = new RelayCommand((o) => App.MainWindowVM.OpenAccountPage(o as Account));
             OpenProfileCommand     = new RelayCommand((o) => (o as Account).OpenInBrowser());
+            LoginCommand           = new RelayCommand(OnLoginAccount);
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
             if (!App.Config.LoadDatabase())

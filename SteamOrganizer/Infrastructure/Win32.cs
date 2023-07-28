@@ -48,6 +48,14 @@ namespace SteamOrganizer.Infrastructure
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr GetModuleHandle(string lpModuleName);
 
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ShowWindow(IntPtr hWnd, EShowWindow flags);
+
         #endregion
 
         #region Structs
@@ -116,30 +124,46 @@ namespace SteamOrganizer.Infrastructure
 
         internal enum AppBarMessage : uint
         {
-            New = 0x00000000,
-            Remove = 0x00000001,
-            QueryPos = 0x00000002,
-            SetPos = 0x00000003,
-            GetState = 0x00000004,
-            GetTaskbarPos = 0x00000005,
-            Activate = 0x00000006,
-            GetAutoHideBar = 0x00000007,
-            SetAutoHideBar = 0x00000008,
+            New              = 0x00000000,
+            Remove           = 0x00000001,
+            QueryPos         = 0x00000002,
+            SetPos           = 0x00000003,
+            GetState         = 0x00000004,
+            GetTaskbarPos    = 0x00000005,
+            Activate         = 0x00000006,
+            GetAutoHideBar   = 0x00000007,
+            SetAutoHideBar   = 0x00000008,
             WindowPosChanged = 0x00000009,
-            SetState = 0x0000000A,
+            SetState         = 0x0000000A,
         }
+
+        public enum EShowWindow
+        {
+            Hide                 = 0,
+            ShowNormal           = 1,
+            ShowMinimized        = 2,
+            Maximize             = 3,
+            ShowNormalNoActivate = 4,
+            Show                 = 5,
+            Minimize             = 6,
+            ShowMinNoActivate    = 7,
+            ShowNoActivate       = 8,
+            Restore              = 9,
+            ShowDefault          = 10,
+            ForceMinimized       = 11
+        };
 
         internal enum AppBarEdge : uint
         {
-            Left = 0,
-            Top = 1,
-            Right = 2,
+            Left   = 0,
+            Top    = 1,
+            Right  = 2,
             Bottom = 3
         }
 
         internal enum AppBarState
         {
-            AutoHide = 0x01,
+            AutoHide    = 0x01,
             AlwaysOnTop = 0x02,
         }
 
@@ -153,12 +177,21 @@ namespace SteamOrganizer.Infrastructure
             return w32Mouse;
         }
 
+        internal static void BringWindowToFront(IntPtr hWnd)
+        {
+            ShowWindow(hWnd, EShowWindow.Restore);
+            SetForegroundWindow(hWnd);
+        }
+
         internal static void MoveFile(string existingFileName, string newFileName, bool overwrite)
         {
             if(overwrite)
+            {
                 MoveFileEx(existingFileName, newFileName, 0x1 | 0x8 | 0x2);
-            else
-                MoveFileEx(existingFileName, newFileName, 0x8 | 0x2);
+                return;
+            }
+
+            MoveFileEx(existingFileName, newFileName, 0x8 | 0x2);
         }
 
         /// <summary>

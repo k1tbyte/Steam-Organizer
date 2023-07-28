@@ -147,9 +147,14 @@
     <Compile Include="Helpers\FileCryptor.cs" />
     <Compile Include="Helpers\MouseHook.cs" />
     <Compile Include="Helpers\SteamIdConverter.cs" />
-    <Compile Include="Helpers\SteamParser.cs" />
+    <Compile Include="Infrastructure\Steam\SteamParser.cs" />
     <Compile Include="Helpers\WindowMessageHandler.cs" />
     <Compile Include="Infrastructure\Regexes.cs" />
+    <Compile Include="Infrastructure\Steam\LoginEmulator.cs" />
+    <Compile Include="Infrastructure\Steam\SteamRegistry.cs" />
+    <Compile Include="Infrastructure\Steam\VDF\VdfDeserializer.cs" />
+    <Compile Include="Infrastructure\Steam\VDF\VdfTable.cs" />
+    <Compile Include="Infrastructure\Steam\VDF\VdfValue.cs" />
     <Compile Include="Infrastructure\WebBrowser.cs" />
     <Compile Include="Infrastructure\Win32.cs" />
     <Compile Include="Infrastructure\Utils.cs" />
@@ -459,9 +464,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\SteamGamesBadges\32000.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Infrastructure\Steam\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Images\Transparent.bmp" />
   </ItemGroup>

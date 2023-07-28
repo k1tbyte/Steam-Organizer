@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
+using SteamKit2;
+using System.Diagnostics;
 
 namespace SteamOrganizer.Infrastructure
 {
@@ -231,6 +233,34 @@ namespace SteamOrganizer.Infrastructure
             }
 
             return null;
+        }
+
+        public static bool SetUserRegistryValue(string path, string valueName, object value, RegistryValueKind kind)
+        {
+            try
+            {
+                using (var registryKey = Registry.CurrentUser.OpenSubKey(path, true))
+                {
+                    registryKey.SetValue(valueName,value, kind);
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                App.Logger.Value.LogHandledException(e);
+            }
+
+            return false;
+        }
+
+        public static void StartProcess(string path, string args = null)
+        {
+            using (Process processSteam = new Process())
+            {
+                processSteam.StartInfo.FileName        = path;
+                processSteam.StartInfo.Arguments       = args;
+                processSteam.Start();
+            };
         }
 
         public static async Task OpenAutoClosableToolTip(FrameworkElement target, object content, int delay = 1000)

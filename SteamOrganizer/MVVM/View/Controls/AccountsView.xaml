@@ -286,6 +286,8 @@
                                 </Button>
 
                                 <Button Style="{StaticResource TransparentButton}"
+                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.LoginCommand,Mode=OneTime}"
+                                        CommandParameter="{Binding}"
                                         Margin="5 0 0 0"
                                         Background="{DynamicResource PrimarySubBrush}">
                                     <Icon:PackIconMaterial Kind="Login" Width="13" Height="13"/>
