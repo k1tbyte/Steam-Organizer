@@ -27,7 +27,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand OpenProfileCommand { get; }
         public RelayCommand ClearSearchBar { get; }
         public AsyncRelayCommand RemoveAccountCommand { get; }
-        public RelayCommand LoginCommand { get; }
+        public AsyncRelayCommand LoginCommand { get; }
         public RelayCommand UpdateAccountsCommand { get; }
         public RelayCommand PinAccountCommand { get; }
         public RelayCommand AddAccountCommand { get; }
@@ -519,9 +519,15 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
         }
 
-        private async void OnLoginAccount(object param)
+        private async Task OnLoginAccount(object param)
         {
-            await  new Steam.LoginEmulator(param as Account).Login();
+            if(await  new Steam.LoginEmulator(param as Account).Login() != Steam.LoginEmulator.ELoginResult.Success)
+            {
+                PushNotification.Open($"Failed to login to account: \"{(param as Account).Nickname}\"");
+                return;
+            }
+
+            PushNotification.Open($"Successfully logged in to account: \"{(param as Account).Nickname}\"");
         }
 
         internal void RefreshCollection() => AccountsCollectionView.Refresh();
@@ -539,7 +545,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             ExportDatabaseCommand  = new RelayCommand(OnDatabaseExport);
             OpenAccountPageCommand = new RelayCommand((o) => App.MainWindowVM.OpenAccountPage(o as Account));
             OpenProfileCommand     = new RelayCommand((o) => (o as Account).OpenInBrowser());
-            LoginCommand           = new RelayCommand(OnLoginAccount);
+            LoginCommand           = new AsyncRelayCommand(OnLoginAccount);
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
             if (!App.Config.LoadDatabase())

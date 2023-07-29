@@ -2,6 +2,7 @@
 using FlaUI.Core.Definitions;
 using FlaUI.UIA3;
 using SteamOrganizer.Infrastructure.Parsers.Vdf;
+using SteamOrganizer.Log;
 using SteamOrganizer.MVVM.Models;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,8 @@ namespace SteamOrganizer.Infrastructure.Steam
             Success,
             SteamNotFound,
             NoAccountPassword,
-            ExternalError
+            ExternalError,
+            Busy
         }
 
         public LoginEmulator(Account acc)
@@ -68,7 +70,7 @@ namespace SteamOrganizer.Infrastructure.Steam
             return false;
         }
 
-        private async Task<bool> AttemptExecuteAction(Func<bool> action,int attempts,int timeout = 1000)
+        private async Task<bool> AttemptExecuteAction(Func<bool> action,int attempts,int timeout = 1000,bool withThrow  = false)
         {
             for (int i = 0; i < attempts; i++)
             {
@@ -78,11 +80,19 @@ namespace SteamOrganizer.Infrastructure.Steam
                 await Task.Delay(timeout);
             }
 
+            if(withThrow)
+            {
+                throw new WarnException("Failed to execute action");
+            }
+                
             return false;
         }
 
         public async Task<ELoginResult> Login()
         {
+            if (IsBusy)
+                return ELoginResult.Busy;
+
             if (string.IsNullOrEmpty(SteamExePath))
                 return ELoginResult.SteamNotFound;
 
@@ -140,15 +150,11 @@ namespace SteamOrganizer.Infrastructure.Steam
 
                 #endregion
 
-                emulator = new UIA3Automation();
+                emulator   = new UIA3Automation();
                 window     = emulator.FromHandle(loginWindowHandle);
                 Win32.BringWindowToFront(loginWindowHandle);
 
-                if(!await AttemptExecuteAction(RetrieveAutomationDocument,MaxTries,500) ||
-                   !await AttemptExecuteAction(RetrieveAutomationChildrens, MaxTries, 500))
-                {
-                    return ELoginResult.ExternalError;
-                }
+                await AttemptExecuteAction(RetrieveAutomationElements, MaxTries, 500, true);
 
                 #region If we are on the account selection page
 
@@ -174,12 +180,8 @@ namespace SteamOrganizer.Infrastructure.Steam
 
                     await Task.Delay(500);
 
-                    if (!await AttemptExecuteAction(RetrieveAutomationDocument, MaxTries, 500) ||
-                        !await AttemptExecuteAction(RetrieveAutomationChildrens, MaxTries, 500))
-                    {
-                        return ELoginResult.ExternalError;
-                    }
-                } 
+                    await AttemptExecuteAction(RetrieveAutomationElements, MaxTries, 500, true);
+                }
 
                 #endregion
 
@@ -187,8 +189,8 @@ namespace SteamOrganizer.Infrastructure.Steam
 
                 if (textBoxes.Length < 2)
                     return ELoginResult.ExternalError;
-                
-                    
+
+
                 textBoxes[0].Text = Account.Login;
                 textBoxes[1].Text = Account.Password;
 
@@ -197,30 +199,56 @@ namespace SteamOrganizer.Infrastructure.Steam
                 if (Account.Authenticator == null)
                     return ELoginResult.Success;
 
-                bool RetrieveAutomationDocument()
-                {
-                    document = window.FindFirstDescendant(o => o.ByControlType(ControlType.Document));
+                #region If 2fa is linked to the account
 
-                    if (document == null || document.FindAllChildren().Length <= 2)
+                await Task.Delay(1000);
+
+                await AttemptExecuteAction(() =>
+                {
+                    if (!RetrieveAutomationElements() || !childrens[0].AutomationId.StartsWith("Layer_2", StringComparison.OrdinalIgnoreCase))
                         return false;
 
+                    if ((textBoxes = childrens.Where(o => o.ControlType == ControlType.Edit)?.Select(o => o.AsTextBox()).ToArray()).Length != 5)
+                    {
+                        if (textBoxes.Length == 0)
+                        {
+                            childrens[childrens.Length - 2].AsButton().Invoke();
+                        }
+                        return false;
+                    }
+
                     return true;
+                }, MaxTries, 500, true);
+
+                var code = await Account.Authenticator.GenerateCode();
+                for (int i = 0; i < 5; i++)
+                {
+                    textBoxes[i].Text = code[i].ToString();
                 }
 
-                bool RetrieveAutomationChildrens()
+                #endregion
+
+                bool RetrieveAutomationElements()
                 {
+                    document = window.FindFirstDescendant(o => o.ByControlType(ControlType.Document));
                     childrens = document.FindAllChildren();
 
-                    if (childrens?.Length <= 0 || childrens[0].ActualWidth == 0 || childrens[0].ActualHeight == 0)
+                    if (document == null || childrens?.Length <= 2 || childrens[0].ActualWidth == 0 || childrens[0].ActualHeight == 0)
                         return false;
 
                     return true;
                 }
             }
+            catch(Exception e)
+            {
+                App.Logger.Value.LogHandledException(e);
+                return ELoginResult.ExternalError;
+            }
             finally
             {
                 IsBusy = false;
                 emulator?.Dispose();
+                webHelper?.Dispose();
             }
 
             return ELoginResult.Success;
