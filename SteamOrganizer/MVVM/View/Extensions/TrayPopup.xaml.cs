@@ -1,6 +1,8 @@
 ﻿using MahApps.Metro.IconPacks;
 using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
+using SteamOrganizer.MVVM.Models;
+using SteamOrganizer.MVVM.ViewModels;
 using System;
 using System.Reflection;
 using System.Windows;
@@ -108,6 +110,24 @@ namespace SteamOrganizer.MVVM.View.Extensions
         {
             TrayIcon.Dispose();
             MouseHook.Unhook();
+        }
+
+        private void Border_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is Tuple<string, ulong> id))
+                return;
+
+            var context = (App.MainWindowVM.Accounts.DataContext as AccountsViewModel);
+            if (!App.Config.Database.Exists(o => o.SteamID64.Equals(id.Item2), out Account acc))
+            {
+                App.Config.RecentlyLoggedIn.Remove(id);
+            }
+            else if(context.LoginCommand.CanExecute(acc))
+            {
+                (App.MainWindowVM.Accounts.DataContext as AccountsViewModel).LoginCommand.Execute(acc);
+            }
+
+            OnClickOutside(0, 0);
         }
     }
 }

@@ -56,6 +56,10 @@ namespace SteamOrganizer.Infrastructure
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ShowWindow(IntPtr hWnd, EShowWindow flags);
 
+        [DllImport("user32.dll", EntryPoint = "BlockInput")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool BlockInput([MarshalAs(UnmanagedType.Bool)] bool fBlockIt);
+
         #endregion
 
         #region Structs

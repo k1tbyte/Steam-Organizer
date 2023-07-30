@@ -152,6 +152,11 @@ namespace SteamOrganizer.Infrastructure.Steam
 
                 emulator   = new UIA3Automation();
                 window     = emulator.FromHandle(loginWindowHandle);
+
+                #if !DEBUG
+                Win32.BlockInput(false);
+                #endif
+
                 Win32.BringWindowToFront(loginWindowHandle);
 
                 await AttemptExecuteAction(RetrieveAutomationElements, MaxTries, 500, true);
@@ -249,6 +254,10 @@ namespace SteamOrganizer.Infrastructure.Steam
                 IsBusy = false;
                 emulator?.Dispose();
                 webHelper?.Dispose();
+
+                #if !DEBUG
+                Win32.BlockInput(true);
+                #endif
             }
 
             return ELoginResult.Success;

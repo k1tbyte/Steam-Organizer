@@ -60,7 +60,20 @@ namespace SteamOrganizer.Infrastructure
                     return true;
                 }
             }
+            return false;
+        }
 
+        public static bool Exists<T>(this ObservableCollection<T> collection, Func<T,bool> match,out int index)
+        {
+            index = -1;
+            for (int i = 0; i < collection.Count; i++)
+            {
+                if (match(collection[i]))
+                {
+                    index = i;
+                    return true;
+                }
+            }
             return false;
         }
 

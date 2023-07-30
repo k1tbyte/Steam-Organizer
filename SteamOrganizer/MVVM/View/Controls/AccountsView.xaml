@@ -280,6 +280,8 @@
                                 <Button Style="{StaticResource TransparentButton}"
                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.OpenAccountPageCommand,Mode=OneTime}"
                                         CommandParameter="{Binding}"
+                                        ToolTipService.InitialShowDelay="300"
+                                        ToolTip="Detailed information"
                                         Background="{DynamicResource PrimarySubBrush}">
                                     <Icon:PackIconMaterial Kind="Pen" Width="13" Height="13"
                                                            Foreground="{DynamicResource TertiaryForegroundBrush}"/>
@@ -287,6 +289,8 @@
 
                                 <Button Style="{StaticResource TransparentButton}"
                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.LoginCommand,Mode=OneTime}"
+                                        ToolTipService.InitialShowDelay="300"
+                                        ToolTip="Login to Steam client"
                                         CommandParameter="{Binding}"
                                         Margin="5 0 0 0"
                                         Background="{DynamicResource PrimarySubBrush}">

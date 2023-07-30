@@ -342,6 +342,11 @@ namespace SteamOrganizer.MVVM.ViewModels
             {
                 Accounts.Remove(acc);
                 App.Config.SaveDatabase();
+                if(App.Config.RecentlyLoggedIn.Exists(o => o.Item2 == acc.SteamID64,out Tuple<string,ulong> element))
+                {
+                    App.Config.RecentlyLoggedIn.Remove(element);
+                }
+                App.Config.Save();
             }
         }
 
@@ -521,13 +526,33 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async Task OnLoginAccount(object param)
         {
-            if(await  new Steam.LoginEmulator(param as Account).Login() != Steam.LoginEmulator.ELoginResult.Success)
+            var acc = param as Account;
+            if (await new Steam.LoginEmulator(acc).Login().ConfigureAwait(false) != Steam.LoginEmulator.ELoginResult.Success)
             {
-                PushNotification.Open($"Failed to login to account: \"{(param as Account).Nickname}\"");
+                PushNotification.Open($"Failed to login to account: \"{acc.Nickname}\"");
                 return;
             }
 
-            PushNotification.Open($"Successfully logged in to account: \"{(param as Account).Nickname}\"");
+            PushNotification.Open($"Successfully logged in to account: \"{acc.Nickname}\"");
+
+            if (!acc.SteamID64.HasValue)
+                return;
+
+            if (!App.Config.RecentlyLoggedIn.Exists(o => o.Item2.Equals(acc.SteamID64),out int index))
+            {
+                if (App.Config.RecentlyLoggedIn.Count + 1 > 5)
+                {
+                    App.Config.RecentlyLoggedIn.RemoveAt(App.Config.RecentlyLoggedIn.Count - 1);
+                }
+
+                App.Config.RecentlyLoggedIn.Insert(0, new Tuple<string, ulong>(acc.Nickname, acc.SteamID64.Value));
+            }
+            else if(App.Config.RecentlyLoggedIn.Count > 1 && index != 0)
+            {
+                App.Config.RecentlyLoggedIn.Move(index, 0);
+            }
+
+            App.Config.Save();
         }
 
         internal void RefreshCollection() => AccountsCollectionView.Refresh();

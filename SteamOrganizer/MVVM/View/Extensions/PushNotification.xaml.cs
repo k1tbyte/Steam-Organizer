@@ -13,6 +13,9 @@ namespace SteamOrganizer.MVVM.View.Extensions
     {
         internal static void Open(string message, Action onClickAction = null, EPushNotificationType type = EPushNotificationType.Info)
         {
+            if (App.MainWindowVM?.View?.WindowState == WindowState.Minimized && App.Config?.Notifications == false)
+                return;
+
             var window = new PushNotification();
             window.PopupMessage.Text = message;
 

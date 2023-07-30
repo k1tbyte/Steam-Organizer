@@ -44,7 +44,7 @@ namespace SteamOrganizer.Storages
 
         public ObservableCollection<Tuple<string, ulong>> RecentlyLoggedIn { get; set; } = new ObservableCollection<Tuple<string, ulong>>();
         public bool MinimizeOnStart { get; set; }
-        public bool Notifications { get; set; }
+        public bool Notifications { get; set; } = true;
 
         public long LastDatabaseUpdateTime { get; set; }
         public bool MinimizeToTray { get; set; }

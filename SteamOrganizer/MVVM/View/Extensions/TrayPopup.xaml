@@ -55,7 +55,6 @@
 
             <ListBox x:Name="RecentlyList"  Background="Transparent"
                      BorderBrush="{DynamicResource PrimaryBackgroundBrush}"
-                     SelectionMode="Single" 
                      Foreground="{DynamicResource PrimaryForegroundBrush}" 
                      d:ItemsSource="{d:SampleData ItemCount=5}">
                 <ListBox.ItemContainerStyle>
@@ -68,7 +67,7 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
 
-                                    <TextBlock Name="Border" Padding="15 7 15 7"
+                                    <TextBlock Name="Border" Padding="15 7 15 7" MouseLeftButtonDown="Border_MouseLeftButtonDown"
                                                    Text="{Binding Item1,Mode=OneWay}" />
 
                                     <ControlTemplate.Triggers>
@@ -85,7 +84,7 @@
                 </ListBox.ItemContainerStyle>
                 <ListBox.Style>
                     <Style TargetType="ListBox">
-                        <Setter Property="BorderThickness" Value="0 3 0 0"/>
+                        <Setter Property="BorderThickness" Value="0 0 0 3"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding HasItems, RelativeSource={RelativeSource Self}}" Value="False">
                                 <Setter Property="BorderThickness" Value="0 0 0 0"/>
