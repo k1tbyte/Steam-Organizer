@@ -266,6 +266,24 @@ namespace SteamOrganizer.Infrastructure
             return false;
         }
 
+        public static bool DeleteRegistryValue(string path, string valueName)
+        {
+            try
+            {
+                using (var registryKey = Registry.CurrentUser.OpenSubKey(path, true))
+                {
+                    registryKey.DeleteValue(valueName);
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                App.Logger.Value.LogHandledException(e);
+            }
+
+            return false;
+        }
+
         public static void StartProcess(string path, string args = null)
         {
             using (Process processSteam = new Process())

@@ -41,7 +41,7 @@ namespace SteamOrganizer.MVVM.Models
         public DateTime AddedDate { get; set; }
 
         [JsonIgnore]
-        public float? YearsOfService => CreatedDate == null ? null : (float?)((DateTime.Now - CreatedDate.Value).TotalDays / 365.25);
+        public float? YearsOfService => CreatedDate == null ? null : (float?)Math.Floor((DateTime.Now - CreatedDate.Value).TotalDays / 365.25 * 10) / 10;
         #endregion
 
         #region Bans

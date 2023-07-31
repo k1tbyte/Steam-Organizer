@@ -116,70 +116,80 @@
     </Style>
 
     <Style x:Key="ModernSwitchToggleButton" TargetType="{x:Type ToggleButton}">
-        <Setter Property="Background" Value="{DynamicResource PrimaryBackgroundBrush}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBackgroundBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource  PrimaryBackgroundBrush}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Width" Value="52"/>
+        <Setter Property="Width" Value="50"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Grid>
-                        <Border x:Name="Border"
+                    <Border x:Name="Border"
                                     Background="{TemplateBinding Background}"
-                                    CornerRadius="7" 
-                                    Height="13" Margin="10 0 0 0"
-                                    Width="27" HorizontalAlignment="Left"
+                                    CornerRadius="12" 
+                                    Height="25"
+                                    Width="45" HorizontalAlignment="Left"
                                     VerticalAlignment="Center" >
-                        </Border>
-                        <Ellipse x:Name="Ellipse" Height="20" Width="20"
+
+                        <Ellipse x:Name="Ellipse"
+                                     Height="14" Width="14"
+                                     StrokeThickness="0" Margin="6 0 0 0"
                                      HorizontalAlignment="Left" VerticalAlignment="Center"
                                      Fill="{DynamicResource SecondaryForegroundBrush}"
-                                     Stroke="{TemplateBinding BorderBrush}"
-                                     StrokeThickness="4"/>
+                                     Stroke="{TemplateBinding BorderBrush}"/>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CheckStates">
                                 <VisualState x:Name="Checked">
                                     <Storyboard>
                                         <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                             Storyboard.TargetProperty="Margin"
-                                                            To="26 0 0 0"
-                                                            Duration="0:0:0.2">
-                                            <ThicknessAnimation.EasingFunction>
-                                                <CircleEase EasingMode="EaseIn"/>
-                                            </ThicknessAnimation.EasingFunction>
-                                        </ThicknessAnimation>
+                                                            To="22 0 0 0" EasingFunction="{StaticResource BaseAnimationFunction}"
+                                                            Duration="0:0:0.3"/>
+
                                         <ColorAnimation  Storyboard.TargetName="Border"  Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                         Duration="0:0:0.2" To="{DynamicResource SecondarySubColor}"/>
+                                                         Duration="0:0:0.2" To="{StaticResource SecondarySubColor}"/>
+                                        <DoubleAnimation  Storyboard.TargetName="Ellipse"
+                                                              Storyboard.TargetProperty="Height"
+                                                              To="18" Duration="0:0:0.3" EasingFunction="{StaticResource BaseAnimationFunction}"/>
+                                        <DoubleAnimation  Storyboard.TargetName="Ellipse"
+                                                              Storyboard.TargetProperty="Width"
+                                                              To="18" Duration="0:0:0.3" EasingFunction="{StaticResource BaseAnimationFunction}"/>
+
                                     </Storyboard>
                                 </VisualState>
-                                <VisualState x:Name="Unchecked">
-                                    <Storyboard>
-                                        <ThicknessAnimation Storyboard.TargetName="Ellipse"
-                                                            Storyboard.TargetProperty="Margin"
-                                                            To="0 0 0 0"
-                                                            Duration="0:0:0.2">
-                                            <ThicknessAnimation.EasingFunction>
-                                                <CircleEase EasingMode="EaseIn"/>
-                                            </ThicknessAnimation.EasingFunction>
-                                        </ThicknessAnimation>
-                                    </Storyboard>
-                                </VisualState>
+                                <VisualState x:Name="Unchecked"/>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                    </Grid>
+                    </Border>
                     <ControlTemplate.Triggers>
 
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Ellipse" Property="Fill" Value="{DynamicResource TertiaryForegroundBrush}"/>
-                            <Setter TargetName="Ellipse" Property="Stroke" Value="{DynamicResource PurpleGradient}"/>
                         </Trigger>
+
+                        <EventTrigger RoutedEvent="Unchecked">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ThicknessAnimation Storyboard.TargetName="Ellipse"
+                                                            Storyboard.TargetProperty="Margin"
+                                                            To="6 0 0 0" EasingFunction="{StaticResource BaseAnimationFunction}"
+                                                            Duration="0:0:0.3"/>
+                                    <DoubleAnimation  Storyboard.TargetName="Ellipse"
+                                                              Storyboard.TargetProperty="Height"
+                                                              To="14" Duration="0:0:0.3" EasingFunction="{StaticResource BaseAnimationFunction}"/>
+                                    <DoubleAnimation  Storyboard.TargetName="Ellipse"
+                                                              Storyboard.TargetProperty="Width"
+                                                              To="14" Duration="0:0:0.3" EasingFunction="{StaticResource BaseAnimationFunction}"/>
+                                    <ColorAnimation   Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                                         Duration="0:0:0.2" To="{StaticResource PrimaryBackgroundColor}"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-    
+
 </ResourceDictionary>

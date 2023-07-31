@@ -18,7 +18,8 @@ namespace SteamOrganizer
     public sealed partial class App : Application
     {
         #region App domain info
-        private static readonly Mutex Mutex             = new Mutex(true, "SteamOrganizer");
+        internal const string Name                      = "SteamOrganizer";
+        private static readonly Mutex Mutex             = new Mutex(true, Name);
         internal static readonly Lazy<AppLogger> Logger = new Lazy<AppLogger>();
         internal static readonly WebBrowser WebBrowser  = new WebBrowser();
 
@@ -36,6 +37,7 @@ namespace SteamOrganizer
         internal static bool IsShuttingDown { get; private set; }
         internal static MainWindowViewModel MainWindowVM { get; private set; }
         internal static TrayPopup TrayMenu { get; private set; }
+        internal static event Action OnStartupFinalized;
 
 
         private static GlobalStorage _config;
@@ -78,7 +80,9 @@ namespace SteamOrganizer
             TrayMenu     = new TrayPopup();
             MainWindow   = new MainWindow();
             MainWindowVM = MainWindow.DataContext as MainWindowViewModel;
-            MainWindow.Show();
+
+            OnStartupFinalized?.Invoke();
+            OnStartupFinalized = null;
         }
 
         private void OnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)

@@ -1,6 +1,5 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
-using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.ViewModels;
 using SteamOrganizer.Storages;
 using System;
@@ -17,16 +16,17 @@ namespace SteamOrganizer.MVVM.View.Windows
         private readonly CornerRadius MainBorderCornerRadius = new CornerRadius(App.Config.MainWindowCornerRadius);
 
         private bool IsMenuExpanderWaiting = false;
-        
+        internal bool IsShown => WindowState != WindowState.Minimized && IsVisible;
 
         public MainWindow()
         {
             SourceInitialized += new EventHandler(OnWindowSourceInitialize);
             InitializeComponent();
+            SetMenuState(((double)App.Config.SideBarState) - 1d);
+            RoundOffBorders();
 
             this.DataContext = new MainWindowViewModel(this);
-            SetMenuState(((double)App.Config.SideBarState)-1d);
-            RoundOffBorders();
+            Splash.Visibility = Visibility.Collapsed;
         }
 
         #region View events
@@ -48,7 +48,7 @@ namespace SteamOrganizer.MVVM.View.Windows
 
         public new void Show()
         {
-            if (WindowState != WindowState.Minimized)
+            if (IsShown)
                 return;
 
             base.Show();

@@ -91,13 +91,13 @@ namespace SteamOrganizer.MVVM.View.Extensions
 
         private void HideShowClick(object sender, RoutedEventArgs e)
         {
-            if (App.MainWindowVM.View.WindowState == WindowState.Minimized)
+            if (App.MainWindowVM.View.IsShown)
             {
-                App.MainWindowVM.View.Show();
+                App.MainWindowVM.View.Hide();
             }
             else
             {
-                App.MainWindowVM.View.Hide();
+                App.MainWindowVM.View.Show();
             }
 
             OnClickOutside(0, 0);

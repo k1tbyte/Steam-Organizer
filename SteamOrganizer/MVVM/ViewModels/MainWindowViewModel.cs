@@ -202,6 +202,20 @@ namespace SteamOrganizer.MVVM.ViewModels
             RegistrySteamUserWatcher.Start();
             OnLocalLoggedInUserChanged(null, null);
         } 
+
+        private void HandleState()
+        {
+            if (App.Config.MinimizeOnStart)
+            {
+                using (var proc = System.Diagnostics.Process.GetCurrentProcess())
+                {
+                    proc.MaxWorkingSet = proc.MinWorkingSet;
+                }
+                return;
+            }
+
+            View.Show();
+        }
         #endregion
 
         public MainWindowViewModel(MainWindow owner)
@@ -210,13 +224,15 @@ namespace SteamOrganizer.MVVM.ViewModels
 #if !DEBUG
             Utils.InBackground(InitServices);
 #endif
-            CurrentView = Accounts =  new AccountsView();
+            CurrentView               = Accounts =  new AccountsView();
             SettingsCommand           = new RelayCommand(OnOpeningSettings);
             AccountsCommand           = new RelayCommand((o) => CurrentView = Accounts);
             OpenNotificationsCommand  = new RelayCommand(OnOpeningNotifications);
             NotificationRemoveCommand = new RelayCommand(OnNotificationRemoving);
             NotificationInvokeCommand = new RelayCommand((o) => (o as Notification)?.OnClickAction?.Invoke());
             NotificationClearAll      = new RelayCommand((o) => View.NotificationsList.Items.Clear());
+
+            HandleState();
         }
     }
 }

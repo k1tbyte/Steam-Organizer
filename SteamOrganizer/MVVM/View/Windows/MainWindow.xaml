@@ -36,6 +36,15 @@
                               Grid.Row="1"
                               Content="{Binding CurrentView, Mode=OneWay}"/>
 
+            <TextBlock Text="Loading . . ."  
+                       x:Name="Splash"
+                       Grid.Column="1" 
+                       Grid.Row="1"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       FontSize="55" FontWeight="Medium"
+                       Foreground="{DynamicResource BackgroundGrad}"/>
+
             <!--#region Notifications popup -->
             
             <Popup x:Name="Notifications"  Width="280" 
@@ -225,12 +234,22 @@
                             <Icon:PackIconMaterial Kind="Bell"/>
                         </Button>
                         <Ellipse Fill="{DynamicResource ErrorBrush}"
-                                 Visibility="{Binding IsNotificationsRead,Mode=OneWay,Converter={StaticResource ToVisibilityInvertedConverter}}"
                                  VerticalAlignment="Top"
                                  HorizontalAlignment="Right"
                                  Height="10" Width="10"
                                  Stroke="{DynamicResource SecondaryBackgroundBrush}"
-                                 Margin="0 0 0 0"/>
+                                 Margin="0 0 0 0">
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsNotificationsRead,Mode=OneWay}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
                     </Grid>
 
 

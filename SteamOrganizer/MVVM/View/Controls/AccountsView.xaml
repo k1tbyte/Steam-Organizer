@@ -380,7 +380,7 @@
                                     <TextBlock FontWeight="Bold" 
                                                Foreground="{DynamicResource SecondaryBackgroundBrush}">
                                         <Run Text="{DynamicResource acv_yearsOf}"/>
-                                        <Run Text="{Binding YearsOfService,TargetNullValue=N/A,Mode=OneWay,StringFormat={}{0:0.00}}"/>
+                                        <Run Text="{Binding YearsOfService,TargetNullValue=N/A,Mode=OneWay,StringFormat={}{0:0.0}}"/>
                                     </TextBlock>
                                 </Border>
 

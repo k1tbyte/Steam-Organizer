@@ -136,19 +136,23 @@ namespace SteamOrganizer.MVVM.ViewModels
         #endregion
 
         #region Global DB Actions
-        private void OnFailedDatabaseLoading(object sender, EventArgs e)
+        private void OnFailedDatabaseLoading()
         {
+            if(!App.MainWindowVM.View.IsShown)
+            {
+                App.MainWindowVM.View.Show();
+            }
+
             // request password for exists db
             if (System.IO.File.Exists(App.DatabasePath))
             {
-                App.MainWindowVM.OpenPopupWindow(new AuthenticationView(App.DatabasePath, OnSuccessDecrypt, true), App.FindString("av_title"), OnInstallationCanceled);
+                App.MainWindowVM.OpenPopupWindow(new AuthenticationView(App.DatabasePath, OnSuccessDecrypt, true), App.FindString("av_title"), App.Shutdown);
             }
             // request password for new db
             else if (App.Config.DatabaseKey == null)
             {
-                App.MainWindowVM.OpenPopupWindow(new AuthenticationView(), App.FindString("word_registration"), OnInstallationCanceled);
+                App.MainWindowVM.OpenPopupWindow(new AuthenticationView(), App.FindString("word_registration"), App.Shutdown);
             }
-
 
             void OnSuccessDecrypt(object content, byte[] key)
             {
@@ -158,14 +162,6 @@ namespace SteamOrganizer.MVVM.ViewModels
                     App.Config.DatabaseKey = key;
                     App.Config.Save();
                     App.Config.SaveDatabase();
-                }
-            }
-
-            void OnInstallationCanceled()
-            {
-                if (App.Config.DatabaseKey == null)
-                {
-                    App.Shutdown();
                 }
             }
         }
@@ -455,11 +451,13 @@ namespace SteamOrganizer.MVVM.ViewModels
                     if (accounts == null || accounts.Count == 0)
                         return;
 
+                    int skipped = 0;
                     foreach (var acc in accounts)
                     {
-                        if (string.IsNullOrEmpty(acc.Login))
+                        if (string.IsNullOrEmpty(acc.Login) || string.IsNullOrEmpty(acc.Nickname))
                         {
                             accounts.Remove(acc);
+                            skipped++;
                             continue;
                         }
 
@@ -472,6 +470,11 @@ namespace SteamOrganizer.MVVM.ViewModels
                     FileCryptor.Serialize(accounts, App.DatabasePath, App.Config.DatabaseKey);
                     App.Config.LoadDatabase();
                     OnPropertyChanged(nameof(Accounts));
+
+                    if(skipped != 0)
+                    {
+                        PushNotification.Open($"Some accounts ({skipped}) cannot be imported because they do not have required data");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -575,7 +578,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
             if (!App.Config.LoadDatabase())
             {
-                App.Current.MainWindow.SourceInitialized += OnFailedDatabaseLoading;
+                App.OnStartupFinalized += OnFailedDatabaseLoading;
                 return;
             }
         }
