@@ -4,6 +4,7 @@ using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -110,6 +111,35 @@ namespace SteamOrganizer.MVVM.View.Extensions
         {
             TrayIcon.Dispose();
             MouseHook.Unhook();
+        }
+
+        internal bool UpdateTrayAccounts(IEnumerable<Account> accounts)
+        {
+            int found = 0;
+            foreach (var acc in accounts)
+            {
+                if (found == 5)
+                    return true;
+
+                if (UpdateAccount(acc))
+                { 
+                    found++;
+                }
+            }
+            return found != 0;
+        }
+
+        private bool UpdateAccount(Account acc)
+        {
+            if (acc.SteamID64 == null || !App.Config.RecentlyLoggedIn.Exists(o => o.Item2 == acc.SteamID64, out int index))
+                return false;
+
+            if (!App.Config.RecentlyLoggedIn[index].Item1.Equals(acc.Nickname))
+            {
+                App.Config.RecentlyLoggedIn[index] = new Tuple<string, ulong>(acc.Nickname, acc.SteamID64.Value);
+            }
+
+            return true;
         }
 
         private void Border_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

@@ -273,6 +273,11 @@ namespace SteamOrganizer.MVVM.ViewModels
             (App.MainWindowVM.Accounts.DataContext as AccountsViewModel).RefreshCollection();
             App.Config.SaveDatabase();
             View.UpdateButton.Visibility = Visibility.Collapsed;
+
+            if (App.TrayMenu.UpdateTrayAccounts(new Account[1] { CurrentAccount }))
+            {
+                App.Config.Save();
+            }
         }
 
         private void OnLoadingAuthenticator(object param)

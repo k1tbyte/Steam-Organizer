@@ -184,23 +184,27 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             if(planned.Count == 1)
             {
-               await planned[0].RetrieveInfo(true);
-               return;
+                if (!await planned[0].RetrieveInfo(true))
+                    return;
             }
-
-            using (updateCancellation = new CancellationTokenSource())
+            else
             {
-                if (await SteamParser.ParseInfo(planned, updateCancellation.Token) == SteamParser.EParseResult.OK)
+                using (updateCancellation = new CancellationTokenSource())
                 {
+                    if (await SteamParser.ParseInfo(planned, updateCancellation.Token) != SteamParser.EParseResult.OK)
+                        return;
+
                     App.MainWindowVM.Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.DatabaseClockOutline,
-                        $"Some accounts have not been updated for a long time and were updated in the background. ({planned.Count})");
+                        $"Some accounts ({planned.Count}) have not been updated for a long time and were updated in the background");
                     App.Config.SaveDatabase();
-                    App.Config.LastDatabaseUpdateTime = Utils.GetUnixTime();
-                    App.Config.Save();
                     AccountsCollectionView.Refresh();
                 }
             }
 
+            if(App.TrayMenu.UpdateTrayAccounts(planned))
+            {
+                App.Config.Save();  
+            }
         }
 
         private async void OnUpdatingAccounts(object param)
@@ -285,6 +289,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                     App.MainWindowVM.Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.DatabaseCheckOutline, msg.ToString());
                     App.Config.SaveDatabase();
                     App.Config.LastDatabaseUpdateTime = Utils.GetUnixTime();
+                    App.TrayMenu.UpdateTrayAccounts(App.Config.Database);
                     App.Config.Save();
                     AccountsCollectionView.Refresh();
                 }
@@ -451,7 +456,8 @@ namespace SteamOrganizer.MVVM.ViewModels
                     if (accounts == null || accounts.Count == 0)
                         return;
 
-                    int skipped = 0;
+                    int skipped      = 0;
+                    var tray         = new List<Tuple<string, ulong>>();
                     foreach (var acc in accounts)
                     {
                         if (string.IsNullOrEmpty(acc.Login) || string.IsNullOrEmpty(acc.Nickname))
@@ -465,10 +471,17 @@ namespace SteamOrganizer.MVVM.ViewModels
                         {
                             acc.AddedDate = DateTime.Now;
                         }
+
+                        if(App.Config.RecentlyLoggedIn.Count > 0 && tray.Count < 5 && App.Config.RecentlyLoggedIn.Exists(o => o.Item2.Equals(acc.SteamID64)))
+                        {
+                            tray.Add(new Tuple<string, ulong>(acc.Nickname,acc.SteamID64.Value));
+                        }
                     }
 
+                    App.Config.RecentlyLoggedIn = new ObservableCollection<Tuple<string, ulong>>(tray);
                     FileCryptor.Serialize(accounts, App.DatabasePath, App.Config.DatabaseKey);
                     App.Config.LoadDatabase();
+                    App.Config.Save();
                     OnPropertyChanged(nameof(Accounts));
 
                     if(skipped != 0)
