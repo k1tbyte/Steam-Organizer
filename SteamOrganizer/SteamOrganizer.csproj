@@ -207,6 +207,9 @@
     <Compile Include="MVVM\View\Extensions\QueryPopup.xaml.cs">
       <DependentUpon>QueryPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\Extensions\SegmentedTextBox.xaml.cs">
+      <DependentUpon>SegmentedTextBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\Extensions\TemplateDecorator.xaml.cs">
       <DependentUpon>TemplateDecorator.xaml</DependentUpon>
     </Compile>
@@ -259,6 +262,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\Extensions\QueryPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Extensions\SegmentedTextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
