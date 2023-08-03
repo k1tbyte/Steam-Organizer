@@ -14,7 +14,7 @@
             MouseLeftButtonDown="HidePopup"/>
 
     <Border Background="{DynamicResource SecondaryBackgroundBrush}" d:Margin="0"
-                Margin="0 0 0 0" x:Name="PopupPresenter" Width="Auto" Height="Auto"
+                Margin="0 40 0 40" x:Name="PopupPresenter" Width="Auto" Height="Auto"
             d:Width="400"
             d:Height="300"
                 VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="5">

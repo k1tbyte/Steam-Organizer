@@ -15,6 +15,7 @@
         Background="Transparent"
         WindowState="Normal"
         MinHeight="550" MinWidth="1050"
+        Closing="Window_Closing"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="1"/>

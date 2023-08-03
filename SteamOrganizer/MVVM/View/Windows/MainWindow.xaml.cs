@@ -32,16 +32,37 @@ namespace SteamOrganizer.MVVM.View.Windows
         #region View events
 
         #region Global window events
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if(!App.Config.MinimizeOnClose)
+            {
+                App.Shutdown();
+                return;
+            }
+
+            e.Cancel = true;
+            Hide();
+        }
+
         internal void OnWindowSourceInitialize(object sender, EventArgs e)
         {
             WindowMessageHandler.AddHook(this);
         }
 
         private void OnCloseWindow(object sender, MouseButtonEventArgs e)
-            => App.Shutdown();
+        {
+            if(!App.Config.MinimizeOnClose)
+            {
+                App.Shutdown();
+            }
+            Hide();
+        }
 
         public new void Hide()
         {
+            if (!IsShown)
+                return;
+
             base.Hide();
             WindowState = WindowState.Minimized;
         }
@@ -178,7 +199,5 @@ namespace SteamOrganizer.MVVM.View.Windows
             Sidebar.CornerRadius   = SidebarCornerRadius;
             MainBorder.CornerRadius  = MainBorderCornerRadius;
         }
-        
-
     }
 }

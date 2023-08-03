@@ -9,7 +9,7 @@
       xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance viewModel:SettingsViewModel}"
-      MaxHeight="400" Width="400"
+      Width="400"
       d:Background="{DynamicResource SecondaryBackgroundBrush}"
       Margin="0 10 0 10" TextBlock.FontWeight="Medium" TextBlock.FontSize="14">
 
@@ -92,11 +92,24 @@
                                    Kind="TrayMinus" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Border>
 
-                <TextBlock Text="Minimize to system tray on startup" VerticalAlignment="Center" 
+                <TextBlock Text="Minimize to tray on startup" VerticalAlignment="Center" 
                        Foreground="{DynamicResource SecondaryForegroundBrush}"/>
 
                 <ToggleButton Style="{StaticResource ModernSwitchToggleButton}" 
                               IsChecked="{Binding Config.MinimizeOnStart}"/>
+            </DockPanel>
+
+            <DockPanel Margin="10 0 10 10">
+                <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
+                    <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                   Kind="TrayArrowDown" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+
+                <TextBlock Text="Minimize to tray on close" VerticalAlignment="Center" 
+                       Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+
+                <ToggleButton Style="{StaticResource ModernSwitchToggleButton}"
+                              IsChecked="{Binding Config.MinimizeOnClose}"/>
             </DockPanel>
 
             <DockPanel Margin="10 0 10 10">
@@ -110,6 +123,38 @@
 
                 <ToggleButton Style="{StaticResource ModernSwitchToggleButton}"
                               IsChecked="{Binding Autostartup}"/>
+            </DockPanel>
+
+            <DockPanel Margin="10 5 10 10">
+                <TextBlock Text="About program" 
+                   DockPanel.Dock="Top" Margin="1 0 0 7"
+                   Foreground="{DynamicResource SecondarySubBrush}" />
+                <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
+                    <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                   Kind="CodeTags" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+
+                <TextBlock Text="Source code" VerticalAlignment="Center" 
+                       Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+
+                <Button Style="{StaticResource TransparentButton}" Margin="10 0 0 0"
+                        HorizontalAlignment="Left" Width="25" Height="25"
+                        Background="{DynamicResource PrimarySubBrush}">
+                    <Icon:PackIconMaterial Kind="OpenInNew" Width="11" Height="11"/>
+                </Button>
+            </DockPanel>
+
+            <DockPanel Margin="10 0 10 10">
+                <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
+                    <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                   Kind="AtomVariant" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+
+                <TextBlock Text="Application Steam organizer" VerticalAlignment="Center" 
+                       Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+                <TextBlock Text="Version 2.0.0.0" VerticalAlignment="Center"
+                           FontWeight="Normal" FontSize="12" Opacity="0.5" HorizontalAlignment="Right"
+                           Foreground="{DynamicResource SecondaryForegroundBrush}"/>
             </DockPanel>
         </StackPanel>
     </ScrollViewer>

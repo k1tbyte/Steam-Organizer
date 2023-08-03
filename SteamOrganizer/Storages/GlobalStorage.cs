@@ -50,6 +50,7 @@ namespace SteamOrganizer.Storages
 
         public long LastDatabaseUpdateTime { get; set; }
         public bool MinimizeToTray { get; set; }
+        public bool MinimizeOnClose { get; set; }
         public string SteamApiKey { get; set; }
 
         /// <summary>
