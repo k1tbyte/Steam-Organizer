@@ -35,7 +35,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         internal MainWindow View { get; }
         public SettingsView Settings { get; private set; }
         public AccountPageView AccountPage { get; private set; }
-        public AccountsView Accounts { get; }
+        public AccountsView Accounts { get; private set; }
 
         private bool _isNotificationsRead = true;
         public bool IsNotificationsRead
@@ -87,9 +87,26 @@ namespace SteamOrganizer.MVVM.ViewModels
         /// Closes the popup window
         /// </summary>
         /// <param name="onClosing">The action is automatically cleared after execution</param>
-        internal void ClosePopupWindow()
+        internal void ClosePopupWindow(bool unsetCallback = false)
         {
+            if(unsetCallback)
+            {
+                View.PopupWindow.Closed = null;
+            }
+
             View.PopupWindow.IsOpen = false;
+        }
+
+        internal void OpenPinPopup(Action<byte[]> callback,bool allowCancel = false)
+        {
+            View.ContentSplash.Child      = new PincodeView(allowCancel) { OnValidated = callback };
+            View.ContentSplash.Visibility = Visibility.Visible;
+        }
+
+        internal void CloseSplashWindow()
+        {
+            View.ContentSplash.Child      = null;
+            View.ContentSplash.Visibility = Visibility.Collapsed;
         }
         #endregion
 
@@ -221,10 +238,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public MainWindowViewModel(MainWindow owner)
         {
             View                      = owner;
-#if !DEBUG
-            Utils.InBackground(InitServices);
-#endif
-            CurrentView               = Accounts =  new AccountsView();
+
             SettingsCommand           = new RelayCommand(OnOpeningSettings);
             AccountsCommand           = new RelayCommand((o) => CurrentView = Accounts);
             OpenNotificationsCommand  = new RelayCommand(OnOpeningNotifications);
@@ -232,7 +246,23 @@ namespace SteamOrganizer.MVVM.ViewModels
             NotificationInvokeCommand = new RelayCommand((o) => (o as Notification)?.OnClickAction?.Invoke());
             NotificationClearAll      = new RelayCommand((o) => View.NotificationsList.Items.Clear());
 
+            if (App.Config.PinCodeKey != null)
+            {
+                OpenPinPopup((key) => OnPincodeSuccess());
+                HandleState();
+                return;
+            }
+
             HandleState();
+            OnPincodeSuccess();
+
+            void OnPincodeSuccess()
+            {
+#if !DEBUG
+            Utils.InBackground(InitServices);
+#endif
+                CurrentView = Accounts = new AccountsView();
+            }
         }
     }
 }

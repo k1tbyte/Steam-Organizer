@@ -20,6 +20,8 @@ namespace SteamOrganizer.Storages
     [Serializable]
     internal sealed class GlobalStorage
     {
+        public const byte MaxPincodeAttempts = 5;
+
         [field: NonSerialized]
         public ObservableCollection<Account> Database { get; set; }
 
@@ -71,6 +73,9 @@ namespace SteamOrganizer.Storages
             }
         }
 
+        public byte[] PinCodeKey { get; set; }
+        public byte PinCodeRemainingAttempts { get; set; } = MaxPincodeAttempts;
+
         #region Storing/restoring
         public bool Save()
             => FileCryptor.Serialize(this, App.ConfigPath, Utils.GetLocalMachineGUID());
@@ -78,10 +83,12 @@ namespace SteamOrganizer.Storages
 
         public static GlobalStorage Load()
         {
-            if (File.Exists(App.ConfigPath) &&
-                FileCryptor.Deserialize(App.ConfigPath, out GlobalStorage result, Utils.GetLocalMachineGUID()))
+            if (File.Exists(App.ConfigPath))
             {
-                return result;
+                if(FileCryptor.Deserialize(App.ConfigPath, out GlobalStorage result, Utils.GetLocalMachineGUID()))
+                    return result;
+
+                File.Delete(App.ConfigPath);
             }
 
             return new GlobalStorage();

@@ -154,14 +154,16 @@ namespace SteamOrganizer.MVVM.ViewModels
                 App.MainWindowVM.OpenPopupWindow(new AuthenticationView(), App.FindString("word_registration"), App.Shutdown);
             }
 
+
             void OnSuccessDecrypt(object content, byte[] key)
             {
                 if (content is ObservableCollection<Account> db)
                 {
-                    App.Config.Database = db;
                     App.Config.DatabaseKey = key;
+                    App.Config.Database    = db;
                     App.Config.Save();
-                    App.Config.SaveDatabase();
+                    OnDatabaseLoaded();
+                    OnPropertyChanged(nameof(Accounts));
                 }
             }
         }

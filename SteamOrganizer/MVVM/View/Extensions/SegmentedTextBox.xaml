@@ -8,8 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <ItemsControl x:Name="Items" Margin="0 0 0 7" VerticalAlignment="Center" Background="Transparent"
                   d:ItemsSource="{d:SampleData ItemCount=4}"
-                  HorizontalAlignment="Center"
-                  ItemsSource="{Binding Segments}">
+                  HorizontalAlignment="Center">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <StackPanel Orientation="Horizontal" />
@@ -17,7 +16,7 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
             <DataTemplate>
-                <TextBox Text="{Binding Text}" Background="Transparent"
+                <TextBox  Background="Transparent"
                              BorderThickness="0" Width="90" Height="90"
                              FontSize="30" MaxLength="1" Margin="20 0 20 0"
                              PreviewTextInput="TextBox_PreviewTextInput"

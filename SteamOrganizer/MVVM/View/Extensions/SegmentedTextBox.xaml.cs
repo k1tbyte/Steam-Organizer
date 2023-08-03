@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,20 +11,15 @@ namespace SteamOrganizer.MVVM.View.Extensions
 {
     public partial class SegmentedTextBox : UserControl
     {
-        public sealed class TextBoxSegment
-        {
-            public string Text { get; set; }
-        }
-
-        public TextBoxSegment[] Segments { get; private set; }
-
+        public Action OnFieldsFilled;
+        public char[] Segments { get; set; }
         public int SegmentsCount
         {
             get => Segments.Length;
-            set => Segments = new TextBoxSegment[value];
+            set => Items.ItemsSource = Segments = new char[value];
         }
 
-        public string Text => string.Join(string.Empty, Segments.Select(o => o.Text));
+        public string Text => string.Join("",Segments);
 
         public SegmentedTextBox()
         {
@@ -29,28 +27,40 @@ namespace SteamOrganizer.MVVM.View.Extensions
             Items.DataContext = this;
         }
 
-        private void FocusContainer(int index)
+        internal TextBox GetTextBoxSegment(int index)
         {
             var container = (Items.ItemContainerGenerator.ContainerFromIndex(index) as ContentPresenter);
-            var child = VisualTreeHelper.GetChild(container, 0) as TextBox;
-            child.Focus();
+            return VisualTreeHelper.GetChild(container, 0) as TextBox;
+        }
+
+        internal void Unset()
+        {
+            Segments = new char[Segments.Length];
+            for (int i = 0; i < Segments.Length; i++)
+            {
+                var segment  = GetTextBoxSegment(i);
+                segment.Text = null;
+            }
         }
 
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             var range = (int)e.Text[0];
 
-            if ((range > 47 && range < 58) || (range > 64 && range < 91) || (range > 96 && range < 123))
+            (sender as TextBox).Text = range >= 97 ? ((char)(range - 32)).ToString() : e.Text;
+            var index = Items.ItemContainerGenerator.IndexFromContainer((sender as FrameworkElement).TemplatedParent);
+
+            Segments[index] = (sender as TextBox).Text[0];
+
+            if (Segments.All(o => o != '\0'))
             {
-                (sender as TextBox).Text       = range >= 97 ? ((char)(range - 32)).ToString() : e.Text;
-                var index = Items.ItemContainerGenerator.IndexFromContainer((sender as FrameworkElement).TemplatedParent);
-                
-                if(index != Segments.Length - 1)
-                {
-                    FocusContainer(++index);
-                }
+
+                OnFieldsFilled?.Invoke();
             }
-           
+            else if(index != Segments.Length - 1)
+            {
+                GetTextBoxSegment(++index).Focus();
+            }
             e.Handled = true;
         }
 
@@ -64,11 +74,11 @@ namespace SteamOrganizer.MVVM.View.Extensions
             var index = Items.ItemContainerGenerator.IndexFromContainer((sender as FrameworkElement).TemplatedParent);
             if (e.Key == Key.Tab || e.Key == Key.Right)
             {
-                FocusContainer(index == Segments.Length - 1 ? 0 : ++index);
+                GetTextBoxSegment(index == Segments.Length - 1 ? 0 : ++index).Focus();
             }
             else if(e.Key == Key.Left)
             {
-                FocusContainer(index == 0 ? Segments.Length - 1 : --index);
+                GetTextBoxSegment(index == 0 ? Segments.Length - 1 : --index).Focus();
             }
 
             e.Handled = true;

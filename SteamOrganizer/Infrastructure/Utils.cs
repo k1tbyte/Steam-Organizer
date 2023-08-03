@@ -15,6 +15,7 @@ using System.Linq;
 using System.Windows.Controls;
 using SteamKit2;
 using System.Diagnostics;
+using System.Windows.Media.Animation;
 
 namespace SteamOrganizer.Infrastructure
 {
@@ -192,6 +193,20 @@ namespace SteamOrganizer.Infrastructure
             img.UriSource         = new Uri(url);
             img.EndInit();
             return img;
+        }
+
+        internal static ThicknessAnimation ShakingAnimation(FrameworkElement element,double amplitude = 40d, double repeat = 3d, double timeMs = 0.1d)
+        {
+            var marginAnim = new ThicknessAnimation(element.Margin,
+                new Thickness(element.Margin.Left + amplitude, element.Margin.Top, element.Margin.Right, element.Margin.Bottom), System.TimeSpan.FromSeconds(timeMs))
+            {
+                RepeatBehavior = new RepeatBehavior(repeat),
+                AutoReverse = true,
+                EasingFunction = App.Current.FindResource("BaseAnimationFunction") as IEasingFunction
+            };
+
+            marginAnim.Freeze();
+            return marginAnim;
         }
 
         public static T FindVisualChild<T>(DependencyObject obj) where T : DependencyObject

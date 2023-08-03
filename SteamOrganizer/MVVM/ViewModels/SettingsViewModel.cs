@@ -8,6 +8,8 @@ namespace SteamOrganizer.MVVM.ViewModels
 {
     internal sealed class SettingsViewModel : ObservableObject
     {
+        public RelayCommand SetupPinCodeCommand { get; private set; }
+
         private const string RegistryAutoStartup = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
         public bool Autostartup
         {
@@ -26,6 +28,29 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
         }
 
+        public bool IsPinCodeEnabled => Config.PinCodeKey != null;
+
         public GlobalStorage Config => App.Config;
+
+        private void OnSetupingPinCode(object param)
+        {
+            App.MainWindowVM.OpenPinPopup(OnFinalizing,true);
+            return;
+
+            void OnFinalizing(byte[] key)
+            {
+                if (key != null)
+                {
+                    Config.PinCodeKey = Config.PinCodeKey == null ? key : null;
+                }
+
+                OnPropertyChanged(nameof(IsPinCodeEnabled));
+            }
+        }
+
+        public SettingsViewModel()
+        {
+            SetupPinCodeCommand = new RelayCommand(OnSetupingPinCode);
+        }
     }
 }

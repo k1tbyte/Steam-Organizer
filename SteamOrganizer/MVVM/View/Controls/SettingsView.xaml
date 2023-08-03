@@ -67,6 +67,23 @@
             </DockPanel>
 
             <DockPanel Margin="10 5 10 10">
+                <TextBlock Text="Security" 
+                   DockPanel.Dock="Top" Margin="1 0 0 7"
+                   Foreground="{DynamicResource SecondarySubBrush}" />
+                <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
+                    <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                   Kind="FormTextboxPassword" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+
+                <TextBlock Text="PIN code" VerticalAlignment="Center" 
+                       Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+
+                <ToggleButton Style="{StaticResource ModernSwitchToggleButton}"
+                              Command="{Binding SetupPinCodeCommand}"
+                              IsChecked="{Binding IsPinCodeEnabled,Mode=OneWay}"/>
+            </DockPanel>
+
+            <DockPanel Margin="10 5 10 10">
                 <TextBlock Text="System integration" 
                    DockPanel.Dock="Top" Margin="1 0 0 7"
                    Foreground="{DynamicResource SecondarySubBrush}" />

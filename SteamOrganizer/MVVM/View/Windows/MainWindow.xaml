@@ -6,6 +6,7 @@
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:ext="clr-namespace:SteamOrganizer.MVVM.View.Extensions"
         xmlns:viewModels="clr-namespace:SteamOrganizer.MVVM.ViewModels"
+        xmlns:view="clr-namespace:SteamOrganizer.MVVM.View.Controls"
         mc:Ignorable="d" 
         WindowStartupLocation="CenterScreen"
         Title="Steam Organizer"
@@ -319,12 +320,12 @@
                               Grid.RowSpan="2" 
                               CornerRadius="{Binding ElementName=MainBorder,Path=CornerRadius}"/>
 
-            <Border Grid.ColumnSpan="2"
+            <Border x:Name="ContentSplash"
+                    Grid.ColumnSpan="2"
                     Grid.RowSpan="2"
-                    CornerRadius="{Binding ElementName=MainBorder,Path=CornerRadius}"
-                    Background="{DynamicResource PrimaryBackgroundBrush}">
-                <ext:SegmentedTextBox SegmentsCount="4"/>
-            </Border>
+                    Visibility="Collapsed"
+                     CornerRadius="{Binding ElementName=MainBorder, Path=CornerRadius,Mode=OneWay}"
+                    Background="{DynamicResource PrimaryBackgroundBrush}"/>
         </Grid>
     </Border>
 </Window>

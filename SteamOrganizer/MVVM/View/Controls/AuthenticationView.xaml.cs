@@ -75,7 +75,7 @@ namespace SteamOrganizer.MVVM.View.Controls
                 password = null;
                 PassBox.Clear();
                 App.Config.Save();
-                App.MainWindowVM.ClosePopupWindow();
+                App.MainWindowVM.ClosePopupWindow(true);
                 return;
             }
 
@@ -105,7 +105,7 @@ namespace SteamOrganizer.MVVM.View.Controls
     
             // It's ok, we do what we want with the callback
             ActionIfSuccess?.Invoke(result, bytes);
-            App.MainWindowVM.ClosePopupWindow();
+            App.MainWindowVM.ClosePopupWindow(true);
         }
 
         private void OnReset(object sender, System.Windows.Input.MouseButtonEventArgs e)
