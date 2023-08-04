@@ -571,6 +571,15 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
 
             App.Config.Save();
+
+            if (App.Config.ActionAfterLogin == 1)
+            {
+                App.MainWindowVM.View.Hide();
+            }
+            else if(App.Config.ActionAfterLogin == 2)
+            {
+                App.Shutdown();
+            }
         }
 
         internal void RefreshCollection() => AccountsCollectionView.Refresh();

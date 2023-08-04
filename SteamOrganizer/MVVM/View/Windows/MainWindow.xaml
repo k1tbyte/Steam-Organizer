@@ -6,7 +6,6 @@
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:ext="clr-namespace:SteamOrganizer.MVVM.View.Extensions"
         xmlns:viewModels="clr-namespace:SteamOrganizer.MVVM.ViewModels"
-        xmlns:view="clr-namespace:SteamOrganizer.MVVM.View.Controls"
         mc:Ignorable="d" 
         WindowStartupLocation="CenterScreen"
         Title="Steam Organizer"

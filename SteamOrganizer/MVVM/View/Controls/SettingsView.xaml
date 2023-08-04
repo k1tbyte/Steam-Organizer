@@ -66,6 +66,24 @@
                 </ComboBox>
             </DockPanel>
 
+            <DockPanel Margin="10 0 10 10">
+                <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
+                    <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                   Kind="LightningBolt" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+
+                <TextBlock Text="Action after login" VerticalAlignment="Center" 
+                       Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+
+                <ComboBox Background="{DynamicResource TertiaryBackgroundBrush}"
+                  Width="120" HorizontalAlignment="Right" Height="27"
+                  SelectedIndex="{Binding Config.ActionAfterLogin,Mode=TwoWay}">
+                    <ComboBoxItem Content="Nothing"/>
+                    <ComboBoxItem Content="Hide to tray"/>
+                    <ComboBoxItem Content="Shutdown"/>
+                </ComboBox>
+            </DockPanel>
+
             <DockPanel Margin="10 5 10 10">
                 <TextBlock Text="Security" 
                    DockPanel.Dock="Top" Margin="1 0 0 7"

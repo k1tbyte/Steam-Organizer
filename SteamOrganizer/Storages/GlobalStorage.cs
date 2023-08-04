@@ -61,6 +61,13 @@ namespace SteamOrganizer.Storages
         /// </summary>
         public byte AutoUpdateDbDelay { get; set; }
 
+        /// <summary>
+        /// Nothing = 0,
+        /// Hide to tray = 1,
+        /// Shutdown = 2,
+        /// </summary>
+        public byte ActionAfterLogin { get; set; }
+
         private byte[] _databaseKey;
         public byte[] DatabaseKey
         {
