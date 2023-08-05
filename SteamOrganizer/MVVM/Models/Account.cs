@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
 using static SteamOrganizer.Helpers.SteamParser;
 using SteamKit2;
+using System.Text;
 
 namespace SteamOrganizer.MVVM.Models
 {
@@ -171,7 +172,7 @@ namespace SteamOrganizer.MVVM.Models
         {
             this.AddedDate = DateTime.Now;
             this.Nickname  = this.Login = login;
-            this.Password  = password;
+            this.Password  = Utils.XorData(password);
             this.SteamID64 = steamID64;
         }
 

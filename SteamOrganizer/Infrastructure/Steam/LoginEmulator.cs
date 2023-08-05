@@ -197,7 +197,7 @@ namespace SteamOrganizer.Infrastructure.Steam
 
 
                 textBoxes[0].Text = Account.Login;
-                textBoxes[1].Text = Account.Password;
+                textBoxes[1].Text = Utils.XorData(Account.Password);
 
                 childrens.FirstOrDefault(o => o.ControlType == ControlType.Button)?.AsButton()?.Invoke();
 

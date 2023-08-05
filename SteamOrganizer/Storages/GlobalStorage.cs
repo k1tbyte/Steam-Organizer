@@ -86,14 +86,14 @@ namespace SteamOrganizer.Storages
 
         #region Storing/restoring
         public bool Save()
-            => FileCryptor.Serialize(this, App.ConfigPath, Utils.GetLocalMachineGUID());
+            => FileCryptor.Serialize(this, App.ConfigPath,App.MachineID);
 
 
         public static GlobalStorage Load()
         {
             if (File.Exists(App.ConfigPath))
             {
-                if(FileCryptor.Deserialize(App.ConfigPath, out GlobalStorage result, Utils.GetLocalMachineGUID()))
+                if(FileCryptor.Deserialize(App.ConfigPath, out GlobalStorage result, App.MachineID))
                     return result;
 
                 File.Delete(App.ConfigPath);

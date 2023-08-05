@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using SteamKit2;
 using System.Diagnostics;
 using System.Windows.Media.Animation;
+using System.Management;
 
 namespace SteamOrganizer.Infrastructure
 {
@@ -89,6 +90,11 @@ namespace SteamOrganizer.Infrastructure
             return bytes;
         }
 
+        public static string XorData(string input)
+            => Encoding.Unicode.GetString(
+                XorData(App.EncryptionKey, Encoding.Unicode.GetBytes(input)));
+        
+
         public static byte[] HashData(byte[] data)
         {
             using (var crypt = new SHA256Managed())
@@ -108,18 +114,28 @@ namespace SteamOrganizer.Infrastructure
             }
         }
 
-        internal static byte[] GetLocalMachineGUID()
+        internal static byte[] GetMachineID()
         {
-            if (!(RegistryKey
-                .OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)?
-                .OpenSubKey(@"SOFTWARE\Microsoft\Cryptography")?
-                .GetValue("MachineGuid") is string GUID))
+            ManagementObjectCollection mbsList = null;
+            ManagementObjectSearcher mos = new ManagementObjectSearcher("Select ProcessorID From Win32_processor");
+            mbsList = mos.Get();
+            string processorId = string.Empty;
+            foreach (ManagementBaseObject mo in mbsList)
             {
-                throw new ArgumentNullException(nameof(GUID));
+                processorId = mo["ProcessorID"] as string;
+                break;
             }
 
-            return HashData(
-                XorData(App.EncryptionKey, Encoding.UTF8.GetBytes(GUID.Replace("-", "") + Encoding.UTF8.GetString(App.EncryptionKey))));
+            mos = new ManagementObjectSearcher("SELECT UUID FROM Win32_ComputerSystemProduct");
+            mbsList = mos.Get();
+            string systemId = string.Empty;
+            foreach (ManagementBaseObject mo in mbsList)
+            {
+                systemId = mo["UUID"] as string;
+                break;
+            }
+
+            return HashData(Encoding.ASCII.GetBytes($"{processorId}{systemId}"));
         }
 
         public static async void InBackground(Action action, bool longRunning = false)

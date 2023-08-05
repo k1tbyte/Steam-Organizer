@@ -39,6 +39,20 @@ namespace SteamOrganizer.MVVM.ViewModels
         public int SelectedTabIndex { get; set; }
         public bool IsPasswordShown { get; set; }
 
+        private bool _isSteamCredentialsExpanded = false;
+        public bool IsSteamCredentialsExpanded
+        {
+            get => _isSteamCredentialsExpanded;
+            set
+            {
+                if (value.Equals(_isSteamCredentialsExpanded))
+                    return;
+
+                _passwordTemp = (_isSteamCredentialsExpanded = value) ? Utils.XorData(CurrentAccount.Password) : CurrentAccount.Password;
+                OnPropertyChanged(nameof(Password));
+            }
+        }
+
         public Visibility AdditionalControlsVis { get; private set; } = Visibility.Visible;
 
 
@@ -122,6 +136,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         }
         public string SteamIDField { get; private set; }
 
+        private bool WaitingForSave = false;
         private string _passwordTemp;
         public string Password
         {
@@ -144,8 +159,19 @@ namespace SteamOrganizer.MVVM.ViewModels
                         SteamCrenetialsErr = null;
                     }
 
-                    CurrentAccount.Password = _passwordTemp;
-                    App.Config.SaveDatabase(3000);
+                    if (WaitingForSave)
+                    {
+                        return;
+                    }
+
+                    Utils.InBackground(async () =>
+                    {
+                        WaitingForSave = true;
+                        await Task.Delay(3000);
+                        CurrentAccount.Password = Utils.XorData(_passwordTemp);
+                        App.Config.SaveDatabase();
+                        WaitingForSave = false;
+                    });
                 }
             }
         }

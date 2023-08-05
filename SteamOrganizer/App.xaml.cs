@@ -17,6 +17,8 @@ namespace SteamOrganizer
 {
     public sealed partial class App : Application
     {
+        private static readonly Task BeginInitializerTask;
+
         #region App domain info
         internal const string Name                      = "SteamOrganizer";
         private static readonly Mutex Mutex             = new Mutex(true, Name);
@@ -34,6 +36,8 @@ namespace SteamOrganizer
             0x45, 0x4F, 0x74, 0x7A, 0x61, 0x6E, 0x6E, 0x58, 0x45, 0x4F, 0x53, 0x64, 0x35, 0x48, 0x47, 0x42, 0x53, 0x4A, 0x76, 0x73, 0x30, 0x6F, 0x70, 0x31, 0x42, 0x48, 0x52, 0x75, 0x76, 0x46, 0x77, 0x6C 
         };
 
+        internal static byte[] MachineID { get; private set; }
+
         internal static bool IsShuttingDown { get; private set; }
         internal static MainWindowViewModel MainWindowVM { get; private set; }
         internal static TrayPopup TrayMenu { get; private set; }
@@ -46,21 +50,27 @@ namespace SteamOrganizer
         #region App domain initializer
         static App()
         {
-            /*AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;*/
+            BeginInitializerTask = Utils.InBackgroundAwait(() =>
+            {
+                MachineID = Utils.GetMachineID();
+                CachingManager.Init();
+                ProfileOptimization.SetProfileRoot(WorkingDir);
+                ProfileOptimization.StartProfile("Startup.profile");
+            });
 
             WorkingDir      = Path.GetDirectoryName(Assembly.GetExecutingAssembly()?.Location) ?? throw new ArgumentNullException(nameof(WorkingDir));
             Version         = Assembly.GetExecutingAssembly()?.GetName()?.Version ?? throw new ArgumentNullException(nameof(Version));
             ConfigPath      = Path.Combine(WorkingDir, "config.bin");
             DatabasePath    = Path.Combine(WorkingDir, "database.bin");
             CacheFolderPath = Path.Combine(WorkingDir, ".cache");
+
         } 
         #endregion
 
         #endregion
 
         [STAThread]
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
 #if !DEBUG
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
@@ -71,10 +81,8 @@ namespace SteamOrganizer
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 
-            ProfileOptimization.SetProfileRoot(WorkingDir);
-            ProfileOptimization.StartProfile("Startup.profile");
-            CachingManager.Init();
-
+            await BeginInitializerTask;
+            BeginInitializerTask.Dispose();
             _config = GlobalStorage.Load();
 
             TrayMenu     = new TrayPopup();
