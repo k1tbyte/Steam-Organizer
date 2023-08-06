@@ -264,12 +264,14 @@ namespace SteamOrganizer.MVVM.ViewModels
         }
         #endregion
 
-        internal void StopBackgroundWorkers()
+        internal void Dispose()
         {
             if (IsSteamCodeGenerating)
             {
                 IsSteamCodeGenerating = false;
             }
+            _passwordTemp = null;
+            FullAvatar = null;
         }
         
 
@@ -349,7 +351,11 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
 
             IsSteamCodeGenerating = true;
-            for (View.TokensGenProgress.Value = 0d; IsSteamCodeGenerating; View.TokensGenProgress.Value--)
+
+            AuthenticatorCode = await CurrentAccount.Authenticator.GenerateCode();
+            OnPropertyChanged(nameof(AuthenticatorCode));
+
+            for (View.TokensGenProgress.Value = 30 - ((await SteamAuth.GetSteamTime()) % 30); IsSteamCodeGenerating; View.TokensGenProgress.Value--)
             {
                 if (View.TokensGenProgress.Value == 0d)
                 {

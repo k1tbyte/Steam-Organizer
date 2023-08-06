@@ -1,4 +1,5 @@
-﻿using SteamOrganizer.Infrastructure;
+﻿using SteamOrganizer.Helpers.Encryption;
+using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.ViewModels;
@@ -29,7 +30,7 @@ namespace SteamOrganizer.MVVM.View.Controls
 
         internal void Dispose()
         {
-            ViewModel.StopBackgroundWorkers();
+            ViewModel.Dispose();
         }
 
         private void OpenOtherLink(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -51,15 +52,18 @@ namespace SteamOrganizer.MVVM.View.Controls
 
         private async void ShowRevocationCode(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var control    = sender as FrameworkElement;
+            var control    = sender as TextBlock;
 
             if (control.Effect == null)
                 return;
 
             var effect     = control.Effect;
+            var text       = control.Text;
             control.Effect = null;
+            control.Text   = EncryptionTools.XorString(ViewModel.CurrentAccount.Authenticator.Revocation_code);
             await Task.Delay(3000);
             control.Effect = effect;
+            control.Text   = text;
         }
 
 

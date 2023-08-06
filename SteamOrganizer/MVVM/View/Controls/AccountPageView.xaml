@@ -274,7 +274,7 @@
                             <StackPanel Orientation="Horizontal" Margin="5 0 0 0">
                                 <TextBlock Text="Revocation code:" Foreground="{DynamicResource SecondaryForegroundBrush}"
                                            VerticalAlignment="Center" FontWeight="Normal" Margin="0 0 5 0"/>
-                                <TextBlock Text="{Binding CurrentAccount.Authenticator.Revocation_code,Mode=OneWay}" 
+                                <TextBlock Text="R12345" 
                                            Cursor="Hand"
                                            MouseLeftButtonDown="ShowRevocationCode"
                                            Foreground="{DynamicResource  PrimarySubBrush}"
@@ -302,10 +302,10 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Border Background="{DynamicResource BackgroundGrad}" 
-                                                CornerRadius="3" Padding="10 1 10 2"
-                                                Margin="3,0,3,0" >
+                                                CornerRadius="3" Padding="0 1 0 2"
+                                                Margin="3,0,3,0" Width="35">
                                             <TextBlock Text="{Binding}" 
-                                                   FontSize="22" 
+                                                   FontSize="22" HorizontalAlignment="Center"
                                                    Foreground="{DynamicResource PrimarySubBrush}"/>
                                         </Border>
 
@@ -544,7 +544,7 @@
 
                             <Expander Margin="15 10" x:Name="SteamExpander"
                                   Tag="{x:Static Icon:PackIconMaterialKind.Fingerprint}"
-                                  Uid="Steam credentials"  IsExpanded="{Binding IsSteamCredentialsExpanded,Mode=OneWayToSource}"
+                                  Uid="Steam credentials"  IsExpanded="{Binding IsSteamCredentialsExpanded}"
                                   OverridesDefaultStyle="True" Template="{StaticResource  ExpanderTemplate}">
                             <Expander.Header>
                                 <Icon:PackIconMaterial Kind="Alert" 
