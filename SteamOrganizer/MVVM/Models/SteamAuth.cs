@@ -14,19 +14,23 @@ namespace SteamOrganizer.MVVM.Models
     {
         #region JSON
 
+        [StringEncryption.Encryptable]
         [field: NonSerialized]
-        [JsonProperty(Required = Required.Always)]
         public string Account_name { get; set; }
 
+        [StringEncryption.Encryptable]
         [JsonProperty(Required = Required.Always)]
         public string Device_id { get; set; }
 
+        [StringEncryption.Encryptable]
         [JsonProperty(Required = Required.Always)]
         public string Identity_secret { get; set; }
 
+        [StringEncryption.Encryptable]
         [JsonProperty(Required = Required.Always)]
         public string Revocation_code { get; set; }
 
+        [StringEncryption.Encryptable]
         [JsonProperty(Required = Required.Always)]
         public string Secret_1 { get; set; }
 
@@ -36,20 +40,21 @@ namespace SteamOrganizer.MVVM.Models
         [JsonProperty(Required = Required.Always)]
         public long Server_time { get; set; }
 
+        [StringEncryption.Encryptable]
         [JsonProperty(Required = Required.Always)]
         public string Shared_secret { get; set; }
 
         [JsonProperty(Required = Required.Always)]
         public short Status { get; set; }
 
+        [StringEncryption.Encryptable]
         [JsonProperty(Required = Required.Always)]
         public string Token_gid { get; set; }
 
         [field: NonSerialized]
-        [JsonProperty(Required = Required.Always)]
         public string Uri { get; set; }
 
-        [JsonIgnore]
+        [StringEncryption.Encryptable]
         public string Secret { get; set; }
 
         [JsonConstructor]

@@ -39,7 +39,7 @@ namespace SteamOrganizer.Helpers.Encryption
             }
         }
 
-        public static T EncryptAllStrings<T>(T obj) where T : class
+        public static T EncryptAllStrings<T>(byte[] key,T obj) where T : class
         {
             var properties = obj.GetType().GetProperties();
 
@@ -49,10 +49,10 @@ namespace SteamOrganizer.Helpers.Encryption
             foreach (var property in properties)
             {
                 var value = property.GetValue(obj);
-                if (!(value is string strField))
+                if (!(value is string strField) || property.GetCustomAttribute(typeof(Encryptable)) == null)
                     continue;
 
-                EncryptionTools.ReplacementXorString(App.EncryptionKey, strField);
+                EncryptionTools.ReplacementXorString(key, strField);
             }
 
             return obj;

@@ -326,14 +326,14 @@ namespace SteamOrganizer.MVVM.ViewModels
             {
                 var auth = JsonConvert.DeserializeObject<SteamAuth>(File.ReadAllText(fileDialog.FileName));
 
-                if(auth.Account_name != CurrentAccount.Login.ToLower() || App.Config.Database.Exists(o => o.Authenticator?.Shared_secret.Equals(auth.Shared_secret) == true))
+                if(string.IsNullOrEmpty(auth.Account_name)   || auth.Account_name != CurrentAccount.Login.ToLower() || App.Config.Database.Exists(o => o.Authenticator?.Shared_secret.Equals(auth.Shared_secret) == true))
                 {
                     PushNotification.Open("Failed to load authenticator. You are trying to add an authenticator from another account, please check your steam credentials", type: PushNotification.EPushNotificationType.Error);
                     return;
                 }
 
-                auth.Secret                  = auth.Uri.Split('=')[1].Split('&')[0];
-                CurrentAccount.Authenticator = StringEncryption.EncryptAllStrings(auth);
+                auth.Secret                  = auth.Uri?.Split('=')[1].Split('&')[0];
+                CurrentAccount.Authenticator = StringEncryption.EncryptAllStrings(App.Config.DatabaseKey, auth);
                 App.Config.SaveDatabase();
                 GenerateSteamGuardTokens();
             }

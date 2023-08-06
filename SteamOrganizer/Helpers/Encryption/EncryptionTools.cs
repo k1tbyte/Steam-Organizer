@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Management;
+﻿using System.Management;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Documents;
 
 namespace SteamOrganizer.Helpers.Encryption
 {
@@ -15,34 +10,27 @@ namespace SteamOrganizer.Helpers.Encryption
         {
             fixed (char* lpstr = input)
             {
-                int j = 0;
-                for (var surrogatePair = (byte*)lpstr; j < input.Length * 2; surrogatePair++, j++)
+                for (var i = 0; i < input.Length; i++)
                 {
-                    *surrogatePair ^= key[j % key.Length];
+                    *(lpstr + i) ^= (char)key[i % key.Length];
                 }
             }
             return input;
         }
 
-        public static unsafe string XorString(byte[] key, string input)
+        public static string XorString(byte[] key, string input)
         {
-            byte[] bytes = new byte[input.Length * 2];
-            fixed (char* lpstr = input)
+            char[] chars = new char[input.Length];
+            for (var i = 0; i < input.Length; i++)
             {
-                int j = 0;
-                for (var surrogatePair = (byte*)lpstr; j < bytes.Length; surrogatePair++, j++)
-                {
-                    bytes[j] = (byte)(*surrogatePair ^ key[j % key.Length]);
-                }
-                fixed (byte* xorbytes = bytes)
-                {
-                    return new string((char*)xorbytes);
-                }
+                chars[i] = (char)(input[i] ^ key[i % key.Length]);
             }
+
+            return new string(chars);
         }
 
         public static string XorString(string input)
-            => XorString(App.EncryptionKey, input);
+            => XorString(App.Config.DatabaseKey, input);
 
 
         public static byte[] HashData(byte[] data)

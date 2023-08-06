@@ -481,12 +481,23 @@ namespace SteamOrganizer.MVVM.ViewModels
                             acc.AddedDate = DateTime.Now;
                         }
 
-                        if(encrypted && !string.IsNullOrEmpty(acc.Password))
+                        #region Encryption
+
+                        // !!! We don't need to decrypt the strings since they were already decrypted before being exported !!!
+                        if (!string.IsNullOrEmpty(acc.Password))
                         {
-                            EncryptionTools.ReplacementXorString(keyCallback, acc.Password);
+                            // Encrypt with local key
+                            EncryptionTools.ReplacementXorString(App.Config.DatabaseKey, acc.Password);
                         }
 
-                        if(App.Config.RecentlyLoggedIn.Count > 0 && tray.Count < 5 && App.Config.RecentlyLoggedIn.Exists(o => o.Item2.Equals(acc.SteamID64)))
+                        if (acc.Authenticator != null)
+                        {
+                            //Encrypt with local key
+                            StringEncryption.EncryptAllStrings(App.Config.DatabaseKey, acc.Authenticator);
+                        } 
+                        #endregion
+
+                        if (App.Config.RecentlyLoggedIn.Count > 0 && tray.Count < 5 && App.Config.RecentlyLoggedIn.Exists(o => o.Item2.Equals(acc.SteamID64)))
                         {
                             tray.Add(new Tuple<string, ulong>(acc.Nickname,acc.SteamID64.Value));
                         }

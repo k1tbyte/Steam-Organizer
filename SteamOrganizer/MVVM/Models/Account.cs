@@ -1,16 +1,14 @@
-﻿using SteamOrganizer.Helpers;
+﻿using Newtonsoft.Json;
+using SteamKit2;
+using SteamOrganizer.Helpers;
+using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using Newtonsoft.Json;
 using static SteamOrganizer.Helpers.SteamParser;
-using SteamKit2;
-using System.Text;
-using System.Runtime.Serialization;
-using SteamOrganizer.Helpers.Encryption;
 
 namespace SteamOrganizer.MVVM.Models
 {
@@ -69,7 +67,6 @@ namespace SteamOrganizer.MVVM.Models
         public string Note { get; set; }
 
         private SteamAuth _authenticator;
-        [JsonIgnore]
         public SteamAuth Authenticator 
         {
             get => _authenticator;
@@ -174,7 +171,7 @@ namespace SteamOrganizer.MVVM.Models
         {
             this.AddedDate = DateTime.Now;
             this.Nickname  = this.Login = login;
-            this.Password  = EncryptionTools.ReplacementXorString(App.EncryptionKey,password);
+            this.Password  = EncryptionTools.ReplacementXorString(App.Config.DatabaseKey,password);
             this.SteamID64 = steamID64;
         }
 
