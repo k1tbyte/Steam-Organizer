@@ -1,14 +1,11 @@
 ﻿using Newtonsoft.Json;
+using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static SteamKit2.GC.Dota.Internal.CMsgDOTABotDebugInfo;
 
 namespace SteamOrganizer.MVVM.Models
 {
@@ -16,6 +13,7 @@ namespace SteamOrganizer.MVVM.Models
     internal sealed class SteamAuth
     {
         #region JSON
+
         [field: NonSerialized]
         [JsonProperty(Required = Required.Always)]
         public string Account_name { get; set; }
@@ -109,7 +107,7 @@ namespace SteamOrganizer.MVVM.Models
                 return null;
             }
 
-            byte[] sharedSecretArray = Convert.FromBase64String(Shared_secret);
+            byte[] sharedSecretArray = Convert.FromBase64String(EncryptionTools.XorString(Shared_secret));
             byte[] timeArray         = BitConverter.GetBytes(time/CodeInterval);
 
             if(BitConverter.IsLittleEndian)

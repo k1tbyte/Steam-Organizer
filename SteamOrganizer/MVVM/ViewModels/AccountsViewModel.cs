@@ -1,6 +1,10 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using SteamOrganizer.Helpers;
+using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
@@ -12,6 +16,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -438,8 +443,10 @@ namespace SteamOrganizer.MVVM.ViewModels
             if (fileDialog.ShowDialog() != true)
                 return;
 
+            bool encrypted = false;
             if(!FileCryptor.Deserialize(fileDialog.FileName, out string json))
             {
+                encrypted = true;
                 App.MainWindowVM.OpenPopupWindow(
                     new AuthenticationView(
                         fileDialog.FileName, OnImporting, false, "Enter the password to import the database"), App.FindString("av_title"));
@@ -474,6 +481,11 @@ namespace SteamOrganizer.MVVM.ViewModels
                             acc.AddedDate = DateTime.Now;
                         }
 
+                        if(encrypted && !string.IsNullOrEmpty(acc.Password))
+                        {
+                            EncryptionTools.ReplacementXorString(keyCallback, acc.Password);
+                        }
+
                         if(App.Config.RecentlyLoggedIn.Count > 0 && tray.Count < 5 && App.Config.RecentlyLoggedIn.Exists(o => o.Item2.Equals(acc.SteamID64)))
                         {
                             tray.Add(new Tuple<string, ulong>(acc.Nickname,acc.SteamID64.Value));
@@ -499,6 +511,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
         }
 
+
         private void OnDatabaseExport(object param)
         {
             App.MainWindowVM.OpenPopupWindow(
@@ -520,10 +533,11 @@ namespace SteamOrganizer.MVVM.ViewModels
                 {
                     DefaultValueHandling = DefaultValueHandling.Ignore,
                     NullValueHandling    = NullValueHandling.Ignore,
-                    Formatting           = withCrypt ? Formatting.None : Formatting.Indented
+                    Formatting           = withCrypt ? Formatting.None : Formatting.Indented,
+                    ContractResolver     = new StringEncryption.EncryptionContractResolver()
                 });
 
-                if (string.IsNullOrEmpty(password))
+                if (!withCrypt)
                 {
                     System.IO.File.WriteAllText(fileDialog.FileName,jObject);
                 }

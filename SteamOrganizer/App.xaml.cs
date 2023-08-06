@@ -1,4 +1,5 @@
 ﻿using SteamOrganizer.Helpers;
+using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.Log;
 using SteamOrganizer.MVVM.View.Extensions;
@@ -52,7 +53,7 @@ namespace SteamOrganizer
         {
             BeginInitializerTask = Utils.InBackgroundAwait(() =>
             {
-                MachineID = Utils.GetMachineID();
+                MachineID = EncryptionTools.GetLocalMachineHash();
                 CachingManager.Init();
                 ProfileOptimization.SetProfileRoot(WorkingDir);
                 ProfileOptimization.StartProfile("Startup.profile");

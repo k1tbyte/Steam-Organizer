@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using SteamOrganizer.Helpers;
+using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
@@ -48,7 +49,8 @@ namespace SteamOrganizer.MVVM.ViewModels
                 if (value.Equals(_isSteamCredentialsExpanded))
                     return;
 
-                _passwordTemp = (_isSteamCredentialsExpanded = value) ? Utils.XorData(CurrentAccount.Password) : CurrentAccount.Password;
+                _isSteamCredentialsExpanded = value;
+                _passwordTemp = EncryptionTools.XorString(_passwordTemp);
                 OnPropertyChanged(nameof(Password));
             }
         }
@@ -167,9 +169,9 @@ namespace SteamOrganizer.MVVM.ViewModels
                     Utils.InBackground(async () =>
                     {
                         WaitingForSave = true;
-                        await Task.Delay(3000);
-                        CurrentAccount.Password = Utils.XorData(_passwordTemp);
-                        App.Config.SaveDatabase();
+                        await Task.Delay(2000);
+                        CurrentAccount.Password = IsSteamCredentialsExpanded ? EncryptionTools.XorString(_passwordTemp) : _passwordTemp;
+                        App.Config.SaveDatabase(3000);
                         WaitingForSave = false;
                     });
                 }
@@ -262,15 +264,6 @@ namespace SteamOrganizer.MVVM.ViewModels
         }
         #endregion
 
-
-        internal void ResumeBackgroundWorkers()
-        {
-            if(CurrentAccount.Authenticator != null)
-            {
-                GenerateSteamGuardTokens();
-            }
-        }
-
         internal void StopBackgroundWorkers()
         {
             if (IsSteamCodeGenerating)
@@ -338,7 +331,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 }
 
                 auth.Secret                  = auth.Uri.Split('=')[1].Split('&')[0];
-                CurrentAccount.Authenticator = auth;
+                CurrentAccount.Authenticator = StringEncryption.EncryptAllStrings(auth);
                 App.Config.SaveDatabase();
                 GenerateSteamGuardTokens();
             }
@@ -385,6 +378,11 @@ namespace SteamOrganizer.MVVM.ViewModels
             this.CurrentAccount = account;
             _passwordTemp       = CurrentAccount.Password;
             Init();
+
+            if(CurrentAccount.Authenticator != null)
+            {
+                GenerateSteamGuardTokens();
+            }
         }
     }
 }

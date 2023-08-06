@@ -144,7 +144,9 @@
     <Compile Include="Helpers\CachingManager.cs" />
     <Compile Include="Helpers\CurrencyHelper.cs" />
     <Compile Include="Helpers\DragAdorner.cs" />
-    <Compile Include="Helpers\FileCryptor.cs" />
+    <Compile Include="Helpers\Encryption\EncryptionTools.cs" />
+    <Compile Include="Helpers\Encryption\FileCryptor.cs" />
+    <Compile Include="Helpers\Encryption\StringEncryption.cs" />
     <Compile Include="Helpers\MouseHook.cs" />
     <Compile Include="Helpers\SteamIdConverter.cs" />
     <Compile Include="Infrastructure\Steam\SteamParser.cs" />

@@ -544,7 +544,7 @@
 
                             <Expander Margin="15 10" x:Name="SteamExpander"
                                   Tag="{x:Static Icon:PackIconMaterialKind.Fingerprint}"
-                                  Uid="Steam credentials"  IsExpanded="{Binding IsSteamCredentialsExpanded}"
+                                  Uid="Steam credentials"  IsExpanded="{Binding IsSteamCredentialsExpanded,Mode=OneWayToSource}"
                                   OverridesDefaultStyle="True" Template="{StaticResource  ExpanderTemplate}">
                             <Expander.Header>
                                 <Icon:PackIconMaterial Kind="Alert" 

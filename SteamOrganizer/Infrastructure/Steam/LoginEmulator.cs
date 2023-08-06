@@ -1,6 +1,7 @@
 ﻿using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
 using FlaUI.UIA3;
+using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure.Parsers.Vdf;
 using SteamOrganizer.Log;
 using SteamOrganizer.MVVM.Models;
@@ -197,7 +198,7 @@ namespace SteamOrganizer.Infrastructure.Steam
 
 
                 textBoxes[0].Text = Account.Login;
-                textBoxes[1].Text = Utils.XorData(Account.Password);
+                textBoxes[1].Text = EncryptionTools.XorString(Account.Password);
 
                 childrens.FirstOrDefault(o => o.ControlType == ControlType.Button)?.AsButton()?.Invoke();
 

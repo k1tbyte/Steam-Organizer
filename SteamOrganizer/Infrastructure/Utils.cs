@@ -79,64 +79,6 @@ namespace SteamOrganizer.Infrastructure
             return false;
         }
 
-        public static byte[] XorData(byte[] key, byte[] input)
-        {
-            var bytes = new byte[input.Length];
-            for (int i = 0; i < input.Length; i++)
-            {
-                bytes[i] = (byte)(input[i] ^ key[i % key.Length]);
-            }
-
-            return bytes;
-        }
-
-        public static string XorData(string input)
-            => Encoding.Unicode.GetString(
-                XorData(App.EncryptionKey, Encoding.Unicode.GetBytes(input)));
-        
-
-        public static byte[] HashData(byte[] data)
-        {
-            using (var crypt = new SHA256Managed())
-            {
-                return crypt.ComputeHash(data);
-            }
-        }
-
-        public static unsafe void ClearStringMemory(string str)
-        {
-            fixed (char* ptr = str)
-            {
-                for (int i = 0; i < str.Length; i++)
-                {
-                    *(ptr + i) = '\0';
-                }
-            }
-        }
-
-        internal static byte[] GetMachineID()
-        {
-            ManagementObjectCollection mbsList = null;
-            ManagementObjectSearcher mos = new ManagementObjectSearcher("Select ProcessorID From Win32_processor");
-            mbsList = mos.Get();
-            string processorId = string.Empty;
-            foreach (ManagementBaseObject mo in mbsList)
-            {
-                processorId = mo["ProcessorID"] as string;
-                break;
-            }
-
-            mos = new ManagementObjectSearcher("SELECT UUID FROM Win32_ComputerSystemProduct");
-            mbsList = mos.Get();
-            string systemId = string.Empty;
-            foreach (ManagementBaseObject mo in mbsList)
-            {
-                systemId = mo["UUID"] as string;
-                break;
-            }
-
-            return HashData(Encoding.ASCII.GetBytes($"{processorId}{systemId}"));
-        }
 
         public static async void InBackground(Action action, bool longRunning = false)
         {

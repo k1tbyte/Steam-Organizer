@@ -20,17 +20,11 @@ namespace SteamOrganizer.MVVM.View.Controls
 
         internal void OpenPage(Account account)
         {
-            if(ViewModel == null || !ViewModel.CurrentAccount.Equals(account))
-            {
-                this.DataContext             = ViewModel = new AccountPageViewModel(this,account);
-                IDComboBox.SelectedIndex     = 0;
-                SteamExpander.IsExpanded     = LinksExpander.IsExpanded = false;
-                UpdateButton.Visibility      = Visibility.Visible;
-                Scroll.ScrollToTop();
-            }
-
-            //We use an already existing data context. So we need to resume background work
-            ViewModel.ResumeBackgroundWorkers();
+            this.DataContext         = ViewModel = new AccountPageViewModel(this, account);
+            IDComboBox.SelectedIndex = 0;
+            LinksExpander.IsExpanded = false;
+            UpdateButton.Visibility  = Visibility.Visible;
+            Scroll.ScrollToTop();
         }
 
         internal void Dispose()

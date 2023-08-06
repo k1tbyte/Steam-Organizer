@@ -1,4 +1,5 @@
-﻿using SteamOrganizer.Infrastructure;
+﻿using SteamOrganizer.Helpers.Encryption;
+using SteamOrganizer.Infrastructure;
 using SteamOrganizer.Storages;
 using System;
 using System.Diagnostics;
@@ -50,7 +51,7 @@ namespace SteamOrganizer.MVVM.View.Controls
                 return;
 
             
-            var bytes = Utils.HashData(Encoding.UTF8.GetBytes(text + Encoding.UTF8.GetString(App.EncryptionKey)));
+            var bytes = EncryptionTools.HashData(Encoding.UTF8.GetBytes(text + Encoding.UTF8.GetString(App.EncryptionKey)));
             if (App.Config.PinCodeKey == null)
             {
                 if(prevBytes == null)
