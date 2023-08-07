@@ -283,6 +283,12 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async Task OnAccountUpdating(object param)
         {
+            if(!WebBrowser.IsNetworkAvailable)
+            {
+                App.WebBrowser.OpenNeedConnectionPopup();
+                return;
+            }
+
             if (!await CurrentAccount.RetrieveInfo(true))
             {
                 PushNotification.Open("An error occurred while trying to update account", type: PushNotification.EPushNotificationType.Error);
@@ -351,20 +357,34 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
 
             IsSteamCodeGenerating = true;
+            if(View.TwoFaCodeBorder.Visibility != Visibility.Visible)
+            {
+                View.TwoFaCodeBorder.Visibility = Visibility.Visible;
+            }
 
-            AuthenticatorCode = await CurrentAccount.Authenticator.GenerateCode();
-            OnPropertyChanged(nameof(AuthenticatorCode));
+            await GenerateCode();
 
             for (View.TokensGenProgress.Value = 30 - ((await SteamAuth.GetSteamTime()) % 30); IsSteamCodeGenerating; View.TokensGenProgress.Value--)
             {
                 if (View.TokensGenProgress.Value == 0d)
                 {
                     View.TokensGenProgress.Value = 30d;
-                    AuthenticatorCode = await CurrentAccount.Authenticator.GenerateCode();
-                    OnPropertyChanged(nameof(AuthenticatorCode));
+                    await GenerateCode();
                 }
 
                 await Task.Delay(1000);
+            }
+
+            async Task GenerateCode()
+            {
+                AuthenticatorCode = await CurrentAccount.Authenticator.GenerateCode();
+                if(AuthenticatorCode == null)
+                {
+                    View.TwoFaCodeBorder.Visibility = Visibility.Collapsed;
+                    IsSteamCodeGenerating           = false;
+                }
+
+                OnPropertyChanged(nameof(AuthenticatorCode));
             }
         }
 

@@ -177,6 +177,9 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async void OnLocalLoggedInUserChanged(object sender, EventArrivedEventArgs args)
         {
+            if (!WebBrowser.IsNetworkAvailable)
+                return;
+
             var activeId = SteamRegistry.GetActiveUserSteamID();
 
             if (activeId == 0)

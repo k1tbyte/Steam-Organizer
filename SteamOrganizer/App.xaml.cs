@@ -107,13 +107,14 @@ namespace SteamOrganizer
         }
 
 
+
         public static new void Shutdown()
         {
             IsShuttingDown = true;
 
             try
             {
-                if (Config.IsPropertiesChanged)
+                if (Config?.IsPropertiesChanged == true)
                     Config.Save();
 
                 TrayMenu?.Dispose();

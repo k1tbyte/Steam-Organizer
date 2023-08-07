@@ -212,6 +212,10 @@ namespace SteamOrganizer.MVVM.View.Controls
 
             if(code == null)
             {
+                if(!Infrastructure.WebBrowser.IsNetworkAvailable)
+                {
+                    App.WebBrowser.OpenNeedConnectionPopup();
+                }
                 return;
             }
 

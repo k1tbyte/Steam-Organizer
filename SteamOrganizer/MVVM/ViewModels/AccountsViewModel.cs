@@ -1,8 +1,5 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using SteamOrganizer.Helpers;
 using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
@@ -16,13 +13,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using Steam =  SteamOrganizer.Infrastructure.Steam;
+using Steam = SteamOrganizer.Infrastructure.Steam;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
@@ -231,10 +227,17 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
+            buttonSpamStub = DateTime.Now;
+
+            if (!WebBrowser.IsNetworkAvailable)
+            {
+                App.WebBrowser.OpenNeedConnectionPopup();
+                return;
+            }
+
             if ((Utils.GetUnixTime() - App.Config.LastDatabaseUpdateTime) < 21600)
             {
                 PushNotification.Open("The accounts have already been updated recently");
-                buttonSpamStub = DateTime.Now;
                 return;
             }
 
@@ -319,7 +322,21 @@ namespace SteamOrganizer.MVVM.ViewModels
             });
 
             AccountsCollectionView = CollectionViewSource.GetDefaultView(Accounts);
-            await CheckPlannedDatabaseUpdate();
+
+            if (WebBrowser.IsNetworkAvailable)
+            {
+                await CheckPlannedDatabaseUpdate();
+                return;
+            }
+
+            #region Postpone cheking for later
+            WebBrowser.OnNetworkConnection += CheckPlannedWhenConnected;
+            async void CheckPlannedWhenConnected()
+            {
+                WebBrowser.OnNetworkConnection -= CheckPlannedWhenConnected;
+                await CheckPlannedDatabaseUpdate();
+            } 
+            #endregion
         } 
         #endregion
 
@@ -443,10 +460,8 @@ namespace SteamOrganizer.MVVM.ViewModels
             if (fileDialog.ShowDialog() != true)
                 return;
 
-            bool encrypted = false;
             if(!FileCryptor.Deserialize(fileDialog.FileName, out string json))
             {
-                encrypted = true;
                 App.MainWindowVM.OpenPopupWindow(
                     new AuthenticationView(
                         fileDialog.FileName, OnImporting, false, "Enter the password to import the database"), App.FindString("av_title"));
@@ -521,7 +536,6 @@ namespace SteamOrganizer.MVVM.ViewModels
                 }
             }
         }
-
 
         private void OnDatabaseExport(object param)
         {
@@ -607,6 +621,17 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
         }
 
+        private void CancelAccountsUpdate()
+        {
+            if (updateCancellation == null)
+                return;
+
+            updateCancellation.Cancel();
+            updateCancellation = null;
+            App.MainWindowVM.Notification(
+                MahApps.Metro.IconPacks.PackIconMaterialKind.WebRemove, "Internet connection lost, some accounts were not updated");
+        }
+
         internal void RefreshCollection() => AccountsCollectionView.Refresh();
 
         public AccountsViewModel(AccountsView owner)
@@ -625,6 +650,8 @@ namespace SteamOrganizer.MVVM.ViewModels
             LoginCommand           = new AsyncRelayCommand(OnLoginAccount);
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
+            WebBrowser.OnNetworkDisconnection += CancelAccountsUpdate;
+
             if (!App.Config.LoadDatabase())
             {
                 App.OnStartupFinalized += OnFailedDatabaseLoading;

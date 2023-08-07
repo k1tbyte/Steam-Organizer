@@ -285,40 +285,42 @@
                                 </TextBlock>
                             </StackPanel>
 
-                            
-                            <Rectangle Margin="-10 10 -10 10"
+
+                            <StackPanel x:Name="TwoFaCodeBorder">
+                                <Rectangle Margin="-10 10 -10 10"
                            Height="3" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
 
-                            <ItemsControl Margin="0 0 0 7"
+                                <ItemsControl Margin="0 0 0 7"
                                           Cursor="Hand" Background="Transparent"
                                           d:ItemsSource="{d:SampleData ItemCount=1}"
                                           HorizontalAlignment="Center"
                                           ItemsSource="{Binding AuthenticatorCode,Mode=OneWay}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="{DynamicResource BackgroundGrad}" 
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{DynamicResource BackgroundGrad}" 
                                                 CornerRadius="3" Padding="0 1 0 2"
                                                 Margin="3,0,3,0" Width="35">
-                                            <TextBlock Text="{Binding}" 
+                                                <TextBlock Text="{Binding}" 
                                                    FontSize="22" HorizontalAlignment="Center"
                                                    Foreground="{DynamicResource PrimarySubBrush}"/>
-                                        </Border>
+                                            </Border>
 
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                                <ItemsControl.InputBindings>
-                                    <MouseBinding Gesture="LeftClick" 
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                    <ItemsControl.InputBindings>
+                                        <MouseBinding Gesture="LeftClick" 
                                           Command="{Binding CopyAuthCodeCommand,Mode=OneTime}"
                                           CommandParameter="{Binding RelativeSource={RelativeSource AncestorLevel=1,AncestorType=ItemsControl}}"/>
-                                </ItemsControl.InputBindings>
-                            </ItemsControl>
+                                    </ItemsControl.InputBindings>
+                                </ItemsControl>
 
-                            <ProgressBar x:Name="TokensGenProgress" Maximum="30" d:Value="20" Height="8"/>
+                                <ProgressBar x:Name="TokensGenProgress" Maximum="30" d:Value="20" Height="8"/>
+                            </StackPanel>
                         </StackPanel>
                     </Grid>
                 </Border>

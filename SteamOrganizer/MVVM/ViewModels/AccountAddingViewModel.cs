@@ -42,7 +42,11 @@ namespace SteamOrganizer.MVVM.ViewModels
             else if (!string.IsNullOrEmpty(ID))
             {
                 LoadingAnimation();
-                if ((id = await SteamIdConverter.ToSteamID64(ID.Replace(" ", ""))) == 0)
+                if(!WebBrowser.IsNetworkAvailable)
+                {
+                    View.Error.Text = "No internet connection";
+                }
+                else if ((id = await SteamIdConverter.ToSteamID64(ID.Replace(" ", ""))) == 0)
                 {
                     View.Error.Text = App.FindString("adv_err_invalid_id");
                 }

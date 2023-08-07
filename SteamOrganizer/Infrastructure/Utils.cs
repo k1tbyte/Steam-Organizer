@@ -17,6 +17,7 @@ using SteamKit2;
 using System.Diagnostics;
 using System.Windows.Media.Animation;
 using System.Management;
+using System.Net;
 
 namespace SteamOrganizer.Infrastructure
 {

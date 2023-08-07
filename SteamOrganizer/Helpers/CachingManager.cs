@@ -54,28 +54,35 @@ namespace SteamOrganizer.Helpers
 
             try
             {
-                if (!File.Exists(path))
+                if (File.Exists(path))
                 {
-                    return Application.Current.Dispatcher.Invoke(() =>
+                    using (var fstream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        var STAbitmap = CreateBitmap();
-                        STAbitmap.UriSource = new Uri($"{WebBrowser.SteamAvatarsHost}{cachedName}.jpg");
-                        STAbitmap.DownloadCompleted += OnBitmapAvatarLoaded;
-                        STAbitmap.EndInit();
-                        CachedImages.TryAdd(cachedName, STAbitmap);
-                        return STAbitmap;
-                    });
+                        var bitmap = CreateBitmap();
+                        bitmap.StreamSource = fstream;
+                        bitmap.EndInit();
+                        bitmap.Freeze();
+                        CachedImages.TryAdd(cachedName, bitmap);
+                        return bitmap;
+                    }
                 }
 
-                using (var fstream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
+                if(!WebBrowser.IsNetworkAvailable)
                 {
-                    var bitmap = CreateBitmap();
-                    bitmap.StreamSource = fstream;
-                    bitmap.EndInit();
-                    bitmap.Freeze();
-                    CachedImages.TryAdd(cachedName, bitmap);
-                    return bitmap;
+                    return GetCachedAvatar(null, decodeWidth, decodeHeight, cacheOption, size);
                 }
+
+                return Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var STAbitmap = CreateBitmap();
+                    STAbitmap.UriSource = new Uri($"{WebBrowser.SteamAvatarsHost}{cachedName}.jpg");
+                    STAbitmap.DownloadCompleted += OnBitmapAvatarLoaded;
+                    STAbitmap.EndInit();
+                    CachedImages.TryAdd(cachedName, STAbitmap);
+                    return STAbitmap;
+                });
+
+
 
             }
             catch (Exception e)
