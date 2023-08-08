@@ -1,4 +1,5 @@
-﻿using System.Management;
+﻿using FlaUI.Core.WindowsAPI;
+using System.Management;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -6,6 +7,23 @@ namespace SteamOrganizer.Helpers.Encryption
 {
     internal static class EncryptionTools
     {
+        public static unsafe void ClearString(params string[] strings)
+        {
+            foreach (var str in strings)
+            {
+                if (str == null)
+                    continue;
+
+                fixed (char* lpstr = str)
+                {
+                    for (var i = 0; i < str.Length; i++)
+                    {
+                        *(lpstr + i) = '\0';
+                    }
+                }
+            }
+
+        }
         public static unsafe string ReplacementXorString(byte[] key, string input)
         {
             if (input == null)

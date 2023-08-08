@@ -499,11 +499,8 @@ namespace SteamOrganizer.MVVM.ViewModels
                         #region Encryption
 
                         // !!! We don't need to decrypt the strings since they were already decrypted before being exported !!!
-                        if (!string.IsNullOrEmpty(acc.Password))
-                        {
-                            // Encrypt with local key
-                            EncryptionTools.ReplacementXorString(App.Config.DatabaseKey, acc.Password);
-                        }
+                        // Encrypt with local key
+                        StringEncryption.EncryptAllStrings(App.Config.DatabaseKey, acc);
 
                         if (acc.Authenticator != null)
                         {
