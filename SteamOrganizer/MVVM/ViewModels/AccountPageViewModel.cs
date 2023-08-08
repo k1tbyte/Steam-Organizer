@@ -8,8 +8,11 @@ using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
 using SteamOrganizer.MVVM.View.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,6 +28,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand OpenAccountURLCommand { get; }
         public RelayCommand OpenOtherURLCommand { get; }
         public RelayCommand BackCommand { get; }
+        public RelayCommand SelectExternalCredentialCommand { get; }
         public AsyncRelayCommand UpdateCommand { get; }
         public AsyncRelayCommand CopySteamIDCommand { get; }
         public AsyncRelayCommand CopyAuthCodeCommand { get; }
@@ -33,29 +37,21 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         #region Properties
 
+        #region Flags
         private bool IsSteamCodeGenerating = false;
-        private readonly AccountPageView View;
-
-        public BitmapImage FullAvatar { get; private set; }
+        private bool WaitingForSave = false;
+        public Visibility AdditionalControlsVis { get; private set; } = Visibility.Visible;
         public int SelectedTabIndex { get; set; }
         public bool IsPasswordShown { get; set; }
 
-        private bool _isSteamCredentialsExpanded = false;
-        public bool IsSteamCredentialsExpanded
-        {
-            get => _isSteamCredentialsExpanded;
-            set
-            {
-                if (value.Equals(_isSteamCredentialsExpanded))
-                    return;
+        #endregion
 
-                _isSteamCredentialsExpanded = value;
-                _passwordTemp = EncryptionTools.XorString(_passwordTemp);
-                OnPropertyChanged(nameof(Password));
-            }
-        }
+        #region Steam summaries
+        private readonly AccountPageView View;
+        public Account CurrentAccount { get; }
 
-        public Visibility AdditionalControlsVis { get; private set; } = Visibility.Visible;
+        public BitmapImage FullAvatar { get; private set; }
+        public string AuthenticatorCode { get; set; } = ".....";
 
 
         private string _yearImagePath;
@@ -73,14 +69,14 @@ namespace SteamOrganizer.MVVM.ViewModels
         }
 
         private string _gamesDetails;
-        public string GamesDetails 
+        public string GamesDetails
         {
             get => _gamesDetails;
             private set => SetProperty(ref _gamesDetails, value);
         }
 
         private string _gameBanDetails;
-        public string GameBanDetails 
+        public string GameBanDetails
         {
             get => _gameBanDetails;
             private set => SetProperty(ref _gameBanDetails, value);
@@ -104,16 +100,15 @@ namespace SteamOrganizer.MVVM.ViewModels
         public string SteamCrenetialsErr
         {
             get => _steamCredentialsErr;
-            set => SetProperty(ref _steamCredentialsErr, value);
+            private set => SetProperty(ref _steamCredentialsErr, value);
         }
 
         private string _appsPriceFormat;
         public string AppsPriceFormat
         {
             get => _appsPriceFormat;
-            set => SetProperty(ref _appsPriceFormat, value);
+            private set => SetProperty(ref _appsPriceFormat, value);
         }
-
 
         public int SelectedSteamIDType
         {
@@ -138,7 +133,6 @@ namespace SteamOrganizer.MVVM.ViewModels
         }
         public string SteamIDField { get; private set; }
 
-        private bool WaitingForSave = false;
         private string _passwordTemp;
         public string Password
         {
@@ -166,20 +160,102 @@ namespace SteamOrganizer.MVVM.ViewModels
                         return;
                     }
 
-                    Utils.InBackground(async () =>
+                    DelayedSave();
+
+                    async void DelayedSave()
                     {
                         WaitingForSave = true;
                         await Task.Delay(2000);
                         CurrentAccount.Password = IsSteamCredentialsExpanded ? EncryptionTools.XorString(_passwordTemp) : _passwordTemp;
                         App.Config.SaveDatabase(3000);
                         WaitingForSave = false;
-                    });
+                    }
                 }
+            }
+        } 
+        #endregion
+
+        #region External credentials stuff
+
+        private bool _isSteamCredentialsExpanded = false;
+
+        private static readonly (PropertyInfo Email, PropertyInfo Password)[] ExternalCredentialsProperties = new (PropertyInfo Email, PropertyInfo Password)[4]
+        {
+                    (typeof(Account).GetProperty(nameof(Account.SteamEmail)),typeof(Account).GetProperty(nameof(Account.SteamEmailPassword))),
+                    (typeof(Account).GetProperty(nameof(Account.UbisoftEmail)),typeof(Account).GetProperty(nameof(Account.UbisoftPassword))),
+                    (typeof(Account).GetProperty(nameof(Account.RockstarEmail)),typeof(Account).GetProperty(nameof(Account.RockstarPassword))),
+                    (typeof(Account).GetProperty(nameof(Account.EpicGamesEmail)),typeof(Account).GetProperty(nameof(Account.EpicGamesPassword))),
+        };
+
+        private (PropertyInfo Email, PropertyInfo Password) SelectedExternalCredentialsProp;
+        public bool[] ExternalCredentialsChecked { get; } = new bool[4] { true, false, false, false };
+        public bool IsSteamCredentialsExpanded
+        {
+            get => _isSteamCredentialsExpanded;
+            set
+            {
+                if (value.Equals(_isSteamCredentialsExpanded))
+                    return;
+
+                _isSteamCredentialsExpanded = value;
+                _passwordTemp = EncryptionTools.XorString(_passwordTemp);
+                OnPropertyChanged(nameof(Password));
             }
         }
 
-        public string AuthenticatorCode { get; set; } = ".....";
-        public Account CurrentAccount { get; }
+        private bool _isExternalCredentialsExpanded = false;
+        public bool IsExternalCredentialsExpanded
+        {
+            get => _isExternalCredentialsExpanded;
+            set
+            {
+                if (value.Equals(_isExternalCredentialsExpanded))
+                    return;
+
+                _isExternalCredentialsExpanded = value;
+
+                _externalEmail    = EncryptionTools.XorString(App.Config.DatabaseKey, _externalEmail);
+                _externalPassword = EncryptionTools.XorString(App.Config.DatabaseKey, _externalPassword);
+                OnPropertyChanged(nameof(ExternalEmail));
+                OnPropertyChanged(nameof(ExternalPassword));
+            }
+        }
+
+        private string _externalEmail;
+
+        public string ExternalEmail
+        {
+            get => _externalEmail;
+            set
+            {
+                if (value.Length == 0)
+                    value = null;
+
+                _externalEmail = value;
+                SelectedExternalCredentialsProp.Email.SetValue(CurrentAccount, _isExternalCredentialsExpanded ?
+                    EncryptionTools.XorString(value) : value);
+                App.Config.SaveDatabase(1000);
+            }
+        }
+
+        private string _externalPassword;
+        public string ExternalPassword
+        {
+            get => _externalPassword;
+            set
+            {
+                if (value.Length == 0)
+                    value = null;
+
+                _externalPassword = value;
+                SelectedExternalCredentialsProp.Password.SetValue(CurrentAccount, _isExternalCredentialsExpanded ?
+                    EncryptionTools.XorString(value) : value);
+                App.Config.SaveDatabase(1000);
+            }
+        }
+
+        #endregion
+
         #endregion
 
 
@@ -388,6 +464,26 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
         }
 
+        private void OnExternalCredentialSelection(object param)
+        {
+            SelectedExternalCredentialsProp = ExternalCredentialsProperties[Array.IndexOf(ExternalCredentialsChecked, true)];
+
+            _externalPassword = SelectedExternalCredentialsProp.Password.GetValue(CurrentAccount) as string;
+            _externalEmail = SelectedExternalCredentialsProp.Email.GetValue(CurrentAccount) as string;
+
+            if (_isExternalCredentialsExpanded)
+            {
+/*                EncryptionTools.ReplacementXorString(App.Config.DatabaseKey, _externalPassword);
+                EncryptionTools.ReplacementXorString(App.Config.DatabaseKey, _externalEmail);*/
+                _externalPassword = EncryptionTools.XorString(App.Config.DatabaseKey, _externalPassword);
+                _externalEmail = EncryptionTools.XorString(App.Config.DatabaseKey, _externalEmail);
+            }
+
+            OnPropertyChanged(nameof(ExternalPassword));
+            OnPropertyChanged(nameof(ExternalEmail));
+        }
+        
+
 
         public AccountPageViewModel(AccountPageView owner,Account account)
         {
@@ -400,6 +496,8 @@ namespace SteamOrganizer.MVVM.ViewModels
             UpdateCommand            = new AsyncRelayCommand(OnAccountUpdating);
             CopyAuthCodeCommand      = new AsyncRelayCommand(async (o) => await OnCopying(AuthenticatorCode, o));
 
+            SelectExternalCredentialCommand = new RelayCommand(OnExternalCredentialSelection);
+
             View                = owner;
             this.CurrentAccount = account;
             _passwordTemp       = CurrentAccount.Password;
@@ -409,6 +507,8 @@ namespace SteamOrganizer.MVVM.ViewModels
             {
                 GenerateSteamGuardTokens();
             }
+
+            OnExternalCredentialSelection(null);
         }
     }
 }

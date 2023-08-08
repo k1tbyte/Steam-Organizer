@@ -8,6 +8,9 @@ namespace SteamOrganizer.Helpers.Encryption
     {
         public static unsafe string ReplacementXorString(byte[] key, string input)
         {
+            if (input == null)
+                return null;
+
             fixed (char* lpstr = input)
             {
                 for (var i = 0; i < input.Length; i++)
@@ -20,6 +23,9 @@ namespace SteamOrganizer.Helpers.Encryption
 
         public static string XorString(byte[] key, string input)
         {
+            if (input == null)
+                return null;
+
             char[] chars = new char[input.Length];
             for (var i = 0; i < input.Length; i++)
             {

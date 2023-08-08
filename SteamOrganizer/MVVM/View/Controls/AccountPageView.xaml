@@ -67,6 +67,35 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
+        <Path x:Key="RockstarIcon"
+              Stretch="Uniform"
+              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}" 
+              Data="M370 2147 c0 -3 -16 -81 -35 -174 -20 -92 -56 -265 -80 -383 -24 -118 -71 -345 -104 -505 -33 -159 -57 -293 -55 -297 6 -10 295 -10 310 0 6 4 27 97 47 208 20 110 41 224 48 252 l11 52 133 0 c172 0 225 -11 264 -55 46 -52 57 -122 43 -268 -6 -67 -8 -138 -4 -157 l8 -35 113 -5 114 -5 89 -97 90 -97 -106 -232 c-59 -128 -105 -233 -103 -235 1 -2 101 56 222 128 121 72 227 133 235 135 9 2 89 -53 184 -127 93 -71 170 -129 172 -127 2 2 -12 100 -31 218 l-34 214 27 23 c15 12 102 75 194 140 92 64 167 120 168 124 0 4 -98 9 -217 10 l-218 3 -34 213 c-19 116 -37 212 -40 212 -4 0 -64 -97 -135 -215 l-129 -215 -112 0 -113 0 -7 38 c-3 20 -5 118 -4 217 3 183 -1 206 -45 305 -4 11 7 23 38 43 129 81 204 269 176 440 -20 126 -74 188 -199 229 -62 20 -89 22 -473 26 -225 2 -408 2 -408 -1z m708 -270 c66 -36 88 -110 57 -196 -21 -61 -58 -104 -117 -137 l-53 -29 -197 0 c-186 0 -198 1 -198 18 0 17 63 307 76 350 5 17 19 18 202 15 167 -3 202 -6 230 -21z"
+              >
+            <Path.LayoutTransform>
+                <ScaleTransform ScaleY="-1"/>
+            </Path.LayoutTransform>
+
+        </Path>
+
+        <Path x:Key="EpicGamesIcon"
+              Stretch="Uniform"
+              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}" 
+              Data="M3.537 0C2.165 0 1.66.506 1.66 1.879V18.44a4.262 4.262 0 00.02.433c.031.3.037.59.316.92.027.033.311.245.311.245.153.075.258.13.43.2l8.335 3.491c.433.199.614.276.928.27h.002c.314.006.495-.071.928-.27l8.335-3.492c.172-.07.277-.124.43-.2 0 0 .284-.211.311-.243.28-.33.285-.621.316-.92a4.261 4.261 0 00.02-.434V1.879c0-1.373-.506-1.88-1.878-1.88zm13.366 3.11h.68c1.138 0 1.688.553 1.688 1.696v1.88h-1.374v-1.8c0-.369-.17-.54-.523-.54h-.235c-.367 0-.537.17-.537.539v5.81c0 .369.17.54.537.54h.262c.353 0 .523-.171.523-.54V8.619h1.373v2.143c0 1.144-.562 1.71-1.7 1.71h-.694c-1.138 0-1.7-.566-1.7-1.71V4.82c0-1.144.562-1.709 1.7-1.709zm-12.186.08h3.114v1.274H6.117v2.603h1.648v1.275H6.117v2.774h1.74v1.275h-3.14zm3.816 0h2.198c1.138 0 1.7.564 1.7 1.708v2.445c0 1.144-.562 1.71-1.7 1.71h-.799v3.338h-1.4zm4.53 0h1.4v9.201h-1.4zm-3.13 1.235v3.392h.575c.354 0 .523-.171.523-.54V4.965c0-.368-.17-.54-.523-.54zm-3.74 10.147a1.708 1.708 0 01.591.108 1.745 1.745 0 01.49.299l-.452.546a1.247 1.247 0 00-.308-.195.91.91 0 00-.363-.068.658.658 0 00-.28.06.703.703 0 00-.224.163.783.783 0 00-.151.243.799.799 0 00-.056.299v.008a.852.852 0 00.056.31.7.7 0 00.157.245.736.736 0 00.238.16.774.774 0 00.303.058.79.79 0 00.445-.116v-.339h-.548v-.565H7.37v1.255a2.019 2.019 0 01-.524.307 1.789 1.789 0 01-.683.123 1.642 1.642 0 01-.602-.107 1.46 1.46 0 01-.478-.3 1.371 1.371 0 01-.318-.455 1.438 1.438 0 01-.115-.58v-.008a1.426 1.426 0 01.113-.57 1.449 1.449 0 01.312-.46 1.418 1.418 0 01.474-.309 1.58 1.58 0 01.598-.111 1.708 1.708 0 01.045 0zm11.963.008a2.006 2.006 0 01.612.094 1.61 1.61 0 01.507.277l-.386.546a1.562 1.562 0 00-.39-.205 1.178 1.178 0 00-.388-.07.347.347 0 00-.208.052.154.154 0 00-.07.127v.008a.158.158 0 00.022.084.198.198 0 00.076.066.831.831 0 00.147.06c.062.02.14.04.236.061a3.389 3.389 0 01.43.122 1.292 1.292 0 01.328.17.678.678 0 01.207.24.739.739 0 01.071.337v.008a.865.865 0 01-.081.382.82.82 0 01-.229.285 1.032 1.032 0 01-.353.18 1.606 1.606 0 01-.46.061 2.16 2.16 0 01-.71-.116 1.718 1.718 0 01-.593-.346l.43-.514c.277.223.578.335.9.335a.457.457 0 00.236-.05.157.157 0 00.082-.142v-.008a.15.15 0 00-.02-.077.204.204 0 00-.073-.066.753.753 0 00-.143-.062 2.45 2.45 0 00-.233-.062 5.036 5.036 0 01-.413-.113 1.26 1.26 0 01-.331-.16.72.72 0 01-.222-.243.73.73 0 01-.082-.36v-.008a.863.863 0 01.074-.359.794.794 0 01.214-.283 1.007 1.007 0 01.34-.185 1.423 1.423 0 01.448-.066 2.006 2.006 0 01.025 0zm-9.358.025h.742l1.183 2.81h-.825l-.203-.499H8.623l-.198.498h-.81zm2.197.02h.814l.663 1.08.663-1.08h.814v2.79h-.766v-1.602l-.711 1.091h-.016l-.707-1.083v1.593h-.754zm3.469 0h2.235v.658h-1.473v.422h1.334v.61h-1.334v.442h1.493v.658h-2.255zm-5.3.897l-.315.793h.624zm-1.145 5.19h8.014l-4.09 1.348z"
+        />
+
+        <Path x:Key="UbisoftIcon"
+              Stretch="Uniform"
+              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}" 
+              Data="M11.41,2C5.21,2 2.53,7.53 2.53,7.53L3.32,8.09C3.32,8.09 2.33,10 2.35,12.4C2.35,17.34 6.29,22 12.07,22C17.33,22 21.67,17.71 21.67,12.41C21.67,5.5 16.31,2 11.41,2M11.47,3.69C16.31,3.69 20.07,7.6 20.07,12.14C20.07,16.95 16.45,20.3 12.23,20.3C9.13,20.3 6.33,17.94 6.33,14.7C6.33,12.82 7.32,11.5 8.44,10.82L8.6,11C8.3,11.24 7.43,12.64 7.43,14C7.43,16.56 9.43,18.33 11.95,18.33C15.16,18.33 17.3,15.59 17.3,12.41C17.3,8.71 14.03,5.57 10.1,5.57C7.93,5.57 6.09,6.5 5.03,7.33L4.86,7.18C6.25,5.04 8.65,3.69 11.47,3.69M10,7.23C12.53,7.23 14.97,8.89 15.59,11.25L15.36,11.33C14.27,9.88 12.47,8.68 10.35,8.68C6.44,8.68 4.39,12.23 4.69,15.19L4.46,15.28C4.46,15.28 4.03,14.33 4.03,13.2C4.03,9.93 6.71,7.23 10,7.23M11.68,11.33C12.86,11.33 13.81,12.3 13.81,13.44C13.81,14.38 13.21,14.94 13.21,14.94L13.92,15.45C13.92,15.45 13.21,16.57 11.76,16.57C10.37,16.57 9.13,15.44 9.13,13.93C9.13,12.38 10.47,11.33 11.68,11.33Z"
+        />
+
+        <Path x:Key="EmailIcon"
+              Stretch="Uniform"
+              Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}" 
+              Data="M19 4H5A3 3 0 0 0 2 7V17a3 3 0 0 0 3 3H19a3 3 0 0 0 3-3V7A3 3 0 0 0 19 4Zm-.41 2-5.88 5.88a1 1 0 0 1-1.42 0L5.41 6ZM20 17a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7.41l5.88 5.88a3 3 0 0 0 4.24 0L20 7.41Z"
+        />
+        
     </Grid.Resources>
 
     <ScrollViewer x:Name="Scroll">
@@ -582,27 +611,66 @@
 
                         <Expander Margin="15 10" x:Name="LinksExpander"
                                   Tag="{x:Static Icon:PackIconMaterialKind.LinkVariant}"
+                                  IsExpanded="{Binding IsExternalCredentialsExpanded}"
                                   Uid="Credentials of external links"
                                   OverridesDefaultStyle="True" Template="{StaticResource  ExpanderTemplate}">
-                            <StackPanel  HorizontalAlignment="Left" Width="300" TextBlock.FontWeight="Normal">
+                                <Grid TextBlock.FontWeight="Normal">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="300"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
 
-                                <ext:TemplateDecorator Title="E-mail adress" Icon="{x:Static Icon:PackIconMaterialKind.At}"
+                                    <ext:TemplateDecorator Title="E-mail adress" Icon="{x:Static Icon:PackIconMaterialKind.At}"
                                                        Margin="0 0 0 10" >
                                     <TextBox Style="{StaticResource ModernTextBox}" Height="35"
-                                             TextInput="AutoSaveTextInput" MaxLength="50"
+                                             MaxLength="50"
+                                             Text="{Binding ExternalEmail,Mode=TwoWay,UpdateSourceTrigger=LostFocus}"
                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
                                 </ext:TemplateDecorator>
 
-                                <ext:TemplateDecorator Title="Pasword" Icon="{x:Static Icon:PackIconMaterialKind.KeyLink}">
-                                    <ext:PasswordBox CornerRadius="5" LostFocus="PasswordBox_LostFocus"
+                                    <ext:TemplateDecorator Title="Pasword" Icon="{x:Static Icon:PackIconMaterialKind.KeyLink}"
+                                                       DockPanel.Dock="Bottom" Grid.Row="1">
+                                    <ext:PasswordBox CornerRadius="5"
                                                      MaxLength="50"
+                                                     Password="{Binding ExternalPassword,Mode=TwoWay,UpdateSourceTrigger=LostFocus}"
                                                      IsPasswordShown="{Binding IsPasswordShown}"
                                                      SelectionBrush="{DynamicResource LightBlueGrad}"
                                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
                                 </ext:TemplateDecorator>
-                            </StackPanel>
+
+                                    <WrapPanel MaxWidth="100" 
+                                               Grid.Column="1" 
+                                               Grid.RowSpan="2"
+                                               Margin="0 0 25 0"
+                                               VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <RadioButton Style="{StaticResource ZoomRadioButton}" Content="{StaticResource EmailIcon}" 
+                                                     Margin="0 20 10 10" 
+                                                     IsChecked="{Binding ExternalCredentialsChecked[0]}"
+                                                     Command="{Binding SelectExternalCredentialCommand}"
+                                                     ToolTip="Steam EMail"/>
+                                        <RadioButton Style="{StaticResource ZoomRadioButton}" Content="{StaticResource UbisoftIcon}" 
+                                                     Margin="0 20 0 10" 
+                                                     IsChecked="{Binding ExternalCredentialsChecked[1]}"
+                                                     Command="{Binding SelectExternalCredentialCommand}"
+                                                     ToolTip="Ubisoft account"/>
+                                        <RadioButton Style="{StaticResource ZoomRadioButton}" Content="{StaticResource RockstarIcon}" 
+                                                     Margin="0 0 10 0" 
+                                                     IsChecked="{Binding ExternalCredentialsChecked[2]}"
+                                                     Command="{Binding SelectExternalCredentialCommand}"
+                                                     ToolTip="Rockstar games account"/>
+                                        <RadioButton Style="{StaticResource ZoomRadioButton}" Content="{StaticResource EpicGamesIcon}" 
+                                                     Margin="0 0 0 0" 
+                                                     IsChecked="{Binding ExternalCredentialsChecked[3]}"
+                                                     Command="{Binding SelectExternalCredentialCommand}"
+                                                     ToolTip="Epic games account"/>
+                                    </WrapPanel>
+                                </Grid>
                         </Expander>
                         <!--#endregion-->
 

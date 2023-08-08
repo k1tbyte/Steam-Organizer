@@ -26,6 +26,29 @@ namespace SteamOrganizer.MVVM.Models
         [StringEncryption.Encryptable]
         public string Password { get; set; }
 
+        [StringEncryption.Encryptable]
+        public string SteamEmail { get; set; }
+
+        [StringEncryption.Encryptable]
+        public string SteamEmailPassword { get; set; }
+
+        [StringEncryption.Encryptable]
+        public string RockstarEmail { get; set; }
+
+        [StringEncryption.Encryptable]
+        public string RockstarPassword { get; set; }
+
+        [StringEncryption.Encryptable]
+        public string UbisoftEmail { get; set; }
+
+        [StringEncryption.Encryptable]
+        public string UbisoftPassword { get; set; }
+
+        [StringEncryption.Encryptable]
+        public string EpicGamesEmail { get; set; }
+
+        [StringEncryption.Encryptable]
+        public string EpicGamesPassword { get; set; }
 
         #region Summaries
         [JsonIgnore]
