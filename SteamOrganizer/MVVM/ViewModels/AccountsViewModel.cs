@@ -178,9 +178,18 @@ namespace SteamOrganizer.MVVM.ViewModels
                 {
                     if (Utils.Presentation.OpenQueryMessageBox(App.FindString("av_exportEncryptMsg"), App.FindString("av_exportEncryptTitle")))
                     {
-                        Config.Serialize(JsonConvert.SerializeObject(Config.Accounts), fileDialog.FileName, Config.Properties.UserCryptoKey);
+                        Config.Serialize(JsonConvert.SerializeObject(Config.Accounts), fileDialog.FileName.Replace(".sadb", ".sodb"), Config.Properties.UserCryptoKey);
                     }
-                    else Utils.Common.BinarySerialize(JsonConvert.SerializeObject(Config.Accounts), fileDialog.FileName);
+                    else
+                    {
+                        Utils.Common.BinarySerialize(JsonConvert.SerializeObject(Config.Accounts,
+                           new JsonSerializerSettings
+                           {
+                               NullValueHandling = NullValueHandling.Ignore,
+                               DefaultValueHandling = DefaultValueHandling.Ignore
+                           }), fileDialog.FileName
+                        );
+                    }
                     
                 }
             });

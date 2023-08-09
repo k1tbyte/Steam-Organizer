@@ -52,19 +52,39 @@ namespace SteamOrganizer.Infrastructure.Models
         public string ProfileURL { get; set; }
         public bool IsProfilePublic { get; set; }
         public DateTime AccCreatedDate { get; set; }
+
+        [JsonIgnore]
         public string CreatedDateImageUrl { get; set; }
+
+        [JsonIgnore]
         public bool ContainParseInfo { get; set; }
+
+        [JsonProperty("LastUpdateDate")]
         public DateTime LastUpdateTime { get; set; }
 
+        [JsonIgnore]
         public UInt32? SteamId32     => SteamIDConverter.SteamID64To32(SteamId64);
+       
+        [JsonIgnore]
         public string SteamID        => SteamIDConverter.SteamID64ToSteamID(SteamId64);
+       
+        [JsonIgnore]
         public string SteamID3       => SteamIDConverter.SteamID64ToSteamID3(SteamId64);
+       
+        [JsonIgnore]
         public string FiveM          => SteamIDConverter.SteamID64ToFiveM(SteamId64);
+      
+        [JsonIgnore]
         public string CsgoFriendCode => SteamIDConverter.SteamID64ToCsgoFriendCode(SteamId64);
+       
+        [JsonIgnore]
         public string AvatarFull     => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_full.jpg" : "/Images/default_steam_profile.png";
+        
+        [JsonIgnore] 
         public string AvatarMedium   => ContainParseInfo ? $"https://avatars.akamai.steamstatic.com/{AvatarHash}_medium.jpg" : "/Images/default_steam_profile.png";
 
         [field: NonSerialized]
+        [JsonIgnore]
         public int Index { get; set; }
         #endregion
 
@@ -82,21 +102,38 @@ namespace SteamOrganizer.Infrastructure.Models
         public int? GamesPlayedCount { get; set; }
         public int? HoursOnPlayed { get; set; }
         public string CountGamesImageUrl { get; set; }
+
+        [JsonIgnore]
         public CSGOStats CSGOStats { get; set; }
         #endregion
 
         #region Other info properties
         public string Note { get; set; } = "";
 
+        [JsonProperty("SteamEmail")]
         public string EmailLogin { get; set; }
+
+        [JsonProperty("SteamEmailPassword ")]
         public string EmailPass { get; set; }
+
+        [JsonProperty("RockstarEmail")]
         public string RockstarEmail { get; set; }
+
+        [JsonProperty("RockstarPassword")]
         public string RockstarPass { get; set; }
+
+        [JsonProperty("UbisoftEmail")]
         public string UplayEmail { get; set; }
+
+        [JsonProperty("UbisoftPassword")]
         public string UplayPass { get; set; }
         public string OriginEmail { get; set; }
         public string OriginPass { get; set; }
+
+        [JsonProperty("EpicGamesEmail")]
         public string EpicGamesEmail { get; set; }
+
+        [JsonProperty("EpicGamesPassword")]
         public string EpicGamesPass { get; set; }
         public string AuthenticatorPath { get; set; }
         #endregion
