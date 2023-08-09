@@ -1,3 +1,8 @@
+VERSION 1.0.3.0 
+
+  ● Added export modes (with and without encryption)
+  ● Added backward compatibility for the new version of Steam organizer
+
 VERSION 1.0.2.0 
 
   ● Fixed automatic steam login
