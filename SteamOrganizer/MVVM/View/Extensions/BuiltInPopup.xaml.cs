@@ -1,5 +1,7 @@
-﻿using SteamOrganizer.Infrastructure;
+﻿using SteamKit2.Internal;
+using SteamOrganizer.Infrastructure;
 using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -18,9 +20,11 @@ namespace SteamOrganizer.MVVM.View.Extensions
         public static readonly DependencyProperty CornerRadiusProperty =
           DependencyProperty.Register("CornerRadius", typeof(CornerRadius), typeof(BuiltInPopup));
 
+        internal readonly SemaphoreSlim OpenedSemaphore = new SemaphoreSlim(1, 1);
+
         private DoubleAnimation OpeningAnimation;
         private DoubleAnimation ClosingAnimation;
-        private bool locked = false;
+
 
         public bool IsOpen
         {
@@ -29,9 +33,14 @@ namespace SteamOrganizer.MVVM.View.Extensions
             {
                 if (value)
                 {
+                    if(OpenedSemaphore.CurrentCount == 0)
+                        return;
+                    
+
                     Visibility            = Visibility.Visible;
                     cancel.Focus();
                     PopupPresenter.BeginAnimation(OpacityProperty, OpeningAnimation);
+                    OpenedSemaphore.Wait();
                 }
                 else
                 {
@@ -62,7 +71,7 @@ namespace SteamOrganizer.MVVM.View.Extensions
             Closed?.Invoke();
             PopupContent = null;
             Closed       = null;
-            locked       = false;
+            OpenedSemaphore.Release();
         }
 
         public BuiltInPopup()
@@ -99,10 +108,10 @@ namespace SteamOrganizer.MVVM.View.Extensions
 
         private void HidePopup(object sender, MouseButtonEventArgs e)
         {
-            if (locked) return;
+            if (OpenedSemaphore.CurrentCount == 1)
+                return;
 
             IsOpen = false;
-            locked = true;
         }
     }
 }

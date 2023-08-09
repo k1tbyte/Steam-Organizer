@@ -30,6 +30,9 @@ namespace SteamOrganizer.Infrastructure.Steam
         internal static string GetSteamExePath()
             => Utils.GetUserRegistryValue(@"Software\\Valve\\Steam", "SteamExe") as string;
 
+        internal static string GetSteamDirectoryPath()
+            => Utils.GetUserRegistryValue(@"Software\\Valve\\Steam", "SteamPath") as string;
+
         internal static async Task<bool> ShutdownSteam(int maxAttempts = 15,string exePath = null)
         {
             if (Process.GetProcessesByName("Steam")?.Length == 0)

@@ -72,10 +72,15 @@ namespace SteamOrganizer.MVVM.ViewModels
         #endregion
 
         #region Popup window api
-        internal void OpenPopupWindow(object content, string title = null, Action onClosing = null)
+        internal async void OpenPopupWindow(object content, string title = null, Action onClosing = null)
         {
             if (!View.IsLoaded)
                 View.Show();
+
+            if(View.PopupWindow.OpenedSemaphore.CurrentCount == 0 && await View.PopupWindow.OpenedSemaphore.WaitAsync(3000))
+            {
+                View.PopupWindow.OpenedSemaphore.Release();
+            }
 
             View.PopupWindow.PopupContent = content;
             View.PopupWindow.Closed = onClosing;

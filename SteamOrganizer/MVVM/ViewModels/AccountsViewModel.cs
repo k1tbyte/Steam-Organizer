@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using SteamOrganizer.Helpers;
 using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
+using SteamOrganizer.Infrastructure.Parsers.Vdf;
+using SteamOrganizer.Infrastructure.Steam;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
@@ -18,6 +20,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using static SteamKit2.GC.CSGO.Internal.CMsgGCCStrike15_v2_MatchmakingGC2ClientUpdate;
 using Steam = SteamOrganizer.Infrastructure.Steam;
 
 namespace SteamOrganizer.MVVM.ViewModels
@@ -152,9 +155,8 @@ namespace SteamOrganizer.MVVM.ViewModels
             // request password for new db
             else if (App.Config.DatabaseKey == null)
             {
-                App.MainWindowVM.OpenPopupWindow(new AuthenticationView(), App.FindString("word_registration"), App.Shutdown);
+                App.MainWindowVM.OpenPopupWindow(new AuthenticationView(CheckLocalAccunts), App.FindString("word_registration"), App.Shutdown);
             }
-
 
             void OnSuccessDecrypt(object content, byte[] key)
             {
@@ -166,6 +168,52 @@ namespace SteamOrganizer.MVVM.ViewModels
                     OnDatabaseLoaded();
                     OnPropertyChanged(nameof(Accounts));
                 }
+            }
+        }
+
+        private void CheckLocalAccunts()
+        {
+            try
+            {
+                var steamPath = SteamRegistry.GetSteamDirectoryPath();
+
+                if (steamPath == null || steamPath.Length == 0 || !WebBrowser.IsNetworkAvailable)
+                    return;
+
+                var steamCfg = new VdfDeserializer(System.IO.File.ReadAllText($"{steamPath}\\config\\config.vdf")).Deserialize() as VdfTable;
+                var accountsTable = steamCfg
+                    .TryGetTable("Software")
+                    .TryGetTable("valve")
+                    .TryGetTable("Steam")
+                    .TryGetTable("Accounts");
+
+                if (accountsTable == null || accountsTable.Count == 0)
+                    return;
+
+                var uniqueAccs = new Dictionary<ulong, string>();
+                foreach (var item in accountsTable.Cast<VdfTable>())
+                {
+                    var id64 = (ulong)(item[0] as VdfDecimal).Content;
+                    if (uniqueAccs.ContainsKey(id64))
+                        continue;
+
+                    uniqueAccs.Add(id64, item.Name);
+                }
+
+                App.MainWindowVM.OpenPopupWindow(
+                    new QueryModal(
+                        $"Previously authorized accounts have been found on your computer ({uniqueAccs.Count}). Passwords will need to be entered manually after import. Import these accounts?",
+                        () =>
+                        {
+                            App.Config.Database             = new ObservableCollection<Account>(uniqueAccs.Select(o => new Account(o.Value, null, o.Key)));
+                            AccountsCollectionView          = CollectionViewSource.GetDefaultView(Accounts);
+                            OnPropertyChanged(nameof(Accounts));
+                            OnUpdatingAccounts(null);
+                        }),"Accounts import");
+            }
+            catch(Exception e)
+            {
+                App.Logger.Value.LogHandledException(e);
             }
         }
 
@@ -312,14 +360,10 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async void OnDatabaseLoaded()
         {
-            //We load images in another thread so as not to block the UI thread
-            await Utils.InBackgroundAwait(() =>
-            {
-                foreach (var account in Accounts)
-                {
-                    account.LoadImage();    
-                }
-            });
+            // We load images in another thread so as not to block the UI thread
+            // !!! Note !!!
+            // If without in background we will catch deadlock o_O (if at least one image needs to be downloaded)
+            await Utils.InBackgroundAwait(() => Parallel.ForEach(Accounts, acc => acc.LoadImage()));
 
             AccountsCollectionView = CollectionViewSource.GetDefaultView(Accounts);
 

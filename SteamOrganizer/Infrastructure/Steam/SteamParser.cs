@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SteamKit2;
-using SteamOrganizer.Infrastructure;
+using SteamOrganizer.Helpers;
 using SteamOrganizer.MVVM.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SteamOrganizer.Helpers
+namespace SteamOrganizer.Infrastructure.Steam
 {
     internal static class SteamParser
     {

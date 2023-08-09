@@ -12,7 +12,8 @@ namespace SteamOrganizer.MVVM.View.Controls
     public sealed partial class AuthenticationView : StackPanel
     {
         private string FilePath { get; set; }
-        private Action<object, byte[]> ActionIfSuccess { get; set; }
+        private readonly Action<object, byte[]> ActionIfSuccess;
+        private readonly Action PasswordRegistered;
 
         private bool IsInitialSetup;
         private bool IsReset;
@@ -28,10 +29,11 @@ namespace SteamOrganizer.MVVM.View.Controls
                 Reset.Visibility = System.Windows.Visibility.Visible;
         }
 
-        public AuthenticationView()
+        public AuthenticationView(Action passwordSuccessRegistered)
         {
             InitializeComponent();
             SetupNew();
+            PasswordRegistered = passwordSuccessRegistered;
         }
 
         private void SetupNew()
@@ -76,6 +78,7 @@ namespace SteamOrganizer.MVVM.View.Controls
                 PassBox.Clear();
                 App.Config.Save();
                 App.MainWindowVM.ClosePopupWindow(true);
+                PasswordRegistered?.Invoke();
                 return;
             }
 

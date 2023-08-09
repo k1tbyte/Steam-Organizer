@@ -234,9 +234,8 @@ namespace SteamOrganizer.Infrastructure.Parsers.Vdf
                 default:
                 {
                     int endindex;
-                    bool isEnd;
-                    string text = GetTextToDelimiter(line, 0, out endindex, out isEnd);
-                    if(!isEnd)
+                        string text = GetTextToDelimiter(line, 0, out endindex, out bool isEnd);
+                        if (!isEnd)
                     {
                         startedToken = new Token() { type = TokenType.String, content = text };
                         unclosedLine = true;
@@ -347,16 +346,14 @@ namespace SteamOrganizer.Infrastructure.Parsers.Vdf
                     VdfValue v;
                     if(token.type == TokenType.String)
                     {
-                        int i;
-                        double d;
 
-                        if(int.TryParse(token.content, NumberStyles.Integer, CultureInfo.InvariantCulture, out i))
+                        if (int.TryParse(token.content, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i))
                         {
                             v = new VdfInteger(name, i);
                         }
-                        else if(double.TryParse(token.content, NumberStyles.Number, CultureInfo.InvariantCulture, out d))
+                        else if (decimal.TryParse(token.content, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal d))
                         {
-                            v = new VdfDouble(name, d);
+                            v = new VdfDecimal(name, d);
                         }
                         else
                         {

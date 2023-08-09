@@ -209,6 +209,9 @@
     <Compile Include="MVVM\View\Extensions\PushNotification.xaml.cs">
       <DependentUpon>PushNotification.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\Extensions\QueryModal.xaml.cs">
+      <DependentUpon>QueryModal.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\Extensions\QueryPopup.xaml.cs">
       <DependentUpon>QueryPopup.xaml</DependentUpon>
     </Compile>
@@ -267,6 +270,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\Extensions\PushNotification.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Extensions\QueryModal.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

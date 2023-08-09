@@ -115,6 +115,9 @@ namespace SteamOrganizer.MVVM.View.Extensions
 
         internal bool UpdateTrayAccounts(IEnumerable<Account> accounts)
         {
+            if (App.Config.RecentlyLoggedIn.Count == 0)
+                return false;
+
             int found = 0;
             foreach (var acc in accounts)
             {

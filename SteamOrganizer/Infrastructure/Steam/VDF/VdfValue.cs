@@ -7,7 +7,7 @@ namespace SteamOrganizer.Infrastructure.Parsers.Vdf
         Table,
         String,
         Integer,
-        Double,
+        Decimal,
     }
 
     #region Types
@@ -25,21 +25,20 @@ namespace SteamOrganizer.Infrastructure.Parsers.Vdf
         public int Content { get; set; }
     }
 
-    public sealed class VdfDouble : VdfValue
+    public sealed class VdfDecimal : VdfValue
     {
-        public VdfDouble(string name) : base(name)               => Type = VdfValueType.Double;
-        public VdfDouble(string name, double value) : this(name) => Content = value;
-        public double Content { get; set; }
+        public VdfDecimal(string name) : base(name)               => Type = VdfValueType.Decimal;
+        public VdfDecimal(string name, decimal value) : this(name) => Content = value;
+        public decimal Content { get; set; }
     } 
     #endregion
 
     public abstract class VdfValue
     {
         public VdfValue(string name) => Name = name;
-        public string Name { get; private set; }
-        private List<string> comments = new List<string>();
+        public string Name { get; }
         public VdfValueType Type { get; protected set; }
-        public ICollection<string> Comments => comments;
+        public ICollection<string> Comments { get; } = new List<string>();
         public VdfValue Parent { get; internal set; }
     }
 }

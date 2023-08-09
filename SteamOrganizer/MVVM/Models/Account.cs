@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using static SteamOrganizer.Helpers.SteamParser;
+using static SteamOrganizer.Infrastructure.Steam.SteamParser;
 
 namespace SteamOrganizer.MVVM.Models
 {
@@ -182,7 +182,7 @@ namespace SteamOrganizer.MVVM.Models
         [JsonConstructor]
         private Account() { }
 
-        public Account(string login, string password)
+        internal Account(string login, string password)
         {
             LoadImage(propertyChanged: false);
             this.AddedDate = DateTime.Now;
@@ -190,7 +190,7 @@ namespace SteamOrganizer.MVVM.Models
             this.Password  = password;
         }
 
-        public Account(string login, string password, ulong steamID64)
+        internal Account(string login, string password, ulong steamID64)
         {
             this.AddedDate = DateTime.Now;
             this.Nickname  = this.Login = login;
@@ -198,7 +198,7 @@ namespace SteamOrganizer.MVVM.Models
             this.SteamID64 = steamID64;
         }
 
-        public Account(string login, string password, uint accountId) :
+        internal Account(string login, string password, uint accountId) :
             this(login, password, accountId + SteamIdConverter.SteamID64Indent)
         { }
 

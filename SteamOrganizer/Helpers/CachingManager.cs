@@ -1,7 +1,9 @@
-﻿using SteamOrganizer.Infrastructure;
+﻿    using SteamOrganizer.Infrastructure;
 using System;
 using System.Collections.Concurrent;
+using System.Drawing;
 using System.IO;
+using System.Web;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -41,11 +43,12 @@ namespace SteamOrganizer.Helpers
 
             if (avatarHash == null)
             {
-                var bitmap = CreateBitmap();
+                if (!CreateBitmap(out BitmapImage bitmap))
+                    return bitmap;
+
                 bitmap.StreamSource = Application.GetResourceStream(new Uri("Resources/Images/default_steam_profile.bmp", UriKind.Relative)).Stream;
                 bitmap.EndInit();
                 bitmap.Freeze();
-                CachedImages.TryAdd(cachedName, bitmap);
                 return bitmap;
             }
 
@@ -56,13 +59,14 @@ namespace SteamOrganizer.Helpers
             {
                 if (File.Exists(path))
                 {
+                    if (!CreateBitmap(out BitmapImage bitmap))
+                        return bitmap;
+
                     using (var fstream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
                     {
-                        var bitmap = CreateBitmap();
                         bitmap.StreamSource = fstream;
                         bitmap.EndInit();
                         bitmap.Freeze();
-                        CachedImages.TryAdd(cachedName, bitmap);
                         return bitmap;
                     }
                 }
@@ -74,14 +78,14 @@ namespace SteamOrganizer.Helpers
 
                 return Application.Current.Dispatcher.Invoke(() =>
                 {
-                    var STAbitmap = CreateBitmap();
+                    if (!CreateBitmap(out BitmapImage STAbitmap))
+                        return STAbitmap;
+
                     STAbitmap.UriSource = new Uri($"{WebBrowser.SteamAvatarsHost}{cachedName}.jpg");
                     STAbitmap.DownloadCompleted += OnBitmapAvatarLoaded;
                     STAbitmap.EndInit();
-                    CachedImages.TryAdd(cachedName, STAbitmap);
                     return STAbitmap;
                 });
-
 
 
             }
@@ -92,14 +96,21 @@ namespace SteamOrganizer.Helpers
 
             return null;
 
-            BitmapImage CreateBitmap()
+            bool CreateBitmap(out BitmapImage image)
             {
-                var img = new BitmapImage();
-                img.BeginInit();
-                img.DecodePixelWidth = decodeWidth;
-                img.DecodePixelHeight = decodeHeight;
-                img.CacheOption = cacheOption;
-                return img;
+                image = new BitmapImage();
+
+                if (!CachedImages.TryAdd(cachedName, image))
+                {
+                    image = CachedImages[cachedName];
+                    return false ;
+                }
+
+                image.BeginInit();
+                image.DecodePixelWidth  = decodeWidth;
+                image.DecodePixelHeight = decodeHeight;
+                image.CacheOption       = cacheOption;
+                return true;
             }
 
             void OnBitmapAvatarLoaded(object sender, EventArgs e)
@@ -119,7 +130,6 @@ namespace SteamOrganizer.Helpers
                     encoder.Save(fstream);
                 }
             }
-
         }
 
 

@@ -11,8 +11,12 @@ namespace SteamOrganizer.Infrastructure.Parsers.Vdf
     {
         public VdfTable(string name) : base(name) { }
 
-        private List<VdfValue> values = new List<VdfValue>();
-        private Dictionary<string, VdfValue> valuelookup = new Dictionary<string,VdfValue>();
+        private readonly List<VdfValue> values = new List<VdfValue>();
+        private readonly Dictionary<string, VdfValue> valuelookup = new Dictionary<string,VdfValue>();
+
+        public int Count                      => values.Count;
+        bool ICollection<VdfValue>.IsReadOnly => false;
+        public VdfValue this[string name]     => valuelookup[name];
 
         public int IndexOf(VdfValue item)
         {
@@ -75,7 +79,13 @@ namespace SteamOrganizer.Infrastructure.Parsers.Vdf
             }
         }
 
-        public VdfValue this[string name] => valuelookup[name];
+        public VdfTable TryGetTable(string name)
+        {
+            if (!valuelookup.TryGetValue(name, out VdfValue value) || !(value is VdfTable table))
+                return null;
+
+            return table;
+        }
 
         public void Add(VdfValue item)
         {
@@ -137,10 +147,10 @@ namespace SteamOrganizer.Infrastructure.Parsers.Vdf
             values.CopyTo(array, arrayIndex);
         }
 
-        public int Count
-        {
-            get { return values.Count; }
-        }
+        public IEnumerator<VdfValue> GetEnumerator()
+            => values.GetEnumerator();
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            => values.GetEnumerator();
 
         public bool Remove(VdfValue item)
         {
@@ -159,21 +169,6 @@ namespace SteamOrganizer.Infrastructure.Parsers.Vdf
                 return true;
             }
             return false;
-        }
-
-        public IEnumerator<VdfValue> GetEnumerator()
-        {
-            return values.GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return values.GetEnumerator();
-        }
-
-        bool ICollection<VdfValue>.IsReadOnly
-        {
-            get { return false; }
-        }
+        }        
     }
 }
