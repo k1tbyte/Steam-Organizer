@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -79,6 +80,19 @@ namespace SteamOrganizer
                 Current.Shutdown();
             }
 #endif
+/*            if (e.Args.Length > 0 && e.Args[0] == "--noicon")
+            {
+                var path = $"{App.WorkingDir}\\SteamOrganizer.lnk";
+                if(!File.Exists(path))
+                {
+                    var localtion = Assembly.GetExecutingAssembly().Location;
+                    Win32.CreateShortcut(path, Assembly.GetExecutingAssembly().Location, null, WorkingDir, null, "", localtion);
+                }
+
+                System.Diagnostics.Process.Start(path);
+                Current.Shutdown();
+                return;
+            }*/
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 

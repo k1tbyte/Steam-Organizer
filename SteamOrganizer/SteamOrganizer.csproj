@@ -148,7 +148,8 @@
     <Compile Include="Helpers\Encryption\FileCryptor.cs" />
     <Compile Include="Helpers\Encryption\StringEncryption.cs" />
     <Compile Include="Helpers\MouseHook.cs" />
-    <Compile Include="Helpers\SteamIdConverter.cs" />
+    <Compile Include="Infrastructure\ArgumentsParser.cs" />
+    <Compile Include="Infrastructure\Steam\SteamIdConverter.cs" />
     <Compile Include="Infrastructure\Steam\SteamParser.cs" />
     <Compile Include="Helpers\WindowMessageHandler.cs" />
     <Compile Include="Infrastructure\Regexes.cs" />
