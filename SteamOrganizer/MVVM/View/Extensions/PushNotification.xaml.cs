@@ -13,6 +13,12 @@ namespace SteamOrganizer.MVVM.View.Extensions
     {
         internal static void Open(string message, Action onClickAction = null, EPushNotificationType type = EPushNotificationType.Info)
         {
+            if(System.Threading.Thread.CurrentThread.ManagedThreadId != App.Current.Dispatcher.Thread.ManagedThreadId)
+            {
+                App.STAInvoke(() => Open(message, onClickAction, type));
+                return;
+            }
+
             if (App.MainWindowVM?.View?.IsShown == false && App.Config?.Notifications == false)
                 return;
 

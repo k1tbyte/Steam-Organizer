@@ -66,7 +66,7 @@ namespace SteamOrganizer
             DatabasePath    = Path.Combine(WorkingDir, "database.bin");
             CacheFolderPath = Path.Combine(WorkingDir, ".cache");
 
-        } 
+        }
         #endregion
 
         #endregion
@@ -78,23 +78,15 @@ namespace SteamOrganizer
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
                 Current.Shutdown();
+                return;
             }
 #endif
-/*            if (e.Args.Length > 0 && e.Args[0] == "--noicon")
-            {
-                var path = $"{App.WorkingDir}\\SteamOrganizer.lnk";
-                if(!File.Exists(path))
-                {
-                    var localtion = Assembly.GetExecutingAssembly().Location;
-                    Win32.CreateShortcut(path, Assembly.GetExecutingAssembly().Location, null, WorkingDir, null, "", localtion);
-                }
-
-                System.Diagnostics.Process.Start(path);
-                Current.Shutdown();
-                return;
-            }*/
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+
+            if (!ArgumentsParser.HandleStartArguments(e.Args))
+                return;
+            
 
             await BeginInitializerTask;
             BeginInitializerTask.Dispose();
@@ -153,7 +145,7 @@ namespace SteamOrganizer
             var value = Current.TryFindResource(resourceKey);
             if(value == null)
             {
-                //Log cannot find resource
+                App.Logger.Value.LogGenericWarningException(new WarnException($"Cannot find resource: {resourceKey}"));
             }
             else if(value is string locale) 
             {

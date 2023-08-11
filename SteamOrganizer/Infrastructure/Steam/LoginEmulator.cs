@@ -123,7 +123,7 @@ namespace SteamOrganizer.Infrastructure.Steam
 
 
                 var remembered = CheckIfRecentlyRemembered();
-                SteamRegistry.SetActiveUserLogin(null);
+                SteamRegistry.SetActiveUserLogin(string.Empty);
 
                 IntPtr loginWindowHandle = webHelper == null ? IntPtr.Zero : webHelper.MainWindowHandle;
 
@@ -236,8 +236,8 @@ namespace SteamOrganizer.Infrastructure.Steam
 
                 bool RetrieveAutomationElements()
                 {
-                    document = window.FindFirstDescendant(o => o.ByControlType(ControlType.Document));
-                    childrens = document.FindAllChildren();
+                    document  = window.FindFirstDescendant(o => o.ByControlType(ControlType.Document));
+                    childrens = document?.FindAllChildren();
 
                     if (document == null || childrens?.Length <= 2 || childrens[0].ActualWidth == 0 || childrens[0].ActualHeight == 0)
                         return false;

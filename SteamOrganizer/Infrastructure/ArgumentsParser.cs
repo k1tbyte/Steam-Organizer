@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SteamOrganizer.Infrastructure.Steam;
+using SteamOrganizer.MVVM.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -74,30 +76,43 @@ namespace SteamOrganizer.Infrastructure
             return commands;
         }
 
-        internal static void HandleStartArguments(string[] args)
+        internal static bool HandleStartArguments(string[] args)
         {
             if (args.Length == 0)
-                return;
+                return true;
 
-            var commands = ParseArguments(args[0]);
+            var joinArgs = string.Join(" ", args);
+
+            var commands = ParseArguments(joinArgs);
 
             if (commands.Count == 0)
-                return;
+                return true;
+
+            if (commands.ContainsKey(nameof(AvailableCommands.NeedResetIcon)))
+            {
+                var path     = $"{App.WorkingDir}\\SteamOrganizer.lnk";
+                var location = Assembly.GetExecutingAssembly().Location;
+
+                Win32.CreateShortcut(path, location, joinArgs.Replace("-noicon", ""), App.WorkingDir, null, "", location);
+                App.Shutdown();
+                System.Diagnostics.Process.Start(path);
+                return false;
+            }
 
             foreach (var cmd in commands)
             {
                 switch (cmd.Key)
                 {
                     case nameof(AvailableCommands.LaunchAppId):
+                        break;
                     case nameof(AvailableCommands.LoginSteamId):
-                        //TODO
+                        MainWindowViewModel.AccountsViewInitialized += (context) =>
+                            context.LoginCommand.Execute(App.Config.Database.FirstOrDefault(o => o.SteamID64 == (ulong)cmd.Value));
                         break;
 
-                    case nameof(AvailableCommands.NeedResetIcon):
-                        //TODO
-                        break;
                 }
             }
+            return true;
         }
     }
 }

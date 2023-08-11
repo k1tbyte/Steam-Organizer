@@ -625,14 +625,16 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async Task OnLoginAccount(object param)
         {
-            var acc = param as Account;
-            if(string.IsNullOrEmpty(acc.Password))
+            if (!(param is Account acc))
+                return;
+
+            if (string.IsNullOrEmpty(acc.Password))
             {
                 PushNotification.Open($"Set a password to log into this account");
                 await Task.Delay(3000);
                 return;
             }
-            if (await new Steam.LoginEmulator(acc).Login().ConfigureAwait(false) != Steam.LoginEmulator.ELoginResult.Success)
+            if (await new Steam.LoginEmulator(acc).Login() != Steam.LoginEmulator.ELoginResult.Success)
             {
                 PushNotification.Open($"Failed to login to account: \"{acc.Nickname}\"");
                 return;

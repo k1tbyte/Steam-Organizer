@@ -29,8 +29,10 @@ namespace SteamOrganizer.MVVM.ViewModels
         #endregion
 
         #region Properties
+        internal static Action<AccountsViewModel> AccountsViewInitialized;
         private ManagementEventWatcher RegistrySteamUserWatcher;
         internal Action PreviewWindowViewChanged;
+
 
         internal MainWindow View { get; }
         public SettingsView Settings { get; private set; }
@@ -270,6 +272,8 @@ namespace SteamOrganizer.MVVM.ViewModels
             Utils.InBackground(InitServices);
 #endif
                 CurrentView = Accounts = new AccountsView();
+                AccountsViewInitialized?.Invoke(Accounts.DataContext as AccountsViewModel);
+                AccountsViewInitialized = null;
             }
         }
     }
