@@ -25,6 +25,8 @@
 
                 <ResourceDictionary Source="Styles/ContextMenu.xaml"/>
 
+                <ResourceDictionary Source="Styles/DataGrid.xaml"/>
+
             </ResourceDictionary.MergedDictionaries>
 
             <converters:ToBooleanConverter x:Key="ToBooleanConverter"/>

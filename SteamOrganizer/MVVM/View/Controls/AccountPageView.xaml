@@ -712,9 +712,57 @@
                     </StackPanel>
 
                 </TabItem>
-                <TabItem Header="Games" Tag="{x:Static Icon:PackIconMaterialKind.GamepadVariantOutline}">
+                    <TabItem Header="Games" Tag="{x:Static Icon:PackIconMaterialKind.GamepadVariantOutline}">
+                        <DataGrid d:ItemsSource="{d:SampleData ItemCount=7}">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="135" >
+                                    <DataGridTemplateColumn.CellStyle>
+                                        <Style TargetType="DataGridCell" >
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="Margin" Value="10 0 0 0"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="DataGridCell">
+                                                        <Rectangle Width="120" Height="56" Cursor="Hand"
+                                                                   Opacity="0.7" 
+                                                                   Stroke="{DynamicResource LightBlueGrad}"
+                                                                   StrokeThickness="2" StrokeDashArray="42"
+                                                                   StrokeDashCap="Triangle"  
+                                                                   RadiusX="3" RadiusY="3">
+                                                            <Rectangle.Fill>
+                                                                <ImageBrush ImageSource="https://cdn.akamai.steamstatic.com/steam/apps/730/header.jpg"/>
+                                                            </Rectangle.Fill>
+                                                        </Rectangle>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </DataGridTemplateColumn.CellStyle>
+                                </DataGridTemplateColumn>
 
-                </TabItem>
+                                <DataGridTextColumn Header="Name"  Binding="{Binding Counter-Strike: Global Offensive}"
+                                                    IsReadOnly="True" 
+                                                    Width="150"
+                                                    ElementStyle="{DynamicResource DataGridTextBlock}" Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+
+                                <DataGridTextColumn Header="ID" Binding="{Binding 2357570}" 
+                                                    IsReadOnly="True" Width="70" 
+                                                    TextBlock.TextAlignment="Center"
+                                                    ElementStyle="{StaticResource DataGridTextBlockCenter}"/>
+                                
+                                <DataGridTextColumn Header="Time" 
+                                                    Binding="{Binding 45468,StringFormat={}{0} h}"
+                                                    IsReadOnly="True" Width="60"
+                                                    ElementStyle="{StaticResource  DataGridTextBlockCenter}" />
+
+                                <DataGridTextColumn Header="Price"  Binding="{Binding 3212122,StringFormat={}{0} $}" 
+                                                    IsReadOnly="True" Width="*"
+                                                    Foreground="{DynamicResource SuccessGrad}"
+                                                    ElementStyle="{StaticResource  DataGridTextBlockCenter}" />
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
                 <TabItem Header="Friends" Tag="{x:Static Icon:PackIconMaterialKind.AccountGroupOutline}">
 
                 </TabItem>
