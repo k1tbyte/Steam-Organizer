@@ -98,12 +98,20 @@ namespace SteamOrganizer.Infrastructure.Steam
             [Serializable]
             internal class Game
             {
-                public uint AppID;
-                public float Playtime_forever;
-                public string Name;
+                public uint AppID { get; set; }
+                public float Playtime_forever { get; set; }
+                public string Name { get; set; }
 
                 [JsonIgnore]
-                public uint? Price;
+                public uint? Price { get; set; }
+
+                [field: NonSerialized]
+                [JsonIgnore]
+                public System.Windows.Media.Imaging.BitmapImage BitmapHeader { get; set; }
+
+                [field: NonSerialized]
+                [JsonIgnore]
+                public string Source { get; set; }
             }
 
             public OwnedGamesResponse Response;

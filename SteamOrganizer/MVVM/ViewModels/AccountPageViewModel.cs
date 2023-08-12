@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SteamOrganizer.Helpers;
 using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
+using SteamOrganizer.Infrastructure.Steam;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
@@ -41,8 +42,21 @@ namespace SteamOrganizer.MVVM.ViewModels
         private bool IsSteamCodeGenerating = false;
         private bool WaitingForSave = false;
         public Visibility AdditionalControlsVis { get; private set; } = Visibility.Visible;
-        public int SelectedTabIndex { get; set; }
         public bool IsPasswordShown { get; set; }
+
+        private int _selectedTabIndex = 0;
+        public int SelectedTabIndex
+        {
+            get => _selectedTabIndex;
+            set
+            {
+                if(value == 1)
+                {
+                    LoadGames();
+                }
+                _selectedTabIndex = value;
+            }
+        }
 
         #endregion
 
@@ -256,6 +270,8 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         #endregion
 
+        public SteamParser.UserOwnedGamesObject.Game[] Games { get; private set; }
+
         #endregion
 
 
@@ -352,6 +368,26 @@ namespace SteamOrganizer.MVVM.ViewModels
             FullAvatar = null;
         }
         
+        private void LoadGames()
+        {
+            var path = Path.Combine(CachingManager.GamesCachePath, CurrentAccount.SteamID64.ToString());
+            if (Games != null || !File.Exists(path))
+                return;
+
+            if (!FileCryptor.Deserialize(path, out SteamParser.UserOwnedGamesObject.Game[] games) || games.Length == 0)
+            {
+                //todo something
+                return;
+            }
+
+
+            foreach (var game in Games = games)
+            {
+                game.BitmapHeader = CachingManager.GetGameHeaderPreview(game.AppID);
+            }
+
+            OnPropertyChanged(nameof(Games));
+        }
 
         private async Task OnCopying(object data,object target)
         {

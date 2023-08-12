@@ -8,7 +8,7 @@
       xmlns:ext="clr-namespace:SteamOrganizer.MVVM.View.Extensions"
       xmlns:glob="clr-namespace:System.Globalization;assembly=mscorlib"
       mc:Ignorable="d" 
-      d:DesignHeight="830" d:DesignWidth="780"
+      d:DesignHeight="900" d:DesignWidth="780"
       d:Background="{DynamicResource PrimaryBackgroundBrush}"
       FocusVisualStyle="{x:Null}"
       d:DataContext="{d:DesignInstance viewModel:AccountPageViewModel}">
@@ -712,10 +712,19 @@
                     </StackPanel>
 
                 </TabItem>
-                    <TabItem Header="Games" Tag="{x:Static Icon:PackIconMaterialKind.GamepadVariantOutline}">
-                        <DataGrid d:ItemsSource="{d:SampleData ItemCount=7}">
+
+                <TabItem Header="Games" Tag="{x:Static Icon:PackIconMaterialKind.GamepadVariantOutline}">
+                        <DataGrid d:ItemsSource="{d:SampleData ItemCount=10}" 
+                                  ItemsSource="{Binding Games,Mode=OneWay}" Height="756">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Width="135" >
+                                    <DataGridTemplateColumn.Header>
+                                        <Button Style="{StaticResource TransparentButton}"
+                                                Height="30" Width="50"
+                                                Background="{DynamicResource BackgroundGrad}">
+                                            <Icon:PackIconMaterial Kind="TableSearch"/>
+                                        </Button>
+                                    </DataGridTemplateColumn.Header>
                                     <DataGridTemplateColumn.CellStyle>
                                         <Style TargetType="DataGridCell" >
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -723,14 +732,14 @@
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="DataGridCell">
-                                                        <Rectangle Width="120" Height="56" Cursor="Hand"
-                                                                   Opacity="0.7" 
+                                                        <Rectangle Width="120" Height="56" Cursor="Hand" 
+                                                                   Opacity="0.9" 
                                                                    Stroke="{DynamicResource LightBlueGrad}"
                                                                    StrokeThickness="2" StrokeDashArray="42"
                                                                    StrokeDashCap="Triangle"  
                                                                    RadiusX="3" RadiusY="3">
                                                             <Rectangle.Fill>
-                                                                <ImageBrush ImageSource="https://cdn.akamai.steamstatic.com/steam/apps/730/header.jpg"/>
+                                                                <ImageBrush ImageSource="{Binding BitmapHeader,Mode=OneTime}"/>
                                                             </Rectangle.Fill>
                                                         </Rectangle>
                                                     </ControlTemplate>
@@ -740,29 +749,30 @@
                                     </DataGridTemplateColumn.CellStyle>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTextColumn Header="Name"  Binding="{Binding Counter-Strike: Global Offensive}"
-                                                    IsReadOnly="True" 
-                                                    Width="150"
-                                                    ElementStyle="{DynamicResource DataGridTextBlock}" Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+                                <DataGridTextColumn Header="Name"  
+                                                    Binding="{Binding Name,Mode=OneTime}"
+                                                    IsReadOnly="True" Width="150"
+                                                    ElementStyle="{DynamicResource DataGridTextBlock}" 
+                                                    Foreground="{DynamicResource PrimaryForegroundBrush}"/>
 
-                                <DataGridTextColumn Header="ID" Binding="{Binding 2357570}" 
-                                                    IsReadOnly="True" Width="70" 
-                                                    TextBlock.TextAlignment="Center"
-                                                    ElementStyle="{StaticResource DataGridTextBlockCenter}"/>
-                                
+                                <DataGridTextColumn Header="ID" Binding="{Binding AppID,Mode=OneTime}" 
+             IsReadOnly="True" Width="70" 
+             TextBlock.TextAlignment="Center"
+             ElementStyle="{StaticResource DataGridTextBlockCenter}"/>
+
                                 <DataGridTextColumn Header="Time" 
-                                                    Binding="{Binding 45468,StringFormat={}{0} h}"
-                                                    IsReadOnly="True" Width="60"
-                                                    ElementStyle="{StaticResource  DataGridTextBlockCenter}" />
+             Binding="{Binding Playtime_forever,Mode=OneTime,StringFormat={}{0} h}"
+             IsReadOnly="True" Width="60"
+             ElementStyle="{StaticResource  DataGridTextBlockCenter}" />
 
-                                <DataGridTextColumn Header="Price"  Binding="{Binding 3212122,StringFormat={}{0} $}" 
-                                                    IsReadOnly="True" Width="*"
-                                                    Foreground="{DynamicResource SuccessGrad}"
-                                                    ElementStyle="{StaticResource  DataGridTextBlockCenter}" />
+                                <DataGridTextColumn Header="Price"  Binding="{Binding Price,StringFormat={}{0} $}" 
+             IsReadOnly="True" Width="*"
+             Foreground="{DynamicResource SuccessGrad}"
+             ElementStyle="{StaticResource  DataGridTextBlockCenter}" />
 
                             </DataGrid.Columns>
                         </DataGrid>
-                    </TabItem>
+                </TabItem>
                 <TabItem Header="Friends" Tag="{x:Static Icon:PackIconMaterialKind.AccountGroupOutline}">
 
                 </TabItem>

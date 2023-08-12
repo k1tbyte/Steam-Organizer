@@ -449,18 +449,9 @@
     <Resource Include="Resources\grabbing.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\PlatformsLogos\EA.png" />
-    <Resource Include="Resources\Images\PlatformsLogos\EGS.png" />
-    <Resource Include="Resources\Images\PlatformsLogos\Rockstar.png" />
-    <Resource Include="Resources\Images\PlatformsLogos\Ubisoft.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\SteamGamesBadges\29000.png" />
     <Resource Include="Resources\Images\SteamGamesBadges\30000.png" />
     <Resource Include="Resources\Images\SteamGamesBadges\31000.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Images\default_steam_profile.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\split.cur" />
@@ -492,9 +483,14 @@
   <ItemGroup>
     <Resource Include="Resources\Images\SteamGamesBadges\32000.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Images\steam_unknown_horizontal.bmp" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Transparent.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\steam_unknown.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
