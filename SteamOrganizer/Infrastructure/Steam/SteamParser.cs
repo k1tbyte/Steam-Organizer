@@ -103,15 +103,15 @@ namespace SteamOrganizer.Infrastructure.Steam
                 public string Name { get; set; }
 
                 [JsonIgnore]
+                public string FormattedPrice { get; set; }
+
+                [field: NonSerialized]
+                [JsonIgnore]
                 public uint? Price { get; set; }
 
                 [field: NonSerialized]
                 [JsonIgnore]
-                public System.Windows.Media.Imaging.BitmapImage BitmapHeader { get; set; }
-
-                [field: NonSerialized]
-                [JsonIgnore]
-                public string Source { get; set; }
+                public object BitmapSource { get; set; }
             }
 
             public OwnedGamesResponse Response;
@@ -152,6 +152,8 @@ namespace SteamOrganizer.Infrastructure.Steam
         }
         #endregion 
         #endregion
+
+        private static string CurrencySymbol;
 
         internal static void SetGamesBadgeBoundary(Account account)
         {
@@ -366,7 +368,16 @@ namespace SteamOrganizer.Infrastructure.Steam
                     acc.HoursOnPlayed = acc.PlayedGamesCount = acc.PaidGames = 0;
                     acc.GamesCount = games.Length;
                     acc.TotalGamesPrice = 0UL;
-                    acc.GamesCurrency = gamesPrices == null ? ECurrencyCode.Invalid : gamesPrices.First().Value.Data.Price_overview.Currency;
+
+                    if( gamesPrices == null)
+                    {
+                        acc.GamesCurrency = ECurrencyCode.Invalid;
+                    }
+                    else
+                    {
+                        acc.GamesCurrency = gamesPrices.First().Value.Data.Price_overview.Currency;
+                        CurrencySymbol = CurrencySymbol ?? CurrencyHelper.GetCurrencySymbol(acc.GamesCurrency.ToString());
+                    }
 
                     for (int i = 0; i < games.Length; i++)
                     {
@@ -381,7 +392,7 @@ namespace SteamOrganizer.Infrastructure.Steam
                             continue;
 
                         var formattedPrice = details.Data.Price_overview.Initial / 100;
-                        games[i].Price = formattedPrice;
+                        games[i].FormattedPrice = $"{formattedPrice} {CurrencySymbol}";
                         acc.TotalGamesPrice += formattedPrice;
                         acc.PaidGames++;
                     }

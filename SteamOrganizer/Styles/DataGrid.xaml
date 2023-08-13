@@ -9,7 +9,9 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="AutoGenerateColumns" Value="False" />
         <Setter Property="CanUserAddRows" Value="False" />
-        <Setter Property="CanUserResizeRows" Value="True" />
+        <Setter Property="CanUserResizeRows" Value="False" />
+        <Setter Property="CanUserResizeColumns" Value="False" />
+        <Setter Property="CanUserReorderColumns" Value="False" />
         <Setter Property="CanUserSortColumns" Value="True" />
         <Setter Property="GridLinesVisibility" Value="None" />
         <Setter Property="IsReadOnly" Value="True" />
@@ -18,6 +20,12 @@
 
     <Style TargetType="DataGridCell">
         <Setter Property="VerticalAlignment" Value="Center"/>
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{x:Null}" />
+                <Setter Property="BorderBrush" Value="{x:Null}" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
@@ -29,6 +37,17 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="Background" Value="{DynamicResource TertiaryBackgroundBrush}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource TertiaryForegroundBrush}"/>
+            </Trigger>
+            <Trigger Property="SortDirection" Value="Ascending">
+                <Setter Property="Foreground" Value="{DynamicResource TertiaryForegroundBrush}"/>
+            </Trigger>
+            <Trigger Property="SortDirection" Value="Descending">
+                <Setter Property="Foreground" Value="{DynamicResource TertiaryForegroundBrush}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="DataGridTextBlock" TargetType="TextBlock">

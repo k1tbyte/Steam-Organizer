@@ -35,5 +35,13 @@ namespace SteamOrganizer.Helpers
 
             return CurrencyMap.TryGetValue(ISOCurrencySymbol, out symbol);
         }
+
+        public static string GetCurrencySymbol(string ISOCurrencySymbol)
+        {
+            if (CurrencyMap == null)
+                Initialize();
+
+            return CurrencyMap[ISOCurrencySymbol];
+        }
     }
 }

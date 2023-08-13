@@ -105,7 +105,7 @@ namespace SteamOrganizer.Helpers
 
         private static BitmapImage DefaultGameHeader;
 
-        internal static BitmapImage GetGameHeaderPreview(uint gameId)
+        internal static object GetGameHeaderPreview(uint gameId)
         {
             if (gameId < MinSteamAppId || gameId % 10 != 0)
             {
@@ -117,7 +117,7 @@ namespace SteamOrganizer.Helpers
 
             if(File.Exists(path))
             {
-                return new BitmapImage().BeginBuild().FinalizeBuild(new FileStream(path, FileMode.Open, FileAccess.ReadWrite));
+                return path;
             }
 
             if (!WebBrowser.IsNetworkAvailable)

@@ -37,7 +37,6 @@ namespace SteamOrganizer.MVVM.ViewModels
 
 
         #region Properties
-
         #region Flags
         private bool IsSteamCodeGenerating = false;
         private bool WaitingForSave = false;
@@ -323,7 +322,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             {
                 AppsPriceFormat = $"{CurrentAccount.TotalGamesPrice.ToString("N0",CultureInfo.InvariantCulture)} {symbol} ({CurrentAccount.GamesCurrency})";
             }
-
+            
             GamesImagePath = $"/Resources/Images/SteamGamesBadges/{CurrentAccount.GamesBadgeBoundary}.png";
             GamesDetails = CurrentAccount.PlayedGamesCount <= 0 ? "0" :
                 new StringBuilder().Append(CurrentAccount.PlayedGamesCount).Append(" (")
@@ -383,7 +382,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             foreach (var game in Games = games)
             {
-                game.BitmapHeader = CachingManager.GetGameHeaderPreview(game.AppID);
+                game.BitmapSource = CachingManager.GetGameHeaderPreview(game.AppID);
             }
 
             OnPropertyChanged(nameof(Games));
