@@ -80,6 +80,9 @@ namespace SteamOrganizer.Infrastructure
             return false;
         }
 
+        public static string ToReadable(this Version version)
+        =>  $"{version}{(version.Revision == 0 ? "" : " Pre-release")}";
+        
 
         public static async void InBackground(Action action, bool longRunning = false)
         {

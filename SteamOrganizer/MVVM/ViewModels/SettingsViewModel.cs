@@ -29,6 +29,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         }
 
         public bool IsPinCodeEnabled => Config.PinCodeKey != null;
+        public string Version => App.Version.ToReadable();
 
         public GlobalStorage Config => App.Config;
 

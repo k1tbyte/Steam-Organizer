@@ -388,21 +388,18 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             LoadingState = 2;
 
-            if (File.Exists(path) && FileCryptor.Deserialize(path, out SteamParser.UserOwnedGamesObject.Game[] games))
+            var fromCache = File.Exists(path);
+            if (fromCache || (!fromCache && CurrentAccount.GamesCount > 0 && await SteamParser.ParseGames(CurrentAccount)))
             {
+                FileCryptor.Deserialize(path, out SteamParser.UserOwnedGamesObject.Game[] games);
                 Games = games;
             }
 
-            if ((Games == null || Games.Length == 0) && CurrentAccount.GamesCount > 0 && WebBrowser.IsNetworkAvailable)
-            {
-                Games = await SteamParser.GetPlayerOwnedGames(CurrentAccount.SteamID64.Value);
-            }
-            else
+            if (Games == null || Games.Length == 0)
             {
                 LoadingState = 1;
                 return;
             }
-
 
             foreach (var game in Games)
             {
