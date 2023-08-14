@@ -401,27 +401,27 @@
 
                 <TabItem Header="Profile" Tag="{x:Static Icon:PackIconMaterialKind.AccountCircleOutline}">
 
-                    <StackPanel>
+                        <StackPanel>
 
-                        <!--#region Badges -->
-                        <Grid x:Name="BadgesDock" Visibility="{Binding CurrentAccount.CreatedDate,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}" VerticalAlignment="Top" Margin="15 25 15 15">
+                            <!--#region Badges -->
+                            <Grid x:Name="BadgesDock" Visibility="{Binding CurrentAccount.CreatedDate,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}" VerticalAlignment="Top" Margin="15 25 15 15">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
 
-                            <Border Background="{DynamicResource BackgroundGrad}"
+                                <Border Background="{DynamicResource BackgroundGrad}"
                                 Width="225" Height="150" HorizontalAlignment="Left"
                                 CornerRadius="12" Margin="0 0 20 0"
                                 Padding="15">
-                                <Grid>
-                                    <Icon:PackIconMaterial Kind="Steam" Height="40" Width="40"
+                                    <Grid>
+                                        <Icon:PackIconMaterial Kind="Steam" Height="40" Width="40"
                                                        Foreground="{DynamicResource PrimarySubBrush}"/>
 
-                                    <TextBlock Margin="50 10 0 0" VerticalAlignment="Top"
+                                        <TextBlock Margin="50 10 0 0" VerticalAlignment="Top"
                                            FontSize="15" Text="Years of service"/>
 
-                                    <TextBlock VerticalAlignment="Top"
+                                        <TextBlock VerticalAlignment="Top"
                                            FontSize="13" TextWrapping="Wrap"
                                            MaxWidth="130"
                                            HorizontalAlignment="Left"
@@ -429,38 +429,38 @@
                                     <Run Text="Account registered"                                            FontWeight="Normal"/>
                                     <LineBreak/>
                                     <Run Text="{Binding CurrentAccount.CreatedDate,Mode=OneWay,StringFormat=f,ConverterCulture={x:Static glob:CultureInfo.CurrentCulture}}" Foreground="{DynamicResource PrimarySubBrush}"/>
-                                    </TextBlock>
+                                        </TextBlock>
 
 
-                                    <Rectangle HorizontalAlignment="Right"
+                                        <Rectangle HorizontalAlignment="Right"
                                                Visibility="{Binding YearImagePath,Mode=OneWay,Converter={StaticResource ToVisibilityConverter}}"
                                            RadiusY="5" RadiusX="5"
                                            Stroke="{DynamicResource PrimarySubBrush}"
                                            StrokeThickness="1"
                                            VerticalAlignment="Bottom"
                                            Height="50" Width="50">
-                                        <Rectangle.Fill>
-                                            <ImageBrush Opacity="0.7" ImageSource="{Binding YearImagePath,Mode=OneWay}"/>
-                                        </Rectangle.Fill>
-                                    </Rectangle>
+                                            <Rectangle.Fill>
+                                                <ImageBrush Opacity="0.7" ImageSource="{Binding YearImagePath,Mode=OneWay}"/>
+                                            </Rectangle.Fill>
+                                        </Rectangle>
 
-                                </Grid>
-                            </Border>
+                                    </Grid>
+                                </Border>
 
-                            <Border Background="{DynamicResource BackgroundGrad}"
+                                <Border Background="{DynamicResource BackgroundGrad}"
                                     Visibility="{Binding CurrentAccount.GamesCount,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}"
                                 Width="225" Height="150"
                                 HorizontalAlignment="Right"
                                 CornerRadius="12"
                                 Padding="15">
-                                <Grid>
-                                    <Icon:PackIconMaterial Kind="GoogleController" Height="40" Width="40"
+                                    <Grid>
+                                        <Icon:PackIconMaterial Kind="GoogleController" Height="40" Width="40"
                                                        Foreground="{DynamicResource PrimarySubBrush}"/>
 
-                                    <TextBlock Margin="50 10 0 0" VerticalAlignment="Top"
+                                        <TextBlock Margin="50 10 0 0" VerticalAlignment="Top"
                                            FontSize="15" Text="Game collection"/>
 
-                                    <TextBlock x:Name="GamesText" VerticalAlignment="Bottom"
+                                        <TextBlock x:Name="GamesText" VerticalAlignment="Bottom"
                                            FontSize="13" MinWidth="140"
                                            HorizontalAlignment="Left"
                                            Margin="0 0 0 0">
@@ -471,28 +471,28 @@
                                     <Run Text="Of them played"                                            FontWeight="Normal"/>
                                     <LineBreak/>
                                     <Run Text="{Binding GamesDetails,Mode=OneWay}" Foreground="{DynamicResource PrimarySubBrush}"/>
-                                    </TextBlock>
+                                        </TextBlock>
 
-                                    <Rectangle HorizontalAlignment="Right"
+                                        <Rectangle HorizontalAlignment="Right"
                                            VerticalAlignment="Bottom"
                                            Height="50" Width="50">
-                                        <Rectangle.Fill>
-                                            <ImageBrush Opacity="0.8" ImageSource="{Binding GamesImagePath,Mode=OneWay}"/>
-                                        </Rectangle.Fill>
-                                        <Rectangle.Style>
-                                            <Style TargetType="Rectangle">
-                                                <Setter Property="Margin" Value="0 0 0 20"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ElementName=GamesText,Path=ActualWidth}" Value="140">
-                                                        <Setter Property="Margin" Value="0"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Rectangle.Style>
-                                    </Rectangle>
+                                            <Rectangle.Fill>
+                                                <ImageBrush Opacity="0.8" ImageSource="{Binding GamesImagePath,Mode=OneWay}"/>
+                                            </Rectangle.Fill>
+                                            <Rectangle.Style>
+                                                <Style TargetType="Rectangle">
+                                                    <Setter Property="Margin" Value="0 0 0 20"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=GamesText,Path=ActualWidth}" Value="140">
+                                                            <Setter Property="Margin" Value="0"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Rectangle.Style>
+                                        </Rectangle>
 
-                                </Grid>
-                            </Border>
+                                    </Grid>
+                                </Border>
 
                                 <Border Background="{DynamicResource BackgroundGrad}"
                                         Visibility="{Binding CurrentAccount.PaidGames,Mode=OneWay,Converter={StaticResource ToVisibilityConverter}}"
@@ -523,70 +523,70 @@
                                            Margin="0 0 0 0"/>
                                     </Grid>
                                 </Border>
-                        
-                        </Grid>
-                        <!--#endregion-->
 
-                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"
+                            </Grid>
+                            <!--#endregion-->
+
+                            <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"
                                    Visibility="{Binding ElementName=BadgesDock,Path=Visibility,Mode=OneWay}"/>
 
-                        <!--#region Bans -->
-                        <Grid Margin="15" Visibility="{Binding AdditionalControlsVis,Mode=OneWay}">
+                            <!--#region Bans -->
+                            <Grid Margin="15" Visibility="{Binding AdditionalControlsVis,Mode=OneWay}">
 
-                            <StackPanel  HorizontalAlignment="Left">
-                                <ContentControl Uid="VAC ban" FocusVisualStyle="{x:Null}"
+                                <StackPanel  HorizontalAlignment="Left">
+                                    <ContentControl Uid="VAC ban" FocusVisualStyle="{x:Null}"
                                                 Margin="0 0 0 15"
                                                 Content="{Binding VacBanDetails,Mode=OneWay}"
                                                 Tag="{Binding CurrentAccount.VacBansCount,Mode=OneWay}"
                                                 Template="{StaticResource BanChipTemplate}"/>
 
-                                <ContentControl Uid="Community ban" FocusVisualStyle="{x:Null}"
+                                    <ContentControl Uid="Community ban" FocusVisualStyle="{x:Null}"
                                                 Content="The account is not allowed to interact with the Steam community. The details or date of the unban are unknown"
                                                 Tag="{Binding CurrentAccount.HaveCommunityBan,Mode=OneWay}" 
                                                 Template="{StaticResource BanChipTemplate}"/>
-                            </StackPanel>
+                                </StackPanel>
 
 
-                            <StackPanel HorizontalAlignment="Right">
+                                <StackPanel HorizontalAlignment="Right">
 
-                                <ContentControl Uid="Game ban" FocusVisualStyle="{x:Null}"
+                                    <ContentControl Uid="Game ban" FocusVisualStyle="{x:Null}"
                                                 Margin="0 0 0 15"
                                                 d:Content="Bans received in some games: Counter Strike Global Offensive, Naraka Bladepoint"
                                                  Content="{Binding GameBanDetails,Mode=OneWay}"
                                                 Tag="{Binding CurrentAccount.GameBansCount,Mode=OneWay}" d:Tag=""
                                                 Template="{StaticResource BanChipTemplate}"/>
 
-                                <ContentControl Uid="Economy ban" FocusVisualStyle="{x:Null}"
+                                    <ContentControl Uid="Economy ban" FocusVisualStyle="{x:Null}"
                                                  Content="{Binding EconomyBanDetails,Mode=OneWay}"
                                                 Tag="{Binding CurrentAccount.EconomyBan,Mode=OneWay}"
                                                 Template="{StaticResource BanChipTemplate}"/>
 
-                            </StackPanel>
+                                </StackPanel>
 
-                        </Grid>
-                        <!--#endregion-->
+                            </Grid>
+                            <!--#endregion-->
 
-                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"
+                            <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"
                                    Visibility="{Binding AdditionalControlsVis,Mode=OneWay}"/>
 
 
-                        <!--#region Credentials -->
+                            <!--#region Credentials -->
 
 
                             <Expander Margin="15 10" x:Name="SteamExpander"
                                   Tag="{x:Static Icon:PackIconMaterialKind.Fingerprint}"
                                   Uid="Steam credentials"  IsExpanded="{Binding IsSteamCredentialsExpanded}"
                                   OverridesDefaultStyle="True" Template="{StaticResource  ExpanderTemplate}">
-                            <Expander.Header>
-                                <Icon:PackIconMaterial Kind="Alert" 
+                                <Expander.Header>
+                                    <Icon:PackIconMaterial Kind="Alert" 
                                                        ToolTipService.InitialShowDelay="300"
                                                        Visibility="{Binding SteamCrenetialsErr,Mode=OneWay,Converter={StaticResource ToVisibilityConverter}}"
                                                        ToolTip="{Binding SteamCrenetialsErr,Mode=OneWay}"
                                                        Foreground="{DynamicResource ErrorBrush}" />
-                            </Expander.Header>
-                            <StackPanel HorizontalAlignment="Left" Width="300" TextBlock.FontWeight="Normal">
+                                </Expander.Header>
+                                <StackPanel HorizontalAlignment="Left" Width="300" TextBlock.FontWeight="Normal">
 
-                                <ext:TemplateDecorator Title="Steam login" Icon="{x:Static Icon:PackIconMaterialKind.Account}"
+                                    <ext:TemplateDecorator Title="Steam login" Icon="{x:Static Icon:PackIconMaterialKind.Account}"
                                                        Margin="0 0 0 10">
                                         <TextBox Style="{StaticResource ModernTextBox}" MaxLength="32"
                                                  Height="35" PreviewTextInput="LoginPreviewTextInput"
@@ -594,22 +594,22 @@
                                                  IsReadOnly="True" IsReadOnlyCaretVisible="False"
                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
-                                </ext:TemplateDecorator>
+                                    </ext:TemplateDecorator>
 
-                                <ext:TemplateDecorator Title="Steam password" Icon="{x:Static Icon:PackIconMaterialKind.Key}">
+                                    <ext:TemplateDecorator Title="Steam password" Icon="{x:Static Icon:PackIconMaterialKind.Key}">
                                         <ext:PasswordBox CornerRadius="5" MaxLength="50"
                                                      Password="{Binding Password,UpdateSourceTrigger=PropertyChanged}"
                                                      SelectionBrush="{DynamicResource LightBlueGrad}"
                                                      IsPasswordShown="{Binding IsPasswordShown}"
                                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
-                                </ext:TemplateDecorator>
-                            </StackPanel>
-                        </Expander>
+                                    </ext:TemplateDecorator>
+                                </StackPanel>
+                            </Expander>
 
-                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
+                            <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
 
-                        <Expander Margin="15 10" x:Name="LinksExpander"
+                            <Expander Margin="15 10" x:Name="LinksExpander"
                                   Tag="{x:Static Icon:PackIconMaterialKind.LinkVariant}"
                                   IsExpanded="{Binding IsExternalCredentialsExpanded}"
                                   Uid="Credentials of external links"
@@ -626,23 +626,23 @@
 
                                     <ext:TemplateDecorator Title="E-mail adress" Icon="{x:Static Icon:PackIconMaterialKind.At}"
                                                        Margin="0 0 0 10" >
-                                    <TextBox Style="{StaticResource ModernTextBox}" Height="35"
+                                        <TextBox Style="{StaticResource ModernTextBox}" Height="35"
                                              MaxLength="50"
                                              Text="{Binding ExternalEmail,Mode=TwoWay,UpdateSourceTrigger=LostFocus}"
                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
-                                </ext:TemplateDecorator>
+                                    </ext:TemplateDecorator>
 
                                     <ext:TemplateDecorator Title="Pasword" Icon="{x:Static Icon:PackIconMaterialKind.KeyLink}"
                                                        DockPanel.Dock="Bottom" Grid.Row="1">
-                                    <ext:PasswordBox CornerRadius="5"
+                                        <ext:PasswordBox CornerRadius="5"
                                                      MaxLength="50"
                                                      Password="{Binding ExternalPassword,Mode=TwoWay,UpdateSourceTrigger=LostFocus}"
                                                      IsPasswordShown="{Binding IsPasswordShown}"
                                                      SelectionBrush="{DynamicResource LightBlueGrad}"
                                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
-                                </ext:TemplateDecorator>
+                                    </ext:TemplateDecorator>
 
                                     <WrapPanel MaxWidth="100" 
                                                Grid.Column="1" 
@@ -671,28 +671,28 @@
                                                      ToolTip="Epic games account"/>
                                     </WrapPanel>
                                 </Grid>
-                        </Expander>
-                        <!--#endregion-->
+                            </Expander>
+                            <!--#endregion-->
 
-                        <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
+                            <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
 
-                        <!--#region Note -->
-                        <Border Margin="15" Background="{DynamicResource BackgroundGrad}" 
+                            <!--#region Note -->
+                            <Border Margin="15" Background="{DynamicResource BackgroundGrad}" 
                                 CornerRadius="10" Padding="8">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="30"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Icon:PackIconMaterial Kind="NoteEdit"
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Icon:PackIconMaterial Kind="NoteEdit"
                                                        Margin="5" Width="20"
                                                        Height="20"
                                                        Foreground="{DynamicResource PrimarySubBrush}"/>
 
-                                <TextBlock  Margin="35 -2 0 0" Text="Note abount account"
+                                    <TextBlock  Margin="35 -2 0 0" Text="Note abount account"
                                             VerticalAlignment="Center"/>
 
-                                <TextBox Grid.Row="1" Background="Transparent" BorderThickness="0"
+                                    <TextBox Grid.Row="1" Background="Transparent" BorderThickness="0"
                                          Text="{Binding CurrentAccount.Note ,UpdateSourceTrigger=PropertyChanged}"
                                          TextInput="AutoSaveTextInput"
                                          FontWeight="Normal" MinHeight="80" MaxHeight="280"
@@ -705,16 +705,15 @@
                                          SelectionBrush="{DynamicResource LightBlueGrad}"
                                          Foreground="{DynamicResource SecondaryForegroundBrush}"/>
 
-                            </Grid>
-                        </Border>
-                        <!--#endregion-->
+                                </Grid>
+                            </Border>
+                            <!--#endregion-->
 
-                    </StackPanel>
-
-                </TabItem>
+                        </StackPanel>
+                    </TabItem>
 
                 <TabItem Header="Games" Tag="{x:Static Icon:PackIconMaterialKind.GamepadVariantOutline}">
-                        <DataGrid d:ItemsSource="{d:SampleData ItemCount=10}" 
+                     <DataGrid d:ItemsSource="{d:SampleData ItemCount=10}" 
                                   ItemsSource="{Binding Games,Mode=OneWay}" Height="756">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Width="135" >
@@ -778,6 +777,24 @@
 
     </DockPanel>
     </ScrollViewer>
+
+    <TextBlock VerticalAlignment="Top" 
+               HorizontalAlignment="Center" Margin="280 150 0 0"
+               FontSize="40" FontWeight="Bold" Foreground="{DynamicResource PrimaryForegroundBrush}">
+        <TextBlock.Style>
+            <Style TargetType="TextBlock">
+                <Setter Property="Text" Value=""/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding LoadingState}" Value="1">
+                        <Setter Property="Text" Value="No results"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding LoadingState}" Value="2">
+                        <Setter Property="Text" Value="Loading. . ."/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </TextBlock.Style>
+    </TextBlock>
 
     <Button Style="{StaticResource FlatButton}" VerticalAlignment="Top"
             Command="{Binding BackCommand,Mode=OneTime}"

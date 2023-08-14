@@ -53,6 +53,11 @@ namespace SteamOrganizer.MVVM.ViewModels
                 {
                     LoadGames();
                 }
+                else if(_loadingState != 0)
+                {
+                    LoadingState = 0;
+                }
+                
                 _selectedTabIndex = value;
             }
         }
@@ -269,6 +274,13 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         #endregion
 
+        private byte _loadingState = 0;
+        public byte LoadingState
+        {
+            get => _loadingState;
+            set => SetProperty(ref _loadingState, value);
+        }
+
         public SteamParser.UserOwnedGamesObject.Game[] Games { get; private set; }
 
         #endregion
@@ -366,26 +378,39 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             FullAvatar = null;
         }
-        
-        private void LoadGames()
+
+        private async void LoadGames()
         {
-            var path = Path.Combine(CachingManager.GamesCachePath, CurrentAccount.SteamID64.ToString());
-            if (Games != null || !File.Exists(path))
+            if (Games != null)
                 return;
 
-            if (!FileCryptor.Deserialize(path, out SteamParser.UserOwnedGamesObject.Game[] games) || games.Length == 0)
+            var path = Path.Combine(CachingManager.GamesCachePath, CurrentAccount.SteamID64.ToString());
+
+            LoadingState = 2;
+
+            if (File.Exists(path) && FileCryptor.Deserialize(path, out SteamParser.UserOwnedGamesObject.Game[] games))
             {
-                //todo something
+                Games = games;
+            }
+
+            if ((Games == null || Games.Length == 0) && CurrentAccount.GamesCount > 0 && WebBrowser.IsNetworkAvailable)
+            {
+                Games = await SteamParser.GetPlayerOwnedGames(CurrentAccount.SteamID64.Value);
+            }
+            else
+            {
+                LoadingState = 1;
                 return;
             }
 
 
-            foreach (var game in Games = games)
+            foreach (var game in Games)
             {
                 game.BitmapSource = CachingManager.GetGameHeaderPreview(game.AppID);
             }
 
             OnPropertyChanged(nameof(Games));
+            LoadingState = 0;
         }
 
         private async Task OnCopying(object data,object target)
