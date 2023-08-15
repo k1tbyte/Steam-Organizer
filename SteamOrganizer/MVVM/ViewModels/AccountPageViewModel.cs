@@ -401,11 +401,6 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            foreach (var game in Games)
-            {
-                game.BitmapSource = CachingManager.GetGameHeaderPreview(game.AppID);
-            }
-
             OnPropertyChanged(nameof(Games));
             LoadingState = 0;
         }

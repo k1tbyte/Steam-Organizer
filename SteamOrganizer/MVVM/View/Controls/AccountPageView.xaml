@@ -713,7 +713,7 @@
                     </TabItem>
 
                 <TabItem Header="Games" Tag="{x:Static Icon:PackIconMaterialKind.GamepadVariantOutline}">
-                     <DataGrid d:ItemsSource="{d:SampleData ItemCount=10}" 
+                     <DataGrid d:ItemsSource="{d:SampleData ItemCount=10}" VirtualizingPanel.VirtualizationMode="Standard"
                                   ItemsSource="{Binding Games,Mode=OneWay}" Height="756">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Width="135" >
@@ -730,15 +730,23 @@
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="DataGridCell">
-                                                        <Rectangle Width="120" Height="56" Cursor="Hand" 
-                                                                   Opacity="0.9" RadiusX="3" RadiusY="3"
-                                                                   Stroke="{DynamicResource LightBlueGrad}"
-                                                                   StrokeThickness="2" StrokeDashArray="41"
-                                                                   StrokeDashCap="Triangle">
-                                                            <Rectangle.Fill>
-                                                                <ImageBrush ImageSource="{Binding BitmapSource,Mode=OneTime}" />
-                                                            </Rectangle.Fill>
-                                                        </Rectangle>
+                                                        <Image Width="120" Height="56" >
+                                                            <Image.OpacityMask>
+                                                                <VisualBrush>
+                                                                    <VisualBrush.Visual>
+                                                                        <Rectangle RadiusX="3" RadiusY="3" Fill="White" Width="120" Height="56" 
+                                                                                   Stroke="White"
+                                                                                   StrokeThickness="6" StrokeDashArray="11"
+                                                                                   StrokeDashCap="Triangle"/>
+                                                                    </VisualBrush.Visual>
+                                                                </VisualBrush>
+                                                            </Image.OpacityMask>
+                                                            <Image.Source>
+                                                                <BitmapImage  DecodePixelWidth="120" DownloadCompleted="BitmapImage_DownloadCompleted"
+                                                                              DecodePixelHeight="56" CacheOption="OnLoad"
+                                                                              UriSource="{Binding PreviewUrl,Mode=OneTime}"/>
+                                                            </Image.Source>
+                                                        </Image>
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>

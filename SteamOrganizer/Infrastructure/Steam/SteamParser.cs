@@ -99,6 +99,7 @@ namespace SteamOrganizer.Infrastructure.Steam
             internal class Game
             {
                 public uint AppID { get; set; }
+                public string PreviewUrl => $"https://cdn.akamai.steamstatic.com/steam/apps/{AppID}/header.jpg";
                 public float Playtime_forever { get; set; }
                 public string Name { get; set; }
 
@@ -108,10 +109,6 @@ namespace SteamOrganizer.Infrastructure.Steam
                 [field: NonSerialized]
                 [JsonIgnore]
                 public uint? Price { get; set; }
-
-                [field: NonSerialized]
-                [JsonIgnore]
-                public object BitmapSource { get; set; }
             }
 
             public OwnedGamesResponse Response;
