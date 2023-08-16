@@ -361,11 +361,6 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async void OnDatabaseLoaded()
         {
-            // We load images in another thread so as not to block the UI thread
-            // !!! Note !!!
-            // If without in background we will catch deadlock o_O (if at least one image needs to be downloaded)
-            await Utils.InBackgroundAwait(() => Parallel.ForEach(Accounts, acc => acc.LoadImage()));
-
             AccountsCollectionView = CollectionViewSource.GetDefaultView(Accounts);
 
             if (WebBrowser.IsNetworkAvailable)

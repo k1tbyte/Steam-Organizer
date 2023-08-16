@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Drawing;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Web;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -105,7 +106,7 @@ namespace SteamOrganizer.Helpers
 
         private static BitmapImage DefaultGameHeader;
 
-        internal static object GetGameHeaderPreview(uint gameId)
+        internal static BitmapImage GetGameHeaderPreview(uint gameId)
         {
             if (gameId < MinSteamAppId || gameId % 10 != 0)
             {
@@ -115,9 +116,9 @@ namespace SteamOrganizer.Helpers
 
             var path = $"{PreviewsCachePath}\\{gameId}";
 
-            if(File.Exists(path))
+            if (File.Exists(path))
             {
-                return path;
+                return new BitmapImage().BeginBuild().FinalizeBuild(new FileStream(path, FileMode.Open, FileAccess.ReadWrite));
             }
 
             if (!WebBrowser.IsNetworkAvailable)
@@ -125,12 +126,12 @@ namespace SteamOrganizer.Helpers
 
             return App.Current.Dispatcher.Invoke(() =>
             {
-                var STAbitmap               = new BitmapImage().BeginBuild();
+                var STAbitmap = new BitmapImage().BeginBuild();
                 STAbitmap.DecodePixelHeight = 56;
-                STAbitmap.DecodePixelWidth  = 120;
+                STAbitmap.DecodePixelWidth = 120;
                 return STAbitmap.FinalizeBuild(new Uri($"https://cdn.akamai.steamstatic.com/steam/apps/{gameId}/header.jpg"), path);
             });
-                 
+
         }
 
 
@@ -139,6 +140,7 @@ namespace SteamOrganizer.Helpers
         /// <summary>
         ///  Default init for any bitmap
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BitmapImage BeginBuild(this BitmapImage img)
         {
             img.BeginInit();
@@ -149,6 +151,7 @@ namespace SteamOrganizer.Helpers
         /// <summary>
         /// Init from local cache bitmap with freezing and stream disposing 
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BitmapImage FinalizeBuild(this BitmapImage img, Stream stream)
         {
             img.StreamSource = stream;
@@ -162,6 +165,7 @@ namespace SteamOrganizer.Helpers
         /// Init from web uri and store cache on local disk
         /// </summary>
         /// <param name="path">Stored cache path</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BitmapImage FinalizeBuild(this BitmapImage img, Uri uri, string path)
         {
             img.UriSource = uri;

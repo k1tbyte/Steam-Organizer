@@ -56,14 +56,26 @@ namespace SteamOrganizer.MVVM.Models
         public ulong? SteamID64 { get; set; }
         [JsonIgnore]
         public bool IsFullyParsed => SteamID64 != null;
-        public string AvatarHash { get; set; }
         public byte VisibilityState { get; set; }
         public string VanityURL { get; set; }
         public int? SteamLevel { get; set; }
         public DateTime? LastUpdateDate { get; set; }
         public DateTime? CreatedDate { get; set; }
-
         public DateTime AddedDate { get; set; }
+
+        private string _avatarHash;
+        public string AvatarHash
+        {
+            get => _avatarHash;
+            set
+            {
+                if (_avatarHash == value)
+                    return;
+
+                _avatarHash = value;
+                InvokePropertyChanged(AvatarChangedEventArgs);
+            }
+        }
 
         [JsonIgnore]
         public float? YearsOfService => CreatedDate == null ? null : (float?)Math.Floor((DateTime.Now - CreatedDate.Value).TotalDays / 365.25 * 10) / 10;
@@ -113,8 +125,7 @@ namespace SteamOrganizer.MVVM.Models
         }
 
         [JsonIgnore]
-        [field: NonSerialized]
-        public BitmapImage AvatarBitmap { get; private set; }
+        public BitmapImage AvatarBitmap => CachingManager.GetCachedAvatar(AvatarHash, 0, 0, size: EAvatarSize.medium);
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
@@ -122,16 +133,6 @@ namespace SteamOrganizer.MVVM.Models
         [JsonIgnore]
         [field: NonSerialized]
         public bool IsCurrentlyUpdating { get; set; }
-
-        public void LoadImage(bool propertyChanged = true)
-        {
-            AvatarBitmap = CachingManager.GetCachedAvatar(AvatarHash, 0, 0, size: EAvatarSize.medium);
-
-            if(propertyChanged)
-            {
-                InvokePropertyChanged(AvatarChangedEventArgs);
-            }
-        }
 
         public string GetProfileUrl() 
             => SteamID64 == null ? WebBrowser.SteamHost : WebBrowser.SteamProfilesHost + SteamID64.ToString();
@@ -184,7 +185,6 @@ namespace SteamOrganizer.MVVM.Models
 
         internal Account(string login, string password)
         {
-            LoadImage(propertyChanged: false);
             this.AddedDate = DateTime.Now;
             this.Nickname  = this.Login = login;
             this.Password  = password;

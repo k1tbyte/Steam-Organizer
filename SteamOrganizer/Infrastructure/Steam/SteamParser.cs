@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace SteamOrganizer.Infrastructure.Steam
 {
@@ -99,7 +100,6 @@ namespace SteamOrganizer.Infrastructure.Steam
             internal class Game
             {
                 public uint AppID { get; set; }
-                public string PreviewUrl => $"https://cdn.akamai.steamstatic.com/steam/apps/{AppID}/header.jpg";
                 public float Playtime_forever { get; set; }
                 public string Name { get; set; }
 
@@ -109,6 +109,9 @@ namespace SteamOrganizer.Infrastructure.Steam
                 [field: NonSerialized]
                 [JsonIgnore]
                 public uint? Price { get; set; }
+
+                [JsonIgnore]
+                public BitmapImage BitmapSource => CachingManager.GetGameHeaderPreview(AppID);
             }
 
             public OwnedGamesResponse Response;
@@ -177,12 +180,7 @@ namespace SteamOrganizer.Infrastructure.Steam
                 return false;
             }
 
-
-            if(acc.AvatarHash != summary.Avatarhash)
-            {
-                acc.AvatarHash = summary.Avatarhash;
-                acc.LoadImage();
-            }
+            acc.AvatarHash      = summary.Avatarhash;
             acc.Nickname        = summary.Personaname;
             acc.VisibilityState = summary.CommunityVisibilityState;
             var id              = summary.ProfileURL.Split('/');

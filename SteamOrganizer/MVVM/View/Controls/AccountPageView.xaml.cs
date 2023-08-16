@@ -1,12 +1,16 @@
-﻿using SteamOrganizer.Helpers.Encryption;
+﻿using SteamKit2;
+using SteamOrganizer.Helpers;
+using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.ViewModels;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace SteamOrganizer.MVVM.View.Controls
 {
@@ -79,12 +83,6 @@ namespace SteamOrganizer.MVVM.View.Controls
             isLoginToolTipShown = true;
             await Utils.OpenAutoClosableToolTip(sender as FrameworkElement, App.FindString("apv_uniq_login_tip"), 3000);
             isLoginToolTipShown = false;
-        }
-
-        int i = 0;
-        private void BitmapImage_DownloadCompleted(object sender, System.EventArgs e)
-        {
-            Console.WriteLine(++i);
         }
     }
 }
