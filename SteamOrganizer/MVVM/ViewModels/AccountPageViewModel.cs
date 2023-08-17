@@ -53,6 +53,10 @@ namespace SteamOrganizer.MVVM.ViewModels
                 {
                     LoadGames();
                 }
+                else if(value == 2)
+                {
+                    LoadFriends();
+                }
                 else if(_loadingState != 0)
                 {
                     LoadingState = 0;
@@ -282,6 +286,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         }
 
         public SteamParser.UserOwnedGamesObject.Game[] Games { get; private set; }
+        public SteamParser.UserFriendsObject.Friend[] Friends { get; private set; }
 
         #endregion
 
@@ -402,6 +407,30 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
 
             OnPropertyChanged(nameof(Games));
+            LoadingState = 0;
+        }
+
+        private async void LoadFriends()
+        {
+            if (Friends != null)
+                return;
+
+            var path = Path.Combine(CachingManager.FriendsCachePath, CurrentAccount.SteamID64.ToString());
+            LoadingState = 2;
+
+            if (File.Exists(path) || (CurrentAccount.VisibilityState == 3 && await SteamParser.ParseFriends(CurrentAccount)))
+            {
+                FileCryptor.Deserialize(path, out SteamParser.UserFriendsObject.Friend[] friends);
+                Friends = friends;
+            }
+
+            if (Friends == null || Friends.Length == 0)
+            {
+                LoadingState = 1;
+                return;
+            }
+
+            OnPropertyChanged(nameof(Friends));
             LoadingState = 0;
         }
 

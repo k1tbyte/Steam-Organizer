@@ -84,5 +84,10 @@ namespace SteamOrganizer.MVVM.View.Controls
             await Utils.OpenAutoClosableToolTip(sender as FrameworkElement, App.FindString("apv_uniq_login_tip"), 3000);
             isLoginToolTipShown = false;
         }
+
+        private void OpenContextMenu(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            (sender as FrameworkElement).ContextMenu.IsOpen = true;
+        }
     }
 }

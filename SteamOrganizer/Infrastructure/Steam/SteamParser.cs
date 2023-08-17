@@ -162,6 +162,9 @@ namespace SteamOrganizer.Infrastructure.Steam
                 [JsonIgnore]
                 public DateTime? FriendSinceDate { get; set; }
 
+                [JsonIgnore]
+                public BitmapImage BitmapSource => CachingManager.GetCachedAvatar(Avatarhash);
+
             }
 
             public UserFriendsResponse FriendsList;

@@ -95,7 +95,62 @@
               Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}" 
               Data="M19 4H5A3 3 0 0 0 2 7V17a3 3 0 0 0 3 3H19a3 3 0 0 0 3-3V7A3 3 0 0 0 19 4Zm-.41 2-5.88 5.88a1 1 0 0 1-1.42 0L5.41 6ZM20 17a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7.41l5.88 5.88a3 3 0 0 0 4.24 0L20 7.41Z"
         />
-        
+
+        <ContextMenu x:Key="FriendsContextMenu">
+            <MenuItem Icon="{x:Static Icon:PackIconMaterialKind.TicketAccount}"
+                      Header="Account page"/>
+            <MenuItem Icon="{x:Static Icon:PackIconMaterialKind.AndroidMessages}"
+                      Header="Send message"/>
+            <MenuItem Icon="{x:Static Icon:PackIconMaterialKind.AccountRemove}"
+                      Header="Remove friend" Foreground="{DynamicResource ErrorBrush}"/>
+        </ContextMenu>
+
+        <ContextMenu x:Key="GamesContextMenu">
+            <MenuItem Icon="{x:Static Icon:PackIconMaterialKind.Database}"
+              Header="Open in SteamDB"/>
+            <MenuItem Icon="{x:Static Icon:PackIconMaterialKind.Steam}"
+                      Header="Install on computer"/>
+        </ContextMenu>
+
+        <ControlTemplate x:Key="ContainerTemplate" TargetType="DataGridCell">
+            <StackPanel Orientation="Horizontal">
+                <Icon:PackIconMaterial Kind="Plus" Background="Transparent"
+                               VerticalAlignment="Center"
+                               Margin="0 0 7 0" Cursor="Hand"
+                               Width="10" Height="10" Foreground="{DynamicResource TertiaryForegroundBrush}"
+                               ContextMenu="{TemplateBinding Tag}">
+                    <Icon:PackIconMaterial.Style>
+                        <Style TargetType="Icon:PackIconMaterial">
+                            <Style.Triggers>
+                                <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+                                                    <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
+                                                </BooleanAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Icon:PackIconMaterial.Style>
+                </Icon:PackIconMaterial>
+
+                <Rectangle Width="{TemplateBinding MinWidth}" Height="{TemplateBinding MinHeight}" Cursor="Hand" 
+               Opacity="0.9" RadiusX="3" RadiusY="3" Margin="0 0 5 0"
+               Stroke="{DynamicResource LightBlueGrad}"
+               StrokeThickness="2" StrokeDashArray="41"
+               StrokeDashCap="Triangle">
+                    <Rectangle.Fill>
+                        <ImageBrush ImageSource="{Binding BitmapSource,Mode=OneTime}" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </StackPanel>
+
+        </ControlTemplate>
+
     </Grid.Resources>
 
     <ScrollViewer x:Name="Scroll">
@@ -710,13 +765,13 @@
                             <!--#endregion-->
 
                         </StackPanel>
-                    </TabItem>
+                </TabItem>
 
                 <TabItem Header="Games" Tag="{x:Static Icon:PackIconMaterialKind.GamepadVariantOutline}">
                      <DataGrid d:ItemsSource="{d:SampleData ItemCount=10}" VirtualizingPanel.VirtualizationMode="Recycling"
-                                  ItemsSource="{Binding Games,Mode=OneWay}" Height="756">
+                                  ItemsSource="{Binding Games,Mode=OneWay}" MaxHeight="756">
                             <DataGrid.Columns>
-                                <DataGridTemplateColumn Width="135" >
+                                <DataGridTemplateColumn>
                                     <DataGridTemplateColumn.Header>
                                         <Button Style="{StaticResource FlatButton}"
                                                 Height="40" Width="135">
@@ -727,21 +782,10 @@
                                         <Style TargetType="DataGridCell" >
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
                                             <Setter Property="Margin" Value="10 0 0 0"/>
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="DataGridCell">
-                                                        <Rectangle Width="120" Height="56" Cursor="Hand" 
-                                                                   Opacity="0.9" RadiusX="3" RadiusY="3"
-                                                                   Stroke="{DynamicResource LightBlueGrad}"
-                                                                   StrokeThickness="2" StrokeDashArray="41"
-                                                                   StrokeDashCap="Triangle">
-                                                            <Rectangle.Fill>
-                                                                <ImageBrush ImageSource="{Binding BitmapSource,Mode=OneTime}" />
-                                                            </Rectangle.Fill>
-                                                        </Rectangle>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
+                                            <Setter Property="MinHeight" Value="56"/>
+                                            <Setter Property="MinWidth" Value="120"/>
+                                            <Setter Property="Tag" Value="{StaticResource GamesContextMenu}"/>
+                                            <Setter Property="Template" Value="{StaticResource ContainerTemplate}"/>
                                         </Style>
                                     </DataGridTemplateColumn.CellStyle>
                                 </DataGridTemplateColumn>
@@ -766,11 +810,48 @@
                                                     Foreground="{DynamicResource SuccessGrad}"
                                                     ElementStyle="{StaticResource  DataGridTextBlockCenter}" />
                             </DataGrid.Columns>
-                        </DataGrid>
+                      </DataGrid>
                 </TabItem>
                 <TabItem Header="Friends" Tag="{x:Static Icon:PackIconMaterialKind.AccountGroupOutline}">
+                        <DataGrid d:ItemsSource="{d:SampleData ItemCount=10}" VirtualizingPanel.VirtualizationMode="Recycling"
+             ItemsSource="{Binding Friends,Mode=OneWay}" MaxHeight="756">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.Header>
+                                        <Button Style="{StaticResource FlatButton}"
+                           Height="40">
+                                            <Icon:PackIconMaterial Kind="TableSearch" Margin="0 3 0 0"/>
+                                        </Button>
+                                    </DataGridTemplateColumn.Header>
+                                    <DataGridTemplateColumn.CellStyle>
+                                        <Style TargetType="DataGridCell" >
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="Margin" Value="10 0 5 0"/>
+                                            <Setter Property="MinHeight" Value="56"/>
+                                            <Setter Property="MinWidth" Value="56"/>
+                                            <Setter Property="Tag" Value="{StaticResource FriendsContextMenu}"/>
+                                            <Setter Property="Template" Value="{StaticResource ContainerTemplate}"/>
+                                        </Style>
+                                    </DataGridTemplateColumn.CellStyle>
+                                </DataGridTemplateColumn>
 
-                </TabItem>
+                                <DataGridTextColumn Header="Nickname"  
+                               Binding="{Binding PersonaName,Mode=OneTime}"
+                               IsReadOnly="True" Width="150"
+                               ElementStyle="{DynamicResource DataGridTextBlock}" 
+                               Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+
+                                <DataGridTextColumn Header="ID" Binding="{Binding SteamID,Mode=OneTime}" 
+                               IsReadOnly="True" Width="*" 
+                               TextBlock.TextAlignment="Center"
+                               ElementStyle="{StaticResource DataGridTextBlockCenter}"/>
+                                <DataGridTextColumn Header="Friend since" 
+                               Binding="{Binding FriendSinceDate,Mode=OneTime,StringFormat=d}"
+                               IsReadOnly="True" Width="*"
+                               ElementStyle="{StaticResource  DataGridTextBlockCenter}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
             </TabControl>
             
         </Border>
