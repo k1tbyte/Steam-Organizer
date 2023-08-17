@@ -17,6 +17,7 @@ namespace SteamOrganizer.Infrastructure
 
         internal const byte MaxConnections        = 5;
         internal const byte MaxAttempts           = 5;
+        internal const int MaxSteamHeaderSize     = 7500; //8 kibibyte  = 8192 (reserve for other headers)
 
         /// <summary>
         /// Time in ms

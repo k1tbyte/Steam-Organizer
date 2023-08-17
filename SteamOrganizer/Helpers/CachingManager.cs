@@ -21,6 +21,7 @@ namespace SteamOrganizer.Helpers
     {
         internal static string AvatarsCachePath;
         internal static string GamesCachePath;
+        internal static string FriendsCachePath;
         internal static string PreviewsCachePath;
         private static readonly ConcurrentDictionary<string,BitmapImage> CachedImages = new ConcurrentDictionary<string,BitmapImage>();
         private const uint MinSteamAppId = 10u;
@@ -32,6 +33,7 @@ namespace SteamOrganizer.Helpers
             Utils.CreateDirIfNotExists(App.CacheFolderPath, attributes);
             Utils.CreateDirIfNotExists(AvatarsCachePath  = Path.Combine(App.CacheFolderPath,"avatars"), attributes);
             Utils.CreateDirIfNotExists(GamesCachePath    = Path.Combine(App.CacheFolderPath, "games"), attributes);
+            Utils.CreateDirIfNotExists(FriendsCachePath  = Path.Combine(App.CacheFolderPath, "friends"), attributes);
             Utils.CreateDirIfNotExists(PreviewsCachePath = Path.Combine(App.CacheFolderPath, "preview"), attributes);
         }
 

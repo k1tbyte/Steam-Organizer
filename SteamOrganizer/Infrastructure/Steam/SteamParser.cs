@@ -5,9 +5,11 @@ using SteamOrganizer.MVVM.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 
 namespace SteamOrganizer.Infrastructure.Steam
 {
@@ -18,7 +20,8 @@ namespace SteamOrganizer.Infrastructure.Steam
                 22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000
              };
 
-        private static readonly UserOwnedGamesObject.Game[] GamesDummy = new UserOwnedGamesObject.Game[0];
+        private static readonly UserOwnedGamesObject.Game[] GamesDummy  = new UserOwnedGamesObject.Game[0];
+        private static readonly UserFriendsObject.Friend[] FriendsDummy = new UserFriendsObject.Friend[0];
 
         internal enum EParseResult : byte
         {
@@ -108,7 +111,7 @@ namespace SteamOrganizer.Infrastructure.Steam
 
                 [field: NonSerialized]
                 [JsonIgnore]
-                public uint? Price { get; set; }
+                public uint? Price;
 
                 [JsonIgnore]
                 public BitmapImage BitmapSource => CachingManager.GetGameHeaderPreview(AppID);
@@ -142,10 +145,23 @@ namespace SteamOrganizer.Infrastructure.Steam
                 public Friend[] Friends;
             }
 
+            [Serializable]
             internal class Friend
             {
-                public ulong SteamID;
-                public long Friend_since;
+                public ulong SteamID { get; set; }
+
+                [field: NonSerialized]
+                public long Friend_since { get; set; }
+
+                [JsonIgnore]
+                public string Avatarhash { get; set; }
+
+                [JsonIgnore]
+                public string PersonaName { get; set; }
+
+                [JsonIgnore]
+                public DateTime? FriendSinceDate { get; set; }
+
             }
 
             public UserFriendsResponse FriendsList;
@@ -334,7 +350,7 @@ namespace SteamOrganizer.Infrastructure.Steam
         internal static async Task<bool> ParseGames(Account acc, bool withDetails = true)
         {
             UserOwnedGamesObject.Game[] games = null;
-            Dictionary<uint, AppDetailsObject> gamesPrices = null;
+            var gamesPrices                   = new Dictionary<uint, AppDetailsObject>();
 
             try
             {
@@ -344,20 +360,48 @@ namespace SteamOrganizer.Infrastructure.Steam
                 if (games.Length < 1 || !withDetails)
                     return true;
 
-                var response = (await App.WebBrowser.GetStringAsync(
-                    $"https://store.steampowered.com/api/appdetails/?appids={string.Join(",", games.Select(o => o.AppID))}&l=en&filters=price_overview")
-                    )?.InjectionReplace(']', '}')?.InjectionReplace('[', '{');
+                var builder  = new StringBuilder("https://store.steampowered.com/api/appdetails/?appids=");
+                var requests = new List<string>(64);
+                var locker   = new object();
 
-                if (response == null)
-                    return false;
+                for (int i = 0; i < games.Length; i++)
+                {
+                    builder.Append(games[i].AppID);
+                    if (builder.Length >= WebBrowser.MaxSteamHeaderSize || i == games.Length - 1)
+                    {
+                        requests.Add(builder.Append("&l=en&filters=price_overview").ToString());
+                        builder.Clear().Append("https://store.steampowered.com/api/appdetails/?appids=");
+                        continue;
+                    }
+                    builder.Append(',');
+                }
 
-                gamesPrices = JsonConvert.DeserializeObject<Dictionary<uint, AppDetailsObject>>(response)?
-                    .Where(o => o.Value.Success && o.Value.Data?.Price_overview != null)?.ToDictionary(o => o.Key, o => o.Value);
+                Parallel.ForEach(requests, x =>
+                {
+                    for (int i = 0; i < WebBrowser.MaxAttempts; i++)
+                    {
+                        var response = App.WebBrowser.GetStringAsync(x).Result?.InjectionReplace(']', '}')?.InjectionReplace('[', '{');
 
-                gamesPrices = gamesPrices?.Any() == true ? gamesPrices : null;
+                        if (response == null || response.Length == 0)
+                        {
+                            continue;
+                        }
+
+                        lock(locker)
+                        {
+                            gamesPrices = gamesPrices.Concat(JsonConvert.DeserializeObject<Dictionary<uint, AppDetailsObject>>(response)?
+                                .Where(o => o.Value.Success && o.Value.Data?.Price_overview != null)).ToDictionary(o => o.Key, o => o.Value);
+                        }
+                        return;
+                    }
+
+                    App.Logger.Value.LogGenericDebug("Bad games price response. Response code: " + App.WebBrowser.LastStatusCode);
+                });
             }
             finally
             {
+                gamesPrices = gamesPrices?.Any() == true ? gamesPrices : null;
+
                 if (games?.Length >= 1)
                 {
                     acc.HoursOnPlayed = acc.PlayedGamesCount = acc.PaidGames = 0;
@@ -401,9 +445,48 @@ namespace SteamOrganizer.Infrastructure.Steam
             return true;
         }
 
+        internal static async Task<bool> ParseFriends(Account acc)
+        {
+            UserFriendsObject.Friend[] friends = null;
+
+            if (acc.SteamID64 == null || acc.VisibilityState != 3 || (friends = await GetPlayerFriends(acc.SteamID64.Value)) == null)
+                return false;
+
+            if (friends.Length < 1)
+                return true;
+
+            Array.Sort(friends, (x, y) => x.SteamID.CompareTo(y.SteamID));
+            var chunks = new List<UserFriendsObject.Friend[]>();
+
+            for (int i = 0; i < friends.Length; i += 100)
+            {
+                chunks.Add(friends
+                    .Skip(i)
+                    .Take(100).ToArray());
+            }
+
+            Parallel.ForEach(chunks, (chunk) =>
+            {
+                var summaries = GetPlayersSummaries(chunk.Select(o => o.SteamID).ToArray()).Result;
+                Array.Sort(summaries, (x, y) => x.SteamId.CompareTo(y.SteamId));
+                
+                for (int i = 0; i < chunk.Length; i++)
+                {
+                    chunk[i].Avatarhash      = summaries[i].Avatarhash;
+                    chunk[i].PersonaName     = summaries[i].Personaname;
+                    chunk[i].FriendSinceDate = Utils.UnixTimeToDateTime(chunk[i].Friend_since);
+                }
+            });
+
+            FileCryptor.Serialize(friends, System.IO.Path.Combine(CachingManager.FriendsCachePath, acc.SteamID64.ToString()));
+            return true;
+        }
+
+
+        #region API requests
         internal static async Task<int?> GetPlayerLevel(ulong steamId64)
         {
-            var response =  await App.WebBrowser.GetStringAsync(
+            var response = await App.WebBrowser.GetStringAsync(
                 $"http://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId64}")
                 .ConfigureAwait(false);
 
@@ -421,7 +504,7 @@ namespace SteamOrganizer.Infrastructure.Steam
 
             return response == null ? null : JsonConvert.DeserializeObject<UserSummariesObject>(response).Response.Players;
         }
-        
+
         internal static async Task<UserBansObject.Player[]> GetPlayersBans(params ulong[] steamIds)
         {
             if (steamIds.Length > 100)
@@ -449,7 +532,8 @@ namespace SteamOrganizer.Infrastructure.Steam
                 $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId}")
                 .ConfigureAwait(false);
 
-            return response == null ? null : JsonConvert.DeserializeObject<UserFriendsObject>(response).FriendsList.Friends;
-        }
+            return response == null ? null : JsonConvert.DeserializeObject<UserFriendsObject>(response).FriendsList.Friends ?? FriendsDummy;
+        } 
+        #endregion
     }
 }
