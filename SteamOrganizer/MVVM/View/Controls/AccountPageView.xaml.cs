@@ -29,7 +29,7 @@ namespace SteamOrganizer.MVVM.View.Controls
             this.DataContext         = ViewModel = new AccountPageViewModel(this, account);
             IDComboBox.SelectedIndex = 0;
             LinksExpander.IsExpanded = false;
-            UpdateButton.Visibility  = Visibility.Visible;
+            UpdateButton.Visibility  = account.Login == null ? Visibility.Collapsed : Visibility.Visible;
             Scroll.ScrollToTop();
         }
 
@@ -87,7 +87,10 @@ namespace SteamOrganizer.MVVM.View.Controls
 
         private void OpenContextMenu(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            (sender as FrameworkElement).ContextMenu.IsOpen = true;
+            var element                     = sender as FrameworkElement;
+            element.ContextMenu.DataContext = element.ContextMenu.DataContext ?? this.DataContext;
+            element.ContextMenu.Tag         = element.DataContext;
+            e.Handled                       = element.ContextMenu.IsOpen = true;
         }
     }
 }

@@ -159,7 +159,7 @@ namespace SteamOrganizer.MVVM.Models
             InvokePropertyChanged(nameof(EconomyBan));
         }
 
-        public async Task<bool> RetrieveInfo(bool markUpdate = false)
+        public async Task<bool> RetrieveInfo()
         {
             try
             {
@@ -167,9 +167,6 @@ namespace SteamOrganizer.MVVM.Models
 
                 if (await ParseInfo(this) != EParseResult.OK)
                     return false;
-
-                if (markUpdate)
-                    LastUpdateDate = DateTime.Now;
 
                 return true;
             }

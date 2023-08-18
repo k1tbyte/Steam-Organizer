@@ -322,7 +322,7 @@ namespace SteamOrganizer.Infrastructure.Steam
             return  EParseResult.OK;
         }
 
-        internal static async Task<EParseResult> ParseInfo(Account account)
+        internal static async Task<EParseResult> ParseInfo(Account account,bool detailed = true)
         {
             if (account == null)
                 return EParseResult.NoValidAccounts;
@@ -337,7 +337,7 @@ namespace SteamOrganizer.Infrastructure.Steam
                 return EParseResult.AttemptsExceeded;
 
             var bansTask  = GetPlayersBans(account.SteamID64.Value).ConfigureAwait(false);
-            var gamesTask = ParseGames(account);
+            var gamesTask = ParseGames(account,detailed);
             var levelTask = GetPlayerLevel(account.SteamID64.Value).ConfigureAwait(false);
 
             var bans  = await bansTask;
@@ -440,7 +440,11 @@ namespace SteamOrganizer.Infrastructure.Steam
                     }
 
                     SetGamesBadgeBoundary(acc);
-                    FileCryptor.Serialize(games, System.IO.Path.Combine(CachingManager.GamesCachePath, acc.SteamID64.ToString()));
+
+                    if(withDetails)
+                    {
+                        FileCryptor.Serialize(games, System.IO.Path.Combine(CachingManager.GamesCachePath, acc.SteamID64.ToString()));
+                    }
                 }
 
             }

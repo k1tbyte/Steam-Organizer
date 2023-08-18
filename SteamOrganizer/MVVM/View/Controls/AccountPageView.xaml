@@ -11,7 +11,8 @@
       d:DesignHeight="900" d:DesignWidth="780"
       d:Background="{DynamicResource PrimaryBackgroundBrush}"
       FocusVisualStyle="{x:Null}"
-      d:DataContext="{d:DesignInstance viewModel:AccountPageViewModel}">
+      d:DataContext="{d:DesignInstance viewModel:AccountPageViewModel}"
+      x:Name="Owner">
     <Grid.Resources>
         <Style x:Key="Links" TargetType="TextBlock">
             <Setter Property="Padding" Value="0 10 0 10"/>
@@ -98,10 +99,14 @@
 
         <ContextMenu x:Key="FriendsContextMenu">
             <MenuItem Icon="{x:Static Icon:PackIconMaterialKind.TicketAccount}"
+                      Command="{Binding OpenFriendPageCommand,Mode=OneTime}"
+                      CommandParameter="{Binding RelativeSource={RelativeSource Self},Path=Parent.Tag}"
                       Header="Account page"/>
             <MenuItem Icon="{x:Static Icon:PackIconMaterialKind.AndroidMessages}"
+                      Visibility="{Binding OnlineControlsVis,Mode=OneWay}"
                       Header="Send message"/>
             <MenuItem Icon="{x:Static Icon:PackIconMaterialKind.AccountRemove}"
+                      Visibility="{Binding OnlineControlsVis,Mode=OneWay}"
                       Header="Remove friend" Foreground="{DynamicResource ErrorBrush}"/>
         </ContextMenu>
 
@@ -109,34 +114,19 @@
             <MenuItem Icon="{x:Static Icon:PackIconMaterialKind.Database}"
               Header="Open in SteamDB"/>
             <MenuItem Icon="{x:Static Icon:PackIconMaterialKind.Steam}"
+                      Command="{Binding InstallGameCommand,Mode=OneTime}"
+                      CommandParameter="{Binding RelativeSource={RelativeSource Self},Path=Parent.Tag}"
                       Header="Install on computer"/>
         </ContextMenu>
 
         <ControlTemplate x:Key="ContainerTemplate" TargetType="DataGridCell">
-            <StackPanel Orientation="Horizontal">
-                <Icon:PackIconMaterial Kind="Plus" Background="Transparent"
-                               VerticalAlignment="Center"
-                               Margin="0 0 7 0" Cursor="Hand"
-                               Width="10" Height="10" Foreground="{DynamicResource TertiaryForegroundBrush}"
-                               ContextMenu="{TemplateBinding Tag}">
-                    <Icon:PackIconMaterial.Style>
-                        <Style TargetType="Icon:PackIconMaterial">
-                            <Style.Triggers>
-                                <EventTrigger RoutedEvent="MouseLeftButtonDown">
-                                    <EventTrigger.Actions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
-                                                    <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
-                                                </BooleanAnimationUsingKeyFrames>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger.Actions>
-                                </EventTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Icon:PackIconMaterial.Style>
-                </Icon:PackIconMaterial>
+            <StackPanel Orientation="Horizontal" x:Name="sas">
+
+                    <Icon:PackIconMaterial Kind="Plus" Width="10" Height="10"
+                                           VerticalAlignment="Center" Cursor="Hand"
+                                           Background="Transparent" Margin="0 0 5 0"
+                                           ContextMenu="{TemplateBinding Tag}"
+                                           PreviewMouseLeftButtonDown="OpenContextMenu"/>
 
                 <Rectangle Width="{TemplateBinding MinWidth}" Height="{TemplateBinding MinHeight}" Cursor="Hand" 
                Opacity="0.9" RadiusX="3" RadiusY="3" Margin="0 0 5 0"
@@ -306,7 +296,7 @@
             
             <!--#endregion-->
 
-            <Border CornerRadius="5"
+                <Border CornerRadius="5" Visibility="{Binding InteractionControlsVis,Mode=OneWay}"
                     Background="{DynamicResource SecondaryBackgroundBrush}"
                     Margin="0 10 0 0" Padding="10">
                     <Grid>
@@ -629,9 +619,10 @@
 
 
                             <Expander Margin="15 10" x:Name="SteamExpander"
-                                  Tag="{x:Static Icon:PackIconMaterialKind.Fingerprint}"
-                                  Uid="Steam credentials"  IsExpanded="{Binding IsSteamCredentialsExpanded}"
-                                  OverridesDefaultStyle="True" Template="{StaticResource  ExpanderTemplate}">
+                                      Visibility="{Binding InteractionControlsVis,Mode=OneWay}"
+                                      Tag="{x:Static Icon:PackIconMaterialKind.Fingerprint}"
+                                      Uid="Steam credentials"  IsExpanded="{Binding IsSteamCredentialsExpanded}"
+                                      OverridesDefaultStyle="True" Template="{StaticResource  ExpanderTemplate}">
                                 <Expander.Header>
                                     <Icon:PackIconMaterial Kind="Alert" 
                                                        ToolTipService.InitialShowDelay="300"
@@ -662,9 +653,10 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
+                            <Rectangle Visibility="{Binding InteractionControlsVis,Mode=OneWay}" Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
 
                             <Expander Margin="15 10" x:Name="LinksExpander"
+                                      Visibility="{Binding InteractionControlsVis,Mode=OneWay}"
                                   Tag="{x:Static Icon:PackIconMaterialKind.LinkVariant}"
                                   IsExpanded="{Binding IsExternalCredentialsExpanded}"
                                   Uid="Credentials of external links"
@@ -729,11 +721,12 @@
                             </Expander>
                             <!--#endregion-->
 
-                            <Rectangle Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
+                            <Rectangle Visibility="{Binding InteractionControlsVis,Mode=OneWay}" Height="3" Margin="0 10 0 10" Fill="{DynamicResource PrimaryBackgroundBrush}"/>
 
                             <!--#region Note -->
                             <Border Margin="15" Background="{DynamicResource BackgroundGrad}" 
-                                CornerRadius="10" Padding="8">
+                                    CornerRadius="10" Padding="8" 
+                                    Visibility="{Binding InteractionControlsVis,Mode=OneWay}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="30"/>
@@ -812,6 +805,7 @@
                             </DataGrid.Columns>
                       </DataGrid>
                 </TabItem>
+                
                 <TabItem Header="Friends" Tag="{x:Static Icon:PackIconMaterialKind.AccountGroupOutline}">
                         <DataGrid d:ItemsSource="{d:SampleData ItemCount=10}" VirtualizingPanel.VirtualizationMode="Recycling"
              ItemsSource="{Binding Friends,Mode=OneWay}" MaxHeight="756">
@@ -825,6 +819,7 @@
                                     </DataGridTemplateColumn.Header>
                                     <DataGridTemplateColumn.CellStyle>
                                         <Style TargetType="DataGridCell" >
+                                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
                                             <Setter Property="Margin" Value="10 0 5 0"/>
                                             <Setter Property="MinHeight" Value="56"/>
@@ -859,7 +854,7 @@
     </DockPanel>
     </ScrollViewer>
 
-    <TextBlock VerticalAlignment="Top" 
+    <TextBlock VerticalAlignment="Top" IsHitTestVisible="False"
                HorizontalAlignment="Center" Margin="280 150 0 0"
                FontSize="40" FontWeight="Bold" Foreground="{DynamicResource PrimaryForegroundBrush}">
         <TextBlock.Style>

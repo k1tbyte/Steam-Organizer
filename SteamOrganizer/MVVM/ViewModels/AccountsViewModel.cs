@@ -236,7 +236,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             if(planned.Count == 1)
             {
-                if (!await planned[0].RetrieveInfo(true))
+                if (!await planned[0].RetrieveInfo())
                     return;
             }
             else

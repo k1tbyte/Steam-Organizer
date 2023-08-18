@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
+using SteamKit2.GC.Dota.Internal;
 using SteamOrganizer.Helpers;
 using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
@@ -33,6 +34,10 @@ namespace SteamOrganizer.MVVM.ViewModels
         public AsyncRelayCommand UpdateCommand { get; }
         public AsyncRelayCommand CopySteamIDCommand { get; }
         public AsyncRelayCommand CopyAuthCodeCommand { get; }
+        public AsyncRelayCommand OpenFriendPageCommand { get; }
+
+        public RelayCommand InstallGameCommand { get; }
+        
         #endregion
 
 
@@ -41,6 +46,8 @@ namespace SteamOrganizer.MVVM.ViewModels
         private bool IsSteamCodeGenerating = false;
         private bool WaitingForSave = false;
         public Visibility AdditionalControlsVis { get; private set; } = Visibility.Visible;
+        public Visibility OnlineControlsVis { get; private set; } = Visibility.Collapsed;
+        public Visibility InteractionControlsVis { get; private set; } = Visibility.Visible;
         public bool IsPasswordShown { get; set; }
 
         private int _selectedTabIndex = 0;
@@ -51,11 +58,11 @@ namespace SteamOrganizer.MVVM.ViewModels
             {
                 if(value == 1)
                 {
-                    LoadGames();
+                    Utils.InBackground(LoadGames);
                 }
                 else if(value == 2)
                 {
-                    LoadFriends();
+                    Utils.InBackground(LoadFriends);
                 }
                 else if(_loadingState != 0)
                 {
@@ -406,6 +413,12 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
+            if(AppsPriceFormat == null && CurrentAccount.PaidGames != 0)
+            {
+                InitGamesInfo();
+                CurrentAccount.InvokePropertyChanged(nameof(CurrentAccount.PaidGames));
+            }    
+
             OnPropertyChanged(nameof(Games));
             LoadingState = 0;
         }
@@ -448,7 +461,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            if (!await CurrentAccount.RetrieveInfo(true))
+            if (!await CurrentAccount.RetrieveInfo())
             {
                 PushNotification.Open("An error occurred while trying to update account", type: PushNotification.EPushNotificationType.Error);
                 return;
@@ -566,11 +579,36 @@ namespace SteamOrganizer.MVVM.ViewModels
             OnPropertyChanged(nameof(ExternalEmail));
         }
         
+        private void OnGameInstallation(object param)
+        {
+            if(SteamRegistry.GetActiveUserSteamID() != CurrentAccount.SteamID64)
+            {
+                PushNotification.Open("Log into this account on your computer to install the app");
+                return;
+            }
+
+            System.Diagnostics.Process.Start($"steam://install/{(param as SteamParser.UserOwnedGamesObject.Game).AppID}");
+        }
+
+        private async Task OnOpeningFriendPage(object param)
+        {
+            var id = (param as SteamParser.UserFriendsObject.Friend).SteamID;
+
+            if(App.Config.Database.Exists(o => o.SteamID64 == id,out Account acc)) { }
+            else if(await SteamParser.ParseInfo(acc = new Account(null, null, id), false) != SteamParser.EParseResult.OK)
+            {
+                PushNotification.Open("Failed to open page, please try again later");
+                return;
+            }
+
+            App.MainWindowVM.AccountPage.OpenPage(acc);
+            Dispose();
+        }
 
 
         public AccountPageViewModel(AccountPageView owner,Account account)
         {
-            BackCommand              = new RelayCommand((o) => App.MainWindowVM.AccountsCommand.Execute(null));
+            BackCommand              = new RelayCommand(App.MainWindowVM.AccountsCommand.Execute);
             CopyAccountURLCommand    = new RelayCommand((o) => Clipboard.SetDataObject(CurrentAccount.GetProfileUrl()));
             LoadAuthenticatorCommand = new RelayCommand(OnLoadingAuthenticator);
             OpenAccountURLCommand    = new RelayCommand((o) => CurrentAccount.OpenInBrowser());
@@ -578,6 +616,8 @@ namespace SteamOrganizer.MVVM.ViewModels
             CopySteamIDCommand       = new AsyncRelayCommand(async(o) => await OnCopying(SteamIDField,o));
             UpdateCommand            = new AsyncRelayCommand(OnAccountUpdating);
             CopyAuthCodeCommand      = new AsyncRelayCommand(async (o) => await OnCopying(AuthenticatorCode, o));
+            OpenFriendPageCommand    = new AsyncRelayCommand(OnOpeningFriendPage);
+            InstallGameCommand       = new RelayCommand(OnGameInstallation);
 
             SelectExternalCredentialCommand = new RelayCommand(OnExternalCredentialSelection);
 
@@ -585,6 +625,12 @@ namespace SteamOrganizer.MVVM.ViewModels
             this.CurrentAccount = account;
             _passwordTemp       = CurrentAccount.Password;
             Init();
+
+            if(account.Login == null)
+            {
+                InteractionControlsVis = Visibility.Collapsed;
+                return;
+            }
 
             if(CurrentAccount.Authenticator != null)
             {
