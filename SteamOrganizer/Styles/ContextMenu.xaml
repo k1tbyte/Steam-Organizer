@@ -39,7 +39,6 @@
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Foreground" Value="{DynamicResource SecondaryForegroundBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource TertiaryBackgroundBrush}"/>
-        <Setter Property="Tag" Value="{DynamicResource PurpleGradient}"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -58,9 +57,6 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Foreground" Value="{DynamicResource TertiaryForegroundBrush}"/>
                             <Setter TargetName="Root" Property="Background" Value="{Binding Path=BorderBrush,RelativeSource={RelativeSource FindAncestor,AncestorType=MenuItem}}"/>
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Root" Property="Background" Value="{Binding Path=Tag,RelativeSource={RelativeSource FindAncestor,AncestorType=MenuItem}}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

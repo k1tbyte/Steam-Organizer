@@ -286,7 +286,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             if ((Utils.GetUnixTime() - App.Config.LastDatabaseUpdateTime) < 21600)
             {
-                PushNotification.Open("The accounts have already been updated recently");
+                PushNotification.Open("The accounts have already been updated recently", type: PushNotification.EPushNotificationType.Warn);
                 return;
             }
 
@@ -313,7 +313,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 #region Check result
                 if (result == SteamParser.EParseResult.NoAccountsWithID)
                 {
-                    PushNotification.Open("There are no accounts available to update");
+                    PushNotification.Open("There are no accounts available to update",type: PushNotification.EPushNotificationType.Warn);
                 }
                 else if (result == SteamParser.EParseResult.AttemptsExceeded)
                 {
@@ -625,7 +625,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             if (string.IsNullOrEmpty(acc.Password))
             {
-                PushNotification.Open($"Set a password to log into this account");
+                PushNotification.Open($"Set a password to log into this account", type: PushNotification.EPushNotificationType.Error);
                 await Task.Delay(3000);
                 return;
             }
@@ -686,13 +686,20 @@ namespace SteamOrganizer.MVVM.ViewModels
             ClearSearchBar         = new RelayCommand((o) => SearchBarText = null);
             RemoveAccountCommand   = new AsyncRelayCommand(OnRemovingAccount);
             UpdateAccountsCommand  = new RelayCommand(OnUpdatingAccounts);
-            PinAccountCommand      = new RelayCommand(OnPinningAccount);
             AddAccountCommand      = new RelayCommand(OnAddingAccount);
             ImportDatabaseCommand  = new RelayCommand(OnDatabaseImport);
             ExportDatabaseCommand  = new RelayCommand(OnDatabaseExport);
             OpenAccountPageCommand = new RelayCommand((o) => App.MainWindowVM.OpenAccountPage(o as Account));
             OpenProfileCommand     = new RelayCommand((o) => (o as Account).OpenInBrowser());
             LoginCommand           = new AsyncRelayCommand(OnLoginAccount);
+            PinAccountCommand      = new RelayCommand(o =>
+            {
+                try { OnPinningAccount(o); }
+                finally
+                {
+                    App.Config.SaveDatabase(1000);
+                }
+            });
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
             WebBrowser.OnNetworkDisconnection += CancelAccountsUpdate;

@@ -1,10 +1,8 @@
-﻿    using SteamOrganizer.Infrastructure;
+﻿using SteamOrganizer.Infrastructure;
 using System;
 using System.Collections.Concurrent;
-using System.Drawing;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Web;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -184,10 +182,16 @@ namespace SteamOrganizer.Helpers
             if (bitmapSource.CanFreeze)
                 bitmapSource.Freeze();
 
+            CacheAvatar(bitmapSource, path);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void CacheAvatar(BitmapSource source, string path)
+        {
             using (var fstream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite))
             {
                 var encoder = new BmpBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+                encoder.Frames.Add(BitmapFrame.Create(source));
                 encoder.Save(fstream);
             }
         }

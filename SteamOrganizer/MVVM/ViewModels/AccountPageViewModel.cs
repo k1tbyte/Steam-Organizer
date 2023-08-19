@@ -1,6 +1,5 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
-using SteamKit2.GC.Dota.Internal;
 using SteamOrganizer.Helpers;
 using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
@@ -10,20 +9,67 @@ using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
 using SteamOrganizer.MVVM.View.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
 namespace SteamOrganizer.MVVM.ViewModels
 {
     internal sealed class AccountPageViewModel : ObservableObject
     {
+        public AccountPageViewModel(AccountPageView owner, Account account)
+        {
+            BackCommand                     = new RelayCommand(App.MainWindowVM.AccountsCommand.Execute);
+            CopyAccountURLCommand           = new RelayCommand(o => Clipboard.SetDataObject(CurrentAccount.GetProfileUrl()));
+            LoadAuthenticatorCommand        = new RelayCommand(OnLoadingAuthenticator);
+            OpenAccountURLCommand           = new RelayCommand(o => CurrentAccount.OpenInBrowser());
+            OpenOtherURLCommand             = new RelayCommand(o => CurrentAccount.OpenInBrowser($"/{o}"));
+            CopySteamIDCommand              = new AsyncRelayCommand(async o => await OnCopying(SteamIDField, o));
+            UpdateCommand                   = new AsyncRelayCommand(OnAccountUpdating);
+            CopyAuthCodeCommand             = new AsyncRelayCommand(async o => await OnCopying(AuthenticatorCode, o));
+            OpenFriendPageCommand           = new AsyncRelayCommand(OnOpeningFriendPage);
+            CreateShortcutCommand           = new AsyncRelayCommand(OnCreatingShortcut);
+            InstallGameCommand              = new RelayCommand(OnGameInstallation);
+            ClearSearchBarCommand           = new RelayCommand(o => SearchBarText = null);
+            SelectExternalCredentialCommand = new RelayCommand(OnExternalCredentialSelection);
+            ClearSearchBarCommand           = new RelayCommand(o => SearchBarText = null);
+            OpenInSteamDb                   = new RelayCommand(o => System.Diagnostics.Process.Start("https://steamdb.info/app/" + (o as SteamParser.UserOwnedGamesObject.Game).AppID).Dispose());
+
+
+            View = owner;
+            this.CurrentAccount = account;
+            _passwordTemp = CurrentAccount.Password;
+            Init();
+
+            if (account.Login == null)
+            {
+                InteractionControlsVis = Visibility.Collapsed;
+                return;
+            }
+
+            if (CurrentAccount.Authenticator != null)
+            {
+                GenerateSteamGuardTokens();
+            }
+        }
+
+        internal void Dispose()
+        {
+            if (IsSteamCodeGenerating)
+            {
+                IsSteamCodeGenerating = false;
+            }
+
+            EncryptionTools.ClearString(AuthenticatorCode, _externalEmail, _externalPassword, _passwordTemp);
+
+            FullAvatar = null;
+        }
+
         #region Commands
         public RelayCommand LoadAuthenticatorCommand { get; }
         public RelayCommand CopyAccountURLCommand { get; }
@@ -35,13 +81,16 @@ namespace SteamOrganizer.MVVM.ViewModels
         public AsyncRelayCommand CopySteamIDCommand { get; }
         public AsyncRelayCommand CopyAuthCodeCommand { get; }
         public AsyncRelayCommand OpenFriendPageCommand { get; }
+        public AsyncRelayCommand CreateShortcutCommand { get; }
 
         public RelayCommand InstallGameCommand { get; }
-        
+        public RelayCommand ClearSearchBarCommand { get; }
+        public RelayCommand OpenInSteamDb { get; }
+
         #endregion
 
-
         #region Properties
+
         #region Flags
         private bool IsSteamCodeGenerating = false;
         private bool WaitingForSave = false;
@@ -56,7 +105,9 @@ namespace SteamOrganizer.MVVM.ViewModels
             get => _selectedTabIndex;
             set
             {
-                if(value == 1)
+                _selectedTabIndex = value;
+
+                if (value == 1)
                 {
                     Utils.InBackground(LoadGames);
                 }
@@ -68,9 +119,19 @@ namespace SteamOrganizer.MVVM.ViewModels
                 {
                     LoadingState = 0;
                 }
-                
-                _selectedTabIndex = value;
+
+                if (value == 1 || value == 2)
+                {
+                    OnPropertyChanged(nameof(SearchBarText));
+                }
             }
+        }
+
+        private byte _loadingState = 0;
+        public byte LoadingState
+        {
+            get => _loadingState;
+            set => SetProperty(ref _loadingState, value);
         }
 
         #endregion
@@ -285,18 +346,56 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         #endregion
 
-        private byte _loadingState = 0;
-        public byte LoadingState
-        {
-            get => _loadingState;
-            set => SetProperty(ref _loadingState, value);
-        }
-
+        #region Games and friends + searching
         public SteamParser.UserOwnedGamesObject.Game[] Games { get; private set; }
         public SteamParser.UserFriendsObject.Friend[] Friends { get; private set; }
 
+        private string _friendsSearchBarText;
+        private string _gamesSearchBarText;
+        public string SearchBarText
+        {
+            get => _selectedTabIndex == 1 ? _gamesSearchBarText : _friendsSearchBarText;
+            set
+            {
+                object collection = _selectedTabIndex == 1 ? (object)Games : Friends;
+
+                if (collection == null)
+                    return;
+
+                var view          = CollectionViewSource.GetDefaultView(collection);
+
+                if (_selectedTabIndex == 1)
+                {
+                    _gamesSearchBarText = value;
+                }
+                else
+                {
+                    _friendsSearchBarText = value;
+                }
+
+                if (value == null)
+                {
+                    OnPropertyChanged();
+                    view.Filter = null;
+                }
+                else if (view.Filter == null)
+                {
+                    view.Filter = OnContentSearching;
+                }
+
+                view.Refresh();
+
+                if (view.IsEmpty)
+                {
+                    LoadingState = 1;
+                    return;
+                }
+                LoadingState = 0;
+            }
+        } 
         #endregion
 
+        #endregion
 
         #region Initialize
 
@@ -379,16 +478,55 @@ namespace SteamOrganizer.MVVM.ViewModels
         }
         #endregion
 
-        internal void Dispose() 
+        #region Background workers
+        private async void GenerateSteamGuardTokens()
         {
             if (IsSteamCodeGenerating)
+                return;
+
+            IsSteamCodeGenerating = true;
+            if (View.TwoFaCodeBorder.Visibility != Visibility.Visible)
             {
-                IsSteamCodeGenerating = false;
+                View.TwoFaCodeBorder.Visibility = Visibility.Visible;
             }
 
-            EncryptionTools.ClearString(AuthenticatorCode, _externalEmail, _externalPassword, _passwordTemp);
+            await GenerateCode();
 
-            FullAvatar = null;
+            for (View.TokensGenProgress.Value = 30 - ((await SteamAuth.GetSteamTime()) % 30); IsSteamCodeGenerating; View.TokensGenProgress.Value--)
+            {
+                if (View.TokensGenProgress.Value == 0d)
+                {
+                    View.TokensGenProgress.Value = 30d;
+                    await GenerateCode();
+                }
+
+                await Task.Delay(1000);
+            }
+
+            async Task GenerateCode()
+            {
+                AuthenticatorCode = await CurrentAccount.Authenticator.GenerateCode();
+                if (AuthenticatorCode == null)
+                {
+                    View.TwoFaCodeBorder.Visibility = Visibility.Collapsed;
+                    IsSteamCodeGenerating = false;
+                }
+
+                OnPropertyChanged(nameof(AuthenticatorCode));
+            }
+        } 
+        #endregion
+
+        #region Games, friends + searching
+        private bool OnContentSearching(object sender)
+        {
+            if (sender is SteamParser.UserOwnedGamesObject.Game game)
+                return game.Name.IndexOf(_gamesSearchBarText, StringComparison.InvariantCultureIgnoreCase) >= 0;
+
+            if (sender is SteamParser.UserFriendsObject.Friend friend)
+                return friend.PersonaName.IndexOf(_friendsSearchBarText, StringComparison.InvariantCultureIgnoreCase) >= 0;
+
+            return true;
         }
 
         private async void LoadGames()
@@ -413,11 +551,12 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            if(AppsPriceFormat == null && CurrentAccount.PaidGames != 0)
+            if (AppsPriceFormat == null && CurrentAccount.PaidGames != 0)
             {
                 InitGamesInfo();
                 CurrentAccount.InvokePropertyChanged(nameof(CurrentAccount.PaidGames));
-            }    
+            }
+
 
             OnPropertyChanged(nameof(Games));
             LoadingState = 0;
@@ -446,8 +585,32 @@ namespace SteamOrganizer.MVVM.ViewModels
             OnPropertyChanged(nameof(Friends));
             LoadingState = 0;
         }
+        #endregion
 
-        private async Task OnCopying(object data,object target)
+        #region Command actions
+        private async Task OnCreatingShortcut(object param)
+        {
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), $"{CurrentAccount.Nickname}.lnk");
+            if (File.Exists(path))
+            {
+                PushNotification.Open("A shortcut has already been created for this account",type: PushNotification.EPushNotificationType.Warn);
+                await Task.Delay(3000);
+                return;
+            }
+
+            var iconPath = $"{CachingManager.AvatarsCachePath}\\{CurrentAccount.AvatarHash}_medium";
+
+            if(!File.Exists(iconPath))
+            {
+                CachingManager.CacheAvatar(CachingManager.GetCachedAvatar(null),iconPath);
+            }
+
+            Win32.CreateShortcut(path, Assembly.GetExecutingAssembly().Location, $"-login {CurrentAccount.Login}", App.WorkingDir, null, "", iconPath);
+            PushNotification.Open("Shortcut created, click to open",
+                () => System.Diagnostics.Process.Start("explorer.exe", "/select, \"" + path + "\"").Dispose());
+        }
+
+        private async Task OnCopying(object data, object target)
         {
             Clipboard.SetDataObject(data);
             await Utils.OpenAutoClosableToolTip(target as FrameworkElement, App.FindString("copied_info"));
@@ -455,7 +618,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async Task OnAccountUpdating(object param)
         {
-            if(!WebBrowser.IsNetworkAvailable)
+            if (!WebBrowser.IsNetworkAvailable)
             {
                 App.WebBrowser.OpenNeedConnectionPopup();
                 return;
@@ -481,11 +644,11 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private void OnLoadingAuthenticator(object param)
         {
-            if(CurrentAccount.Authenticator != null)
+            if (CurrentAccount.Authenticator != null)
             {
                 QueryPopup.GetPopup(App.FindString("apv_auth_remove"), () =>
                 {
-                    IsSteamCodeGenerating        = false;
+                    IsSteamCodeGenerating = false;
                     CurrentAccount.Authenticator = null;
                     App.Config.SaveDatabase();
                 }).OpenPopup(param as FrameworkElement, System.Windows.Controls.Primitives.PlacementMode.Bottom);
@@ -504,60 +667,23 @@ namespace SteamOrganizer.MVVM.ViewModels
             {
                 var auth = JsonConvert.DeserializeObject<SteamAuth>(File.ReadAllText(fileDialog.FileName));
 
-                if(string.IsNullOrEmpty(auth.Account_name)   || auth.Account_name != CurrentAccount.Login.ToLower() || App.Config.Database.Exists(o => o.Authenticator?.Shared_secret.Equals(auth.Shared_secret) == true))
+                if (string.IsNullOrEmpty(auth.Account_name) || auth.Account_name != CurrentAccount.Login.ToLower() || App.Config.Database.Exists(o => o.Authenticator?.Shared_secret.Equals(auth.Shared_secret) == true))
                 {
                     PushNotification.Open("Failed to load authenticator. You are trying to add an authenticator from another account, please check your steam credentials", type: PushNotification.EPushNotificationType.Error);
                     return;
                 }
 
-                auth.Secret                  = auth.Uri?.Split('=')[1].Split('&')[0];
+                auth.Secret = auth.Uri?.Split('=')[1].Split('&')[0];
                 CurrentAccount.Authenticator = StringEncryption.EncryptAllStrings(App.Config.DatabaseKey, auth);
                 App.Config.SaveDatabase();
                 GenerateSteamGuardTokens();
             }
-            catch 
+            catch
             {
-                PushNotification.Open("Failed to load authenticator. Invalid format",type: PushNotification.EPushNotificationType.Error);
+                PushNotification.Open("Failed to load authenticator. Invalid format", type: PushNotification.EPushNotificationType.Error);
                 return;
             }
-            
-        }
 
-        private async void GenerateSteamGuardTokens()
-        {
-            if (IsSteamCodeGenerating)
-                return;
-
-            IsSteamCodeGenerating = true;
-            if(View.TwoFaCodeBorder.Visibility != Visibility.Visible)
-            {
-                View.TwoFaCodeBorder.Visibility = Visibility.Visible;
-            }
-
-            await GenerateCode();
-
-            for (View.TokensGenProgress.Value = 30 - ((await SteamAuth.GetSteamTime()) % 30); IsSteamCodeGenerating; View.TokensGenProgress.Value--)
-            {
-                if (View.TokensGenProgress.Value == 0d)
-                {
-                    View.TokensGenProgress.Value = 30d;
-                    await GenerateCode();
-                }
-
-                await Task.Delay(1000);
-            }
-
-            async Task GenerateCode()
-            {
-                AuthenticatorCode = await CurrentAccount.Authenticator.GenerateCode();
-                if(AuthenticatorCode == null)
-                {
-                    View.TwoFaCodeBorder.Visibility = Visibility.Collapsed;
-                    IsSteamCodeGenerating           = false;
-                }
-
-                OnPropertyChanged(nameof(AuthenticatorCode));
-            }
         }
 
         private void OnExternalCredentialSelection(object param)
@@ -578,10 +704,10 @@ namespace SteamOrganizer.MVVM.ViewModels
             OnPropertyChanged(nameof(ExternalPassword));
             OnPropertyChanged(nameof(ExternalEmail));
         }
-        
+
         private void OnGameInstallation(object param)
         {
-            if(SteamRegistry.GetActiveUserSteamID() != CurrentAccount.SteamID64)
+            if (SteamRegistry.GetActiveUserSteamID() != CurrentAccount.SteamID64)
             {
                 PushNotification.Open("Log into this account on your computer to install the app");
                 return;
@@ -592,10 +718,17 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async Task OnOpeningFriendPage(object param)
         {
+            if (!WebBrowser.IsNetworkAvailable)
+            {
+                App.WebBrowser.OpenNeedConnectionPopup();
+                await Task.Delay(3000);
+                return;
+            }
+
             var id = (param as SteamParser.UserFriendsObject.Friend).SteamID;
 
-            if(App.Config.Database.Exists(o => o.SteamID64 == id,out Account acc)) { }
-            else if(await SteamParser.ParseInfo(acc = new Account(null, null, id), false) != SteamParser.EParseResult.OK)
+            if (App.Config.Database.Exists(o => o.SteamID64 == id, out Account acc)) { }
+            else if (await SteamParser.ParseInfo(acc = new Account(null, null, id), false) != SteamParser.EParseResult.OK)
             {
                 PushNotification.Open("Failed to open page, please try again later");
                 return;
@@ -604,38 +737,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             App.MainWindowVM.AccountPage.OpenPage(acc);
             Dispose();
         }
+        #endregion
 
-
-        public AccountPageViewModel(AccountPageView owner,Account account)
-        {
-            BackCommand              = new RelayCommand(App.MainWindowVM.AccountsCommand.Execute);
-            CopyAccountURLCommand    = new RelayCommand((o) => Clipboard.SetDataObject(CurrentAccount.GetProfileUrl()));
-            LoadAuthenticatorCommand = new RelayCommand(OnLoadingAuthenticator);
-            OpenAccountURLCommand    = new RelayCommand((o) => CurrentAccount.OpenInBrowser());
-            OpenOtherURLCommand      = new RelayCommand((o) => CurrentAccount.OpenInBrowser($"/{o}"));
-            CopySteamIDCommand       = new AsyncRelayCommand(async(o) => await OnCopying(SteamIDField,o));
-            UpdateCommand            = new AsyncRelayCommand(OnAccountUpdating);
-            CopyAuthCodeCommand      = new AsyncRelayCommand(async (o) => await OnCopying(AuthenticatorCode, o));
-            OpenFriendPageCommand    = new AsyncRelayCommand(OnOpeningFriendPage);
-            InstallGameCommand       = new RelayCommand(OnGameInstallation);
-
-            SelectExternalCredentialCommand = new RelayCommand(OnExternalCredentialSelection);
-
-            View                = owner;
-            this.CurrentAccount = account;
-            _passwordTemp       = CurrentAccount.Password;
-            Init();
-
-            if(account.Login == null)
-            {
-                InteractionControlsVis = Visibility.Collapsed;
-                return;
-            }
-
-            if(CurrentAccount.Authenticator != null)
-            {
-                GenerateSteamGuardTokens();
-            }
-        }
     }
 }

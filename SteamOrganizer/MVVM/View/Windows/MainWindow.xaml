@@ -13,7 +13,7 @@
         AllowsTransparency="True"
         Background="Transparent"
         WindowState="Normal"
-        MinHeight="550" MinWidth="1050"
+        MinHeight="553" MinWidth="1050" Height="553"
         Closing="Window_Closing"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
     <WindowChrome.WindowChrome>
@@ -166,6 +166,11 @@
                     <RadioButton  Style="{StaticResource MenuRadioButton}" 
                                   Tag="{DynamicResource word_rmtControl}">
                         <Icon:PackIconMaterial Kind="RemoteDesktop" Height="23" Width="23" />
+                    </RadioButton>
+
+                    <RadioButton  Style="{StaticResource MenuRadioButton}" 
+                                  Tag="Tools">
+                        <Icon:PackIconMaterial Kind="HexagonMultipleOutline" Height="23" Width="23" />
                     </RadioButton>
                 </StackPanel>
             </Border>

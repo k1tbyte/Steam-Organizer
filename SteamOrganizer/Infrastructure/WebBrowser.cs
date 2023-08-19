@@ -86,7 +86,7 @@ namespace SteamOrganizer.Infrastructure
         {
             if (!IsNetworkAvailable)
             {
-                PushNotification.Open("This action requires an Internet connection");
+                PushNotification.Open("This action requires an Internet connection", type: PushNotification.EPushNotificationType.Warn);
                 return;
             }
         }

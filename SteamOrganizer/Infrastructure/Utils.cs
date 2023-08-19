@@ -18,6 +18,8 @@ using System.Diagnostics;
 using System.Windows.Media.Animation;
 using System.Management;
 using System.Net;
+using System.Drawing.Imaging;
+using System.Drawing;
 
 namespace SteamOrganizer.Infrastructure
 {
@@ -281,6 +283,43 @@ namespace SteamOrganizer.Infrastructure
             await Task.Delay(delay);
 
             toolTip.IsOpen = false;
+        }
+
+        public static Icon IconFromImage(Bitmap img)
+        {
+            using (var ms = new MemoryStream())
+            {
+                using (var bw = new BinaryWriter(ms))
+                {
+                    // Header
+                    bw.Write((short)0);   // 0 : reserved
+                    bw.Write((short)1);   // 2 : 1=ico, 2=cur
+                    bw.Write((short)1);   // 4 : number of images
+
+                    var w = img.Width;
+                    if (w >= 256) w = 0;
+                    bw.Write((byte)w);    // 0 : width of image
+                    var h = img.Height;
+                    if (h >= 256) h = 0;
+                    bw.Write((byte)h);    // 1 : height of image
+                    bw.Write((byte)0);    // 2 : number of colors in palette
+                    bw.Write((byte)0);    // 3 : reserved
+                    bw.Write((short)0);   // 4 : number of color planes
+                    bw.Write((short)0);   // 6 : bits per pixel
+                    var sizeHere = ms.Position;
+                    bw.Write(0);          // 8 : image size
+                    var start = (int)ms.Position + 4;
+                    bw.Write(start);      // 12: offset of image data
+
+                    img.Save(ms, ImageFormat.Png);
+                    var imageSize = (int)ms.Position - start;
+                    ms.Seek(sizeHere, System.IO.SeekOrigin.Begin);
+                    bw.Write(imageSize);
+                    ms.Seek(0, System.IO.SeekOrigin.Begin);
+
+                    return new Icon(ms);
+                }
+            }
         }
 
         public static DateTime? UnixTimeToDateTime(long unixtime)

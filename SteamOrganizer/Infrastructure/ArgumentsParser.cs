@@ -26,7 +26,7 @@ namespace SteamOrganizer.Infrastructure
             public static readonly int LaunchAppId;
 
             [Command("login")]
-            public static readonly ulong LoginSteamId;
+            public static readonly string AccountLogin;
 
             [Command("noicon")]
             public static readonly bool NeedResetIcon;
@@ -105,9 +105,9 @@ namespace SteamOrganizer.Infrastructure
                 {
                     case nameof(AvailableCommands.LaunchAppId):
                         break;
-                    case nameof(AvailableCommands.LoginSteamId):
+                    case nameof(AvailableCommands.AccountLogin):
                         MainWindowViewModel.AccountsViewInitialized += (context) =>
-                            context.LoginCommand.Execute(App.Config.Database.FirstOrDefault(o => o.SteamID64 == (ulong)cmd.Value));
+                            context.LoginCommand.Execute(App.Config.Database.FirstOrDefault(o => o.Login.IndexOf(cmd.Value.ToString(),StringComparison.OrdinalIgnoreCase) >= 0));
                         break;
 
                 }
