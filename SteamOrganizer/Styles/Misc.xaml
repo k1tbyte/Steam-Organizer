@@ -3,6 +3,11 @@
 
     <CircleEase EasingMode="EaseInOut" x:Key="BaseAnimationFunction"/>
 
+    <Storyboard x:Key="LoadedAnimation">
+        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                            From="0" To="1" Duration="0:0:0.3"/>
+    </Storyboard>
+
     <ControlTemplate x:Key="ExpanderTemplate" TargetType="Expander">
         <Grid>
             <Grid.RowDefinitions>

@@ -21,6 +21,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         #region Commands
         public RelayCommand SettingsCommand { get; }
+        public RelayCommand RemoteControlCommand { get; }
         public RelayCommand AccountsCommand { get; }
         public RelayCommand OpenNotificationsCommand { get; }
         public RelayCommand NotificationInvokeCommand { get; }
@@ -33,11 +34,13 @@ namespace SteamOrganizer.MVVM.ViewModels
         private ManagementEventWatcher RegistrySteamUserWatcher;
         internal Action PreviewWindowViewChanged;
 
-
+        #region Views
         internal MainWindow View { get; }
-        public SettingsView Settings { get; private set; }
-        public AccountPageView AccountPage { get; private set; }
-        public AccountsView Accounts { get; private set; }
+        internal SettingsView Settings { get; private set; }
+        internal AccountPageView AccountPage { get; private set; }
+        internal AccountsView Accounts { get; private set; }
+        internal RemoteControlView RemoteControl { get; private set; } 
+        #endregion
 
         private bool _isNotificationsRead = true;
         public bool IsNotificationsRead
@@ -174,7 +177,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
         }
 
-        #region Private
+        #region Command actions
         private void OnOpeningSettings(object param)
         {
             Settings = Settings ?? new SettingsView();
@@ -250,11 +253,12 @@ namespace SteamOrganizer.MVVM.ViewModels
             View                      = owner;
 
             SettingsCommand           = new RelayCommand(OnOpeningSettings);
-            AccountsCommand           = new RelayCommand((o) => CurrentView = Accounts);
+            AccountsCommand           = new RelayCommand(o => CurrentView = Accounts);
+            RemoteControlCommand      = new RelayCommand(o => CurrentView = RemoteControl ?? (RemoteControl = new RemoteControlView()));
             OpenNotificationsCommand  = new RelayCommand(OnOpeningNotifications);
             NotificationRemoveCommand = new RelayCommand(OnNotificationRemoving);
-            NotificationInvokeCommand = new RelayCommand((o) => (o as Notification)?.OnClickAction?.Invoke());
-            NotificationClearAll      = new RelayCommand((o) => View.NotificationsList.Items.Clear());
+            NotificationInvokeCommand = new RelayCommand(o => (o as Notification)?.OnClickAction?.Invoke());
+            NotificationClearAll      = new RelayCommand(o => View.NotificationsList.Items.Clear());
 
             if (App.Config.PinCodeKey != null)
             {

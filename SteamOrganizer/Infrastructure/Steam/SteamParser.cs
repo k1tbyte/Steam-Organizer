@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 
 namespace SteamOrganizer.Infrastructure.Steam
 {
@@ -530,7 +529,7 @@ namespace SteamOrganizer.Infrastructure.Steam
                 $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId}&include_appinfo=true&include_played_free_games=1")
                 .ConfigureAwait(false);
 
-            return response == null ? null : JsonConvert.DeserializeObject<UserOwnedGamesObject>(response).Response.Games ?? GamesDummy;
+            return response == null ? null : JsonConvert.DeserializeObject<UserOwnedGamesObject>(response).Response?.Games ?? GamesDummy;
         }
 
         internal static async Task<UserFriendsObject.Friend[]> GetPlayerFriends(ulong steamId)
@@ -539,7 +538,7 @@ namespace SteamOrganizer.Infrastructure.Steam
                 $"http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?relationship=friend&key={App.Config.SteamApiKey ?? App.STEAM_API_KEY}&steamid={steamId}")
                 .ConfigureAwait(false);
 
-            return response == null ? null : JsonConvert.DeserializeObject<UserFriendsObject>(response).FriendsList.Friends ?? FriendsDummy;
+            return response == null ? null : JsonConvert.DeserializeObject<UserFriendsObject>(response).FriendsList?.Friends ?? FriendsDummy;
         } 
         #endregion
     }

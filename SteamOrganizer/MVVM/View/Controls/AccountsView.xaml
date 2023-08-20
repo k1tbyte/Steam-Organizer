@@ -108,9 +108,6 @@
 
         </StackPanel>
 
-
-
-
         <StackPanel HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Orientation="Horizontal">
@@ -188,7 +185,6 @@
             </ToggleButton>
 
         </StackPanel>
-
 
         <ListBox x:Name="AccountsBox"
                  Grid.Row="1"
@@ -507,5 +503,10 @@
         
     </Grid>
 
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource LoadedAnimation}"/>
+        </EventTrigger>
+    </UserControl.Triggers>
     
 </UserControl>

@@ -192,6 +192,9 @@
     <Compile Include="MVVM\View\Controls\PincodeView.xaml.cs">
       <DependentUpon>PincodeView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\Controls\RemoteControlView.xaml.cs">
+      <DependentUpon>RemoteControlView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\Controls\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
@@ -247,6 +250,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\Controls\PincodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Controls\RemoteControlView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
