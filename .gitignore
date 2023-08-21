@@ -367,3 +367,4 @@ FodyWeavers.xsd
 /desktop.ini
 /SteamOrganizer/Properties/Settings.Designer.cs
 /SteamOrganizer/Properties/Settings.settings
+/SteamOrganizer.Backend/appsettings.json
