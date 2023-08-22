@@ -1,11 +1,11 @@
 ﻿namespace SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
 
-public struct PlayerLevel
+public struct PlayerLevelObject
 {
-    public struct LevelResponse
+    public struct PlayerLevel
     {
         public int? Player_level { get; set; }
     }
 
-    public LevelResponse Response { get; set; }
+    public PlayerLevel Response { get; set; }
 }

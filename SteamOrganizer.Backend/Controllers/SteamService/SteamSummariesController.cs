@@ -1,68 +1,92 @@
 using Microsoft.AspNetCore.Mvc;
+using SteamOrganizer.Backend.Core;
 using SteamOrganizer.Backend.Parsers.SteamAPI;
-using System.Text;
+using SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
 using System.Text.Json;
 
 namespace SteamOrganizer.Backend.Controllers.SteamService;
 
 [ApiController]
-[Route("SteamService/GetPlayerSummaries")]
+[Route("SteamService/PlayerSummaries")]
 public sealed class SteamSummariesController : ControllerBase
 {
-    private readonly ILogger<SteamSummariesController> _logger;
-    private const int MaxAttempts = 5;
 
-    public SteamSummariesController(ILogger<SteamSummariesController> logger)
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<PlayerSummariesObject.PlayerSummaries?> GetAsync(ulong steamid,bool includeGames = false)
     {
-        _logger = logger;
+        var countryCode = includeGames ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : string.Empty;
+
+        var response = await SteamParser.ParseInfo(steamid, includeGames, countryCode).ConfigureAwait(false);
+        if(response == null)
+        {
+            BadRequest();
+            return null;
+        }
+
+        return response;
     }
 
     [HttpPost]
-    public async Task PostAsync(ulong[] steamid, bool includeLevel = true, bool includeBans = true, bool includeGames = false, bool includeFriends = false)
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<Dictionary<string, PlayerSummariesObject.PlayerSummaries>?> PostAsync(ulong[] steamid,bool includeGames = false,string? cc = null)
     {
-        var response         = HttpContext.Response;
-        response.StatusCode  = 200;
-        response.ContentType = "text/event-stream";
-        var locker           = new object();
+        var unique = steamid?.Distinct()?.ToArray();
 
-        var unique = steamid.Distinct().ToArray();
-
-        for (int i = 0, attempt = 0, remainingCount = unique.Length; i < unique.Length; i += 100)
+        if (unique == null || !unique.Any())
         {
-            var chunk = unique
-                .Skip(i)
-                .Take(100)
-                .ToArray();
-
-            var summaries = await SteamParser.GetPlayersSummaries(chunk).ConfigureAwait(false);
-
-            if(summaries == null)
-            {
-                response.StatusCode = 404;
-                return;
-            }    
-
-            await Parallel.ForEachAsync(summaries,
-                new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 }, async (player,token) =>
-            {
-                if(includeLevel)
-                {
-                    player.SteamLevel = await SteamParser.GetPlayerLevel(player.SteamID).ConfigureAwait(false);
-                }
-
-
-                lock (locker)
-                {
-                    response.WriteAsync(JsonSerializer.Serialize(player) + '\n').Wait();
-                    response.Body.Flush();
-                }
-            });
+            BadRequest($"Invalid parameter {nameof(steamid)}");
+            return null;
         }
 
+        var countryCode = cc ?? (includeGames ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : string.Empty);
+        var dictionary  = new Dictionary<string, PlayerSummariesObject.PlayerSummaries>(unique.Length);
 
+        var result = await SteamParser.ParseInfo(unique, includeGames, countryCode,
+            (player) => dictionary.Add(player.SteamID, player)).ConfigureAwait(false);
 
+        if (result != ESteamApiResult.OK)
+        {
+            Results.Problem(result.ToString(), statusCode: 500);
+        }
 
+        return dictionary;
+    }
 
-        response.Body.Close();
+    [HttpPost("Stream")]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task PostAsyncStream(ulong[] steamid,bool includeGames = false, string? cc = null)
+    {
+        var unique = steamid?.Distinct()?.ToArray();
+
+        if (unique == null || !unique.Any())
+        {
+            Results.BadRequest($"Invalid parameter {nameof(steamid)}");
+            return;
+        }
+
+        var httpResponse         = HttpContext.Response;
+        httpResponse.ContentType = "text/event-stream";
+        var locker               = new object();
+        var countryCode          = cc ?? (includeGames ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : string.Empty);
+
+        var result = await SteamParser.ParseInfo(unique,includeGames, countryCode,
+            (player) => 
+        { 
+            var jResponse = JsonSerializer.Serialize(player) + '\n'; 
+            lock (locker) 
+            { 
+                httpResponse.WriteAsync(jResponse).Wait(); httpResponse.Body.Flush(); 
+            } 
+        }).ConfigureAwait(false);
+
+        httpResponse.Body.Close();
+
+        Ok();
     }
 }

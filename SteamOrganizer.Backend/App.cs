@@ -1,9 +1,11 @@
 
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using SteamOrganizer.Backend.Parsers.SteamAPI;
 using SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
+using System.Net;
 using System.Text.Json;
 
 namespace SteamOrganizer.Backend;
@@ -15,6 +17,7 @@ public static class App
 
     public static void Main(string[] args)
     {
+
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
@@ -41,6 +44,11 @@ public static class App
 
         app.UseHttpsRedirection();
         app.MapControllers();
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+            ForwardedHeaders.XForwardedProto
+        });
 
         Configuration = new ConfigurationBuilder().SetBasePath(app.Environment.ContentRootPath)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
