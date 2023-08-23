@@ -26,7 +26,7 @@ internal static class SteamParser
 
     /// <param name="accounts">list of accounts to update</param>
     /// <param name="processingCallback">Args: Current account, Remaining accounts count, Completed successfully </param>
-    internal static async Task<ESteamApiResult> ParseInfo(ulong[] players,bool includeGames,string countryCode, Action<PlayerSummariesObject.PlayerSummariesResponse> callback)
+    internal static async Task<ESteamApiResult> ParseInfo(ulong[] players,bool includeGames,string countryCode, Action<SteamSummariesObject.SteamSummariesResponse> callback)
     {
         try
         {
@@ -86,7 +86,7 @@ internal static class SteamParser
         return ESteamApiResult.OK;
     }
 
-    internal static async Task<PlayerSummariesObject.PlayerSummariesResponse?> ParseInfo(ulong player, bool includeGames, string countryCode)
+    internal static async Task<SteamSummariesObject.SteamSummariesResponse?> ParseInfo(ulong player, bool includeGames, string countryCode)
     {
         var summariesTask = GetPlayersSummaries(player).ConfigureAwait(false);
         var bansTask      = GetPlayersBans(player).ConfigureAwait(false);
@@ -215,7 +215,7 @@ internal static class SteamParser
         await Parallel.ForEachAsync(chunks,new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism },
             async (chunk,token) =>
         {
-            var summaries = await GetPlayersSummaries(chunk.Select(o => o.SteamID).ToArray()).ConfigureAwait(false);
+            var summaries = await GetPlayersSummaries(chunk.Select(o => ulong.Parse(o.SteamID)).ToArray()).ConfigureAwait(false);
 
             if (summaries == null)
                 return;
@@ -260,7 +260,7 @@ internal static class SteamParser
 
     #region Steam API requests
 
-    internal static async Task<PlayerSummariesObject.PlayerSummariesResponse[]?> GetPlayersSummaries(params object[] steamIds)
+    internal static async Task<SteamSummariesObject.SteamSummariesResponse[]?> GetPlayersSummaries(params ulong[] steamIds)
     {
         if (steamIds.Length > 100)
             throw new InvalidOperationException(nameof(steamIds));
@@ -269,7 +269,7 @@ internal static class SteamParser
             $"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={ApiKey}&steamids={string.Join(",", steamIds)}")
             .ConfigureAwait(false);
 
-        return response == null ? null : JsonSerializer.Deserialize<PlayerSummariesObject>(response, App.DefaultJsonOptions)?.Response?.Players;
+        return response == null ? null : JsonSerializer.Deserialize<SteamSummariesObject>(response, App.DefaultJsonOptions)?.Response?.Players;
     }
 
     internal static async Task<int?> GetPlayerLevel(string steamId)

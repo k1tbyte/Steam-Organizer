@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
+using SteamOrganizer.Backend.Core;
+using SteamOrganizer.Backend.Parsers.CSGOStats.Responses;
 using SteamOrganizer.Backend.Parsers.SteamAPI;
 using SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
 using System.Net;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace SteamOrganizer.Backend;
 
@@ -15,9 +18,8 @@ public static class App
     public static IConfigurationRoot Configuration { get; private set; }
     public static readonly JsonSerializerOptions DefaultJsonOptions = new() { PropertyNameCaseInsensitive = true };
 
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
-
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
@@ -42,7 +44,6 @@ public static class App
 
 #endif
 
-        app.UseHttpsRedirection();
         app.MapControllers();
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {

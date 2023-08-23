@@ -1,12 +1,13 @@
 ﻿using SteamOrganizer.Backend.Converters;
+using SteamOrganizer.Backend.Parsers.CSGOStats.Responses;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
 
-public sealed class PlayerSummariesObject
+public sealed class SteamSummariesObject
 {
-    public class PlayerSummaries
+    public class SteamSummaries
     {
         public string AvatarHash { get; set; }
         public string? PersonaName { get; set; }
@@ -20,17 +21,17 @@ public sealed class PlayerSummariesObject
         public int? SteamLevel { get; set; }
         public PlayerBansObject.PlayerBans? Bans { get; set; }
         public PlayerOwnedGamesObject.OwnedGames? GamesSummaries { get; set; }
-
     }
-    public sealed class PlayerSummariesResponse : PlayerSummaries
+
+    public sealed class SteamSummariesResponse : SteamSummaries
     {
         public string SteamID { get; set; }
     }
 
-    public sealed class SummariesResponse
+    public sealed class SummariesResponseObject
     {
-        public PlayerSummariesResponse[]? Players { get; set; }
+        public SteamSummariesResponse[]? Players { get; set; }
     }
 
-    public SummariesResponse? Response { get; set; }
+    public SummariesResponseObject? Response { get; set; }
 }

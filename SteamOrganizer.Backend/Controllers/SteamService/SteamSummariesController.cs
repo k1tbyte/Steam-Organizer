@@ -14,7 +14,7 @@ public sealed class SteamSummariesController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<PlayerSummariesObject.PlayerSummaries?> GetAsync(ulong steamid,bool includeGames = false)
+    public async Task<SteamSummariesObject.SteamSummaries?> GetAsync(ulong steamid,bool includeGames = false)
     {
         var countryCode = includeGames ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : string.Empty;
 
@@ -32,7 +32,7 @@ public sealed class SteamSummariesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<Dictionary<string, PlayerSummariesObject.PlayerSummaries>?> PostAsync(ulong[] steamid,bool includeGames = false,string? cc = null)
+    public async Task<Dictionary<string, SteamSummariesObject.SteamSummaries>?> PostAsync(ulong[] steamid,bool includeGames = false,string? cc = null)
     {
         var unique = steamid?.Distinct()?.ToArray();
 
@@ -43,7 +43,7 @@ public sealed class SteamSummariesController : ControllerBase
         }
 
         var countryCode = cc ?? (includeGames ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : string.Empty);
-        var dictionary  = new Dictionary<string, PlayerSummariesObject.PlayerSummaries>(unique.Length);
+        var dictionary  = new Dictionary<string, SteamSummariesObject.SteamSummaries>(unique.Length);
 
         var result = await SteamParser.ParseInfo(unique, includeGames, countryCode,
             (player) => dictionary.Add(player.SteamID, player)).ConfigureAwait(false);
@@ -62,6 +62,9 @@ public sealed class SteamSummariesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task PostAsyncStream(ulong[] steamid,bool includeGames = false, string? cc = null)
     {
+        var httpResponse = HttpContext.Response;
+        httpResponse.ContentType = "text/event-stream";
+
         var unique = steamid?.Distinct()?.ToArray();
 
         if (unique == null || !unique.Any())
@@ -70,8 +73,6 @@ public sealed class SteamSummariesController : ControllerBase
             return;
         }
 
-        var httpResponse         = HttpContext.Response;
-        httpResponse.ContentType = "text/event-stream";
         var locker               = new object();
         var countryCode          = cc ?? (includeGames ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : string.Empty);
 
@@ -81,9 +82,10 @@ public sealed class SteamSummariesController : ControllerBase
             var jResponse = JsonSerializer.Serialize(player) + '\n'; 
             lock (locker) 
             { 
-                httpResponse.WriteAsync(jResponse).Wait(); httpResponse.Body.Flush(); 
+                httpResponse.WriteAsync(jResponse).Wait(); 
+                httpResponse.Body.Flush(); 
             } 
-        }).ConfigureAwait(false);
+        });
 
         httpResponse.Body.Close();
 

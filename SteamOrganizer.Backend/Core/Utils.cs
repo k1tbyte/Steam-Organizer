@@ -16,4 +16,20 @@ public static class Utils
         }
         return str;
     }
+
+    public static unsafe string? InjectionReplace(this string? str, int fromIndex, char replaceTo, char terminateChar)
+    {
+        if (str == null || str.Length < fromIndex)
+            return str;
+
+        fixed (char* lpstr = str)
+        {
+            for (char* i = (lpstr + fromIndex); *i != '\0' && *i != terminateChar; i++)
+            {
+                *i = replaceTo;
+            }
+        }
+        return str;
+    }
+
 }
