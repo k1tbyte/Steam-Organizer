@@ -3,8 +3,6 @@ using SteamOrganizer.Backend.Core;
 using SteamOrganizer.Backend.Parsers.CSGOStats;
 using SteamOrganizer.Backend.Parsers.CSGOStats.Responses;
 using SteamOrganizer.Backend.Parsers.SteamAPI;
-using SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
-using System.Text.Json.Nodes;
 
 namespace SteamOrganizer.Backend.Controllers.CSGOService;
 

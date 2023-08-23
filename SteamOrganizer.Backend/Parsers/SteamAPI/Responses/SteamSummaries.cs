@@ -1,6 +1,4 @@
 ﻿using SteamOrganizer.Backend.Converters;
-using SteamOrganizer.Backend.Parsers.CSGOStats.Responses;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
@@ -11,6 +9,8 @@ public sealed class SteamSummariesObject
     {
         public string AvatarHash { get; set; }
         public string? PersonaName { get; set; }
+
+        [JsonConverter(typeof(SteamURLConverter))]
         public string? ProfileURL { get; set; }
         public string? LocCountryCode { get; set; }
 

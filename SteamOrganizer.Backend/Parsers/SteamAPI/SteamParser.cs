@@ -17,12 +17,14 @@ internal enum ESteamApiResult : byte
 
 internal static class SteamParser
 {
+    private static readonly string? ApiKey = App.Config.GetValue<string?>("Credentials:SteamApiKey");
+
     private static readonly ushort[] GamesBadgeBoundaries = {
                 1,5,10,25,50,100,250,500,1000,2000,3000,4000,5000,6000,7000,8000,8000,9000,10000,11000,13000,14000,15000,16000,17000,18000,20000,21000,
                 22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000
              };
 
-    internal static string? ApiKey { get; set; }
+
 
     /// <param name="accounts">list of accounts to update</param>
     /// <param name="processingCallback">Args: Current account, Remaining accounts count, Completed successfully </param>
@@ -61,7 +63,6 @@ internal static class SteamParser
                     async (player, token) =>
                 {
                     player.Bans       = bans[player.SteamID];
-                    player.ProfileURL = GetVanityUrlFromUrl(player.ProfileURL!);
 
                     if (player.CommunityVisibilityState == 3)
                     {
@@ -108,7 +109,6 @@ internal static class SteamParser
         }
 
         summaries.Bans       = (await bansTask)?[0];
-        summaries.ProfileURL = GetVanityUrlFromUrl(summaries.ProfileURL!);
         return summaries;
     }
 
@@ -251,11 +251,6 @@ internal static class SteamParser
 
         return 0;
     }
-    private static string? GetVanityUrlFromUrl(string url)
-    {
-        var splitId = url.Split('/');
-        return splitId[3] == "id" ? splitId[4] : null;
-    } 
     #endregion
 
     #region Steam API requests

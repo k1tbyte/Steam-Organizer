@@ -14,23 +14,22 @@ public static class CsgoParser
 {
     #region UrlConsts
     // Base
-    public const string BaseUrl = "https://open.faceit.com/data/v4";
-
+    public const string BaseUrl          = "https://open.faceit.com/data/v4";
     // Methods
-    public const string PlayerUrl = "players/"; //player info by player id
+    public const string PlayerUrl        = "players/"; //player info by player id
     public const string PlayerSteamIdUrl = "players?game=csgo&game_player_id=";//player info by steam id
-    public const string NicknameUrl = "players?nickname="; //player info by nickname
-    public const string MatchUrl = "matches/"; //match info by match id
+    public const string NicknameUrl      = "players?nickname="; //player info by nickname
+    public const string MatchUrl         = "matches/"; //match info by match id
     // parameters
-    public const string StatsUrl = "/stats/csgo"; //player info by nickname
+    public const string StatsUrl         = "/stats/csgo"; //player info by nickname
     #endregion
-    private static readonly HttpClient client = new HttpClient();
+
+    private static readonly HttpClient client = new();
     static CsgoParser()
     {
         client.BaseAddress = new Uri(BaseUrl);
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ApiKey);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", App.Config.GetValue<string>("Credentials:FaceitApiKey"));
     }
-    public static string? ApiKey { get; set; }
 
     public static async Task<MatchmakingStatsObject?> GetMatchmakingStats(string steamid)
     {
