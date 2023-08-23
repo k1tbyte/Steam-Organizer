@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using SteamOrganizer.Backend.Core;
+using SteamOrganizer.Backend.Parsers.CSGOStats;
 using SteamOrganizer.Backend.Parsers.CSGOStats.Responses;
 using SteamOrganizer.Backend.Parsers.SteamAPI;
 using SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
@@ -56,7 +57,7 @@ public static class App
             .AddEnvironmentVariables().Build();
 
         SteamParser.ApiKey = App.Configuration.GetValue<string?>("Credentials:SteamApiKey");
-
+        CsgoParser.ApiKey = App.Configuration.GetValue<string?>("Credentials:FaceitApiKey");
         app.Run();
     }
 }
