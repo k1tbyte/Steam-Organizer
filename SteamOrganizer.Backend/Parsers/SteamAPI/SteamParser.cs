@@ -230,7 +230,6 @@ internal static class SteamParser
         }).ConfigureAwait(false);
 
         return friends;
-
     }
 
     #region Helpers

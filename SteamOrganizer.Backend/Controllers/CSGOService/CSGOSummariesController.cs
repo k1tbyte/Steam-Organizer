@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SteamOrganizer.Backend.Core;
+using SteamOrganizer.Backend.Parsers.CsgoAPI.Responses;
 using SteamOrganizer.Backend.Parsers.CSGOStats;
 using SteamOrganizer.Backend.Parsers.CSGOStats.Responses;
 using SteamOrganizer.Backend.Parsers.SteamAPI;
+using System.Collections.Generic;
 
 namespace SteamOrganizer.Backend.Controllers.CSGOService;
 
@@ -30,6 +32,28 @@ public class CSGOSummariesController : ControllerBase
 
         return dict;
     }
+
+    [HttpGet("FaceitStats")]
+    public async Task<Dictionary<string, FaceitStatsObject?>?>  GetFaceitStatsAsync(string steamids)
+    {
+        var ids = steamids.Replace(" ", string.Empty).Split(',').Where(o => ulong.TryParse(o, out ulong result));
+        if (ids == null)
+        {
+            BadRequest($"{steamids}");
+            return null;
+        }
+
+        var dict = new Dictionary<string, FaceitStatsObject?>();
+        await Parallel.ForEachAsync(ids, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism },
+            async (id, token) =>
+        {
+            var result = await CsgoParser.GetFaceitStats(id).ConfigureAwait(false);
+            dict.TryAdd(id, result);
+        }).ConfigureAwait(false);
+
+        return dict;
+    }
+
 
     [HttpGet("PlayerSummaries")]
     public async Task<Dictionary<string, CSGOPlayerSummaries>?> GetCSGOSummariesAsync(string steamids)
