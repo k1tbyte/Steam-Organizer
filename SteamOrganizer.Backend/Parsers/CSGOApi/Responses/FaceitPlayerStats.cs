@@ -2,53 +2,67 @@
 
 namespace SteamOrganizer.Backend.Parsers.CSGOApi.Responses
 {
-    public class FaceitPlayerStatsObject
+    public sealed class FaceitPlayerStatsObject
     {
-        public string? player_id{get; set;}
-        public LifetimeStats? lifetime { get; set; } //account stats
-        public IList<MapStats>? segments { get; set; } //map stats
+        [JsonPropertyName("lifetime")]
+        public FaceitOverallStats? OverallStats { get; set; }
 
-        public class LifetimeStats
+        [JsonPropertyName("segments")]
+        public MapStats[]? Maps { get; set; }
+
+        public class FaceitOverallStats
         {
+            public string? Matches { get; set; }
+            public string? Wins { get; set; }
+
             [JsonPropertyName("Average K/D Ratio")]
-            public float AvgKD { get; set; }
+            public string? AvgKD { get; set; }
+
             [JsonPropertyName("Average Headshots %")]
-            public int AvgHs { get; set; }
-            [JsonPropertyName("Matches")]
-            public int Matches { get; set; }
+            public string? AvgHs { get; set; }
+
             [JsonPropertyName("Win Rate %")]
-            public int Winrate { get; set; }
-            [JsonPropertyName("Wins")]
-            public int Wins { get; set; }
+            public string? Winrate { get; set; }
+
             [JsonPropertyName("Longest Win Streak")]
-            public int LongestWinStreak { get; set; }
+            public string? LongestWinStreak { get; set; }
         }
+
+        public class GameStats
+        {
+            public string? Wins { get; set; }
+            public string? Matches { get; set; }
+
+            [JsonPropertyName("Win Rate %")]
+            public string? AvgWinRate { get; set; }
+
+            [JsonPropertyName("Average Headshots %")]
+            public string? AvgHS { get; set; }
+
+            [JsonPropertyName("Average Kills")]
+            public string? AvgKills { get; set; }
+
+            [JsonPropertyName("Average Deaths")]
+            public string? AvgDeaths { get; set; }
+
+            [JsonPropertyName("Average K/D Ratio")]
+            public string? AvgKD { get; set; }
+
+            [JsonPropertyName("Average K/R Ratio")]
+            public string? AvgKR { get; set; }
+
+            [JsonPropertyName("Average Assists")]
+            public string? AvgAssists { get; set; }
+
+        }
+
         public class MapStats
         {
-            public Stats? stats { get; set; }
-            public string? mode { get; set; } //game mode (5x5 etc)
-            public string? label { get; set; } // map name
-            public class Stats
-            {
-                public int Wins { get; set; }
-                public int Matches { get; set; }
-                [JsonPropertyName("Win Rate %")]
-                public int AvgWinRate { get; set; }
-                [JsonPropertyName("Average Headshots %")]
-                public int AvgHS { get; set; }
-                [JsonPropertyName("Average Kills")]
-                public float AvgKills { get; set; }
-                [JsonPropertyName("Average Deaths")]
-                public float AvgDeaths { get; set; }
-                [JsonPropertyName("Average K/D Ratio")]
-                public float AvgKD { get; set; }
-                [JsonPropertyName("Average K/R Ratio")]
-                public float AvgKR { get; set; }
-                [JsonPropertyName("Average Assists")]
-                public float AvgAssists { get; set; }
+            public GameStats? Stats { get; set; }
+            public string? Mode { get; set; } //game mode (5x5 etc)
 
-            }
-
+            [JsonPropertyName("label")]
+            public string? MapName { get; set; }
         }
     }
 }

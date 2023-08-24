@@ -54,6 +54,15 @@ internal static class WebBrowser
         return null;
     }
 
+    public static async Task<(string?,HttpStatusCode)> GetStringAsync(string url, string authToken)
+    {
+        using var request             = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+        using var response            = await HttpClient.SendAsync(request).ConfigureAwait(false);
+
+        return (await response.Content.ReadAsStringAsync().ConfigureAwait(false), response.StatusCode);
+    }
+
     public static async Task<string> GetCountryCodeByIp(IPAddress? address)
     {
         var response = await GetStringAsync($"http://ip-api.com/json/{address}");

@@ -1,23 +1,23 @@
-﻿namespace SteamOrganizer.Backend.Parsers.CSGOApi.Responses
-{
-    public class FaceitPlayerObject
-    {
-        public string? faceit_url { get; set; }
-        public IList<string?> friends_ids { get; set; }
-        public Games? games { get; set; }
+﻿using System.Text.Json.Serialization;
 
-        public class Games
+namespace SteamOrganizer.Backend.Parsers.CSGOApi.Responses
+{
+    public sealed class FaceitPlayerObject
+    {
+        public sealed class Game
         {
-            public Game? csgo { get; set; }
-            public class Game
-            {
-                public int faceit_elo { get; set; }
-                public int skill_level { get; set; }
-            }
+            public int Faceit_elo { get; set; }
+            public byte Skill_level { get; set; }
         }
-        public string? nickname { get; set; }
-        public string? player_id { get; set; } //faceit id
-        public string? steam_id_64 { get; set; }
-        public string? steam_nickname { get; set; }
+        public sealed class GamesList
+        {
+            public Game? Csgo { get; set; }
+        }
+
+
+        public GamesList? Games { get; set; }
+
+        [JsonPropertyName("player_id")]
+        public required string FaceitID { get; set; } 
     }
 }

@@ -52,10 +52,14 @@ public class CSGOSummariesController : ControllerBase
 
         await Parallel.ForEachAsync(steamSummaries,async(player,token) =>
         {
+            var matchmakingTask = CsgoParser.GetMatchmakingStats(player.SteamID).ConfigureAwait(false);
+            var faceitTask      = CsgoParser.GetFaceitStats(player.SteamID).ConfigureAwait(false);
+
             dict.Add(player.SteamID, new CSGOPlayerSummaries 
             { 
-                AccountInfo = player, 
-                MatchmakingStats   = await CsgoParser.GetMatchmakingStats(player.SteamID).ConfigureAwait(false)
+                AccountInfo        = player, 
+                MatchmakingStats   = await matchmakingTask,
+                FaceitStats        = await faceitTask
             });
         });
 
