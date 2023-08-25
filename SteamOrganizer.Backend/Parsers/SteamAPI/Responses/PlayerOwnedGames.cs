@@ -43,4 +43,6 @@ public sealed class AppDetailsObject
 
     public bool Success { get; set; }
     public AppData? Data { get; set; }
+
+    public bool FromCache { get; set; }
 }

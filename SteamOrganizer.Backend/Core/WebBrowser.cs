@@ -65,11 +65,19 @@ internal static class WebBrowser
 
     public static async Task<string> GetCountryCodeByIp(IPAddress? address)
     {
-        var response = await GetStringAsync($"http://ip-api.com/json/{address}");
-        if (response == null)
-            return "us";
+        try
+        {
+            var response = await GetStringAsync($"http://ip-api.com/json/{address}");
+            if (response == null)
+                return "us";
 
-        return System.Text.Json.JsonSerializer.Deserialize<IpInfoObject>(response, App.DefaultJsonOptions)?.CountryCode ?? "us";
+            return System.Text.Json.JsonSerializer.Deserialize<IpInfoObject>(response, App.DefaultJsonOptions)?.CountryCode ?? "us";
+        }
+        catch
+        {
+            return "us";
+        }
+
     }
 
 

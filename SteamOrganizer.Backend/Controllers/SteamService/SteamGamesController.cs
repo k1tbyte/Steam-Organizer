@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using SteamOrganizer.Backend.Core;
 using SteamOrganizer.Backend.Parsers.SteamAPI;
 using SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
@@ -9,6 +10,7 @@ namespace SteamOrganizer.Backend.Controllers.SteamService;
 [Route("SteamService/PlayerOwnedGames")]
 public sealed class SteamGamesController : ControllerBase
 {
+
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]

@@ -81,6 +81,7 @@ namespace SteamOrganizer
                 return;
             }
 #endif
+            var s = SteamKit2.ECurrencyCode.COP;
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 

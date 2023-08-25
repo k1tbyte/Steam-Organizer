@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using SteamOrganizer.Backend.Parsers.SteamAPI;
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Distributed;
+using SteamOrganizer.Backend.Core;
 
 namespace SteamOrganizer.Backend;
 
@@ -11,6 +13,7 @@ public static class App
     public static readonly JsonSerializerOptions DefaultJsonOptions = new() { PropertyNameCaseInsensitive = true };
     private static readonly WebApplication Current;
     internal static IConfiguration Config => Current.Configuration;
+    internal static readonly RedisCacheService Cache;
 
     static App()
     {
@@ -30,7 +33,16 @@ public static class App
             options.AllowSynchronousIO = true;
         });
 
+        builder.Services.AddTransient<RedisCacheService>();
+
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = "localhost:6379";
+            options.InstanceName = "SteamOrganizer";
+        });
+
         Current = builder.Build();
+        Cache   = (RedisCacheService)Current!.Services.GetService(typeof(RedisCacheService))!;
 
 #if DEBUG
         Current.UseSwagger();

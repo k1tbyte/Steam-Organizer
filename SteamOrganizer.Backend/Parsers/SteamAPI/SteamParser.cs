@@ -125,23 +125,36 @@ internal static class SteamParser
             if (games.Games.Length < 1 || !withDetails)
                 return games;
 
-            var builder  = new StringBuilder("https://store.steampowered.com/api/appdetails/?appids=");
+            var builder  = new StringBuilder();
             var requests = new List<string>(64);
             var locker   = new object();
 
             for (int i = 0; i < games.Games.Length; i++)
             {
-                builder.Append(games.Games[i].AppID);
-                if (builder.Length >= WebBrowser.MaxSteamHeaderSize || i == games.Games.Length - 1)
+                if (App.Cache.GetCachedData<AppDetailsObject>($"{games.Games[i].AppID}_{countryCode}",out var cachedDetails))
                 {
-                    requests.Add(builder.Append($"&cc={countryCode}&l=en&filters=price_overview").ToString());
-                    builder.Clear().Append("https://store.steampowered.com/api/appdetails/?appids=");
+                    gamesPrices.Add(games.Games[i].AppID, cachedDetails!);
+                    Console.WriteLine($"{i} {games.Games[i].AppID}_{countryCode}" + " get from cache");
+                    continue;
+                }
+                builder.Append(games.Games[i].AppID);
+                if (builder.Length >= WebBrowser.MaxSteamHeaderSize)
+                {
+                    requests.Add(builder.Append($"&cc={countryCode}&l=en&filters=price_overview")
+                        .Insert(0, "https://store.steampowered.com/api/appdetails/?appids=").ToString());
+                    builder.Clear();
                     continue;
                 }
                 builder.Append(',');
             }
 
-            await Parallel.ForEachAsync(requests,async (x, token) =>
+            if(builder.Length != 0)
+            {
+                requests.Add(builder.Append($"&cc={countryCode}&l=en&filters=price_overview").Insert(0, "https://store.steampowered.com/api/appdetails/?appids=").ToString());
+            }
+
+            await Parallel.ForEachAsync(requests,new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism},
+                async (x, token) =>
             {
                 for (int i = 0; i < WebBrowser.MaxAttempts; i++)
                 {
@@ -180,9 +193,16 @@ internal static class SteamParser
                         continue;
 
                     var formattedPrice            = details!.Data!.Price_overview!.Initial / 100;
-                    games.Games[i].FormattedPrice = details?.Data?.Price_overview?.Final_formatted;
+                    games.Games[i].FormattedPrice = details!.Data!.Price_overview!.Final_formatted;
                     games.TotalGamesPrice += formattedPrice;
                     games.PaidGames++;
+
+                    if (details.FromCache)
+                        continue;
+
+                    details.FromCache = true;
+                    App.Cache.SetCachedData($"{games.Games[i].AppID}_{countryCode}", details, TimeSpan.FromHours(12));
+                    Console.WriteLine($"{games.Games[i].AppID}_{countryCode}" + " set to cache");
                 }
 
                 games.GamesBoundaryBadge = GetGamesBadgeBoundary(games.Games.Length);
