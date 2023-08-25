@@ -13,7 +13,7 @@ public static class App
     public static readonly JsonSerializerOptions DefaultJsonOptions = new() { PropertyNameCaseInsensitive = true };
     private static readonly WebApplication Current;
     internal static IConfiguration Config => Current.Configuration;
-    internal static readonly RedisCacheService Cache;
+    internal static readonly MemoryCachingService Cache;
 
     static App()
     {
@@ -33,16 +33,7 @@ public static class App
             options.AllowSynchronousIO = true;
         });
 
-        builder.Services.AddTransient<RedisCacheService>();
-
-        builder.Services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = "localhost:6379";
-            options.InstanceName = "SteamOrganizer";
-        });
-
         Current = builder.Build();
-        Cache   = (RedisCacheService)Current!.Services.GetService(typeof(RedisCacheService))!;
 
 #if DEBUG
         Current.UseSwagger();
@@ -56,10 +47,18 @@ public static class App
             ForwardedHeaders = ForwardedHeaders.XForwardedFor |
             ForwardedHeaders.XForwardedProto
         });
+
+        Cache = new("SteamOrganizer");
     }
 
     public static void Main(string[] args)
     {
+        AppDomain.CurrentDomain.ProcessExit += OnApplicationShuttingDown;
         Current.Run();
+    }
+
+    private static void OnApplicationShuttingDown(object? sender, EventArgs e)
+    {
+        Cache.Dispose();
     }
 }
