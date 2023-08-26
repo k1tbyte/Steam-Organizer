@@ -1,8 +1,7 @@
 ﻿using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
-namespace SteamOrganizer.Backend.Parsers.CSGOStats.Responses;
-
+namespace SteamOrganizer.Backend.Parsers.CSGOApi.Responses;
 
 public sealed class MatchmakingStatsObject
 {

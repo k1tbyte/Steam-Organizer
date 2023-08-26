@@ -134,9 +134,9 @@ internal static class SteamParser
                 if (App.Cache.GetCachedData<AppDetailsObject>($"{games.Games[i].AppID}_{countryCode}",out var cachedDetails))
                 {
                     gamesPrices.Add(games.Games[i].AppID, cachedDetails!);
-                    Console.WriteLine($"{i} {games.Games[i].AppID}_{countryCode}" + " get from cache");
                     continue;
                 }
+
                 builder.Append(games.Games[i].AppID);
                 if (builder.Length >= WebBrowser.MaxSteamHeaderSize)
                 {
@@ -153,30 +153,35 @@ internal static class SteamParser
                 requests.Add(builder.Append($"&cc={countryCode}&l=en&filters=price_overview").Insert(0, "https://store.steampowered.com/api/appdetails/?appids=").ToString());
             }
 
-            await Parallel.ForEachAsync(requests,new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism},
-                async (x, token) =>
-            {
-                for (int i = 0; i < WebBrowser.MaxAttempts; i++)
-                {
-                    var response = (await WebBrowser.GetStringAsync(x).ConfigureAwait(false))?.InjectionReplace(']', '}')?.InjectionReplace('[', '{');
+            await Parallel.ForEachAsync(requests, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism },
+                 async (x, token) =>
+             {
+                 for (int i = 0; i < WebBrowser.MaxAttempts; i++)
+                 {
+                     var response = (await WebBrowser.GetStringAsync(x).ConfigureAwait(false))?.InjectionReplace(']', '}')?.InjectionReplace('[', '{');
 
-                    if (response == null || response.Length == 0)
-                    {
-                        continue;
-                    }
+                     if (response == null || response.Length == 0)
+                     {
+                         continue;
+                     }
 
-                    lock (locker)
-                    {
-                        gamesPrices = gamesPrices.Concat(JsonSerializer.Deserialize<Dictionary<uint, AppDetailsObject>>(response,App.DefaultJsonOptions)?
-                            .Where(o => o.Value.Success && o.Value.Data?.Price_overview != null)!)?.ToDictionary(o => o.Key, o => o.Value);
-                    }
-                    return;
-                }
-            }).ConfigureAwait(false);
+                     lock(locker)
+                     {
+                         foreach (var item in JsonSerializer.Deserialize<Dictionary<uint, AppDetailsObject>>(response, App.DefaultJsonOptions)!)
+                         {
+                             gamesPrices.Add(item.Key, item.Value);
+                         }
+
+                     }
+
+                     return;
+                 }
+             });
         }
         finally
         {
             gamesPrices = gamesPrices?.Any() == true ? gamesPrices : null;
+            var culture = App.CultureHelper.GetCultureByTwoLetterCode(countryCode) ?? new System.Globalization.CultureInfo("en-US");
 
             if (games?.Games?.Length >= 1)
             {
@@ -192,17 +197,19 @@ internal static class SteamParser
                     if (gamesPrices == null || !gamesPrices.TryGetValue(games.Games[i].AppID, out var details))
                         continue;
 
-                    var formattedPrice            = details!.Data!.Price_overview!.Initial / 100;
-                    games.Games[i].FormattedPrice = details!.Data!.Price_overview!.Final_formatted;
-                    games.TotalGamesPrice += formattedPrice;
-                    games.PaidGames++;
+                    if (details!.Data?.Price_overview != null)
+                    {
+                        var converted = details!.Data!.Price_overview!.Initial / 100;
+                        games.TotalGamesPrice += converted;
+                        games.Games[i].FormattedPrice = App.CultureHelper.FormatCurrency(culture, converted);
+                        games.PaidGames++;
+                    }
+                    else if(details.Success)
+                    {
+                        games.Games[i].FormattedPrice = "Free";
+                    }
 
-                    if (details.FromCache)
-                        continue;
-
-                    details.FromCache = true;
                     App.Cache.SetCachedData($"{games.Games[i].AppID}_{countryCode}", details, TimeSpan.FromHours(12));
-                    Console.WriteLine($"{games.Games[i].AppID}_{countryCode}" + " set to cache");
                 }
 
                 games.GamesBoundaryBadge = GetGamesBadgeBoundary(games.Games.Length);

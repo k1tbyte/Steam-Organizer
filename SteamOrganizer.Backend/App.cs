@@ -5,15 +5,18 @@ using SteamOrganizer.Backend.Parsers.SteamAPI;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using SteamOrganizer.Backend.Core;
+using System.Globalization;
 
 namespace SteamOrganizer.Backend;
 
 public static class App
 {
     public static readonly JsonSerializerOptions DefaultJsonOptions = new() { PropertyNameCaseInsensitive = true };
+    internal static readonly CultureHelper CultureHelper = new(false);
     private static readonly WebApplication Current;
     internal static IConfiguration Config => Current.Configuration;
     internal static readonly MemoryCachingService Cache;
+
 
     static App()
     {

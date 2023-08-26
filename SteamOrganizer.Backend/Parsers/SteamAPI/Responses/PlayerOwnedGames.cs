@@ -33,7 +33,6 @@ public sealed class AppDetailsObject
 {
     public sealed class AppPrice
     {
-        public string? Final_formatted { get; set; }
         public uint Initial { get; set; }
     }
     public sealed class AppData

@@ -1,15 +1,9 @@
-﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using SteamOrganizer.Backend.Core;
-using SteamOrganizer.Backend.Parsers.CSGOStats.Responses;
-using System.Text.Json;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
+﻿using SteamOrganizer.Backend.Core;
 using SteamOrganizer.Backend.Parsers.CSGOApi.Responses;
-using SteamOrganizer.Backend.Parsers.CsgoAPI.Responses;
+using System.Net;
+using System.Text.Json;
 
-namespace SteamOrganizer.Backend.Parsers.CSGOStats;
+namespace SteamOrganizer.Backend.Parsers.CSGOApi;
 
 public static class CsgoParser
 {
@@ -31,17 +25,30 @@ public static class CsgoParser
     {
         try
         {
+            if (App.Cache.GetCachedData<MatchmakingStatsObject>($"csM_{steamid}", out var cache))
+            {
+                return cache;
+            }
+
             var response = await WebBrowser.GetStringAsync($"https://csgostats.gg/player/{steamid}");
             if (response == null)
                 return null;
+
 
             var match = Regexes.CsgoStatsJson().Match(response)?.Value;
             if (match == null)
                 return null;
 
             match.InjectionReplace(0, ' ', '{').InjectionReplace(match.Length - 1, ' ', '\0');
+            var obj = JsonSerializer.Deserialize<MatchmakingStatsObject>(match, App.DefaultJsonOptions);
 
-            return JsonSerializer.Deserialize<MatchmakingStatsObject>(match, App.DefaultJsonOptions);
+            if(obj != null)
+            {
+                App.Cache.SetCachedData($"csM_{steamid}", obj, TimeSpan.FromHours(6));
+            }
+
+
+            return obj;
         }
         catch
         {

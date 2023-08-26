@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
+using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -17,10 +18,12 @@ public sealed class MemoryCachingService : IDisposable
         ArgumentException.ThrowIfNullOrEmpty(serviceName);
         ServiceName = serviceName;
 
-        var path = Path.Combine(Environment.CurrentDirectory, serviceName + ".cache");
+        var path = Path.Combine(Directory.GetCurrentDirectory(), serviceName + ".cache");
         
         try
         {
+            if (!File.Exists(path))
+                return;
 
             var obj = JsonSerializer.Deserialize<Dictionary<string, CacheObject>>(File.ReadAllText(path));
             if (obj == null || obj.Count == 0)
@@ -53,6 +56,20 @@ public sealed class MemoryCachingService : IDisposable
                 return false;
             }
 
+            if(cache.Data is JsonElement json)
+            {
+                try
+                {
+                    var jValue = json.Deserialize<T>();
+                    if (jValue != null)
+                    {
+                        cache.Data = jValue;
+                    }
+                }
+                catch { }
+
+            }
+
             if (cache.Data is T data)
             {
                 value = data;
@@ -64,11 +81,13 @@ public sealed class MemoryCachingService : IDisposable
 
     public bool SetCachedData<T>(string key, T data, TimeSpan cacheDuration,bool overwriteIfExists = false) where T : notnull
     {
+        if (data == null)
+            return false;
+
         try
         {
             lock(Locker)
             {
-                var cacheObject = new CacheObject(data, cacheDuration);
                 if(MemoryCache.TryGetValue(key,out var cache))
                 {
                     if(cache.IsExpired || overwriteIfExists)
@@ -81,7 +100,7 @@ public sealed class MemoryCachingService : IDisposable
                     }
                 }
 
-                MemoryCache.Add(key, cacheObject);
+                MemoryCache.Add(key, new CacheObject(data, cacheDuration));
                 return true;
             }
         }
@@ -98,8 +117,16 @@ public sealed class MemoryCachingService : IDisposable
 
         if(MemoryCache.Any())
         {
+            foreach (var item in MemoryCache)
+            {
+                if(item.Value.IsExpired)
+                {
+                    MemoryCache.Remove(item.Key);
+                }
+            }
+
             File.WriteAllText(Path.Combine(
-                Environment.CurrentDirectory, ServiceName + ".cache"),
+                Directory.GetCurrentDirectory(), ServiceName + ".cache"),
                 JsonSerializer.Serialize(MemoryCache)
             );
         }
@@ -123,37 +150,22 @@ public sealed class MemoryCachingService : IDisposable
 
     private sealed class CacheObject
     {
-
-#pragma warning disable CS8618
         [JsonConstructor]
-        public CacheObject(object Data, DateTime ExpiredTime, string ObjTypeName)
+        public CacheObject(object Data, DateTime ExpiredTime)
         {
             this.ExpiredTime = ExpiredTime;
-            this.ObjTypeName = ObjTypeName;
-
-            try
-            {
-                var type = Type.GetType(ObjTypeName,true);
-                Data = (Data as JsonObject).Deserialize(type!) ?? throw new Exception();
-            }
-            catch
-            {
-                this.Data = Data;
-            }
+            this.Data        = Data;
         }
-#pragma warning restore CS8618
 
         public CacheObject(object data, TimeSpan cacheDuration)
         {
             ArgumentNullException.ThrowIfNull(data, nameof(data));
 
             this.Data   = data;
-            ObjTypeName = data.GetType().Name;
             ExpiredTime = DateTime.Now + cacheDuration;
         }
 
-        public string ObjTypeName {  get; }
-        public object Data { get; }
+        public object Data { get; set; }
         public DateTime ExpiredTime { get; }
 
         [JsonIgnore]

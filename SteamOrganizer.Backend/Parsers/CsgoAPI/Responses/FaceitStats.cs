@@ -1,7 +1,6 @@
-﻿using SteamOrganizer.Backend.Parsers.CSGOApi.Responses;
-using static SteamOrganizer.Backend.Parsers.CSGOApi.Responses.FaceitPlayerStatsObject;
+﻿using static SteamOrganizer.Backend.Parsers.CSGOApi.Responses.FaceitPlayerStatsObject;
 
-namespace SteamOrganizer.Backend.Parsers.CsgoAPI.Responses;
+namespace SteamOrganizer.Backend.Parsers.CSGOApi.Responses;
 
 public sealed class FaceitStatsObject : FaceitOverallStats
 {

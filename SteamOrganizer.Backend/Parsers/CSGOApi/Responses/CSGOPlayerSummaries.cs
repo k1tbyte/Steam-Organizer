@@ -1,7 +1,6 @@
-﻿using SteamOrganizer.Backend.Parsers.CsgoAPI.Responses;
-using SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
+﻿using SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
 
-namespace SteamOrganizer.Backend.Parsers.CSGOStats.Responses;
+namespace SteamOrganizer.Backend.Parsers.CSGOApi.Responses;
 
 public sealed class CSGOPlayerSummaries
 {

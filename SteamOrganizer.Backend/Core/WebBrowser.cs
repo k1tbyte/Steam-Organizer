@@ -8,7 +8,7 @@ internal static class WebBrowser
 {
     public const int MaxAttempts        = 5;
     public const int RetryRequestDelay  = 5000;
-    public const int MaxSteamHeaderSize = 7500;
+    public const int MaxSteamHeaderSize = 7300;
     public static readonly int MaxDegreeOfParallelism =
 #if DEBUG
         Environment.ProcessorCount;

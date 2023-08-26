@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SteamOrganizer.Backend.Core;
-using SteamOrganizer.Backend.Parsers.CsgoAPI.Responses;
-using SteamOrganizer.Backend.Parsers.CSGOStats;
-using SteamOrganizer.Backend.Parsers.CSGOStats.Responses;
+using SteamOrganizer.Backend.Parsers.CSGOApi;
+using SteamOrganizer.Backend.Parsers.CSGOApi.Responses;
 using SteamOrganizer.Backend.Parsers.SteamAPI;
-using System.Collections.Generic;
 
 namespace SteamOrganizer.Backend.Controllers.CSGOService;
 

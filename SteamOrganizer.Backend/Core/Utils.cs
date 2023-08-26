@@ -1,4 +1,7 @@
-﻿namespace SteamOrganizer.Backend.Core;
+﻿using System.Globalization;
+using System.Net;
+
+namespace SteamOrganizer.Backend.Core;
 
 public static class Utils
 {
@@ -31,5 +34,4 @@ public static class Utils
         }
         return str;
     }
-
 }

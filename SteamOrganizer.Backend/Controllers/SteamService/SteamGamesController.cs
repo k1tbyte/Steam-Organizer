@@ -16,7 +16,7 @@ public sealed class SteamGamesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<PlayerOwnedGamesObject.OwnedGames?> GetAsync(ulong steamId, bool withDetails = false, string? cc = null)
     {
-        var countryCode = cc ?? ( withDetails ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : string.Empty);
+        var countryCode = cc ?? (withDetails ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : "us");
         var response = await SteamParser.ParseGames(steamId.ToString(), countryCode, withDetails).ConfigureAwait(false);
         if (response == null)
         {
