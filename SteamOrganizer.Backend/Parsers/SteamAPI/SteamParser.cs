@@ -153,6 +153,9 @@ internal static class SteamParser
                 requests.Add(builder.Append($"&cc={countryCode}&l=en&filters=price_overview").Insert(0, "https://store.steampowered.com/api/appdetails/?appids=").ToString());
             }
 
+            if (requests.Count == 0)
+                return games;
+
             await Parallel.ForEachAsync(requests, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism },
                  async (x, token) =>
              {

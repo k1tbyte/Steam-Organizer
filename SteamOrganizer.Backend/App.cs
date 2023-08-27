@@ -15,7 +15,7 @@ public static class App
     internal static readonly CultureHelper CultureHelper = new(false);
     private static readonly WebApplication Current;
     internal static IConfiguration Config => Current.Configuration;
-    internal static readonly MemoryCachingService Cache;
+    internal static readonly Lazy<MemoryCachingService> Cache = new(() => new MemoryCachingService("SteamOrganizer"));
 
 
     static App()
@@ -50,8 +50,6 @@ public static class App
             ForwardedHeaders = ForwardedHeaders.XForwardedFor |
             ForwardedHeaders.XForwardedProto
         });
-
-        Cache = new("SteamOrganizer");
     }
 
     public static void Main(string[] args)
@@ -62,6 +60,7 @@ public static class App
 
     private static void OnApplicationShuttingDown(object? sender, EventArgs e)
     {
-        Cache.Dispose();
+        if(Cache.IsValueCreated)
+            Cache.Value.Dispose();
     }
 }
