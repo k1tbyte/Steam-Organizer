@@ -21,12 +21,19 @@ public class CSGOSummariesController : ControllerBase
         }
         var dict = new Dictionary<string, MatchmakingStatsObject?>();
 
-        await Parallel.ForEachAsync(ids, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism, CancellationToken = HttpContext.RequestAborted },
-            async (id, token) =>
+        try
         {
-            var result = await CsgoParser.GetMatchmakingStats(id).ConfigureAwait(false);
-            dict.TryAdd(id, result);
-        }).ConfigureAwait(false);
+            await Parallel.ForEachAsync(ids, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism, CancellationToken = HttpContext.RequestAborted },
+            async (id, token) =>
+            {
+                var result = await CsgoParser.GetMatchmakingStats(id).ConfigureAwait(false);
+                dict.TryAdd(id, result);
+            }).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
 
         return dict;
     }
@@ -42,12 +49,21 @@ public class CSGOSummariesController : ControllerBase
         }
 
         var dict = new Dictionary<string, FaceitStatsObject?>();
-        await Parallel.ForEachAsync(ids, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism, CancellationToken = HttpContext.RequestAborted },
-            async (id, token) =>
+
+        try
         {
-            var result = await CsgoParser.GetFaceitStats(id).ConfigureAwait(false);
-            dict.TryAdd(id, result);
-        }).ConfigureAwait(false);
+            await Parallel.ForEachAsync(ids, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism, CancellationToken = HttpContext.RequestAborted },
+            async (id, token) =>
+            {
+                var result = await CsgoParser.GetFaceitStats(id).ConfigureAwait(false);
+                dict.TryAdd(id, result);
+            }).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+
 
         return dict;
     }
@@ -72,19 +88,27 @@ public class CSGOSummariesController : ControllerBase
 
         var dict = new Dictionary<string, CSGOPlayerSummaries>();
 
-        await Parallel.ForEachAsync(steamSummaries, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism, CancellationToken = HttpContext.RequestAborted },
-             async(player,token) =>
+        try
         {
-            var matchmakingTask = CsgoParser.GetMatchmakingStats(player.SteamID).ConfigureAwait(false);
-            var faceitTask      = CsgoParser.GetFaceitStats(player.SteamID).ConfigureAwait(false);
+            await Parallel.ForEachAsync(steamSummaries, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism, CancellationToken = HttpContext.RequestAborted },
+            async (player, token) =>
+            {
+                var matchmakingTask = CsgoParser.GetMatchmakingStats(player.SteamID).ConfigureAwait(false);
+                var faceitTask = CsgoParser.GetFaceitStats(player.SteamID).ConfigureAwait(false);
 
-            dict.Add(player.SteamID, new CSGOPlayerSummaries 
-            { 
-                AccountInfo        = player, 
-                MatchmakingStats   = await matchmakingTask,
-                FaceitStats        = await faceitTask
+                dict.Add(player.SteamID, new CSGOPlayerSummaries
+                {
+                    AccountInfo = player,
+                    MatchmakingStats = await matchmakingTask,
+                    FaceitStats = await faceitTask
+                });
             });
-        });
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+
 
         return dict;
     }

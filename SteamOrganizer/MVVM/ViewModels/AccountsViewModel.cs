@@ -20,7 +20,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using static SteamKit2.GC.CSGO.Internal.CMsgGCCStrike15_v2_MatchmakingGC2ClientUpdate;
 using Steam = SteamOrganizer.Infrastructure.Steam;
 
 namespace SteamOrganizer.MVVM.ViewModels
@@ -243,7 +242,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             {
                 using (updateCancellation = new CancellationTokenSource())
                 {
-                    if (await API.ParseInfo(planned, updateCancellation.Token) != API.EParseResult.OK)
+                    if (await API.GetInfo(planned, updateCancellation.Token) != API.EAPIResult.OK)
                         return;
 
                     App.MainWindowVM.Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.DatabaseClockOutline,
@@ -284,17 +283,17 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-/*            if ((Utils.GetUnixTime() - App.Config.LastDatabaseUpdateTime) < 21600)
+            if ((Utils.GetUnixTime() - App.Config.LastDatabaseUpdateTime) < 21600)
             {
                 PushNotification.Open("The accounts have already been updated recently", type: PushNotification.EPushNotificationType.Warn);
                 return;
-            }*/
+            }
 
             int availableAccounts = 0;
 
             using (updateCancellation = new CancellationTokenSource())
             {
-                var result = await API.ParseInfo(App.Config.Database, updateCancellation.Token, (account, remainings) =>
+                var result = await API.GetInfo(App.Config.Database, updateCancellation.Token, (account, remainings) =>
                 {
                     if (availableAccounts == 0)
                     {
@@ -305,16 +304,11 @@ namespace SteamOrganizer.MVVM.ViewModels
                 });
 
                 #region Check result
-                if (result == API.EParseResult.NoAccountsWithID)
+                if (result == API.EAPIResult.NoAccountsWithID)
                 {
                     PushNotification.Open("There are no accounts available to update",type: PushNotification.EPushNotificationType.Warn);
                 }
-                else if (result == API.EParseResult.AttemptsExceeded)
-                {
-                    App.MainWindowVM.Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.DatabaseAlertOutline,
-                        "The maximum number of attempts was exceeded when updating the account database, please try again later");
-                }
-                else if (result == API.EParseResult.InternalError)
+                else if (result == API.EAPIResult.InternalError)
                 {
                     App.MainWindowVM.Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.DatabaseRemoveOutline,
                         "An unexpected error occurred while updating the account database");
@@ -323,21 +317,6 @@ namespace SteamOrganizer.MVVM.ViewModels
                 {
                     var msg = new StringBuilder("Account database update completed. Total accounts updated: ")
                         .Append(availableAccounts);
-
-                    if (accsWithError.Count > 0)
-                    {
-                        msg.Append(". The following accounts have only been partially updated: ");
-
-                        if (accsWithError.Count <= 10)
-                        {
-                            msg.Append(string.Join(", ", accsWithError.Select(o => o.Nickname)));
-                        }
-                        else
-                        {
-                            msg.Append(string.Join(", ", accsWithError.Take(10).Select(o => o.Nickname)))
-                                .Append("... and more (").Append(accsWithError.Count - 10).Append(')');
-                        }
-                    }
 
                     App.MainWindowVM.Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.DatabaseCheckOutline, msg.ToString());
                     App.Config.SaveDatabase();

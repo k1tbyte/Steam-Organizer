@@ -1,4 +1,6 @@
-﻿using SteamOrganizer.MVVM.View.Extensions;
+﻿using Newtonsoft.Json;
+using SteamOrganizer.Log;
+using SteamOrganizer.MVVM.View.Extensions;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -127,6 +129,29 @@ namespace SteamOrganizer.Infrastructure
                 App.Logger.Value.LogHandledException(e);
             }
             return null;
+        }
+
+        public async Task<T> GetAsJsonAsync<T>(string url)
+        {
+            var response = await GetStringAsync(url);
+            try
+            {
+                if (response == null)
+                    throw new WarnException("Response is null, status code: " + App.WebBrowser.LastStatusCode);
+
+                return JsonConvert.DeserializeObject<T>(response);
+            }
+            catch(WarnException e)
+            {
+                App.Logger.Value.LogGenericWarningException(e);
+            }
+            catch(Exception e)
+            {
+                App.Logger.Value.LogHandledException(e);
+            }
+
+            return default;
+
         }
 
         public async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request, HttpCompletionOption options)

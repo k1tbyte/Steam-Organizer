@@ -164,7 +164,7 @@ namespace SteamOrganizer.MVVM.Models
             {
                 IsCurrentlyUpdating = true;
 
-                if (await GetInfo(this) != EParseResult.OK)
+                if (await GetInfo(this) != EAPIResult.OK)
                     return false;
 
                 return true;

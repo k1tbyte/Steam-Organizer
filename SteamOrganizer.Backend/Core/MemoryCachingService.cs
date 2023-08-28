@@ -125,10 +125,12 @@ public sealed class MemoryCachingService : IDisposable
                 }
             }
 
+#if !DEBUG
             File.WriteAllText(Path.Combine(
                 Directory.GetCurrentDirectory(), ServiceName + ".cache"),
                 JsonSerializer.Serialize(MemoryCache)
             );
+#endif
         }
 
 

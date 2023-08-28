@@ -893,7 +893,7 @@
                                TextBlock.TextAlignment="Center"
                                ElementStyle="{StaticResource DataGridTextBlockCenter}"/>
                                 <DataGridTextColumn Header="Friend since" 
-                               Binding="{Binding FriendSinceDate,Mode=OneTime,StringFormat=d}"
+                               Binding="{Binding Friend_since,Mode=OneTime,StringFormat=d}"
                                IsReadOnly="True" Width="*"
                                ElementStyle="{StaticResource  DataGridTextBlockCenter}" />
                             </DataGrid.Columns>

@@ -341,7 +341,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         #region Games and friends + searching
         public API.Game[] Games { get; private set; }
-        public API.UserFriendsObject.Friend[] Friends { get; private set; }
+        public API.Friend[] Friends { get; private set; }
 
         private string _friendsSearchBarText;
         private string _gamesSearchBarText;
@@ -511,7 +511,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             if (sender is API.Game game)
                 return game.Name.IndexOf(_gamesSearchBarText, StringComparison.InvariantCultureIgnoreCase) >= 0;
 
-            if (sender is API.UserFriendsObject.Friend friend)
+            if (sender is API.Friend friend)
                 return friend.PersonaName.IndexOf(_friendsSearchBarText, StringComparison.InvariantCultureIgnoreCase) >= 0;
 
             return true;
@@ -528,7 +528,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             var fromCache = File.Exists(path);
             var prevGames = CurrentAccount.PaidGames;
-            if (fromCache || (!fromCache && CurrentAccount.GamesCount > 0 && await API.ParseGames(CurrentAccount)))
+            if (fromCache || (!fromCache && CurrentAccount.GamesCount > 0 && await API.GetGames(CurrentAccount)))
             {
                 FileCryptor.Deserialize(path, out API.Game[] games);
                 Games = games;
@@ -559,9 +559,9 @@ namespace SteamOrganizer.MVVM.ViewModels
             var path = Path.Combine(CachingManager.FriendsCachePath, CurrentAccount.SteamID64.ToString());
             LoadingState = 2;
 
-            if (File.Exists(path) || (CurrentAccount.VisibilityState == 3 && await API.ParseFriends(CurrentAccount)))
+            if (File.Exists(path) || (CurrentAccount.VisibilityState == 3 && await API.GetFriends(CurrentAccount)))
             {
-                FileCryptor.Deserialize(path, out API.UserFriendsObject.Friend[] friends);
+                FileCryptor.Deserialize(path, out API.Friend[] friends);
                 Friends = friends;
             }
 
@@ -714,10 +714,10 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            var id = (param as API.UserFriendsObject.Friend).SteamID;
+            var id = (param as API.Friend).SteamID;
 
             if (App.Config.Database.Exists(o => o.SteamID64 == id, out Account acc)) { }
-            else if (await API.GetInfo(acc = new Account(null, null, id)) != API.EParseResult.OK)
+            else if (await API.GetInfo(acc = new Account(null, null, id)) != API.EAPIResult.OK)
             {
                 PushNotification.Open("Failed to open page, please try again later");
                 return;
