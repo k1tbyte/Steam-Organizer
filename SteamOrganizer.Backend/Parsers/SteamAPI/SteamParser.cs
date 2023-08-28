@@ -28,7 +28,7 @@ internal static class SteamParser
 
     /// <param name="accounts">list of accounts to update</param>
     /// <param name="processingCallback">Args: Current account, Remaining accounts count, Completed successfully </param>
-    internal static async Task<ESteamApiResult> ParseInfo(ulong[] players,bool includeGames,string countryCode, Action<SteamSummariesObject.SteamSummariesResponse> callback)
+    internal static async Task<ESteamApiResult> ParseInfo(ulong[] players,bool includeGames,string countryCode, CancellationToken token, Action<SteamSummariesObject.SteamSummariesResponse> callback)
     {
         try
         {
@@ -54,12 +54,12 @@ internal static class SteamParser
                         return ESteamApiResult.AttemptsExceeded;
                     }
 
-                    await Task.Delay(WebBrowser.RetryRequestDelay);
+                    await Task.Delay(WebBrowser.RetryRequestDelay,token);
                     i -= 100;
                     continue;
                 }
 
-                await Parallel.ForEachAsync(summaries, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism },
+                await Parallel.ForEachAsync(summaries, new ParallelOptions { MaxDegreeOfParallelism = 2, CancellationToken = token },
                     async (player, token) =>
                 {
                     player.Bans       = bans[player.SteamID];
@@ -70,7 +70,7 @@ internal static class SteamParser
                         
                         if(includeGames)
                         {
-                            player.GamesSummaries = await ParseGames(player.SteamID, countryCode).ConfigureAwait(false);
+                            player.GamesSummaries = await ParseGames(player.SteamID, countryCode, token).ConfigureAwait(false);
                         }
                     }
 
@@ -78,6 +78,10 @@ internal static class SteamParser
                 }).ConfigureAwait(false);
 
             }
+        }
+        catch(OperationCanceledException)
+        {
+            return ESteamApiResult.OperationCanceled;
         }
         catch
         {
@@ -87,7 +91,7 @@ internal static class SteamParser
         return ESteamApiResult.OK;
     }
 
-    internal static async Task<SteamSummariesObject.SteamSummariesResponse?> ParseInfo(ulong player, bool includeGames, string countryCode)
+    internal static async Task<SteamSummariesObject.SteamSummariesResponse?> ParseInfo(ulong player, bool includeGames, string countryCode,CancellationToken token)
     {
         var summariesTask = GetPlayersSummaries(player).ConfigureAwait(false);
         var bansTask      = GetPlayersBans(player).ConfigureAwait(false);
@@ -103,7 +107,7 @@ internal static class SteamParser
             var levelTask            = GetPlayerLevel(player.ToString()).ConfigureAwait(false);
 
             if(includeGames)
-                summaries.GamesSummaries = await ParseGames(player.ToString(), countryCode);
+                summaries.GamesSummaries = await ParseGames(player.ToString(), countryCode, token);
 
             summaries.SteamLevel     = await levelTask;
         }
@@ -112,7 +116,7 @@ internal static class SteamParser
         return summaries;
     }
 
-    internal static async Task<PlayerOwnedGamesObject.OwnedGames?> ParseGames(string steamId, string countryCode, bool withDetails = true)
+    internal static async Task<PlayerOwnedGamesObject.OwnedGames?> ParseGames(string steamId, string countryCode,CancellationToken token, bool withDetails = true)
     {
         PlayerOwnedGamesObject.OwnedGames? games = new();
         var gamesPrices                          = new Dictionary<uint, AppDetailsObject>();
@@ -156,7 +160,7 @@ internal static class SteamParser
             if (requests.Count == 0)
                 return games;
 
-            await Parallel.ForEachAsync(requests, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism },
+            await Parallel.ForEachAsync(requests, new ParallelOptions { MaxDegreeOfParallelism = WebBrowser.MaxDegreeOfParallelism, CancellationToken = token },
                  async (x, token) =>
              {
                  for (int i = 0; i < WebBrowser.MaxAttempts; i++)
@@ -181,10 +185,15 @@ internal static class SteamParser
                  }
              });
         }
+        catch(OperationCanceledException)
+        {
+            return games;
+        }
         finally
         {
             gamesPrices = gamesPrices?.Any() == true ? gamesPrices : null;
-            var culture = App.CultureHelper.GetCultureByTwoLetterCode(countryCode) ?? new System.Globalization.CultureInfo("en-US");
+            var culture = App.CultureHelper.GetCultureByTwoLetterCode(countryCode) ?? CultureHelper.Default;
+            decimal totalGamesPrice = 0;
 
             if (games?.Games?.Length >= 1)
             {
@@ -202,8 +211,8 @@ internal static class SteamParser
 
                     if (details!.Data?.Price_overview != null)
                     {
-                        var converted = details!.Data!.Price_overview!.Initial / 100;
-                        games.TotalGamesPrice += converted;
+                        var converted = details!.Data!.Price_overview!.Initial / 100m;
+                        totalGamesPrice += converted;
                         games.Games[i].FormattedPrice = App.CultureHelper.FormatCurrency(culture, converted);
                         games.PaidGames++;
                     }
@@ -213,6 +222,11 @@ internal static class SteamParser
                     }
 
                     App.Cache.SetCachedData($"{games.Games[i].AppID}_{countryCode}", details, TimeSpan.FromHours(12));
+                }
+
+                if(totalGamesPrice != 0)
+                {
+                    games.GamesPriceFormatted = App.CultureHelper.FormatCurrency(culture, totalGamesPrice);
                 }
 
                 games.GamesBoundaryBadge = GetGamesBadgeBoundary(games.Games.Length);

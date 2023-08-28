@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 using SteamOrganizer.Backend.Core;
 using SteamOrganizer.Backend.Parsers.SteamAPI;
 using SteamOrganizer.Backend.Parsers.SteamAPI.Responses;
@@ -17,7 +16,11 @@ public sealed class SteamGamesController : ControllerBase
     public async Task<PlayerOwnedGamesObject.OwnedGames?> GetAsync(ulong steamId, bool withDetails = false, string? cc = null)
     {
         var countryCode = cc ?? (withDetails ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : "us");
-        var response = await SteamParser.ParseGames(steamId.ToString(), countryCode, withDetails).ConfigureAwait(false);
+        var response = await SteamParser.ParseGames(steamId.ToString(), countryCode,HttpContext.RequestAborted, withDetails).ConfigureAwait(false);
+
+        if (HttpContext.RequestAborted.IsCancellationRequested)
+            return null;
+
         if (response == null)
         {
             BadRequest();

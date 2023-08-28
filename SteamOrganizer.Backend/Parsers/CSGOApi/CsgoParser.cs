@@ -7,17 +7,7 @@ namespace SteamOrganizer.Backend.Parsers.CSGOApi;
 
 public static class CsgoParser
 {
-    #region UrlConsts
-    // Base
     public const string FaceitAPIUrl          = "https://open.faceit.com/data/v4/";
-    // Methods
-    public const string PlayerUrl        = "players/"; //player info by player id
-    public const string PlayerSteamIdUrl = "players?game=csgo&game_player_id=";//player info by steam id
-    public const string NicknameUrl      = "players?nickname="; //player info by nickname
-    public const string MatchUrl         = "matches/"; //match info by match id
-    // parameters
-    public const string StatsUrl         = "/stats/csgo"; //player info by nickname
-    #endregion
 
     private static readonly string FaceitApiKey = App.Config.GetValue<string>("Credentials:FaceitApiKey")!;
 
@@ -103,8 +93,4 @@ public static class CsgoParser
         });
         return (match, team1, team2);
     }*/
-
-    #region FaceitApiRequests
-
-    #endregion
 }

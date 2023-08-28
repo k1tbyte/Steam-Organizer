@@ -15,7 +15,7 @@ public static class App
     internal static readonly CultureHelper CultureHelper = new(false);
     private static readonly WebApplication Current;
     internal static IConfiguration Config => Current.Configuration;
-    internal static readonly Lazy<MemoryCachingService> Cache = new(() => new MemoryCachingService("SteamOrganizer"));
+    internal static readonly MemoryCachingService Cache = new("SteamOrganizer");
 
 
     static App()
@@ -60,7 +60,6 @@ public static class App
 
     private static void OnApplicationShuttingDown(object? sender, EventArgs e)
     {
-        if(Cache.IsValueCreated)
-            Cache.Value.Dispose();
+            Cache.Dispose();
     }
 }

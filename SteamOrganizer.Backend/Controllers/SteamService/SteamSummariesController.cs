@@ -18,7 +18,7 @@ public sealed class SteamSummariesController : ControllerBase
     {
         var countryCode = includeGames ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : string.Empty;
 
-        var response = await SteamParser.ParseInfo(steamid, includeGames, countryCode).ConfigureAwait(false);
+        var response = await SteamParser.ParseInfo(steamid, includeGames, countryCode, HttpContext.RequestAborted).ConfigureAwait(false);
         if(response == null)
         {
             BadRequest();
@@ -45,7 +45,7 @@ public sealed class SteamSummariesController : ControllerBase
         var countryCode = cc ?? (includeGames ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : string.Empty);
         var dictionary  = new Dictionary<string, SteamSummariesObject.SteamSummaries>(unique.Length);
 
-        var result = await SteamParser.ParseInfo(unique, includeGames, countryCode,
+        var result = await SteamParser.ParseInfo(unique, includeGames, countryCode, HttpContext.RequestAborted,
             (player) => dictionary.Add(player.SteamID, player)).ConfigureAwait(false);
 
         if (result != ESteamApiResult.OK)
@@ -76,9 +76,11 @@ public sealed class SteamSummariesController : ControllerBase
         var locker               = new object();
         var countryCode          = cc ?? (includeGames ? await WebBrowser.GetCountryCodeByIp(Request.HttpContext.Connection.RemoteIpAddress).ConfigureAwait(false) : string.Empty);
 
-        var result = await SteamParser.ParseInfo(unique,includeGames, countryCode,
+        var result = await SteamParser.ParseInfo(unique,includeGames, countryCode, HttpContext.RequestAborted,
             (player) => 
-        { 
+        {
+            Console.WriteLine(player.SteamID);
+
             var jResponse = JsonSerializer.Serialize(player) + '\n'; 
             lock (locker) 
             { 
@@ -89,6 +91,9 @@ public sealed class SteamSummariesController : ControllerBase
 
         httpResponse.Body.Close();
 
-        Ok();
+        if (result == ESteamApiResult.OK)
+        {
+            Ok();
+        }
     }
 }

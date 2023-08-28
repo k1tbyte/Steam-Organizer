@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using static SteamOrganizer.Infrastructure.Steam.SteamParser;
+using static SteamOrganizer.Infrastructure.Steam.API;
 
 namespace SteamOrganizer.MVVM.Models
 {
@@ -94,9 +94,8 @@ namespace SteamOrganizer.MVVM.Models
         public int PlayedGamesCount { get; set; }
         public ushort GamesBadgeBoundary { get; set; }
         public float HoursOnPlayed { get; set; }
-        public ulong TotalGamesPrice { get; set; }
+        public string TotalGamesPrice { get; set; }
         public int PaidGames { get; set; }
-        public ECurrencyCode GamesCurrency { get; set; }
         #endregion
 
         public string Note { get; set; }
@@ -165,7 +164,7 @@ namespace SteamOrganizer.MVVM.Models
             {
                 IsCurrentlyUpdating = true;
 
-                if (await ParseInfo(this) != EParseResult.OK)
+                if (await GetInfo(this) != EParseResult.OK)
                     return false;
 
                 return true;

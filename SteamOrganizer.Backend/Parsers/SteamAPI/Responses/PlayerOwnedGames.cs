@@ -10,9 +10,7 @@ public sealed class PlayerOwnedGamesObject
         public int PlayedGamesCount { get; set; }
         public float HoursOnPlayed { get; set; }
         public ushort GamesBoundaryBadge { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public ulong TotalGamesPrice { get; set; }
+        public string? GamesPriceFormatted { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int PaidGames { get; set; }

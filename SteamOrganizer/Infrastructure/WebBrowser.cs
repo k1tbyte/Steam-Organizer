@@ -129,6 +129,20 @@ namespace SteamOrganizer.Infrastructure
             return null;
         }
 
+        public async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request, HttpCompletionOption options)
+        {
+            try
+            {
+                return await HttpClient.SendAsync(request, options).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                App.Logger.Value.LogHandledException(e);
+
+            }
+            return null;
+        }
+
         public async Task<string> PostStringAsync(string url, string content)
         {
             try

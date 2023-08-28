@@ -611,7 +611,7 @@
                                            ToolTipService.InitialShowDelay="200"
                                            FontSize="20"
                                            HorizontalAlignment="Right"
-                                           Text="{Binding AppsPriceFormat,Mode=OneWay}"
+                                           Text="{Binding CurrentAccount.TotalGamesPrice,Mode=OneWay}"
                                            Foreground="{DynamicResource SuccessGrad}"
                                            Margin="0 0 0 0"/>
                                     </Grid>
@@ -848,7 +848,7 @@
                                                     IsReadOnly="True" Width="60"
                                                     ElementStyle="{StaticResource  DataGridTextBlockCenter}" />
                                 <DataGridTextColumn Header="Price"  
-                                                    Binding="{Binding FormattedPrice,Mode=OneTime,TargetNullValue=Free}" 
+                                                    Binding="{Binding FormattedPrice,Mode=OneTime,TargetNullValue=—}" 
                                                     IsReadOnly="True" Width="*"
                                                     Foreground="{DynamicResource SuccessGrad}"
                                                     ElementStyle="{StaticResource  DataGridTextBlockCenter}" />

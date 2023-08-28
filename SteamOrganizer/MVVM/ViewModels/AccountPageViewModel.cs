@@ -38,7 +38,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             ClearSearchBarCommand           = new RelayCommand(o => SearchBarText = null);
             SelectExternalCredentialCommand = new RelayCommand(OnExternalCredentialSelection);
             ClearSearchBarCommand           = new RelayCommand(o => SearchBarText = null);
-            OpenInSteamDb                   = new RelayCommand(o => System.Diagnostics.Process.Start("https://steamdb.info/app/" + (o as SteamParser.UserOwnedGamesObject.Game).AppID).Dispose());
+            OpenInSteamDb                   = new RelayCommand(o => System.Diagnostics.Process.Start("https://steamdb.info/app/" + (o as API.Game).AppID).Dispose());
 
 
             View = owner;
@@ -193,13 +193,6 @@ namespace SteamOrganizer.MVVM.ViewModels
             private set => SetProperty(ref _steamCredentialsErr, value);
         }
 
-        private string _appsPriceFormat;
-        public string AppsPriceFormat
-        {
-            get => _appsPriceFormat;
-            private set => SetProperty(ref _appsPriceFormat, value);
-        }
-
         public int SelectedSteamIDType
         {
             set
@@ -347,8 +340,8 @@ namespace SteamOrganizer.MVVM.ViewModels
         #endregion
 
         #region Games and friends + searching
-        public SteamParser.UserOwnedGamesObject.Game[] Games { get; private set; }
-        public SteamParser.UserFriendsObject.Friend[] Friends { get; private set; }
+        public API.Game[] Games { get; private set; }
+        public API.UserFriendsObject.Friend[] Friends { get; private set; }
 
         private string _friendsSearchBarText;
         private string _gamesSearchBarText;
@@ -440,11 +433,6 @@ namespace SteamOrganizer.MVVM.ViewModels
                 GamesImagePath = "/Resources/Images/Transparent.bmp";
                 return;
             }
-
-            if(CurrentAccount.PaidGames != 0 && CurrencyHelper.TryGetCurrencySymbol(CurrentAccount.GamesCurrency.ToString(),out string symbol))
-            {
-                AppsPriceFormat = $"{CurrentAccount.TotalGamesPrice.ToString("N0",CultureInfo.InvariantCulture)} {symbol} ({CurrentAccount.GamesCurrency})";
-            }
             
             GamesImagePath = $"/Resources/Images/SteamGamesBadges/{CurrentAccount.GamesBadgeBoundary}.png";
             GamesDetails = CurrentAccount.PlayedGamesCount <= 0 ? "0" :
@@ -520,10 +508,10 @@ namespace SteamOrganizer.MVVM.ViewModels
         #region Games, friends + searching
         private bool OnContentSearching(object sender)
         {
-            if (sender is SteamParser.UserOwnedGamesObject.Game game)
+            if (sender is API.Game game)
                 return game.Name.IndexOf(_gamesSearchBarText, StringComparison.InvariantCultureIgnoreCase) >= 0;
 
-            if (sender is SteamParser.UserFriendsObject.Friend friend)
+            if (sender is API.UserFriendsObject.Friend friend)
                 return friend.PersonaName.IndexOf(_friendsSearchBarText, StringComparison.InvariantCultureIgnoreCase) >= 0;
 
             return true;
@@ -539,9 +527,10 @@ namespace SteamOrganizer.MVVM.ViewModels
             LoadingState = 2;
 
             var fromCache = File.Exists(path);
-            if (fromCache || (!fromCache && CurrentAccount.GamesCount > 0 && await SteamParser.ParseGames(CurrentAccount)))
+            var prevGames = CurrentAccount.PaidGames;
+            if (fromCache || (!fromCache && CurrentAccount.GamesCount > 0 && await API.ParseGames(CurrentAccount)))
             {
-                FileCryptor.Deserialize(path, out SteamParser.UserOwnedGamesObject.Game[] games);
+                FileCryptor.Deserialize(path, out API.Game[] games);
                 Games = games;
             }
 
@@ -551,7 +540,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            if (AppsPriceFormat == null && CurrentAccount.PaidGames != 0)
+            if (CurrentAccount.PaidGames != 0 && CurrentAccount.PaidGames != prevGames)
             {
                 InitGamesInfo();
                 CurrentAccount.InvokePropertyChanged(nameof(CurrentAccount.PaidGames));
@@ -570,9 +559,9 @@ namespace SteamOrganizer.MVVM.ViewModels
             var path = Path.Combine(CachingManager.FriendsCachePath, CurrentAccount.SteamID64.ToString());
             LoadingState = 2;
 
-            if (File.Exists(path) || (CurrentAccount.VisibilityState == 3 && await SteamParser.ParseFriends(CurrentAccount)))
+            if (File.Exists(path) || (CurrentAccount.VisibilityState == 3 && await API.ParseFriends(CurrentAccount)))
             {
-                FileCryptor.Deserialize(path, out SteamParser.UserFriendsObject.Friend[] friends);
+                FileCryptor.Deserialize(path, out API.UserFriendsObject.Friend[] friends);
                 Friends = friends;
             }
 
@@ -713,7 +702,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            System.Diagnostics.Process.Start($"steam://install/{(param as SteamParser.UserOwnedGamesObject.Game).AppID}");
+            System.Diagnostics.Process.Start($"steam://install/{(param as API.Game).AppID}");
         }
 
         private async Task OnOpeningFriendPage(object param)
@@ -725,10 +714,10 @@ namespace SteamOrganizer.MVVM.ViewModels
                 return;
             }
 
-            var id = (param as SteamParser.UserFriendsObject.Friend).SteamID;
+            var id = (param as API.UserFriendsObject.Friend).SteamID;
 
             if (App.Config.Database.Exists(o => o.SteamID64 == id, out Account acc)) { }
-            else if (await SteamParser.ParseInfo(acc = new Account(null, null, id), false) != SteamParser.EParseResult.OK)
+            else if (await API.GetInfo(acc = new Account(null, null, id)) != API.EParseResult.OK)
             {
                 PushNotification.Open("Failed to open page, please try again later");
                 return;

@@ -5,6 +5,13 @@ namespace SteamOrganizer.Backend.Core;
 public sealed class CultureHelper
 {
     private readonly CultureTypes cultureType;
+
+    public static readonly CountryInfo Default = new ()
+    {
+        Culture = new CultureInfo("en-US"),
+        Region = new RegionInfo("en-US")
+    };
+
     public CultureHelper(bool AllCultures)
     {
         cultureType = AllCultures ? CultureTypes.AllCultures : CultureTypes.SpecificCultures;
@@ -52,12 +59,13 @@ public sealed class CultureHelper
             .Select(o => o.Culture).FirstOrDefault();
     }
 
-    public CultureInfo? GetCultureByTwoLetterCode(string? code)
+    public CountryInfo? GetCultureByTwoLetterCode(string? code)
     {
         if (code == null)
             return null;
 
-        return   Countries.Where(info => info.Culture?.Name?.EndsWith(code,StringComparison.OrdinalIgnoreCase) == true).FirstOrDefault()?.Culture;
+        return Countries.Where(info => info.Culture?.Name?.EndsWith(code, StringComparison.OrdinalIgnoreCase) == true &&
+            info.Region != null && info.Region.CurrencySymbol != info.Region.ISOCurrencySymbol).FirstOrDefault();
     }
 
     public List<int?> GetRegionGeoId(string CountryName, bool UseNativeName)
@@ -68,8 +76,19 @@ public sealed class CultureHelper
                                         .Select(info => info.Region?.GeoId).ToList();
     }
 
-    public string FormatCurrency(CultureInfo info, decimal currency)
-        => currency.ToString("C", info).Replace(",00", "");
+    public string FormatCurrency(CountryInfo info, decimal currency)
+    {
+        var formatted = currency.ToString(currency % 1 == 0 ? "C0" : "C2", info.Culture);
+
+        if (formatted.Contains('$') && info.Region!.ISOCurrencySymbol != "USD")
+        {
+            var index = formatted.IndexOf('$') + 1;
+            var spaced = index < formatted.Length && formatted[index] == ' ';
+            formatted = formatted.Replace("$", info.Region!.ISOCurrencySymbol + (spaced ? "$": "$ "));
+        }
+
+        return formatted;
+    }
 
     private static List<CountryInfo> GetAllCountries(CultureTypes cultureTypes)
     {
