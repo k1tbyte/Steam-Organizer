@@ -160,7 +160,6 @@
     <Compile Include="Infrastructure\WebBrowser.cs" />
     <Compile Include="Infrastructure\Win32.cs" />
     <Compile Include="Infrastructure\Utils.cs" />
-    <Compile Include="Keys.cs" />
     <Compile Include="Log\AppExceptions.cs" />
     <Compile Include="Log\AppLogger.cs" />
     <Compile Include="MVVM\Converters\TemplateBooleanConverter.cs" />
