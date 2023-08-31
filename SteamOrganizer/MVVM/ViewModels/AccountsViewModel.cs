@@ -44,7 +44,6 @@ namespace SteamOrganizer.MVVM.ViewModels
         private ICollectionView AccountsCollectionView;
         private CancellationTokenSource updateCancellation;
         private DateTime buttonSpamStub;
-        private DateTime loginSpamStub;
 
         private readonly AccountsView View;
 
