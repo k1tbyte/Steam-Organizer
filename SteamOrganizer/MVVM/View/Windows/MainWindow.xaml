@@ -170,6 +170,7 @@
                     </RadioButton>
 
                     <RadioButton  Style="{StaticResource MenuRadioButton}" 
+                                  Command="{Binding ToolsControlCommand,Mode=OneTime}"
                                   Tag="Tools">
                         <Icon:PackIconMaterial Kind="HexagonMultipleOutline" Height="23" Width="23" />
                     </RadioButton>
