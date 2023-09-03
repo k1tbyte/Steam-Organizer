@@ -208,7 +208,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                             AccountsCollectionView          = CollectionViewSource.GetDefaultView(Accounts);
                             OnPropertyChanged(nameof(Accounts));
                             OnUpdatingAccounts(null);
-                        }),"Accounts import");
+                        },true),"Accounts import");
             }
             catch(Exception e)
             {

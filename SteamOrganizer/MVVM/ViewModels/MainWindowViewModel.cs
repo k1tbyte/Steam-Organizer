@@ -8,7 +8,10 @@ using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.View.Windows;
 using SteamOrganizer.Properties;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Management;
+using System.Net.Http;
 using System.Security.Principal;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -247,6 +250,8 @@ namespace SteamOrganizer.MVVM.ViewModels
             if (versionStr == null || !Version.TryParse(versionStr, out Version version) || version <= App.Version)
                 return;
 
+            var changes = await App.WebBrowser.GetStringAsync("https://raw.githubusercontent.com/k1tbyte/Steam-Organizer/master/CHANGELOG.md");
+
             App.STAInvoke(() => Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.ProgressCheck,
                 $"An update to version {version.ToReadable()} is available. Click to view details",() =>
                 {
@@ -258,9 +263,24 @@ namespace SteamOrganizer.MVVM.ViewModels
 
                     View.Notifications.IsOpen = false;
 
-                    OpenPopupWindow(new QueryModal($"{version.ToReadable()}?", () => App.Shutdown()));
-
+                    OpenPopupWindow(
+                        new QueryModal($"Would you like to update the application to version {version.ToReadable()}? After downloading, the program will restart. \n\nAvailable changes:\n\n{changes}", 
+                        DownloadUpdate), "New update");
                 }));
+
+            async void DownloadUpdate()
+            {
+                var client = new HttpClient();
+                using (var stream = await client.GetStreamAsync($"https://github.com/k1tbyte/Steam-Organizer/releases/download/{version}/SteamOrganizer-Portable.zip"))
+                using (var fileStream = new FileStream(App.WorkingDir + "\\downloadcache.zip", FileMode.CreateNew))
+                {
+                    await stream.CopyToAsync(fileStream);
+                }
+
+                File.WriteAllText(App.WorkingDir + "\\update.vbs", Properties.Resources.UpdateScript);
+                Process.Start(App.WorkingDir + "\\update.vbs").Dispose();
+                App.Shutdown();
+            }
         }
 
         private void HandleState()

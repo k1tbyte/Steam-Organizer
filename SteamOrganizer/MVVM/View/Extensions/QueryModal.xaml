@@ -13,16 +13,17 @@
         <RowDefinition/>
         <RowDefinition/>
     </Grid.RowDefinitions>
-    <DockPanel Margin="10 10 10 0">
+    <DockPanel Margin="10 10 0 0">
             <Border Padding="7" CornerRadius="3" Background="{DynamicResource PurpleGradient}"
                     HorizontalAlignment="Left" Width="30" Height="30" VerticalAlignment="Top" Margin="0 2 0 0">
                 <Icon:PackIconMaterial Kind="Help" Foreground="White"/>
             </Border>
 
         <ScrollViewer>
-            <TextBlock x:Name="ContentText" d:Text="Are you sure you want to delete this? It will be impossible to undo the action." VerticalAlignment="Center" Margin="10 0 0 0"
-                       Foreground="{DynamicResource SecondaryForegroundBrush}" FontSize="14" TextWrapping="Wrap"
-                       FontWeight="Medium"/>
+            <TextBlock x:Name="ContentText" 
+                       Margin="10 0 15 0"
+                       d:Text="Are you sure you want to delete this? It will be impossible to undo the action." VerticalAlignment="Center"
+                       Foreground="{DynamicResource SecondaryForegroundBrush}" FontSize="12" TextWrapping="Wrap"/>
         </ScrollViewer>
 
 

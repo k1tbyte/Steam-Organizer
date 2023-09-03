@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SteamOrganizer.MVVM.View.Extensions
@@ -7,12 +8,16 @@ namespace SteamOrganizer.MVVM.View.Extensions
     {
         private readonly Action SuccessAction;
 
-        public QueryModal(string message,Action succesAction)
+        public QueryModal(string message,Action succesAction,bool boldText = false)
         {
             InitializeComponent();
             ContentText.Text = message;
             SuccessAction = succesAction;
-
+            if(boldText)
+            {
+                ContentText.FontWeight = FontWeights.Medium;
+                ContentText.FontSize   = 14;
+            }
         }
         
         private void No_Click(object sender, System.Windows.RoutedEventArgs e) => App.MainWindowVM.ClosePopupWindow();
