@@ -233,7 +233,35 @@ namespace SteamOrganizer.MVVM.ViewModels
             RegistrySteamUserWatcher.EventArrived += new EventArrivedEventHandler(OnLocalLoggedInUserChanged);
             RegistrySteamUserWatcher.Start();
             OnLocalLoggedInUserChanged(null, null);
+            CheckUpdate();
         } 
+
+        private async void CheckUpdate()
+        {
+            if (!WebBrowser.IsNetworkAvailable)
+                return;
+
+            var versionStr = Regexes.AppVersion.Match(await App.WebBrowser.GetStringAsync(
+                "https://raw.githubusercontent.com/k1tbyte/Steam-Organizer/master/SteamOrganizer/Properties/AssemblyInfo.cs"))?.Value;
+
+            if (versionStr == null || !Version.TryParse(versionStr, out Version version) || version <= App.Version)
+                return;
+
+            App.STAInvoke(() => Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.ProgressCheck,
+                $"An update to version {version.ToReadable()} is available. Click to view details",() =>
+                {
+                    if(!WebBrowser.IsNetworkAvailable)
+                    {
+                        App.WebBrowser.OpenNeedConnectionPopup();
+                        return;
+                    }
+
+                    View.Notifications.IsOpen = false;
+
+                    OpenPopupWindow(new QueryModal($"{version.ToReadable()}?", () => App.Shutdown()));
+
+                }));
+        }
 
         private void HandleState()
         {
@@ -275,7 +303,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             void OnPincodeSuccess()
             {
-#if !DEBUG
+#if DEBUG
             Utils.InBackground(InitServices);
 #endif
                 CurrentView = Accounts = new AccountsView();

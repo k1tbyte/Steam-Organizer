@@ -52,6 +52,7 @@ public static class App
         });
     }
 
+
     public static void Main(string[] args)
     {
         AppDomain.CurrentDomain.ProcessExit += OnApplicationShuttingDown;

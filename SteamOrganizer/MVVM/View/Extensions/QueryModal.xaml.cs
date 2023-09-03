@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace SteamOrganizer.MVVM.View.Extensions
 {
-    public sealed partial class QueryModal : StackPanel
+    public sealed partial class QueryModal : Grid
     {
         private readonly Action SuccessAction;
 
