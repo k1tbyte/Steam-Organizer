@@ -1,6 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
-
+using System.Text;
 
 namespace SteamOrganizer.Infrastructure
 {
@@ -59,6 +60,9 @@ namespace SteamOrganizer.Infrastructure
         [DllImport("user32.dll", EntryPoint = "BlockInput")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool BlockInput([MarshalAs(UnmanagedType.Bool)] bool fBlockIt);
+
+        [DllImport("User32.dll", EntryPoint = "SendMessage")]
+        private static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
 
         #endregion
 
@@ -148,12 +152,23 @@ namespace SteamOrganizer.Infrastructure
             void Save();
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct COPYDATASTRUCT
+        {
+            public IntPtr dwData;
+            public int cbData;
+
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string lpData;
+        }
+
         #endregion
 
         #region Enums
         private const int WS_EX_APPWINDOW = 262144, WS_EX_TOOLWINDOW = 128, GWL_EX_STYLE = -20;
         private static Type m_type        = Type.GetTypeFromProgID("WScript.Shell");
         private static object m_shell     = Activator.CreateInstance(m_type);
+        private const int WM_COPYDATA     = 0x004A;
 
         internal enum AppBarMessage : uint
         {
@@ -238,6 +253,20 @@ namespace SteamOrganizer.Infrastructure
             if (!string.IsNullOrEmpty(iconPath))
                 shortcut.IconLocation = iconPath;
             shortcut.Save();
+        }
+
+        public static void SendMessage(IntPtr hwnd, string message)
+        {
+            var messageBytes = Encoding.Unicode.GetBytes(message);
+            var data = new COPYDATASTRUCT
+            {
+                dwData = IntPtr.Zero,
+                lpData = message,
+                cbData = messageBytes.Length + 1 /* +1 because of \0 string termination */
+            };
+
+            if (SendMessage(hwnd, WM_COPYDATA, IntPtr.Zero, ref data) != 0)
+                throw new Win32Exception(Marshal.GetLastWin32Error());
         }
 
         /// <summary>

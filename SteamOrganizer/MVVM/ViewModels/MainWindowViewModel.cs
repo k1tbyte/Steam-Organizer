@@ -270,8 +270,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             async void DownloadUpdate()
             {
-                var client = new HttpClient();
-                using (var stream = await client.GetStreamAsync($"https://github.com/k1tbyte/Steam-Organizer/releases/download/{version}/SteamOrganizer-Portable.zip"))
+                using (var stream = await App.WebBrowser.HttpClient.GetStreamAsync($"https://github.com/k1tbyte/Steam-Organizer/releases/download/{version}/SteamOrganizer-Portable.zip"))
                 using (var fileStream = new FileStream(App.WorkingDir + "\\downloadcache.zip", FileMode.CreateNew))
                 {
                     await stream.CopyToAsync(fileStream);
@@ -323,7 +322,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             void OnPincodeSuccess()
             {
-#if DEBUG
+#if !DEBUG
             Utils.InBackground(InitServices);
 #endif
                 CurrentView = Accounts = new AccountsView();

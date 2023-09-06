@@ -76,24 +76,19 @@ namespace SteamOrganizer.Infrastructure
             return commands;
         }
 
-        internal static bool HandleStartArguments(string[] args)
+        internal static bool HandleStartArguments(string args)
         {
-            if (args.Length == 0)
-                return true;
-
-            var joinArgs = string.Join(" ", args);
-
-            var commands = ParseArguments(joinArgs);
+            var commands = ParseArguments(args);
 
             if (commands.Count == 0)
                 return true;
 
             if (commands.ContainsKey(nameof(AvailableCommands.NeedResetIcon)))
             {
-                var path     = $"{App.WorkingDir}\\SteamOrganizer.lnk";
+                var path = $"{App.WorkingDir}\\SteamOrganizer.lnk";
                 var location = Assembly.GetExecutingAssembly().Location;
 
-                Win32.CreateShortcut(path, location, joinArgs.Replace("-noicon", ""), App.WorkingDir, null, "", location);
+                Win32.CreateShortcut(path, location, args.Replace("-noicon", ""), App.WorkingDir, null, "", location);
                 App.Shutdown();
                 System.Diagnostics.Process.Start(path);
                 return false;
@@ -107,12 +102,20 @@ namespace SteamOrganizer.Infrastructure
                         break;
                     case nameof(AvailableCommands.AccountLogin):
                         MainWindowViewModel.AccountsViewInitialized += (context) =>
-                            context.LoginCommand.Execute(App.Config.Database.FirstOrDefault(o => o.Login.IndexOf(cmd.Value.ToString(),StringComparison.OrdinalIgnoreCase) >= 0));
+                            context.LoginCommand.Execute(App.Config.Database.FirstOrDefault(o => o.Login.IndexOf(cmd.Value.ToString(), StringComparison.OrdinalIgnoreCase) >= 0));
                         break;
 
                 }
             }
             return true;
+        }
+
+        internal static bool HandleStartArguments(string[] args)
+        {
+            if (args.Length == 0)
+                return true;
+
+            return HandleStartArguments(string.Join(" ", args));
         }
     }
 }

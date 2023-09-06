@@ -26,7 +26,7 @@ namespace SteamOrganizer.Infrastructure
         /// </summary>
         internal const int RetryRequestDelay      = 5000;
 
-        private readonly HttpClient HttpClient;
+        public readonly HttpClient HttpClient;
         private readonly HttpClientHandler HttpClientHandler;
 
         internal HttpStatusCode? LastStatusCode { get; private set; } = null;

@@ -7,10 +7,11 @@ using SteamOrganizer.MVVM.View.Windows;
 using SteamOrganizer.MVVM.ViewModels;
 using SteamOrganizer.Storages;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -77,11 +78,17 @@ namespace SteamOrganizer
 #if !DEBUG
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
+                if(e.Args.Length > 0)
+                {
+                    var name = Process.GetCurrentProcess().ProcessName;
+                    var mainProcess = Process.GetProcesses().SingleOrDefault(o => o.ProcessName == name && o.MainWindowHandle != IntPtr.Zero);
+                    Win32.SendMessage(mainProcess.MainWindowHandle, string.Join(" ", e.Args));
+                }
+
                 Current.Shutdown();
                 return;
             }
 #endif
-            var s = SteamKit2.ECurrencyCode.COP;
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 

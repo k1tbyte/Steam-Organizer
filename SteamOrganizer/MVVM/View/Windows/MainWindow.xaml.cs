@@ -47,6 +47,7 @@ namespace SteamOrganizer.MVVM.View.Windows
         internal void OnWindowSourceInitialize(object sender, EventArgs e)
         {
             WindowMessageHandler.AddHook(this);
+            WindowMessageHandler.ArgumentsHandler += (param) => ArgumentsParser.HandleStartArguments(param);
         }
 
         private void OnCloseWindow(object sender, MouseButtonEventArgs e)
