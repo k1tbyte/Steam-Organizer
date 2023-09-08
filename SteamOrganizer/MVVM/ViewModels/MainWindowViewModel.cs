@@ -195,36 +195,43 @@ namespace SteamOrganizer.MVVM.ViewModels
             if (!WebBrowser.IsNetworkAvailable)
                 return;
 
-            var activeId = SteamRegistry.GetActiveUserSteamID();
-
-            if (activeId == 0)
+            try
             {
-                LoggedInImage = null;
-                LoggedInNickname = null;
-                return;
-            }
+                var activeId = SteamRegistry.GetActiveUserSteamID();
 
-            var login = SteamRegistry.GetActiveUserLogin();
-            if (!string.IsNullOrEmpty(login) && App.Config.Database.Exists(o => o.SteamID64 == null && string.Equals(o.Login,login,StringComparison.OrdinalIgnoreCase),out Account anonym))
-            {
-                anonym.SteamID64 = activeId;
-                if (await anonym.RetrieveInfo())
+                if (activeId == 0)
                 {
-                    anonym.InvokeBannerPropertiesChanged();
-                    App.Config.SaveDatabase();
+                    LoggedInImage = null;
+                    LoggedInNickname = null;
+                    return;
                 }
+
+                var login = SteamRegistry.GetActiveUserLogin();
+                if (!string.IsNullOrEmpty(login) && App.Config?.Database?.Exists(o => o.SteamID64 == null && string.Equals(o.Login, login, StringComparison.OrdinalIgnoreCase), out Account anonym) == true)
+                {
+                    anonym.SteamID64 = activeId;
+                    if (await anonym.RetrieveInfo())
+                    {
+                        anonym.InvokeBannerPropertiesChanged();
+                        App.Config.SaveDatabase();
+                    }
+                }
+
+                var xmlPage = await App.WebBrowser.GetStringAsync($"{WebBrowser.SteamProfilesHost}{activeId}?xml=1");
+
+                var imgHash = Regexes.AvatarHashXml.Match(xmlPage)?.Groups[0]?.Value;
+                var nickname = Regexes.NicknameXml.Match(xmlPage)?.Groups[0]?.Value;
+
+                if (string.IsNullOrEmpty(imgHash) || string.IsNullOrEmpty(nickname))
+                    return;
+
+                LoggedInImage = CachingManager.GetCachedAvatar(imgHash, 80, 80);
+                LoggedInNickname = $"{App.FindString("word_wlcbck")}, {nickname}";
             }
-
-            var xmlPage = await App.WebBrowser.GetStringAsync($"{WebBrowser.SteamProfilesHost}{activeId}?xml=1");
-
-            var imgHash = Regexes.AvatarHashXml.Match(xmlPage)?.Groups[0]?.Value;
-            var nickname = Regexes.NicknameXml.Match(xmlPage)?.Groups[0]?.Value;
-
-            if (string.IsNullOrEmpty(imgHash) || string.IsNullOrEmpty(nickname))
-                return;
-
-            LoggedInImage = CachingManager.GetCachedAvatar(imgHash, 80, 80);
-            LoggedInNickname = $"{App.FindString("word_wlcbck")}, {nickname}";
+            catch(Exception e)
+            {
+                App.Logger.Value.LogHandledException(e);
+            }
         }
 
 
@@ -322,7 +329,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             void OnPincodeSuccess()
             {
-#if !DEBUG
+#if DEBUG
             Utils.InBackground(InitServices);
 #endif
                 CurrentView = Accounts = new AccountsView();

@@ -52,6 +52,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Logo.ico</ApplicationIcon>
@@ -62,9 +63,6 @@
     </Reference>
     <Reference Include="FlaUI.UIA3, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FlaUI.UIA3.4.0.0\lib\net48\FlaUI.UIA3.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.11.49.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.11.49\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="Interop.UIAutomationClient, Version=10.0.19041.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Interop.UIAutomationClient.10.19041.0\lib\net45\Interop.UIAutomationClient.dll</HintPath>
