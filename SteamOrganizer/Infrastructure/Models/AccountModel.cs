@@ -113,7 +113,7 @@ namespace SteamOrganizer.Infrastructure.Models
         [JsonProperty("SteamEmail")]
         public string EmailLogin { get; set; }
 
-        [JsonProperty("SteamEmailPassword ")]
+        [JsonProperty("SteamEmailPassword")]
         public string EmailPass { get; set; }
 
         [JsonProperty("RockstarEmail")]
