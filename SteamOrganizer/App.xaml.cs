@@ -75,7 +75,7 @@ namespace SteamOrganizer
         [STAThread]
         protected override async void OnStartup(StartupEventArgs e)
         {
-#if DEBUG
+#if !DEBUG
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
                 if(e.Args.Length > 0)

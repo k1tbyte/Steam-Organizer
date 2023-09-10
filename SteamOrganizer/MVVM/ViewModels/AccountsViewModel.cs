@@ -270,9 +270,8 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
 
             if ((DateTime.Now - buttonSpamStub).Ticks < 50000000)
-            {
                 return;
-            }
+            
 
             buttonSpamStub = DateTime.Now;
 
@@ -527,7 +526,8 @@ namespace SteamOrganizer.MVVM.ViewModels
                         }
                     }
 
-                    App.Config.RecentlyLoggedIn = new ObservableCollection<Tuple<string, ulong>>(tray);
+                    App.Config.RecentlyLoggedIn       = new ObservableCollection<Tuple<string, ulong>>(tray);
+                    App.Config.LastDatabaseUpdateTime = 0;
                     FileCryptor.Serialize(accounts, App.DatabasePath, App.Config.DatabaseKey);
                     App.Config.LoadDatabase();
                     App.Config.Save();

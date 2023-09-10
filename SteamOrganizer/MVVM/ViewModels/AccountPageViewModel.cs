@@ -93,7 +93,6 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         #region Flags
         private bool IsSteamCodeGenerating = false;
-        private bool WaitingForSave = false;
         public Visibility AdditionalControlsVis { get; private set; } = Visibility.Visible;
         public Visibility OnlineControlsVis { get; private set; } = Visibility.Collapsed;
         public Visibility InteractionControlsVis { get; private set; } = Visibility.Visible;
@@ -233,26 +232,11 @@ namespace SteamOrganizer.MVVM.ViewModels
                 }
                 else
                 {
-                    if (!String.IsNullOrEmpty(_steamCredentialsErr))
-                    {
+                    if (_steamCredentialsErr != null)
                         SteamCrenetialsErr = null;
-                    }
-
-                    if (WaitingForSave)
-                    {
-                        return;
-                    }
-
-                    DelayedSave();
-
-                    async void DelayedSave()
-                    {
-                        WaitingForSave = true;
-                        await Task.Delay(2000);
-                        CurrentAccount.Password = IsSteamCredentialsExpanded ? EncryptionTools.XorString(_passwordTemp) : _passwordTemp;
-                        App.Config.SaveDatabase(3000);
-                        WaitingForSave = false;
-                    }
+                    
+                    CurrentAccount.Password = EncryptionTools.XorString(value);
+                    App.Config.SaveDatabase(3000);
                 }
             }
         }

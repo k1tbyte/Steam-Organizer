@@ -329,7 +329,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             void OnPincodeSuccess()
             {
-#if DEBUG
+#if !DEBUG
             Utils.InBackground(InitServices);
 #endif
                 CurrentView = Accounts = new AccountsView();
