@@ -65,8 +65,6 @@ namespace SteamOrganizer.MVVM.ViewModels
                 IsSteamCodeGenerating = false;
             }
 
-            EncryptionTools.ClearString(AuthenticatorCode, _externalEmail, _externalPassword, _passwordTemp);
-
             FullAvatar = null;
         }
 
