@@ -233,6 +233,17 @@ namespace SteamOrganizer.MVVM.View.Controls
                 acc.YearsOfService != null ? $"{App.FindString("acv_regDate")} {acc.CreatedDate:f}" : App.FindString("acv_regDateUnknown");
         }
 
+        private void NicknameMouseOver(object sender, MouseEventArgs e)
+        {
+            var element     = sender as FrameworkElement;
+            var acc         = element.DataContext as Account;
+
+            if (string.IsNullOrEmpty(acc.Note))
+                return;
+
+            element.ToolTip = acc.Note.Length > 150 ? $"{acc.Note.Remove(150).Trim()}  . . ." : acc.Note;
+        }
+
         private void AvatarMouseOver(object sender, MouseEventArgs e)
         {
             var element = sender as FrameworkElement;

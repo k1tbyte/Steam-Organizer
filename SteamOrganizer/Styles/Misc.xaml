@@ -95,7 +95,7 @@
                 <ControlTemplate TargetType="ToolTip">
                     <Border CornerRadius="5" Padding="7" Margin="0 0 0 7" Background="{DynamicResource PurpleGradient}">
                         <TextBlock Text="{TemplateBinding Property=Content}" FontSize="12" Foreground="{DynamicResource TertiaryForegroundBrush}" TextWrapping="Wrap"
-                                           MaxWidth="300"/>
+                                           MaxWidth="300" MaxHeight="{TemplateBinding MaxHeight}"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

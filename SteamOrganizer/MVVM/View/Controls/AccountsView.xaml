@@ -271,12 +271,15 @@
                                 <TextBlock Text="{Binding Nickname,Mode=OneWay}" Margin="10 0 10 0"
                                            Foreground="{DynamicResource TertiaryForegroundBrush}"
                                            FontWeight="Medium"
-                                           FontSize="15"  />
+                                           ToolTipService.InitialShowDelay="300"
+                                           MouseEnter="NicknameMouseOver"
+                                           FontSize="15" />
+
 
                                 <Button Style="{StaticResource TransparentButton}"
                                         Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Path=DataContext.OpenAccountPageCommand,Mode=OneTime}"
                                         CommandParameter="{Binding}"
-                                        ToolTipService.InitialShowDelay="300"
+                                        ToolTipService.InitialShowDelay="500"
                                         ToolTip="Detailed information"
                                         Background="{DynamicResource PrimarySubBrush}">
                                     <Icon:PackIconMaterial Kind="Pen" Width="13" Height="13"
