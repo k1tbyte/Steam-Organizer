@@ -2,6 +2,7 @@
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.ViewModels;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -242,6 +243,15 @@ namespace SteamOrganizer.MVVM.View.Controls
                 return;
 
             element.ToolTip = acc.Note.Length > 150 ? $"{acc.Note.Remove(150).Trim()}  . . ." : acc.Note;
+        }
+
+        private void BansMouseOver(object sender , MouseEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+            var acc = element.DataContext as Account;
+
+            element.ToolTip = (acc.VacBansCount > 0 && acc.GameBansCount > 0) ? "The last ban was received " : $"Account was banned "  
+                + $"{(int)(DateTime.Now - ((acc.LastUpdateDate ?? acc.AddedDate) - TimeSpan.FromDays(acc.DaysSinceLastBan))).TotalDays} day(s) ago";
         }
 
         private void AvatarMouseOver(object sender, MouseEventArgs e)

@@ -404,7 +404,8 @@
 
                                 <Border Background="{DynamicResource ErrorBrush}"
                                         Visibility="{Binding VacBansCount,Converter={StaticResource ToVisibilityConverter}}"
-                                        Style="{StaticResource AccountInfoChip}">
+                                        Style="{StaticResource AccountInfoChip}"
+                                        MouseEnter="BansMouseOver">
                                     <TextBlock Text="VAC" 
                                                FontWeight="Bold" 
                                                Foreground="{DynamicResource SecondaryBackgroundBrush}"/>
@@ -421,6 +422,7 @@
 
                                 <Border Background="{DynamicResource ErrorBrush}"  
                                         Style="{StaticResource AccountInfoChip}"
+                                        MouseEnter="BansMouseOver"
                                         Visibility="{Binding GameBansCount,Converter={StaticResource ToVisibilityConverter},Mode=OneWay}">
                                     <TextBlock Text="Game" 
                                                FontWeight="Bold" 
