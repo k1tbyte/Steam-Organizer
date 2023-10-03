@@ -169,12 +169,6 @@
                                   Tag="{DynamicResource word_rmtControl}">
                         <Icon:PackIconMaterial Kind="RemoteDesktop" Height="23" Width="23" />
                     </RadioButton>
-
-                    <RadioButton  Style="{StaticResource MenuRadioButton}" 
-                                  Command="{Binding ToolsControlCommand,Mode=OneTime}"
-                                  Tag="Tools" Visibility="Collapsed">
-                        <Icon:PackIconMaterial Kind="HexagonMultipleOutline" Height="23" Width="23" />
-                    </RadioButton>
                 </StackPanel>
             </Border>
 

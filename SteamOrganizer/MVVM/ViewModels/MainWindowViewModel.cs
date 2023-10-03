@@ -44,7 +44,6 @@ namespace SteamOrganizer.MVVM.ViewModels
         internal AccountPageView AccountPage { get; private set; }
         internal AccountsView Accounts { get; private set; }
         internal RemoteControlView RemoteControl { get; private set; } 
-        internal ToolsView ToolsControl { get; private set; }
         #endregion
 
         private bool _isNotificationsRead = true;
@@ -311,7 +310,6 @@ namespace SteamOrganizer.MVVM.ViewModels
             SettingsCommand           = new RelayCommand(OnOpeningSettings);
             AccountsCommand           = new RelayCommand(o => CurrentView = Accounts);
             RemoteControlCommand      = new RelayCommand(o => CurrentView = RemoteControl ?? (RemoteControl = new RemoteControlView()));
-            ToolsControlCommand       = new RelayCommand(o => CurrentView = ToolsControl ?? (ToolsControl = new ToolsView()));
             OpenNotificationsCommand  = new RelayCommand(OnOpeningNotifications);
             NotificationRemoveCommand = new RelayCommand(OnNotificationRemoving);
             NotificationInvokeCommand = new RelayCommand(o => (o as Notification)?.OnClickAction?.Invoke());

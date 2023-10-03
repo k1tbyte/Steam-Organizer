@@ -50,6 +50,13 @@ namespace SteamOrganizer.MVVM.Models
         [StringEncryption.Encryptable]
         public string EpicGamesPassword { get; set; }
 
+        [StringEncryption.Encryptable]
+        public string EAEmail { get; set; }
+
+        [StringEncryption.Encryptable]
+        public string EAPassword { get; set; }
+
+
         #region Summaries
         [JsonIgnore]
         public uint? AccountID => SteamID64.HasValue ? (uint?)(SteamID64 - SteamIdConverter.SteamID64Indent) : null;

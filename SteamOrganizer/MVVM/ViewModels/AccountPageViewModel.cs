@@ -257,16 +257,17 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         #region External credentials stuff
 
-        private static readonly (PropertyInfo Email, PropertyInfo Password)[] ExternalCredentialsProperties = new (PropertyInfo Email, PropertyInfo Password)[4]
+        private static readonly (PropertyInfo Email, PropertyInfo Password)[] ExternalCredentialsProperties = new (PropertyInfo Email, PropertyInfo Password)[5]
         {
                     (typeof(Account).GetProperty(nameof(Account.SteamEmail)),typeof(Account).GetProperty(nameof(Account.SteamEmailPassword))),
                     (typeof(Account).GetProperty(nameof(Account.UbisoftEmail)),typeof(Account).GetProperty(nameof(Account.UbisoftPassword))),
                     (typeof(Account).GetProperty(nameof(Account.RockstarEmail)),typeof(Account).GetProperty(nameof(Account.RockstarPassword))),
                     (typeof(Account).GetProperty(nameof(Account.EpicGamesEmail)),typeof(Account).GetProperty(nameof(Account.EpicGamesPassword))),
+                    (typeof(Account).GetProperty(nameof(Account.EAEmail)),typeof(Account).GetProperty(nameof(Account.EAPassword))),
         };
 
         private (PropertyInfo Email, PropertyInfo Password) SelectedExternalCredentialsProp;
-        public bool[] ExternalCredentialsChecked { get; } = new bool[4] { true, false, false, false };
+        public bool[] ExternalCredentialsChecked { get; } = new bool[5] { true, false, false, false, false };
 
         private bool _isExternalCredentialsExpanded = false;
         public bool IsExternalCredentialsExpanded
