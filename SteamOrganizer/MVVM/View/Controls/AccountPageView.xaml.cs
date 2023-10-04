@@ -6,7 +6,9 @@ using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.ViewModels;
 using System;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -46,14 +48,6 @@ namespace SteamOrganizer.MVVM.View.Controls
             }
 
         }
-
-        private void AutoSaveTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
-            => App.Config.SaveDatabase(3000);
-        
-
-        private void PasswordBox_LostFocus(object sender, RoutedEventArgs e)
-            => App.Config.SaveDatabase(3000);
-        
 
         private async void ShowRevocationCode(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -96,6 +90,33 @@ namespace SteamOrganizer.MVVM.View.Controls
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             SearchPopup.OpenPopup(sender as FrameworkElement, System.Windows.Controls.Primitives.PlacementMode.Bottom);
+        }
+
+        private void PhonePreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            if (!e.Text.All(char.IsDigit))
+                e.Handled = true;
+        }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var textbox       = sender as TextBox;
+            object content    = textbox.Text.Length == 0 ? null : textbox.Text;
+            var binding       = textbox.GetBindingExpression(TextBox.TextProperty);
+            var prop          = binding.ResolvedSource.GetType().GetProperty(binding.ResolvedSourcePropertyName);
+            var value         = prop.GetValue(binding.ResolvedSource);
+
+            if (content == value || (string)content == value?.ToString())
+                return;
+
+            if (prop.PropertyType != typeof(string))
+            {
+                var converter = TypeDescriptor.GetConverter(prop.PropertyType);
+                content       = content == null ? Activator.CreateInstance(prop.PropertyType) : converter.ConvertFromString(content as string);
+            }
+
+            prop.SetValue(binding.ResolvedSource, content);
+            App.Config.SaveDatabase();
         }
     }
 }

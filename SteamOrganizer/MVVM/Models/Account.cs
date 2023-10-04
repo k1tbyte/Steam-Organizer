@@ -56,6 +56,8 @@ namespace SteamOrganizer.MVVM.Models
         [StringEncryption.Encryptable]
         public string EAPassword { get; set; }
 
+        public ulong? Phone { get; set; }
+
 
         #region Summaries
         [JsonIgnore]

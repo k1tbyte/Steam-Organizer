@@ -696,13 +696,25 @@
                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
                                     </ext:TemplateDecorator>
 
-                                    <ext:TemplateDecorator Title="Steam password" Icon="{x:Static Icon:PackIconMaterialKind.Key}">
+                                    <ext:TemplateDecorator Title="Steam password" Icon="{x:Static Icon:PackIconMaterialKind.Key}"
+                                                           Margin="0 0 0 10">
                                         <ext:PasswordBox CornerRadius="5" MaxLength="50"
                                                      Password="{Binding Password,UpdateSourceTrigger=PropertyChanged}"
                                                      SelectionBrush="{DynamicResource LightBlueGrad}"
                                                      IsPasswordShown="{Binding IsPasswordShown}"
                                                      Foreground="{DynamicResource SecondaryForegroundBrush}"
                                                      Background="{DynamicResource TertiaryBackgroundBrush}"/>
+                                    </ext:TemplateDecorator>
+
+                                    <ext:TemplateDecorator Title="Linked phone number" Icon="{x:Static Icon:PackIconMaterialKind.Phone}"
+                                                       Margin="0 0 0 10">
+                                        <TextBox Style="{StaticResource ModernTextBox}" MaxLength="15"
+                                                 Height="35" PreviewTextInput="PhonePreviewTextInput"
+                                                 Text="{Binding CurrentAccount.Phone,Mode=OneWay}"
+                                                 LostFocus="TextBox_LostFocus"
+                                                 Foreground="{DynamicResource SecondaryForegroundBrush}"
+                                                 Background="{DynamicResource TertiaryBackgroundBrush}"/>
+
                                     </ext:TemplateDecorator>
                                 </StackPanel>
                             </Expander>
@@ -725,7 +737,7 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
 
-                                    <ext:TemplateDecorator Title="E-mail adress" Icon="{x:Static Icon:PackIconMaterialKind.At}"
+                                    <ext:TemplateDecorator Title="E-mail address" Icon="{x:Static Icon:PackIconMaterialKind.At}"
                                                        Margin="0 0 0 10" >
                                         <TextBox Style="{StaticResource ModernTextBox}" Height="35"
                                              MaxLength="50"
@@ -799,8 +811,8 @@
                                             VerticalAlignment="Center"/>
 
                                     <TextBox Grid.Row="1" Background="Transparent" BorderThickness="0"
-                                         Text="{Binding CurrentAccount.Note ,UpdateSourceTrigger=PropertyChanged}"
-                                         TextInput="AutoSaveTextInput"
+                                         Text="{Binding CurrentAccount.Note,Mode=OneWay}"
+                                         LostFocus="TextBox_LostFocus"
                                          FontWeight="Normal" MinHeight="80" MaxHeight="280"
                                          AcceptsReturn="True"
                                          VerticalScrollBarVisibility="Auto"
