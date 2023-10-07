@@ -601,8 +601,12 @@ namespace SteamOrganizer.MVVM.ViewModels
                 await Task.Delay(3000);
                 return;
             }
-            if (await new Steam.LoginEmulator(acc).Login() != Steam.LoginEmulator.ELoginResult.Success)
+
+            LoginEmulator.ELoginResult result = LoginEmulator.ELoginResult.Success;
+
+            if ((result = await new Steam.LoginEmulator(acc).Login()) != Steam.LoginEmulator.ELoginResult.Success)
             {
+                App.Logger.Value.LogGenericDebug($"Login result is not ok: {result}");
                 PushNotification.Open($"Failed to login to account: \"{acc.Nickname}\"");
                 return;
             }

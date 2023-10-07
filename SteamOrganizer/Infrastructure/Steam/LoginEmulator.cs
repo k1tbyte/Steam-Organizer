@@ -114,11 +114,15 @@ namespace SteamOrganizer.Infrastructure.Steam
                 if (CheckIfAlreadyLogged())
                     return ELoginResult.Success;
 
+                var isWindowRunning = (webHelper = Process.GetProcessesByName("steamwebhelper").FirstOrDefault(o => o.MainWindowHandle != IntPtr.Zero)) != null;
+
                 // This check is needed to optimize the login - we do not need to restart Steam if the login page is already active.
-                if ((webHelper = Process.GetProcessesByName("steamwebhelper").FirstOrDefault(o => o.MainWindowHandle != IntPtr.Zero)) == null || !webHelper.MainWindowTitle?.EndsWith("Steam") == true)
+                if (isWindowRunning &&  webHelper.MainWindowTitle?.EndsWith(" Steam") == false)
                 {
                     if (!await SteamRegistry.ShutdownSteam(MaxTries, SteamExePath))
                         return ELoginResult.ExternalError;
+
+                    webHelper = null;
                 }
 
 

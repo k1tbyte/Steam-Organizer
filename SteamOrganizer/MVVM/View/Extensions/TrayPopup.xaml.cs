@@ -46,12 +46,12 @@ namespace SteamOrganizer.MVVM.View.Extensions
             if (((System.Windows.Forms.MouseEventArgs)e).Button != WinForms.MouseButtons.Right)
                 return;
 
-            MouseHook.OnMouseAction += OnClickOutside;
-            MouseHook.Hook();
             var points       = Win32.GetMousePosition();
             HorizontalOffset = points.X - this.Width - 3;
             VerticalOffset   = points.Y;
             this.IsOpen      = true;
+            MouseHook.OnMouseAction += OnClickOutside;
+            MouseHook.Hook();
         }
 
         private void OnClickOutside(int xPos, int yPos)

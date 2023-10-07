@@ -32,11 +32,9 @@ namespace SteamOrganizer.Log
 
         private void Log(string level, object message, string previousMethodName)
         {
-#if DEBUG
             message.ThrowIfNull();
             previousMethodName.ThrowIfNullOrEmpty();
             logStream.WriteLine($"{DateTime.Now:yyyy-MM-dd HH\\:mm\\:ss}|{level}|{previousMethodName}() | {message}");
-#endif
         }
 
         /// <summary>
