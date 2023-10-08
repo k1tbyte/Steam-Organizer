@@ -16,6 +16,15 @@ namespace SteamOrganizer.Storages
         Expanded = 200
     }
 
+    [Serializable]
+    internal sealed class GDriveInfo
+    {
+        public string AccessToken { get; set; }
+        public string RefreshToken { get; set; }
+        public string DisplayName { get; set; }
+        public string AvatarUrl { get; set; }
+        public string EmailAddress { get; set; }
+    }
 
     [Serializable]
     internal sealed class GlobalStorage
@@ -83,6 +92,8 @@ namespace SteamOrganizer.Storages
 
         public byte[] PinCodeKey { get; set; }
         public byte PinCodeRemainingAttempts { get; set; } = MaxPincodeAttempts;
+
+        public GDriveInfo GDriveInfo { get; set; }
 
         #region Storing/restoring
         public bool Save()
