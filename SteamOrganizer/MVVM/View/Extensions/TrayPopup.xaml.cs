@@ -43,7 +43,7 @@ namespace SteamOrganizer.MVVM.View.Extensions
 
         private void TrayIcon_Click(object sender, EventArgs e)
         {
-            if (((System.Windows.Forms.MouseEventArgs)e).Button != WinForms.MouseButtons.Right)
+            if (((WinForms.MouseEventArgs)e).Button != WinForms.MouseButtons.Right)
                 return;
 
             var points       = Win32.GetMousePosition();

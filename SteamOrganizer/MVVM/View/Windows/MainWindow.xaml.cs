@@ -200,5 +200,11 @@ namespace SteamOrganizer.MVVM.View.Windows
             Sidebar.CornerRadius   = SidebarCornerRadius;
             MainBorder.CornerRadius  = MainBorderCornerRadius;
         }
+
+        private void OpacityAnimationCompleted(object sender, EventArgs e)
+        {
+            (sender as FrameworkElement).Visibility = Visibility.Collapsed;
+            (sender as FrameworkElement).Opacity = 1d;
+        }
     }
 }

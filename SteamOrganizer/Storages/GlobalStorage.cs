@@ -1,9 +1,11 @@
 ﻿using SteamOrganizer.Helpers;
 using SteamOrganizer.Infrastructure;
+using SteamOrganizer.Infrastructure.Synchronization;
 using SteamOrganizer.MVVM.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SteamOrganizer.Storages
@@ -14,6 +16,14 @@ namespace SteamOrganizer.Storages
         Hidden = 0,
         Open = 70,
         Expanded = 200
+    }
+
+    internal enum ESyncState : byte
+    {
+        None,
+        Processing,
+        Synchronized,
+        Partial
     }
 
     [Serializable]
@@ -94,6 +104,8 @@ namespace SteamOrganizer.Storages
         public byte PinCodeRemainingAttempts { get; set; } = MaxPincodeAttempts;
 
         public GDriveInfo GDriveInfo { get; set; }
+        public bool IsSyncEnabled { get; set; }
+        public bool IsSyncAvailable => GDriveInfo != null && IsSyncEnabled;
 
         #region Storing/restoring
         public bool Save()
@@ -133,10 +145,14 @@ namespace SteamOrganizer.Storages
             return false;
         }
 
+        [NonSerialized]
         private int WaitingCounter = 0;
 
+        [NonSerialized]
+        private CancellationTokenSource SyncCancellationToken;
+
         /// <param name="timeout">Useful for frequent save prompts like textboxes</param>
-        public async void SaveDatabase(int timeout = 0)
+        public async void SaveDatabase()
         {
 
             // We need to check the counter to know about the calls that happen while waiting.
@@ -151,17 +167,47 @@ namespace SteamOrganizer.Storages
                 return;
             }
 
-            if (timeout != 0)
+            App.MainWindowVM.DatabaseSyncState = ESyncState.Processing;
+            for (WaitingCounter = 1; WaitingCounter > 0; WaitingCounter--)
             {
-                for (WaitingCounter = 1; WaitingCounter > 0; WaitingCounter--)
-                {
-                    await Task.Delay(timeout);
-                }
+                await Task.Delay(2000);
             }
 
             _databaseKey.ThrowIfNull();
 
             FileCryptor.Serialize(Database, App.DatabasePath, _databaseKey);
+            App.Logger.Value.LogGenericDebug("Database is saved");
+
+            // We simply cancel the previous upload operation and submit the new version again
+            // (this will be extremely rare, since such a frequency of saves does not happen)
+            SyncCancellationToken?.Cancel();
+            SyncCancellationToken?.Dispose();
+
+            SyncCancellationToken = new CancellationTokenSource();
+
+            if (IsSyncAvailable && WebBrowser.IsNetworkAvailable)
+            {
+                //If you haven't logged in or haven't loaded
+                if (GDriveManager.Instance == null && (!await GDriveManager.AuthorizeAsync(SyncCancellationToken.Token, false)) ||
+                    !await GDriveManager.Instance.UploadFile(App.DatabasePath, SyncCancellationToken.Token))
+                {
+                    if(!SyncCancellationToken.IsCancellationRequested)
+                        App.MainWindowVM.DatabaseSyncState = ESyncState.Partial;
+
+                    return;
+                }
+            }
+
+            try
+            {
+                App.MainWindowVM.DatabaseSyncState = ESyncState.Synchronized;
+                await Task.Delay(2000, SyncCancellationToken.Token);
+                App.MainWindowVM.DatabaseSyncState = ESyncState.None;
+            }
+            catch { return;  }
+
+            SyncCancellationToken.Dispose();
+            SyncCancellationToken = null;
         } 
         #endregion
     }

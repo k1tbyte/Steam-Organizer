@@ -147,6 +147,81 @@
             </DockPanel>
 
             <DockPanel Margin="10 5 10 10">
+                <TextBlock Text="Synchronization and backups" 
+                   DockPanel.Dock="Top" Margin="1 0 0 7"
+                   Foreground="{DynamicResource SecondarySubBrush}" />
+                <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
+                    <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                   Kind="GoogleDrive" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+
+                <TextBlock Text="Synchronization with Google Drive" VerticalAlignment="Center" 
+                       Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+
+                <ToggleButton Style="{StaticResource ModernSwitchToggleButton}"
+                              x:Name="SyncButton"
+                              IsChecked="{Binding Config.IsSyncEnabled}"/>
+
+            </DockPanel>
+
+            <Border Background="{DynamicResource TertiaryBackgroundBrush}"
+                    Visibility="{Binding ElementName=SyncButton,Path=IsChecked,Converter={StaticResource ToVisibilityConverter}}"
+                    Margin="40 0 0 10" Padding="10" CornerRadius="15 0 0 15" d:Visibility="Visible">
+
+                <Grid>
+                    <StackPanel Orientation="Horizontal" 
+                                Visibility="{Binding Config.GDriveInfo,Converter={StaticResource ToVisibilityConverter}}"
+                                x:Name="GoogleInfo"
+                                d:Visibility="Collapsed">
+                        <Ellipse Width="45" Height="45" StrokeThickness="1"
+              Stroke="{DynamicResource LightBlueGrad}">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding Config.GDriveInfo.AvatarUrl,Mode=OneWay}"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <TextBlock VerticalAlignment="Center" 
+                                   FontSize="13" Margin="10 0 0 0" Opacity="0.6"
+                                   FontWeight="Normal" LineStackingStrategy="MaxHeight"
+                                   LineHeight="22"
+                                   Foreground="{DynamicResource SecondaryForegroundBrush}">
+                            <Run Text="{Binding Config.GDriveInfo.DisplayName,Mode=OneWay}" Foreground="{DynamicResource TertiaryForegroundBrush}"/>
+                            <LineBreak/>
+                            <Run Text="{Binding Config.GDriveInfo.EmailAddress,Mode=OneWay}"/>
+                        </TextBlock>
+
+                        <Button Style="{StaticResource FlatButton}"
+                                Command="{Binding LogoutGoogleCommand,Mode=OneTime}"
+                                Width="40" Height="40" Margin="90 0 0 0">
+                            <Icon:PackIconMaterial Kind="LogoutVariant"/>
+                        </Button>
+                    </StackPanel>
+
+                    <Button Style="{StaticResource FlatButton}" 
+                            Visibility="{Binding Config.GDriveInfo,Converter={StaticResource ToVisibilityInvertedConverter}}"
+                            Height="30" Command="{Binding LoginWithGoogleCommand,Mode=OneTime}">
+                        <TextBlock>
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Text" Value="Log in to account in your browser"/> 
+                                    <Setter Property="ToolTip" Value="Click to cancel"/>
+                                    <Setter Property="ToolTipService.InitialShowDelay" Value="250"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding GoogleAuthToken,Mode=OneWay}" Value="{x:Null}">
+                                            <Setter Property="Text" Value="➕ Sign in with Google"/>
+                                            <Setter Property="ToolTip" Value="{x:Null}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Button>
+                </Grid>
+               
+            </Border>
+
+
+            <DockPanel Margin="10 5 10 10">
                 <TextBlock Text="About program" 
                    DockPanel.Dock="Top" Margin="1 0 0 7"
                    Foreground="{DynamicResource SecondarySubBrush}" />

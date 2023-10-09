@@ -7,11 +7,11 @@ using SteamOrganizer.MVVM.View.Controls;
 using SteamOrganizer.MVVM.View.Extensions;
 using SteamOrganizer.MVVM.View.Windows;
 using SteamOrganizer.Properties;
+using SteamOrganizer.Storages;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Management;
-using System.Net.Http;
 using System.Security.Principal;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -43,8 +43,15 @@ namespace SteamOrganizer.MVVM.ViewModels
         internal SettingsView Settings { get; private set; }
         internal AccountPageView AccountPage { get; private set; }
         internal AccountsView Accounts { get; private set; }
-        internal RemoteControlView RemoteControl { get; private set; } 
+        internal RemoteControlView RemoteControl { get; private set; }
         #endregion
+
+        private ESyncState _databaseSyncState;
+        public ESyncState DatabaseSyncState
+        {
+            get => _databaseSyncState;
+            set => SetProperty(ref _databaseSyncState, value);
+        }
 
         private bool _isNotificationsRead = true;
         public bool IsNotificationsRead

@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Globalization;
+using System.Windows;
 
 namespace SteamOrganizer.MVVM.Converters
 {
@@ -13,6 +15,6 @@ namespace SteamOrganizer.MVVM.Converters
     {
         public ToVisibilityInvertedConverter() :
             base(Visibility.Collapsed, Visibility.Visible)
-        { } 
+        { }
     }
 }

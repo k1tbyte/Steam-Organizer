@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SteamOrganizer.Helpers;
 using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
@@ -234,7 +235,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                         SteamCrenetialsErr = null;
                     
                     CurrentAccount.Password = EncryptionTools.XorString(value);
-                    App.Config.SaveDatabase(3000);
+                    App.Config.SaveDatabase();
                 }
             }
         }
@@ -288,36 +289,30 @@ namespace SteamOrganizer.MVVM.ViewModels
         public string ExternalEmail
         {
             get => _externalEmail;
-            set
-            {
-                if (value.Length == 0)
-                    value = null;
-
-                EncryptionTools.ClearString(_externalEmail);
-                _externalEmail = value;
-
-                SelectedExternalCredentialsProp.Email.SetValue(CurrentAccount,EncryptionTools.XorString(value));
-                App.Config.SaveDatabase(1000);
-                EncryptionTools.ClearString(value);
-            }
+            set => SetEncryptedString(SelectedExternalCredentialsProp.Email, ref _externalEmail, ref value);
         }
 
         private string _externalPassword;
         public string ExternalPassword
         {
             get => _externalPassword;
-            set
-            {
-                if (value.Length == 0)
-                    value = null;
+            set => SetEncryptedString(SelectedExternalCredentialsProp.Password, ref _externalPassword, ref value);
+        }
 
-                EncryptionTools.ClearString(_externalPassword);
-                _externalPassword = value;
+        private void SetEncryptedString(PropertyInfo property,ref string oldValue, ref string newValue)
+        {
+            if (oldValue.Equals(newValue))
+                return;
 
-                SelectedExternalCredentialsProp.Password.SetValue(CurrentAccount,EncryptionTools.XorString(value));
-                App.Config.SaveDatabase(1000);
-                EncryptionTools.ClearString(value);
-            }
+            if (newValue.Length == 0)
+                newValue = null;
+
+            EncryptionTools.ClearString(oldValue);
+            oldValue = newValue;
+
+            property.SetValue(CurrentAccount, EncryptionTools.XorString(newValue));
+            App.Config.SaveDatabase();
+            EncryptionTools.ClearString(newValue);
         }
 
         #endregion

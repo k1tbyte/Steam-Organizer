@@ -118,5 +118,6 @@ namespace SteamOrganizer.MVVM.View.Controls
             prop.SetValue(binding.ResolvedSource, content);
             App.Config.SaveDatabase();
         }
+
     }
 }

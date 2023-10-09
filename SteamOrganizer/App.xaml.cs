@@ -89,6 +89,7 @@ namespace SteamOrganizer
                 return;
             }
 #endif
+
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 

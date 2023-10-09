@@ -4,6 +4,7 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
+using SteamOrganizer.Helpers.Encryption;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,16 +20,29 @@ namespace SteamOrganizer.Infrastructure.Synchronization
         private const string DefaultMimeType = "application/octet-stream";
         private const string SyncFolderName  = "Steam organizer";
 
+        private const string ClientId     = "r|GMP_]opyd\\\u0018!4&>|F\0E\bES-=1\u001d\u0002'C\u0019w$\u0010\fV[W./|>\u0012Cf&2#9X\u0014_\0\u0017]'=!\u0010\u0004%\u0018\u00021*\u001a\u000eO\r\u00015";
+        private const string ClientSecret = "\u0002\07)16C5\u0011!\u0002#`|\u0011!\nr$\u0005e)\u0018c\u001d{\b:;\u0003\0!h\u001b%";
+
         private readonly DriveService Service;
-        private readonly File WorkingFolder;
+        private File WorkingFolder;
+
+        public static GDriveManager Instance { get; private set; }
 
         private GDriveManager(DriveService service)
         {
             Service = service;
+        }
 
-            if ((WorkingFolder = GetSyncFolder()) == null)
+        private async Task Init()
+        {
+            var request = Service.Files.List();
+            request.Q = $"mimeType = 'application/vnd.google-apps.folder' and name = '{SyncFolderName}' and 'root' in parents and trashed=false";
+            request.OrderBy = "createdTime asc";
+            WorkingFolder = (await request.ExecuteAsync())?.Files?.FirstOrDefault();
+
+            if (WorkingFolder == null)
             {
-                WorkingFolder = CreateFile(SyncFolderName, FolderMimeType);
+                WorkingFolder = await CreateFile(SyncFolderName, FolderMimeType);
             }
         }
 
@@ -39,7 +53,7 @@ namespace SteamOrganizer.Infrastructure.Synchronization
             return (await request.ExecuteAsync()).User;
         }
 
-        private File CreateFile(string name, string mimeType, string parentFolderId = null)
+        private async Task<File> CreateFile(string name, string mimeType, string parentFolderId = null)
         {
             try
             {
@@ -48,9 +62,9 @@ namespace SteamOrganizer.Infrastructure.Synchronization
                     Name = name,
                     MimeType = mimeType,
                     Parents = parentFolderId == null ? null : new[] { parentFolderId }
-                }).Execute();
+                }).ExecuteAsync();
 
-                return file;
+                return await file;
             }
             catch (Exception e)
             {
@@ -75,23 +89,26 @@ namespace SteamOrganizer.Infrastructure.Synchronization
             catch { }
         }
 
-        public async Task UploadFile(string path, CancellationToken token)
+        public async Task<bool> UploadFile(string path, CancellationToken token)
         {
-            if (!System.IO.File.Exists(path))
-                throw new InvalidOperationException();
-
-            using (var stream = new System.IO.FileStream(path, System.IO.FileMode.Open))
+            try
             {
-                await UploadFile(stream, System.IO.Path.GetFileName(path), token);
-            }
-        }
+                if (!System.IO.File.Exists(path))
+                    throw new InvalidOperationException();
 
-        private File GetSyncFolder()
-        {
-            var request = Service.Files.List();
-            request.Q = $"mimeType = 'application/vnd.google-apps.folder' and name = '{SyncFolderName}' and 'root' in parents and trashed=false";
-            var files = request.Execute();
-            return files.Files.FirstOrDefault();
+                using (var stream = new System.IO.FileStream(path, System.IO.FileMode.Open))
+                {
+                    await UploadFile(stream, System.IO.Path.GetFileName(path), token);
+                }
+
+                return true;
+            }
+            catch(Exception e)
+            {
+                App.Logger.Value.LogHandledException(e);
+            }
+
+            return false;
         }
 
         /// <param name="nameWithExt">Full file name</param>
@@ -120,7 +137,7 @@ namespace SteamOrganizer.Infrastructure.Synchronization
         }
 
 
-        public static async Task<GDriveManager> AuthorizeAsync(string clientId, string clientSecret, CancellationToken token)
+        public static async Task<bool> AuthorizeAsync(CancellationToken token ,bool openExternal = true)
         {
             var scopes = new string[] { Scope.DriveFile };
 
@@ -128,8 +145,8 @@ namespace SteamOrganizer.Infrastructure.Synchronization
             {
                 ClientSecrets = new ClientSecrets
                 {
-                    ClientId = clientId,
-                    ClientSecret = clientSecret
+                    ClientId = EncryptionTools.XorString(App.EncryptionKey,ClientId),
+                    ClientSecret = EncryptionTools.XorString(App.EncryptionKey,ClientSecret)
                 },
                 Scopes = scopes
             };
@@ -147,33 +164,75 @@ namespace SteamOrganizer.Infrastructure.Synchronization
                             {
                                 RefreshToken = App.Config.GDriveInfo.RefreshToken,
                                 AccessToken  = App.Config.GDriveInfo.AccessToken,
-
                             }
                         )
                     });
 
-                    return new GDriveManager(service);
+                    Instance = new GDriveManager(service);
+                    await Instance.Init();
+                    return true;
                 }
-                catch
+                catch (Exception e)
                 {
                     //not valid
+                    App.Logger.Value.LogHandledException(e);
                     App.Config.GDriveInfo.RefreshToken = App.Config.GDriveInfo.AccessToken = null;
                     App.Config.Save();
                 }
             }
 
-            var credPath = System.IO.Path.Combine(App.CacheFolderPath, "_gdriveCredentialsTemp");
+            if (!openExternal)
+                return false;
 
-            var manager =  new GDriveManager(new DriveService(new BaseClientService.Initializer()
+            var credPath = System.IO.Path.Combine(App.CacheFolderPath, "_gdriveCredentialsTemp");
+            UserCredential credentials;
+
+            try
             {
-                HttpClientInitializer = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    init, scopes, Environment.UserName, token, new FileDataStore(credPath, true))
+                credentials = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    init, scopes, Environment.UserName, token, new FileDataStore(credPath, true));
+            }
+            catch(OperationCanceledException)
+            {
+                return false;
+            }
+
+
+            Instance =  new GDriveManager(new DriveService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credentials
             }));
+
+            await Instance.Init();
+
+            var aboutInfo = await Instance.GetLoggedUserInfo();
+
+            App.Config.GDriveInfo = new Storages.GDriveInfo
+            {
+                RefreshToken = credentials.Token.RefreshToken,
+                AccessToken  = credentials.Token.AccessToken,
+                AvatarUrl    = aboutInfo.PhotoLink.IndexOf("default",StringComparison.OrdinalIgnoreCase) >= 0 ? "\\Resources\\Images\\google.bmp" : aboutInfo.PhotoLink,
+                DisplayName  = aboutInfo.DisplayName,
+                EmailAddress = aboutInfo.EmailAddress
+            };
+
+            App.Config.Save();
 
             System.IO.Directory.Delete(credPath, true);
 
-            return manager;
+            return true;
 
+        }
+
+        public static void LogOut()
+        {
+            Instance?.Service.Dispose();
+            Instance = null;
+            if (App.Config.GDriveInfo != null)
+            {
+                App.Config.GDriveInfo = null;
+                App.Config.Save();
+            }
         }
     }
 }

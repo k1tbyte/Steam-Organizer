@@ -670,11 +670,17 @@ namespace SteamOrganizer.MVVM.ViewModels
             LoginCommand           = new AsyncRelayCommand(OnLoginAccount);
             PinAccountCommand      = new RelayCommand(o =>
             {
-                try { OnPinningAccount(o); }
-                finally
+                try
                 {
-                    App.Config.SaveDatabase(1000);
+                    OnPinningAccount(o);
                 }
+                catch (Exception e)
+                {
+                    App.Logger.Value.LogHandledException(e);
+                    return;
+                }
+
+                App.Config.SaveDatabase();
             });
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;

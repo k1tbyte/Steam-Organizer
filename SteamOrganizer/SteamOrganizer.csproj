@@ -174,7 +174,6 @@
     <Compile Include="Infrastructure\Steam\VDF\VdfTable.cs" />
     <Compile Include="Infrastructure\Steam\VDF\VdfValue.cs" />
     <Compile Include="Infrastructure\Synchronization\GDriveManager.cs" />
-    <Compile Include="Infrastructure\Synchronization\Synchronizer.cs" />
     <Compile Include="Infrastructure\WebBrowser.cs" />
     <Compile Include="Infrastructure\Win32.cs" />
     <Compile Include="Infrastructure\Utils.cs" />
@@ -514,6 +513,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\steam_unknown.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\google.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

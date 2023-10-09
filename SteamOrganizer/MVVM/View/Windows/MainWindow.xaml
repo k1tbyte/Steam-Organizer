@@ -6,6 +6,7 @@
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:ext="clr-namespace:SteamOrganizer.MVVM.View.Extensions"
         xmlns:viewModels="clr-namespace:SteamOrganizer.MVVM.ViewModels"
+        xmlns:config="clr-namespace:SteamOrganizer.Storages"
         mc:Ignorable="d" 
         WindowStartupLocation="CenterScreen"
         Title="Steam Organizer"
@@ -21,7 +22,7 @@
         <WindowChrome CaptionHeight="1"/>
     </WindowChrome.WindowChrome>
 
-    
+
     <Border x:Name="MainBorder" Background="{DynamicResource PrimaryBackgroundBrush}" d:CornerRadius="9" >
         <Grid>
             <Grid.ColumnDefinitions>
@@ -229,6 +230,37 @@
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Orientation="Horizontal">
+
+                    <Icon:PackIconMaterial Margin="-30 0 0 0" Height="15" Width="15" Background="Transparent"
+                                           VerticalAlignment="Center" ToolTipService.InitialShowDelay="250">
+                        <Icon:PackIconMaterial.Style>
+                            <Style TargetType="Icon:PackIconMaterial">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Spin" Value="False"/>
+                                <Setter Property="Foreground" Value="{DynamicResource LightCyanGradient}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DatabaseSyncState,Mode=OneWay}" Value="{x:Static config:ESyncState.Processing}">
+                                        <Setter Property="Kind" Value="Autorenew"/>
+                                        <Setter Property="Spin" Value="True"/>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Setter Property="ToolTip" Value="Saving changes..."/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DatabaseSyncState,Mode=OneWay}" Value="{x:Static config:ESyncState.Partial}">
+                                        <Setter Property="Kind" Value="CloudAlert"/>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/>
+                                        <Setter Property="ToolTip" Value="The changes were saved locally, but an error occurred when synchronizing with the cloud"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding DatabaseSyncState,Mode=OneWay}" Value="{x:Static config:ESyncState.Synchronized}">
+                                        <Setter Property="Kind" Value="Check"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource SuccessGrad}"/>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Setter Property="ToolTip" Value="All changes were successfully saved"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Icon:PackIconMaterial.Style>
+                    </Icon:PackIconMaterial>
 
                     <Grid Margin="0 0 20 0">
                         <Button Style="{StaticResource FlatButton}"
