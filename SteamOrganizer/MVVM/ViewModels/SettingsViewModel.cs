@@ -86,9 +86,8 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
 
             GoogleAuthToken = new CancellationTokenSource(TimeSpan.FromMinutes(1));
-            var success     = await GDriveManager.AuthorizeAsync(GoogleAuthToken.Token);
 
-            if(success)
+            if(await GDriveManager.AuthorizeAsync(GoogleAuthToken.Token) != null)
             {
                 PushNotification.Open("You have successfully linked your Google account to Steam organizer");
                 OnPropertyChanged(nameof(Config));

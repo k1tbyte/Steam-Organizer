@@ -5,6 +5,7 @@ using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
 using SteamOrganizer.Infrastructure.Parsers.Vdf;
 using SteamOrganizer.Infrastructure.Steam;
+using SteamOrganizer.Infrastructure.Synchronization;
 using SteamOrganizer.MVVM.Core;
 using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
@@ -14,12 +15,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.IO.Pipes;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using System.Windows;
 using System.Windows.Data;
+using static SteamKit2.GC.Dota.Internal.CMsgDOTALeague;
 using Steam = SteamOrganizer.Infrastructure.Steam;
 
 namespace SteamOrganizer.MVVM.ViewModels
@@ -37,6 +43,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand OpenAccountPageCommand { get; }
         public RelayCommand ImportDatabaseCommand { get; }
         public RelayCommand ExportDatabaseCommand { get; }
+        public AsyncRelayCommand SyncDatabaseCommand { get; }
         #endregion
 
         #region Properties
@@ -653,6 +660,90 @@ namespace SteamOrganizer.MVVM.ViewModels
                 MahApps.Metro.IconPacks.PackIconMaterialKind.WebRemove, "Internet connection lost, some accounts were not updated");
         }
 
+        private async Task OnDatabaseSynching(object param)
+        {
+            if (App.MainWindowVM.DatabaseSyncState == Storages.ESyncState.Processing)
+                return;
+
+            if(!App.Config.IsSyncAvailable)
+            {
+                PushNotification.Open("You have not prepared your account for synchronization, do this in the settings.",
+                    type: PushNotification.EPushNotificationType.Warn);
+                await Task.Delay(2000);
+                return;
+            }
+
+            if (!WebBrowser.IsNetworkAvailable)
+            {
+                App.WebBrowser.OpenNeedConnectionPopup();
+                await Task.Delay(2000);
+                return;
+            }
+
+
+            var manager = await GDriveManager.AuthorizeAsync(CancellationToken.None, false);
+
+            if(manager == null)
+            {
+                PushNotification.Open("Unable to connect to the cloud", type: PushNotification.EPushNotificationType.Error);
+                return;
+            }
+
+            var lastFile = (await manager.GetFilesListByName("database.bin", false, "modifiedTime desc")).FirstOrDefault();
+
+            if(lastFile == null)
+            {
+                PushNotification.Open("No available backups found", type: PushNotification.EPushNotificationType.Info);
+                return;
+            }
+
+            using (var cloudFile  = new MemoryStream())
+            {
+                await manager.DownloadFileAsync(lastFile.Id, cloudFile, CancellationToken.None);
+                cloudFile.Position = 0;
+
+                if (!File.Exists(App.DatabasePath) || App.Config.Database.Count == 0)
+                {
+                    using (var fileStream = File.Create(App.DatabasePath))
+                    {
+                        cloudFile.CopyTo(fileStream);
+                    }
+
+                    App.Restart();
+                    return;
+                }
+
+                using (var localFile = File.OpenRead(App.DatabasePath))
+                using (var md5 = MD5.Create())
+                {
+
+                    var localHash = md5.ComputeHash(localFile);
+                    var cloudHash = md5.ComputeHash(cloudFile);
+
+                    if (localHash.SequenceEqual(cloudHash))
+                    {
+                        PushNotification.Open("The database is already synchronized", type: PushNotification.EPushNotificationType.Info);
+                        return;
+                    }
+                }
+
+                cloudFile.Position = 0;
+                var bytes = cloudFile.ToArray();
+                var isPossibleToOpen = FileCryptor.Deserialize(cloudFile, out ObservableCollection<Account> db, App.Config.DatabaseKey);
+
+                App.MainWindowVM.OpenPopupWindow(new QueryModal($"Are you sure you want to pull the database from the cloud?\n\n• Synchronized: {lastFile.ModifiedTime:f}\n\n" +
+                    (isPossibleToOpen ? $"After the operation the following will be loaded: {db.Count} accounts" :
+                    "It was not possible to view the contents of the database. It may be protected with a different password") +".\n\n🠶 A backup copy will be created automatic for the current database",
+                    () =>
+                    {
+                        File.Copy(App.DatabasePath, Path.Combine(App.WorkingDir, App.DatabaseName + ".bak"),true);
+                        File.WriteAllBytes(App.DatabasePath, bytes);
+                        App.Restart();
+
+                    }), "Synchronization");
+            }
+        }
+
         internal void RefreshCollection() => AccountsCollectionView.Refresh();
 
         public AccountsViewModel(AccountsView owner)
@@ -668,6 +759,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             OpenAccountPageCommand = new RelayCommand((o) => App.MainWindowVM.OpenAccountPage(o as Account));
             OpenProfileCommand     = new RelayCommand((o) => (o as Account).OpenInBrowser());
             LoginCommand           = new AsyncRelayCommand(OnLoginAccount);
+            SyncDatabaseCommand    = new AsyncRelayCommand(OnDatabaseSynching);
             PinAccountCommand      = new RelayCommand(o =>
             {
                 try

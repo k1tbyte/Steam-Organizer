@@ -220,6 +220,35 @@
                
             </Border>
 
+            <DockPanel Margin="10 0 10 10">
+                <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
+                    <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                   Kind="SourceBranchSync" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+
+                <TextBlock Text="Maximum number of backups" VerticalAlignment="Center" 
+                       Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+
+                <ComboBox Background="{DynamicResource TertiaryBackgroundBrush}"
+                  Width="120" HorizontalAlignment="Right" Height="27"
+                  SelectedIndex="{Binding Config.ActionAfterLogin,Mode=TwoWay}">
+                    <ComboBoxItem Content="No versions"/>
+                    <ComboBoxItem Content="10"/>
+                    <ComboBoxItem Content="25"/>
+                    <ComboBoxItem Content="50"/>
+                    <ComboBoxItem Content="Unlimited"/>
+                </ComboBox>
+            </DockPanel>
+
+            <DockPanel Margin="10 0 10 10">
+                <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
+                    <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                   Kind="Cloud" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+
+                <TextBlock Text="Sync folder name" VerticalAlignment="Center" 
+                       Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+            </DockPanel>
 
             <DockPanel Margin="10 5 10 10">
                 <TextBlock Text="About program" 

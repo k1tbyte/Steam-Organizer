@@ -30,6 +30,9 @@ namespace SteamOrganizer.Infrastructure
 
             [Command("noicon")]
             public static readonly bool NeedResetIcon;
+
+            [Command("restart")]
+            public static readonly bool Restart;
         }
 
         private static Dictionary<string, object> ParseArguments(string args)
@@ -83,6 +86,12 @@ namespace SteamOrganizer.Infrastructure
             if (commands.Count == 0)
                 return true;
 
+            if(commands.ContainsKey(nameof(AvailableCommands.Restart)))
+            {
+                App.Restart();
+                return false;
+            }
+
             if (commands.ContainsKey(nameof(AvailableCommands.NeedResetIcon)))
             {
                 var path = $"{App.WorkingDir}\\SteamOrganizer.lnk";
@@ -100,11 +109,11 @@ namespace SteamOrganizer.Infrastructure
                 {
                     case nameof(AvailableCommands.LaunchAppId):
                         break;
+
                     case nameof(AvailableCommands.AccountLogin):
                         MainWindowViewModel.AccountsViewInitialized += (context) =>
                             context.LoginCommand.Execute(App.Config.Database.FirstOrDefault(o => o.Login.IndexOf(cmd.Value.ToString(), StringComparison.OrdinalIgnoreCase) >= 0));
                         break;
-
                 }
             }
             return true;
@@ -115,7 +124,7 @@ namespace SteamOrganizer.Infrastructure
             if (args.Length == 0)
                 return true;
 
-            return HandleStartArguments(string.Join(" ", args));
+            return HandleStartArguments(string.Join(" ", args).ToLower());
         }
     }
 }

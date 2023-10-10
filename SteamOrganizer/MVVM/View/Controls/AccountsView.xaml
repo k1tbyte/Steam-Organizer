@@ -106,6 +106,19 @@
                 </Icon:PackIconMaterial.InputBindings>
             </Icon:PackIconMaterial>
 
+            <Button Style="{StaticResource FlatButton}" Margin="5 0 0 -3"
+                    Command="{Binding SyncDatabaseCommand,Mode=OneTime}">
+                <Icon:PackIconMaterial Kind="DatabaseSyncOutline"
+                                   ToolTipService.InitialShowDelay="200"
+                                   VerticalAlignment="Center"
+                                   ToolTip="Synchronize database with cloud"
+                                   Background="Transparent" Cursor="Hand"
+                                   Height="20" Width="20"
+                                   Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+            </Button>
+
+
+
         </StackPanel>
 
         <StackPanel HorizontalAlignment="Center"

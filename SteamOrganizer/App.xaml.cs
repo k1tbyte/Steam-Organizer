@@ -24,6 +24,7 @@ namespace SteamOrganizer
 
         #region App domain info
         internal const string Name                      = "SteamOrganizer";
+        internal const string DatabaseName              = "database.bin";
         private static readonly Mutex Mutex             = new Mutex(true, Name);
         internal static readonly Lazy<AppLogger> Logger = new Lazy<AppLogger>();
         internal static readonly WebBrowser WebBrowser  = new WebBrowser();
@@ -64,7 +65,7 @@ namespace SteamOrganizer
             WorkingDir      = Path.GetDirectoryName(Assembly.GetExecutingAssembly()?.Location) ?? throw new ArgumentNullException(nameof(WorkingDir));
             Version         = Assembly.GetExecutingAssembly()?.GetName()?.Version ?? throw new ArgumentNullException(nameof(Version));
             ConfigPath      = Path.Combine(WorkingDir, "config.bin");
-            DatabasePath    = Path.Combine(WorkingDir, "database.bin");
+            DatabasePath    = Path.Combine(WorkingDir, DatabaseName);
             CacheFolderPath = Path.Combine(WorkingDir, ".cache");
 
         }
@@ -144,6 +145,12 @@ namespace SteamOrganizer
             {
                 App.Current.Dispatcher.InvokeShutdown();
             }
+        }
+
+        public static void Restart(string args = null)
+        {
+            Shutdown();
+            Process.Start(Assembly.GetEntryAssembly().Location, args);
         }
 
         public static void STAInvoke(Action action)

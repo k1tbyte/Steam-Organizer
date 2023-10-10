@@ -1,6 +1,7 @@
 ﻿using SteamOrganizer.Infrastructure;
 using System;
 using System.IO;
+using System.IO.Pipes;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
@@ -78,26 +79,40 @@ namespace SteamOrganizer.Helpers
         {
             filePath.ThrowIfNullOrEmpty();
 
+            if (!File.Exists(filePath))
+            {
+                result = null;
+                return false;
+            }
+
+            using (var fileStream = new FileStream(filePath, FileMode.Open))
+            {
+                return Deserialize<T>(fileStream, out result, decryptionKey);
+            }
+        }
+
+        internal static bool Deserialize<T>(Stream stream, out T result, byte[] decryptionKey = null) where T : class
+        {
+            stream.ThrowIfNull();
+            stream.Position = 0;
             try
             {
-                using (var fileStream = new FileStream(filePath, FileMode.Open))
+                if (decryptionKey == null)
                 {
-                    if (decryptionKey == null)
-                    {
-                        result = ReadObjectFromStream(fileStream) as T;
-                    }
-                    else
-                    {
-                        using (var cryptoStream = CreateDecryptionStream(decryptionKey, fileStream))
-                        {
-                            result = ReadObjectFromStream(cryptoStream) as T;
-                        }
-                    }
-
-                    return true;
+                    result = ReadObjectFromStream(stream) as T;
                 }
+                else
+                {
+                    using (var cryptoStream = CreateDecryptionStream(decryptionKey, stream))
+                    {
+                        result = ReadObjectFromStream(cryptoStream) as T;
+                    }
+                }
+
+                return true;
+
             }
-            catch(SerializationException)
+            catch (SerializationException)
             {
                 //Decrypt or read error
             }

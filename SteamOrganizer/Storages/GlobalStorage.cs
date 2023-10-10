@@ -176,7 +176,9 @@ namespace SteamOrganizer.Storages
             _databaseKey.ThrowIfNull();
 
             FileCryptor.Serialize(Database, App.DatabasePath, _databaseKey);
+#if DEBUG
             App.Logger.Value.LogGenericDebug("Database is saved");
+#endif
 
             // We simply cancel the previous upload operation and submit the new version again
             // (this will be extremely rare, since such a frequency of saves does not happen)
@@ -185,10 +187,10 @@ namespace SteamOrganizer.Storages
 
             SyncCancellationToken = new CancellationTokenSource();
 
-            if (IsSyncAvailable && WebBrowser.IsNetworkAvailable)
+            if (IsSyncAvailable && WebBrowser.IsNetworkAvailable && Database.Count > 0)
             {
                 //If you haven't logged in or haven't loaded
-                if (GDriveManager.Instance == null && (!await GDriveManager.AuthorizeAsync(SyncCancellationToken.Token, false)) ||
+                if (GDriveManager.Instance == null && (await GDriveManager.AuthorizeAsync(SyncCancellationToken.Token, false) != null) ||
                     !await GDriveManager.Instance.UploadFile(App.DatabasePath, SyncCancellationToken.Token))
                 {
                     if(!SyncCancellationToken.IsCancellationRequested)
@@ -209,6 +211,6 @@ namespace SteamOrganizer.Storages
             SyncCancellationToken.Dispose();
             SyncCancellationToken = null;
         } 
-        #endregion
+#endregion
     }
 }

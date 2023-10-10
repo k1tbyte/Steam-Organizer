@@ -123,22 +123,25 @@ namespace SteamOrganizer.Infrastructure.Synchronization
         {
             var request    = Service.Files.List();
             request.Q      = $"mimeType != '{FolderMimeType}' and '{WorkingFolder.Id}' in parents and name = '{nameWithExt}' {(trashed ? "" : "and trashed = false")}";
-            request.Fields = "id, createdTime, modifiedTime, size";
+            request.Fields = "files(id, createdTime, modifiedTime, size)";
             request.OrderBy = orderBy;
             var files      = await request.ExecuteAsync();
             return files.Files;
         }
 
-        public async Task<File> GetFileById(string id)
+
+        public async Task DownloadFileAsync(string id, System.IO.MemoryStream stream, CancellationToken token)
         {
-            var request    = Service.Files.Get(id);
-            request.Fields = "name, createdTime, modifiedTime, size";
-            return await request.ExecuteAsync();
+            var request = Service.Files.Get(id);
+            await request.DownloadAsync(stream, token);
         }
 
 
-        public static async Task<bool> AuthorizeAsync(CancellationToken token ,bool openExternal = true)
+        public static async Task<GDriveManager> AuthorizeAsync(CancellationToken token ,bool openExternal = true)
         {
+            if (Instance != null)
+                return Instance;
+
             var scopes = new string[] { Scope.DriveFile };
 
             var init = new GoogleAuthorizationCodeFlow.Initializer()
@@ -170,7 +173,7 @@ namespace SteamOrganizer.Infrastructure.Synchronization
 
                     Instance = new GDriveManager(service);
                     await Instance.Init();
-                    return true;
+                    return Instance;
                 }
                 catch (Exception e)
                 {
@@ -182,7 +185,7 @@ namespace SteamOrganizer.Infrastructure.Synchronization
             }
 
             if (!openExternal)
-                return false;
+                return null;
 
             var credPath = System.IO.Path.Combine(App.CacheFolderPath, "_gdriveCredentialsTemp");
             UserCredential credentials;
@@ -194,7 +197,7 @@ namespace SteamOrganizer.Infrastructure.Synchronization
             }
             catch(OperationCanceledException)
             {
-                return false;
+                return null;
             }
 
 
@@ -220,7 +223,7 @@ namespace SteamOrganizer.Infrastructure.Synchronization
 
             System.IO.Directory.Delete(credPath, true);
 
-            return true;
+            return Instance;
 
         }
 
