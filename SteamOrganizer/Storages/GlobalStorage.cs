@@ -44,6 +44,13 @@ namespace SteamOrganizer.Storages
         [field: NonSerialized]
         public ObservableCollection<Account> Database { get; set; }
 
+
+        #region One-time flags
+
+        public static bool RequiredOpeningWindow { get; set; }
+
+        #endregion
+
         /// <summary>
         /// Called only upon successful loading from a file
         /// </summary>
@@ -190,7 +197,7 @@ namespace SteamOrganizer.Storages
             if (IsSyncAvailable && WebBrowser.IsNetworkAvailable && Database.Count > 0)
             {
                 //If you haven't logged in or haven't loaded
-                if (GDriveManager.Instance == null && (await GDriveManager.AuthorizeAsync(SyncCancellationToken.Token, false) != null) ||
+                if (GDriveManager.Instance == null && (await GDriveManager.AuthorizeAsync(SyncCancellationToken.Token, false) == null) ||
                     !await GDriveManager.Instance.UploadFile(App.DatabasePath, SyncCancellationToken.Token))
                 {
                     if(!SyncCancellationToken.IsCancellationRequested)

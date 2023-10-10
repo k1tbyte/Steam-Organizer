@@ -297,9 +297,9 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private void HandleState()
         {
-            if (App.Config.MinimizeOnStart)
+            if (App.Config.MinimizeOnStart && !GlobalStorage.RequiredOpeningWindow)
             {
-                using (var proc = System.Diagnostics.Process.GetCurrentProcess())
+                using (var proc = Process.GetCurrentProcess())
                 {
                     proc.MaxWorkingSet = proc.MinWorkingSet;
                 }

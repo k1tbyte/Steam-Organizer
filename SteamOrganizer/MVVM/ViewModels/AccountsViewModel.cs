@@ -16,16 +16,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Pipes;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 using System.Windows;
 using System.Windows.Data;
-using static SteamKit2.GC.Dota.Internal.CMsgDOTALeague;
 using Steam = SteamOrganizer.Infrastructure.Steam;
 
 namespace SteamOrganizer.MVVM.ViewModels
@@ -665,7 +662,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             if (App.MainWindowVM.DatabaseSyncState == Storages.ESyncState.Processing)
                 return;
 
-            if(!App.Config.IsSyncAvailable)
+            if(App.Config.GDriveInfo == null)
             {
                 PushNotification.Open("You have not prepared your account for synchronization, do this in the settings.",
                     type: PushNotification.EPushNotificationType.Warn);
@@ -709,7 +706,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                         cloudFile.CopyTo(fileStream);
                     }
 
-                    App.Restart();
+                    App.Restart("-forcewindow");
                     return;
                 }
 
@@ -738,7 +735,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                     {
                         File.Copy(App.DatabasePath, Path.Combine(App.WorkingDir, App.DatabaseName + ".bak"),true);
                         File.WriteAllBytes(App.DatabasePath, bytes);
-                        App.Restart();
+                        App.Restart("-forcewindow");
 
                     }), "Synchronization");
             }

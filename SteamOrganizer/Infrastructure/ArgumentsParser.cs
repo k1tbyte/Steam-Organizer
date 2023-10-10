@@ -1,5 +1,6 @@
 ﻿using SteamOrganizer.Infrastructure.Steam;
 using SteamOrganizer.MVVM.ViewModels;
+using SteamOrganizer.Storages;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,6 +34,9 @@ namespace SteamOrganizer.Infrastructure
 
             [Command("restart")]
             public static readonly bool Restart;
+
+            [Command("forcewindow")]
+            public static readonly bool ForceWindow;
         }
 
         private static Dictionary<string, object> ParseArguments(string args)
@@ -88,7 +92,7 @@ namespace SteamOrganizer.Infrastructure
 
             if(commands.ContainsKey(nameof(AvailableCommands.Restart)))
             {
-                App.Restart();
+                App.Restart(args.Replace("-restart",""));
                 return false;
             }
 
@@ -107,6 +111,10 @@ namespace SteamOrganizer.Infrastructure
             {
                 switch (cmd.Key)
                 {
+                    case nameof(AvailableCommands.ForceWindow):
+                        GlobalStorage.RequiredOpeningWindow = true;
+                        break;
+
                     case nameof(AvailableCommands.LaunchAppId):
                         break;
 
