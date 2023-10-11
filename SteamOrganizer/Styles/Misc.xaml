@@ -31,7 +31,7 @@
 
 
             <ToggleButton  x:Name="ExpanderButton" DockPanel.Dock="Right" Width="50" Cursor="Hand"
-                                           HorizontalAlignment="Right" FocusVisualStyle="{x:Null}"
+                                           HorizontalAlignment="Right" FocusVisualStyle="{x:Null}" Foreground="{DynamicResource SecondaryForegroundBrush}"
                                            IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
                 <ToggleButton.Template>
                     <ControlTemplate TargetType="ToggleButton">

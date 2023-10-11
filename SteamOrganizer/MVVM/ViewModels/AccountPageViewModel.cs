@@ -301,7 +301,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private void SetEncryptedString(PropertyInfo property,ref string oldValue, ref string newValue)
         {
-            if (oldValue.Equals(newValue))
+            if (oldValue == newValue)
                 return;
 
             if (newValue.Length == 0)
