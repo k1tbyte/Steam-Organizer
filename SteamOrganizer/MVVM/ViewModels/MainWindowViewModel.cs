@@ -12,6 +12,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Management;
+using System.Net.Http;
 using System.Security.Principal;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -282,15 +283,26 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             async void DownloadUpdate()
             {
-                using (var stream = await App.WebBrowser.HttpClient.GetStreamAsync($"https://github.com/k1tbyte/Steam-Organizer/releases/download/{version}/SteamOrganizer-Portable.zip"))
-                using (var fileStream = new FileStream(App.WorkingDir + "\\downloadcache.zip", FileMode.CreateNew))
-                {
-                    await stream.CopyToAsync(fileStream);
-                }
+                var url = $"https://github.com/k1tbyte/Steam-Organizer/releases/download/{version}/SteamOrganizer-Portable.zip";
 
-                File.WriteAllText(App.WorkingDir + "\\update.vbs", Properties.Resources.UpdateScript);
-                Process.Start(App.WorkingDir + "\\update.vbs").Dispose();
-                App.Shutdown();
+                try
+                {
+                    using (var stream = await App.WebBrowser.HttpClient.GetStreamAsync(url))
+                    using (var fileStream = new FileStream(App.WorkingDir + "\\downloadcache.zip", FileMode.CreateNew))
+                    {
+                        await stream.CopyToAsync(fileStream);
+                    }
+
+                    File.WriteAllText(App.WorkingDir + "\\update.vbs", Resources.UpdateScript);
+                    Process.Start(App.WorkingDir + "\\update.vbs").Dispose();
+                    App.Shutdown();
+                }
+                catch (Exception e)
+                {
+                    PushNotification.Open("An error occurred while updating the applicationю. Click to try updating it manually",
+                        () => Process.Start(url).Dispose(), PushNotification.EPushNotificationType.Error);
+                    App.Logger.Value.LogHandledException(e);
+                }
             }
         }
 

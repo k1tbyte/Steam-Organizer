@@ -38,7 +38,6 @@ namespace SteamOrganizer.Infrastructure
             HttpClientHandler = new HttpClientHandler
             {
                 AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
-                AllowAutoRedirect = false,
                 MaxConnectionsPerServer = MaxConnections
             };
 
