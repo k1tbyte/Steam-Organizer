@@ -724,8 +724,8 @@ namespace SteamOrganizer.MVVM.ViewModels
                     }
                 }
 
-                cloudFile.Position = 0;
-                var bytes = cloudFile.ToArray();
+                cloudFile.Position   = 0;
+                var bytes            = cloudFile.ToArray();
                 var isPossibleToOpen = FileCryptor.Deserialize(cloudFile, out ObservableCollection<Account> db, App.Config.DatabaseKey);
 
                 App.MainWindowVM.OpenPopupWindow(new QueryModal($"Are you sure you want to pull the database from the cloud?\n\n• Synchronized: {lastFile.ModifiedTime:f}\n\n" +

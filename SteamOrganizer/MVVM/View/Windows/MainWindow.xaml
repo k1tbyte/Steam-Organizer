@@ -8,12 +8,10 @@
         xmlns:viewModels="clr-namespace:SteamOrganizer.MVVM.ViewModels"
         xmlns:config="clr-namespace:SteamOrganizer.Storages"
         mc:Ignorable="d" 
-        WindowStartupLocation="CenterScreen"
         Title="Steam Organizer"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
-        WindowState="Normal"
         MinHeight="553" MinWidth="1050" 
         Height="553" Width="0"
         Closing="Window_Closing"
@@ -201,7 +199,7 @@
                     BorderThickness="0 0 0 1.5"  
                     BorderBrush="{DynamicResource PrimaryBorderBrush}"
                     Background="{DynamicResource SecondaryBackgroundBrush}"
-                    MouseLeftButtonDown="OnDragMove"/>
+                    PreviewMouseDown="OnDragMove"/>
 
             <DockPanel Margin="20 0 20 0" Grid.ColumnSpan="2">
 

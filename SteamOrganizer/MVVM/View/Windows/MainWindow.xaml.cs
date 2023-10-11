@@ -11,10 +11,6 @@ namespace SteamOrganizer.MVVM.View.Windows
 {
     public sealed partial class MainWindow : Window
     {
-        private readonly CornerRadius TopPanelCornerRadius   = new CornerRadius(App.Config.MainWindowCornerRadius, App.Config.MainWindowCornerRadius, 0d, 0d);
-        private readonly CornerRadius SidebarCornerRadius    = new CornerRadius(0d, 0d, 0d, App.Config.MainWindowCornerRadius);
-        private readonly CornerRadius MainBorderCornerRadius = new CornerRadius(App.Config.MainWindowCornerRadius);
-
         private bool IsMenuExpanderWaiting = false;
         internal bool IsShown => WindowState != WindowState.Minimized && IsVisible;
 
@@ -25,8 +21,33 @@ namespace SteamOrganizer.MVVM.View.Windows
             SetMenuState(((double)App.Config.SideBarState) - 1d);
             RoundOffBorders();
 
+            if(!App.Config.IsMaximixed && App.Config.Width != 0)
+            {
+                Width  = App.Config.Width;
+                Height = App.Config.Height;
+
+                Left = Width >= SystemParameters.PrimaryScreenWidth - 3 ? 0 : App.Config.Left;
+                Top = Height >= SystemParameters.PrimaryScreenHeight -3 ? 0 :  App.Config.Top;
+            }
+            else
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
+
+
             this.DataContext = new MainWindowViewModel(this);
             Splash.Visibility = Visibility.Collapsed;
+            App.OnShuttingDown += SaveMetaInfo;
+
+
+        }
+
+        private void SaveMetaInfo()
+        {
+            App.Config.Left   = Left;
+            App.Config.Top    = Top;
+            App.Config.Width  = ActualWidth;
+            App.Config.Height = ActualHeight;
         }
 
         #region View events
@@ -74,6 +95,12 @@ namespace SteamOrganizer.MVVM.View.Windows
                 return;
 
             base.Show();
+
+            if(App.Config.IsMaximixed)
+            {
+                OnMaximizeWindow(null,null);
+                return;
+            }
             WindowState = WindowState.Normal;
         }
 
@@ -85,14 +112,18 @@ namespace SteamOrganizer.MVVM.View.Windows
                 // We need to remove roundness in full screen mode
                 RoundOffBorders(true);
 
+                App.Config.IsMaximixed = true;
                 WindowState = WindowState.Maximized;
                 return;
             }
 
+
+            App.Config.IsMaximixed = false;
+            WindowState = WindowState.Normal;
+
             // Bringing back rounded edges
             RoundOffBorders();
 
-            WindowState = WindowState.Normal;
         }
 
         private void OnMinimizeWindow(object sender, MouseButtonEventArgs e)
@@ -100,7 +131,19 @@ namespace SteamOrganizer.MVVM.View.Windows
 
         private void OnDragMove(object sender, MouseButtonEventArgs e)
         {
-            if (WindowState == WindowState.Maximized && e.ClickCount != 2)
+            if(e.MiddleButton == MouseButtonState.Pressed)
+            {
+                if(WindowState == WindowState.Maximized)
+                    OnMaximizeWindow(null, null);
+
+                Width  = 0;
+                Height = 0;
+                Left   = (SystemParameters.PrimaryScreenWidth / 2) - ActualWidth / 2;
+                Top    = (SystemParameters.PrimaryScreenHeight / 2) - ActualHeight / 2;
+                return;
+            }
+
+            if (e.LeftButton != MouseButtonState.Pressed ||  (WindowState == WindowState.Maximized && e.ClickCount != 2))
                 return;
 
             if (WindowState == WindowState.Maximized)
@@ -127,8 +170,6 @@ namespace SteamOrganizer.MVVM.View.Windows
             var offsetY = Win32.GetMousePosition().X - (this.WindowState == WindowState.Maximized ? 0 : this.Left);
 
             SetMenuState(offsetY);
-
-            App.Config.IsPropertiesChanged = true;
             MenuExpanderOnMouseLeave(sender, null);
             e.Handled = true;
         }
@@ -185,9 +226,9 @@ namespace SteamOrganizer.MVVM.View.Windows
         /// Sets rounded edges for the main window borders
         /// </summary>
         /// <param name="unset">Set corner radius to 0</param>
-        private void RoundOffBorders(bool unset = false)
+        internal void RoundOffBorders(bool unset = false)
         {
-            if (MainBorderCornerRadius.TopRight == 0)
+            if (App.Config.MainWindowCornerRadius == 0d || WindowState == WindowState.Maximized)
                 return;
 
             if(unset)
@@ -196,9 +237,9 @@ namespace SteamOrganizer.MVVM.View.Windows
                 return;
             }
 
-            TopPanel.CornerRadius    = TopPanelCornerRadius;
-            Sidebar.CornerRadius   = SidebarCornerRadius;
-            MainBorder.CornerRadius  = MainBorderCornerRadius;
+            TopPanel.CornerRadius    = new CornerRadius(App.Config.MainWindowCornerRadius, App.Config.MainWindowCornerRadius, 0d, 0d); ;
+            Sidebar.CornerRadius     = new CornerRadius(0d, 0d, 0d, App.Config.MainWindowCornerRadius);
+            MainBorder.CornerRadius  = new CornerRadius(App.Config.MainWindowCornerRadius);
         }
 
         private void OpacityAnimationCompleted(object sender, EventArgs e)

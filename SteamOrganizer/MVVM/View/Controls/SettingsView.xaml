@@ -40,9 +40,9 @@
 
 
                 <Slider Style="{StaticResource Horizontal_Slider}"
-                Minimum="0" Maximum="25" SmallChange="1" LargeChange="1" 
+                Minimum="0" Maximum="20" SmallChange="1" LargeChange="1" 
                 Tag="{DynamicResource sv_corner_prop}"
-                Value="{Binding Config.MainWindowCornerRadius}"
+                Value="{Binding Config.MainWindowCornerRadius,UpdateSourceTrigger=LostFocus}"
                 Uid="{Binding RelativeSource={RelativeSource Self}, Path=Value,StringFormat={}{0:0 px}}"
                 Height="12" Margin="0 17 0 0"/>
             </DockPanel>
@@ -220,6 +220,7 @@
                
             </Border>
 
+            <!--
             <DockPanel Margin="10 0 10 10">
                 <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
                     <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
@@ -249,6 +250,7 @@
                 <TextBlock Text="Sync folder name" VerticalAlignment="Center" 
                        Foreground="{DynamicResource SecondaryForegroundBrush}"/>
             </DockPanel>
+            !-->
 
             <DockPanel Margin="10 5 10 10">
                 <TextBlock Text="About program" 
@@ -263,7 +265,8 @@
                        Foreground="{DynamicResource SecondaryForegroundBrush}"/>
 
                 <Button Style="{StaticResource TransparentButton}" Margin="10 0 0 0"
-                        HorizontalAlignment="Left" Width="25" Height="25"
+                        HorizontalAlignment="Left" Width= "25" Height="25" Click="OpenSource"
+                        ToolTip="Click to open"
                         Background="{DynamicResource PrimarySubBrush}">
                     <Icon:PackIconMaterial Kind="OpenInNew" Width="11" Height="11"/>
                 </Button>

@@ -192,7 +192,6 @@ namespace SteamOrganizer.MVVM.ViewModels
         private void OnOpeningSettings(object param)
         {
             Settings = Settings ?? new SettingsView();
-            App.Config.IsPropertiesChanged = true;
             OpenPopupWindow(Settings, App.FindString("sv_title"));
         }
 

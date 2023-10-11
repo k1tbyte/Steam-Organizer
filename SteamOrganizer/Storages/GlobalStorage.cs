@@ -62,12 +62,25 @@ namespace SteamOrganizer.Storages
         /// <summary>
         /// To indicate whether you need to update the config
         /// </summary>
-        [field: NonSerialized]
-        public bool IsPropertiesChanged { get; set; }
 
         public ESideBarState SideBarState { get; set; } = ESideBarState.Expanded;
 
-        public double MainWindowCornerRadius { get; set; } = 9d;
+        private double _mainWindowCornerRadius = 9d;
+        public double MainWindowCornerRadius 
+        {
+            get => _mainWindowCornerRadius;
+            set
+            {
+                _mainWindowCornerRadius = value;
+                App.MainWindowVM.View.RoundOffBorders();
+            }
+        }
+
+        public double Left { get; set; }
+        public double Top { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public bool IsMaximixed { get; set; }
         #endregion
 
         public ObservableCollection<Tuple<string, ulong>> RecentlyLoggedIn { get; set; } = new ObservableCollection<Tuple<string, ulong>>();

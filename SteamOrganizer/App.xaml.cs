@@ -46,6 +46,7 @@ namespace SteamOrganizer
         internal static MainWindowViewModel MainWindowVM { get; private set; }
         internal static TrayPopup TrayMenu { get; private set; }
         internal static event Action OnStartupFinalized;
+        internal static event Action OnShuttingDown;
 
 
         private static GlobalStorage _config;
@@ -126,13 +127,15 @@ namespace SteamOrganizer
 
         public static new void Shutdown()
         {
+            if (IsShuttingDown)
+                return;
+
             IsShuttingDown = true;
+            OnShuttingDown?.Invoke();
 
             try
             {
-                if (Config?.IsPropertiesChanged == true)
-                    Config.Save();
-
+                Config?.Save();
                 TrayMenu?.Dispose();
                 WebBrowser?.Dispose();
                 Mutex.Close();

@@ -10,5 +10,9 @@ namespace SteamOrganizer.MVVM.View.Controls
             InitializeComponent();
             this.DataContext = new SettingsViewModel();
         }
+
+        private void OpenSource(object sender, System.Windows.RoutedEventArgs e)
+            => System.Diagnostics.Process.Start("https://github.com/k1tbyte/Steam-Organizer").Dispose();
+        
     }
 }
