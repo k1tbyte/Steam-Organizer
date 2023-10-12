@@ -142,7 +142,58 @@
             </Border>
 
 
-            <TextBox Padding="0 0 23 0" 
+            <Grid>
+                <Popup x:Name="ExtendedSearchPopup" AllowsTransparency="True" PopupAnimation="Slide"
+           Placement="Bottom" StaysOpen="False" VerticalOffset="5" HorizontalOffset="5"
+                       PlacementTarget="{Binding ElementName=extendedSearch}">
+                    <Border Background="{DynamicResource SecondaryBackgroundBrush}"
+                            Effect="{StaticResource LightShadow}" Margin="3"
+                            Padding="10" CornerRadius="3 10 10 10">
+                        <Grid TextBlock.Foreground="{DynamicResource SecondaryForegroundBrush}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="80"/>
+                                <ColumnDefinition MinWidth="80"/>
+                                <ColumnDefinition MinWidth="80"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition MinHeight="30"/>
+                                <RowDefinition MinHeight="30"/>
+                                <RowDefinition MinHeight="30"/>
+                                <RowDefinition MinHeight="30"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Search by" Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                       FontWeight="Medium" Margin="0 0 0 5" FontSize="13"/>
+                            
+                            <TextBlock Text="Nickname" Grid.Row="1" VerticalAlignment="Center"/>
+                            <RadioButton Grid.Column="1" Grid.Row="1" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"/>
+                            
+                            <TextBlock Text="Note" Grid.Row="2" VerticalAlignment="Center"/>
+                            <RadioButton Grid.Column="1" Grid.Row="2" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"/>
+                           
+                            <TextBlock Text="Email" Grid.Row="3" VerticalAlignment="Center"/>
+                            <RadioButton Grid.Column="1" Grid.Row="3" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"/>
+
+                            <TextBlock Text="Phone" Grid.Row="4" VerticalAlignment="Center"/>
+                            <RadioButton Grid.Column="1" Grid.Row="4" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"/>
+
+                            <TextBlock Text="Apply filters" Foreground="{DynamicResource TertiaryForegroundBrush}"
+                                       Grid.Column="2"
+                                       FontWeight="Medium" Margin="0 0 0 5" FontSize="13"/>
+
+                            <TextBlock Text="Banned" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"/>
+                            <TextBlock Text="Anonymous" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"/>
+                            <TextBlock Text="Include 2FA" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"/>
+                            <TextBlock Text="Include games" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center"/>
+
+                        </Grid>
+                    </Border>
+                   
+                </Popup>
+                
+                <TextBox Padding="0 0 23 0" 
                  MaxLength="60"
                  Uid="Search . . ." 
                  Text="{Binding SearchBarText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
@@ -151,7 +202,18 @@
                  HorizontalAlignment="Center"
                  Foreground="{DynamicResource SecondaryForegroundBrush}"
                  Background="{DynamicResource SecondaryBackgroundBrush}"
-                 MinWidth="400"/>
+                 MinWidth="400" 
+                 GotFocus="TextBox_GotFocus"
+                 LostFocus="TextBox_LostFocus"/>
+
+                <Border Background="{DynamicResource TertiarySubBrush}"
+                        Height="12" Width="17" HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        Visibility="Collapsed" Cursor="Hand"
+                        CornerRadius="0 20 0 12.0" MouseLeftButtonUp="ExtendedSearchLeftMouseDown"
+                        Opacity="0.5" x:Name="extendedSearch" />
+            </Grid>
+
 
             <Button Style="{StaticResource TransparentButton}"
                     Command="{Binding AddAccountCommand,Mode=OneTime}"

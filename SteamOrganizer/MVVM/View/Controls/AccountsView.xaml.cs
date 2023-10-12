@@ -261,5 +261,17 @@ namespace SteamOrganizer.MVVM.View.Controls
             element.ToolTip =
                 $"{App.FindString("acv_addDate")} {acc.AddedDate:f}{(acc.LastUpdateDate != null ? $"\n{App.FindString("acv_updDate")} {acc.LastUpdateDate:f}" : null)}";
         }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+            => extendedSearch.Visibility = Visibility.Visible;
+        
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+            => extendedSearch.Visibility = Visibility.Collapsed;
+
+        private void ExtendedSearchLeftMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ExtendedSearchPopup.IsOpen = !ExtendedSearchPopup.IsOpen;
+        }
     }
 }
