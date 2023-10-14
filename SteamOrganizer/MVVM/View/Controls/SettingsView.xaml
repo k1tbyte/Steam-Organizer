@@ -131,6 +131,7 @@
 
                 <ToggleButton Style="{StaticResource ModernSwitchToggleButton}"
                               IsChecked="{Binding Config.MinimizeOnClose}"/>
+                
             </DockPanel>
 
             <DockPanel Margin="10 0 10 10">

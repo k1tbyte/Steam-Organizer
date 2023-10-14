@@ -192,4 +192,35 @@
         </Setter>
     </Style>
 
+    <Style TargetType="CheckBox">
+        <Setter Property="Height" Value="25"/>
+        <Setter Property="Width" Value="25"/>
+        <Setter Property="Background" Value="{DynamicResource PrimaryBackgroundBrush}"/>
+        <Setter Property="IsChecked" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Border Width="{TemplateBinding Width}"
+                                            CornerRadius="5"
+                                            Height="{TemplateBinding Height}"
+                                            Background="{TemplateBinding Background}">
+                        <Icon:PackIconMaterial Kind="Check" x:Name="ico"
+                                                               Width="13" Height="13" Foreground="{DynamicResource SuccessGrad}"
+                                                               VerticalAlignment="Center"
+                                                               HorizontalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="{x:Null}">
+                            <Setter TargetName="ico" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter TargetName="ico" Property="Kind" Value="Minus"/>
+                            <Setter TargetName="ico" Property="Foreground" Value="PaleVioletRed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

@@ -153,7 +153,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition MinWidth="80"/>
                                 <ColumnDefinition MinWidth="80"/>
-                                <ColumnDefinition MinWidth="80"/>
+                                <ColumnDefinition MinWidth="100"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -184,9 +184,16 @@
                                        FontWeight="Medium" Margin="0 0 0 5" FontSize="13"/>
 
                             <TextBlock Text="Banned" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="1" Grid.Column="3"/>
+                            
                             <TextBlock Text="Anonymous" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="2" Grid.Column="3"/>
+                            
                             <TextBlock Text="Include 2FA" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="3" Grid.Column="3"/>
+                            
                             <TextBlock Text="Include games" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="4" Grid.Column="3"/>
 
                         </Grid>
                     </Border>

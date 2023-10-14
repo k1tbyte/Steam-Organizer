@@ -19,6 +19,8 @@
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="1"/>
     </WindowChrome.WindowChrome>
+    <Window.Resources>
+</Window.Resources>
 
 
     <Border x:Name="MainBorder" Background="{DynamicResource PrimaryBackgroundBrush}" d:CornerRadius="9" >
@@ -358,6 +360,7 @@
                     Visibility="Collapsed"
                      CornerRadius="{Binding ElementName=MainBorder, Path=CornerRadius,Mode=OneWay}"
                     Background="{DynamicResource PrimaryBackgroundBrush}"/>
+
         </Grid>
     </Border>
 </Window>
