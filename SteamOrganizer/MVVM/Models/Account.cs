@@ -65,6 +65,7 @@ namespace SteamOrganizer.MVVM.Models
         public ulong? SteamID64 { get; set; }
         [JsonIgnore]
         public bool IsFullyParsed => SteamID64 != null;
+        public bool IsAnonym => SteamID64 == null;
         public byte VisibilityState { get; set; }
         public string VanityURL { get; set; }
         public int? SteamLevel { get; set; }
@@ -96,6 +97,8 @@ namespace SteamOrganizer.MVVM.Models
         public int GameBansCount { get; set; }
         public int DaysSinceLastBan { get; set; }
         public int EconomyBan { get; set; }
+
+        public bool IsBanned => HaveCommunityBan || VacBansCount > 0 || GameBansCount > 0 || EconomyBan != 0;
         #endregion
 
         #region Games
@@ -105,6 +108,7 @@ namespace SteamOrganizer.MVVM.Models
         public float HoursOnPlayed { get; set; }
         public string TotalGamesPrice { get; set; }
         public int PaidGames { get; set; }
+        public bool IsIncludeGames => GamesCount != 0;
         #endregion
 
         public string Note { get; set; }
@@ -141,6 +145,7 @@ namespace SteamOrganizer.MVVM.Models
         [JsonIgnore]
         [field: NonSerialized]
         public bool IsCurrentlyUpdating { get; set; }
+        
 
         public string GetProfileUrl() 
             => SteamID64 == null ? WebBrowser.SteamHost : WebBrowser.SteamProfilesHost + SteamID64.ToString();

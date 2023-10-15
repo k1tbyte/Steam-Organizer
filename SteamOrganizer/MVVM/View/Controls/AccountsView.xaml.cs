@@ -273,5 +273,15 @@ namespace SteamOrganizer.MVVM.View.Controls
         {
             ExtendedSearchPopup.IsOpen = !ExtendedSearchPopup.IsOpen;
         }
+
+        private void CheckBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var checkBox = sender as CheckBox;
+            checkBox.IsChecked = checkBox.IsChecked == true ? null : (bool?)!(checkBox.IsChecked == null);
+
+            checkBox.Command.Execute(checkBox);
+            e.Handled = true;
+            checkBox.ReleaseMouseCapture();
+        }
     }
 }

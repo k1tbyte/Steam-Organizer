@@ -17,6 +17,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -40,6 +41,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand OpenAccountPageCommand { get; }
         public RelayCommand ImportDatabaseCommand { get; }
         public RelayCommand ExportDatabaseCommand { get; }
+        public RelayCommand ApplyFilterCommand { get; }
         public AsyncRelayCommand SyncDatabaseCommand { get; }
         #endregion
 
@@ -354,16 +356,6 @@ namespace SteamOrganizer.MVVM.ViewModels
             #endregion
         } 
         #endregion
-
-        private bool OnCollectionFiltering(object param)
-        {
-            if (!(param is Account acc))
-            {
-                return false;
-            }
-
-            return acc.Nickname.IndexOf(_searchBarText, StringComparison.InvariantCultureIgnoreCase) >= 0;
-        }
 
         private async Task OnRemovingAccount(object param)
         {
@@ -741,6 +733,49 @@ namespace SteamOrganizer.MVVM.ViewModels
             }
         }
 
+
+        #region Filtering
+        private readonly Dictionary<PropertyInfo, Func<Account, bool>> FiltersCollection = new Dictionary<PropertyInfo, Func<Account, bool>>();
+        private void OnApplyingFilter(object param)
+        {
+            var sender = param as System.Windows.Controls.CheckBox;
+            var property = typeof(Account).GetProperty(sender.Tag.ToString());
+
+            FiltersCollection.Remove(property);
+            if (sender.IsChecked == null)
+                return;
+
+
+            FiltersCollection.Add(property,
+                (acc) =>
+                {
+                    var value = property.GetValue(acc);
+                    return (value is bool b ? b : value != null) == (sender.IsChecked == true);
+                });
+            AccountsCollectionView.Filter = OnCollectionFiltering;
+            AccountsCollectionView.Refresh();
+        }
+
+        private bool OnCollectionFiltering(object param)
+        {
+            if (!(param is Account acc))
+            {
+                return false;
+            }
+
+            if(FiltersCollection.Count > 0)
+            {
+                foreach (var filter in FiltersCollection)
+                {
+                    if(!filter.Value.Invoke(acc))
+                        return false;
+                }
+            }
+
+            return acc.Nickname.IndexOf(_searchBarText, StringComparison.InvariantCultureIgnoreCase) >= 0;
+        } 
+        #endregion
+
         internal void RefreshCollection() => AccountsCollectionView.Refresh();
 
         public AccountsViewModel(AccountsView owner)
@@ -757,6 +792,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             OpenProfileCommand     = new RelayCommand((o) => (o as Account).OpenInBrowser());
             LoginCommand           = new AsyncRelayCommand(OnLoginAccount);
             SyncDatabaseCommand    = new AsyncRelayCommand(OnDatabaseSynching);
+            ApplyFilterCommand     = new RelayCommand(OnApplyingFilter);
             PinAccountCommand      = new RelayCommand(o =>
             {
                 try
@@ -771,6 +807,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
                 App.Config.SaveDatabase();
             });
+            
 
             App.Config.DatabaseLoaded += OnDatabaseLoaded;
             WebBrowser.OnNetworkDisconnection += CancelAccountsUpdate;

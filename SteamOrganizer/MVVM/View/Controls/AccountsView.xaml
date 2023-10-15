@@ -184,16 +184,24 @@
                                        FontWeight="Medium" Margin="0 0 0 5" FontSize="13"/>
 
                             <TextBlock Text="Banned" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"/>
-                            <CheckBox Grid.Row="1" Grid.Column="3"/>
+                            <CheckBox Grid.Row="1" Grid.Column="3"
+                                      Tag="IsBanned"  PreviewMouseLeftButtonUp="CheckBox_PreviewMouseLeftButtonDown"
+                                      Command="{Binding ApplyFilterCommand,Mode=OneTime}"/>
                             
                             <TextBlock Text="Anonymous" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"/>
-                            <CheckBox Grid.Row="2" Grid.Column="3"/>
+                            <CheckBox Grid.Row="2" Grid.Column="3"
+                                      Tag="IsAnonym"  PreviewMouseLeftButtonUp="CheckBox_PreviewMouseLeftButtonDown"
+                                      Command="{Binding ApplyFilterCommand,Mode=OneTime}"/>
                             
                             <TextBlock Text="Include 2FA" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"/>
-                            <CheckBox Grid.Row="3" Grid.Column="3"/>
+                            <CheckBox Grid.Row="3" Grid.Column="3"
+                                      Tag="Authenticator"  PreviewMouseLeftButtonUp="CheckBox_PreviewMouseLeftButtonDown"
+                                      Command="{Binding ApplyFilterCommand,Mode=OneTime}"/>
                             
                             <TextBlock Text="Include games" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center"/>
-                            <CheckBox Grid.Row="4" Grid.Column="3"/>
+                            <CheckBox Grid.Row="4" Grid.Column="3"
+                                      Tag="IsIncludeGames" PreviewMouseLeftButtonUp="CheckBox_PreviewMouseLeftButtonDown"
+                                      Command="{Binding ApplyFilterCommand,Mode=OneTime}"/>
 
                         </Grid>
                     </Border>
