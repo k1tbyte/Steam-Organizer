@@ -23,7 +23,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using Steam = SteamOrganizer.Infrastructure.Steam;
 
 namespace SteamOrganizer.MVVM.ViewModels
@@ -32,7 +31,6 @@ namespace SteamOrganizer.MVVM.ViewModels
     {
         #region Commands
         public RelayCommand OpenProfileCommand { get; }
-        public RelayCommand ClearSearchBar { get; }
         public AsyncRelayCommand RemoveAccountCommand { get; }
         public AsyncRelayCommand LoginCommand { get; }
         public RelayCommand UpdateAccountsCommand { get; }
@@ -42,16 +40,18 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand ImportDatabaseCommand { get; }
         public RelayCommand ExportDatabaseCommand { get; }
         public RelayCommand ApplyFilterCommand { get; }
+        public RelayCommand ChangeSearchFilterCommand { get; }
         public AsyncRelayCommand SyncDatabaseCommand { get; }
         #endregion
 
         #region Properties
         public ObservableCollection<Account> Accounts => App.Config.Database;
-        private ICollectionView AccountsCollectionView;
+        private CollectionSearchEngine<Account> SearchEngine;
         private CancellationTokenSource updateCancellation;
         private DateTime buttonSpamStub;
 
         private readonly AccountsView View;
+        private PropertyInfo SearchingProperty = typeof(Account).GetProperty(nameof(Account.Nickname));
 
         private string _searchBarText;
         public string SearchBarText
@@ -59,24 +59,12 @@ namespace SteamOrganizer.MVVM.ViewModels
             get => _searchBarText;
             set
             {
-                if (string.IsNullOrEmpty(value))
-                {
-                    AccountsCollectionView.Filter = null;
-                }
-
-                else if (AccountsCollectionView.Filter == null)
-                {
-                    AccountsCollectionView.Filter = OnCollectionFiltering;
-                }
-
                 _searchBarText = value;
 
                 if (value == null)
-                {
                     OnPropertyChanged();
-                }
-
-                AccountsCollectionView.Refresh();
+                
+                SearchEngine.ApplySearch(SearchingProperty,value);
             }
         }
 
@@ -86,62 +74,6 @@ namespace SteamOrganizer.MVVM.ViewModels
             get => _remainingUpdateCount;
             set => SetProperty(ref _remainingUpdateCount, value);
         }
-        #endregion
-
-        #region Sorting
-
-        private readonly string[] SortTypes = new string[]
-{
-            nameof(Account.SteamID64), nameof(Account.AddedDate), nameof(Account.LastUpdateDate), nameof(Account.SteamLevel)
-};
-
-        private bool _sortDirection;
-        public bool SortDirection
-        {
-            get => _sortDirection;
-            set
-            {
-                _sortDirection = value;
-                Sort();
-            }
-
-        }
-        private int _sortByIndex = -1;
-        public int SortByIndex
-        {
-            set
-            {
-                if (value.Equals(_sortByIndex))
-                {
-                    return;
-                }
-
-                if (value == 0)
-                {
-                    View.SortComboBox.SelectedIndex = -1;
-                    return;
-                }
-
-                _sortByIndex = value;
-                Sort();
-            }
-        }
-
-        private void Sort()
-        {
-            if (AccountsCollectionView.SortDescriptions.Count != 0)
-            {
-                AccountsCollectionView.SortDescriptions.Clear();
-            }
-
-            if (_sortByIndex == -1)
-            {
-                return;
-            }
-
-            AccountsCollectionView.SortDescriptions.Add(new SortDescription(SortTypes[_sortByIndex - 1], _sortDirection ? ListSortDirection.Descending : ListSortDirection.Ascending));
-        }
-
         #endregion
 
         #region Global DB Actions
@@ -210,8 +142,8 @@ namespace SteamOrganizer.MVVM.ViewModels
                         $"Previously authorized accounts have been found on your computer ({uniqueAccs.Count}). Passwords will need to be entered manually after import. Import these accounts?",
                         () =>
                         {
-                            App.Config.Database             = new ObservableCollection<Account>(uniqueAccs.Select(o => new Account(o.Value, null, o.Key)));
-                            AccountsCollectionView          = CollectionViewSource.GetDefaultView(Accounts);
+                            App.Config.Database  = new ObservableCollection<Account>(uniqueAccs.Select(o => new Account(o.Value, null, o.Key)));
+                            SearchEngine         = new CollectionSearchEngine<Account>(Accounts);
                             OnPropertyChanged(nameof(Accounts));
                             OnUpdatingAccounts(null);
                         },true),"Accounts import");
@@ -253,7 +185,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                     App.MainWindowVM.Notification(MahApps.Metro.IconPacks.PackIconMaterialKind.DatabaseClockOutline,
                         $"Some accounts ({planned.Count}) have not been updated for a long time and were updated in the background");
                     App.Config.SaveDatabase();
-                    AccountsCollectionView.Refresh();
+                    SearchEngine.Collection.Refresh();
                 }
             }
 
@@ -327,7 +259,7 @@ namespace SteamOrganizer.MVVM.ViewModels
                     App.Config.LastDatabaseUpdateTime = Utils.GetUnixTime();
                     App.TrayMenu.UpdateTrayAccounts(App.Config.Database);
                     App.Config.Save();
-                    AccountsCollectionView.Refresh();
+                    SearchEngine.Collection.Refresh();
                 }
                 #endregion
             }
@@ -338,7 +270,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private async void OnDatabaseLoaded()
         {
-            AccountsCollectionView = CollectionViewSource.GetDefaultView(Accounts);
+            SearchEngine = new CollectionSearchEngine<Account>(Accounts);
 
             if (WebBrowser.IsNetworkAvailable)
             {
@@ -734,66 +666,90 @@ namespace SteamOrganizer.MVVM.ViewModels
         }
 
 
-        #region Filtering
-        private readonly Dictionary<PropertyInfo, Func<Account, bool>> FiltersCollection = new Dictionary<PropertyInfo, Func<Account, bool>>();
-        private void OnApplyingFilter(object param)
+        #region Collection filtering and sorting
+
+        private readonly string[] SortTypes = new string[]
         {
-            var sender = param as System.Windows.Controls.CheckBox;
-            var property = typeof(Account).GetProperty(sender.Tag.ToString());
+            nameof(Account.SteamID64), nameof(Account.AddedDate), nameof(Account.LastUpdateDate), nameof(Account.SteamLevel)
+        };
 
-            FiltersCollection.Remove(property);
-            if (sender.IsChecked == null)
-                return;
+        private bool _sortDirection;
+        public bool SortDirection
+        {
+            get => _sortDirection;
+            set
+            {
+                _sortDirection = value;
+                SearchEngine.ApplySort(_sortByIndex == -1 ? null : SortTypes[_sortByIndex - 1],
+                    _sortDirection ? ListSortDirection.Descending : ListSortDirection.Ascending);
+            }
+
+        }
+        private int _sortByIndex = -1;
+        public int SortByIndex
+        {
+            set
+            {
+                if (value.Equals(_sortByIndex))
+                    return;
 
 
-            FiltersCollection.Add(property,
-                (acc) =>
+                if (value == 0)
                 {
-                    var value = property.GetValue(acc);
-                    return (value is bool b ? b : value != null) == (sender.IsChecked == true);
-                });
-            AccountsCollectionView.Filter = OnCollectionFiltering;
-            AccountsCollectionView.Refresh();
+                    View.SortComboBox.SelectedIndex = -1;
+                    return;
+                }
+
+                _sortByIndex = value;
+                SearchEngine.ApplySort(_sortByIndex == -1 ? null : SortTypes[_sortByIndex - 1],
+                    _sortDirection ? ListSortDirection.Descending : ListSortDirection.Ascending);
+            }
         }
 
-        private bool OnCollectionFiltering(object param)
+        private void OnApplyingFilter(object param)
         {
-            if (!(param is Account acc))
+            var sender   = param as System.Windows.Controls.CheckBox;
+            var property = typeof(Account).GetProperty(sender.Tag.ToString());
+            
+            if (sender.IsChecked == null)
             {
-                return false;
+                SearchEngine.RemoveFilter(property);
+                return;
             }
 
-            if(FiltersCollection.Count > 0)
+            SearchEngine.AddFilter(property, (acc) =>
             {
-                foreach (var filter in FiltersCollection)
-                {
-                    if(!filter.Value.Invoke(acc))
-                        return false;
-                }
-            }
+                var value = property.GetValue(acc);
+                return (value is bool b ? b : value != null) == (sender.IsChecked == true);
+            });
+        }
 
-            return acc.Nickname.IndexOf(_searchBarText, StringComparison.InvariantCultureIgnoreCase) >= 0;
-        } 
+        private void OnChangindSearchFilter(object param)
+        {
+            SearchingProperty = typeof(Account).GetProperty(param.ToString());
+            SearchEngine.ApplySearch(SearchingProperty, _searchBarText);
+        }
+
+        internal void RefreshCollection() => SearchEngine.Collection.Refresh();
+
         #endregion
-
-        internal void RefreshCollection() => AccountsCollectionView.Refresh();
 
         public AccountsViewModel(AccountsView owner)
         {
             View = owner;
 
-            ClearSearchBar         = new RelayCommand((o) => SearchBarText = null);
-            RemoveAccountCommand   = new AsyncRelayCommand(OnRemovingAccount);
-            UpdateAccountsCommand  = new RelayCommand(OnUpdatingAccounts);
-            AddAccountCommand      = new RelayCommand(OnAddingAccount);
-            ImportDatabaseCommand  = new RelayCommand(OnDatabaseImport);
-            ExportDatabaseCommand  = new RelayCommand(OnDatabaseExport);
-            OpenAccountPageCommand = new RelayCommand((o) => App.MainWindowVM.OpenAccountPage(o as Account));
-            OpenProfileCommand     = new RelayCommand((o) => (o as Account).OpenInBrowser());
-            LoginCommand           = new AsyncRelayCommand(OnLoginAccount);
-            SyncDatabaseCommand    = new AsyncRelayCommand(OnDatabaseSynching);
-            ApplyFilterCommand     = new RelayCommand(OnApplyingFilter);
-            PinAccountCommand      = new RelayCommand(o =>
+            RemoveAccountCommand      = new AsyncRelayCommand(OnRemovingAccount);
+            UpdateAccountsCommand     = new RelayCommand(OnUpdatingAccounts);
+            AddAccountCommand         = new RelayCommand(OnAddingAccount);
+            ImportDatabaseCommand     = new RelayCommand(OnDatabaseImport);
+            ExportDatabaseCommand     = new RelayCommand(OnDatabaseExport);
+            OpenAccountPageCommand    = new RelayCommand(o => App.MainWindowVM.OpenAccountPage(o as Account));
+            OpenProfileCommand        = new RelayCommand(o => (o as Account).OpenInBrowser());
+            LoginCommand              = new AsyncRelayCommand(OnLoginAccount);
+            SyncDatabaseCommand       = new AsyncRelayCommand(OnDatabaseSynching);
+            ApplyFilterCommand        = new RelayCommand(OnApplyingFilter);
+            ChangeSearchFilterCommand = new RelayCommand(OnChangindSearchFilter);
+            PinAccountCommand         = new RelayCommand(o =>
             {
                 try
                 {

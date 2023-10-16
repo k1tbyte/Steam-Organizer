@@ -143,12 +143,13 @@
 
 
             <Grid>
-                <Popup x:Name="ExtendedSearchPopup" AllowsTransparency="True" PopupAnimation="Slide"
-           Placement="Bottom" StaysOpen="False" VerticalOffset="5" HorizontalOffset="5"
-                       PlacementTarget="{Binding ElementName=extendedSearch}">
+                <Popup x:Name="ExtendedSearchPopup" AllowsTransparency="True" PopupAnimation="Fade"
+           Placement="Bottom" VerticalOffset="5" HorizontalOffset="5"
+                       StaysOpen="{Binding ElementName=SearchBox,Path=IsKeyboardFocused,Mode=OneWay}"
+                       PlacementTarget="{Binding ElementName=SearchBox}" >
                     <Border Background="{DynamicResource SecondaryBackgroundBrush}"
                             Effect="{StaticResource LightShadow}" Margin="3"
-                            Padding="10" CornerRadius="3 10 10 10">
+                            Padding="15 10 15 10" CornerRadius="3 7 7 7">
                         <Grid TextBlock.Foreground="{DynamicResource SecondaryForegroundBrush}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition MinWidth="80"/>
@@ -168,16 +169,25 @@
                                        FontWeight="Medium" Margin="0 0 0 5" FontSize="13"/>
                             
                             <TextBlock Text="Nickname" Grid.Row="1" VerticalAlignment="Center"/>
-                            <RadioButton Grid.Column="1" Grid.Row="1" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"/>
+                            <RadioButton Grid.Column="1" Grid.Row="1" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"
+                                         IsChecked="True" 
+                                         Command="{Binding ChangeSearchFilterCommand,Mode=OneTime}"
+                                         CommandParameter="Nickname"/>
                             
                             <TextBlock Text="Note" Grid.Row="2" VerticalAlignment="Center"/>
-                            <RadioButton Grid.Column="1" Grid.Row="2" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"/>
+                            <RadioButton Grid.Column="1" Grid.Row="2" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"
+                                         Command="{Binding ChangeSearchFilterCommand,Mode=OneTime}"
+                                         CommandParameter="Note"/>
                            
-                            <TextBlock Text="Email" Grid.Row="3" VerticalAlignment="Center"/>
-                            <RadioButton Grid.Column="1" Grid.Row="3" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"/>
+                            <TextBlock Text="URL" Grid.Row="3" VerticalAlignment="Center"/>
+                            <RadioButton Grid.Column="1" Grid.Row="3" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"
+                                         Command="{Binding ChangeSearchFilterCommand,Mode=OneTime}"
+                                         CommandParameter="VanityURL"/>
 
                             <TextBlock Text="Phone" Grid.Row="4" VerticalAlignment="Center"/>
-                            <RadioButton Grid.Column="1" Grid.Row="4" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"/>
+                            <RadioButton Grid.Column="1" Grid.Row="4" Style="{StaticResource ModernSwitchToggleButton}" HorizontalAlignment="Left"
+                                         Command="{Binding ChangeSearchFilterCommand,Mode=OneTime}"
+                                         CommandParameter="Phone"/>
 
                             <TextBlock Text="Apply filters" Foreground="{DynamicResource TertiaryForegroundBrush}"
                                        Grid.Column="2"
@@ -203,30 +213,27 @@
                                       Tag="IsIncludeGames" PreviewMouseLeftButtonUp="CheckBox_PreviewMouseLeftButtonDown"
                                       Command="{Binding ApplyFilterCommand,Mode=OneTime}"/>
 
+                            <Button Style="{StaticResource FlatButton}"
+                                    Grid.Column="3" Margin="0 0 -30 15" PreviewMouseLeftButtonDown="Button_PreviewMouseLeftButtonDown">
+                                <Icon:PackIconMaterial Kind="ArrowTopRight" Height="8" Width="8"
+                                                       VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                            </Button>
                         </Grid>
                     </Border>
                    
                 </Popup>
-                
-                <TextBox Padding="0 0 23 0" 
-                 MaxLength="60"
+
+                <TextBox Padding="0 0 23 0" x:Name="SearchBox"
+                 MaxLength="60" 
                  Uid="Search . . ." 
                  Text="{Binding SearchBarText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                 Tag="{Binding ClearSearchBar,Mode=OneTime}"
                  Style="{StaticResource SearchTextBox}" 
                  HorizontalAlignment="Center"
                  Foreground="{DynamicResource SecondaryForegroundBrush}"
                  Background="{DynamicResource SecondaryBackgroundBrush}"
                  MinWidth="400" 
-                 GotFocus="TextBox_GotFocus"
-                 LostFocus="TextBox_LostFocus"/>
-
-                <Border Background="{DynamicResource TertiarySubBrush}"
-                        Height="12" Width="17" HorizontalAlignment="Left"
-                        VerticalAlignment="Bottom"
-                        Visibility="Collapsed" Cursor="Hand"
-                        CornerRadius="0 20 0 12.0" MouseLeftButtonUp="ExtendedSearchLeftMouseDown"
-                        Opacity="0.5" x:Name="extendedSearch" />
+                 GotFocus="SearchBox_GotFocus"
+                         PreviewMouseDown="SearchBox_MouseUp"/>
             </Grid>
 
 

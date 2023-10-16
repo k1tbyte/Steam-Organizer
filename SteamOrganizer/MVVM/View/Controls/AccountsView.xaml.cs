@@ -41,7 +41,18 @@ namespace SteamOrganizer.MVVM.View.Controls
         {
             InitializeComponent();
             this.DataContext = new AccountsViewModel(this);
-            Loaded += (sender,e) => AccountsScrollViewer = Utils.FindVisualChild<ScrollViewer>(AccountsBox);
+            Loaded += AccountsViewLoaded;
+        }
+
+        private void AccountsViewLoaded(object sender, RoutedEventArgs args)
+        {
+            AccountsScrollViewer = Utils.FindVisualChild<ScrollViewer>(AccountsBox);
+            var button = SearchBox.Template.FindName("Button", SearchBox) as Button;
+            button.PreviewGotKeyboardFocus += (s, e) =>
+            {
+                (this.DataContext as AccountsViewModel).SearchBarText = null;
+                e.Handled = true;
+            };
         }
 
         #region Drag-drop events
@@ -262,18 +273,7 @@ namespace SteamOrganizer.MVVM.View.Controls
                 $"{App.FindString("acv_addDate")} {acc.AddedDate:f}{(acc.LastUpdateDate != null ? $"\n{App.FindString("acv_updDate")} {acc.LastUpdateDate:f}" : null)}";
         }
 
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
-            => extendedSearch.Visibility = Visibility.Visible;
-        
-
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
-            => extendedSearch.Visibility = Visibility.Collapsed;
-
-        private void ExtendedSearchLeftMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            ExtendedSearchPopup.IsOpen = !ExtendedSearchPopup.IsOpen;
-        }
-
+        #region Searchbox
         private void CheckBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var checkBox = sender as CheckBox;
@@ -283,5 +283,28 @@ namespace SteamOrganizer.MVVM.View.Controls
             e.Handled = true;
             checkBox.ReleaseMouseCapture();
         }
+
+        private async void SearchBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ExtendedSearchPopup.StaysOpen = true;
+            ExtendedSearchPopup.IsOpen = true;
+            await Task.Delay(1000);
+            ExtendedSearchPopup.StaysOpen = false;
+
+        }
+
+        private void Button_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ExtendedSearchPopup.IsOpen = false;
+            e.Handled = true;
+        }
+
+        private void SearchBox_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.MiddleButton == MouseButtonState.Pressed && !ExtendedSearchPopup.IsOpen)
+                ExtendedSearchPopup.IsOpen = true;
+        } 
+        #endregion
+
     }
 }

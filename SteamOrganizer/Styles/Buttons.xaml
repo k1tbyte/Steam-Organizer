@@ -204,7 +204,7 @@
                                             CornerRadius="5"
                                             Height="{TemplateBinding Height}"
                                             Background="{TemplateBinding Background}">
-                        <Icon:PackIconMaterial Kind="Check" x:Name="ico"
+                        <Icon:PackIconMaterial Kind="Plus" x:Name="ico"
                                                                Width="13" Height="13" Foreground="{DynamicResource SuccessGrad}"
                                                                VerticalAlignment="Center"
                                                                HorizontalAlignment="Center"/>
