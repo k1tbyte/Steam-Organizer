@@ -22,7 +22,7 @@ namespace SteamOrganizer.MVVM.View.Controls
         public PincodeView(bool allowCancel = false)
         {
             InitializeComponent();
-            code.OnFieldsFilled = Validate;
+            code.OnFieldsFilled   = Validate;
             Loaded += (sender, e) => code.GetTextBoxSegment(0).Focus();
 
             if (allowCancel)

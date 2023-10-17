@@ -13,8 +13,8 @@ namespace SteamOrganizer.Storages
 
     internal enum ESideBarState : byte
     {
-        Hidden = 0,
-        Open = 70,
+        Hidden   = 0,
+        Open     = 70,
         Expanded = 200
     }
 
@@ -34,6 +34,13 @@ namespace SteamOrganizer.Storages
         public string DisplayName { get; set; }
         public string AvatarUrl { get; set; }
         public string EmailAddress { get; set; }
+
+        private string _syncFolderName;
+        public string SyncFolderName
+        {
+            get => _syncFolderName ?? "Steam organizer";
+            set => _syncFolderName = value.Length == 0 ? null : value;
+        }
     }
 
     [Serializable]
@@ -119,6 +126,7 @@ namespace SteamOrganizer.Storages
                 _databaseKey = value;
             }
         }
+
 
         public byte[] PinCodeKey { get; set; }
         public byte PinCodeRemainingAttempts { get; set; } = MaxPincodeAttempts;

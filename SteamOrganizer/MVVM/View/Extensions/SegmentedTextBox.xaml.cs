@@ -7,13 +7,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-//⬤
 namespace SteamOrganizer.MVVM.View.Extensions
 {
     public partial class SegmentedTextBox : UserControl
     {
         public Action OnFieldsFilled;
         public char[] Segments { get; set; }
+        public bool IsCharsHidden { get; set; }
         public int SegmentsCount
         {
             get => Segments.Length;
@@ -48,14 +48,14 @@ namespace SteamOrganizer.MVVM.View.Extensions
         {
             var range = (int)e.Text[0];
 
-            (sender as TextBox).Text = range >= 97 ? ((char)(range - 32)).ToString() : e.Text;
+            var text = range >= 97 ? ((char)(range - 32)).ToString() : e.Text;
             var index = Items.ItemContainerGenerator.IndexFromContainer((sender as FrameworkElement).TemplatedParent);
+            Segments[index] =  text[0];
 
-            Segments[index] = (sender as TextBox).Text[0];
+            (sender as TextBox).Text = IsCharsHidden ? "⬤" : text;
 
             if (Segments.All(o => o != '\0'))
             {
-
                 OnFieldsFilled?.Invoke();
             }
             else if(index != Segments.Length - 1)
@@ -67,11 +67,13 @@ namespace SteamOrganizer.MVVM.View.Extensions
 
         private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            // Whitelist keys (if e.handled != true:  TextBox_PreviewTextInput will be called after return from here)
             if ((e.Key >= Key.D0 && e.Key <= Key.D9) || (e.Key >= Key.A && e.Key <= Key.Z) || (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9))
             {
                 return;
             }
 
+            // Navigation
             var index = Items.ItemContainerGenerator.IndexFromContainer((sender as FrameworkElement).TemplatedParent);
             if (e.Key == Key.Tab || e.Key == Key.Right)
             {
@@ -82,6 +84,7 @@ namespace SteamOrganizer.MVVM.View.Extensions
                 GetTextBoxSegment(index == 0 ? Segments.Length - 1 : --index).Focus();
             }
 
+            // Ignore other keys
             e.Handled = true;
         }
     }

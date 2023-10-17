@@ -165,7 +165,7 @@
 
             </DockPanel>
 
-            <Border Background="{DynamicResource TertiaryBackgroundBrush}"
+            <Border Background="{DynamicResource TertiaryBackgroundBrush}" x:Name="LoginWithGoogle"
                     Visibility="{Binding ElementName=SyncButton,Path=IsChecked,Converter={StaticResource ToVisibilityConverter}}"
                     Margin="40 0 0 10" Padding="10" CornerRadius="15 0 0 15" d:Visibility="Visible">
 
@@ -198,7 +198,7 @@
                         </Button>
                     </StackPanel>
 
-                    <Button Style="{StaticResource FlatButton}" 
+                    <Button Style="{StaticResource FlatButton}"
                             Visibility="{Binding Config.GDriveInfo,Converter={StaticResource ToVisibilityInvertedConverter}}"
                             Height="30" Command="{Binding LoginWithGoogleCommand,Mode=OneTime}">
                         <TextBlock>
@@ -221,8 +221,8 @@
                
             </Border>
 
-            <!--
-            <DockPanel Margin="10 0 10 10">
+
+            <DockPanel Margin="10 0 10 10" Visibility="{Binding ElementName=LoginWithGoogle,Path=Visibility}">
                 <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
                     <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
                                    Kind="SourceBranchSync" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -242,16 +242,17 @@
                 </ComboBox>
             </DockPanel>
 
-            <DockPanel Margin="10 0 10 10">
+            <DockPanel Margin="10 0 10 10" Visibility="{Binding ElementName=LoginWithGoogle,Path=Visibility}">
                 <Border Style="{StaticResource ChipBorder}" Margin="0 0 10 0" >
                     <Icon:PackIconMaterial Foreground="{DynamicResource TertiaryForegroundBrush}"
-                                   Kind="Cloud" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                   Kind="FolderSync" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Border>
 
-                <TextBlock Text="Sync folder name" VerticalAlignment="Center" 
-                       Foreground="{DynamicResource SecondaryForegroundBrush}"/>
+                <TextBox Style="{StaticResource HintTextBox}"
+                         Tag="Folder name for sync" IsHitTestVisible="{Binding Config.IsSyncAvailable}"
+                         Text="{Binding Config.GDriveInfo.SyncFolderName}"/>
             </DockPanel>
-            !-->
+            
 
             <DockPanel Margin="10 5 10 10">
                 <TextBlock Text="About program" 

@@ -119,9 +119,11 @@ namespace SteamOrganizer.MVVM.ViewModels
             View.PopupWindow.IsOpen = false;
         }
 
-        internal void OpenPinPopup(Action<byte[]> callback,bool allowCancel = false)
+        internal void OpenPinPopup(Action<byte[]> callback, bool allowCancel = false, bool hideChars = false)
         {
-            View.ContentSplash.Child      = new PincodeView(allowCancel) { OnValidated = callback };
+            var pinView                   = new PincodeView(allowCancel) { OnValidated = callback };
+            pinView.code.IsCharsHidden    = hideChars;
+            View.ContentSplash.Child      = pinView;
             View.ContentSplash.Visibility = Visibility.Visible;
         }
 
@@ -335,7 +337,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
             if (App.Config.PinCodeKey != null)
             {
-                OpenPinPopup((key) => OnPincodeSuccess());
+                OpenPinPopup((key) => OnPincodeSuccess(), hideChars: true);
                 HandleState();
                 return;
             }

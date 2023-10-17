@@ -63,7 +63,7 @@ namespace SteamOrganizer.MVVM.ViewModels
 
         private void OnSetupingPinCode(object param)
         {
-            App.MainWindowVM.OpenPinPopup(OnFinalizing,true);
+            App.MainWindowVM.OpenPinPopup(OnFinalizing, true, Config.PinCodeKey != null);
             return;
 
             void OnFinalizing(byte[] key)

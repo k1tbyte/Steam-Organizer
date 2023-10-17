@@ -18,7 +18,6 @@ namespace SteamOrganizer.Infrastructure.Synchronization
     {
         private const string FolderMimeType  = "application/vnd.google-apps.folder";
         private const string DefaultMimeType = "application/octet-stream";
-        private const string SyncFolderName  = "Steam organizer";
 
         private const string ClientId     = "r|GMP_]opyd\\\u0018!4&>|F\0E\bES-=1\u001d\u0002'C\u0019w$\u0010\fV[W./|>\u0012Cf&2#9X\u0014_\0\u0017]'=!\u0010\u0004%\u0018\u00021*\u001a\u000eO\r\u00015";
         private const string ClientSecret = "\u0002\07)16C5\u0011!\u0002#`|\u0011!\nr$\u0005e)\u0018c\u001d{\b:;\u0003\0!h\u001b%";
@@ -36,13 +35,13 @@ namespace SteamOrganizer.Infrastructure.Synchronization
         private async Task Init()
         {
             var request = Service.Files.List();
-            request.Q = $"mimeType = 'application/vnd.google-apps.folder' and name = '{SyncFolderName}' and 'root' in parents and trashed=false";
+            request.Q = $"mimeType = 'application/vnd.google-apps.folder' and name = '{App.Config.GDriveInfo.SyncFolderName}' and 'root' in parents and trashed=false";
             request.OrderBy = "createdTime asc";
             WorkingFolder = (await request.ExecuteAsync())?.Files?.FirstOrDefault();
 
             if (WorkingFolder == null)
             {
-                WorkingFolder = await CreateFile(SyncFolderName, FolderMimeType);
+                WorkingFolder = await CreateFile(App.Config.GDriveInfo.SyncFolderName, FolderMimeType);
             }
         }
 
