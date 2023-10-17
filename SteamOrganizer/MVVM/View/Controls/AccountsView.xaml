@@ -233,7 +233,7 @@
                  Background="{DynamicResource SecondaryBackgroundBrush}"
                  MinWidth="400" 
                  GotFocus="SearchBox_GotFocus"
-                         PreviewMouseDown="SearchBox_MouseUp"/>
+                 PreviewMouseDown="SearchBox_MouseUp"/>
             </Grid>
 
 

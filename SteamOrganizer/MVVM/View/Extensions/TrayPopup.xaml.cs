@@ -49,19 +49,20 @@ namespace SteamOrganizer.MVVM.View.Extensions
             var points       = Win32.GetMousePosition();
             HorizontalOffset = points.X - this.Width - 3;
             VerticalOffset   = points.Y;
-            this.IsOpen      = true;
             MouseHook.OnMouseAction += OnClickOutside;
             MouseHook.Hook();
+            this.IsOpen = true;
         }
 
         private void OnClickOutside(int xPos, int yPos)
         {
-            if(IsOpen && (xPos < HorizontalOffset || xPos > HorizontalOffset + Width) && (yPos < VerticalOffset || yPos > VerticalOffset + ActualHeight))
-            { 
-                IsOpen = false;
-                MouseHook.OnMouseAction -= OnClickOutside;
-                MouseHook.Unhook();
-            }
+            if (xPos >= HorizontalOffset && xPos <= HorizontalOffset + this.Child.RenderSize.Width &&
+                yPos <= VerticalOffset && yPos >= VerticalOffset - this.Child.RenderSize.Height)
+                return;
+
+            IsOpen = false;
+            MouseHook.OnMouseAction -= OnClickOutside;
+            MouseHook.Unhook();
         }
 
         private void OnSettingNotificationsMode(object sender, RoutedEventArgs e)
