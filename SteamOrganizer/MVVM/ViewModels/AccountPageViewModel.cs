@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using SteamOrganizer.Helpers;
 using SteamOrganizer.Helpers.Encryption;
 using SteamOrganizer.Infrastructure;
@@ -10,6 +11,7 @@ using SteamOrganizer.MVVM.Models;
 using SteamOrganizer.MVVM.View.Controls;
 using SteamOrganizer.MVVM.View.Extensions;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -40,7 +42,7 @@ namespace SteamOrganizer.MVVM.ViewModels
             SelectExternalCredentialCommand = new RelayCommand(OnExternalCredentialSelection);
             ClearSearchBarCommand           = new RelayCommand(o => SearchBarText = null);
             OpenInSteamDb                   = new RelayCommand(o => System.Diagnostics.Process.Start("https://steamdb.info/app/" + (o as API.Game).AppID).Dispose());
-
+            ExportAuthenticatorCommand      = new RelayCommand(OnAuthenticatorExporting);
 
             View = owner;
             this.CurrentAccount = account;
@@ -85,6 +87,7 @@ namespace SteamOrganizer.MVVM.ViewModels
         public RelayCommand InstallGameCommand { get; }
         public RelayCommand ClearSearchBarCommand { get; }
         public RelayCommand OpenInSteamDb { get; }
+        public RelayCommand ExportAuthenticatorCommand { get; }
 
         #endregion
 
@@ -555,6 +558,72 @@ namespace SteamOrganizer.MVVM.ViewModels
         #endregion
 
         #region Command actions
+        private void OnAuthenticatorExporting(object param)
+        {
+            if(param == null)
+            {
+                OnExporting(null);
+                return;
+            }
+
+            App.MainWindowVM.OpenPopupWindow(
+                new TextInputView(OnExporting, App.FindString("apv_authExportTip"), true), $"Exporting authenticator for ({CurrentAccount.Login})");
+
+            void OnExporting(string password)
+            {
+                byte[] key = null;
+                bool withCrypt = password != null;
+                if (param != null && string.IsNullOrEmpty(password))
+                {
+                    withCrypt = true;
+                    key       = App.Config.DatabaseKey;
+                }
+                
+                var fileDialog = new SaveFileDialog
+                {
+                    Filter = withCrypt ? "Steam Organizer mobile authenticator (.soMaFile)|*.soMaFile" : "Mobile authenticator (.maFile)|*.maFile",
+                    FileName = CurrentAccount.Login
+                };
+
+                if (fileDialog.ShowDialog() != true)
+                    return;
+
+
+                var obj = JsonConvert.DeserializeObject<SteamAuth>(JsonConvert.SerializeObject(CurrentAccount.Authenticator,
+                    new JsonSerializerSettings { ContractResolver = new StringEncryption.EncryptionContractResolver()}));
+
+                obj.Uri          = $"otpauth://totp/Steam:{CurrentAccount.Login}?secret={obj.Secret}&issuer=Steam";
+                obj.Account_name = CurrentAccount.Login;
+                obj.Secret       = null;
+
+                var jObject =  JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+                {
+                     NullValueHandling = NullValueHandling.Ignore,
+                     ContractResolver  = new CamelCasePropertyNamesContractResolver(),
+                     Formatting        = Formatting.Indented
+                });
+
+                if (!withCrypt)
+                {
+                    File.WriteAllText(fileDialog.FileName, jObject);
+                }
+                else
+                {
+                    Utils.InBackground(() =>
+                    {
+                        key = key ?? FileCryptor.GenerateEncryptionKey(password, App.EncryptionKey);
+                        FileCryptor.Serialize(jObject, fileDialog.FileName, key);
+                    });
+                }
+
+                PushNotification.Open(
+                    "Authenticator successfully exported, click to open in explorer",
+                    () => Process.Start(new ProcessStartInfo { Arguments = Path.GetPathRoot(fileDialog.FileName), FileName = "explorer.exe" }).Dispose());
+
+            }
+
+        }
+
         private async Task OnCreatingShortcut(object param)
         {
             var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), $"{CurrentAccount.Nickname}.lnk");

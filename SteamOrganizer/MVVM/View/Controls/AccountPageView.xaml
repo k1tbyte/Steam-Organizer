@@ -131,6 +131,24 @@
                       Header="Install on computer"/>
         </ContextMenu>
 
+        <ContextMenu x:Key="Remove2faContextMenu">
+            <MenuItem Header="Export as JSON (maFile)" Icon="{x:Static Icon:PackIconMaterialKind.FileExport}"
+                      Command="{Binding ExportAuthenticatorCommand,Mode=OneTime}"/>
+            <MenuItem Header="Export with encryption" Icon="{x:Static Icon:PackIconMaterialKind.FileLock}"
+                      Command="{Binding ExportAuthenticatorCommand,Mode=OneTime}"
+                      CommandParameter=" "/>
+            <MenuItem Header="Remove" Icon="{x:Static Icon:PackIconMaterialKind.KeyRemove}"
+                                              Command="{Binding LoadAuthenticatorCommand,Mode=OneTime}"
+                                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                                              Foreground="PaleVioletRed" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="Import2faContextMenu">
+            <MenuItem Header="Import" Icon="{x:Static Icon:PackIconMaterialKind.KeyPlus}"
+                                              Command="{Binding LoadAuthenticatorCommand,Mode=OneTime}"
+                                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}" />
+        </ContextMenu>
+
         <ControlTemplate x:Key="ContainerTemplate" TargetType="DataGridCell">
             <StackPanel Orientation="Horizontal" x:Name="sas">
 
@@ -341,28 +359,26 @@
                                FontWeight="Medium"
                                Foreground="{DynamicResource SecondaryForegroundBrush}"/>
 
-                        <Button Style="{StaticResource TransparentButton}" 
-                                Command="{Binding LoadAuthenticatorCommand,Mode=OneTime}"
-                                CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
-                                HorizontalAlignment="Right" Padding="0">
-                            <Icon:PackIconMaterial Cursor="Hand"
-                                           IsHitTestVisible="False"
-                                           VerticalAlignment="Center"   
-                                           Foreground="{DynamicResource LightBlueGrad}"
-                                           HorizontalAlignment="Right" 
-                                           Width="25" Height="25">
-                                <Icon:PackIconMaterial.Style>
-                                    <Style TargetType="Icon:PackIconMaterial">
-                                        <Setter Property="Kind" Value="MinusCircle"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding CurrentAccount.Authenticator}" Value="{x:Null}">
-                                                <Setter Property="Kind" Value="PlusCircle"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Icon:PackIconMaterial.Style>
-                            </Icon:PackIconMaterial>
-                        </Button>
+                        <Icon:PackIconMaterial Cursor="Hand"
+                                               Background="Transparent"
+                                               VerticalAlignment="Center"   
+                                               Foreground="{DynamicResource LightBlueGrad}"
+                                               HorizontalAlignment="Right" 
+                                               Width="25" Height="25"
+                                               PreviewMouseLeftButtonDown="OpenContextMenu">
+                            <Icon:PackIconMaterial.Style>
+                                <Style TargetType="Icon:PackIconMaterial">
+                                    <Setter Property="Kind" Value="ArrowDownDropCircle"/>
+                                    <Setter Property="ContextMenu" Value="{StaticResource Remove2faContextMenu}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CurrentAccount.Authenticator}" Value="{x:Null}">
+                                            <Setter Property="Kind" Value="PlusCircle"/>
+                                            <Setter Property="ContextMenu" Value="{StaticResource Import2faContextMenu}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Icon:PackIconMaterial.Style>
+                        </Icon:PackIconMaterial>
 
 
                         <StackPanel Orientation="Vertical"
@@ -839,7 +855,7 @@
                                 <DataGridTemplateColumn>
                                     <DataGridTemplateColumn.Header>
                                         <Button Style="{StaticResource FlatButton}"
-                                                Height="40" Width="135" Click="Button_Click">
+                                                Height="40" Width="135" Click="OpenPopupClick">
                                             <Icon:PackIconMaterial Kind="TableSearch" Margin="0 3 0 0"/>
                                         </Button>
                                     </DataGridTemplateColumn.Header>
@@ -849,6 +865,7 @@
                                             <Setter Property="Margin" Value="10 0 0 0"/>
                                             <Setter Property="MinHeight" Value="56"/>
                                             <Setter Property="MinWidth" Value="120"/>
+                                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                                             <Setter Property="Tag" Value="{StaticResource GamesContextMenu}"/>
                                             <Setter Property="Template" Value="{StaticResource ContainerTemplate}"/>
                                         </Style>
@@ -886,7 +903,7 @@
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn>
                                     <DataGridTemplateColumn.Header>
-                                        <Button Style="{StaticResource FlatButton}" Click="Button_Click"
+                                        <Button Style="{StaticResource FlatButton}" Click="OpenPopupClick"
                            Height="40" Width="100">
                                             <Icon:PackIconMaterial Kind="TableSearch" Margin="0 3 0 0"/>
                                         </Button>

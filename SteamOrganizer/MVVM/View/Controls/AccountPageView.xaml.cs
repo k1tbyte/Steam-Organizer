@@ -87,7 +87,7 @@ namespace SteamOrganizer.MVVM.View.Controls
             e.Handled                       = element.ContextMenu.IsOpen = true;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void OpenPopupClick(object sender, RoutedEventArgs e)
         {
             SearchPopup.OpenPopup(sender as FrameworkElement, System.Windows.Controls.Primitives.PlacementMode.Bottom);
         }

@@ -21,7 +21,7 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="23"/>
-                <RowDefinition Height="40"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Rectangle FocusVisualStyle="{x:Null}" x:Name="cancel" Focusable="True"  VerticalAlignment="Top" HorizontalAlignment="Left" RadiusX="50" RadiusY="50"
@@ -29,8 +29,10 @@
                         Cursor="Hand"/>
 
             <TextBlock HorizontalAlignment="Center"
-                       VerticalAlignment="Top"
-                        Grid.Row="1"
+                       VerticalAlignment="Top" Margin="0 0 0 15"
+                       MaxWidth="200"
+                        Grid.Row="1" TextAlignment="Center"
+                       TextWrapping="Wrap"
                        Foreground="{DynamicResource TertiaryForegroundBrush}"
                        FontWeight="Medium" 
                        FontSize="18" x:Name="Title"/>
@@ -38,7 +40,7 @@
             <Rectangle Grid.Row="1" Margin="0 0 0 3"
                        Fill="{DynamicResource PrimaryBackgroundBrush}" Height="3"
                        VerticalAlignment="Bottom"/>
-            
+
             <ContentPresenter x:Name="Presenter" 
                               Content="{Binding PopupContent}" Grid.Row="2"/>
 

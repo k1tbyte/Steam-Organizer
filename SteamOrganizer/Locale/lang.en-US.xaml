@@ -89,7 +89,8 @@
     <v:String x:Key="apv_public">Public</v:String>
     <v:String x:Key="apv_auth_remove">Remove authenticator (not deactivate)? If you do not have backups of this authenticator, you will lose access to your account</v:String>
     <v:String x:Key="apv_uniq_login_tip">The login is unique and must match the ID, so you cannot change the login. If you entered the wrong username, just re-create account</v:String>
-    
+    <v:String x:Key="apv_authExportTip">Enter a password to encrypt the authenticator. If you leave the field blank, the data will be encrypted with your current password</v:String>
+
     <!--#endregion-->
 
 </ResourceDictionary>
