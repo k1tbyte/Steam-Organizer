@@ -1,0 +1,100 @@
+
+.wrapper .cbx {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+}
+
+.wrapper .cbx span {
+    display: inline-block;
+    vertical-align: middle;
+    transform: translate3d(0, 0, 0);
+}
+
+.wrapper .cbx span:first-child {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    border-radius: 25%;
+    transform: scale(1);
+    vertical-align: middle;
+    background: linear-gradient( 180deg, rgba(5, 5, 15, 0) 0%, rgba(141, 141, 185, 0.16) 100% );
+    border: 1px solid #8d8db9;
+    transition: all 0.2s ease;
+}
+
+.wrapper .cbx span:first-child svg {
+    position: absolute;
+    z-index: 1;
+    top: 8px;
+    left: 6px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 16px;
+    stroke-dashoffset: 16px;
+    transition: all 0.3s ease;
+    transition-delay: 0.1s;
+    transform: translate3d(0, 0, 0);
+}
+
+.wrapper .cbx span:first-child:before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    background: #3c53c7;
+    display: block;
+    transform: scale(0);
+    opacity: 1;
+    border-radius: 50%;
+    transition-delay: 0.2s;
+}
+
+.wrapper .cbx span:last-child {
+    margin-left: 8px;
+}
+
+.wrapper .cbx span:last-child:after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 0;
+    height: 1px;
+    width: 100%;
+    background: #8d8db9;
+    transform-origin: 0 0;
+    transform: scaleX(0);
+}
+
+.wrapper .cbx:hover span:first-child {
+    border-color: #3c53c7;
+}
+
+.inpCbx {
+    display: none;
+}
+
+.wrapper .inpCbx:checked + .cbx span:first-child {
+    border-color: transparent;
+    background: #3c53c7;
+    animation: check 0.6s ease;
+}
+
+.wrapper .inpCbx:checked + .cbx span:first-child svg {
+    stroke-dashoffset: 0;
+}
+
+.wrapper .inpCbx:checked + .cbx span:first-child:before {
+    transform: scale(2.2);
+    opacity: 0;
+    transition: all 0.6s ease;
+}
+
+@keyframes check {
+    50% {
+      transform: scale(1.2);
+    }
+}
