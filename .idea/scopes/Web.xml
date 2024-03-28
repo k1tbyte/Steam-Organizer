@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Web" pattern="(file[Steam-Organizer]:SteamOrganizer.Web/*||file[Steam-Organizer]:SteamOrganizer.Web//*)&amp;&amp;!file:SteamOrganizer.Web/yarn.lock&amp;&amp;!file:SteamOrganizer.Web/package-lock.json&amp;&amp;!file:SteamOrganizer.Web/.eslintrc.cjs" />
+</component>
