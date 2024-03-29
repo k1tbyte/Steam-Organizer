@@ -1,6 +1,6 @@
-export default function Logo(props) {
+export default function Logo({width, height}) {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" height={props.height} width={props.width}
+        <svg xmlns="http://www.w3.org/2000/svg" height={height} width={width}
              viewBox="47.797 14.063 439.4 467.3" id="sas">
             <defs>
                 <linearGradient id="logo-gradient"  x1="50%" y1="0%" x2="50%" y2="100%">
