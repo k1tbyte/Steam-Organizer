@@ -16,7 +16,8 @@ export default {
                 3: "#292848",
                 4: "#6d67fd",
                 5: "#6c5eb3",
-                6: "#3F3D7C"
+                6: "#3F3D7C",
+                7: "linear-gradient(to right, #87CEFA 0%, #6c5ecf 100%)"
             },
             fg: {
                 1: "#474c69",
