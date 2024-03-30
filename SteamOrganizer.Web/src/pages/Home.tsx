@@ -1,7 +1,11 @@
 import { Sidebar } from "../components/Sidebar.tsx";
+import Account from "../components/Account.tsx";
 
 export default function Home() {
     return (
-        <Sidebar/>
+        <div>
+            <Sidebar/>
+            <Account/>
+        </div>
     )
 }
