@@ -23,5 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 .eslintrc.cjs
-package-lock.json
-/yarn.lock
+yarn.lock

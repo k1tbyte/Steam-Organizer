@@ -1,7 +1,8 @@
 import { grid } from "../assets"
 import Logo from "../components/Logo.jsx";
+import { FC } from 'react'
 
-export default function Auth() {
+const Auth: FC = () => {
     return (
         <div className="block lg:flex h-screen">
             <div className="w-full bg-pr-2 h-screen flex items-center justify-center lg:w-1/2">
@@ -13,7 +14,7 @@ export default function Auth() {
                     <h1 className="text-4xl lg:text-3xl text-fg-2 font-bold">Steam organizer</h1>
                     <p className="text-fg-1 text-xl mt-2">Access to your steam accounts everywhere</p>
                     <button className="btn-primary flex items-center justify-center">
-                      {/*  <FaGoogle className="mr-4"/>*/}
+                        {/*  <FaGoogle className="mr-4"/>*/}
                         Login with Google
                     </button>
                 </div>
@@ -24,3 +25,5 @@ export default function Auth() {
         </div>
     )
 }
+
+export default Auth;

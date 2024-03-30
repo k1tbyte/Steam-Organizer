@@ -1,6 +1,34 @@
 import { LuZap, LuUsers, LuFolderSync } from "react-icons/lu"
+import {FC, ReactNode} from 'react'
 
-export default function Sidebar() {
+interface ISidebarItemProps {
+    icon: ReactNode
+    text: string
+    active?: boolean
+}
+
+const SidebarItem: FC<ISidebarItemProps> = ({icon,text, active }) => {
+    let iconCol,bgCol, textCol
+    if(active) {
+        iconCol = "text-blue-400"
+        bgCol = "bg-pr-3"
+        textCol = "text-fg-2"
+    }
+    else {
+        iconCol = "text-fg-1"
+        bgCol = "hover:bg-stroke-1 transition-all"
+        textCol = ""
+    }
+
+    return (
+        <li className={`py-5 btn flex items-center justify-center flex-col ${iconCol} ${bgCol}`}>
+            {icon}
+            <p className={`mt-3 font-bold text-sm ${textCol}`}>{text}</p>
+        </li>
+    )
+}
+
+const Sidebar: FC = () => {
     return (
         <aside className="h-screen flex">
             <nav className="h-full flex flex-col bg-pr-2  w-52 border-r-2 border-r-stroke-1">
@@ -31,23 +59,7 @@ export default function Sidebar() {
     )
 }
 
-export function SidebarItem({icon,text, active}) {
-    let iconCol,bgCol, textCol
-    if(active) {
-        iconCol = "text-blue-400"
-        bgCol = "bg-pr-3"
-        textCol = "text-fg-2"
-    }
-    else {
-        iconCol = "text-fg-1"
-        bgCol = "hover:bg-stroke-1 transition-all"
-        textCol = ""
-    }
-
-    return (
-        <li className={`py-5 cursor-pointer flex items-center justify-center flex-col ${iconCol} ${bgCol}`}>
-            {icon}
-            <p className={`mt-3 font-bold text-sm ${textCol}`}>{text}</p>
-        </li>
-    )
+export {
+    Sidebar,
+    SidebarItem
 }
