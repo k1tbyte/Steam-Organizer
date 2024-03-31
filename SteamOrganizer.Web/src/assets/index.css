@@ -12,7 +12,9 @@
     --font-grotesk: "Space Grotesk", sans-serif;
     color-scheme: dark;
 }
-
+.sm-button{
+    @apply rounded-[5px] font-bold text-pr-2 mx-0.5 my-0.5  px-[10px] py-[2px]
+}
 body {
     background: #1b1c31;
 }
