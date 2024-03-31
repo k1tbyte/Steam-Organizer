@@ -2,6 +2,7 @@ import {Sidebar, SidebarItem} from "../components/Sidebar.tsx";
 import {LuFolderSync, LuUsers, LuZap} from "react-icons/lu";
 import Header from "../components/Header.tsx";
 import {HomeLayout} from "../layouts/HomeLayout.tsx";
+import Account from "../components/Account.tsx";
 
 export default function Home() {
     return (
@@ -15,7 +16,10 @@ export default function Home() {
         } header={
             <Header/>
         } content={
-            <div className="flex justify-center w-full items-center">Content area</div>
+            <div className="flex gap-2 w-full pt-2">
+                <Account/>
+                <Account/>
+            </div>
         }/>
     )
 }
