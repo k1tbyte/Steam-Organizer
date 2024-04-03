@@ -13,8 +13,18 @@
     color-scheme: dark;
 }
 .sm-button{
-    @apply rounded-[5px] font-bold text-pr-2 mx-0.5 my-0.5  px-[10px] py-[2px]
+    @apply rounded-[5px] font-bold text-pr-2 mx-0.5 my-0.5
 }
 body {
     background: #1b1c31;
+}
+
+.test {
+    display: grid;
+    grid-auto-rows: min-content auto;
+    grid-auto-columns: max-content auto;
+}
+
+.test-2 {
+    grid-row: 2;
 }

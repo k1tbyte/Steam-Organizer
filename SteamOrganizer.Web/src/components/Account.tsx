@@ -5,7 +5,7 @@ import { MdDelete} from "react-icons/md";
 function Account() {
   return (
       <div className="">
-        <div className="inline-flex rounded-[3px] bg-pr-2 text-sm h-[105px] min-w-[453px] text-nowrap">
+        <div className="inline-flex rounded-[3px] bg-pr-2 text-sm  text-nowrap">
           <div className="flex justify-center py-6 px-2">
             <img src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true" alt="..." className="rounded-full border-indigo-600  border-2 w-[60px] h-[60px] "/>
           </div>
