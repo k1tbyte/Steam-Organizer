@@ -1,54 +1,49 @@
-import { IoEnterOutline } from "react-icons/io5";
-import { TiPin } from "react-icons/ti";
-import { FaPen } from "react-icons/fa6";
+import { FaSignInAlt } from "react-icons/fa";
+import { FaPenToSquare } from "react-icons/fa6";
+import { BsPinAngleFill } from "react-icons/bs";
 import { MdDelete} from "react-icons/md";
+
 function Account() {
   return (
-      <div className="">
-        <div className="inline-flex rounded-[3px] bg-pr-2 text-sm  text-nowrap">
-          <div className="flex justify-center py-6 px-2">
-            <img src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true" alt="..." className="rounded-full border-indigo-600  border-2 w-[60px] h-[60px] "/>
-          </div>
-          <div className="flex py-4 flex-col">
-            <div className="flex text-white">
-              <h3 className="font-bold mr-2">Test nickname</h3>
-              <div className="sm-button bg-pr-4">
-                <IoEnterOutline className="h-full text-white"/>
-              </div>
-              <div className="sm-button bg-pr-4">
-                <FaPen className="h-full text-white"></FaPen>
-              </div>
-            </div>
-            <div className="flex">
-              <div className="basis-1/2">
-                <div className="flex">
-                  <div className="sm-button bg-pr-4">Level :1</div>
-                  <div className="sm-button bg-pr-4">Years :1</div>
-                </div>
-                <div className="text-pr-4 flex">ID: <div className="ml-2 text-white font-extralight">1337</div></div>
-              </div>
-              <div className="basis-1/2 flex-col">
-                <div className="flex">
-                  <div className="sm-button bg-green-500">VAC</div>
-                  <div className="sm-button bg-green-500">Game</div>
-                </div>
-                <div className="flex">
-                  <div className="sm-button bg-green-500">Trade</div>
-                  <div className="sm-button bg-green-500">Community</div>
-                </div>
-              </div>
-            </div>
+      <div className="flex flex-1-min min-h-[105px] min-w-[300px]
+                      lg:max-w-[535px] bg-pr-2  p-4 pr-10 rounded-[3px] relative">
+          <img
+              src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
+              alt=""
+              className="w-[55px] h-[55px] rounded-lg primary-grad"
+          />
 
+          <div className="ml-3">
+              <div className="flex">
+                  <span className="text-[14px]">Why u bully me</span>
+                  <button className="btn-rect ml-2">
+                      <FaSignInAlt size={14}/>
+                  </button>
+                  <button className="btn-rect ml-[6px]">
+                      <FaPenToSquare size={14}/>
+                  </button>
+              </div>
+              <div className="text-xs mt-[7px] flex flex-wrap font-bold font-segoe text-pr-1 gap-[5px]">
+
+                  <div className="flex text-nowrap gap-[5px] mr-2">
+                      <div className="chip-rect">Level: 1000</div>
+                      <div className="chip-rect">Years: 4</div>
+                  </div>
+
+                  <div className="flex flex-wrap  gap-[5px] ">
+                      <div className="chip-rect bg-success">VAC</div>
+                      <div className="chip-rect bg-success">Game</div>
+                      <div className="chip-rect bg-success">Trade</div>
+                      <div className="chip-rect bg-success">Community</div>
+                  </div>
+
+                  <span className="text-fg-2 font-medium w-full"><b className="text-pr-4">ID:</b> 144156554</span>
+              </div>
           </div>
-          <div className=" flex flex-col justify-between my-3 ml-5 mr-4 items-end">
-            <div className="">
-              <TiPin className="h-full text-lg text-fg-1"></TiPin>
-            </div>
-            <div className="">
-              <MdDelete className="h-full text-lg text-fg-1"></MdDelete>
-            </div>
-          </div>
-        </div>
+
+          <BsPinAngleFill className="absolute text-fg-1 right-3 top-3 hover:text-yellow-300 btn" size={17}/>
+          <MdDelete className="absolute text-fg-1 right-3 bottom-3 hover:text-failed btn" size={20}/>
+
       </div>
 
   )

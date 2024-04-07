@@ -25,12 +25,14 @@ export default {
         },
         stroke: {
           1: "#212236"
-        }
+        },
+        success: "#08fc81",
+        failed: "#d97193"
       },
       fontFamily: {
         sans: ["var(--font-sora)", ...fontFamily.sans],
         code: "var(--font-code)",
-        grotesk: "var(--font-grotesk)",
+        segoe: "var(--font-segoe)",
       },
       transitionDuration: {
         DEFAULT: "200ms",
@@ -41,11 +43,17 @@ export default {
     plugin(({addComponents, addUtilities}) => {
       addComponents({
         '.btn': {
-          "@apply select-none cursor-pointer": {}
+          "@apply select-none cursor-pointer transition-all": {}
         },
         '.btn-primary': {
           "@apply btn text-fg-3 bg-pr-4 py-3 w-full rounded-xl mt-12 font-code text-sm hover:scale-105 active:scale-95 transition-all": {}
-        }
+        },
+        '.chip-rect': {
+          "@apply bg-pr-5 px-[10px] py-[2px] rounded-[5px]": {}
+        },
+        '.btn-rect': {
+          "@apply btn bg-pr-4 text-fg-3 rounded-[5px] px-[7px] py-[4px]" : {}
+        },
       });
       addUtilities({
 

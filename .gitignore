@@ -160,7 +160,7 @@ nCrunchTemp_*
 *.mm.*
 AutoTest.Net/
 
-# Web workbench (sass)
+# frontend workbench (sass)
 .sass-cache/
 
 # Installshield output folder
@@ -179,7 +179,7 @@ DocProject/Help/html
 # Click-Once directory
 publish/
 
-# Publish Web Output
+# Publish frontend Output
 *.[Pp]ublish.xml
 *.azurePubxml
 # Note: Comment the next line if you want to checkin your web deploy settings,
@@ -187,8 +187,8 @@ publish/
 *.pubxml
 *.publishproj
 
-# Microsoft Azure Web App publish settings. Comment the next line if you want to
-# checkin your Azure Web App publish settings, but sensitive information contained
+# Microsoft Azure frontend App publish settings. Comment the next line if you want to
+# checkin your Azure frontend App publish settings, but sensitive information contained
 # in these scripts will be unencrypted
 PublishScripts/
 
@@ -370,3 +370,4 @@ FodyWeavers.xsd
 
 # User
 .idea/
+Tests/

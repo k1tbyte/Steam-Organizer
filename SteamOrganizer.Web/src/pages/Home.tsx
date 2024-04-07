@@ -16,7 +16,13 @@ export default function Home() {
             } header={
                 <Header/>
             } content={
-                <div className="flex gap-2 w-full pt-2">
+                <div className="flex flex-wrap gap-2 p-2">
+                    <Account/>
+                    <Account/>
+                    <Account/>
+                    <Account/>
+                    <Account/>
+                    <Account/>
                     <Account/>
                 </div>
             }/>

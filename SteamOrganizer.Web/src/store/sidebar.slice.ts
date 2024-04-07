@@ -1,9 +1,9 @@
 import {createSlice } from "@reduxjs/toolkit";
 
 export const enum ESidebarState {
-    Hidden= "hidden",
-    Partial = "w-16",
-    Full = "w52"
+    Hidden,
+    Partial,
+    Full
 }
 
 const initialState: { sidebarState: ESidebarState | undefined } = { sidebarState: undefined };

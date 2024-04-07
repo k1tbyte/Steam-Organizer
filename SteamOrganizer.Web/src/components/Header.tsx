@@ -13,9 +13,10 @@ export const Header: React.FC = () => {
 
     return (
         <div className="w-full flex justify-between items-center bg-pr-2 h-12 border-b-2 border-b-stroke-1 px-3
-        text-fg-2 col-span-2">
-            <LuAlignJustify size={20} onClick={() => {
-                changeState(store.getState().sidebar.sidebarState == ESidebarState.Full ? ESidebarState.Hidden : ESidebarState.Full)
+        text-fg-2 flex-shrink-0">
+            <LuAlignJustify className=" lg:invisible"  size={20} onClick={() => {
+                const state = store.getState().sidebar.sidebarState != ESidebarState.Hidden ? ESidebarState.Hidden : ESidebarState.Full;
+                changeState(state)
             }} />
             <div className="flex items-center gap-5 mr-1">
                 <FaBell size={17}  />
