@@ -5,18 +5,22 @@ import {RootState} from "../store/store.ts";
 import {useActions} from "../hooks/useActions.ts";
 import {ESidebarState} from "../store/sidebar.slice.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
+import {Link, useLocation} from "react-router-dom";
 
 interface ISidebarItemProps {
     icon: ReactNode
     text: string
-    active?: boolean
+    link:string
+}
+interface ISidebarProps {
+    children: ReactNode
 }
 
-export const SidebarItem: FC<ISidebarItemProps> = ({icon,text, active }) => {
+export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
     const state = useSelector((state: RootState) => state.sidebar.sidebarState)
-
+    let location=useLocation();
     let iconClass,bgCol, textClass
-    if(active) {
+    if(location.pathname===link) {
         iconClass = "text-blue-400"
         bgCol = "translate-x-0 bg-pr-3 border-l-[3px] border-l-pr-4"
         textClass = "text-fg-2"
@@ -32,11 +36,15 @@ export const SidebarItem: FC<ISidebarItemProps> = ({icon,text, active }) => {
     }
 
     return (
-        <li className={`py-[21px] btn flex items-start justify-center flex-col group relative ${iconClass}`}>
-            <div className="z-10 flex-col flex items-center w-full justify-center pointer-events-none">
-                {icon}
-                <p className={`mt-3 font-bold text-sm ${textClass}`}>{text}</p>
-            </div>
+        <Link to={link} className="w-full h-full p-0 m-0">
+        <li className={`py-[21px] btn flex items-start justify-center flex-col group relative ${iconClass} `} >
+
+                <div className="z-10 flex-col flex items-center w-full justify-center pointer-events-none">
+                    {icon}
+                    <p className={`mt-3 font-bold text-sm ${textClass}`}>{text}</p>
+                </div>
+
+
 
             <div className={`w-full h-full absolute ${bgCol}`}></div>
 
@@ -45,15 +53,16 @@ export const SidebarItem: FC<ISidebarItemProps> = ({icon,text, active }) => {
                                  bg-pr-3 text-fg-2 text-sm
                                  invisible opacity-20 -translate-x-3 transition-all
                                  group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}>
-                    {text}
+                        {text}
                 </div>
             )}
 
         </li>
-    )
+        </Link>
+    );
 }
 
-export const Sidebar: FC = ({children}: any) => {
+export const Sidebar: FC<ISidebarProps> = ({children}) => {
     let state = useSelector<RootState>((state) => state.sidebar.sidebarState)
     const { changeState } = useActions()
 
