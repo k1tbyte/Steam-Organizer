@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300&display=swap");
+/*@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600;700&display=swap");*/
 
 @tailwind base;
 @tailwind components;
@@ -8,13 +7,11 @@
 
 :root {
     --font-sora: "Sora", sans-serif;
-    --font-code: "Source Code Pro", monospace;
     --font-segoe: "Segoe UI", sans-serif;
+    /* --font-code: "Source Code Pro", monospace;*/
     color-scheme: dark;
 }
-.sm-button{
-    @apply rounded-[5px] font-bold text-pr-2 mx-0.5 my-0.5
-}
+
 body {
     background: #1b1c31;
 }
@@ -25,20 +22,4 @@ body {
     background-origin: border-box;
     background-clip: content-box, border-box
 }
-
-.test-2 {
-    flex: 1 1 min-content;
-}
-
-.flex-1-min {
-    flex: 1 1 min-content;
-}
-
-.test-3 {
-    display: grid;
-    grid-gap: 1rem;
-    grid-template-columns: 1fr;
-    grid-template-rows: min-content min-content;
-}
-
 

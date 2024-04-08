@@ -1,11 +1,11 @@
 import {LuAlignJustify} from "react-icons/lu";
 import {HiMiniCog6Tooth} from "react-icons/hi2";
 import {FaBell} from "react-icons/fa";
-import React from "react";
 import { useStore} from "react-redux";
 import { RootState } from "../store/store.ts";
 import {useActions} from "../hooks/useActions.ts";
 import {ESidebarState} from "../store/sidebar.slice.ts";
+import Dialog from "./elements/Dialog.tsx";
 
 export const Header: React.FC = () => {
     const store = useStore<RootState>();
@@ -19,8 +19,13 @@ export const Header: React.FC = () => {
                 changeState(state)
             }} />
             <div className="flex items-center gap-5 mr-1">
-                <FaBell size={17}  />
-                <HiMiniCog6Tooth size={17}  />
+                <FaBell size={17} />
+                <Dialog contentClass="max-w-[405px]" trigger={<HiMiniCog6Tooth size={17}/>} title="New account" >
+                    <div className="font-segoe text-[13px] text-fg-2">
+                        Settings component
+                    </div>
+                </Dialog>
+
             </div>
         </div>
     )

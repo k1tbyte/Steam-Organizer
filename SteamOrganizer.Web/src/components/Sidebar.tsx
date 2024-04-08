@@ -18,12 +18,12 @@ export const SidebarItem: FC<ISidebarItemProps> = ({icon,text, active }) => {
     let iconClass,bgCol, textClass
     if(active) {
         iconClass = "text-blue-400"
-        bgCol = "bg-pr-3"
+        bgCol = "translate-x-0 bg-pr-3 border-l-[3px] border-l-pr-4"
         textClass = "text-fg-2"
     }
     else {
-        iconClass = "text-fg-1"
-        bgCol = "hover:bg-stroke-1 transition-all"
+        iconClass = "text-fg-1 hover:bg-stroke-1"
+        bgCol = "-translate-x-full"
         textClass = ""
     }
 
@@ -32,23 +32,28 @@ export const SidebarItem: FC<ISidebarItemProps> = ({icon,text, active }) => {
     }
 
     return (
-        <li className={`py-[21px] btn flex items-center justify-center flex-col group relative ${iconClass} ${bgCol}`}>
-            {icon}
-            <p className={`mt-3 font-bold text-sm ${textClass}`}>{text}</p>
+        <li className={`py-[21px] btn flex items-start justify-center flex-col group relative ${iconClass}`}>
+            <div className="z-10 flex-col flex items-center w-full justify-center pointer-events-none">
+                {icon}
+                <p className={`mt-3 font-bold text-sm ${textClass}`}>{text}</p>
+            </div>
+
+            <div className={`w-full h-full absolute ${bgCol}`}></div>
+
             {state == ESidebarState.Partial && (
                 <div className={`absolute left-full rounded-md px-2 py-1 ml-5
                                  bg-pr-3 text-fg-2 text-sm
                                  invisible opacity-20 -translate-x-3 transition-all
-                                 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}
-                >
+                                 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}>
                     {text}
                 </div>
             )}
+
         </li>
     )
 }
 
-export const Sidebar: FC = ({ children }: any) => {
+export const Sidebar: FC = ({children}: any) => {
     let state = useSelector<RootState>((state) => state.sidebar.sidebarState)
     const { changeState } = useActions()
 

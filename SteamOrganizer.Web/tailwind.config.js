@@ -27,7 +27,11 @@ export default {
           1: "#212236"
         },
         success: "#08fc81",
-        failed: "#d97193"
+        failed: "#d97193",
+        close: "#ee6f60"
+      },
+      borderRadius: {
+        'default': '5px',
       },
       fontFamily: {
         sans: ["var(--font-sora)", ...fontFamily.sans],
@@ -37,7 +41,27 @@ export default {
       transitionDuration: {
         DEFAULT: "200ms",
       },
-    },
+      keyframes: {
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        'fade-out': {
+          '100%': { opacity: '0' },
+        },
+        'pop-in': {
+          from: { opacity: '0', marginTop: '-100px' },
+          to: { opacity: '1', margin: '0px' },
+        },
+        'pop-out': {
+          '100%': { opacity: '0', marginTop: '-50px' },
+        }
+      },
+      animation: {
+        'fade-in': 'fade-in 150ms',
+        'fade-out': 'fade-out 150ms',
+      },
+  },
   },
   plugins: [
     plugin(({addComponents, addUtilities}) => {
