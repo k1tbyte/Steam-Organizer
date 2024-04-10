@@ -1,10 +1,15 @@
 import {configureStore } from "@reduxjs/toolkit";
-import { reducer as sidebarReducer } from "./sidebar.slice.ts";
+import uiReducer from "./ui.slice.ts";
 
 export const store = configureStore({
     reducer: {
-        sidebar: sidebarReducer
-    }
+        ui: uiReducer
+    },
+    middleware: getDefaultMiddleware =>
+        getDefaultMiddleware({
+       /*     immutableCheck: false,
+            serializableCheck: false,*/
+        })
 })
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -3,7 +3,7 @@ import {useSlider} from "../hooks/useSlider.ts";
 import {useSelector} from "react-redux";
 import {RootState} from "../store/store.ts";
 import {useActions} from "../hooks/useActions.ts";
-import {ESidebarState} from "../store/sidebar.slice.ts";
+import {ESidebarState} from "../store/ui.slice.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 import {Link, useLocation} from "react-router-dom";
 
@@ -17,64 +17,56 @@ interface ISidebarProps {
 }
 
 export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
-    const state = useSelector((state: RootState) => state.sidebar.sidebarState)
+    const state = useSelector((state: RootState) => state.ui.sidebarState)
     let location=useLocation();
-    let iconClass,bgCol, textClass
+
+    let iconClass,bgCol,
+        textClass = state != ESidebarState.Full ? "hidden" : "";
+
     if(location.pathname===link) {
         iconClass = "text-blue-400"
-        bgCol = "translate-x-0 bg-pr-3 border-l-[3px] border-l-pr-4"
-        textClass = "text-fg-2"
+        bgCol = "scale-x-100 bg-pr-3 border-l-[3px]"
+        textClass += " text-fg-2"
     }
     else {
         iconClass = "text-fg-1 hover:bg-stroke-1"
-        bgCol = "-translate-x-full"
-        textClass = ""
-    }
-
-    if(state != ESidebarState.Full) {
-        textClass += " hidden"
+        bgCol = "scale-x-0"
     }
 
     return (
-        <Link to={link} className="w-full h-full p-0 m-0">
-        <li className={`py-[21px] btn flex items-start justify-center flex-col group relative ${iconClass} `} >
+        <Link to={link}
+              className={`py-[21px] btn flex items-start justify-center flex-col group relative ${iconClass}`}>
+            <div className="z-10 flex-col flex items-center w-full justify-center pointer-events-none">
+                {icon}
+                <p className={`mt-3 font-bold text-sm ${textClass}`}>{text}</p>
+            </div>
 
-                <div className="z-10 flex-col flex items-center w-full justify-center pointer-events-none">
-                    {icon}
-                    <p className={`mt-3 font-bold text-sm ${textClass}`}>{text}</p>
-                </div>
-
-
-
-            <div className={`w-full h-full absolute ${bgCol}`}></div>
+            <div className={`w-full h-full origin-left border-l-pr-4 absolute duration-500 transition-all ${bgCol}`}/>
 
             {state == ESidebarState.Partial && (
                 <div className={`absolute left-full rounded-md px-2 py-1 ml-5
-                                 bg-pr-3 text-fg-2 text-sm
-                                 invisible opacity-20 -translate-x-3 transition-all
-                                 group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}>
-                        {text}
+                                     bg-pr-3 text-fg-2 text-sm
+                                     invisible opacity-20 -translate-x-3 transition-all
+                                     group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}>
+                    {text}
                 </div>
             )}
-
-        </li>
         </Link>
     );
 }
 
 export const Sidebar: FC<ISidebarProps> = ({children}) => {
-    let state = useSelector<RootState>((state) => state.sidebar.sidebarState)
-    const { changeState } = useActions()
+    let state = useSelector<RootState>((state) => state.ui.sidebarState)
+    const {changeSidebarState} = useActions()
 
     const sideBarState = useRef(ESidebarState.Full);
     const isSmallScreen = useMediaQuery( {
         query: '(max-width: 1023px)',
-        callback: (match: boolean) => changeState(match ? ESidebarState.Hidden : ESidebarState.Full)
+        callback: (match: boolean) => changeSidebarState(match ? ESidebarState.Hidden : ESidebarState.Full)
     });
 
     if(state == undefined) {
-        console.log("init")
-        changeState( state = (isSmallScreen ? ESidebarState.Hidden : ESidebarState.Partial));
+        changeSidebarState( state = (isSmallScreen ? ESidebarState.Hidden : ESidebarState.Partial));
     }
 
     const sliderRef = useSlider((event: PointerEvent) => {
@@ -91,7 +83,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
         }
 
         if(newState != null) {
-            changeState(newState)
+            changeSidebarState(newState)
             sideBarState.current = newState;
         }
     });
@@ -125,7 +117,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
 
             {state != ESidebarState.Hidden && isSmallScreen &&
                 <div className="lg:static bg-black opacity-50 w-screen"
-                     onClick={() => changeState(ESidebarState.Hidden)}></div>
+                     onClick={() => changeSidebarState(ESidebarState.Hidden)}></div>
             }
         </aside>
     )

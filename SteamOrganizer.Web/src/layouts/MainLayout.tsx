@@ -7,7 +7,7 @@ export  const MainLayout: FC= () => {
     return (
         <div className="h-screen flex">
             <Sidebar>
-                <SidebarItem icon={<LuUsers size={20}/>} text="Accounts" active={true} link="/"/>
+                <SidebarItem icon={<LuUsers size={20}/>} text="Accounts" link="/"/>
                 <SidebarItem icon={<LuZap size={20}/>} text="Actions" link="/actions"/>
                 <SidebarItem icon={<LuFolderSync size={20}/>} text={"Backups"} link="/backups"/>
             </Sidebar>

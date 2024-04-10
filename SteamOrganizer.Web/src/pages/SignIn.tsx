@@ -2,7 +2,7 @@ import { grid } from "../assets"
 import Logo from "../components/Logo.jsx";
 import { FC } from 'react'
 
-const Auth: FC = () => {
+const SignIn: FC = () => {
     return (
         <div className="block lg:flex h-screen">
             <div className="w-full bg-pr-2 h-screen flex items-center justify-center lg:w-1/2">
@@ -26,4 +26,4 @@ const Auth: FC = () => {
     )
 }
 
-export default Auth;
+export default SignIn;

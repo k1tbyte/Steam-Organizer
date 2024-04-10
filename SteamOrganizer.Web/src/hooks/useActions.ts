@@ -1,10 +1,10 @@
 import {useDispatch} from "react-redux";
 import {useMemo} from "react";
 import {bindActionCreators} from "@reduxjs/toolkit";
-import { actions as sidebarActions } from "../store/sidebar.slice.ts";
+import { actions as uiActions } from "../store/ui.slice.ts";
 
 const rootActions = {
-    ...sidebarActions
+    ...uiActions
 }
 
 export const useActions = () => {
