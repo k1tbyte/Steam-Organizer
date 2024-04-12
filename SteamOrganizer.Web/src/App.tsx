@@ -1,4 +1,3 @@
-/*import SignIn from "./pages/SignIn.tsx";*/
 import Accounts from "./pages/Accounts.tsx";
 import {MainLayout} from "./layouts/MainLayout.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
@@ -9,7 +8,8 @@ import Backups from "./pages/Backups.tsx";
 import { RootModal } from "./components/elements/Modal.tsx";
 import useModal from "./hooks/useModal.ts";
 import {useEffect} from "react";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import {loadConfig, loadAccounts, EDecryptResult} from "./store/config.ts";
+import db from "./services/indexedDb.ts";
 
 const router = createBrowserRouter([
   {
@@ -37,26 +37,21 @@ const router = createBrowserRouter([
     element: <SignIn/>
   },
 ]);
+
 export default function App() {
 
-  const { openModal, closeModal } = useModal()
+  const { openModal } = useModal()
 
-  useEffect(() => {
-
-    const setFp = async () => {
-      const fp = await FingerprintJS.load();
-
-      const { visitorId } = await fp.get();
-
-      return visitorId
-    };
-
-
-    setFp().then((id) => {
-      openModal({ children:
-            <span onClick={() => closeModal()}>Fingerprint: {id}</span>
-        ,preventClosing: true, title: "Registration", contentClass: "max-w-[405px]"})
-    });
+  useEffect( () => {
+    db.openConnection().then(async () => {
+      await loadConfig()
+      const result = await loadAccounts()
+      if(result == EDecryptResult.NoKey) {
+        openModal({ children:
+              <span>Enter password for encryption key</span>
+          ,preventClosing: true, title: "Registration", contentClass: "max-w-[405px]"})
+      }
+    })
   }, []);
 
   return (
