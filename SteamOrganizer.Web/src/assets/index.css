@@ -26,3 +26,7 @@ body {
     flex: 1 1 min-content;
 }
 
+.purple-grad {
+    background: linear-gradient(to bottom right, #7222db 10%, #6c5ecf 100%);
+}
+

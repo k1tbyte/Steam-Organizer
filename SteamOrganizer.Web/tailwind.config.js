@@ -24,7 +24,9 @@ export default {
           3: "#f7f7f7"
         },
         stroke: {
-          1: "#212236"
+          1: "#212236",
+          2: "#7222db",
+          3: "#6c5ecf"
         },
         success: "#08fc81",
         failed: "#d97193",
@@ -32,6 +34,10 @@ export default {
       },
       borderRadius: {
         'default': '5px',
+        'small': '3px'
+      },
+      fontSize: {
+        'def': '13px',
       },
       fontFamily: {
         sans: ["var(--font-sora)", ...fontFamily.sans],
@@ -72,15 +78,20 @@ export default {
         '.btn-primary': {
           "@apply btn text-fg-3 bg-pr-4 py-3 w-full rounded-xl mt-12 font-code text-sm hover:scale-105 active:scale-95 transition-all": {}
         },
+        '.btn-secondary': {
+          "@apply rounded-small text-def font-semibold bg-pr-4 px-2.5 py-1 transition-colors hover:text-fg-3 text-pr-3": {}
+        },
         '.chip-rect': {
-          "@apply bg-pr-5 px-[10px] py-[2px] rounded-[5px]": {}
+          "@apply bg-pr-5 px-[10px] py-[2px] rounded-default": {}
         },
         '.btn-rect': {
-          "@apply btn bg-pr-4 text-fg-3 rounded-[5px] px-[7px] py-[4px]" : {}
+          "@apply btn bg-pr-4 text-fg-3 rounded-default px-[7px] py-[4px]" : {}
         },
       });
       addUtilities({
+        '.purple-grad': {
 
+        }
       })
     })
   ],

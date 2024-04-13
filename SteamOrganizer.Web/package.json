@@ -13,6 +13,7 @@
     "@fingerprintjs/fingerprintjs": "^4.2.2",
     "@radix-ui/react-dialog": "^1.0.5",
     "@reduxjs/toolkit": "^2.2.3",
+    "clsx": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1",

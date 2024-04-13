@@ -1,27 +1,26 @@
-import {FC, useState} from "react";
+import {forwardRef, InputHTMLAttributes, useState} from "react";
+import clsx from 'clsx';
+
 import { IoMdEyeOff,IoMdEye } from "react-icons/io";
 
-export const PasswordBox: FC =()=>{
-    const [isPasswordVisible,setPasswordVisibility]= useState(false);
-    function changePasswordVisibility(){
-        setPasswordVisibility(!isPasswordVisible);
-    }
+interface IPasswordBoxProps extends InputHTMLAttributes<HTMLInputElement> {
+    className?: string,
+}
+
+export const PasswordBox = forwardRef<HTMLInputElement,IPasswordBoxProps> (
+    ({className, ...props}, ref) => {
+    const [passwordVisible,setPasswordVisibility]= useState(false);
+
     return(
-        <div className="min-w-28 flex w-full  bg-pr-3 rounded-[3px] h-[36px] px-2">
-            <input type={isPasswordVisible?"text":"password"}
-                   placeholder=""
-                   className={`w-full bg-transparent min-w-20 text-fg-2 focus:outline-none font-segoe  ${isPasswordVisible?"font-normal text-[13px]":"font-extrabold text-[18px]"}`}
-                      />
-            <button className=""
-                    onClick={changePasswordVisibility}>
+        <div className={clsx("w-full h-[35px] flex items-center  bg-pr-3 rounded-small text-fg-2 text-def",className)}>
+            <input type={clsx(passwordVisible || "password")} {...props} ref={ref}
+                   className="w-full h-full placeholder-fg-1 placeholder:font-semibold px-2.5 bg-transparent outline-0 outline-none"/>
+            <button className="h-full hover:text-fg-3 transition-all pr-2.5"
+                    onClick={() => setPasswordVisibility((prev) => !prev)}>
                 {
-                    isPasswordVisible?(
-                        <IoMdEye size={19} className="text-fg-2 hover:text-white"/>
-                    ):(
-                        <IoMdEyeOff size={19} className="text-fg-2 hover:text-white" />
-                    )
+                    passwordVisible ? <IoMdEye size={18} /> : <IoMdEyeOff size={18} />
                 }
             </button>
         </div>
     )
-}
+})

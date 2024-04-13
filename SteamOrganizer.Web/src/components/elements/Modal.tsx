@@ -35,7 +35,7 @@ export const Modal: FC<IModalProps> = (props) => {
                     { props.preventClosing !== true && <Close className="bg-close w-3 h-3 rounded-full"/> }
                     <Title className="text-lg mb-2 text-center font-semibold text-fg-3">{props.title}</Title>
 
-                    <div className="bg-pr-1 h-1 -mx-[10px] mb-2"/>
+                    <div className="bg-pr-1 h-1 -mx-[10px] mb-3"/>
                     {props.children}
                 </Content>
             </Portal>
