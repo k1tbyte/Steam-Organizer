@@ -73,13 +73,10 @@ export default {
     plugin(({addComponents, addUtilities}) => {
       addComponents({
         '.btn': {
-          "@apply select-none cursor-pointer transition-all": {}
+          "@apply select-none cursor-pointer": {}
         },
         '.btn-primary': {
-          "@apply btn text-fg-3 bg-pr-4 py-3 w-full rounded-xl mt-12 font-code text-sm hover:scale-105 active:scale-95 transition-all": {}
-        },
-        '.btn-secondary': {
-          "@apply rounded-small text-def font-semibold bg-pr-4 px-2.5 py-1 transition-colors hover:text-fg-3 text-pr-3": {}
+          "@apply flex items-center justify-center px-3 py-1 rounded-small font-semibold select-none": {}
         },
         '.chip-rect': {
           "@apply bg-pr-5 px-[10px] py-[2px] rounded-default": {}

@@ -1,25 +1,28 @@
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import db from "../services/indexedDb.ts"
-import {decrypt, deriveKey, encrypt} from "../services/cryptography.ts";
+import {decrypt, deriveKey, encrypt, importKey} from "../services/cryptography.ts";
 interface IAppConfig {
-    databaseKey?: ArrayBuffer
+    encryptionKey?: string
     test?: string
 }
 
 export const enum EDecryptResult {
     Success,
     NoKey,
-    NeedAuth
+    NeedAuth,
+    BadCredentials
 }
 
 let fingerprint: CryptoKey | undefined;
+let databaseKey: CryptoKey | undefined;
+
 export let config: IAppConfig;
+export let accounts: number[]
 
 export const  loadConfig = async () => {
     const agent = await FingerprintJS.load();
     const { visitorId } = await agent.get();
-    fingerprint = await deriveKey("visitorId",1)
-    console.log(visitorId)
+    fingerprint = await deriveKey({ secret: "visitorId", iterations: 1})
     const configBytes = await db.get("config") as ArrayBuffer | undefined
 
     config = {}
@@ -49,9 +52,26 @@ export const saveAccounts = async () => {
 }
 
 export const loadAccounts = async () => {
-    if(config.databaseKey == undefined) {
-        return EDecryptResult.NoKey
+    const dbBytes = await db.get("accounts") as ArrayBuffer | undefined
+    if(config.encryptionKey == undefined) {
+        return dbBytes == undefined ? EDecryptResult.NoKey : EDecryptResult.NeedAuth
     }
 
+    if(databaseKey == undefined) {
+        databaseKey = await importKey(config.encryptionKey)
+    }
+
+    if(dbBytes == undefined) {
+        accounts = []
+        return EDecryptResult.Success
+    }
+
+    try {
+        const data = await decrypt(databaseKey, dbBytes);
+        accounts = JSON.parse(data)
+        return EDecryptResult.Success
+    } catch {
+        return EDecryptResult.BadCredentials
+    }
     //decrypt
 }
