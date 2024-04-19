@@ -47,7 +47,7 @@ export default function App() {
     db.openConnection().then(async () => {
       await loadConfig()
       const result = await loadAccounts()
-      if(result == EDecryptResult.NoKey) {
+      if(result != EDecryptResult.Success) {
         openModal({ children: <Authentication/>, preventClosing: true,
                          title: "Registration", contentClass: "max-w-[305px]"})
       }
