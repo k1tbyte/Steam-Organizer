@@ -5,8 +5,7 @@ import { MdDelete} from "react-icons/md";
 
 function Account() {
   return (
-      <div className="flex flex-1-min min-h-[105px] min-w-[300px]
-                      lg:max-w-[535px] bg-pr-2  p-4 pr-10 rounded-[3px] relative">
+      <div className="flex min-h-[105px] bg-pr-2  p-4 pr-10 rounded-[3px] relative">
           <img
               src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
               alt=""
@@ -30,7 +29,7 @@ function Account() {
                       <div className="chip-rect">Years: 4</div>
                   </div>
 
-                  <div className="flex flex-wrap  gap-[5px] ">
+                  <div className="flex flex-wrap gap-[5px] ">
                       <div className="chip-rect bg-success">VAC</div>
                       <div className="chip-rect bg-success">Game</div>
                       <div className="chip-rect bg-success">Trade</div>

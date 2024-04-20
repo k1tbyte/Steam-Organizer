@@ -1,6 +1,7 @@
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import db from "../services/indexedDb.ts"
-import {decrypt, deriveKey, encrypt, importKey} from "../services/cryptography.ts";
+import {decrypt, deriveKey, encrypt, exportKey, importKey} from "../services/cryptography.ts";
+
 interface IAppConfig {
     encryptionKey?: string
     test?: string
@@ -47,12 +48,22 @@ export const saveConfig = async () => {
     )
 }
 
-export const saveAccounts = async () => {
+export const getAccounts = () => db.get("accounts") as Promise<ArrayBuffer | undefined>
+export const storeEncryptionKey = async (key: CryptoKey) => {
+    config.encryptionKey = await exportKey(key)
+    databaseKey = key
+    await saveConfig()
+}
 
+export const saveAccounts = async () => {
+    await db.save(
+        await encrypt(databaseKey!, JSON.stringify({ account1: "test" })),
+        "accounts"
+    )
 }
 
 export const loadAccounts = async () => {
-    const dbBytes = await db.get("accounts") as ArrayBuffer | undefined
+    const dbBytes = await getAccounts()
     if(config.encryptionKey == undefined) {
         return dbBytes == undefined ? EDecryptResult.NoKey : EDecryptResult.NeedAuth
     }

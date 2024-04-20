@@ -8,7 +8,7 @@ import Backups from "./pages/Backups.tsx";
 import { RootModal } from "./components/elements/Modal.tsx";
 import useModal from "./hooks/useModal.ts";
 import {useEffect} from "react";
-import {loadConfig, loadAccounts, EDecryptResult} from "./store/config.ts";
+import { loadConfig, loadAccounts, EDecryptResult, storeEncryptionKey, getAccounts } from "./store/config.ts";
 import db from "./services/indexedDb.ts";
 import Authentication from "./pages/modal/Authentication.tsx";
 
@@ -47,10 +47,26 @@ export default function App() {
     db.openConnection().then(async () => {
       await loadConfig()
       const result = await loadAccounts()
-      if(result != EDecryptResult.Success) {
-        openModal({ children: <Authentication/>, preventClosing: true,
-                         title: "Registration", contentClass: "max-w-[305px]"})
+
+      let info: string;
+
+      switch(result) {
+        case EDecryptResult.NoKey:
+          info = "Enter a new password to encrypt your accounts, this is a required step. Enter a password that you 100% remember. If you forget your password, you will permanently lose access to your data.";
+          break;
+        case EDecryptResult.BadCredentials:
+          info = "For various reasons, the data could not be decrypted, please enter the password"
+          break;
+        case EDecryptResult.NeedAuth:
+          info = "It seems you have changed your browser. Please re-enter your password"
+          break;
+        default: return;
       }
+
+      openModal({ children:
+            <Authentication info={info} onSuccess={storeEncryptionKey} decryptData={await getAccounts()} />,
+        preventClosing: true, title: "Authentication", contentClass: "max-w-[305px]"}
+      )
     })
   }, []);
 

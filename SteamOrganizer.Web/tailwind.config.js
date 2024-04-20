@@ -29,7 +29,7 @@ export default {
           3: "#6c5ecf"
         },
         success: "#08fc81",
-        failed: "#d97193",
+        failed: "var(--failed)",
         close: "#ee6f60"
       },
       borderRadius: {
@@ -61,7 +61,7 @@ export default {
         },
         'pop-out': {
           '100%': { opacity: '0', marginTop: '-50px' },
-        }
+        },
       },
       animation: {
         'fade-in': 'fade-in 150ms',
@@ -83,7 +83,7 @@ export default {
         },
         '.btn-rect': {
           "@apply btn bg-pr-4 text-fg-3 rounded-default px-[7px] py-[4px]" : {}
-        },
+        }
       });
       addUtilities({
         '.purple-grad': {
