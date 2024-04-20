@@ -6,13 +6,18 @@ export const enum ESidebarState {
     Full
 }
 
+export const getSidebarState = () => {
+    return Number(localStorage.getItem("sidebar") ?? ESidebarState.Full);
+}
+
 const initialState:
     {
-        sidebarState: ESidebarState | undefined,
+        sidebarState: ESidebarState,
         modalState: boolean
     } =
     {
-        sidebarState: undefined,
+        sidebarState: window.matchMedia("(max-width: 1023px)").matches ?
+            ESidebarState.Hidden : getSidebarState(),
         modalState: false
     };
 

@@ -3,9 +3,10 @@ import {useSlider} from "../hooks/useSlider.ts";
 import {useSelector} from "react-redux";
 import {RootState} from "../store/store.ts";
 import {useActions} from "../hooks/useActions.ts";
-import {ESidebarState} from "../store/ui.slice.ts";
+import {ESidebarState, getSidebarState} from "../store/ui.slice.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 import {Link, useLocation} from "react-router-dom";
+import clsx from "clsx";
 
 interface ISidebarItemProps {
     icon: ReactNode
@@ -56,40 +57,39 @@ export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
 }
 
 export const Sidebar: FC<ISidebarProps> = ({children}) => {
-    let state = useSelector<RootState>((state) => state.ui.sidebarState)
+    let state = useSelector<RootState>((state) => state.ui.sidebarState) as ESidebarState
     const {changeSidebarState} = useActions()
+    const prevState = useRef(state)
 
-    const sideBarState = useRef(ESidebarState.Full);
     const isSmallScreen = useMediaQuery( {
         query: '(max-width: 1023px)',
-        callback: (match: boolean) => changeSidebarState(match ? ESidebarState.Hidden : ESidebarState.Full)
+        callback: (match: boolean) => {
+            changeSidebarState(match ? ESidebarState.Hidden : getSidebarState());
+        }
     });
-
-    if(state == undefined) {
-        changeSidebarState( state = (isSmallScreen ? ESidebarState.Hidden : ESidebarState.Partial));
-    }
 
     const sliderRef = useSlider((event: PointerEvent) => {
         let newState: ESidebarState | null = null;
 
-        if(event.clientX < 30 && sideBarState.current != ESidebarState.Hidden) {
+        if(event.clientX < 30 && prevState.current != ESidebarState.Hidden) {
             newState = ESidebarState.Hidden
         }
-        else if(event.clientX > 60 && event.clientX < 100 && sideBarState.current != ESidebarState.Partial) {
+        else if(event.clientX > 60 && event.clientX < 100 && prevState.current != ESidebarState.Partial) {
             newState = ESidebarState.Partial
         }
-        else if(event.clientX > 165 && sideBarState.current != ESidebarState.Full) {
+        else if(event.clientX > 165 && prevState.current != ESidebarState.Full) {
             newState = ESidebarState.Full
         }
 
         if(newState != null) {
+            prevState.current = newState;
             changeSidebarState(newState)
-            sideBarState.current = newState;
+            localStorage.setItem("sidebar", newState.toString())
         }
     });
 
     return (
-        <aside className={`fixed lg:relative flex flex-shrink-0 h-full z-10`}>
+        <aside className={clsx(`fixed lg:relative flex flex-shrink-0 h-full z-10`)}>
             <nav className={`h-full flex flex-col bg-pr-2  transition-all 
                           ${state == ESidebarState.Full ? "w-52" : state == ESidebarState.Partial ? "w-16" : "w-0 overflow-hidden"}`}>
 
@@ -110,13 +110,13 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
                 </div>
             </nav>
 
-            <div ref={sliderRef} className="pl-1 items-center transition-all h-full opacity-0 hover:opacity-100
+            <div ref={sliderRef} className="pl-1 items-center transition-all h-full opacity-0 active:opacity-100 hover:opacity-100
                                             cursor-col-resize hidden lg:flex absolute -right-2">
                 <div className="bg-pr-4 h-32 w-1  rounded-xl"/>
             </div>
 
             {state != ESidebarState.Hidden && isSmallScreen &&
-                <div className="lg:static bg-black opacity-50 w-screen"
+                <div className="lg:hidden bg-black opacity-50 w-screen"
                      onClick={() => changeSidebarState(ESidebarState.Hidden)}></div>
             }
         </aside>

@@ -1,16 +1,13 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 interface IMediaProps {
     query: string,
     callback?: (match: boolean) => void;
 }
 const useMediaQuery = ( { query, callback }: IMediaProps) => {
-    const [match, setMatch] = useState(window.matchMedia(query).matches);
-
     useEffect(() => {
         const updateMatch = () =>  {
             const isMatch = window.matchMedia(query).matches;
-            setMatch(isMatch);
             if (callback) {
                 callback(isMatch);
             }
@@ -23,7 +20,7 @@ const useMediaQuery = ( { query, callback }: IMediaProps) => {
         };
     }, [query]);
 
-    return match;
+    return window.matchMedia(query).matches;
 };
 
 export default useMediaQuery;
