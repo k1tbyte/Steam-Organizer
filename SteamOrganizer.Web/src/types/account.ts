@@ -1,13 +1,13 @@
 import { SteamAuth } from "./steamAuth.ts";
 
-export class Account {
+export class AccountType {
     nickname: string;
     login: string;
     password: string;
     phone?: number;
     note?: string;
 
-    steamId64?: number;
+    steamId64?: bigint;
     visibilityState?: number;
     vanityUrl?: string;
     steamLevel?: number;
@@ -44,7 +44,7 @@ export class Account {
         return this.haveCommunityBan || this.vacBansCount || this.gameBansCount || this.daysSinceLastBan || this.economyBan;
     }
 
-    constructor(login: string, password: string, steamId64?: number) {
+    constructor(login: string, password: string, steamId64?: bigint) {
         this.addedDate = new Date()
         this.nickname = this.login = login
         this.password = password
