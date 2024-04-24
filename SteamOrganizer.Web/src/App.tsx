@@ -1,10 +1,10 @@
-import Accounts from "./pages/Accounts.tsx";
+import Accounts from "./pages/Accounts/Accounts.tsx";
 import {MainLayout} from "./layouts/MainLayout.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
 import { createBrowserRouter, RouterProvider} from 'react-router-dom'
 import Actions from "./pages/Actions.tsx";
 import SignIn from "./pages/SignIn.tsx";
-import Backups from "./pages/Backups.tsx";
+import Backups from "./pages/Backups/Backups.tsx";
 import { RootModal } from "./components/elements/Modal.tsx";
 import useModal from "./hooks/useModal.ts";
 import {useEffect} from "react";

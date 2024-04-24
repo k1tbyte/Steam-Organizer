@@ -1,0 +1,23 @@
+.wrapper {
+    @apply w-full flex-wrap sm:flex-nowrap flex justify-center gap-2.5 absolute px-2  h-[40px] transition-all overflow-clip
+}
+
+.editButton {
+    @apply bg-pr-2 max-w-[60px] w-full h-[40px] rounded-r-xl rounded-l-3xl flex-center text-fg-2 sm:-order-2 z-20
+}
+
+.addButton {
+    @apply bg-pr-3 max-w-[60px] w-full h-[40px] rounded-l-xl rounded-r-3xl flex-center text-blue-400  z-20
+}
+
+.searchPanel {
+    @apply absolute right-0 top-0 flex-center h-full
+}
+
+.iconWrapper {
+    @apply bg-pr-3 h-full w-16 rounded-r-xl rounded-l-3xl flex-center text-blue-400
+}
+
+.searchOverlay {
+    @apply bg-pr-2 h-[75px] bg-opacity-70 rounded-b-xl w-full absolute top-8 sm:hidden -z-10 backdrop-blur-md transition-all
+}

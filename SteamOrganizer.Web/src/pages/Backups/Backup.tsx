@@ -8,7 +8,7 @@ interface IBackupProps{
     date?:Date
 }
 
- const  Backup:FC<IBackupProps>=({name,icon,date})=>{
+ const  Backup: FC<IBackupProps> = ({name,icon,date}) => {
     return(
         <div className="flex min-h-[105px] w-full bg-pr-2  p-4 pr-10 rounded-[3px] relative">
             <div className="ml-3 flex flex-col justify-center">

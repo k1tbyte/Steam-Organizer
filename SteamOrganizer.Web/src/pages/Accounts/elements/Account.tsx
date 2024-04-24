@@ -22,18 +22,18 @@ function Account() {
                       <FaPenToSquare size={14}/>
                   </button>
               </div>
-              <div className="text-xs mt-[7px] flex flex-wrap font-bold font-segoe text-pr-1 gap-[5px]">
+              <div className="text-xs mt-[7px] flex flex-wrap font-bold text-pr-1 gap-[5px]">
 
                   <div className="flex text-nowrap gap-[5px] mr-2">
-                      <div className="chip-rect">Level: 1000</div>
-                      <div className="chip-rect">Years: 4</div>
+                      <div className="chip">Level: 1000</div>
+                      <div className="chip">Years: 4</div>
                   </div>
 
-                  <div className="flex flex-wrap gap-[5px] ">
-                      <div className="chip-rect bg-success">VAC</div>
-                      <div className="chip-rect bg-success">Game</div>
-                      <div className="chip-rect bg-success">Trade</div>
-                      <div className="chip-rect bg-success">Community</div>
+                  <div className="flex flex-wrap gap-[5px] text-[12px]">
+                      <div className="chip bg-success">VAC</div>
+                      <div className="chip bg-success">Game</div>
+                      <div className="chip bg-success">Trade</div>
+                      <div className="chip bg-success">Community</div>
                   </div>
 
                   <span className="text-fg-2 font-medium w-full"><b className="text-pr-4">ID:</b> 144156554</span>

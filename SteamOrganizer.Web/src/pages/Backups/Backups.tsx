@@ -1,4 +1,4 @@
-import Backup from "../components/Backup.tsx";
+import Backup from "./Backup.tsx";
 
 export default function Backups(){
     return (

@@ -28,8 +28,8 @@ export const Modal: FC<IModalProps> = (props) => {
             }
             <Portal>
                 <Overlay className="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out"/>
-                <Content className={`${props.contentClass} fixed flex flex-col z-50 w-[90vw] bg-pr-2 p-[10px] font-segoe
-                                                    rounded-default translate-x-[-50%] translate-y-[-50%] top-[50%] left-[50%]
+                <Content className={`${props.contentClass} fixed flex flex-col z-50 w-[90vw] bg-pr-2 p-[10px]
+                                                    rounded-2xm translate-x-[-50%] translate-y-[-50%] top-[50%] left-[50%]
                                                     data-[state=open]:animate-[pop-in_0.2s] data-[state=closed]:animate-[pop-out_0.1s]`}>
 
                     { props.preventClosing !== true && <Close className="bg-close w-3 h-3 rounded-full"/> }

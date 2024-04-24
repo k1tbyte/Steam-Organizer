@@ -22,7 +22,7 @@ const InputWrapper = forwardRef<HTMLSpanElement,IInputWrapperProps>(
 
             <div className="flex mb-1">
                 <div className="bg-gradient-to-br from-stroke-2 to-stroke-3 w-[35px]
-                                rounded-small p-[7px] flex-shrink-0 flex items-center justify-center mr-2.5">
+                                rounded-xm p-[7px] flex-shrink-0 flex items-center justify-center mr-2.5">
                     {icon}
                 </div>
                 {children}

@@ -1,5 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-import { fontFamily } from "tailwindcss/defaultTheme";
 import plugin from "tailwindcss/plugin";
 
 export default {
@@ -33,16 +32,11 @@ export default {
         close: "#ee6f60"
       },
       borderRadius: {
-        'default': '5px',
-        'small': '3px'
+        '2xm': '5px',
+        'xm': '3px'
       },
       fontSize: {
-        'def': '13px',
-      },
-      fontFamily: {
-        sans: ["var(--font-sora)", ...fontFamily.sans],
-        code: "var(--font-code)",
-        segoe: "var(--font-segoe)",
+        '2xs': '13px',
       },
       transitionDuration: {
         DEFAULT: "200ms",
@@ -75,19 +69,16 @@ export default {
         '.btn': {
           "@apply select-none cursor-pointer": {}
         },
-        '.btn-primary': {
-          "@apply flex items-center justify-center px-3 py-1 rounded-small font-semibold select-none": {}
-        },
-        '.chip-rect': {
-          "@apply bg-pr-5 px-[10px] py-[2px] rounded-default": {}
+        '.chip': {
+          "@apply bg-pr-5 px-[9.7px] py-[2px] rounded-2xm": {}
         },
         '.btn-rect': {
-          "@apply btn bg-pr-4 text-fg-3 rounded-default px-[7px] py-[4px]" : {}
+          "@apply btn bg-pr-4 text-fg-3 rounded-2xm px-[7px] py-[4px]" : {}
         }
       });
       addUtilities({
-        '.purple-grad': {
-
+        '.flex-center': {
+          "@apply flex items-center justify-center": {}
         }
       })
     })

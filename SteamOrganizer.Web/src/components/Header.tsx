@@ -6,8 +6,9 @@ import { RootState } from "../store/store.ts";
 import {useActions} from "../hooks/useActions.ts";
 import {ESidebarState} from "../store/ui.slice.ts";
 import { Modal } from "./elements/Modal.tsx";
+import {FC} from "react";
 
-export const Header: React.FC = () => {
+export const Header: FC = () => {
     const store = useStore<RootState>();
     const {  changeSidebarState } = useActions();
 
@@ -25,7 +26,7 @@ export const Header: React.FC = () => {
             <div className="flex items-center gap-5 mr-1">
                 <FaBell size={17} />
                 <Modal contentClass="max-w-[405px]" trigger={<HiMiniCog6Tooth size={17}/>} title="New account" >
-                    <div className="font-segoe text-[13px] text-fg-2">
+                    <div className="text-[13px] text-fg-2">
                         Settings component
                     </div>
                 </Modal>

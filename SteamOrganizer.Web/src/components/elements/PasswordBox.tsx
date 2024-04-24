@@ -12,7 +12,7 @@ export const PasswordBox = forwardRef<HTMLInputElement,IPasswordBoxProps> (
     const [passwordVisible,setPasswordVisibility]= useState(false);
 
     return(
-        <div className={clsx("w-full h-[35px] flex items-center  bg-pr-3 rounded-small text-fg-2 text-def",className)}>
+        <div className={clsx("w-full h-[35px] flex items-center bg-pr-3 rounded-xm text-fg-2 text-2xs",className)}>
             <input type={clsx(passwordVisible || "password","")} {...props} ref={ref}
                    className="w-full h-full placeholder-fg-1 placeholder:font-semibold px-2.5 bg-transparent outline-0 outline-none
                    rounded-sm"/>

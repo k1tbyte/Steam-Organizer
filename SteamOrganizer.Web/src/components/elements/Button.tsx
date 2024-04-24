@@ -1,6 +1,6 @@
 import {ButtonHTMLAttributes, FC, ReactNode, RefObject, useEffect, useRef, useState} from "react";
-import clsx from "clsx";
 import MutableRef from "../../types/mutableRef.ts";
+import {cn} from "../../lib/utils.ts";
 
 export interface IButtonActions {
     invalidate: (delay: number) => void,
@@ -36,7 +36,7 @@ const Button: FC<IButtonProps> = (
 
     return (
         <button ref={actions?.payload?.ref} disabled={isLoading}
-                className={clsx("btn-primary text-def min-h-7 bg-pr-4 text-pr-3 transition-colors enabled:hover:text-fg-3 " , className)} {...props}>
+                className={cn("rounded-xm font-semibold select-none px-3 py-1 flex-center text-2xs min-h-7 bg-pr-4 text-pr-3 transition-colors enabled:hover:text-fg-3 " , className)} {...props}>
 
             {isLoading ?
                 <svg className="animate-spin h-5 w-5 text-fg-3" viewBox="0 0 24 24">
