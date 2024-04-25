@@ -1,4 +1,4 @@
-import {FC, ReactNode, useRef} from 'react'
+import React, {FC, ReactNode, useRef} from 'react'
 import {useSlider} from "../hooks/useSlider.ts";
 import {useSelector} from "react-redux";
 import {RootState} from "../store/store.ts";
@@ -7,6 +7,7 @@ import {ESidebarState, getSidebarState} from "../store/ui.slice.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 import {Link, useLocation} from "react-router-dom";
 import clsx from "clsx";
+import {Gradients} from "../assets";
 
 interface ISidebarItemProps {
     icon: ReactNode
@@ -38,7 +39,8 @@ export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
         <Link to={link}
               className={`py-[21px] btn flex items-start justify-center flex-col group relative ${iconClass}`}>
             <div className="z-10 flex-col flex items-center w-full justify-center pointer-events-none">
-                {icon}
+                {/*@ts-ignore*/}
+                {location.pathname===link ? React.cloneElement(icon, { stroke: Gradients.LightBlue }) : icon}
                 <p className={`mt-3 font-semibold text-sm ${textClass}`}>{text}</p>
             </div>
 

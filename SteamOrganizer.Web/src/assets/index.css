@@ -8,19 +8,20 @@
 :root {
     font-family: Inter, sans-serif;
     color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizelegibility;
     --failed: #ef4444;
     @apply selection:bg-indigo-600 selection:text-fg-3 caret-fg-2
 }
 
-body {
-    background: #1b1c31;
+#root {
+    max-width: 100vw;
+    max-height: 100vh;
+    @apply h-screen w-screen overflow-clip bg-pr-1 flex
 }
 
 .primary-grad {
-    background-image: linear-gradient(white, white), linear-gradient(to right, #87CEFA 0%, #6c5ecf 100%);;
-    border: double 2px transparent;
-    background-origin: border-box;
-    background-clip: content-box, border-box
+    background: linear-gradient(to right, #87CEFA 0%, #6c5ecf 100%);
 }
 
 .invalidate {

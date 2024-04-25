@@ -5,11 +5,12 @@ import { MdDelete} from "react-icons/md";
 
 function Account() {
   return (
-      <div className="flex min-h-[105px] bg-pr-2  p-4 pr-10 rounded-[3px] relative">
+      <div className="flex bg-pr-2  p-4 pr-10 rounded-[3px] h-fit relative">
+
           <img
               src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
               alt=""
-              className="w-[55px] h-[55px] rounded-lg primary-grad"
+              className="rounded-lg primary-grad p-0.5 w-[55px] h-[55px]"
           />
 
           <div className="ml-3">

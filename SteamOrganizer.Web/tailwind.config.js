@@ -70,7 +70,7 @@ export default {
           "@apply select-none cursor-pointer": {}
         },
         '.chip': {
-          "@apply bg-pr-5 px-[9.7px] py-[2px] rounded-2xm": {}
+          "@apply bg-pr-5 px-[9px] py-[2px] rounded-2xm": {}
         },
         '.btn-rect': {
           "@apply btn bg-pr-4 text-fg-3 rounded-2xm px-[7px] py-[4px]" : {}

@@ -34,7 +34,7 @@ export const  loadConfig = async () => {
     try {
         const data = await decrypt(fingerprint,configBytes);
         config = JSON.parse(data)
-    } catch {  }
+    } catch { }
 }
 
 export const saveConfig = async () => {

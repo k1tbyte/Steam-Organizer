@@ -11,6 +11,7 @@ import {useEffect} from "react";
 import { loadConfig, loadAccounts, EDecryptResult, storeEncryptionKey, getAccounts } from "./store/config.ts";
 import db from "./services/indexedDb.ts";
 import Authentication from "./pages/modal/Authentication.tsx";
+import { Defs } from "./assets"
 
 const router = createBrowserRouter([
   {
@@ -74,6 +75,7 @@ export default function App() {
       <>
         <RouterProvider router={router}/>
         <RootModal/>
+        <Defs/>
       </>
   )
 }

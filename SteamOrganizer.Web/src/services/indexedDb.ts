@@ -39,6 +39,10 @@ function openConnection() {
             reject('Error opening database');
         };
 
+        dbOpenRequest.onblocked =() => {
+            reject('Database blocked')
+        }
+
         dbOpenRequest.onupgradeneeded = function () {
             const db = dbOpenRequest.result;
             db.createObjectStore( 'user');
