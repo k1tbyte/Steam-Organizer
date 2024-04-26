@@ -2,8 +2,15 @@ import { FaSignInAlt } from "react-icons/fa";
 import { FaPenToSquare } from "react-icons/fa6";
 import { BsPinAngleFill } from "react-icons/bs";
 import { MdDelete} from "react-icons/md";
+import type { Account } from "../../../types/account.ts";
+import React, {FC } from "react";
 
-function Account() {
+interface IAccountCardProps {
+    acc: Account
+}
+
+
+const AccountCard: FC<IAccountCardProps> = ({acc}) => {
   return (
       <div className="flex bg-pr-2  p-4 pr-10 rounded-[3px] h-fit relative">
 
@@ -15,7 +22,7 @@ function Account() {
 
           <div className="ml-3">
               <div className="flex">
-                  <span className="text-[14px]">Why u bully me</span>
+                  <span className="text-[14px]">{acc.nickname}</span>
                   <button className="btn-rect ml-2">
                       <FaSignInAlt size={14}/>
                   </button>
@@ -37,7 +44,7 @@ function Account() {
                       <div className="chip bg-success">Community</div>
                   </div>
 
-                  <span className="text-fg-2 font-medium w-full"><b className="text-pr-4">ID:</b> 144156554</span>
+                  <span className="text-fg-2 font-medium w-full"><b className="text-pr-4">ID:</b> {acc.steamId64?.toString()}</span>
               </div>
           </div>
 
@@ -49,4 +56,4 @@ function Account() {
   )
 }
 
-export default Account
+export default React.memo(AccountCard)

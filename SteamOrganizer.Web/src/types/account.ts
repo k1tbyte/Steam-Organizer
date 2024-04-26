@@ -1,6 +1,6 @@
 import { SteamAuth } from "./steamAuth.ts";
 
-export class AccountType {
+export class Account {
     nickname: string;
     login: string;
     password: string;

@@ -92,8 +92,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
 
     return (
         <aside className={clsx(`fixed lg:relative flex flex-shrink-0 h-full z-50`)}>
-            <nav className={`h-full flex flex-col bg-pr-2  transition-all rounded-sm 
-                          ${state == ESidebarState.Full ? "w-52" : state == ESidebarState.Partial ? "w-16" : "w-0 overflow-clip"}`}>
+            <nav className={`h-full flex flex-col bg-pr-2 rounded-sm ${state == ESidebarState.Full ? "w-52" : state == ESidebarState.Partial ? "w-16" : "w-0 overflow-clip"}`}>
 
                 <div className={`lg:h-[48px] border-b-2 border-b-stroke-1`}/>
 
@@ -112,8 +111,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
                 </div>
             </nav>
 
-            <div ref={sliderRef} className="pl-1 items-center transition-all h-full opacity-0 active:opacity-100 hover:opacity-100
-                                            cursor-col-resize hidden lg:flex absolute -right-2">
+            <div ref={sliderRef} className="pl-1 items-center transition-all h-full opacity-0 active:opacity-100 hover:opacity-100 cursor-col-resize hidden lg:flex absolute -right-2">
                 <div className="bg-pr-4 h-32 w-1  rounded-xl"/>
             </div>
 
