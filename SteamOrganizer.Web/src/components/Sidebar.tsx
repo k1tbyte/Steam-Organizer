@@ -92,7 +92,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
 
     return (
         <aside className={clsx(`fixed lg:relative flex flex-shrink-0 h-full z-50`)}>
-            <nav className={`h-full flex flex-col bg-pr-2 rounded-sm ${state == ESidebarState.Full ? "w-52" : state == ESidebarState.Partial ? "w-16" : "w-0 overflow-clip"}`}>
+            <nav className={`h-full flex flex-col bg-pr-2 transition-all rounded-sm ${state == ESidebarState.Full ? "w-52" : state == ESidebarState.Partial ? "w-16" : "w-0 overflow-clip"}`}>
 
                 <div className={`lg:h-[48px] border-b-2 border-b-stroke-1`}/>
 

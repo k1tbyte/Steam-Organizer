@@ -14,6 +14,7 @@
     @apply selection:bg-indigo-600 selection:text-fg-3 caret-fg-2
 }
 
+.os-theme-dark,
 .os-theme-light {
     --os-size: 7px;
 }
