@@ -5,10 +5,9 @@ interface IGridProps {
     columns: number;
     limit: number;
     renderIndex: number;
-    visibleIndex: number;
     timer: number;
     startRow: number;
-    preventScrolling: boolean;
+    scrollPercent: number;
 }
 
 interface IVirtualScrollerProps {
@@ -16,12 +15,13 @@ interface IVirtualScrollerProps {
     renderElement: (id: number) => ReactNode;
 }
 
-let scrollPercent = 0;
 const VirtualScroller: FC<IVirtualScrollerProps> = ({ count, renderElement }) => {
     const scrollerRef = useRef<HTMLDivElement>(null);
     const areaRef = useRef<HTMLDivElement>(null);
+    const dummyRef = useRef<HTMLDivElement>(null);
     const gridRef = useRef<IGridProps>({} as IGridProps);
     const grid = gridRef.current
+    const padding = grid.rowHeight * grid.startRow
 
     const [startIndex, setStartIndex] = useState(0);
     const [limit,setLimit] = useState(1);
@@ -43,17 +43,14 @@ const VirtualScroller: FC<IVirtualScrollerProps> = ({ count, renderElement }) =>
     }
 
     const render = () => {
-        const overscan = 0;
-
         //Считаем количество сколько помещается рядов на экране
-        const visibleRows =Math.ceil(scrollerRef.current!.clientHeight / grid.rowHeight) + 1;
+        const visibleRows =Math.ceil(scrollerRef.current!.clientHeight / grid.rowHeight);
         // Считаем стартовый индекс ряда
         grid.startRow = Math.floor(scrollerRef.current!.scrollTop / grid.rowHeight)
-        grid.visibleIndex = grid.startRow * grid.columns;
-        const renderIndex = Math.max(grid.visibleIndex - (overscan * grid.columns), 0);
+        const renderIndex = Math.max(grid.startRow * grid.columns, 0);
 
         const endIndex = Math.min(
-            ((grid.startRow + overscan + 1) * grid.columns) + (grid.columns * visibleRows),
+            ((grid.startRow + 1) * grid.columns) + (grid.columns * visibleRows),
             count
         );
         const limitCount = endIndex - renderIndex;
@@ -75,30 +72,34 @@ const VirtualScroller: FC<IVirtualScrollerProps> = ({ count, renderElement }) =>
             clearTimeout(grid.timer)
             grid.timer = setTimeout(() => {
                 calculateSizes()
-                areaRef.current!.style.height = `${count / grid.columns * grid.rowHeight}px`;
-
-                scrollerRef.current!.scrollTop = Math.ceil(scrollPercent / 100 * areaRef.current!.clientHeight)
+                dummyRef.current!.style.height = `${count / grid.columns * grid.rowHeight}px`;
+                scrollerRef.current!.scrollTop = Math.ceil(grid.scrollPercent / 100 * dummyRef.current!.clientHeight)
                 render()
-                grid.preventScrolling = true;
-            },10)
+                grid.timer = 0;
+            },30)
         }).observe(scrollerRef.current!)
     },[])
 
-
     return (
-        <div className="overflow-auto mt-2"  onScroll={() => {
-            if(grid.preventScrolling) {
-                grid.preventScrolling = false;
+        <div ref={scrollerRef}
+             className="relative h-full overflow-auto my-2" onScroll={() => {
+            if(grid.timer) {
                 return
             }
-            scrollPercent = Math.ceil(scrollerRef.current!.scrollTop / areaRef.current!.clientHeight*100)
+            grid.scrollPercent = Math.ceil(scrollerRef.current!.scrollTop / dummyRef.current!.clientHeight * 100)
             render()
-        }} ref={scrollerRef}>
-            <div ref={areaRef} style={{paddingTop: `${grid.startRow * grid.rowHeight}px`}}
-                 className="grid  content-start grid-cols-[repeat(auto-fill,minmax(300px,1fr))] mx-2 gap-2">
-                {visibleItems.map((i) =>
-                    renderElement(i)
-                )}
+        }}>
+
+            <div ref={dummyRef} className="w-full">
+                <div ref={areaRef} style={{
+                    top: `-${padding + grid.rowHeight}px`,
+                    paddingTop: `${padding}px`
+                }}
+                     className="grid sticky grid-cols-[repeat(auto-fill,minmax(300px,1fr))] mx-2 gap-2">
+                    {visibleItems.map((i) =>
+                        renderElement(i)
+                    )}
+                </div>
             </div>
         </div>
     );
