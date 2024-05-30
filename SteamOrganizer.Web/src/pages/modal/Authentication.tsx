@@ -1,13 +1,13 @@
 import {MdVpnKey} from "react-icons/md";
 import {FaInfo} from "react-icons/fa6";
-import InputWrapper from "../../components/elements/InputWrapper.tsx";
-import {PasswordBox} from "../../components/elements/PasswordBox.tsx";
-import {decrypt, deriveKey } from "../../services/cryptography.ts";
-import Button, { IButtonActions} from "../../components/elements/Button.tsx";
-import {passwordValidator, useInputValidate} from "../../hooks/useInputValidate.ts";
+import InputWrapper from "@/components/elements/InputWrapper.tsx";
+import {PasswordBox} from "@/components/elements/PasswordBox.tsx";
+import {decrypt, deriveKey } from "@/services/cryptography.ts";
+import Button, { IButtonActions} from "@/components/elements/Button.tsx";
+import {passwordValidator, useInputValidate} from "@/hooks/useInputValidate.ts";
 import {FC} from "react";
-import MutableRef from "../../types/mutableRef.ts";
-import useModal from "../../hooks/useModal.ts";
+import MutableRef from "@/types/mutableRef.ts";
+import {useModalActions} from "@/components/elements/Modal.tsx";
 
 interface IAuthProps {
     info: string,
@@ -17,11 +17,12 @@ interface IAuthProps {
 }
 
 const Authentication : FC<IAuthProps> = (props) => {
-    const {closeModal} = useModal();
     const [inputRef, messageRef, validateRef]
         = useInputValidate([ passwordValidator ]);
+    const { closeModal, contentRef }  = useModalActions();
 
     const submitActions = new MutableRef<IButtonActions>()
+
 
     const tryDecrypt = async () => {
         const key = await deriveKey({ secret: inputRef.current!.value, extractable: true })
@@ -35,7 +36,7 @@ const Authentication : FC<IAuthProps> = (props) => {
     }
 
     return (
-        <div className="flex flex-col items-center w-full">
+        <div className="flex flex-col items-center w-full" ref={contentRef}>
             <div className="text-[12px] text-fg-2 relative pl-5 text-justify pr-2 mb-3">
                 <FaInfo size={18} className="text-fg-3 absolute -left-0.5 top-0.5"/>
                 <span>{props.info}</span>

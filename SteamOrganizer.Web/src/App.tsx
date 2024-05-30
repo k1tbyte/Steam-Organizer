@@ -5,13 +5,12 @@ import { createBrowserRouter, RouterProvider} from 'react-router-dom'
 import Actions from "./pages/Actions.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import Backups from "./pages/Backups/Backups.tsx";
-import { RootModal } from "./components/elements/Modal.tsx";
-import useModal from "./hooks/useModal.ts";
 import {useEffect} from "react";
 import { loadConfig, loadAccounts, EDecryptResult, storeEncryptionKey, getAccounts } from "./store/config.ts";
 import db from "./services/indexedDb.ts";
 import Authentication from "./pages/modal/Authentication.tsx";
 import { Defs } from "./assets"
+import {modal, ModalsHost} from "./components/elements/Modal.tsx";
 
 const router = createBrowserRouter([
   {
@@ -42,8 +41,6 @@ const router = createBrowserRouter([
 
 export default function App() {
 
-  const { openModal } = useModal()
-
   useEffect( () => {
     db.openConnection().then(async () => {
       await loadConfig()
@@ -64,17 +61,20 @@ export default function App() {
         default: return;
       }
 
-      openModal({ children:
-            <Authentication info={info} onSuccess={storeEncryptionKey} decryptData={await getAccounts()} />,
-        preventClosing: true, title: "Authentication", contentClass: "max-w-[305px]"}
-      )
+      modal.open({
+        body: <Authentication info={info} onSuccess={storeEncryptionKey} decryptData={await getAccounts()} />,
+        onClosing: () => true,
+        title: "Authentication",
+        withCloseButton: false,
+        className: "max-w-[305px] w-full"
+      })
     })
   }, []);
 
   return (
       <>
         <RouterProvider router={router}/>
-        <RootModal/>
+        <ModalsHost/>
         <Defs/>
       </>
   )

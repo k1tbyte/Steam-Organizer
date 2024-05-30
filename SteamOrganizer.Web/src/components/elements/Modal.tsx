@@ -1,65 +1,147 @@
-import { Root, Trigger, Portal, Overlay, Content, Title, Close } from "@radix-ui/react-dialog"
-import { FC, ReactNode} from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store.ts";
-import { useActions } from "../../hooks/useActions.ts";
+import { AnimatePresence, motion } from "framer-motion";
+import React, {Dispatch, FC, Fragment, ReactNode, SetStateAction, useEffect, useRef, useState} from "react";
+import {cn} from "@/lib/utils.ts";
 
-export interface IModalData {
+interface IModalOptions {
+    onClosing?: () => boolean | undefined;
+    body: ReactNode;
+    id?: number;
+}
+
+interface IModalProps extends  IModalOptions {
     title?: string,
-    contentClass?: string,
-    children?: ReactNode,
-    preventClosing?: boolean
+    withCloseButton?: boolean,
+    className?: string
 }
 
-interface IModalProps extends  IModalData {
-    trigger?: ReactNode,
-    isOpen?: boolean,
-    onStateChange?: (open: boolean) => void,
+let setModals: Dispatch<SetStateAction<IModalOptions[]>>;
+let prevCount: number = 0;
+
+const handleClose = (id: number, onClosing?: () => boolean | undefined) => {
+    if(!onClosing?.()) {
+        modal.close(id);
+    }
 }
 
-export const Modal: FC<IModalProps> = (props) => {
-    return (
-        <Root open={props.isOpen}  onOpenChange={props.onStateChange}>
-            {
-                props.trigger &&
-                <Trigger /*asChild*/>
-                    {props.trigger}
-                </Trigger>
+const ModalBody: FC<IModalProps> = React.memo(
+    ({ body,
+         onClosing,
+         id, className,
+         title,
+         withCloseButton = true}) => {
+
+        return (
+            <motion.div className={cn("fixed left-[50%] top-[50%] z-50 rounded-2xm bg-pr-2 p-[10px] translate-x-[-50%] translate-y-[-50%]",className)}
+                        modal-id={id}
+                        initial={{ opacity: 0, marginTop: -80 }}
+                        animate={{ opacity: 1, marginTop: 0  }}
+                        exit={{ opacity: 0, marginTop: -80 }}>
+                {
+                    withCloseButton &&
+                    <div role="button" className="bg-close w-3 h-3 rounded-full"
+                         onClick={() => handleClose(id!, onClosing)}/>
+                }
+
+                <h2 className="text-lg mb-2 text-center font-semibold text-fg-3">{title}</h2>
+                <div role="separator" className="bg-pr-1 h-1 -mx-[10px] mb-3"/>
+                {body}
+            </motion.div>
+        )
+    })
+
+export const ModalsHost = () => {
+    const [modals, setHostModals] = useState<IModalOptions[]>([])
+    const overlayRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        setModals = setHostModals
+    },[])
+
+    useEffect(() => {
+        if(!modals.length) {
+            return
+        }
+
+        const modalElement = overlayRef.current!.nextElementSibling! as HTMLElement
+        const focusableElements = modalElement.querySelectorAll(
+            'button, [href], input, textarea'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+        firstElement?.focus()
+
+        function handleModalKey(event: KeyboardEvent) {
+            if (event.code === 'Escape') {
+                const last = modals[modals.length-1]
+                handleClose(last.id!, last.onClosing)
+                return
             }
-            <Portal>
-                <Overlay className="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out"/>
-                <Content className={`${props.contentClass} fixed flex flex-col z-50 w-[90vw] bg-pr-2 p-[10px]
-                                                    rounded-2xm translate-x-[-50%] translate-y-[-50%] top-[50%] left-[50%]
-                                                    data-[state=open]:animate-[pop-in_0.2s] data-[state=closed]:animate-[pop-out_0.1s]`}>
 
-                    { props.preventClosing !== true && <Close className="bg-close w-3 h-3 rounded-full"/> }
-                    <Title className="text-lg mb-2 text-center font-semibold text-fg-3">{props.title}</Title>
+            if (event.key === "Tab" && firstElement) {
+                if (event.shiftKey && document.activeElement === firstElement) {
+                    event.preventDefault();
+                    lastElement.focus();
+                }
+                else if (!event.shiftKey && document.activeElement === lastElement) {
+                    event.preventDefault();
+                    firstElement.focus();
+                }
+            }
+        }
 
-                    <div className="bg-pr-1 h-1 -mx-[10px] mb-3"/>
-                    {props.children}
-                </Content>
-            </Portal>
-        </Root>
+        modalElement.addEventListener('keydown', handleModalKey)
+        return () => modalElement.removeEventListener('keydown', handleModalKey)
+    }, [modals])
+
+    return (
+        <AnimatePresence >
+            {modals.length &&
+                modals?.map((o, i) => {
+                    return (
+                        <Fragment key={i}>
+                            {
+                                i === (modals.length - 1) &&
+                                <motion.div ref={overlayRef}
+                                            initial={{opacity: prevCount > 0 ? 1 : 0 }}
+                                            animate={{opacity: 1}}
+                                            exit={{opacity: 0}}
+                                            className="fixed z-50 inset-0 backdrop-saturate-150 bg-black/80 backdrop-blur-md"
+                                            aria-hidden="true"
+                                            onClick={() => handleClose(o.id!, o.onClosing)}/>
+                            }
+                            {o.body}
+                        </Fragment>
+                    )
+                })
+            }
+        </AnimatePresence>
     )
 }
 
-let rootModalData: IModalData | undefined;
-
-export const  setModalData = (data: IModalData) => {
-    rootModalData = data;
+export const useModalActions = () => {
+    const contentRef = useRef<HTMLDivElement>(null)
+    function closeModal() {
+        const id = contentRef.current?.parentElement?.getAttribute("modal-id") as number | undefined
+        if(id) {
+            modal.close(id)
+        }
+    }
+    return {contentRef, closeModal }
 }
 
-export const RootModal: FC =  () =>
-{
-    const props = useSelector((state: RootState) => state.ui)
-    const { changeModalState } = useActions();
-
-    return Modal({
-        title: rootModalData?.title,
-        children: rootModalData?.children,
-        contentClass: rootModalData?.contentClass,
-        isOpen: props.modalState,
-        onStateChange: rootModalData?.preventClosing ? undefined:  () => { changeModalState(false) },
-        preventClosing: rootModalData?.preventClosing
-    })
+export const modal = {
+    close: (id: number = -1) => setModals(prev => {
+        prevCount = prev.length
+        prev.splice(id, 1)
+        return [...prev];
+    }),
+    open: (props: IModalProps) => {
+        setModals(prev => {
+            prevCount = prev.length
+            props.id = prev.length
+            return [...prev,
+                {id: props.id, onClosing: props.onClosing, body: <ModalBody {...props} />}
+            ];
+        });
+        return props.id!;
+    },
 }

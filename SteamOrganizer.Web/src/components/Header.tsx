@@ -5,8 +5,8 @@ import { useStore} from "react-redux";
 import { RootState } from "../store/store.ts";
 import {useActions} from "../hooks/useActions.ts";
 import {ESidebarState} from "../store/ui.slice.ts";
-import { Modal } from "./elements/Modal.tsx";
 import {FC} from "react";
+import {modal} from "@/components/elements/Modal.tsx";
 
 export const Header: FC = () => {
     const store = useStore<RootState>();
@@ -25,12 +25,16 @@ export const Header: FC = () => {
 
             <div className="flex items-center gap-5 mr-1">
                 <FaBell size={17} />
-                <Modal contentClass="max-w-[405px]" trigger={<HiMiniCog6Tooth size={17}/>} title="New account" >
-                    <div className="text-[13px] text-fg-2">
-                        Settings component
-                    </div>
-                </Modal>
-
+                <HiMiniCog6Tooth size={17} onClick={() => {
+                    modal.open({
+                        className: "w-full max-w-[405px]",
+                        title: "Settings",
+                        body:
+                            <div className="text-[13px] text-fg-2">
+                                Settings component
+                            </div>
+                    })
+                }}/>
             </div>
         </div>
     )
