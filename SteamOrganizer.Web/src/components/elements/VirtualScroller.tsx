@@ -1,4 +1,5 @@
 import {FC, ReactNode, useEffect, useRef, useState} from "react";
+import {useScrollbar} from "@/hooks/useScrollbar.ts";
 
 interface IGridProps {
     rowHeight: number;
@@ -8,6 +9,7 @@ interface IGridProps {
     timer: number;
     startRow: number;
     scrollPercent: number;
+    isLoaded: boolean;
 }
 
 interface IVirtualScrollerProps {
@@ -16,10 +18,16 @@ interface IVirtualScrollerProps {
 }
 
 const VirtualScroller: FC<IVirtualScrollerProps> = ({ count, renderElement }) => {
-    const scrollerRef = useRef<HTMLDivElement>(null);
-    const areaRef = useRef<HTMLDivElement>(null);
-    const dummyRef = useRef<HTMLDivElement>(null);
+    const areaRef = useRef<HTMLDivElement>(null!);
+    const sizerRef = useRef<HTMLDivElement>(null!);
     const gridRef = useRef<IGridProps>({} as IGridProps);
+    const {hostRef, scrollRef} = useScrollbar({
+        scroll: () => {
+            grid.scrollPercent = Math.ceil(scrollRef.current!.scrollTop / sizerRef.current.clientHeight * 100)
+            render()
+        }
+    });
+
     const grid = gridRef.current
     const padding = grid.rowHeight * grid.startRow
 
@@ -44,9 +52,9 @@ const VirtualScroller: FC<IVirtualScrollerProps> = ({ count, renderElement }) =>
 
     const render = () => {
         //Считаем количество сколько помещается рядов на экране
-        const visibleRows =Math.ceil(scrollerRef.current!.clientHeight / grid.rowHeight);
+        const visibleRows =Math.ceil(scrollRef.current!.clientHeight / grid.rowHeight);
         // Считаем стартовый индекс ряда
-        grid.startRow = Math.floor(scrollerRef.current!.scrollTop / grid.rowHeight)
+        grid.startRow = Math.floor(scrollRef.current!.scrollTop / grid.rowHeight)
         const renderIndex = Math.max(grid.startRow * grid.columns, 0);
 
         const endIndex = Math.min(
@@ -65,35 +73,25 @@ const VirtualScroller: FC<IVirtualScrollerProps> = ({ count, renderElement }) =>
 
     useEffect(() => {
         new ResizeObserver(() => {
-            if(!areaRef?.current) {
-                return;
-            }
-
             clearTimeout(grid.timer)
             grid.timer = setTimeout(() => {
                 calculateSizes()
-                dummyRef.current!.style.height = `${count / grid.columns * grid.rowHeight}px`;
-                scrollerRef.current!.scrollTop = Math.ceil(grid.scrollPercent / 100 * dummyRef.current!.clientHeight)
+                sizerRef.current!.style.height = `${count / grid.columns * grid.rowHeight}px`;
+                scrollRef.current!.scrollTop = Math.ceil(grid.scrollPercent / 100 * sizerRef.current!.clientHeight)
                 render()
                 grid.timer = 0;
             },30)
-        }).observe(scrollerRef.current!)
+        }).observe(sizerRef.current!)
+        grid.isLoaded = true
     },[])
 
     return (
-        <div ref={scrollerRef}
-             className="relative h-full overflow-auto my-2" onScroll={() => {
-            if(grid.timer) {
-                return
-            }
-            grid.scrollPercent = Math.ceil(scrollerRef.current!.scrollTop / dummyRef.current!.clientHeight * 100)
-            render()
-        }}>
-
-            <div ref={dummyRef} className="w-full">
+        <div ref={hostRef} className="my-2">
+            <div ref={sizerRef} className="w-full">
                 <div ref={areaRef} style={{
                     top: `-${padding + grid.rowHeight}px`,
-                    paddingTop: `${padding}px`
+                    paddingTop: `${padding}px`,
+                    opacity: grid.isLoaded ? 1 : 0
                 }}
                      className="grid sticky grid-cols-[repeat(auto-fill,minmax(300px,1fr))] mx-2 gap-2">
                     {visibleItems.map((i) =>
