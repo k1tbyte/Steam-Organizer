@@ -8,7 +8,7 @@ export  const MainLayout: FC= () => {
     return (
         <>
             <Sidebar>
-                <SidebarItem icon={<LuUsers size={20}/>} text="Accounts" link="/"/>
+                <SidebarItem icon={<LuUsers size={20}/>} text="Accounts" link="/accounts"/>
                 <SidebarItem icon={<LuZap size={20}/>} text="Actions" link="/actions"/>
                 <SidebarItem icon={<LuFolderSync size={20}/>} text={"Backups"} link="/backups"/>
             </Sidebar>

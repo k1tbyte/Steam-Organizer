@@ -30,22 +30,34 @@ const ModalBody: FC<IModalProps> = React.memo(
          title,
          withCloseButton = true}) => {
 
-        return (
-            <motion.div className={cn("fixed left-[50%] top-[50%] z-50 rounded-2xm bg-pr-2 p-[10px] translate-x-[-50%] translate-y-[-50%]",className)}
-                        modal-id={id}
-                        initial={{ opacity: 0, marginTop: -80 }}
-                        animate={{ opacity: 1, marginTop: 0  }}
-                        exit={{ opacity: 0, marginTop: -80 }}>
-                {
-                    withCloseButton &&
-                    <div role="button" className="bg-close w-3 h-3 rounded-full"
-                         onClick={() => handleClose(id!, onClosing)}/>
-                }
+        const contentRef = useRef<HTMLDivElement>(null)
+        useEffect(() => {
+            // @ts-ignore
+            if(contentRef.current?.firstChild!.scrollHeight > (window.innerHeight - 128))  {
+                contentRef.current!.classList.replace("items-center","items-start")
+            }
+        },[])
 
-                <h2 className="text-lg mb-2 text-center font-semibold text-fg-3">{title}</h2>
-                <div role="separator" className="bg-pr-1 h-1 -mx-[10px] mb-3"/>
-                {body}
-            </motion.div>
+        return (
+            <div ref={contentRef} className={"inset-0 fixed items-center overflow-y-auto z-50 w-screen flex justify-center"} onClick={() => handleClose(id!, onClosing)}
+            >
+                <motion.div className={cn("rounded-2xm bg-pr-2 p-[10px] mb-12", className)}
+                            modal-id={id}
+                            onClick={(e) => e.stopPropagation()}
+                            initial={{opacity: 0, marginTop: -80}}
+                            animate={{opacity: 1, marginTop: 64}}
+                            exit={{opacity: 0, marginTop: -80}}>
+                    {
+                        withCloseButton &&
+                        <div role="button" className="bg-close w-3 h-3 rounded-full"
+                             onClick={() => handleClose(id!, onClosing)}/>
+                    }
+
+                    <h2 className="text-lg mb-2 text-center font-semibold text-fg-3">{title}</h2>
+                    <div role="separator" className="bg-pr-1 h-1 -mx-[10px] mb-3"/>
+                    {body}
+                </motion.div>
+            </div>
         )
     })
 
@@ -54,10 +66,10 @@ export const ModalsHost = () => {
     const overlayRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         setModals = setHostModals
-    },[])
+    }, [])
 
     useEffect(() => {
-        if(!modals.length) {
+        if (!modals.length) {
             return
         }
 
@@ -71,7 +83,7 @@ export const ModalsHost = () => {
 
         function handleModalKey(event: KeyboardEvent) {
             if (event.code === 'Escape') {
-                const last = modals[modals.length-1]
+                const last = modals[modals.length - 1]
                 handleClose(last.id!, last.onClosing)
                 return
             }
@@ -105,8 +117,7 @@ export const ModalsHost = () => {
                                             animate={{opacity: 1}}
                                             exit={{opacity: 0}}
                                             className="fixed z-50 inset-0 backdrop-saturate-150 bg-black/80 backdrop-blur-md"
-                                            aria-hidden="true"
-                                            onClick={() => handleClose(o.id!, o.onClosing)}/>
+                                            aria-hidden="true"/>
                             }
                             {o.body}
                         </Fragment>

@@ -61,6 +61,9 @@ export default {
         'fade-in': 'fade-in 150ms',
         'fade-out': 'fade-out 150ms',
       },
+      fontFamily: {
+        code: "var(--font-code)"
+      }
   },
   },
   plugins: [

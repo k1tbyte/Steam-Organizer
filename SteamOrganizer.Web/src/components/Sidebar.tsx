@@ -1,31 +1,40 @@
-import React, {FC, ReactNode, useRef} from 'react'
+import React, {FC, Dispatch, ReactNode, SetStateAction, useRef, useState, createContext, useContext} from 'react'
 import {useSlider} from "../hooks/useSlider.ts";
-import {useSelector} from "react-redux";
-import {RootState} from "../store/store.ts";
-import {useActions} from "../hooks/useActions.ts";
-import {ESidebarState, getSidebarState} from "../store/ui.slice.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 import {Link, useLocation} from "react-router-dom";
 import clsx from "clsx";
-import {Gradients} from "../assets";
+import {Gradients} from "@/assets";
+
+export const enum ESidebarState {
+    Hidden,
+    Partial,
+    Full
+}
 
 interface ISidebarItemProps {
     icon: ReactNode
     text: string
     link:string
 }
+
 interface ISidebarProps {
     children: ReactNode
 }
 
+export let setState: Dispatch<SetStateAction<ESidebarState>>
+const SidebarContext = createContext<ESidebarState>(0)
+const mediaBreak = "(max-width: 1023px)"
+
+const getState = () => (Number(localStorage.getItem("sidebar")) ?? ESidebarState.Full);
+
 export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
-    const state = useSelector((state: RootState) => state.ui.sidebarState)
     let location=useLocation();
+    const state = useContext(SidebarContext)
 
     let iconClass,bgCol,
         textClass = state != ESidebarState.Full ? "hidden" : "";
 
-    if(location.pathname===link) {
+    if(location.pathname.startsWith(link)) {
         iconClass = "text-blue-400"
         bgCol = "scale-x-100 bg-pr-3 border-l-[3px]"
         textClass += " text-fg-2"
@@ -40,7 +49,7 @@ export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
               className={`py-[21px] btn flex items-start justify-center flex-col group relative ${iconClass}`}>
             <div className="z-10 flex-col flex items-center w-full justify-center pointer-events-none">
                 {/*@ts-ignore*/}
-                {location.pathname===link ? React.cloneElement(icon, { stroke: Gradients.LightBlue }) : icon}
+                {location.pathname.startsWith(link) ? React.cloneElement(icon, { stroke: Gradients.LightBlue }) : icon}
                 <p className={`mt-3 font-semibold text-sm ${textClass}`}>{text}</p>
             </div>
 
@@ -59,14 +68,18 @@ export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
 }
 
 export const Sidebar: FC<ISidebarProps> = ({children}) => {
-    let state = useSelector<RootState>((state) => state.ui.sidebarState) as ESidebarState
-    const {changeSidebarState} = useActions()
+    const [state, setSidebarState] = useState<ESidebarState>(
+        window.matchMedia(mediaBreak).matches ? ESidebarState.Hidden : getState()
+    )
+
     const prevState = useRef(state)
 
+    setState = setSidebarState
+
     const isSmallScreen = useMediaQuery( {
-        query: '(max-width: 1023px)',
+        query: mediaBreak,
         callback: (match: boolean) => {
-            changeSidebarState(match ? ESidebarState.Hidden : getSidebarState());
+            setState(match ? ESidebarState.Hidden : getState());
         }
     });
 
@@ -85,7 +98,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
 
         if(newState != null) {
             prevState.current = newState;
-            changeSidebarState(newState)
+            setState(newState)
             localStorage.setItem("sidebar", newState.toString())
         }
     });
@@ -96,7 +109,11 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
 
                 <div className={`lg:h-[48px] border-b-2 border-b-stroke-1`}/>
 
-                <ul className="flex-1"> {children} </ul>
+                <SidebarContext.Provider value={ state }>
+                    <ul className="flex-1">
+                        {children}
+                    </ul>
+                </SidebarContext.Provider>
                 <div className={`border-t border-pr-3 px-[11px] py-3 flex overflow-clip`}>
                     <img
                         src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
@@ -117,7 +134,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
 
             {state != ESidebarState.Hidden && isSmallScreen &&
                 <div className="lg:hidden bg-black opacity-50 w-screen"
-                     onClick={() => changeSidebarState(ESidebarState.Hidden)}></div>
+                     onClick={() => setState(ESidebarState.Hidden)}></div>
             }
         </aside>
     )

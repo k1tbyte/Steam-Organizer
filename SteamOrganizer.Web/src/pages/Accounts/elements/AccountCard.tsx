@@ -2,15 +2,16 @@ import { FaSignInAlt } from "react-icons/fa";
 import { FaPenToSquare } from "react-icons/fa6";
 import { BsPinAngleFill } from "react-icons/bs";
 import { MdDelete} from "react-icons/md";
-import type { Account } from "../../../types/account.ts";
+import type { Account } from "@/types/account.ts";
 import React, {FC } from "react";
+import {Link} from "react-router-dom";
 
 interface IAccountCardProps {
-    acc: Account
+    acc: Account,
 }
 
 
-const AccountCard: FC<IAccountCardProps> = ({acc}) => {
+const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
   return (
       <div className="flex bg-pr-2  p-4 pr-10 rounded-[3px] h-fit relative">
 
@@ -23,11 +24,11 @@ const AccountCard: FC<IAccountCardProps> = ({acc}) => {
           <div className="ml-3">
               <div className="flex">
                   <span className="text-[14px]">{acc.nickname}</span>
+                  <Link className="btn-rect ml-[6px]" to={`/accounts/${acc.login}`}>
+                      <FaPenToSquare size={14}/>
+                  </Link>
                   <button className="btn-rect ml-2">
                       <FaSignInAlt size={14}/>
-                  </button>
-                  <button className="btn-rect ml-[6px]">
-                      <FaPenToSquare size={14}/>
                   </button>
               </div>
               <div className="text-xs mt-[7px] flex flex-wrap font-bold text-pr-1 gap-[5px]">
