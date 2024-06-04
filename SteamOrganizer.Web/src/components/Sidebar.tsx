@@ -4,6 +4,8 @@ import useMediaQuery from "../hooks/useMediaQuery.ts";
 import {Link, useLocation} from "react-router-dom";
 import clsx from "clsx";
 import {Gradients} from "@/assets";
+import {GoogleLogin} from "@/components/elements/GoogleLogin.tsx";
+
 
 export const enum ESidebarState {
     Hidden,
@@ -112,16 +114,18 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
                     </ul>
                 </SidebarContext.Provider>
                 <div className={`border-t border-accent px-[11px] py-3 flex overflow-clip`}>
-                    <img
-                        src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
-                        alt=""
-                        className="w-10 h-10 rounded-md"
-                    />
-                    <div className="pl-2 flex-col flex justify-center text-nowrap w-full overflow-clip relative">
-                        <h4 className="text-foreground-accent text-sm">Kitbyte</h4>
-                        <span className="text-foreground-muted text-xs">kit8.com</span>
-                        <div className="absolute w-1/3 h-full right-0 bg-gradient-to-r from-transparent to-primary"/>
-                    </div>
+                    {/*<img*/}
+                    {/*    src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"*/}
+                    {/*    alt=""*/}
+                    {/*    className="w-10 h-10 rounded-md"*/}
+                    {/*/>*/}
+                    {/*<div className="pl-2 flex-col flex justify-center text-nowrap w-full overflow-clip relative">*/}
+                    {/*    <h4 className="text-foreground-accent text-sm">Kitbyte</h4>*/}
+                    {/*    <span className="text-foreground-muted text-xs">kit8.com</span>*/}
+                    {/*    <div className="absolute w-1/3 h-full right-0 bg-gradient-to-r from-transparent to-primary"/>*/}
+                    {/*</div>*/}
+
+
                 </div>
             </nav>
 
