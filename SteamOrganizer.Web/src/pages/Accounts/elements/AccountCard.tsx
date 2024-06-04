@@ -13,12 +13,12 @@ interface IAccountCardProps {
 
 const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
   return (
-      <div className="flex bg-pr-2  p-4 pr-10 rounded-[3px] h-fit relative">
+      <div className="flex bg-primary  p-4 pr-10 rounded-[3px] h-fit relative">
 
           <img
               src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
               alt=""
-              className="rounded-lg primary-grad p-0.5 w-[55px] h-[55px]"
+              className="rounded-lg grad-primary p-0.5 w-[55px] h-[55px]"
           />
 
           <div className="ml-3">
@@ -31,7 +31,7 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
                       <FaSignInAlt size={14}/>
                   </button>
               </div>
-              <div className="text-xs mt-[7px] flex flex-wrap font-bold text-pr-1 gap-[5px]">
+              <div className="text-xs mt-[7px] flex flex-wrap font-bold text-background gap-[5px]">
 
                   <div className="flex text-nowrap gap-[5px] mr-2">
                       <div className="chip">Level: 1000</div>
@@ -45,12 +45,12 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
                       <div className="chip bg-success">Community</div>
                   </div>
 
-                  <span className="text-fg-2 font-medium w-full"><b className="text-pr-4">ID:</b> {acc.steamId64?.toString()}</span>
+                  <span className="text-foreground font-medium w-full"><b className="text-secondary">ID:</b> {acc.steamId64?.toString()}</span>
               </div>
           </div>
 
-          <BsPinAngleFill className="absolute text-fg-1 right-3 top-3 hover:text-yellow-300 btn" size={17}/>
-          <MdDelete className="absolute text-fg-1 right-3 bottom-3 hover:text-failed btn" size={20}/>
+          <BsPinAngleFill className="absolute text-foreground-muted right-3 top-3 hover:text-yellow-300 btn" size={17}/>
+          <MdDelete className="absolute text-foreground-muted right-3 bottom-3 hover:text-failed btn" size={20}/>
 
       </div>
 

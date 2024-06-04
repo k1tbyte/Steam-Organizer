@@ -8,8 +8,7 @@ import {ESidebarState, setState } from "@/components/Sidebar.tsx";
 export const Header: FC = () => {
 
     return (
-        <div className="w-full flex justify-between items-center bg-pr-2 h-12 border-b-2 border-b-stroke-1 px-3
-        text-fg-2 flex-shrink-0">
+        <div className="w-full flex justify-between items-center bg-primary h-12 border-b-2 border-b-border px-3 text-foreground flex-shrink-0">
             <div className="flex">
                 <LuAlignJustify className=" lg:invisible"  size={20} onClick={() => {
                     setState(prev =>
@@ -25,7 +24,7 @@ export const Header: FC = () => {
                         className: "w-full max-w-[405px]",
                         title: "Settings",
                         body:
-                            <div className="text-[13px] text-fg-2">
+                            <div className="text-[13px] text-foreground">
                                 Settings component
                             </div>
                     })

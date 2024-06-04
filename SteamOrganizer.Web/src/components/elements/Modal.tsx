@@ -41,7 +41,7 @@ const ModalBody: FC<IModalProps> = React.memo(
         return (
             <div ref={contentRef} className={"inset-0 fixed items-center overflow-y-auto z-50 w-screen flex justify-center"} onClick={() => handleClose(id!, onClosing)}
             >
-                <motion.div className={cn("rounded-2xm bg-pr-2 p-[10px] mb-12", className)}
+                <motion.div className={cn("rounded-2xm bg-primary p-[10px] mb-12", className)}
                             modal-id={id}
                             onClick={(e) => e.stopPropagation()}
                             initial={{opacity: 0, marginTop: -80}}
@@ -53,8 +53,8 @@ const ModalBody: FC<IModalProps> = React.memo(
                              onClick={() => handleClose(id!, onClosing)}/>
                     }
 
-                    <h2 className="text-lg mb-2 text-center font-semibold text-fg-3">{title}</h2>
-                    <div role="separator" className="bg-pr-1 h-1 -mx-[10px] mb-3"/>
+                    <h2 className="text-lg mb-2 text-center font-semibold text-foreground-accent">{title}</h2>
+                    <div role="separator" className="bg-background h-1 -mx-[10px] mb-3"/>
                     {body}
                 </motion.div>
             </div>

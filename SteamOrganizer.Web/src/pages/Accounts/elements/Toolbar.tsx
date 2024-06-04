@@ -20,11 +20,11 @@ const Toolbar: FC = () => {
                 </button>
                 <div className="w-full flex-center relative -order-1 z-20  h-[40px]">
                     <div className={clsx(styles.searchOverlay, expanded || "h-0")}></div>
-                    <Input className="rounded-lg pr-24 h-full bg-pr-2 placeholder:font-semibold" maxLength={60} placeholder="Search in accounts"/>
+                    <Input className="rounded-lg pr-24 h-full bg-primary placeholder:font-semibold" maxLength={60} placeholder="Search in accounts"/>
                     <div className={styles.searchPanel}>
 
                         <FaChevronDown size={15}
-                                       className={clsx("mr-2 text-fg-2 transition-transform sm:hidden", expanded && "rotate-180")}
+                                       className={clsx("mr-2 text-foreground transition-transform sm:hidden", expanded && "rotate-180")}
                                        onClick={() => setExpanded(prev => !prev)}/>
 
                         <div className={styles.iconWrapper}>

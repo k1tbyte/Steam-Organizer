@@ -10,7 +10,7 @@ interface IBackupProps{
 
  const  BackupCard: FC<IBackupProps> = ({name,icon,date}) => {
     return(
-        <div className="flex min-h-[105px] w-full bg-pr-2  p-4 pr-10 rounded-[3px] relative">
+        <div className="flex min-h-[105px] w-full bg-primary  p-4 pr-10 rounded-[3px] relative">
             <div className="ml-3 flex flex-col justify-center">
                 <div className="inline-flex">
 
@@ -21,11 +21,11 @@ interface IBackupProps{
                 </div>
 
                 <div className="">
-                    <span className="text-fg-2 text-xs font-medium w-full"><b className="text-pr-4">Date :</b> {date!.toLocaleString()}</span>
+                    <span className="text-foreground text-xs font-medium w-full"><b className="text-secondary">Date :</b> {date!.toLocaleString()}</span>
                 </div>
             </div>
-            <MdOutlineRestorePage className="absolute text-fg-1 right-3 top-3 hover:text-blue-500 btn" size={23}/>
-            <MdDelete className="absolute text-fg-1 right-3 bottom-3 hover:text-failed btn" size={23}/>
+            <MdOutlineRestorePage className="absolute text-foreground-muted right-3 top-3 hover:text-blue-500 btn" size={23}/>
+            <MdDelete className="absolute text-foreground-muted right-3 bottom-3 hover:text-failed btn" size={23}/>
 
         </div>
     )

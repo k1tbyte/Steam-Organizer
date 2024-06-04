@@ -37,8 +37,8 @@ const Authentication : FC<IAuthProps> = (props) => {
 
     return (
         <div className="flex flex-col items-center w-full" ref={contentRef}>
-            <div className="text-[12px] text-fg-2 relative pl-5 text-justify pr-2 mb-3">
-                <FaInfo size={18} className="text-fg-3 absolute -left-0.5 top-0.5"/>
+            <div className="text-[12px] text-foreground relative pl-5 text-justify pr-2 mb-3">
+                <FaInfo size={18} className="text-foreground-accent absolute -left-0.5 top-0.5"/>
                 <span>{props.info}</span>
             </div>
             <InputWrapper ref={messageRef} title="Password" className="mb-7 w-full" icon={<MdVpnKey size={18}/>}>

@@ -13,10 +13,10 @@ export const PasswordBox = forwardRef<HTMLInputElement,IPasswordBoxProps> (
     const [passwordVisible,setPasswordVisibility]= useState(false);
 
     return(
-        <div className={clsx("w-full flex items-center bg-pr-3 rounded-xm text-fg-2 text-2xs",className)}>
+        <div className={clsx("w-full flex items-center bg-accent rounded-xm text-foreground text-2xs",className)}>
             <Input type={clsx(passwordVisible || "password","")} {...props} ref={ref}
                    className="bg-transparent"/>
-            <button className="h-full hover:text-fg-3 transition-all pr-2.5"
+            <button className="h-full hover:text-foreground-accent transition-all pr-2.5"
                     onClick={() => setPasswordVisibility((prev) => !prev)}>
                 {
                     passwordVisible ? <IoMdEye size={18} /> : <IoMdEyeOff size={18} />

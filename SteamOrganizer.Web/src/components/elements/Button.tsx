@@ -35,11 +35,11 @@ const Button: FC<IButtonProps> = (
     }
 
     return (
-        <button ref={actions?.payload?.ref} disabled={isLoading}
-                className={cn("rounded-xm font-semibold select-none px-3 py-1 flex-center text-2xs min-h-7 bg-pr-4 text-pr-3 transition-colors enabled:hover:text-fg-3 " , className)} {...props}>
+        <button ref={buttonRef} disabled={isLoading}
+                className={cn("rounded-xm font-semibold select-none px-3 py-1 flex-center text-2xs min-h-7 bg-secondary text-accent transition-colors enabled:hover:text-foreground-accent " , className)} {...props}>
 
             {isLoading ?
-                <svg className="animate-spin h-5 w-5 text-fg-3" viewBox="0 0 24 24">
+                <svg className="animate-spin h-5 w-5 text-foreground-accent" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" fill="transparent"
                             strokeWidth="4"/>
                     <path className="opacity-75" fill="currentColor"

@@ -11,8 +11,13 @@
     color-scheme: dark;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizelegibility;
-    --failed: #ef4444;
-    @apply selection:bg-indigo-600 selection:text-fg-3 caret-fg-2
+    @apply selection:bg-indigo-600 selection:text-foreground-accent caret-foreground
+}
+
+#root {
+    max-width: 100svw;
+    max-height: 100svh;
+    @apply h-svh w-svw overflow-clip bg-background flex
 }
 
 .os-theme-dark,
@@ -20,26 +25,6 @@
     --os-size: 7px;
 }
 
-#root {
-    max-width: 100vw;
-    max-height: 100vh;
-    @apply h-screen w-screen overflow-clip bg-pr-1 flex
-}
-
-.primary-grad {
-    background: linear-gradient(to right, #87CEFA 0%, #6c5ecf 100%);
-}
-
-.invalidate {
-    background: var(--failed);
-    pointer-events: none;
-    animation: shake 0.5s;
-}
-
-@keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
-    100% { transform: translateX(0); }
+.letter-space {
+    letter-spacing: 1px;
 }

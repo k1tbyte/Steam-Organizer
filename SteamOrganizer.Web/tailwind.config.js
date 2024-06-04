@@ -9,27 +9,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        pr: {
-          1: "#1b1c31",
-          2: "#24253a",
-          3: "#292848",
-          4: "#6d67fd",
-          5: "#6c5eb3",
-          6: "#3F3D7C"
-        },
-        fg: {
-          1: "#474c69",
-          2: "#b8b8b8",
-          3: "#f7f7f7"
-        },
-        stroke: {
-          1: "#212236",
-          2: "#7222db",
-          3: "#6c5ecf"
-        },
-        success: "#08fc81",
-        failed: "var(--failed)",
-        close: "#ee6f60"
+        "background": "#191a33",
+        "primary": "#21223d",
+        "accent": "#26254b",
+        "secondary": "#6d67fd",
+        "chip": "#6858b9",
+        "tertiary": "#3a3881",
+        "foreground": "#beb2b2",
+        "foreground-muted": "#41486f",
+        "foreground-accent": "#f8f6f6",
+        "border": "#1e2039",
+        "success": "#08fc81",
+        "danger": "#f04343",
+        "close": "#ef6e5f"
       },
       borderRadius: {
         '2xm': '5px',
@@ -42,24 +34,16 @@ export default {
         DEFAULT: "200ms",
       },
       keyframes: {
-        'fade-in': {
-          from: { opacity: '0' },
-          to: { opacity: '1' },
-        },
-        'fade-out': {
-          '100%': { opacity: '0' },
-        },
-        'pop-in': {
-          from: { opacity: '0', marginTop: '-100px' },
-          to: { opacity: '1', margin: '0px' },
-        },
-        'pop-out': {
-          '100%': { opacity: '0', marginTop: '-50px' },
+        shake: {
+          '0%': { transform: 'translateX(0)' },
+          '25%': { transform: 'translateX(-5px)' },
+          '50%': { transform: 'translateX(5px)' },
+          '75%': { transform: 'translateX(-5px)' },
+          '100%': { transform: 'translateX(0)' },
         },
       },
       animation: {
-        'fade-in': 'fade-in 150ms',
-        'fade-out': 'fade-out 150ms',
+        'shaking': 'shake 500ms',
       },
       fontFamily: {
         code: "var(--font-code)"
@@ -73,15 +57,27 @@ export default {
           "@apply select-none cursor-pointer": {}
         },
         '.chip': {
-          "@apply bg-pr-5 px-[9px] py-[2px] rounded-2xm": {}
+          "@apply bg-chip px-[9px] py-[2px] rounded-2xm": {}
         },
         '.btn-rect': {
-          "@apply btn bg-pr-4 text-fg-3 rounded-2xm px-[7px] py-[4px]" : {}
+          "@apply btn bg-secondary text-foreground-accent rounded-2xm px-[7px] py-[4px]" : {}
         }
       });
       addUtilities({
         '.flex-center': {
           "@apply flex items-center justify-center": {}
+        },
+        '.grad-purple': {
+          "@apply bg-gradient-to-br from-[#721fde] to-[#695ad3]": {}
+        },
+        '.grad-chip': {
+          "@apply  bg-gradient-to-br from-[#292848]  from-10% to-[#2f2f4b]": {}
+        },
+        '.grad-primary': {
+          "@apply bg-gradient-to-r from-[#87CEFA] to-[#6c5ecf]": {}
+        },
+        '.invalidate': {
+          "@apply pointer-events-none bg-danger animate-shaking": {}
         }
       })
     })
