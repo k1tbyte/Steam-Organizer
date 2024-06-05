@@ -124,6 +124,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
                     {/*    <span className="text-foreground-muted text-xs">kit8.com</span>*/}
                     {/*    <div className="absolute w-1/3 h-full right-0 bg-gradient-to-r from-transparent to-primary"/>*/}
                     {/*</div>*/}
+                    <GoogleLogin></GoogleLogin>
 
 
                 </div>

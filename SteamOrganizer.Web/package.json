@@ -13,6 +13,7 @@
     "@fingerprintjs/fingerprintjs": "^4.2.2",
     "clsx": "^2.1.0",
     "framer-motion": "^11.2.9",
+    "gapi-script": "^1.2.0",
     "overlayscrollbars": "^2.7.3",
     "react": "^18.2.0",
     "react-cool-virtual": "^0.7.0",
@@ -22,6 +23,9 @@
     "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
+    "@types/gapi": "^0.0.47",
+    "@types/gapi.auth2": "^0.0.60",
+    "@types/gapi.client.drive-v3": "^0.0.4",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",

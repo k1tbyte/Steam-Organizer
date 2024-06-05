@@ -12,6 +12,7 @@ import Authentication from "@/pages/Modals/Authentication.tsx";
 import { Defs } from "./assets"
 import {modal, ModalsHost} from "./components/elements/Modal.tsx";
 import {Profile} from "@/pages/Profile/Profile.tsx";
+import {AuthProvider} from "@/providers/authProvider.tsx";
 
 const router = createBrowserRouter([
   {
@@ -81,8 +82,10 @@ export default function App() {
 
   return (
       <>
-        <RouterProvider router={router}/>
-        <ModalsHost/>
+        <AuthProvider>
+          <RouterProvider router={router}/>
+          <ModalsHost/>
+        </AuthProvider>
         <Defs/>
       </>
   )

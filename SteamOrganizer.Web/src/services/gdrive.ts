@@ -1,9 +1,10 @@
 
 import {gapi} from "gapi-script";
+import {isAuthorized} from "@/services/gAuthService.ts";
 
 
 export const saveFile = async () => {
-    if (!gapi.auth2.getAuthInstance()) {
+    if (!isAuthorized) {
         console.log('User not signed in');
         return;
     }
