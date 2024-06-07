@@ -2,7 +2,7 @@ import {forwardRef, InputHTMLAttributes, useState} from "react";
 import clsx from 'clsx';
 
 import { IoMdEyeOff,IoMdEye } from "react-icons/io";
-import Input from "@/components/elements/Input.tsx";
+import Input from "@/components/primitives/Input.tsx";
 
 interface IPasswordBoxProps extends InputHTMLAttributes<HTMLInputElement> {
     className?: string,

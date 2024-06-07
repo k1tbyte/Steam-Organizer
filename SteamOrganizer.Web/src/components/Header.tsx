@@ -2,7 +2,7 @@ import {LuAlignJustify} from "react-icons/lu";
 import {HiMiniCog6Tooth} from "react-icons/hi2";
 import {FaBell} from "react-icons/fa";
 import {FC} from "react";
-import {modal} from "@/components/elements/Modal.tsx";
+import {modal} from "@/components/primitives/Modal.tsx";
 import {ESidebarState, setState } from "@/components/Sidebar.tsx";
 
 export const Header: FC = () => {

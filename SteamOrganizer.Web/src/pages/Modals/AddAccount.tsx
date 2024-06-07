@@ -1,11 +1,11 @@
 import {FC} from "react";
-import {useModalActions} from "@/components/elements/Modal.tsx";
+import {useModalActions} from "@/components/primitives/Modal.tsx";
 import InputWrapper from "@/components/elements/InputWrapper.tsx";
 import {MdVpnKey} from "react-icons/md";
-import {PasswordBox} from "@/components/elements/PasswordBox.tsx";
+import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import { MdAlternateEmail } from "react-icons/md";
-import Input from "@/components/elements/Input.tsx";
-import Button from "@/components/elements/Button.tsx";
+import Input from "@/components/primitives/Input.tsx";
+import Button from "@/components/primitives/Button.tsx";
 
 interface IAddAccountProps {
 

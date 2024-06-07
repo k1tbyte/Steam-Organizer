@@ -10,7 +10,7 @@ import { loadConfig, loadAccounts, EDecryptResult, storeEncryptionKey, getAccoun
 import db from "./services/indexedDb.ts";
 import Authentication from "@/pages/Modals/Authentication.tsx";
 import { Defs } from "./assets"
-import {modal, ModalsHost} from "./components/elements/Modal.tsx";
+import {modal, ModalsHost} from "./components/primitives/Modal.tsx";
 import {Profile} from "@/pages/Profile/Profile.tsx";
 import {AuthProvider} from "@/providers/authProvider.tsx";
 

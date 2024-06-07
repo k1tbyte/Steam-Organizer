@@ -1,13 +1,13 @@
 import {MdVpnKey} from "react-icons/md";
 import {FaInfo} from "react-icons/fa6";
 import InputWrapper from "@/components/elements/InputWrapper.tsx";
-import {PasswordBox} from "@/components/elements/PasswordBox.tsx";
+import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import {decrypt, deriveKey } from "@/services/cryptography.ts";
-import Button, { IButtonActions} from "@/components/elements/Button.tsx";
+import Button, { IButtonActions} from "@/components/primitives/Button.tsx";
 import {passwordValidator, useInputValidate} from "@/hooks/useInputValidate.ts";
 import {FC} from "react";
 import MutableRef from "@/types/mutableRef.ts";
-import {useModalActions} from "@/components/elements/Modal.tsx";
+import {useModalActions} from "@/components/primitives/Modal.tsx";
 
 interface IAuthProps {
     info: string,

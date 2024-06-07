@@ -1,7 +1,7 @@
 import AccountCard from "./elements/AccountCard.tsx";
 import Toolbar from "./elements/Toolbar.tsx";
 import {Account} from "@/types/account.ts";
-import VirtualScroller from "../../components/elements/VirtualScroller.tsx";
+import VirtualScroller from "@/components/primitives/VirtualScroller.tsx";
 
 let accounts: Account[] = new Array(200);
 for (let i = 0; i < accounts.length; i++) {

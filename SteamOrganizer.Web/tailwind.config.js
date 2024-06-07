@@ -56,6 +56,9 @@ export default {
         '.btn': {
           "@apply select-none cursor-pointer": {}
         },
+        '.btn-hover': {
+          "@apply btn text-foreground hover:text-foreground-accent transition-colors": {}
+        },
         '.chip': {
           "@apply bg-chip px-[9px] py-[2px] rounded-2xm": {}
         },
@@ -64,6 +67,12 @@ export default {
         }
       });
       addUtilities({
+        '.flex-y-center': {
+          "@apply flex items-center": {}
+        },
+        '.flex-x-center': {
+          "@apply flex justify-center": {}
+        },
         '.flex-center': {
           "@apply flex items-center justify-center": {}
         },
@@ -78,6 +87,15 @@ export default {
         },
         '.invalidate': {
           "@apply pointer-events-none bg-danger animate-shaking": {}
+        },
+        '.backdrop-primary': {
+          "@apply bg-primary/80 backdrop-saturate-150 backdrop-blur-md": {}
+        },
+        '.translate-center': {
+          "@apply -translate-y-1/2 -translate-x-1/2 left-1/2 top-1/2": {}
+        },
+        '.letter-space': {
+            letterSpacing: "1px"
         }
       })
     })

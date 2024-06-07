@@ -9,6 +9,7 @@ const options: PartialOptions = {
         autoHide: "move",
         theme: "os-theme-light",
         clickScroll: true,
+        autoHideDelay: 200
     }
 }
 

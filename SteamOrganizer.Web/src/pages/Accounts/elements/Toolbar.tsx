@@ -2,11 +2,11 @@ import React, {FC, useState} from "react";
 import clsx from "clsx";
 import styles from "./Toolbar.module.pcss";
 import {BiSolidEdit} from "react-icons/bi";
-import Input from "@/components/elements/Input.tsx";
+import Input from "@/components/primitives/Input.tsx";
 import {FaChevronDown, FaSearch} from "react-icons/fa";
 import {FaPlus} from "react-icons/fa6";
 import {Gradients} from "@/assets";
-import {modal} from "@/components/elements/Modal.tsx";
+import {modal} from "@/components/primitives/Modal.tsx";
 import {AddAccount} from "@/pages/Modals/AddAccount.tsx";
 
 const Toolbar: FC = () => {

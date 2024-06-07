@@ -37,6 +37,7 @@ export const saveFile = async () => {
             folderId = createFolderResponse.result.id;
         }
 
+        gapi.client.drive.files.create( { uploadType: "media" }, /*body:*/ { ?? } )
         // Check if the file exists
         const fileResponse = await gapi.client.drive.files.list({
             q: `name='${fileName}' and '${folderId}' in parents and trashed=false`,
