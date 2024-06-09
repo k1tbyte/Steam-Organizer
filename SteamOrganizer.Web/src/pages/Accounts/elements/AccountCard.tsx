@@ -1,10 +1,7 @@
-import { FaSignInAlt } from "react-icons/fa";
-import { FaPenToSquare } from "react-icons/fa6";
-import { BsPinAngleFill } from "react-icons/bs";
-import { MdDelete} from "react-icons/md";
 import type { Account } from "@/types/account.ts";
 import React, {FC } from "react";
 import {Link} from "react-router-dom";
+import {Icon, SvgIcon} from "@/assets";
 
 interface IAccountCardProps {
     acc: Account,
@@ -25,10 +22,10 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
               <div className="flex">
                   <span className="text-[14px]">{acc.nickname}</span>
                   <Link className="btn-rect ml-[6px]" to={`/accounts/${acc.login}`}>
-                      <FaPenToSquare size={14}/>
+                      <SvgIcon icon={Icon.EditSquare} size={14}/>
                   </Link>
                   <button className="btn-rect ml-2">
-                      <FaSignInAlt size={14}/>
+                      <SvgIcon icon={Icon.EnterSquare} size={14}/>
                   </button>
               </div>
               <div className="text-xs mt-[7px] flex flex-wrap font-bold text-background gap-[5px]">
@@ -49,8 +46,8 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
               </div>
           </div>
 
-          <BsPinAngleFill className="absolute text-foreground-muted right-3 top-3 hover:text-yellow-300 btn" size={17}/>
-          <MdDelete className="absolute text-foreground-muted right-3 bottom-3 hover:text-failed btn" size={20}/>
+          <SvgIcon icon={Icon.Pin} className="absolute text-foreground-muted right-3 top-3 hover:text-yellow-300 btn rotate-45" size={20}/>
+          <SvgIcon icon={Icon.Trash} className="absolute text-foreground-muted right-3 bottom-3 hover:text-failed btn" size={20}/>
 
       </div>
 

@@ -1,11 +1,10 @@
 import {FC} from "react";
 import {useModalActions} from "@/components/primitives/Modal.tsx";
 import InputWrapper from "@/components/elements/InputWrapper.tsx";
-import {MdVpnKey} from "react-icons/md";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
-import { MdAlternateEmail } from "react-icons/md";
 import Input from "@/components/primitives/Input.tsx";
 import Button from "@/components/primitives/Button.tsx";
+import {Icon, SvgIcon} from "@/assets";
 
 interface IAddAccountProps {
 
@@ -16,14 +15,14 @@ export const AddAccount: FC<IAddAccountProps> = () => {
 
     return (
         <div className="w-full" ref={contentRef}>
-            <InputWrapper title="Login" className="mb-2 w-full" icon={<MdAlternateEmail size={18}/>}>
+            <InputWrapper title="Login" className="mb-2 w-full" icon={<SvgIcon icon={Icon.UserText} size={18}/>}>
                 <Input />
             </InputWrapper>
-            <InputWrapper title="Password" className="mb-2 w-full" icon={<MdVpnKey size={18}/>}>
+            <InputWrapper title="Password" className="mb-2 w-full" icon={<SvgIcon icon={Icon.Key} size={18}/>}>
                 <PasswordBox />
             </InputWrapper>
             <InputWrapper title="Account ID in any format" className="mb-7 w-full"
-                          icon={<p className="font-bold font-code mb-0.5" >ID</p>}>
+                          icon={<SvgIcon icon={Icon.Identifier} size={36}/>}>
                 <Input />
             </InputWrapper>
             <Button className="w-full max-w-28 mx-auto" onClick={closeModal}>

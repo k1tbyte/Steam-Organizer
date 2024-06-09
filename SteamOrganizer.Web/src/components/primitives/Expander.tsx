@@ -1,8 +1,8 @@
 import {FC, ReactElement, ReactNode, useState} from "react";
 import {cn} from "@/lib/utils.ts";
-import {FaChevronDown} from "react-icons/fa";
 import {AnimatePresence, motion} from "framer-motion";
 import clsx from "clsx";
+import {Icon, SvgIcon} from "@/assets";
 
 
 interface IExpanderProps {
@@ -28,7 +28,7 @@ export const Expander: FC<IExpanderProps> = ({ className, icon, title,
                     }
                     <span className="letter-space text-md font-bold">{title}</span>
                 </div>
-                <FaChevronDown size={22} role="button"
+                <SvgIcon icon={Icon.ChevronDown} size={22} role="button"
                                className={clsx("btn-hover transition-transform",{"rotate-90": !expanded })}
                                onClick={() => setExpanded(prev => !prev)}/>
             </div>

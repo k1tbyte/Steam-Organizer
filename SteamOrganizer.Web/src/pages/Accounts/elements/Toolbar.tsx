@@ -1,11 +1,8 @@
 import React, {FC, useState} from "react";
 import clsx from "clsx";
 import styles from "./Toolbar.module.pcss";
-import {BiSolidEdit} from "react-icons/bi";
 import Input from "@/components/primitives/Input.tsx";
-import {FaChevronDown, FaSearch} from "react-icons/fa";
-import {FaPlus} from "react-icons/fa6";
-import {Gradients} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "@/assets";
 import {modal} from "@/components/primitives/Modal.tsx";
 import {AddAccount} from "@/pages/Modals/AddAccount.tsx";
 
@@ -16,19 +13,19 @@ const Toolbar: FC = () => {
             <div className={clsx(styles.wrapper, expanded && "h-[110px]")}>
 
                 <button className={styles.editButton}>
-                    <BiSolidEdit size={20}/>
+                    <SvgIcon icon={Icon.EditSquareOutline} size={21}/>
                 </button>
                 <div className="w-full flex-center relative -order-1 z-20  h-[40px]">
                     <div className={clsx(styles.searchOverlay, expanded || "h-0")}></div>
                     <Input className="rounded-lg pr-24 h-full bg-primary placeholder:font-semibold" maxLength={60} placeholder="Search in accounts"/>
                     <div className={styles.searchPanel}>
 
-                        <FaChevronDown size={15}
+                        <SvgIcon icon={Icon.ChevronDown} size={15}
                                        className={clsx("mr-2 text-foreground transition-transform sm:hidden", expanded && "rotate-180")}
                                        onClick={() => setExpanded(prev => !prev)}/>
 
                         <div className={styles.iconWrapper}>
-                            <FaSearch fill={Gradients.LightBlue}/>
+                            <SvgIcon icon={Icon.Magnifier} fill={Gradients.LightBlue} size={16}/>
                         </div>
                     </div>
                 </div>
@@ -38,7 +35,7 @@ const Toolbar: FC = () => {
                         body: <AddAccount/>
                     })
                 }}>
-                    <FaPlus size={20} fill={Gradients.LightBlue}/>
+                    <SvgIcon icon={Icon.Plus} size={20} fill={Gradients.LightBlue}/>
                 </button>
             </div>
         </div>

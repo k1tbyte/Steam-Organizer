@@ -1,9 +1,7 @@
 import React, {FC, ReactElement } from "react";
 import {useParams} from "react-router-dom";
-import { SiSteamdb } from "react-icons/si";
-import { FaCheckCircle, FaRegUserCircle, FaSteamSymbol, FaGamepad, FaUserFriends } from "react-icons/fa";
 import {Tab, TabPanel} from "@/components/primitives/Tabs.tsx";
-import {Gradients} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "@/assets";
 import {motion} from "framer-motion";
 import styles from "./Profile.module.pcss";
 import ProfileTab from "@/pages/Profile/tabs/ProfileTab.tsx";
@@ -50,16 +48,14 @@ export const Profile: FC = () => {
                 </div>
                 <div className={styles.header}>
                     <div className={styles.avatarContainer}>
-                        <img style={{maskImage: "url(#mask)"}}
+                        <img style={{maskImage: "url(#avatarMask)"}}
                              src="https://avatars.akamai.steamstatic.com/b3bd9dfc77bc5e2c12f6317873a12f0d36b4a65a_full.jpg"
                              className={styles.avatar} alt="avatar"/>
 
                         <svg xmlns="http://www.w3.org/2000/svg" className="absolute stroke-accent"
-                             viewBox="-3 -3 190 190" width="184" height="182"
+                             viewBox="-3 -3 190 190" width="184" height="182" fill="transparent"
                              strokeOpacity={0.6} strokeWidth={10}>
-                            <path className="st0"
-                                  d="M152.18,175H31.1c-12.92,0-23.4-11.34-23.4-25.32L-0.19,26.68C-0.19,11.94,11.29,0,25.46,0h132.71c14.16,0,25.64,11.94,25.64,26.68l-8.24,123.01C175.58,163.66,165.1,175,152.18,175z"
-                                  fill="transparent"/>
+                            <use xlinkHref={`/sprites.svg#avatarMask`}/>
                         </svg>
                         <div className={styles.lvlLabel}>
                             17
@@ -79,16 +75,16 @@ export const Profile: FC = () => {
                         </div>
 
                         <div className="flex-y-center gap-5">
-                            <FaCheckCircle className="text-green-400" size={20}/>
+                            <SvgIcon icon={Icon.CheckCircle} className="text-green-400" size={25}/>
                             <p className="letter-space text-sm">No bans</p>
                         </div>
 
                         <div className="flex gap-3">
                             <a className={styles.iconLink}>
-                                <FaSteamSymbol size={30}/>
+                                <SvgIcon icon={Icon.Steam} size={30}/>
                             </a>
                             <a className={styles.iconLink}>
-                                <SiSteamdb size={30}/>
+                                <SvgIcon icon={Icon.SteamDb} size={30}/>
                             </a>
                         </div>
                     </div>
@@ -104,15 +100,15 @@ export const Profile: FC = () => {
                               }
                     >
                         <Tab key="profile" title={(active) =>
-                            <TabTitle title="Profile" icon={<FaRegUserCircle size={20}/>} active={active}/>
+                            <TabTitle title="Profile" icon={<SvgIcon icon={Icon.UserOutline} size={20}/>} active={active}/>
                         } children={<ProfileTab/>}/>
 
                         <Tab key="games" title={(active) =>
-                            <TabTitle title="Games" icon={<FaGamepad size={20}/>} active={active}/>
+                            <TabTitle title="Games" icon={<SvgIcon icon={Icon.Gamepad} size={20}/>} active={active}/>
                         } children={<GamesTab/>}/>
 
                         <Tab key="friends" title={(active) =>
-                            <TabTitle title="Friends" icon={<FaUserFriends size={20}/>} active={active}/>
+                            <TabTitle title="Friends" icon={<SvgIcon icon={Icon.Users} size={20}/>} active={active}/>
                         } children={<FriendsTab/>}/>
                     </TabPanel>
                 </div>

@@ -1,7 +1,46 @@
 import grid from "./images/grid.webp"
+import { FC, SVGAttributes } from "react";
 
 export const enum Gradients {
-    LightBlue = "url(#lightBlueGrad)"
+    LightBlue = "url(#lightBlueGrad)",
+    Success = "url(#successGrad)"
+}
+
+export const enum Icon {
+    Steam = 1,
+    SteamDb,
+    CheckDecagram,
+    AlertDecagram,
+    UsersOutline,
+    LightningOutline,
+    FolderSync,
+    EditSquare,
+    EnterSquare,
+    EditSquareOutline,
+    Magnifier,
+    Plus,
+    Pin,
+    Trash,
+    Bell,
+    Cog,
+    SteamOutline,
+    GameController,
+    BadgeAward,
+    Block,
+    ChevronDown,
+    UserOutline,
+    Gamepad,
+    Users,
+    CheckCircle,
+    Fingerprint,
+    AlignJustify,
+    Key,
+    Identifier,
+    UserText,
+    BackupRestore,
+    Eye,
+    EyeOff,
+    InfoMark,
 }
 
 export function Defs() {
@@ -12,14 +51,35 @@ export function Defs() {
                     <stop offset="0" stopColor="#87CEFA"/>
                     <stop offset="1" stopColor="#6c5ecf"/>
                 </linearGradient>
+                <linearGradient id="successGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stopColor="#26F596"/>
+                    <stop offset="1" stopColor="#0499F2"/>
+                </linearGradient>
             </defs>
-            <mask id="mask">
-
-                <path className="st0" d="M152.18,175H31.1c-12.92,0-23.4-11.34-23.4-25.32L-0.19,26.68C-0.19,11.94,11.29,0,25.46,0h132.71c14.16,0,25.64,11.94,25.64,26.68l-8.24,123.01C175.58,163.66,165.1,175,152.18,175z" fill="#ffff"/>
+            <mask id="avatarMask">
+                <use xlinkHref={`/sprites.svg#avatarMask`} fill="#ffff"/>
             </mask>
         </svg>
     )
 }
+
+interface ISvgIconProps extends SVGAttributes<SVGElement>  {
+    size?: number;
+    className?: string;
+    icon: Icon;
+}
+
+export const SvgIcon: FC<ISvgIconProps> = ({ icon,size,  fill, ...props }) => {
+    return (
+        <svg fill={fill ?? "currentColor"}
+             stroke={props.stroke ?? "currentColor"}
+             strokeWidth={0}
+             width={size ?? props.width}
+             height={size ?? props.height} {...props} >
+            <use xlinkHref={`/sprites.svg#i${icon}`}/>
+        </svg>
+    );
+};
 
 export {
     grid

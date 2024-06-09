@@ -1,6 +1,5 @@
-
-import {MdDelete, MdOutlineRestorePage} from "react-icons/md";
 import {FC} from "react";
+import {Icon, SvgIcon} from "@/assets";
 
 interface IBackupProps{
     name?:string
@@ -24,8 +23,8 @@ interface IBackupProps{
                     <span className="text-foreground text-xs font-medium w-full"><b className="text-secondary">Date :</b> {date!.toLocaleString()}</span>
                 </div>
             </div>
-            <MdOutlineRestorePage className="absolute text-foreground-muted right-3 top-3 hover:text-blue-500 btn" size={23}/>
-            <MdDelete className="absolute text-foreground-muted right-3 bottom-3 hover:text-failed btn" size={23}/>
+            <SvgIcon icon={Icon.BackupRestore} className="absolute text-foreground-muted right-3 top-3 hover:text-blue-500 btn" size={23}/>
+            <SvgIcon icon={Icon.Trash} className="absolute text-foreground-muted right-3 bottom-3 hover:text-failed btn" size={23}/>
 
         </div>
     )

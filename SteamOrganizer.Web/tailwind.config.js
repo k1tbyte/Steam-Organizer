@@ -80,7 +80,7 @@ export default {
           "@apply bg-gradient-to-br from-[#721fde] to-[#695ad3]": {}
         },
         '.grad-chip': {
-          "@apply  bg-gradient-to-br from-[#292848]  from-10% to-[#2f2f4b]": {}
+          "@apply  bg-gradient-to-br from-[#26254b]  from-10% to-[#2b2b4f]": {}
         },
         '.grad-primary': {
           "@apply bg-gradient-to-r from-[#87CEFA] to-[#6c5ecf]": {}

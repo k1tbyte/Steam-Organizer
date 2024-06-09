@@ -1,8 +1,7 @@
 import {forwardRef, InputHTMLAttributes, useState} from "react";
 import clsx from 'clsx';
-
-import { IoMdEyeOff,IoMdEye } from "react-icons/io";
 import Input from "@/components/primitives/Input.tsx";
+import {Icon, SvgIcon} from "@/assets";
 
 interface IPasswordBoxProps extends InputHTMLAttributes<HTMLInputElement> {
     className?: string,
@@ -19,7 +18,7 @@ export const PasswordBox = forwardRef<HTMLInputElement,IPasswordBoxProps> (
             <button className="h-full hover:text-foreground-accent transition-all pr-2.5"
                     onClick={() => setPasswordVisibility((prev) => !prev)}>
                 {
-                    passwordVisible ? <IoMdEye size={18} /> : <IoMdEyeOff size={18} />
+                    passwordVisible ? <SvgIcon icon={Icon.Eye} size={18} /> : <SvgIcon icon={Icon.EyeOff} size={18} />
                 }
             </button>
         </div>

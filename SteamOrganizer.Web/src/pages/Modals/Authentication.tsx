@@ -1,5 +1,3 @@
-import {MdVpnKey} from "react-icons/md";
-import {FaInfo} from "react-icons/fa6";
 import InputWrapper from "@/components/elements/InputWrapper.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import {decrypt, deriveKey } from "@/services/cryptography.ts";
@@ -8,6 +6,7 @@ import {passwordValidator, useInputValidate} from "@/hooks/useInputValidate.ts";
 import {FC} from "react";
 import MutableRef from "@/types/mutableRef.ts";
 import {useModalActions} from "@/components/primitives/Modal.tsx";
+import {Icon, SvgIcon} from "@/assets";
 
 interface IAuthProps {
     info: string,
@@ -38,10 +37,10 @@ const Authentication : FC<IAuthProps> = (props) => {
     return (
         <div className="flex flex-col items-center w-full" ref={contentRef}>
             <div className="text-[12px] text-foreground relative pl-5 text-justify pr-2 mb-3">
-                <FaInfo size={18} className="text-foreground-accent absolute -left-0.5 top-0.5"/>
+                <SvgIcon icon={Icon.InfoMark} size={18} className="text-foreground-accent absolute -left-0.5 top-0.5"/>
                 <span>{props.info}</span>
             </div>
-            <InputWrapper ref={messageRef} title="Password" className="mb-7 w-full" icon={<MdVpnKey size={18}/>}>
+            <InputWrapper ref={messageRef} title="Password" className="mb-7 w-full" icon={<SvgIcon icon={Icon.Key} size={18}/>}>
                 <PasswordBox ref={inputRef}/>
             </InputWrapper>
             <Button children="Confirm" className="w-full max-w-36" actions={submitActions}
