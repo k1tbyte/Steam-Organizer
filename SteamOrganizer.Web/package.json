@@ -24,7 +24,6 @@
   "devDependencies": {
     "@types/gapi": "^0.0.47",
     "@types/gapi.auth2": "^0.0.60",
-    "@types/gapi.client.drive-v3": "^0.0.4",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",

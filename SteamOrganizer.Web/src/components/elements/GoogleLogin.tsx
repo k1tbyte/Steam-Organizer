@@ -1,11 +1,8 @@
 import React from 'react';
 import {useAuth} from "@/providers/authProvider.tsx";
-import {saveFile} from "@/services/gdrive.ts";
+import { saveFile} from "@/services/gDrive.ts";
 function saveTest(){
-    saveFile({
-            folderName:"accManager",
-            fileName:"test.txt",
-            fileContent:"HelloWorld"});
+    saveFile("accounts.json",{ login: "hello", password: "world" });
 }
 export const GoogleLogin: React.FC = () => {
     const { user, signIn, signOut } = useAuth();
