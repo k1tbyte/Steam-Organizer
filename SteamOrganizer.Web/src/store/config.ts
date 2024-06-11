@@ -1,6 +1,7 @@
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import db from "../services/indexedDb.ts"
 import {decrypt, deriveKey, encrypt, exportKey, importKey} from "../services/cryptography.ts";
+import {Account} from "@/types/account.ts";
 
 interface IAppConfig {
     encryptionKey?: string
@@ -18,7 +19,7 @@ let fingerprint: CryptoKey | undefined;
 let databaseKey: CryptoKey | undefined;
 
 export let config: IAppConfig;
-export let accounts: number[]
+export const accounts: Account[] = []
 
 export const  loadConfig = async () => {
     const agent = await FingerprintJS.load();
@@ -73,13 +74,12 @@ export const loadAccounts = async () => {
     }
 
     if(dbBytes == undefined) {
-        accounts = []
         return EDecryptResult.Success
     }
 
     try {
         const data = await decrypt(databaseKey, dbBytes);
-        accounts = JSON.parse(data)
+        accounts.push(JSON.parse(data))
         return EDecryptResult.Success
     } catch {
         return EDecryptResult.BadCredentials

@@ -1,0 +1,55 @@
+import { BaseVirtualLayout } from "./BaseVirtualLayout.ts";
+
+export class GridLayout extends BaseVirtualLayout {
+    public columns: number = -1;
+
+    private calculateSizes() {
+        const gridStyles = window.getComputedStyle(this.layout);
+
+        const row = gridStyles.getPropertyValue('grid-template-rows').match(/[\d.]+/)?.[0];
+        const col = gridStyles.getPropertyValue('grid-template-columns').match(/[\d.]+/)?.[0];
+        if(!row || !col) {
+            return
+        }
+        const columnGap = parseFloat(gridStyles.getPropertyValue('grid-column-gap'));
+        const rowGap = parseFloat(gridStyles.getPropertyValue('grid-row-gap'));
+        const columnWidth = parseFloat(col) + columnGap;
+        this.rowHeight = parseFloat(row) + rowGap;
+        this.columns =  Math.ceil(this.layout.clientWidth / columnWidth);
+    }
+
+    public render() {
+        if(this.collection.length === 1) {
+            this.chunkSetter([0])
+            return;
+        }
+        const visibleRows =Math.ceil(this.scroller.clientHeight / this.rowHeight);
+        this.startRow = Math.floor(this.scroller.scrollTop / this.rowHeight)
+        const renderIndex = Math.max(this.startRow * this.columns, 0);
+
+        const endIndex = Math.min(
+            ((this.startRow + 1) * this.columns) + (this.columns * visibleRows),
+            this.collection.length
+        );
+        const limitCount = endIndex - renderIndex;
+
+        if(renderIndex === this.offsetIndex && limitCount === this.limit) {
+            return;
+        }
+        this.limit = limitCount;
+        this.offsetIndex = renderIndex
+        this.chunkSetter(Array.from({ length: limitCount },
+            (_,i) => i + renderIndex));
+    }
+
+    public refresh (reset: boolean = true) {
+
+        if(reset) {
+            this.offsetIndex = -1;
+        }
+
+        this.calculateSizes()
+        this.sizer.style.height = `${this.collection.length / this.columns * this.rowHeight}px`;
+        this.render()
+    }
+}

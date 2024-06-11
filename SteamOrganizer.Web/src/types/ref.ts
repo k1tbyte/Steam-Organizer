@@ -1,7 +1,7 @@
-export default class MutableRef<T> {
+export default class Ref<T> {
     payload: T | undefined
 
-    MutableRef(payload: T) {
+    mutate(payload: T) {
         this.payload = payload;
     }
 }

@@ -4,7 +4,7 @@ import {decrypt, deriveKey } from "@/services/cryptography.ts";
 import Button, { IButtonActions} from "@/components/primitives/Button.tsx";
 import {passwordValidator, useInputValidate} from "@/hooks/useInputValidate.ts";
 import {FC} from "react";
-import MutableRef from "@/types/mutableRef.ts";
+import Ref from "@/types/ref.ts";
 import {useModalActions} from "@/components/primitives/Modal.tsx";
 import {Icon, SvgIcon} from "@/assets";
 
@@ -20,7 +20,7 @@ const Authentication : FC<IAuthProps> = (props) => {
         = useInputValidate([ passwordValidator ]);
     const { closeModal, contentRef }  = useModalActions();
 
-    const submitActions = new MutableRef<IButtonActions>()
+    const submitActions = new Ref<IButtonActions>()
 
 
     const tryDecrypt = async () => {

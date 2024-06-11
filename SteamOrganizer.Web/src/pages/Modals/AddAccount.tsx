@@ -5,6 +5,9 @@ import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import Input from "@/components/primitives/Input.tsx";
 import Button from "@/components/primitives/Button.tsx";
 import {Icon, SvgIcon} from "@/assets";
+import { actions } from "@/pages/Accounts/Accounts.tsx";
+import {Account} from "@/types/account.ts";
+import { accounts } from "@/store/config.ts";
 
 interface IAddAccountProps {
 
@@ -12,6 +15,13 @@ interface IAddAccountProps {
 
 export const AddAccount: FC<IAddAccountProps> = () => {
     const { closeModal, contentRef }  = useModalActions();
+
+    const addClick = () => {
+        actions.mutate(() =>
+            accounts.push(new Account("test","test",1337n))
+        )
+        closeModal();
+    }
 
     return (
         <div className="w-full" ref={contentRef}>
@@ -25,7 +35,7 @@ export const AddAccount: FC<IAddAccountProps> = () => {
                           icon={<SvgIcon icon={Icon.Identifier} size={36}/>}>
                 <Input />
             </InputWrapper>
-            <Button className="w-full max-w-28 mx-auto" onClick={closeModal}>
+            <Button className="w-full max-w-28 mx-auto" onClick={addClick}>
                 Add
             </Button>
         </div>

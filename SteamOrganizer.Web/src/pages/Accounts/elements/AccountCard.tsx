@@ -2,6 +2,8 @@ import type { Account } from "@/types/account.ts";
 import React, {FC } from "react";
 import {Link} from "react-router-dom";
 import {Icon, SvgIcon} from "@/assets";
+import { actions } from "@/pages/Accounts/Accounts.tsx";
+import { accounts } from "@/store/config.ts";
 
 interface IAccountCardProps {
     acc: Account,
@@ -46,8 +48,12 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
               </div>
           </div>
 
-          <SvgIcon icon={Icon.Pin} className="absolute text-foreground-muted right-3 top-3 hover:text-yellow-300 btn rotate-45" size={20}/>
-          <SvgIcon icon={Icon.Trash} className="absolute text-foreground-muted right-3 bottom-3 hover:text-failed btn" size={20}/>
+          <SvgIcon icon={Icon.Pin} role="button" className="absolute text-foreground-muted right-3 top-3 hover:text-yellow-300 btn rotate-45" size={20}/>
+          <SvgIcon icon={Icon.Trash} role="button" className="absolute text-foreground-muted right-3 bottom-3 hover:text-danger btn" size={20} onClick={() => {
+              actions.mutate(() =>
+                  accounts.splice(accounts.indexOf(acc),1)
+              )
+          }}/>
 
       </div>
 

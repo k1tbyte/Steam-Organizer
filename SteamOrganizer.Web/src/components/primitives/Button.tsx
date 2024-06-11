@@ -1,5 +1,5 @@
 import {ButtonHTMLAttributes, FC, ReactNode, RefObject, useEffect, useRef, useState} from "react";
-import MutableRef from "../../types/mutableRef.ts";
+import Ref from "../../types/ref.ts";
 import {cn} from "../../lib/utils.ts";
 
 export interface IButtonActions {
@@ -11,7 +11,7 @@ export interface IButtonActions {
 interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     className?: string,
     children: ReactNode
-    actions?: MutableRef<IButtonActions>
+    actions?: Ref<IButtonActions>
 }
 
 const Button: FC<IButtonProps> = (
