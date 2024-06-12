@@ -13,6 +13,7 @@ import { Defs } from "./assets"
 import {modal, ModalsHost} from "./components/primitives/Modal.tsx";
 import {Profile} from "@/pages/Profile/Profile.tsx";
 import {AuthProvider} from "@/providers/authProvider.tsx";
+import { ToastsHost } from "@/components/primitives/Toast.tsx";
 
 const router = createBrowserRouter([
   {
@@ -85,6 +86,7 @@ export default function App() {
         <AuthProvider>
           <RouterProvider router={router}/>
           <ModalsHost/>
+          <ToastsHost/>
         </AuthProvider>
         <Defs/>
       </>

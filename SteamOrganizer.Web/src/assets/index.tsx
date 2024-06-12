@@ -41,6 +41,11 @@ export const enum Icon {
     Eye,
     EyeOff,
     InfoMark,
+    Close,
+    AlertCircleOutline,
+    InfoCircleOutline,
+    CloseCircleOutline,
+    CheckCircleOutline
 }
 
 export function Defs() {
