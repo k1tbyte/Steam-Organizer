@@ -18,6 +18,11 @@ type GDriveResponse<T> = {
 }
 
 const rootFolderName = "SteamOrganizer";
+const backupFolderName = "Backups";
+export const enum fileTypes{
+    backup,
+    cfg,
+}
 
 export const getFile = (query: string) =>
     gapi.client.request({
@@ -65,10 +70,10 @@ const uploadMultipart = async (name: string, content: any, rootId: string) => {
         body: body,
     }) as unknown as Promise<GDriveResponse<File>>);
 };
-
-const createRootFolder = async () => {
+const createFolder = async (name:string,parentId:string) => {
     const metadata = {
-        'name': rootFolderName,
+        'name': name,
+        'parents':[parentId],
         'mimeType': 'application/vnd.google-apps.folder'
     };
 
@@ -81,13 +86,20 @@ const createRootFolder = async () => {
     return request.result.id as string;
 }
 
-export const saveFile = async (name: string, data: any):Promise<any> => {
+export const gDriveSaveFile = async (name: string, data: any,type:fileTypes):Promise<any> => {
+    const rootId = await getFolderId(rootFolderName,'root')
+    switch (type){
+        case fileTypes.backup:
+            const backupsId = await getFolderId(backupFolderName,rootId);
+            return (await uploadMultipart(name,data, backupsId)).result;
+        default:
+            return (await uploadMultipart(name,data, rootId)).result;
+    }
+}
+
+const getFolderId = async (name:string,parentId:string)=>{
     let folderResponse = await getFile(
-        `mimeType = 'application/vnd.google-apps.folder' and name='${rootFolderName}' and 'root' in parents and trashed=false`
+        `mimeType = 'application/vnd.google-apps.folder' and name='${name}' and '${parentId}' in parents and trashed=false`
     )
-
-
-    const rootId = folderResponse.result?.files?.[0]?.id ?? await createRootFolder()
-    return (await uploadMultipart(name,data, rootId)).result
-};
-
+    return folderResponse.result?.files?.[0]?.id ?? await createFolder(name,parentId);
+}

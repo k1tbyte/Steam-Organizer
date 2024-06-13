@@ -126,7 +126,6 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
                     {/*</div>*/}
                     <GoogleLogin></GoogleLogin>
 
-
                 </div>
             </nav>
 

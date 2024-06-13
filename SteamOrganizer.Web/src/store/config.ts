@@ -62,7 +62,10 @@ export const saveAccounts = async () => {
         "accounts"
     )
 }
-
+export const getEncryptedAccounts = async () =>{
+    const arrayBuffer = await encrypt(databaseKey!, JSON.stringify(accounts));
+    return btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+}
 export const loadAccounts = async () => {
     const dbBytes = await getAccounts()
     if(config.encryptionKey == undefined) {
