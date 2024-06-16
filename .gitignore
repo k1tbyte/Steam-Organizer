@@ -369,4 +369,4 @@ FodyWeavers.xsd
 
 # User
 .idea/
-Tests/
+/Tests/

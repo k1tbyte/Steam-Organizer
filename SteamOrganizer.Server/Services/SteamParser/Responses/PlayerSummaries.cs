@@ -3,9 +3,16 @@ using SteamOrganizer.Server.Lib.JsonConverters;
 
 namespace SteamOrganizer.Server.Services.SteamParser.Responses;
 
-public sealed class PlayerSummaries
+public interface IIdentifiable
 {
-    public required string SteamId { get; set; }
+    public ulong SteamId { get; }
+}
+
+public sealed class PlayerSummaries : IIdentifiable
+{
+    [JsonConverter(typeof(ToNumberConverter))]
+    public required ulong SteamId { get; set; }
+    
     public string? AvatarHash { get; set; }
     public string? PersonaName { get; set; }
 

@@ -3,9 +3,10 @@ using SteamOrganizer.Server.Lib.JsonConverters;
 
 namespace SteamOrganizer.Server.Services.SteamParser.Responses;
 
-public sealed class PlayerFriend
+public sealed class PlayerFriend : IIdentifiable
 {
-    public required string SteamId { get; set; }
+    [JsonConverter(typeof(ToNumberConverter))]
+    public required ulong SteamId { get; set; }
     
     [JsonConverter(typeof(UnixToDateTimeConverter))]
     [JsonPropertyName("friend_since")]

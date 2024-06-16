@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using SteamOrganizer.Server.Filters;
-using SteamOrganizer.Server.Services;
 using SteamOrganizer.Server.Services.SteamParser;
 using SteamOrganizer.Server.Services.SteamParser.Responses;
 
@@ -16,7 +16,37 @@ public sealed class WebApiController(SteamParser parser) : ControllerBase
     {
         return await parser
             .SetCurrency(request.Currency)
-            .GetInfo(request.Ids.First(), request.IncludeGames);
+            .GetPlayerInfo(request.Ids.First(), request.IncludeGames);
+    }
+    
+    [HttpPost]
+    public async Task GetSummariesStream([FromBody] SummariesRequest request)
+    {
+        Response.ContentType = "text/event-stream";
+        
+        using var locker = new SemaphoreSlim(1,1);
+        
+        await using var responseStream = Response.BodyWriter.AsStream();
+        
+        var result = await parser
+            .SetCurrency(request.Currency)
+            .GetPlayerInfo(request.Ids, request.IncludeGames, async (player,token) =>
+            {
+                await locker.WaitAsync(token);
+                await Response.WriteAsync("data: ",token);
+                await JsonSerializer.SerializeAsync(responseStream, player, Defines.JsonOptions, token);
+                await Response.WriteAsync("\r\r", token);
+                await Response.Body.FlushAsync(token);
+                locker.Release();
+            });
+
+        if (result == ESteamApiResult.OK)
+        {
+            Ok();
+            return;
+        }
+
+        BadRequest(result.ToString());
     }
 
     [HttpGet]
@@ -24,7 +54,6 @@ public sealed class WebApiController(SteamParser parser) : ControllerBase
     {
         var response = await parser.SetCurrency(request.Currency).GetGames(
             request.SteamId!.Value,
-            HttpContext.RequestAborted,
             request.WithDetails
         ).ConfigureAwait(false);
         
@@ -32,22 +61,14 @@ public sealed class WebApiController(SteamParser parser) : ControllerBase
     }
 
     [HttpGet]
-    public async Task GetFriends([Required] ulong? steamId)
+    public async Task<PlayerFriend[]?> GetFriends([Required] ulong? steamId)
     {
-        
-    }
-
-    [HttpPost]
-    public async Task GetSummariesStream([FromBody] SummariesRequest request)
-    {
-        var httpResponse = HttpContext.Response;
-        httpResponse.ContentType = "text/event-stream";
-        
+        return await parser.GetFriendsInfo(steamId!.Value);
     }
 }
 
 public sealed record SummariesRequest(
-    [Required,Length(1, 1000)] HashSet<ulong> Ids,
+    [Required,Length(1, 100)] HashSet<ulong> Ids,
     bool IncludeGames,
     string? Currency
 );

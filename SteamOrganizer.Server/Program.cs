@@ -50,11 +50,11 @@ public static class Program
         builder.Services.AddHttpClient();
         builder.Services.AddScoped<SteamParser>(o =>
         {
-            var apiKey = o.GetService<IHttpContextAccessor>()!
-                .HttpContext!.Request.Query[Defines.ApiKeyParamName].ToString();
+            var context = o.GetService<IHttpContextAccessor>()!.HttpContext;
+            var apiKey = context!.Request.Query[Defines.ApiKeyParamName].ToString();
             var client = o.GetService<HttpClient>()!;
             client.BaseAddress = new Uri(Defines.SteamApiBaseUrl);
-            return new SteamParser(client, o.GetService<CacheManager>()!, apiKey);
+            return new SteamParser(client, o.GetService<CacheManager>()!, apiKey, context.RequestAborted);
         });
         builder.Services.AddSingleton<CacheManager>(o => new CacheManager("global"));
 

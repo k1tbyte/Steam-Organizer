@@ -2,19 +2,13 @@ namespace SteamOrganizer.Server.Lib;
 
 public static class Extensions
 {
-    public static async Task<string?> TryGetString(this HttpClient client, string url)
+    public static async Task<string?> TryGetString(this HttpClient client, string url, CancellationToken token = default)
     {
-        try
+
+        using var response = await client.GetAsync(url, token).ConfigureAwait(false);
+        if (response.IsSuccessStatusCode)
         {
-            using var response = await client.GetAsync(url).ConfigureAwait(false);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadAsStringAsync();
-            }
-        }
-        catch
-        {
-            // TODO: Handle status code
+            return await response.Content.ReadAsStringAsync(token);
         }
 
         return null;

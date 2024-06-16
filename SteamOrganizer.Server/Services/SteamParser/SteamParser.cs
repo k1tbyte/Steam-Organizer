@@ -16,9 +16,9 @@ internal enum ESteamApiResult : byte
 }
 
 
-public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string apiKey)
+public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string apiKey, CancellationToken cancellation)
 {
-    public const int MaxAttempts        = 5;
+    public const int MaxAttempts        = 3;
     public const int RetryRequestDelay  = 5000;
     public const int MaxSteamQuerySize = 7300;
     
@@ -29,10 +29,11 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
     ];
 
     private Currency _currency  = Currency.Default;
+    public CancellationToken Cancellation { get; set; } = cancellation;
 
     public SteamParser SetCurrency(string? currencyName)
     {
-        if (currencyName != null && Currency.Currencies.TryGetValue(currencyName, out var currency))
+        if (currencyName != null && Currency.Currencies.TryGetValue(currencyName.ToUpperInvariant(), out var currency))
         {
             _currency = currency;
         }
@@ -40,29 +41,10 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
         return this;
     }
     
-    private static ushort GetGamesBadgeBoundary(int gamesCount)
-    {
-        if (gamesCount < 1) return 0;
-        if (gamesCount > GamesBadgeBoundaries[^2])
-        {
-            return GamesBadgeBoundaries[^1];
-        }
-
-        for (int i = 0; i < GamesBadgeBoundaries.Length - 1; i++)
-        {
-            if (gamesCount == GamesBadgeBoundaries[i] || gamesCount < GamesBadgeBoundaries[i + 1])
-            {
-                return GamesBadgeBoundaries[i];
-            }
-        }
-
-        return 0;
-    }
     
-    internal async Task<PlayerSummaries?> GetInfo(ulong id, 
-        bool withGames, CancellationToken token = default)
+    internal async Task<PlayerSummaries?> GetPlayerInfo(ulong id, bool withGames)
     {
-        var summariesTask = GetPlayerSummaries(id).ConfigureAwait(false);
+        var summariesTask = GetPlayerSummaries([id]).ConfigureAwait(false);
         var bansTask      = GetPlayerBans(id).ConfigureAwait(false);
 
         var summaries = (await summariesTask)?[0];
@@ -77,7 +59,7 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
 
             if (withGames)
             {
-                summaries.GamesSummaries = await GetGames(id, token);
+                summaries.GamesSummaries = await GetGames(id);
             }
 
             summaries.SteamLevel     = await levelTask;
@@ -87,54 +69,58 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
         return summaries;
     }
     
-    internal async Task<ESteamApiResult> GetInfo(ulong[] ids,
-        bool withGames,
-        CancellationToken token,
-        Action<PlayerSummaries> callback)
+    internal async Task<ESteamApiResult> GetPlayerInfo(HashSet<ulong> ids, bool withGames,
+        Func<PlayerSummaries, CancellationToken, Task>? callback = null)
     {
-        /*try
+        try
         {
-            var span = ids.AsSpan();
             // A chunk consists of a maximum of 100 accounts because
             // the maximum number of IDs that GetPlayerSummaries and GetPlayerBans accepts
-            for (int i = 0, attempt = 0, remainingCount = players.Length; i < players.Length; i += 100)
+            for (int i = 0, attempt = 0; i < ids.Count; i += 100)
             {
-                var summariesTask = GetPlayerSummaries(ids.AsSpan()).ConfigureAwait(false);
-                var bansTask      = GetPlayersBans(chunk).ConfigureAwait(false);
+                var chunk = ids.Skip(i).Take(100).ToArray();
+
+                var summariesTask = GetPlayerSummaries(chunk).ConfigureAwait(false);
+                var bansTask      = GetPlayerBans(chunk).ConfigureAwait(false);
 
                 var summaries = await summariesTask;
-                var bans = (await bansTask)?.ToDictionary(o => o.SteamID);
+                var bans = (await bansTask)?.ToDictionary(o => o.SteamId);
+                
 
                 if (summaries == null || bans == null)
                 {
-                    if (++attempt >= WebBrowser.MaxAttempts)
+                    if (++attempt >= MaxAttempts)
                     {
                         return ESteamApiResult.AttemptsExceeded;
                     }
 
-                    await Task.Delay(WebBrowser.RetryRequestDelay,token);
+                    await Task.Delay(RetryRequestDelay, Cancellation);
                     i -= 100;
                     continue;
                 }
 
-                await Parallel.ForEachAsync(summaries, new ParallelOptions { MaxDegreeOfParallelism = 2, CancellationToken = token },
-                    async (player, token) =>
-                {
-                    player.Bans       = bans[player.SteamID];
-
-                    if (player.CommunityVisibilityState == 3)
+                await Parallel.ForEachAsync(summaries,
+                    new ParallelOptions { MaxDegreeOfParallelism = 2, CancellationToken = Cancellation },
+                    async (player, _) =>
                     {
-                        player.SteamLevel     = await GetPlayerLevel(player.SteamID).ConfigureAwait(false); 
-                        
-                        if(includeGames)
+                        player.Bans       = bans[player.SteamId];
+
+                        if (player.CommunityVisibilityState == 3)
                         {
-                            player.GamesSummaries = await ParseGames(player.SteamID, countryCode, token).ConfigureAwait(false);
+                            player.SteamLevel     = await GetPlayerLevel(player.SteamId).ConfigureAwait(false); 
+                        
+                            if(withGames)
+                            {
+                                player.GamesSummaries = await GetGames(player.SteamId).ConfigureAwait(false);
+                            }
+                        }
+
+                        if (callback != null)
+                        {
+                            await callback(player, Cancellation);
                         }
                     }
-
-                    callback?.Invoke(player);
-                }).ConfigureAwait(false);
-
+                ).ConfigureAwait(false);
             }
         }
         catch(OperationCanceledException)
@@ -144,14 +130,47 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
         catch
         {
             return ESteamApiResult.InternalError;
-        }*/
+        }
 
         return ESteamApiResult.OK;
     }
 
+    internal async Task<PlayerFriend[]?> GetFriendsInfo(ulong steamId)
+    {
+        var friends = await GetPlayerFriends(steamId);
+
+        if (friends == null || friends.Length < 1)
+            return friends;
+        
+        Array.Sort(friends, IdComparator);
+        
+        await Parallel.ForAsync(0, (int)Math.Ceiling(friends.Length / 100f),
+            new ParallelOptions { CancellationToken = Cancellation },
+            async (i, _) =>
+            {
+                var chunk = friends.Skip(i * 100).Take(100).ToArray();
+                var summaries = await GetPlayerSummaries(
+                    chunk.Select(o => o.SteamId)
+                ).ConfigureAwait(false);
+                
+                if (summaries == null)
+                    return;
+                
+                Array.Sort(summaries, IdComparator);
+                for (var j = 0; j < chunk.Length; j++)
+                {
+                    chunk[j].AvatarHash = summaries[j].AvatarHash;
+                    chunk[j].PersonaName = summaries[j].PersonaName;
+                }
+            }
+        );
+        
+        return friends;
+    }
+
     #region Game info parsing
     
-    internal async Task<PlayerGames?> GetGames(ulong steamId,CancellationToken token, bool withDetails = true)
+    internal async Task<PlayerGames?> GetGames(ulong steamId, bool withDetails = true)
     {
         var games = new PlayerGames();
         var prices = new Dictionary<uint, GameDetails>();
@@ -198,7 +217,7 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
             }
 
             if (requests.Count > 0)
-                await ParseGameInfoRequests(requests, token, prices);
+                await ParseGameInfoRequests(requests, prices).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -248,22 +267,20 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
         }
     }
         
-    private Task ParseGameInfoRequests(List<string> requests,
-        CancellationToken cancellationToken,
-        Dictionary<uint, GameDetails> gamesPrices)
+    private Task ParseGameInfoRequests(List<string> requests, Dictionary<uint, GameDetails> gamesPrices)
     {
         var options = new ParallelOptions
         {
             MaxDegreeOfParallelism = Environment.ProcessorCount,
-            CancellationToken = cancellationToken
+            CancellationToken = Cancellation
         };
         
         return Parallel.ForEachAsync(requests, options, async (x, token) =>
         {
             for (int i = 0; i < MaxAttempts; i++)
             {
-                var response = (await httpClient.TryGetString(x).ConfigureAwait(false))?
-                    .MutableReplace(']', '}')?.MutableReplace('[', '{');
+                var response = (await httpClient.TryGetString(x, token).ConfigureAwait(false))?
+                    .MutableReplace(']', '}').MutableReplace('[', '{');
 
                 if (string.IsNullOrEmpty(response))
                 {
@@ -305,17 +322,19 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
     internal async Task<PlayerBans[]?> GetPlayerBans(params ulong[] steamIds)
     {
         var response = await httpClient.TryGetString(
-            $"ISteamUser/GetPlayerBans/v1/?key={apiKey}&steamids={string.Join(",", steamIds)}"
+            $"ISteamUser/GetPlayerBans/v1/?key={apiKey}&steamids={string.Join(",", steamIds)}",
+            Cancellation
         ).ConfigureAwait(false);
 
         return response == null ? null :
             JsonSerializer.Deserialize<PlayerBansResponse>(response, Defines.JsonOptions)?.Players;
     }
     
-    internal async Task<PlayerSummaries[]?> GetPlayerSummaries(params ulong[] steamIds)
+    internal async Task<PlayerSummaries[]?> GetPlayerSummaries(IEnumerable<ulong> steamIds)
     {
         var response = await httpClient.TryGetString(
-            $"ISteamUser/GetPlayerSummaries/v0002/?key={apiKey}&steamids={string.Join(",", steamIds)}"
+            $"ISteamUser/GetPlayerSummaries/v0002/?key={apiKey}&steamids={string.Join(",", steamIds)}",
+            Cancellation
         ).ConfigureAwait(false);
 
         return response == null ? null : 
@@ -325,7 +344,8 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
     internal async Task<PlayerFriend[]?> GetPlayerFriends(ulong steamId)
     {
         var response = await httpClient.TryGetString(
-            $"ISteamUser/GetFriendList/v0001/?relationship=friend&key={apiKey}&steamid={steamId}"
+            $"ISteamUser/GetFriendList/v0001/?relationship=friend&key={apiKey}&steamid={steamId}",
+            Cancellation
         ).ConfigureAwait(false);
 
         return response == null ? null :
@@ -335,7 +355,8 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
     internal async Task<PlayerGameInfo[]?> GetPlayerGames(ulong steamId)
     {
         var response = await httpClient.TryGetString(
-            $"IPlayerService/GetOwnedGames/v0001/?key={apiKey}&steamid={steamId}&include_appinfo=true&include_played_free_games=1"
+            $"IPlayerService/GetOwnedGames/v0001/?key={apiKey}&steamid={steamId}&include_appinfo=true&include_played_free_games=1",
+            Cancellation
         ).ConfigureAwait(false);
 
         return response == null ? null :
@@ -345,7 +366,8 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
     internal async Task<int?> GetPlayerLevel(ulong steamId)
     {
         var response = await httpClient.TryGetString(
-            $"IPlayerService/GetSteamLevel/v1/?key={apiKey}&steamid={steamId}"
+            $"IPlayerService/GetSteamLevel/v1/?key={apiKey}&steamid={steamId}",
+            Cancellation
         ).ConfigureAwait(false);
 
         return response == null ? null :
@@ -353,4 +375,24 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
     }
     
     #endregion
+    
+    private static ushort GetGamesBadgeBoundary(int gamesCount)
+    {
+        if (gamesCount < 1) return 0;
+        if (gamesCount > GamesBadgeBoundaries[^2])
+        {
+            return GamesBadgeBoundaries[^1];
+        }
+
+        for (int i = 0; i < GamesBadgeBoundaries.Length - 1; i++)
+        {
+            if (gamesCount == GamesBadgeBoundaries[i] || gamesCount < GamesBadgeBoundaries[i + 1])
+            {
+                return GamesBadgeBoundaries[i];
+            }
+        }
+
+        return 0;
+    }
+    private static int IdComparator(IIdentifiable x, IIdentifiable y) => x.SteamId.CompareTo(y.SteamId);
 }
