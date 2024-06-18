@@ -8,15 +8,13 @@ namespace SteamOrganizer.Server.Services.SteamParser;
 internal enum ESteamApiResult : byte
 {
     OK,
-    NoValidAccounts,
-    NoAccountsWithID,
     AttemptsExceeded,
     OperationCanceled,
     InternalError,
 }
 
 
-public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string apiKey, CancellationToken cancellation)
+public sealed class SteamParser(HttpClient httpClient, string apiKey, CancellationToken cancellation)
 {
     public const int MaxAttempts        = 3;
     public const int RetryRequestDelay  = 5000;
@@ -29,13 +27,16 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
     ];
 
     private Currency _currency  = Currency.Default;
+    private Bucket<uint,GameDetails> _cache = CacheManager.GetBucket<uint,GameDetails>("gameprices_" + Currency.Default.CountryCode);
     public CancellationToken Cancellation { get; set; } = cancellation;
 
     public SteamParser SetCurrency(string? currencyName)
     {
-        if (currencyName != null && Currency.Currencies.TryGetValue(currencyName.ToUpperInvariant(), out var currency))
+        if (currencyName != null && Currency.Currencies.TryGetValue(currencyName.ToUpperInvariant(), out var currency)
+            && !Equals(currency, _currency))
         {
             _currency = currency;
+            _cache = CacheManager.GetBucket<uint,GameDetails>("gameprices_" + _currency.CountryCode);
         }
 
         return this;
@@ -195,7 +196,7 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
                     games.PlayedGamesCount++;
                 }
                 
-                if (cache.GetCachedData<GameDetails>($"{info.AppId}_{_currency.Name}", out var cachedDetails))
+                if (_cache.TryGet(info.AppId, out var cachedDetails))
                 {
                     FormatPrice(games, info, cachedDetails!);
                     continue;
@@ -241,10 +242,7 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
                         }
                         FormatPrice(games,info, details);
 
-                        cache.SetCachedData(
-                            $"{info.AppId}_{_currency.Name}", details,
-                            TimeSpan.FromHours(12)
-                        );
+                        _cache.Store(info.AppId, details, TimeSpan.FromHours(12));
                     }
                 }
                 
@@ -395,4 +393,5 @@ public sealed class SteamParser(HttpClient httpClient,CacheManager cache, string
         return 0;
     }
     private static int IdComparator(IIdentifiable x, IIdentifiable y) => x.SteamId.CompareTo(y.SteamId);
+    private static ulong ResolveId(ulong id) => id > UInt32.MaxValue ? id : id + Defines.SteamId64Indent;
 }

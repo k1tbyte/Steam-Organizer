@@ -11,7 +11,7 @@ public sealed class PlayerBans : IIdentifiable
     public int DaysSinceLastBan { get; set; }
     public string? EconomyBan { get; set; }
 
-    [JsonConverter(typeof(ToNumberConverter))]
+    [JsonConverter(typeof(SteamIdConverter))]
     [JsonPropertyName("SteamId")]
     public ulong Id
     {

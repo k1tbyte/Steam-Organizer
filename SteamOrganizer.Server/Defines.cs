@@ -9,8 +9,9 @@ public static class Defines
     {
         PropertyNameCaseInsensitive = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        
     };
+
+    public const string CacheFolderName = "Cache";
     
     public const string ApiVersion = "api/v1";
     public const string RoutePattern = $"{ApiVersion}/[controller]/[action]";

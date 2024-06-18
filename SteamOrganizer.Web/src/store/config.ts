@@ -5,7 +5,7 @@ import {Account} from "@/types/account.ts";
 
 interface IAppConfig {
     encryptionKey?: string
-    test?: string
+    steamApiKey?: string
 }
 
 export const enum EDecryptResult {

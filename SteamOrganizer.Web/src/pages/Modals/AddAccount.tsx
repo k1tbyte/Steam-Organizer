@@ -18,7 +18,7 @@ export const AddAccount: FC<IAddAccountProps> = () => {
 
     const addClick = () => {
         actions.mutate(() =>
-            accounts.push(new Account("test","test",1337n))
+            accounts.push(new Account("test","test",1337))
         )
         closeModal();
     }

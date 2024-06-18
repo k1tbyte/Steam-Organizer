@@ -10,7 +10,7 @@ public interface IIdentifiable
 
 public sealed class PlayerSummaries : IIdentifiable
 {
-    [JsonConverter(typeof(ToNumberConverter))]
+    [JsonConverter(typeof(SteamIdConverter))]
     public required ulong SteamId { get; set; }
     
     public string? AvatarHash { get; set; }

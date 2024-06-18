@@ -1,7 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using SteamOrganizer.Server.Filters;
+using SteamOrganizer.Server.Lib;
+using SteamOrganizer.Server.Lib.JsonConverters;
 using SteamOrganizer.Server.Services.SteamParser;
 using SteamOrganizer.Server.Services.SteamParser.Responses;
 
@@ -63,18 +66,22 @@ public sealed class WebApiController(SteamParser parser) : ControllerBase
     [HttpGet]
     public async Task<PlayerFriend[]?> GetFriends([Required] ulong? steamId)
     {
-        return await parser.GetFriendsInfo(steamId!.Value);
+        return await parser.GetFriendsInfo(Tools.ToSteamId64(steamId!.Value));
     }
 }
 
-public sealed record SummariesRequest(
-    [Required,Length(1, 100)] HashSet<ulong> Ids,
-    bool IncludeGames,
-    string? Currency
-);
+public sealed class SummariesRequest
+{
+    [Required, Length(1, 100), JsonConverter(typeof(SteamIdSetConverter))] 
+    public required HashSet<ulong> Ids { get; init; }
+    public bool IncludeGames { get; init; }
+    public string? Currency { get; init; }
+}
 
-public sealed record GamesRequest(
-    [Required] ulong? SteamId,
-    bool WithDetails,
-    string? Currency
-);
+public sealed class GamesRequest
+{
+    [Required,JsonConverter(typeof(SteamIdConverter))] 
+    public ulong? SteamId { get; init; }
+    public bool WithDetails { get; init; }
+    public string? Currency { get; init; }
+}

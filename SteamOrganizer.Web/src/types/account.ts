@@ -7,7 +7,7 @@ export class Account {
     phone?: number;
     note?: string;
 
-    steamId64?: bigint;
+    id?: number;
     visibilityState?: number;
     vanityUrl?: string;
     steamLevel?: number;
@@ -36,7 +36,7 @@ export class Account {
 
 
     isAnonymous() {
-        return this.steamId64 === undefined;
+        return this.id === undefined;
     }
 
     isBanned(): boolean {
@@ -44,10 +44,10 @@ export class Account {
         return this.haveCommunityBan || this.vacBansCount || this.gameBansCount || this.daysSinceLastBan || this.economyBan;
     }
 
-    constructor(login: string, password: string, steamId64?: bigint) {
+    constructor(login: string, password: string, accountId?: number) {
         this.addedDate = new Date()
         this.nickname = this.login = login
         this.password = password
-        this.steamId64 = steamId64
+        this.id = accountId
     }
 }

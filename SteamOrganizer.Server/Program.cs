@@ -28,15 +28,15 @@ public static class Program
             o.JsonSerializerOptions.PropertyNameCaseInsensitive = Defines.JsonOptions.PropertyNameCaseInsensitive;
             o.JsonSerializerOptions.DefaultIgnoreCondition = Defines.JsonOptions.DefaultIgnoreCondition;
         });
-
-        /*builder.Services.AddCors(o =>
+        
+        builder.Services.AddCors(o =>
         {
-            o.AddPolicy("AllowSpecificOrigin",
+            o.AddPolicy("DefaultCors",
                 policy => policy
-                    .WithOrigins("https://your-website.com")
+                    .WithOrigins(builder.Configuration["AllowedOrigin"]!)
                     .AllowAnyHeader()
                     .AllowAnyMethod());
-        });*/
+        });
         
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
@@ -54,11 +54,14 @@ public static class Program
             var apiKey = context!.Request.Query[Defines.ApiKeyParamName].ToString();
             var client = o.GetService<HttpClient>()!;
             client.BaseAddress = new Uri(Defines.SteamApiBaseUrl);
-            return new SteamParser(client, o.GetService<CacheManager>()!, apiKey, context.RequestAborted);
+            return new SteamParser(client, apiKey, context.RequestAborted);
         });
-        builder.Services.AddSingleton<CacheManager>(o => new CacheManager("global"));
+      //  builder.Services.AddSingleton<CacheManager>(_ => new CacheManager("global"));
 
         var app = builder.Build();
+        
+        var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+        lifetime.ApplicationStopping.Register(OnShutdown);
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -67,14 +70,18 @@ public static class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
+        app.UseCors("DefaultCors");
 
         app.UseAuthorization();
-      //  app.UseCors("AllowSpecificOrigin");
 
 
         app.MapControllers();
 
         app.Run();
+    }
+
+    private static void OnShutdown()
+    {
+        CacheManager.Dispose();
     }
 }

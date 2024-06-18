@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useState, ReactNode, useEffect} from 'react';
-import {getUserProfile, initGapi, signIn, signOut, subscribe, unsubscribe} from "@/services/gAuthService.ts";
+import {getUserProfile, initGapi, signIn, signOut, subscribe, unsubscribe} from "@/services/gAuth.ts";
 
 interface IAuthUser {
     isLoggedIn?: boolean | undefined;
@@ -19,7 +19,8 @@ const AuthContext = createContext<AuthContextType>(undefined!);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<IAuthUser>({});
 
-  /*  useEffect(() => {
+/*
+    useEffect(() => {
         const stateCallback = (state: boolean) => {
             let info;
             if(state) {
@@ -38,7 +39,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         initGapi()
 
         return () => unsubscribe(stateCallback)
-    },[])*/
+    },[])
+*/
 
 
     return (

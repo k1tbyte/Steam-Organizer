@@ -5,7 +5,7 @@ namespace SteamOrganizer.Server.Services.SteamParser.Responses;
 
 public sealed class PlayerFriend : IIdentifiable
 {
-    [JsonConverter(typeof(ToNumberConverter))]
+    [JsonConverter(typeof(SteamIdConverter))]
     public required ulong SteamId { get; set; }
     
     [JsonConverter(typeof(UnixToDateTimeConverter))]
