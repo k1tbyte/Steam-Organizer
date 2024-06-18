@@ -1,6 +1,7 @@
 import React from 'react';
 import {useAuth} from "@/providers/authProvider.tsx";
 import {storeDb} from "@/services/sync.ts";
+import {loadBackupsInfo} from "@/store/config.ts";
 async function saveTest(){
    await storeDb("helloworld");
 }
@@ -25,11 +26,14 @@ export const GoogleLogin: React.FC = () => {
                 <div className="btn" onClick={saveTest}>
                     Test backup
                 </div>
+                <div className="btn" onClick={loadBackupsInfo}>
+                    Load backups
+                </div>
             </div>
         ) : (
             <div>
                 <div className="btn" onClick={signIn}>
-                        <p>{user.isLoggedIn === undefined ? "loading..." : "Sign in"} </p>
+                <p>{user.isLoggedIn === undefined ? "loading..." : "Sign in"} </p>
                     </div>
                 </div>
             )

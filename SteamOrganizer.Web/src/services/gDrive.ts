@@ -5,6 +5,7 @@ type File = {
     kind?: string;
     mimeType?: string;
     name: string;
+    createdTime?:string;
 }
 
 type FileList = {
@@ -13,8 +14,9 @@ type FileList = {
 
 type GDriveResponse<T> = {
     result?: T;
-    status: number;
+    status?: number;
     statusText?: string;
+    nextPageToken?:string;
 }
 
 const rootFolderName = "SteamOrganizer";
@@ -34,6 +36,21 @@ export const getFile = (query: string) =>
             pageSize: 1
         }
     }) as unknown as Promise<GDriveResponse<FileList>>
+
+export const gDriveGetBackupsInfo =async (pageSize:number=100,pageToken:string="") =>{
+    const rootId = await getFolderId(rootFolderName,'root');
+    const backupsId = await getFolderId(backupFolderName,rootId);
+    return gapi.client.request({
+        path: "https://www.googleapis.com/drive/v3/files",
+        method: "GET",
+        params: {
+            q: `mimeType = 'application/json' and '${backupsId}' in parents and trashed=false`,
+            fields: 'files(id, name,createdTime)',
+            pageSize: pageSize
+        }
+    })as unknown as Promise<GDriveResponse<FileList>>;
+}
+
 
 export const deleteFile = async (fileId: string) =>
     gapi.client.request({
@@ -85,6 +102,20 @@ const createFolder = async (name:string,parentId:string) => {
 
     return request.result.id as string;
 }
+const getFolderId = async (name:string,parentId:string)=>{
+    let folderResponse = await getFile(
+        `mimeType = 'application/vnd.google-apps.folder' and name='${name}' and '${parentId}' in parents and trashed=false`
+    )
+    return folderResponse.result?.files?.[0]?.id ?? await createFolder(name,parentId);
+}
+
+const getBackupIdByName = async (fileName:string) =>{
+    const rootId = await getFolderId(rootFolderName,'root');
+    const backupsId = await getFolderId(backupFolderName,rootId);
+    const fileResponse = await getFile(
+        `mimeType='application/json' and name contains '${fileName}' and '${backupsId}' in parents`);
+    return fileResponse.result?.files?.[0]?.id;
+}
 
 export const gDriveSaveFile = async (name: string, data: any,type:fileTypes):Promise<any> => {
     const rootId = await getFolderId(rootFolderName,'root')
@@ -96,10 +127,18 @@ export const gDriveSaveFile = async (name: string, data: any,type:fileTypes):Pro
             return (await uploadMultipart(name,data, rootId)).result;
     }
 }
-
-const getFolderId = async (name:string,parentId:string)=>{
-    let folderResponse = await getFile(
-        `mimeType = 'application/vnd.google-apps.folder' and name='${name}' and '${parentId}' in parents and trashed=false`
-    )
-    return folderResponse.result?.files?.[0]?.id ?? await createFolder(name,parentId);
-}
+export const gDriveGetFileContent = async (fileId:string):Promise<string>=> {
+    let body="";
+    gapi.client.request({
+        path: `https://www.googleapis.com/drive/v3/files/${fileId}`,
+        method: "GET",
+        params: {
+            alt: 'media',
+        }
+    }).then((response: any) => {
+        body=response.body;
+    }, (error: any) => {
+         console.log(JSON.stringify(error, null, 2));
+    });
+    return body;
+};

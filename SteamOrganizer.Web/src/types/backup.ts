@@ -1,8 +1,12 @@
 export type Backup={
-    name:string;
-    date:Date;
+
     accAmount:number;
     accounts:string;
+}
+export type BackupInfo={
+    name:string;
+    date:Date;
+    fileId:string;
 }
 export const enum backupStorages {
     gDrive,

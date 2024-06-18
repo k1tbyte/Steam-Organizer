@@ -2,6 +2,9 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import db from "../services/indexedDb.ts"
 import {decrypt, deriveKey, encrypt, exportKey, importKey} from "../services/cryptography.ts";
 import {Account} from "@/types/account.ts";
+import {BackupInfo} from "@/types/backup.ts";
+import {gDriveGetBackupsInfo} from "@/services/gDrive.ts";
+import {parseISO} from "date-fns";
 
 interface IAppConfig {
     encryptionKey?: string
@@ -19,7 +22,8 @@ let fingerprint: CryptoKey | undefined;
 let databaseKey: CryptoKey | undefined;
 
 export let config: IAppConfig;
-export const accounts: Account[] = []
+export const accounts: Account[] = [];
+export const backupsInfo: BackupInfo[] = [];
 
 export const  loadConfig = async () => {
     const agent = await FingerprintJS.load();
@@ -66,6 +70,27 @@ export const getEncryptedAccounts = async () =>{
     const arrayBuffer = await encrypt(databaseKey!, JSON.stringify(accounts));
     return btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 }
+export const restoreEncryptedAccounts = async (encryptedAccounts:string) =>{
+    const binString = atob(encryptedAccounts);
+    const arrayBuffer:ArrayBuffer = Uint8Array.from(binString, (m) => m.codePointAt(0)!);
+    const data= await decrypt(databaseKey!,arrayBuffer);
+    accounts.splice(0,accounts.length);
+    accounts.push(JSON.parse(data));
+}
+export const loadBackupsInfo = async ()=>{
+    const response = await gDriveGetBackupsInfo();
+    backupsInfo.splice(0,backupsInfo.length);
+    const files = response?.result?.files!;
+    for (const file of files){
+        const backupInfo:BackupInfo={
+            name:file.name,
+            fileId:file.id,
+            date:parseISO(file.createdTime!)
+        }
+        backupsInfo.push(backupInfo);
+    }
+}
+
 export const loadAccounts = async () => {
     const dbBytes = await getAccounts()
     if(config.encryptionKey == undefined) {
