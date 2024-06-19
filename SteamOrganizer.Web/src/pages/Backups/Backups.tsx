@@ -12,7 +12,10 @@ export default function Backups(){
     useEffect(() => {
         if(user.isLoggedIn)
             loadBackupsInfo();
-    }, []);
+    }, [user.isLoggedIn]);
+    useEffect(() => {
+        backupsGrid.payload?.refresh();
+    }, [backupsInfo]);
     return (
         <div>
             <VirtualScroller collection={backupsInfo} layout={GridLayout} gridRef={backupsGrid}

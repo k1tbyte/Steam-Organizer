@@ -41,6 +41,7 @@ const onRestoreClick=async (fileId:string)=>{
     await restoreDb(fileId,backupStorages.gDrive);
 }
 const onDeleteClick=async (fileId:string)=>{
-    await deleteFile(fileId);
     backupsInfo.splice(backupsInfo.findIndex(backup=>backup.fileId===fileId),1);
+    await deleteFile(fileId);
+
 }
