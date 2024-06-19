@@ -12,6 +12,7 @@
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^4.2.2",
     "clsx": "^2.1.0",
+    "date-fns": "^3.6.0",
     "framer-motion": "^11.2.9",
     "gapi-script": "^1.2.0",
     "overlayscrollbars": "^2.7.3",

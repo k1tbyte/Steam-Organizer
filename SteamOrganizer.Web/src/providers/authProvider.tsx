@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthContextType>(undefined!);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<IAuthUser>({});
 
-/*
+
     useEffect(() => {
         const stateCallback = (state: boolean) => {
             let info;
@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         return () => unsubscribe(stateCallback)
     },[])
-*/
+
 
 
     return (
