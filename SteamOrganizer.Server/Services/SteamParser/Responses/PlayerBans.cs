@@ -24,5 +24,5 @@ public sealed class PlayerBans : IIdentifiable
 
 public sealed class PlayerBansResponse
 {
-    public PlayerBans[]? Players { get; set; }
+    public required PlayerBans[] Players { get; set; }
 }

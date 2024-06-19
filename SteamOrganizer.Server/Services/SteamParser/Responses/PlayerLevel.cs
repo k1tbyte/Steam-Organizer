@@ -1,6 +1,6 @@
 namespace SteamOrganizer.Server.Services.SteamParser.Responses;
 
-public struct PlayerLevelResponse
+public class PlayerLevelResponse
 {
     public struct PlayerLevel
     {

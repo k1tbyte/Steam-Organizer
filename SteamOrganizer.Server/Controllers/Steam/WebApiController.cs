@@ -12,11 +12,18 @@ namespace SteamOrganizer.Server.Controllers.Steam;
 
 [ApiKey]
 [Route($"{Defines.ApiVersion}/steam/[controller]/[action]")]
+[ProducesResponseType( StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status403Forbidden)]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+[ProducesResponseType(StatusCodes.Status429TooManyRequests)]
 public sealed class WebApiController(SteamParser parser) : ControllerBase
 {
+
     [HttpGet]
     public async Task<PlayerSummaries?> GetSummaries(SummariesRequest request)
     {
+        
         return await parser
             .SetCurrency(request.Currency)
             .GetPlayerInfo(request.Ids.First(), request.IncludeGames);
@@ -31,7 +38,7 @@ public sealed class WebApiController(SteamParser parser) : ControllerBase
         
         await using var responseStream = Response.BodyWriter.AsStream();
         
-        var result = await parser
+        await parser
             .SetCurrency(request.Currency)
             .GetPlayerInfo(request.Ids, request.IncludeGames, async (player,token) =>
             {
@@ -42,14 +49,7 @@ public sealed class WebApiController(SteamParser parser) : ControllerBase
                 await Response.Body.FlushAsync(token);
                 locker.Release();
             });
-
-        if (result == ESteamApiResult.OK)
-        {
-            Ok();
-            return;
-        }
-
-        BadRequest(result.ToString());
+        
     }
 
     [HttpGet]
@@ -67,6 +67,15 @@ public sealed class WebApiController(SteamParser parser) : ControllerBase
     public async Task<PlayerFriend[]?> GetFriends([Required] ulong? steamId)
     {
         return await parser.GetFriendsInfo(Tools.ToSteamId64(steamId!.Value));
+    }
+
+    [HttpGet]
+    public async Task<ulong?> GetAccountId([Required, Length(3, 32)] string vanityUrl)
+    {
+        var result = await parser.PerformRequest(
+            parser.GetAccountId(vanityUrl), Response
+        );
+        return result == null ? null : Tools.ToSteamId32(result.Value);
     }
 }
 

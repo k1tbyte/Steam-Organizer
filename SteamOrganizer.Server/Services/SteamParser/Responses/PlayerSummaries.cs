@@ -11,7 +11,7 @@ public interface IIdentifiable
 public sealed class PlayerSummaries : IIdentifiable
 {
     [JsonConverter(typeof(SteamIdConverter))]
-    public required ulong SteamId { get; set; }
+    public ulong SteamId { get; set; }
     
     public string? AvatarHash { get; set; }
     public string? PersonaName { get; set; }
@@ -33,7 +33,12 @@ public sealed class PlayerSummariesResponse
 {
     public sealed class ResponseObject
     {
-        public PlayerSummaries[]? Players { get; set; }
+        public required PlayerSummaries[] Players { get; set; }
     }
-    public ResponseObject? Response { get; set; }
+    public required ResponseObject Response { get; set; }
+}
+
+public sealed class ResolveVanityResponse
+{
+    public PlayerSummaries? Response { get; set; }
 }

@@ -27,7 +27,7 @@ public sealed class PlayerGames
 
 public sealed class PlayerGamesResponse
 {
-    public PlayerGames? Response { get; set; }
+    public required PlayerGames Response { get; set; }
 }
 
 public sealed class GamePrice

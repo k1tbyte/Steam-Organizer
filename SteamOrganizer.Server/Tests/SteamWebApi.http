@@ -24,3 +24,7 @@ Content-Type: application/json
 > {%
     response.body.onEachLine((line) => client.log(line));
 %}
+
+### Getting account id from vanity url
+GET {{host}}/api/v1/steam/webApi/getAccountId
+    ?key={{apiKey}}&vanityUrl={{testVanityUrl}}

@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using SteamOrganizer.Server.Lib;
@@ -5,20 +6,14 @@ using SteamOrganizer.Server.Services.SteamParser.Responses;
 
 namespace SteamOrganizer.Server.Services.SteamParser;
 
-internal enum ESteamApiResult : byte
+public sealed class SteamParser : IDisposable
 {
-    OK,
-    AttemptsExceeded,
-    OperationCanceled,
-    InternalError,
-}
-
-
-public sealed class SteamParser(HttpClient httpClient, string apiKey, CancellationToken cancellation)
-{
+    private readonly HttpClient _httpClient;
+    private readonly string _apiKey;
+    
     public const int MaxAttempts        = 3;
     public const int RetryRequestDelay  = 5000;
-    public const int MaxSteamQuerySize = 7300;
+    public const int MaxSteamQuerySize = 6300;
     
     private static readonly ushort[] GamesBadgeBoundaries =
     [
@@ -28,7 +23,33 @@ public sealed class SteamParser(HttpClient httpClient, string apiKey, Cancellati
 
     private Currency _currency  = Currency.Default;
     private Bucket<uint,GameDetails> _cache = CacheManager.GetBucket<uint,GameDetails>("gameprices_" + Currency.Default.CountryCode);
-    public CancellationToken Cancellation { get; set; } = cancellation;
+    
+    private CancellationToken _cancellation;
+    private CancellationTokenSource? _errorCancellation;
+    public CancellationToken Cancellation
+    {
+        get => _cancellation;
+        set
+        {
+            _errorCancellation?.Cancel();
+            _errorCancellation?.Dispose();
+            _errorCancellation = CancellationTokenSource.CreateLinkedTokenSource(value);
+            _cancellation = _errorCancellation.Token;
+        }
+    }
+    public HttpStatusCode? ErrorCode { get; private set; }
+
+    public SteamParser(HttpClient httpClient, string apiKey, CancellationToken cancellation)
+    {
+        _httpClient = httpClient;
+        _apiKey = apiKey;
+        Cancellation = cancellation;
+    }
+    
+    public void Dispose()
+    {
+        _errorCancellation?.Dispose();
+    }
 
     public SteamParser SetCurrency(string? currencyName)
     {
@@ -41,7 +62,23 @@ public sealed class SteamParser(HttpClient httpClient, string apiKey, Cancellati
 
         return this;
     }
-    
+
+    public async Task<T?> PerformRequest <T> (Task<T> request, HttpResponse response)
+    {
+        T? result = default;
+        try
+        {
+            result = await request;
+        }
+        catch (OperationCanceledException) { }
+
+        if (ErrorCode != null)
+        {
+            response.StatusCode = (int)ErrorCode.Value;
+        }
+        
+        return result;
+    }
     
     internal async Task<PlayerSummaries?> GetPlayerInfo(ulong id, bool withGames)
     {
@@ -70,70 +107,50 @@ public sealed class SteamParser(HttpClient httpClient, string apiKey, Cancellati
         return summaries;
     }
     
-    internal async Task<ESteamApiResult> GetPlayerInfo(HashSet<ulong> ids, bool withGames,
+    internal async Task<int> GetPlayerInfo(HashSet<ulong> ids, bool withGames,
         Func<PlayerSummaries, CancellationToken, Task>? callback = null)
     {
-        try
+        int processed = 0;
+        
+        // A chunk consists of a maximum of 100 accounts because
+        // the maximum number of IDs that GetPlayerSummaries and GetPlayerBans accepts
+        for (int i = 0; i < ids.Count; i += 100)
         {
-            // A chunk consists of a maximum of 100 accounts because
-            // the maximum number of IDs that GetPlayerSummaries and GetPlayerBans accepts
-            for (int i = 0, attempt = 0; i < ids.Count; i += 100)
-            {
-                var chunk = ids.Skip(i).Take(100).ToArray();
+            var chunk = ids.Skip(i).Take(100).ToArray();
 
-                var summariesTask = GetPlayerSummaries(chunk).ConfigureAwait(false);
-                var bansTask      = GetPlayerBans(chunk).ConfigureAwait(false);
+            var summariesTask = GetPlayerSummaries(chunk).ConfigureAwait(false);
+            var bansTask      = GetPlayerBans(chunk).ConfigureAwait(false);
 
-                var summaries = await summariesTask;
-                var bans = (await bansTask)?.ToDictionary(o => o.SteamId);
-                
+            var summaries = await summariesTask;
+            var bans = (await bansTask).ToDictionary(o => o.SteamId);
 
-                if (summaries == null || bans == null)
+            await Parallel.ForEachAsync(summaries,
+                new ParallelOptions { MaxDegreeOfParallelism = 2, CancellationToken = Cancellation },
+                async (player, _) =>
                 {
-                    if (++attempt >= MaxAttempts)
+                    player.Bans       = bans[player.SteamId];
+
+                    if (player.CommunityVisibilityState == 3)
                     {
-                        return ESteamApiResult.AttemptsExceeded;
-                    }
-
-                    await Task.Delay(RetryRequestDelay, Cancellation);
-                    i -= 100;
-                    continue;
-                }
-
-                await Parallel.ForEachAsync(summaries,
-                    new ParallelOptions { MaxDegreeOfParallelism = 2, CancellationToken = Cancellation },
-                    async (player, _) =>
-                    {
-                        player.Bans       = bans[player.SteamId];
-
-                        if (player.CommunityVisibilityState == 3)
-                        {
-                            player.SteamLevel     = await GetPlayerLevel(player.SteamId).ConfigureAwait(false); 
+                        player.SteamLevel     = await GetPlayerLevel(player.SteamId).ConfigureAwait(false); 
                         
-                            if(withGames)
-                            {
-                                player.GamesSummaries = await GetGames(player.SteamId).ConfigureAwait(false);
-                            }
-                        }
-
-                        if (callback != null)
+                        if(withGames)
                         {
-                            await callback(player, Cancellation);
+                            player.GamesSummaries = await GetGames(player.SteamId).ConfigureAwait(false);
                         }
                     }
-                ).ConfigureAwait(false);
-            }
-        }
-        catch(OperationCanceledException)
-        {
-            return ESteamApiResult.OperationCanceled;
-        }
-        catch
-        {
-            return ESteamApiResult.InternalError;
+
+                    if (callback != null)
+                    {
+                        await callback(player, Cancellation);
+                    }
+
+                    processed++;
+                }
+            ).ConfigureAwait(false);
         }
 
-        return ESteamApiResult.OK;
+        return processed;
     }
 
     internal async Task<PlayerFriend[]?> GetFriendsInfo(ulong steamId)
@@ -154,9 +171,6 @@ public sealed class SteamParser(HttpClient httpClient, string apiKey, Cancellati
                     chunk.Select(o => o.SteamId)
                 ).ConfigureAwait(false);
                 
-                if (summaries == null)
-                    return;
-                
                 Array.Sort(summaries, IdComparator);
                 for (var j = 0; j < chunk.Length; j++)
                 {
@@ -175,88 +189,79 @@ public sealed class SteamParser(HttpClient httpClient, string apiKey, Cancellati
     {
         var games = new PlayerGames();
         var prices = new Dictionary<uint, GameDetails>();
-
-        try
-        {
-            if ((games.Games = await GetPlayerGames(steamId).ConfigureAwait(false)) == null)
-                return null;
+        
+        if ((games.Games = await GetPlayerGames(steamId).ConfigureAwait(false)) == null)
+            return null;
             
-            if (games.Games.Length < 1 || !withDetails)
-                return games;
-
-            var builder = new StringBuilder();
-            var requests = new List<string>(64);
-
-            foreach (var info in games.Games)
-            {
-                if (info.Playtime_forever != 0f)
-                {
-                    info.Playtime_forever /= 60f;
-                    games.HoursOnPlayed += info.Playtime_forever;
-                    games.PlayedGamesCount++;
-                }
-                
-                if (_cache.TryGet(info.AppId, out var cachedDetails))
-                {
-                    FormatPrice(games, info, cachedDetails!);
-                    continue;
-                }
-
-                builder.Append(info.AppId);
-                if (builder.Length >= MaxSteamQuerySize)
-                {
-                    requests.Add(WrapRequest(builder));
-                    continue;
-                }
-
-                builder.Append(',');
-            }
-
-            if (builder.Length != 0)
-            {
-                requests.Add(WrapRequest(builder));
-            }
-
-            if (requests.Count > 0)
-                await ParseGameInfoRequests(requests, prices).ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
+        if (games.Games.Length < 1 || !withDetails)
             return games;
-        }
-        finally
+
+        var builder = new StringBuilder();
+        var requests = new List<string>(64);
+
+        foreach (var info in games.Games)
         {
-            if (games.Games?.Length > 0)
+            if (info.Playtime_forever != 0f)
             {
-                if (prices.Count > 0)
-                {
-                    foreach (var info in games.Games)
-                    {
-                        if (info.FormattedPrice != null ||
-                            !prices.TryGetValue(info.AppId, out var details))
-                            continue;
-
-                        if (details.Data?.Price_overview != null)
-                        {
-                            details.Data.Price_overview.Initial /= 100;
-                        }
-                        FormatPrice(games,info, details);
-
-                        _cache.Store(info.AppId, details, TimeSpan.FromHours(12));
-                    }
-                }
-                
-                games.GamesPriceFormatted = _currency.Format(games.GamesPrice);
-                
-
-                games.GamesCount = games.Games.Length;
-                games.GamesBoundaryBadge = GetGamesBadgeBoundary(games.Games.Length);
+                info.Playtime_forever /= 60f;
+                games.HoursOnPlayed += info.Playtime_forever;
+                games.PlayedGamesCount++;
             }
+                
+            if (_cache.TryGet(info.AppId, out var cachedDetails))
+            {
+                FormatPrice(games, info, cachedDetails!);
+                continue;
+            }
+
+            builder.Append(info.AppId);
+            if (builder.Length >= MaxSteamQuerySize)
+            {
+                requests.Add(WrapRequest());
+                continue;
+            }
+
+            builder.Append(',');
         }
 
+        if (builder.Length != 0)
+        {
+            requests.Add(WrapRequest());
+        }
+
+        if (requests.Count > 0)
+            await ParseGameInfoRequests(requests, prices).ConfigureAwait(false);
+            
+        if (games.Games?.Length > 0)
+        {
+            if (prices.Count > 0)
+            {
+                foreach (var info in games.Games)
+                {
+                    if (info.FormattedPrice != null ||
+                        !prices.TryGetValue(info.AppId, out var details))
+                        continue;
+
+                    if (details.Data?.Price_overview != null)
+                    {
+                        details.Data.Price_overview.Initial /= 100;
+                    }
+                    FormatPrice(games,info, details);
+
+                    _cache.Store(info.AppId, details, TimeSpan.FromHours(12));
+                }
+            }
+                
+            games.GamesPriceFormatted = _currency.Format(games.GamesPrice);
+                
+
+            games.GamesCount = games.Games.Length;
+            games.GamesBoundaryBadge = GetGamesBadgeBoundary(games.Games.Length);
+        }
+        
         return games;
 
-        string WrapRequest(StringBuilder builder)
+        string WrapRequest()
         {
             var request = builder.Append($"&cc={_currency.CountryCode}&l=en&filters=price_overview")
                 .Insert(0, "https://store.steampowered.com/api/appdetails/?appids=").ToString();
@@ -273,24 +278,17 @@ public sealed class SteamParser(HttpClient httpClient, string apiKey, Cancellati
             CancellationToken = Cancellation
         };
         
-        return Parallel.ForEachAsync(requests, options, async (x, token) =>
+        return Parallel.ForEachAsync(requests, options, async (x, _) =>
         {
-            for (int i = 0; i < MaxAttempts; i++)
-            {
-                var response = (await httpClient.TryGetString(x, token).ConfigureAwait(false))?
-                    .MutableReplace(']', '}').MutableReplace('[', '{');
+            var response = (await Request<string>(x, MaxAttempts, true).ConfigureAwait(false))?
+                .MutableReplace(']', '}').MutableReplace('[', '{');
 
-                if (string.IsNullOrEmpty(response))
-                {
-                    continue;
-                }
+            if (response == null) return;
                 
-                foreach (var item in 
-                         JsonSerializer.Deserialize<Dictionary<uint, GameDetails>>(response, Defines.JsonOptions)!)
-                {
-                    gamesPrices.Add(item.Key, item.Value);
-                }
-                return;
+            foreach (var item in 
+                     JsonSerializer.Deserialize<Dictionary<uint, GameDetails>>(response, Defines.JsonOptions)!)
+            {
+                gamesPrices.Add(item.Key, item.Value);
             }
         });
     }
@@ -317,62 +315,88 @@ public sealed class SteamParser(HttpClient httpClient, string apiKey, Cancellati
     
     #region Steam API requests
 
-    internal async Task<PlayerBans[]?> GetPlayerBans(params ulong[] steamIds)
+    internal async Task<PlayerBans[]> GetPlayerBans(params ulong[] steamIds)
     {
-        var response = await httpClient.TryGetString(
-            $"ISteamUser/GetPlayerBans/v1/?key={apiKey}&steamids={string.Join(",", steamIds)}",
-            Cancellation
+        var response = await Request<PlayerBansResponse>(
+            $"ISteamUser/GetPlayerBans/v1/?key={_apiKey}&steamids={string.Join(",", steamIds)}"
         ).ConfigureAwait(false);
 
-        return response == null ? null :
-            JsonSerializer.Deserialize<PlayerBansResponse>(response, Defines.JsonOptions)?.Players;
+        return response!.Players;
     }
     
-    internal async Task<PlayerSummaries[]?> GetPlayerSummaries(IEnumerable<ulong> steamIds)
+    internal async Task<PlayerSummaries[]> GetPlayerSummaries(IEnumerable<ulong> steamIds)
     {
-        var response = await httpClient.TryGetString(
-            $"ISteamUser/GetPlayerSummaries/v0002/?key={apiKey}&steamids={string.Join(",", steamIds)}",
-            Cancellation
+        var response = await Request<PlayerSummariesResponse>(
+            $"ISteamUser/GetPlayerSummaries/v0002/?key={_apiKey}&steamids={string.Join(",", steamIds)}"
         ).ConfigureAwait(false);
 
-        return response == null ? null : 
-            JsonSerializer.Deserialize<PlayerSummariesResponse>(response, Defines.JsonOptions)?.Response?.Players;
+        return response!.Response.Players;
     }
     
     internal async Task<PlayerFriend[]?> GetPlayerFriends(ulong steamId)
     {
-        var response = await httpClient.TryGetString(
-            $"ISteamUser/GetFriendList/v0001/?relationship=friend&key={apiKey}&steamid={steamId}",
-            Cancellation
+        var response = await Request<PlayerFriendsResponse>(
+            $"ISteamUser/GetFriendList/v0001/?relationship=friend&key={_apiKey}&steamid={steamId}"
         ).ConfigureAwait(false);
 
-        return response == null ? null :
-            JsonSerializer.Deserialize<PlayerFriendsResponse>(response, Defines.JsonOptions)?.FriendsList?.Friends;
+        return response?.FriendsList?.Friends;
     }
     
     internal async Task<PlayerGameInfo[]?> GetPlayerGames(ulong steamId)
     {
-        var response = await httpClient.TryGetString(
-            $"IPlayerService/GetOwnedGames/v0001/?key={apiKey}&steamid={steamId}&include_appinfo=true&include_played_free_games=1",
-            Cancellation
+        var response = await Request<PlayerGamesResponse>(
+            $"IPlayerService/GetOwnedGames/v0001/?key={_apiKey}&steamid={steamId}&include_appinfo=true&include_played_free_games=1"
         ).ConfigureAwait(false);
 
-        return response == null ? null :
-            JsonSerializer.Deserialize<PlayerGamesResponse>(response, Defines.JsonOptions)?.Response?.Games;
+        return response?.Response.Games;
     }
     
     internal async Task<int?> GetPlayerLevel(ulong steamId)
     {
-        var response = await httpClient.TryGetString(
-            $"IPlayerService/GetSteamLevel/v1/?key={apiKey}&steamid={steamId}",
-            Cancellation
+        var response = await Request<PlayerLevelResponse>(
+            $"IPlayerService/GetSteamLevel/v1/?key={_apiKey}&steamid={steamId}"
         ).ConfigureAwait(false);
 
-        return response == null ? null :
-            JsonSerializer.Deserialize<PlayerLevelResponse>(response, Defines.JsonOptions).Response.Player_level;
+        return response?.Response.Player_level;
+    }
+
+    internal async Task<ulong?> GetAccountId(string vanityUrl)
+    {
+        var response = await Request<ResolveVanityResponse>(
+            $"ISteamUser/ResolveVanityURL/v0001/?key={_apiKey}&vanityurl={vanityUrl}",3
+        ).ConfigureAwait(false);
+
+        return response?.Response?.SteamId;
     }
     
     #endregion
+
+    private async Task<T?> Request <T>(string url, int retries = 0, bool raw = false) where T: class
+    {
+        retry:
+        var response = await _httpClient.GetAsync(url, Cancellation);
+            
+        if (response.IsSuccessStatusCode)
+        {
+            var result = raw ? (T)(object)await response.Content.ReadAsStringAsync(_cancellation) :
+                await response.Content.ReadFromJsonAsync<T>(Defines.JsonOptions, _cancellation);
+            response.Dispose();
+            return result;
+        }
+            
+        if (response.StatusCode is HttpStatusCode.TooManyRequests or
+                HttpStatusCode.ServiceUnavailable && retries-- > 0)
+        {
+            await Task.Delay(RetryRequestDelay, _cancellation);
+            response.Dispose();
+            goto retry;
+        }
+        
+        ErrorCode = response.StatusCode;
+        await _errorCancellation!.CancelAsync();
+        response.Dispose();
+        return null;
+    }
     
     private static ushort GetGamesBadgeBoundary(int gamesCount)
     {
@@ -393,5 +417,4 @@ public sealed class SteamParser(HttpClient httpClient, string apiKey, Cancellati
         return 0;
     }
     private static int IdComparator(IIdentifiable x, IIdentifiable y) => x.SteamId.CompareTo(y.SteamId);
-    private static ulong ResolveId(ulong id) => id > UInt32.MaxValue ? id : id + Defines.SteamId64Indent;
 }
