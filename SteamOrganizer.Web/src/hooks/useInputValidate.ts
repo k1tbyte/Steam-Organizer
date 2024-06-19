@@ -1,21 +1,31 @@
 import { RefObject, useEffect, useRef} from "react";
 
-const  emailRegex = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$');
+const emailRegex = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$');
+const steamApiKeyRegex = new RegExp('^[A-Fa-f0-9]{32}$')
 
 export type TypeInputValidator = (input: string) => string | null;
 
-export const requiredValidator: TypeInputValidator = (input) =>
-    input.length == 0 ? "Required" : null;
-
-export const passwordValidator: TypeInputValidator = (input) => {
-    return input.length < 8 ? "Must be minimum 8 characters" : null;
+interface InputValidators {
+    [key: string]: TypeInputValidator;
 }
 
-export const emailValidator: TypeInputValidator = (input) => {
-    return emailRegex.test(input) ? null : "Must be an email"
+export const validator: InputValidators = {
+    required:  input =>  input.length == 0 ? "Required" : null,
+    password: input => input.length < 8 ? "Must be minimum 8 characters" : null,
+    email: input => emailRegex.test(input) ? null : "Must be an email",
+    steamApiKey: input =>  steamApiKeyRegex.test(input) ? null : "Invalid api key"
 }
 
-export const useInputValidate = (validators: Array<TypeInputValidator>):
+/**
+ * Usage: [inputRef, messageRef, validateRef] = useInputValidate()
+ *
+ * `[in] inputRef`: reference to input for validation
+ *
+ * `[in] messageRef`: reference to an object to display a validation error (p, span, etc.)
+ *
+ * `[out] validateRef`: manual validator call
+ */
+export const useInputValidate = (validators: Array<TypeInputValidator>, onSuccess?: (input: string) => void):
     [RefObject<HTMLInputElement>, RefObject<HTMLDivElement>, RefObject<() => boolean>] => {
     const inputRef = useRef<HTMLInputElement>(null)
     const messageRef = useRef<HTMLDivElement>(null)
@@ -40,6 +50,7 @@ export const useInputValidate = (validators: Array<TypeInputValidator>):
             if(message.textContent != null) {
                 message.textContent = null
             }
+            onSuccess?.(input.value)
             return true;
         }
 

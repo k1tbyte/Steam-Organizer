@@ -8,7 +8,7 @@ import {parseISO} from "date-fns";
 
 interface IAppConfig {
     encryptionKey?: string
-    test?: string
+    steamApiKey?: string
 }
 
 export const enum EDecryptResult {

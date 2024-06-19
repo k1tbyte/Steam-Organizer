@@ -2,6 +2,7 @@ import {FC} from "react";
 import {modal} from "@/components/primitives/Modal.tsx";
 import {ESidebarState, setState } from "@/components/Sidebar.tsx";
 import {Icon, SvgIcon} from "@/assets";
+import {Settings} from "@/pages/Modals/Settings.tsx";
 
 export const Header: FC = () => {
 
@@ -19,12 +20,8 @@ export const Header: FC = () => {
                 <SvgIcon icon={Icon.Bell} size={17} />
                 <SvgIcon icon={Icon.Cog} size={17} className="cursor-pointer" onClick={() => {
                     modal.open({
-                        className: "w-full max-w-[405px]",
                         title: "Settings",
-                        body:
-                            <div className="text-[13px] text-foreground">
-                                Settings component
-                            </div>
+                        body: <Settings/>
                     })
                 }}/>
             </div>

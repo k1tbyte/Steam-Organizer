@@ -1,0 +1,26 @@
+### List of games with prices
+GET {{host}}/api/v1/steam/webApi/getGames
+    ?key={{apiKey}}&steamId={{testId}}&withDetails=true&currency=eur
+
+### List of friends with summaries. Sorted by ascending ID
+GET {{host}}/api/v1/steam/webApi/getFriends
+    ?key={{apiKey}}&steamId={{testId}}
+
+### Steam profile info with summaries, bans and level. Supports several IDs at the same time (Max 100 unique).
+GET {{host}}/api/v1/steam/webApi/getSummaries
+    ?key={{apiKey}}&ids={{testId}}&includeGames=false&currency=eur
+
+### Same as above, supports streaming to transfer a large number of profiles. 
+POST {{host}}/api/v1/steam/webApi/getSummariesStream?key={{apiKey}}
+Content-Type: application/json
+
+{
+  "ids": [
+    {{testId}}
+  ],
+  "includeGames": false,
+  "currency": "eur"
+}
+> {%
+    response.body.onEachLine((line) => client.log(line));
+%}

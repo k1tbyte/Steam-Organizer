@@ -45,7 +45,8 @@ export const enum Icon {
     AlertCircleOutline,
     InfoCircleOutline,
     CloseCircleOutline,
-    CheckCircleOutline
+    CheckCircleOutline,
+    Api
 }
 
 export function Defs() {

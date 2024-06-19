@@ -3,11 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{AE552E6B-432A-4C5E-AF78-684D4FA6EC85}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamOrganizer", "SteamOrganizer\SteamOrganizer.csproj", "{02A17623-84C2-413F-88CE-05A5B879C48A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamOrganizer.Backend", "SteamOrganizer.Backend\SteamOrganizer.Backend.csproj", "{A0D6220E-F22F-491D-96F1-E3DEFACE86D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamOrganizer.Server", "SteamOrganizer.Server\SteamOrganizer.Server.csproj", "{549E201A-146D-4146-A4F0-43A10D25C39B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,18 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AE552E6B-432A-4C5E-AF78-684D4FA6EC85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AE552E6B-432A-4C5E-AF78-684D4FA6EC85}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AE552E6B-432A-4C5E-AF78-684D4FA6EC85}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AE552E6B-432A-4C5E-AF78-684D4FA6EC85}.Release|Any CPU.Build.0 = Release|Any CPU
-		{02A17623-84C2-413F-88CE-05A5B879C48A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{02A17623-84C2-413F-88CE-05A5B879C48A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{02A17623-84C2-413F-88CE-05A5B879C48A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{02A17623-84C2-413F-88CE-05A5B879C48A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A0D6220E-F22F-491D-96F1-E3DEFACE86D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A0D6220E-F22F-491D-96F1-E3DEFACE86D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A0D6220E-F22F-491D-96F1-E3DEFACE86D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A0D6220E-F22F-491D-96F1-E3DEFACE86D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{549E201A-146D-4146-A4F0-43A10D25C39B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{549E201A-146D-4146-A4F0-43A10D25C39B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{549E201A-146D-4146-A4F0-43A10D25C39B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{549E201A-146D-4146-A4F0-43A10D25C39B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
