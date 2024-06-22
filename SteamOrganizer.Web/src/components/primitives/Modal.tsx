@@ -128,8 +128,8 @@ export const ModalsHost = () => {
     )
 }
 
-export const useModalActions = () => {
-    const contentRef = useRef<HTMLDivElement>(null)
+export const useModalActions  = <T extends HTMLElement>() => {
+    const contentRef = useRef<T>(null)
     function closeModal() {
         const id = contentRef.current?.parentElement?.getAttribute("modal-id") as unknown as number | undefined
         if(id) {

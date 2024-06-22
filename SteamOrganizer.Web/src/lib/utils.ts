@@ -18,3 +18,14 @@ export const fromLittleEndian = (bytes: Uint8Array, len: number) => {
     return bytes.reduce((slice: bigint, byte: number, i: number) =>
         slice + (BigInt(byte) << (BigInt(i) * BigInt(len))), BigInt(0));
 }
+
+export const bufferToBase64 = (bytes: ArrayBuffer) => {
+    return btoa(
+        new Uint8Array(bytes)
+            .reduce((data, byte) => data + String.fromCharCode(byte), '')
+    );
+}
+
+export const jsonIgnoreNull = (key: string, value: any) => {
+    if(value !== null && value !== undefined) return value
+}

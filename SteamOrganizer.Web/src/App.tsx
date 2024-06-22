@@ -6,7 +6,7 @@ import Actions from "./pages/Actions.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import Backups from "./pages/Backups/Backups.tsx";
 import {useEffect} from "react";
-import { loadConfig, loadAccounts, EDecryptResult, storeEncryptionKey, getAccounts } from "./store/config.ts";
+import { loadConfig, EDecryptResult } from "./store/config.ts";
 import db from "./services/indexedDb.ts";
 import Authentication from "@/pages/Modals/Authentication.tsx";
 import { Defs } from "./assets"
@@ -14,6 +14,7 @@ import {modal, ModalsHost} from "./components/primitives/Modal.tsx";
 import {Profile} from "@/pages/Profile/Profile.tsx";
 import {AuthProvider} from "@/providers/authProvider.tsx";
 import { ToastsHost } from "@/components/primitives/Toast.tsx";
+import {getAccountsBuffer, loadAccounts, storeEncryptionKey} from "@/store/accounts.ts";
 
 const router = createBrowserRouter([
   {
@@ -72,7 +73,7 @@ export default function App() {
       }
 
       modal.open({
-        body: <Authentication info={info} onSuccess={storeEncryptionKey} decryptData={await getAccounts()} />,
+        body: <Authentication info={info} onSuccess={storeEncryptionKey} decryptData={await getAccountsBuffer()} />,
         onClosing: () => true,
         title: "Authentication",
         withCloseButton: false,

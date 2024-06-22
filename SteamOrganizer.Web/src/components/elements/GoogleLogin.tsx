@@ -1,9 +1,10 @@
 import React from 'react';
 import {useAuth} from "@/providers/authProvider.tsx";
-import {storeDb} from "@/services/sync.ts";
-import {loadBackupsInfo} from "@/store/config.ts";
+import {getFileJson, getFileList, uploadFileJson} from "@/services/gDrive.ts";
+let i = 0;
 async function saveTest(){
-   await storeDb("helloworld");
+    console.log(await getFileJson<any>("164HcUob8oi49B2UfgnSPzJ_u6ioap9EA"))
+    i++;
 }
 export const GoogleLogin: React.FC = () => {
     const { user, signIn, signOut } = useAuth();
@@ -24,16 +25,13 @@ export const GoogleLogin: React.FC = () => {
                     Logout
                 </div>
                 <div className="btn" onClick={saveTest}>
-                    Test backup
-                </div>
-                <div className="btn" onClick={loadBackupsInfo}>
-                    Load backups
+                    save
                 </div>
             </div>
         ) : (
             <div>
                 <div className="btn" onClick={signIn}>
-                <p>{user.isLoggedIn === undefined ? "loading..." : "Sign in"} </p>
+                        <p>{user.isLoggedIn === undefined ? "loading..." : "Sign in"} </p>
                     </div>
                 </div>
             )

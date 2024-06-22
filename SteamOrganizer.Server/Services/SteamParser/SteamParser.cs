@@ -84,8 +84,8 @@ public sealed class SteamParser : IDisposable
     {
         var summariesTask = GetPlayerSummaries([id]).ConfigureAwait(false);
         var bansTask      = GetPlayerBans(id).ConfigureAwait(false);
-
-        var summaries = (await summariesTask)?[0];
+        
+        var summaries = (await summariesTask).FirstOrDefault();
         if(summaries == null)
         {
             return null;
@@ -103,7 +103,7 @@ public sealed class SteamParser : IDisposable
             summaries.SteamLevel     = await levelTask;
         }
 
-        summaries.Bans       = (await bansTask)?[0];
+        summaries.Bans       = (await bansTask).FirstOrDefault();
         return summaries;
     }
     

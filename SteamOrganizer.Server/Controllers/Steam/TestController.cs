@@ -4,11 +4,11 @@ using SteamOrganizer.Server.Services.SteamParser;
 namespace SteamOrganizer.Server.Controllers.Steam;
 
 [Route(Defines.RoutePattern)]
-public class TestController(SteamParser client)
+public class TestController(SteamParser client) : Controller
 {
     [HttpGet]
-    public async Task Test()
+    public async Task<IHeaderDictionary> Test()
     {
-      
+        return Request.Headers;
     }
 }

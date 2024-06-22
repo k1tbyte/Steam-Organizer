@@ -1,4 +1,4 @@
-import { SteamAuth } from "./steamAuth.ts";
+import {EVisibilityState, SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
 
 export class Account {
     nickname: string;
@@ -8,7 +8,7 @@ export class Account {
     note?: string;
 
     id?: number;
-    visibilityState?: number;
+    visibilityState?: EVisibilityState;
     vanityUrl?: string;
     steamLevel?: number;
     createdDate?: Date;
@@ -32,16 +32,26 @@ export class Account {
     pinned?: boolean;
     unpinIndex?: number;
 
-    authenticator?: SteamAuth
 
-
-    isAnonymous() {
+    public isAnonymous() {
         return this.id === undefined;
     }
 
-    isBanned(): boolean {
+    public isBanned(): boolean {
         // @ts-ignore
         return this.haveCommunityBan || this.vacBansCount || this.gameBansCount || this.daysSinceLastBan || this.economyBan;
+    }
+
+    public assign(info: SteamPlayerSummary) {
+        if(this.avatarHash) {
+            this.lastUpdateDate = new Date()
+        }
+
+        this.nickname = info.personaName
+        this.avatarHash = info.avatarHash
+        this.visibilityState = info.communityVisibilityState
+        this.steamLevel = info.steamLevel
+        this.vanityUrl = info.profileUrl
     }
 
     constructor(login: string, password: string, accountId?: number) {
