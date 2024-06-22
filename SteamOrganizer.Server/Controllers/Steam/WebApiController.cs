@@ -23,10 +23,9 @@ public sealed class WebApiController(SteamParser parser) : ControllerBase
     [HttpGet]
     public async Task<PlayerSummaries?> GetSummaries(SummariesRequest request)
     {
-        
         return await parser
             .SetCurrency(request.Currency)
-            .GetPlayerInfo(request.Ids.First(), request.IncludeGames);
+            .GetPlayerInfo(Tools.ToSteamId64(request.Ids.First()), request.IncludeGames);
     }
     
     [HttpPost]

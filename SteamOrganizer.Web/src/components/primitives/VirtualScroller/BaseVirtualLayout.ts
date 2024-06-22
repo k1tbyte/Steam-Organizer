@@ -1,11 +1,14 @@
 import {Dispatch, SetStateAction} from "react";
+import {ObservableObject} from "@/lib/observableObject.ts";
 
 export abstract class BaseVirtualLayout {
     protected readonly chunkSetter: Dispatch<SetStateAction<number[]>>;
     protected readonly scroller: HTMLElement;
-    protected readonly collection: ArrayLike<any>;
+    protected readonly observer: ObservableObject<ArrayLike<any>>;
     protected readonly sizer: HTMLDivElement;
     protected readonly layout: HTMLDivElement;
+    public isInitialized: boolean = false;
+    public collection: ArrayLike<any>;
 
     startRow: number = 0;
     rowHeight: number = 0;
@@ -13,18 +16,30 @@ export abstract class BaseVirtualLayout {
     limit: number = 0;
     timer: number = 0;
 
-    public constructor(collection: ArrayLike<any>,
+    public constructor(observer: ObservableObject<ArrayLike<any>>,
                           chunkSetter: Dispatch<SetStateAction<number[]>>,
                           scroller: HTMLElement,
                           sizer: HTMLDivElement,
                           layout: HTMLDivElement) {
+
+        this.collection = observer.data;
         this.chunkSetter = chunkSetter;
         this.scroller = scroller;
-        this.collection = collection;
+        this.observer = observer;
         this.sizer = sizer;
         this.layout = layout;
+        observer.onChanged(this.onChangedCallback)
+    }
+
+    protected onChangedCallback = (data: ArrayLike<any>) => {
+        this.collection = data
+        this.refresh()
     }
 
     public abstract render() : void;
     public abstract refresh(reset?: boolean) : void;
+    public dispose()
+    {
+        this.observer.unsubscribe(this.onChangedCallback)
+    }
 }

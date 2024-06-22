@@ -1,22 +1,27 @@
 import {FC, ReactElement, ReactNode, useEffect, useRef, useState} from "react";
 import {useScrollbar} from "@/hooks/useScrollbar.ts";
 import {BaseVirtualLayout} from "./BaseVirtualLayout.ts";
+import {ObservableObject} from "@/lib/observableObject.ts";
 import Ref from "@/types/ref.ts";
+import {Loader} from "@/components/primitives/Loader.tsx";
+
+type Actions = {
+
+}
 
 interface IVirtualScrollerProps {
     className?: string;
-    collection: ArrayLike<any>;
-    renderElement: (id: number) => ReactNode;
+    collection: ObservableObject<any[]>;
+    renderElement: (object: any, index: number) => ReactNode;
     layout: typeof BaseVirtualLayout,
-    gridRef: Ref<BaseVirtualLayout>,
-    emptyIndicator?: ReactElement
+    emptyIndicator?: ReactElement,
+    isLoading?: boolean;
 }
 
-const VirtualScroller: FC<IVirtualScrollerProps> = ({   collection, renderElement,
-                                                        layout, className,
-                                                        gridRef, emptyIndicator
+const VirtualScroller: FC<IVirtualScrollerProps> = ({   collection, renderElement, isLoading,
+                                                        layout, className, emptyIndicator
 }) => {
-    const [items, setItems] = useState<number[]>(collection.length ? [0] : [])
+    const [items, setItems] = useState<number[]>([])
     const areaRef = useRef<HTMLDivElement>(null!);
     const sizerRef = useRef<HTMLDivElement>(null!);
     const layoutRef = useRef<BaseVirtualLayout>();
@@ -37,22 +42,29 @@ const VirtualScroller: FC<IVirtualScrollerProps> = ({   collection, renderElemen
         // @ts-ignore
         layoutRef.current =  new layout(collection, setItems,
             scrollRef.current!, sizerRef.current, areaRef.current)
-        gridRef.payload = layoutRef.current
         observer.observe(sizerRef.current!)
 
         return () => {
-            gridRef.payload = undefined
             observer.disconnect();
+            layoutRef.current?.dispose()
         }
     },[])
+    useEffect(() => {
+        if(!layoutRef.current.isInitialized) {
+            layoutRef.current.refresh()
+        }
+    },[items])
 
-    let padding = 0, top = 0, opacity =0;
+    let padding = 0, top = 0, opacity = 0;
 
     if(layoutRef.current) {
         const layout = layoutRef.current;
         padding = layout.rowHeight * layout?.startRow;
         top = padding + layout.rowHeight;
-        opacity = 1;
+
+        if(layout.isInitialized) {
+            opacity = 1;
+        }
     }
 
     return (
@@ -64,11 +76,14 @@ const VirtualScroller: FC<IVirtualScrollerProps> = ({   collection, renderElemen
                     opacity: opacity
                 }}
                      className={"sticky " + className}>
-                    {items.map((i) =>
-                        renderElement(i)
+                    {items.map((i) => {
+
+                            return renderElement(layoutRef.current.collection[i], i);
+                        }
                     )}
                 </div>
-                { collection.length === 0 &&  emptyIndicator}
+                { isLoading  ? <Loader className="absolute translate-center"/>
+                    : collection.data.length === 0 &&  emptyIndicator}
             </div>
         </div>
     );

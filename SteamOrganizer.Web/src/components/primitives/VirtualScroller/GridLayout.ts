@@ -1,7 +1,7 @@
 import { BaseVirtualLayout } from "./BaseVirtualLayout.ts";
 
 export class GridLayout extends BaseVirtualLayout {
-    public columns: number = -1;
+    public columns: number = NaN;
 
     private calculateSizes() {
         const gridStyles = window.getComputedStyle(this.layout);
@@ -16,12 +16,18 @@ export class GridLayout extends BaseVirtualLayout {
         const columnWidth = parseFloat(col) + columnGap;
         this.rowHeight = parseFloat(row) + rowGap;
         this.columns =  Math.ceil(this.layout.clientWidth / columnWidth);
+
+        if(!this.isInitialized) {
+            this.isInitialized = true;
+        }
     }
 
     public render() {
-        if(this.collection.length === 1) {
-            this.chunkSetter([0])
-            return;
+        if(!this.isInitialized) {
+            if(this.collection.length > 0) {
+                this.chunkSetter([0])
+            }
+            return
         }
         const visibleRows =Math.ceil(this.scroller.clientHeight / this.rowHeight);
         this.startRow = Math.floor(this.scroller.scrollTop / this.rowHeight)
@@ -33,7 +39,7 @@ export class GridLayout extends BaseVirtualLayout {
         );
         const limitCount = endIndex - renderIndex;
 
-        if(renderIndex === this.offsetIndex && limitCount === this.limit) {
+        if(isNaN(limitCount) || (renderIndex === this.offsetIndex && limitCount === this.limit)) {
             return;
         }
         this.limit = limitCount;

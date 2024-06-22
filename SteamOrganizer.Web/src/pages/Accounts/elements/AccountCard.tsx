@@ -1,9 +1,8 @@
-import type { Account } from "@/types/account.ts";
+import type { Account } from "@/entity/account.ts";
 import React, {FC } from "react";
 import {Link} from "react-router-dom";
 import {Icon, SvgIcon} from "@/assets";
-import { actions } from "@/pages/Accounts/Accounts.tsx";
-import { accounts } from "@/store/config.ts";
+import {accounts} from "@/store/accounts.ts";
 
 interface IAccountCardProps {
     acc: Account,
@@ -14,10 +13,11 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
   return (
       <div className="flex bg-primary  p-4 pr-10 rounded-[3px] h-fit relative">
 
-          <img
-              src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
+          <img loading="lazy"
+              src={acc.avatarHash ? `https://avatars.steamstatic.com/${acc.avatarHash}_medium.jpg` :
+                  "https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"}
               alt=""
-              className="rounded-lg grad-primary p-0.5 w-[55px] h-[55px]"
+              className="rounded-lg grad-primary p-0.5 w-[55px] h-[55px] shrink-0"
           />
 
           <div className="ml-3">
@@ -33,7 +33,7 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
               <div className="text-xs mt-[7px] flex flex-wrap font-bold text-background gap-[5px]">
 
                   <div className="flex text-nowrap gap-[5px] mr-2">
-                      <div className="chip">Level: 1000</div>
+                      <div className="chip">Level: {acc.steamLevel ?? `—`}</div>
                       <div className="chip">Years: 4</div>
                   </div>
 
@@ -44,15 +44,15 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
                       <div className="chip bg-success">Community</div>
                   </div>
 
-                  <span className="text-foreground font-medium w-full"><b className="text-secondary">ID:</b> {acc.steamId64?.toString()}</span>
+                  <span className="text-foreground font-medium w-full"><b className="text-secondary">ID:</b> {acc.id?.toString()}</span>
               </div>
           </div>
 
           <SvgIcon icon={Icon.Pin} role="button" className="absolute text-foreground-muted right-3 top-3 hover:text-yellow-300 btn rotate-45" size={20}/>
           <SvgIcon icon={Icon.Trash} role="button" className="absolute text-foreground-muted right-3 bottom-3 hover:text-danger btn" size={20} onClick={() => {
-              actions.mutate(() =>
-                  accounts.splice(accounts.indexOf(acc),1)
-              )
+              accounts.mutate((o) => {
+                  o.splice(o.indexOf(acc), 1)
+              })
           }}/>
 
       </div>
