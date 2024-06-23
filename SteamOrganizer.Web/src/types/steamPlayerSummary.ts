@@ -10,12 +10,18 @@ export const enum ECommentPermission {
     Private = 2,
 }
 
+export const enum EEconomyBanType {
+    None = 0,
+    Probation = 1,
+    Banned = 2
+}
+
 export type SteamPlayerBans = {
     communityBanned: boolean;
     numberOfVacBans: number;
     numberOfGameBans: number;
     daysSinceLastBan: number;
-    economyBan?: string;
+    economyBan: EEconomyBanType;
 }
 
 export type SteamGameInfo = {

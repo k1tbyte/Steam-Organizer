@@ -42,7 +42,7 @@ export class Account {
         return this.haveCommunityBan || this.vacBansCount || this.gameBansCount || this.daysSinceLastBan || this.economyBan;
     }
 
-    public assign(info: SteamPlayerSummary) {
+    public assignInfo(info: SteamPlayerSummary) {
         if(this.avatarHash) {
             this.lastUpdateDate = new Date()
         }

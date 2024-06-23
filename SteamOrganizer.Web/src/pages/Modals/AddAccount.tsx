@@ -9,13 +9,19 @@ import {Account} from "@/entity/account.ts";
 import {accounts, saveAccounts} from "@/store/accounts.ts";
 import {toAccountId} from "@/lib/steamIdConverter.ts";
 import {getPlayerInfo} from "@/services/steamApi.ts";
+import { useFormValidation, validator} from "@/hooks/useInputValidation.ts";
 
 interface IAddAccountProps {
 
 }
 
 export const AddAccount: FC<IAddAccountProps> = () => {
-    const { closeModal, contentRef }  = useModalActions<HTMLFormElement>();
+    const { closeModal, contentRef }  = useModalActions<HTMLDivElement>();
+    const sas = useFormValidation([
+        validator.password,
+        null,
+        validator.password
+    ])
 
     const addClick = async (e) => {
         e.preventDefault()
@@ -26,7 +32,7 @@ export const AddAccount: FC<IAddAccountProps> = () => {
             formData.get("login").toString(),
             formData.get("password").toString(),id
         );
-        acc.assign(info)
+        acc.assignInfo(info)
         console.log(acc)
 
         accounts.mutate((o) => {
@@ -37,20 +43,22 @@ export const AddAccount: FC<IAddAccountProps> = () => {
     }
 
     return (
-        <form className="w-full" ref={contentRef} onSubmit={addClick}>
-            <InputWrapper title="Login" className="mb-2 w-full" icon={<SvgIcon icon={Icon.UserText} size={18}/>}>
-                <Input name="login"/>
-            </InputWrapper>
-            <InputWrapper title="Password" className="mb-2 w-full" icon={<SvgIcon icon={Icon.Key} size={18}/>}>
-                <PasswordBox  name="password"/>
-            </InputWrapper>
-            <InputWrapper title="Account ID in any format" className="mb-7 w-full"
-                          icon={<SvgIcon icon={Icon.Identifier} size={36}/>}>
-                <Input name="id"/>
-            </InputWrapper>
-            <Button className="w-full max-w-28 mx-auto" type="submit">
-                Add
-            </Button>
-        </form>
+        <div ref={contentRef}>
+            <form className="w-full" ref={sas}>
+                <InputWrapper title="Login" className="mb-2 w-full" icon={<SvgIcon icon={Icon.UserText} size={18}/>}>
+                    <Input name="login"/>
+                </InputWrapper>
+                <InputWrapper title="Password" className="mb-2 w-full" icon={<SvgIcon icon={Icon.Key} size={18}/>}>
+                    <PasswordBox  name="password"/>
+                </InputWrapper>
+                <InputWrapper title="Account ID in any format" className="mb-7 w-full"
+                              icon={<SvgIcon icon={Icon.Identifier} size={36}/>}>
+                    <Input name="id"/>
+                </InputWrapper>
+                <Button className="w-full max-w-28 mx-auto" type="submit">
+                    Add
+                </Button>
+            </form>
+        </div>
     )
 }

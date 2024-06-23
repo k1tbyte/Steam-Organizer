@@ -116,7 +116,7 @@ export const ModalsHost = () => {
                                             initial={{opacity: prevCount > 0 ? 1 : 0 }}
                                             animate={{opacity: 1}}
                                             exit={{opacity: 0}}
-                                            className="fixed z-50 inset-0 backdrop-saturate-150 bg-black/80 backdrop-blur-md"
+                                            className="fixed z-50 inset-0 backdrop-saturate-150 bg-black/80 backdrop-blur-sm"
                                             aria-hidden="true"/>
                             }
                             {o.body}

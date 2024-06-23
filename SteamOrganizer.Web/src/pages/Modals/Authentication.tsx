@@ -2,7 +2,7 @@ import InputWrapper from "@/components/elements/InputWrapper.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import {decrypt, deriveKey } from "@/services/cryptography.ts";
 import Button, { IButtonActions} from "@/components/primitives/Button.tsx";
-import {useInputValidate, validator} from "@/hooks/useInputValidate.ts";
+import {useInputValidation, validator} from "@/hooks/useInputValidation.ts";
 import {FC} from "react";
 import Ref from "@/types/ref.ts";
 import {useModalActions} from "@/components/primitives/Modal.tsx";
@@ -17,8 +17,8 @@ interface IAuthProps {
 
 const Authentication : FC<IAuthProps> = (props) => {
     const [inputRef, messageRef, validateRef]
-        = useInputValidate([ validator.password ]);
-    const { closeModal, contentRef }  = useModalActions();
+        = useInputValidation( validator.password);
+    const { closeModal, contentRef }  = useModalActions<HTMLDivElement>();
 
     const submitActions = new Ref<IButtonActions>()
 

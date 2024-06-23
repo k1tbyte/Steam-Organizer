@@ -15,9 +15,7 @@ const InputWrapper = forwardRef<HTMLSpanElement,IInputWrapperProps>(
         <div className={clsx(className)}>
             <div className="flex justify-between items-center mb-0.5 ml-0.5 relative ">
                 <p className="text-chip text-[13px] font-semibold">{title}</p>
-                <span ref={ref} className="text-[11px] bg-danger text-foreground-accent py-0.5 opacity-90 px-1
-                                 rounded-sm absolute right-0 bottom-0 max-w-[70%] text-ellipsis text-nowrap
-                                 overflow-hidden hover:text-wrap empty:opacity-0 empty:p-0 transition-opacity pointer-events-none"/>
+                <span ref={ref} validation-text="" className="text-[11px] bg-danger text-foreground-accent py-0.5 opacity-90 px-1 rounded-sm right-0 bottom-0 max-w-[70%] text-ellipsis text-nowrap absolute overflow-hidden hover:text-wrap empty:opacity-0 empty:p-0 transition-opacity pointer-events-none"/>
             </div>
 
             <div className="flex mb-1">

@@ -38,10 +38,10 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
                   </div>
 
                   <div className="flex flex-wrap gap-[5px] text-[12px]">
-                      <div className="chip bg-success">VAC</div>
-                      <div className="chip bg-success">Game</div>
-                      <div className="chip bg-success">Trade</div>
-                      <div className="chip bg-success">Community</div>
+                      {acc.vacBansCount && <div className="chip bg-close">VAC</div>}
+                      {acc.gameBansCount && <div className="chip bg-close">Game</div>}
+                      {acc.haveCommunityBan && <div className="chip bg-close">Community</div>}
+                      {acc.economyBan && <div className="chip bg-close">Trade</div>}
                   </div>
 
                   <span className="text-foreground font-medium w-full"><b className="text-secondary">ID:</b> {acc.id?.toString()}</span>

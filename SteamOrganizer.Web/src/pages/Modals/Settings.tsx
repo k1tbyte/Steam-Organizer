@@ -2,13 +2,13 @@ import {FC} from "react";
 import InputWrapper from "@/components/elements/InputWrapper.tsx";
 import {Icon, SvgIcon} from "@/assets";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
-import {useInputValidate, validator} from "@/hooks/useInputValidate.ts";
+import {useInputValidation, validator} from "@/hooks/useInputValidation.ts";
 import {config, saveConfig} from "@/store/config.ts";
 
 export const Settings: FC = () => {
-    const [inputRef, messageRef] = useInputValidate([
-        (input) => input.length === 0 ? null : validator.steamApiKey(input)
-    ],  (i) => {
+    const [inputRef, messageRef] = useInputValidation(
+        input => input.length === 0 ? null : validator.steamApiKey(input),
+        i => {
         if(config.steamApiKey === i) {
             return
         }
