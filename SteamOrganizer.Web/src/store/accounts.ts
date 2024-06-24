@@ -22,7 +22,37 @@ export const storeEncryptionKey = async (key: CryptoKey) => {
     await saveConfig()
 }
 
-export const saveAccounts = async () => {
+
+/**
+ * @returns
+ * [0] - collided by id
+ *
+ * [1] - collided by login
+ */
+export const isAccountCollided = (id: number | undefined, login: string | undefined) => {
+    if(!id && !login) {
+        throw new Error("At least one identification field must be specified")
+    }
+    let byId: boolean
+    let byLogin: boolean
+
+    const contains = accounts.data.some(o =>
+        (byId = (o.id && o.id === id)) || (byLogin =(login && o.login === login))
+    )
+
+    return contains ? [byId,byLogin] : undefined
+}
+
+/**
+ * @param action The action after which saving is performed.
+ * Return `false` from action if the action is unsuccessful. After this, no saving will be made.
+ */
+export const saveAccounts = async (action: () => boolean | void = undefined) => {
+
+    if(action?.() === false) {
+        return;
+    }
+
     await db.save(
         await exportAccounts(),
         dbFieldName
@@ -50,6 +80,9 @@ export const loadAccounts = async (bytes: ArrayBuffer | null = null) => {
     try {   
         const data = await decrypt(databaseKey, bytes);
         accounts.set(JSON.parse(data))
+        for(const acc of accounts.data) {
+            Object.setPrototypeOf(acc, Account.prototype)
+        }
         return EDecryptResult.Success
     } catch {
         return EDecryptResult.BadCredentials

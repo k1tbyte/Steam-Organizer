@@ -21,7 +21,7 @@ export default {
         "border": "#1e2039",
         "success": "#08fc81",
         "danger": "#f04343",
-        "close": "#ef6e5f"
+        "close": "#de6d92"
       },
       borderRadius: {
         '2xm': '5px',

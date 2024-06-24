@@ -1,5 +1,6 @@
 import { md5 } from "@/lib/md5.js";
 import {fromLittleEndian, toLittleEndian} from "@/lib/utils.ts";
+import {resolveVanityUrl} from "@/services/steamApi.ts";
 
 export const id64Indent = 76561197960265728n;
 const Base32 = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -58,14 +59,16 @@ export const converters: ISteamIdConverter[] = [
 
 const idFromUrl = new RegExp("/(?:id|profiles)/([^/, ]+)")
 
-export const toAccountId = (steamId: string) => {
+export const toAccountId = async (steamId: string) => {
+    if(!steamId) return undefined
     const id =   steamId.match(idFromUrl)?.[1] ?? steamId
     for (const converter of converters) {
         if(converter.matcher.test(id)) {
             return converter.to(id)
         }
     }
-    // check vanity url
+
+    return (await resolveVanityUrl(id)) ?? 0
 }
 
 const decodeCsCode = (code: string) => {

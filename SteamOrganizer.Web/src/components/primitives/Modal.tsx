@@ -39,11 +39,9 @@ const ModalBody: FC<IModalProps> = React.memo(
         },[])
 
         return (
-            <div ref={contentRef} className={"inset-0 fixed items-center overflow-y-auto z-50 w-screen flex justify-center"} onClick={() => handleClose(id!, onClosing)}
-            >
-                <motion.div className={cn("rounded-2xm bg-primary p-[10px] mb-12", className)}
+            <div ref={contentRef} className={"inset-0 fixed items-center pointer-events-none overflow-y-auto z-50 w-screen flex justify-center"}>
+                <motion.div className={cn("rounded-2xm bg-primary p-[10px] mb-12 pointer-events-auto", className)}
                             modal-id={id}
-                            onClick={(e) => e.stopPropagation()}
                             initial={{opacity: 0, marginTop: -80}}
                             animate={{opacity: 1, marginTop: 64}}
                             exit={{opacity: 0, marginTop: -80}}>
@@ -113,6 +111,7 @@ export const ModalsHost = () => {
                             {
                                 i === (modals.length - 1) &&
                                 <motion.div ref={overlayRef}
+                                            onClick={() => handleClose(i, o.onClosing)}
                                             initial={{opacity: prevCount > 0 ? 1 : 0 }}
                                             animate={{opacity: 1}}
                                             exit={{opacity: 0}}

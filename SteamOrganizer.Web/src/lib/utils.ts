@@ -27,5 +27,8 @@ export const bufferToBase64 = (bytes: ArrayBuffer) => {
 }
 
 export const jsonIgnoreNull = (key: string, value: any) => {
-    if(value !== null && value !== undefined) return value
+    // Ignore fields with the prefix _ (95) and empty fields
+    if(value !== null && value !== undefined && key.charCodeAt(0) != 95) {
+        return value
+    }
 }

@@ -2,6 +2,7 @@ import { RefObject, useEffect, useRef} from "react";
 
 const emailRegex = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$');
 const steamApiKeyRegex = new RegExp('^[A-Fa-f0-9]{32}$')
+const loginRegex = new RegExp("^(?=.*[A-Za-z0-9])(?!.*[/*\\-.+_@!&$#%]{2})[A-Za-z0-9/*\\-.+_@!&$#%]{3,64}$")
 
 export type TypeInputValidator = (input: string) => string | null;
 
@@ -80,12 +81,15 @@ export const useFormValidation = (validators: TypeInputValidator[],
 
         const onSubmit = (e) => {
             e.preventDefault();
+            let success: boolean = true;
             for(const action of actions) {
-                if(!action()) {
-                    return;
+                if(!action() && success) {
+                    success = false;
                 }
             }
-            onSuccess?.(e)
+            if(success) {
+                onSuccess?.(e)
+            }
         }
 
         form.addEventListener('submit', onSubmit)
@@ -101,7 +105,8 @@ export const useFormValidation = (validators: TypeInputValidator[],
 
 export const validator: InputValidators = {
     required:  input =>  input.length == 0 ? "Required" : null,
-    password: input => input.length < 8 ? "Must be minimum 8 characters" : null,
+    login: input => loginRegex.test(input) ? null : "Invalid login",
+    password: input => input.length < 6 ? "Must be minimum 6 characters" : null,
     email: input => emailRegex.test(input) ? null : "Must be an email",
     steamApiKey: input =>  steamApiKeyRegex.test(input) ? null : "Invalid api key"
 }

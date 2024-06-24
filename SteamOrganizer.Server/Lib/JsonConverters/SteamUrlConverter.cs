@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace SteamOrganizer.Server.Lib.JsonConverters;
 
-public class SteamUrlConverter : JsonConverter<string>
+public sealed class SteamUrlConverter : JsonConverter<string>
 {
     public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

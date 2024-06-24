@@ -13,9 +13,12 @@ const InputWrapper = forwardRef<HTMLSpanElement,IInputWrapperProps>(
 
     return  (
         <div className={clsx(className)}>
-            <div className="flex justify-between items-center mb-0.5 ml-0.5 relative ">
-                <p className="text-chip text-[13px] font-semibold">{title}</p>
-                <span ref={ref} validation-text="" className="text-[11px] bg-danger text-foreground-accent py-0.5 opacity-90 px-1 rounded-sm right-0 bottom-0 max-w-[70%] text-ellipsis text-nowrap absolute overflow-hidden hover:text-wrap empty:opacity-0 empty:p-0 transition-opacity pointer-events-none"/>
+            <div className="flex justify-between mb-0.5 ml-0.5 relative gap-3">
+                <p className="text-chip text-[13px] font-semibold text-nowrap">{title}</p>
+                <div className="flex-y-center overflow-hidden max-w-[70%] opacity-90">
+                    <span ref={ref} validation-text=""
+                          className="text-[11px] text-foreground-accent  overflow-hidden text-ellipsis hover:py-0.5 bg-danger rounded-sm px-1 hover:absolute right-0 bottom-0 hover:text-wrap text-nowrap cursor-default"/>
+                </div>
             </div>
 
             <div className="flex mb-1">
@@ -27,6 +30,6 @@ const InputWrapper = forwardRef<HTMLSpanElement,IInputWrapperProps>(
             </div>
         </div>
     )
-})
+    })
 
 export default InputWrapper;

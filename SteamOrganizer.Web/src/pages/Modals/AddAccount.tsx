@@ -1,61 +1,85 @@
-import {FC} from "react";
+import {FC, useRef} from "react";
 import {useModalActions} from "@/components/primitives/Modal.tsx";
 import InputWrapper from "@/components/elements/InputWrapper.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import Input from "@/components/primitives/Input.tsx";
-import Button from "@/components/primitives/Button.tsx";
+import Button, {IButtonActions} from "@/components/primitives/Button.tsx";
 import {Icon, SvgIcon} from "@/assets";
 import {Account} from "@/entity/account.ts";
-import {accounts, saveAccounts} from "@/store/accounts.ts";
+import {accounts, isAccountCollided, saveAccounts} from "@/store/accounts.ts";
 import {toAccountId} from "@/lib/steamIdConverter.ts";
-import {getPlayerInfo} from "@/services/steamApi.ts";
-import { useFormValidation, validator} from "@/hooks/useInputValidation.ts";
+import {useFormValidation, validator} from "@/hooks/useInputValidation.ts";
+import Ref from "@/types/ref.ts";
+import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 
 interface IAddAccountProps {
 
 }
 
 export const AddAccount: FC<IAddAccountProps> = () => {
+    const errorIdRef = useRef<HTMLDivElement>()
+    const errorLoginRef = useRef<HTMLDivElement>()
     const { closeModal, contentRef }  = useModalActions<HTMLDivElement>();
-    const sas = useFormValidation([
-        validator.password,
-        null,
-        validator.password
-    ])
+    const submitActions = new Ref<IButtonActions>()
 
     const addClick = async (e) => {
-        e.preventDefault()
-        const formData = new FormData(e.currentTarget);
-        const id = toAccountId(formData.get("id").toString());
-        const info =  await getPlayerInfo(id)
-        const acc = new Account(
-            formData.get("login").toString(),
-            formData.get("password").toString(),id
-        );
-        acc.assignInfo(info)
-        console.log(acc)
+        try {
+            submitActions.payload.setLoading(true)
+            const formData = new FormData(e.currentTarget);
+            const steamId = formData.get("id").toString();
+            const login = formData.get("login").toString();
+            const id = await toAccountId(steamId)
 
-        accounts.mutate((o) => {
-            o.push(acc)
-            saveAccounts()
-        })
-        closeModal();
+
+            if(id === 0) {
+                errorIdRef.current.textContent = "Account with this id not found"
+                return
+            }
+
+            const collision = isAccountCollided(id, login)
+            if(collision) {
+                const error = collision[0] ? errorIdRef.current : errorLoginRef.current;
+                error.textContent = `Account with same ${collision[0] ? 'id' : 'login'} already exists`
+                return
+            }
+            const account = await Account.new(login, formData.get("password").toString(), id)
+            if(!account) {
+                toast.open({ body: "Failed to retrieve account information", variant: ToastVariant.Error })
+                return
+            }
+
+            accounts.mutate((o) => {
+                o.push(account)
+                saveAccounts()
+            })
+
+            closeModal()
+        }
+        finally {
+            submitActions.payload.setLoading(false)
+        }
     }
+
+    const formValidation = useFormValidation([
+        validator.login,
+        validator.password,
+        (s) => (!s || s.length > 1) ? null : "Enter valid id"
+    ], addClick)
 
     return (
         <div ref={contentRef}>
-            <form className="w-full" ref={sas}>
-                <InputWrapper title="Login" className="mb-2 w-full" icon={<SvgIcon icon={Icon.UserText} size={18}/>}>
+            <form className="w-[280px]" ref={formValidation}>
+                <InputWrapper title="Login" ref={errorLoginRef} className="mb-2 w-full" icon={<SvgIcon icon={Icon.UserText} size={18}/>}>
                     <Input name="login"/>
                 </InputWrapper>
                 <InputWrapper title="Password" className="mb-2 w-full" icon={<SvgIcon icon={Icon.Key} size={18}/>}>
                     <PasswordBox  name="password"/>
                 </InputWrapper>
-                <InputWrapper title="Account ID in any format" className="mb-7 w-full"
+                <InputWrapper title="Steam ID in any format" className="mb-7 w-full" ref={errorIdRef}
                               icon={<SvgIcon icon={Icon.Identifier} size={36}/>}>
                     <Input name="id"/>
                 </InputWrapper>
-                <Button className="w-full max-w-28 mx-auto" type="submit">
+                <Button actions={submitActions} className="w-full max-w-28 mx-auto" type="submit">
                     Add
                 </Button>
             </form>
