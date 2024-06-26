@@ -9,7 +9,7 @@ export default function Accounts() {
         <>
             <Toolbar/>
             <VirtualScroller collection={accounts} layout={GridLayout}
-                             className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] mx-2 gap-2"
+                             className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] mx-2 gap-2 auto-rows"
                              emptyIndicator={<p className="absolute translate-center text-foreground-muted text-center">
                                  The list of accounts is empty
                              </p>}

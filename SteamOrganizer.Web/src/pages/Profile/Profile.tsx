@@ -8,12 +8,22 @@ import ProfileTab from "@/pages/Profile/tabs/ProfileTab.tsx";
 import GamesTab from "@/pages/Profile/tabs/GamesTab.tsx";
 import FriendsTab from "@/pages/Profile/tabs/FriendsTab.tsx";
 import {useScrollbar} from "@/hooks/useScrollbar.ts";
+import {accounts} from "@/store/accounts.ts";
+import {defaultAvatar} from "@/store/config.ts";
 
 interface ITabTitleProps {
     active: boolean;
     icon: ReactElement;
     title: string
 }
+
+const dateOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+} satisfies Intl.DateTimeFormatOptions;
 
 const TabTitle: FC<ITabTitleProps> = ( { active, icon, title }) => (
     <div className="flex-center gap-3">
@@ -33,23 +43,23 @@ const TabTitle: FC<ITabTitleProps> = ( { active, icon, title }) => (
 
 export const Profile: FC = () => {
     const { id } = useParams();
+    const numId = parseFloat(id)
+    const acc = accounts.data.find(!isNaN(numId) ?
+        (o => o.id === numId) : (o => o.login === id))
     const { hostRef } = useScrollbar();
 
+    if(!acc) {
+        return <p>Account not found</p>
+    }
+
+    const dateFormat = new Intl.DateTimeFormat(navigator.language, dateOptions);
     return (
         <div className={styles.wrapper} ref={hostRef}>
             <div className={styles.mainContainer}>
-                <div className={styles.profileImgContainer}>
-                    <img src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/601220/5b6469b419ece1d0b98f91a4d7293d58803df0f1.jpg"
-                         className={styles.profileImg} alt=""/>
-                    {/*                    <video playsInline autoPlay muted loop
-                           className="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 scale-125">
-                        <source src="https://cdn.akamai.steamstatic.com/steamcommunity/public/images/items/292030/ef8800d4202871c5986baf5f49264897c5cffecd.mp4" type="video/mp4"/>
-                    </video>*/}
-                </div>
                 <div className={styles.header}>
                     <div className={styles.avatarContainer}>
                         <img style={{maskImage: "url(#avatarMask)"}}
-                             src="https://avatars.akamai.steamstatic.com/b3bd9dfc77bc5e2c12f6317873a12f0d36b4a65a_full.jpg"
+                             src={`https://avatars.akamai.steamstatic.com/${acc.avatarHash ?? defaultAvatar}_full.jpg`}
                              className={styles.avatar} alt="avatar"/>
 
                         <svg xmlns="http://www.w3.org/2000/svg" className="absolute stroke-accent"
@@ -61,17 +71,21 @@ export const Profile: FC = () => {
                             17
                         </div>
                     </div>
-                    <p className={styles.nicknameTitle}>The old man from the mountain</p>
+                    <p className={styles.nicknameTitle}>{acc.nickname}</p>
                     <div className="w-full bg-background my-5 h-0.5"/>
                     <div className={styles.infoContainer}>
                         <div className="text-center">
                             <p className={styles.infoTitle}>Added</p>
-                            <p className={styles.infoSubtitle}>23.11.2020 11:35</p>
+                            <p className={styles.infoSubtitle}>{
+                                dateFormat.format(new Date(acc.addedDate))
+                            }</p>
                         </div>
 
                         <div className="text-center">
                             <p className={styles.infoTitle}>Updated</p>
-                            <p className={styles.infoSubtitle}>23.11.2020 11:35</p>
+                            <p className={styles.infoSubtitle}>{
+                                acc.lastUpdateDate ? dateFormat.format(new Date(acc.lastUpdateDate)) : '—'
+                            }</p>
                         </div>
 
                         <div className="flex-y-center gap-5">

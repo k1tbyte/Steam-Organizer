@@ -96,6 +96,9 @@ export default {
         },
         '.letter-space': {
             letterSpacing: "1px"
+        },
+        '.auto-rows': {
+          gridAutoRows: "1fr"
         }
       })
     })

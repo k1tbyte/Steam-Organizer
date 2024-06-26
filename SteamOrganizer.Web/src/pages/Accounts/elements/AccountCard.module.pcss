@@ -1,0 +1,69 @@
+.card {
+    @apply flex bg-primary p-4 pb-0 pr-10 rounded-[3px] h-full relative;
+}
+
+.body {
+    @apply text-xs mt-[7px] font-bold text-background overflow-visible;
+}
+
+.bans {
+    @apply flex flex-wrap gap-[5px] text-[12px] overflow-hidden h-[20px] relative;
+    width: 200px;
+    height: 20px;
+
+    &:hover {
+        @apply w-full overflow-visible;
+        span {
+            @apply hidden
+        }
+    }
+}
+
+.banChip {
+    @apply chip bg-close
+}
+
+.anyBans {
+    @apply chip bg-success inline-block
+}
+
+.id {
+    @apply text-foreground font-medium w-full mt-2 mb-3
+}
+
+.nick {
+    @apply text-[14px] text-nowrap overflow-hidden text-ellipsis
+}
+
+.topInfo {
+    @apply flex text-nowrap gap-[5px] mr-2 mb-[5px];
+}
+
+.main {
+   @apply ml-3 overflow-hidden
+}
+
+.pin {
+    @apply absolute text-foreground-muted right-3 top-3 hover:text-yellow-300 btn rotate-45
+}
+
+.edit {
+    @apply btn-rect;
+    margin-left: 6px;
+}
+
+.enter {
+    @apply btn-rect ml-2
+}
+
+.trashBin {
+    @apply absolute text-foreground-muted right-3 bottom-3 hover:text-danger btn
+}
+
+.indicators {
+    @apply flex justify-center gap-1 mt-3
+}
+
+.avatar {
+    @apply rounded-lg grad-primary p-0.5 w-[55px] h-[55px]
+}

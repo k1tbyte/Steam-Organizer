@@ -16,6 +16,8 @@ export const enum EDecryptResult {
 
 let fingerprint: CryptoKey | undefined;
 
+export const defaultAvatar = "fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb"
+
 export let config: IAppConfig;
 
 export const  loadConfig = async () => {

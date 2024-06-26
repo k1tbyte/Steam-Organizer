@@ -1,60 +1,79 @@
 import type { Account } from "@/entity/account.ts";
 import React, {FC } from "react";
 import {Link} from "react-router-dom";
-import {Icon, SvgIcon} from "@/assets";
+import { Icon, SvgIcon} from "@/assets";
 import {accounts} from "@/store/accounts.ts";
+import styles from "./AccountCard.module.pcss"
+import {defaultAvatar} from "@/store/config.ts";
 
 interface IAccountCardProps {
     acc: Account,
 }
 
-
 const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
+    // @ts-ignore
+    const bansCount = acc.haveCommunityBan + !!acc.vacBansCount + !!acc.gameBansCount +  !!acc.economyBan
+
     return (
-        <div className="flex bg-primary  p-4 pr-10 rounded-[3px] h-fit relative">
+        <div className={styles.card}>
 
-            <img loading="lazy"
-                 src={acc.avatarHash ? `https://avatars.steamstatic.com/${acc.avatarHash}_medium.jpg` :
-                     "https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"}
-                 alt=""
-                 className="rounded-lg grad-primary p-0.5 w-[55px] h-[55px] shrink-0"
-            />
+            <div className="shrink-0">
+                <img loading="lazy"
+                     src={`https://avatars.steamstatic.com/${acc.avatarHash ?? defaultAvatar}_medium.jpg`}
+                     alt=""
+                     className={styles.avatar}
+                />
+                <div className={styles.indicators}>
+                    {/* <SvgIcon icon={Icon.Lock} size={16} className="fill-success"/> */}
+                    { !acc.id && <SvgIcon icon={Icon.Incognito} size={16} className="fill-yellow-300"/>}
+                </div>
+            </div>
 
-            <div className="ml-3">
+            <div className={styles.main}>
                 <div className="flex">
-                    <span className="text-[14px]">{acc.nickname}</span>
-                    <Link className="btn-rect ml-[6px]" to={`/accounts/${acc.login}`}>
+                    <span className={styles.nick}>{acc.nickname}</span>
+                    <Link className={styles.edit} to={`/accounts/${acc.id ?? acc.login}`}>
                         <SvgIcon icon={Icon.EditSquare} size={14}/>
                     </Link>
-                    <button className="btn-rect ml-2">
+                    <button className={styles.enter}>
                         <SvgIcon icon={Icon.EnterSquare} size={14}/>
                     </button>
                 </div>
-                <div className="text-xs mt-[7px] flex flex-wrap font-bold text-background gap-[5px]">
+                <div className={styles.body}>
 
-                    <div className="flex text-nowrap gap-[5px] mr-2">
+                    <div className={styles.topInfo}>
                         <div className="chip">Level: {acc.steamLevel ?? `—`}</div>
                         <div className="chip">Years: {acc.getYears() ?? '—'}</div>
                     </div>
 
-                    <div className="flex flex-wrap gap-[5px] text-[12px]">
-                        {!!acc.vacBansCount && <div className="chip bg-close">VAC</div>}
-                        {!!acc.gameBansCount && <div className="chip bg-close">Game</div>}
-                        {!!acc.haveCommunityBan && <div className="chip bg-close">Community</div>}
-                        {!!acc.economyBan && <div className="chip bg-close">Trade</div>}
-                    </div>
+                    {bansCount ?
+                        <div className={styles.bans}>
+                            {bansCount > 2 && <span className={styles.banChip}>+{bansCount-2}</span>}
+                            {!!acc.vacBansCount && <div className={styles.banChip}>VAC</div>}
+                            {!!acc.gameBansCount && <div className={styles.banChip}>Game</div>}
+                            {!!acc.haveCommunityBan && <div className={styles.banChip}>Community</div>}
+                            {!!acc.economyBan && <div className={styles.banChip}>Trade</div>}
+                        </div> :
+                        <div className="h-[20px]">
+                            <div className={styles.anyBans}>No bans &#10003;</div>
+                        </div>
+                    }
 
-                    <span className="text-foreground font-medium w-full"><b className="text-secondary">ID:</b> {acc.id?.toString()}</span>
+                    <p className={styles.id}><b
+                        className="text-secondary">ID:</b> {acc.id ?? '—'}</p>
                 </div>
             </div>
 
-            <SvgIcon icon={Icon.Pin} role="button" className="absolute text-foreground-muted right-3 top-3 hover:text-yellow-300 btn rotate-45" size={20}/>
-            <SvgIcon icon={Icon.Trash} role="button" className="absolute text-foreground-muted right-3 bottom-3 hover:text-danger btn" size={20} onClick={() => {
-                accounts.mutate((o) => {
-                    o.splice(o.indexOf(acc), 1)
-                })
-            }}/>
-
+            <SvgIcon icon={Icon.Pin} role="button"
+                     className={styles.pin}
+                     size={20}/>
+            <SvgIcon icon={Icon.Trash} role="button"
+                     className={styles.trashBin} size={20}
+                     onClick={() => {
+                         accounts.mutate((o) => {
+                             o.splice(o.indexOf(acc), 1)
+                         })
+                     }}/>
         </div>
     )
 }

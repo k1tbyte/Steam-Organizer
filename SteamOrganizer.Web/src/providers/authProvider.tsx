@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthContextType>(undefined!);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<IAuthUser>({});
 
-    useEffect(() => {
+  /*  useEffect(() => {
         const stateCallback = (state: boolean) => {
             let info;
             if(state) {
@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         initGapi()
 
         return () => isAuthorized.unsubscribe(stateCallback)
-    },[])
+    },[])*/
 
 
     return (
