@@ -5,6 +5,7 @@ import { Icon, SvgIcon} from "@/assets";
 import {accounts} from "@/store/accounts.ts";
 import styles from "./AccountCard.module.pcss"
 import {defaultAvatar} from "@/store/config.ts";
+import {Tooltip} from "@/components/primitives/Tooltip.tsx";
 
 interface IAccountCardProps {
     acc: Account,
@@ -42,7 +43,7 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
                 <div className={styles.body}>
 
                     <div className={styles.topInfo}>
-                        <div className="chip">Level: {acc.steamLevel ?? `—`}</div>
+                        <Tooltip message="Some text" className="chip">Level: {acc.steamLevel ?? `—`}</Tooltip>
                         <div className="chip">Years: {acc.getYears() ?? '—'}</div>
                     </div>
 

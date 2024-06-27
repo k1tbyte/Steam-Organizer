@@ -1,6 +1,16 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+const dateOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+} satisfies Intl.DateTimeFormatOptions;
+
+export const dateFormatter = new Intl.DateTimeFormat(navigator.language, dateOptions);
+
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }

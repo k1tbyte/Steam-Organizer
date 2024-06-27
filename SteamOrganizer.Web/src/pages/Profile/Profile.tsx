@@ -10,20 +10,13 @@ import FriendsTab from "@/pages/Profile/tabs/FriendsTab.tsx";
 import {useScrollbar} from "@/hooks/useScrollbar.ts";
 import {accounts} from "@/store/accounts.ts";
 import {defaultAvatar} from "@/store/config.ts";
+import {dateFormatter} from "@/lib/utils.ts";
 
 interface ITabTitleProps {
     active: boolean;
     icon: ReactElement;
     title: string
 }
-
-const dateOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-} satisfies Intl.DateTimeFormatOptions;
 
 const TabTitle: FC<ITabTitleProps> = ( { active, icon, title }) => (
     <div className="flex-center gap-3">
@@ -52,7 +45,6 @@ export const Profile: FC = () => {
         return <p>Account not found</p>
     }
 
-    const dateFormat = new Intl.DateTimeFormat(navigator.language, dateOptions);
     return (
         <div className={styles.wrapper} ref={hostRef}>
             <div className={styles.mainContainer}>
@@ -77,14 +69,14 @@ export const Profile: FC = () => {
                         <div className="text-center">
                             <p className={styles.infoTitle}>Added</p>
                             <p className={styles.infoSubtitle}>{
-                                dateFormat.format(new Date(acc.addedDate))
+                                dateFormatter.format(new Date(acc.addedDate))
                             }</p>
                         </div>
 
                         <div className="text-center">
                             <p className={styles.infoTitle}>Updated</p>
                             <p className={styles.infoSubtitle}>{
-                                acc.lastUpdateDate ? dateFormat.format(new Date(acc.lastUpdateDate)) : '—'
+                                acc.lastUpdateDate ? dateFormatter.format(new Date(acc.lastUpdateDate)) : '—'
                             }</p>
                         </div>
 

@@ -51,7 +51,6 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-
   useEffect( () => {
     db.openConnection().then(async () => {
       await loadConfig()

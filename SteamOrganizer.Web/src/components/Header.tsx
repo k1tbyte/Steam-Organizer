@@ -3,6 +3,7 @@ import {modal} from "@/components/primitives/Modal.tsx";
 import {ESidebarState, setState } from "@/components/Sidebar.tsx";
 import {Icon, SvgIcon} from "@/assets";
 import {Settings} from "@/pages/Modals/Settings.tsx";
+import {Tooltip} from "@/components/primitives/Tooltip.tsx";
 
 export const Header: FC = () => {
 
@@ -13,7 +14,6 @@ export const Header: FC = () => {
                     setState(prev =>
                         prev == ESidebarState.Hidden ? ESidebarState.Full : ESidebarState.Hidden)
                 }} />
-
             </div>
 
             <div className="flex items-center gap-5 mr-1">
