@@ -6,10 +6,12 @@ import {accounts} from "@/store/accounts.ts";
 import styles from "./AccountCard.module.pcss"
 import {defaultAvatar} from "@/store/config.ts";
 import {Tooltip} from "@/components/primitives/Tooltip.tsx";
+import {dateFormatter} from "@/lib/utils.ts";
 
 interface IAccountCardProps {
     acc: Account,
 }
+
 
 const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
     // @ts-ignore
@@ -19,14 +21,17 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
         <div className={styles.card}>
 
             <div className="shrink-0">
-                <img loading="lazy"
-                     src={`https://avatars.steamstatic.com/${acc.avatarHash ?? defaultAvatar}_medium.jpg`}
-                     alt=""
-                     className={styles.avatar}
-                />
+                <Tooltip message={() => <p>Account added: {dateFormatter.format(new Date(acc.addedDate))}<br/> Account updated: </p>}>
+                    <img loading="lazy"
+                         src={`https://avatars.steamstatic.com/${acc.avatarHash ?? defaultAvatar}_medium.jpg`}
+                         alt=""
+                         className={styles.avatar}
+                    />
+                </Tooltip>
+
                 <div className={styles.indicators}>
                     {/* <SvgIcon icon={Icon.Lock} size={16} className="fill-success"/> */}
-                    { !acc.id && <SvgIcon icon={Icon.Incognito} size={16} className="fill-yellow-300"/>}
+                    {!acc.id && <SvgIcon icon={Icon.Incognito} size={16} className="fill-yellow-300"/>}
                 </div>
             </div>
 
@@ -43,7 +48,7 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
                 <div className={styles.body}>
 
                     <div className={styles.topInfo}>
-                        <Tooltip message="Some text" className="chip">Level: {acc.steamLevel ?? `—`}</Tooltip>
+                        <div className="chip">Level: {acc.steamLevel ?? `—`}</div>
                         <div className="chip">Years: {acc.getYears() ?? '—'}</div>
                     </div>
 

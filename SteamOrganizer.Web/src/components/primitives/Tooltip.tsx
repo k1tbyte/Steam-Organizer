@@ -1,10 +1,20 @@
 import {AnimatePresence, motion} from "framer-motion";
-import {ButtonHTMLAttributes, FC, ReactElement, ReactNode, useEffect, useRef, useState} from "react";
+import {
+    ButtonHTMLAttributes,
+    cloneElement,
+    FC,
+    isValidElement,
+    ReactElement,
+    ReactNode,
+    useEffect,
+    useRef,
+    useState
+} from "react";
 import {createPortal} from "react-dom";
 
 interface ITooltipProps extends ButtonHTMLAttributes<HTMLDivElement>{
     children: ReactNode;
-    message?: ReactElement | string;
+    message?: (() => ReactElement) | ReactElement | string;
     openDelay?: number;
     offsetY?: number;
     offsetX?: number;
@@ -21,7 +31,7 @@ const align = (anchor: DOMRect, tip: DOMRect, bottom: boolean, offset: number = 
 }
 
 const clamp = (anchor: DOMRect, tip: DOMRect, offset: number = 0) => {
-    const centered = anchor.left + (anchor.width / 2 - tip.width / 2);
+    const centered = anchor.left - tip.width / 2 + anchor.width / 2;
     const align = Math.min(window.innerWidth - (centered + tip.width), 0)
     return Math.max(centered + align + offset, Math.abs(offset))
 }
@@ -31,14 +41,13 @@ const rootId = document.getElementById("root")
 export const Tooltip: FC<ITooltipProps> =
     ({ children,
          message,
-         offsetX = -5,
+         offsetX = 0,
          offsetY = 5,
          alignBottom,
          openDelay = 300,
          ...props }) => {
 
     const [isOpen, setOpen] = useState(false);
-    const [tooltipStyle, setTooltipStyle] = useState({});
     const elementRef = useRef(null);
     const tipRef = useRef<HTMLDivElement>(null)
     let timer: number;
@@ -47,13 +56,12 @@ export const Tooltip: FC<ITooltipProps> =
         if(!tipRef.current) {
             return
         }
+        const tip = tipRef.current;
 
         const anchorRect = elementRef.current.getBoundingClientRect();
-        const tipRect = tipRef.current.getBoundingClientRect()
-        setTooltipStyle({
-            top:  align(anchorRect, tipRect, alignBottom, offsetY) + 'px',
-            left: clamp(anchorRect, tipRect, offsetX) + 'px',
-        });
+        const tipRect = tip.getBoundingClientRect()
+        tip.style.top = align(anchorRect, tipRect, alignBottom, offsetY) + 'px'
+        tip.style.left = clamp(anchorRect, tipRect, offsetX) + 'px'
     }, [isOpen]);
 
     const debounceOpen = () => {
@@ -70,31 +78,37 @@ export const Tooltip: FC<ITooltipProps> =
         }
     }
 
+    const triggerProps = {
+        ref: elementRef,
+        onMouseOver: debounceOpen,
+        onFocus: debounceOpen,
+        onMouseLeave: debounceClose
+    }
+
+    let trigger: ReactElement = isValidElement(children) ? cloneElement(children, triggerProps) :
+        <div {...props} {...triggerProps} >
+            {children}
+        </div>
+
     return (
 
-        <div ref={elementRef}
-            onMouseOver={debounceOpen}
-            onFocus={debounceOpen}
-            onMouseLeave={debounceClose}
-            {...props}
-        >
-            {children}
+        <>
+            {trigger}
             {createPortal(
                 <AnimatePresence>
                     {
                         isOpen && message &&
                         <motion.div ref={tipRef} key={Math.random()}
-                                    className="z-50 bg-accent drop-shadow-md px-2.5 py-1 text-[13px] rounded-2xm text-foreground"
+                                    className="z-50 absolute bg-accent drop-shadow-md px-2.5 py-1 text-[13px] rounded-2xm text-foreground"
                                     initial={{opacity: 0, translateY: "10px"}}
                                     animate={{opacity: 1, translateY: 0}}
-                                    exit={{opacity: 0, translateY: "-10px"}}
-                                    style={{...tooltipStyle, position: 'absolute'}}>
-                            {message}
+                                    exit={{opacity: 0, translateY: "-10px"}}>
+                            {typeof message === 'function' ? message() : message}
                         </motion.div>
                     }
                 </AnimatePresence>,
                 rootId
             )}
-        </div>
+        </>
     );
 }
