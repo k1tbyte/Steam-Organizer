@@ -5,9 +5,9 @@ import {config, EDecryptResult, saveConfig} from "@/store/config.ts";
 import {ObservableObject} from "@/lib/observableObject.ts";
 import {isAuthorized} from "@/services/gAuth.ts";
 import {storeBackup} from "@/store/backups.ts";
-import {jsonIgnoreNull} from "@/lib/utils.ts";
+import {jsonDateReviver, jsonIgnoreNull} from "@/lib/utils.ts";
 
-export const accounts = new ObservableObject<Account[]>([])
+export const accounts = new ObservableObject<Account[]>(undefined)
 export let databaseKey: CryptoKey | undefined;
 
 const dbFieldName = "accounts"
@@ -65,26 +65,27 @@ export const saveAccounts = async (action: () => boolean | void = undefined) => 
 
 export const loadAccounts = async (bytes: ArrayBuffer | null = null) => {
     bytes = bytes ?? await getAccountsBuffer()
-    if(config.encryptionKey == undefined) {
+    if (config.encryptionKey == undefined) {
         return bytes == undefined ? EDecryptResult.NoKey : EDecryptResult.NeedAuth
     }
 
-    if(databaseKey == undefined) {
+    if (databaseKey == undefined) {
         databaseKey = await importKey(config.encryptionKey)
     }
 
-    if(bytes == undefined) {
+    if (bytes == undefined) {
         return EDecryptResult.Success
     }
 
-    try {   
+    try {
         const data = await decrypt(databaseKey, bytes);
-        accounts.set(JSON.parse(data))
-        for(const acc of accounts.data) {
+        accounts.set(JSON.parse(data, jsonDateReviver))
+        for (const acc of accounts.data) {
             Object.setPrototypeOf(acc, Account.prototype)
         }
         return EDecryptResult.Success
     } catch {
+        accounts.set([])
         return EDecryptResult.BadCredentials
     }
 }

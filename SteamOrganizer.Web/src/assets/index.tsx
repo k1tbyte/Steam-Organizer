@@ -1,5 +1,5 @@
 import grid from "./images/grid.webp"
-import { FC, SVGAttributes } from "react";
+import {FC, forwardRef, SVGAttributes} from "react";
 
 export const enum Gradients {
     LightBlue = "url(#lightBlueGrad)",
@@ -77,9 +77,16 @@ interface ISvgIconProps extends SVGAttributes<SVGElement>  {
     icon: Icon;
 }
 
-export const SvgIcon: FC<ISvgIconProps> = ({ icon,size,  fill, ...props }) => {
+export const SvgIcon = forwardRef<SVGSVGElement, ISvgIconProps>(
+    ({
+         icon,
+         size,
+         fill,
+         ...props
+    }, ref
+    ) => {
     return (
-        <svg fill={fill ?? "currentColor"}
+        <svg fill={fill ?? "currentColor"} ref={ref}
              stroke={props.stroke ?? "currentColor"}
              strokeWidth={0}
              width={size ?? props.width}
@@ -87,7 +94,7 @@ export const SvgIcon: FC<ISvgIconProps> = ({ icon,size,  fill, ...props }) => {
             <use xlinkHref={`/sprites.svg#i${icon}`}/>
         </svg>
     );
-};
+});
 
 export {
     grid

@@ -14,7 +14,7 @@ import {createPortal} from "react-dom";
 
 interface ITooltipProps extends ButtonHTMLAttributes<HTMLDivElement>{
     children: ReactNode;
-    message?: (() => ReactElement) | ReactElement | string;
+    message?: (() => ReactElement | string) | ReactElement | string;
     openDelay?: number;
     offsetY?: number;
     offsetX?: number;
@@ -33,7 +33,7 @@ const align = (anchor: DOMRect, tip: DOMRect, bottom: boolean, offset: number = 
 const clamp = (anchor: DOMRect, tip: DOMRect, offset: number = 0) => {
     const centered = anchor.left - tip.width / 2 + anchor.width / 2;
     const align = Math.min(window.innerWidth - (centered + tip.width), 0)
-    return Math.max(centered + align + offset, Math.abs(offset))
+    return Math.max(centered + align, Math.abs(offset))
 }
 
 const rootId = document.getElementById("root")
@@ -41,7 +41,7 @@ const rootId = document.getElementById("root")
 export const Tooltip: FC<ITooltipProps> =
     ({ children,
          message,
-         offsetX = 0,
+         offsetX = 5,
          offsetY = 5,
          alignBottom,
          openDelay = 300,
@@ -99,7 +99,8 @@ export const Tooltip: FC<ITooltipProps> =
                     {
                         isOpen && message &&
                         <motion.div ref={tipRef} key={Math.random()}
-                                    className="z-50 absolute bg-accent drop-shadow-md px-2.5 py-1 text-[13px] rounded-2xm text-foreground"
+                                    className="z-50 absolute bg-accent drop-shadow-md px-2.5 py-1 text-[13px] rounded-2xm text-foreground whitespace-pre"
+                                    onMouseOver={debounceOpen} onFocus={debounceOpen} onMouseLeave={debounceClose}
                                     initial={{opacity: 0, translateY: "10px"}}
                                     animate={{opacity: 1, translateY: 0}}
                                     exit={{opacity: 0, translateY: "-10px"}}>

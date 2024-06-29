@@ -1,10 +1,10 @@
 import {EventEmitter} from "@/lib/eventEmitter.ts";
 
 export class ObservableObject<T> {
-    private subscribers: EventEmitter<T> = new EventEmitter<T>()
+    private subscribers: EventEmitter<T | undefined> = new EventEmitter<T>()
 
     // Original data
-    public data: T;
+    public data: T | undefined;
 
     public constructor(object: T) {
         this.data = object

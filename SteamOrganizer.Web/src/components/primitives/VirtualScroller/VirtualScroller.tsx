@@ -2,12 +2,7 @@ import {FC, ReactElement, ReactNode, useEffect, useRef, useState} from "react";
 import {useScrollbar} from "@/hooks/useScrollbar.ts";
 import {BaseVirtualLayout} from "./BaseVirtualLayout.ts";
 import {ObservableObject} from "@/lib/observableObject.ts";
-import Ref from "@/types/ref.ts";
 import {Loader} from "@/components/primitives/Loader.tsx";
-
-type Actions = {
-
-}
 
 interface IVirtualScrollerProps {
     className?: string;
@@ -15,11 +10,19 @@ interface IVirtualScrollerProps {
     renderElement: (object: any, index: number) => ReactNode;
     layout: typeof BaseVirtualLayout,
     emptyIndicator?: ReactElement,
+    loader?: ReactElement,
     isLoading?: boolean;
 }
 
-const VirtualScroller: FC<IVirtualScrollerProps> = ({   collection, renderElement, isLoading,
-                                                        layout, className, emptyIndicator
+const VirtualScroller: FC<IVirtualScrollerProps> = (
+    {
+        collection,
+        renderElement,
+        isLoading,
+        layout,
+        className,
+        emptyIndicator,
+        loader
 }) => {
     const [items, setItems] = useState<number[]>([])
     const areaRef = useRef<HTMLDivElement>(null!);
@@ -69,7 +72,7 @@ const VirtualScroller: FC<IVirtualScrollerProps> = ({   collection, renderElemen
 
     return (
         <div ref={hostRef} className="my-2 h-full">
-            <div ref={sizerRef} className="w-full">
+            <div ref={sizerRef} className="h-full relative">
                 <div ref={areaRef} style={{
                     top: `-${top}px`,
                     paddingTop: `${padding}px`,
@@ -77,12 +80,11 @@ const VirtualScroller: FC<IVirtualScrollerProps> = ({   collection, renderElemen
                 }}
                      className={"sticky " + className}>
                     {items.map((i) => {
-
                             return renderElement(layoutRef.current.collection[i], i);
                         }
                     )}
                 </div>
-                { isLoading  ? <Loader className="absolute translate-center"/>
+                { isLoading || !collection.data ? loader
                     : collection.data.length === 0 &&  emptyIndicator}
             </div>
         </div>

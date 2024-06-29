@@ -1,5 +1,6 @@
 import {FC} from "react";
 
+
 const GamesTab: FC = () => (
     <div>
         User games

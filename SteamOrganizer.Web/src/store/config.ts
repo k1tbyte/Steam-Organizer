@@ -22,7 +22,7 @@ export let config: IAppConfig;
 
 export const  loadConfig = async () => {
     const agent = await FingerprintJS.load();
-    const { visitorId } = await agent.get();
+  //  const { visitorId } = await agent.get();
     fingerprint = await deriveKey({ secret: "visitorId", iterations: 1})
     const configBytes = await db.get("config") as ArrayBuffer | undefined
 

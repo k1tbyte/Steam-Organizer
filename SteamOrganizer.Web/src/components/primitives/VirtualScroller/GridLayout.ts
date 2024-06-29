@@ -24,7 +24,7 @@ export class GridLayout extends BaseVirtualLayout {
 
     public render() {
         if(!this.isInitialized) {
-            if(this.collection.length > 0) {
+            if(this.collection?.length > 0) {
                 this.chunkSetter([0])
             }
             return
@@ -55,7 +55,7 @@ export class GridLayout extends BaseVirtualLayout {
         }
 
         this.calculateSizes()
-        this.sizer.style.height = `${this.collection.length / this.columns * this.rowHeight}px`;
+        this.sizer.style.height = `${this.collection?.length / this.columns * this.rowHeight}px`;
         this.render()
     }
 }

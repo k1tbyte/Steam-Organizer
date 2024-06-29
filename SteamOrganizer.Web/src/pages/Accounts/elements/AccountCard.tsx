@@ -21,7 +21,12 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
         <div className={styles.card}>
 
             <div className="shrink-0">
-                <Tooltip message={() => <p>Account added: {dateFormatter.format(new Date(acc.addedDate))}<br/> Account updated: </p>}>
+                <Tooltip message={() =>
+                    <p>
+                        Account added: {dateFormatter.format(acc.addedDate)}
+                        { acc.lastUpdateDate && "\nAccount updated: " + dateFormatter.format(acc.lastUpdateDate) }
+                    </p>
+                }>
                     <img loading="lazy"
                          src={`https://avatars.steamstatic.com/${acc.avatarHash ?? defaultAvatar}_medium.jpg`}
                          alt=""
@@ -31,7 +36,11 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
 
                 <div className={styles.indicators}>
                     {/* <SvgIcon icon={Icon.Lock} size={16} className="fill-success"/> */}
-                    {!acc.id && <SvgIcon icon={Icon.Incognito} size={16} className="fill-yellow-300"/>}
+                    {!acc.id &&
+                        <Tooltip message={() => "This is an anonymous account and does not contain any\ninformation other than credentials"}>
+                            <SvgIcon icon={Icon.Incognito} size={16} className="fill-yellow-300"/>
+                        </Tooltip>
+                    }
                 </div>
             </div>
 

@@ -1,4 +1,4 @@
-import React, {FC, ReactElement } from "react";
+import React, {FC, ReactElement, useEffect} from "react";
 import {useParams} from "react-router-dom";
 import {Tab, TabPanel} from "@/components/primitives/Tabs.tsx";
 import {Gradients, Icon, SvgIcon} from "@/assets";
@@ -11,11 +11,18 @@ import {useScrollbar} from "@/hooks/useScrollbar.ts";
 import {accounts} from "@/store/accounts.ts";
 import {defaultAvatar} from "@/store/config.ts";
 import {dateFormatter} from "@/lib/utils.ts";
+import {Account} from "@/entity/account.ts";
+import {useLoader} from "@/hooks/useLoader.ts";
+import {Loader, LoaderStatic} from "@/components/primitives/Loader.tsx";
 
 interface ITabTitleProps {
     active: boolean;
     icon: ReactElement;
     title: string
+}
+
+export interface IAccountProps {
+    acc: Account
 }
 
 const TabTitle: FC<ITabTitleProps> = ( { active, icon, title }) => (
@@ -33,15 +40,60 @@ const TabTitle: FC<ITabTitleProps> = ( { active, icon, title }) => (
     </div>
 )
 
+const Info: FC<IAccountProps> = ({ acc }) => {
+    return (
+        <div className={styles.infoContainer}>
+            <div className="text-center">
+                <p className={styles.infoTitle}>Added</p>
+                <p className={styles.infoSubtitle}>{
+                    dateFormatter.format(acc.addedDate)
+                }</p>
+            </div>
+
+            { acc.id &&
+                <>
+                    <div className="text-center">
+                        <p className={styles.infoTitle}>Updated</p>
+                        <p className={styles.infoSubtitle}>{
+                            acc.lastUpdateDate ? dateFormatter.format(acc.lastUpdateDate) : '—'
+                        }</p>
+                    </div>
+
+                    <div className="flex-y-center gap-5">
+                        <SvgIcon icon={Icon.CheckCircle} className="text-green-400" size={25}/>
+                        <p className="letter-space text-sm">No bans</p>
+                    </div>
+
+                    <div className="flex gap-3">
+                        <a className={styles.iconLink}>
+                            <SvgIcon icon={Icon.Steam} size={30}/>
+                        </a>
+                        <a className={styles.iconLink}>
+                            <SvgIcon icon={Icon.SteamDb} size={30}/>
+                        </a>
+                    </div>
+                </>
+            }
+        </div>
+    )
+}
+
 
 export const Profile: FC = () => {
-    const { id } = useParams();
+    const {id} = useParams();
+    const isLoading = useLoader(accounts);
+    const { hostRef} = useScrollbar(undefined, [isLoading]);
+
+    if(isLoading) {
+        return <LoaderStatic/>
+    }
+
     const numId = parseFloat(id)
     const acc = accounts.data.find(!isNaN(numId) ?
         (o => o.id === numId) : (o => o.login === id))
-    const { hostRef } = useScrollbar();
 
-    if(!acc) {
+
+    if (!acc) {
         return <p>Account not found</p>
     }
 
@@ -60,64 +112,43 @@ export const Profile: FC = () => {
                             <use xlinkHref={`/sprites.svg#avatarMask`}/>
                         </svg>
                         <div className={styles.lvlLabel}>
-                            17
+                            {acc.steamLevel ?? '—'}
                         </div>
                     </div>
                     <p className={styles.nicknameTitle}>{acc.nickname}</p>
                     <div className="w-full bg-background my-5 h-0.5"/>
-                    <div className={styles.infoContainer}>
-                        <div className="text-center">
-                            <p className={styles.infoTitle}>Added</p>
-                            <p className={styles.infoSubtitle}>{
-                                dateFormatter.format(new Date(acc.addedDate))
-                            }</p>
-                        </div>
-
-                        <div className="text-center">
-                            <p className={styles.infoTitle}>Updated</p>
-                            <p className={styles.infoSubtitle}>{
-                                acc.lastUpdateDate ? dateFormatter.format(new Date(acc.lastUpdateDate)) : '—'
-                            }</p>
-                        </div>
-
-                        <div className="flex-y-center gap-5">
-                            <SvgIcon icon={Icon.CheckCircle} className="text-green-400" size={25}/>
-                            <p className="letter-space text-sm">No bans</p>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <a className={styles.iconLink}>
-                                <SvgIcon icon={Icon.Steam} size={30}/>
-                            </a>
-                            <a className={styles.iconLink}>
-                                <SvgIcon icon={Icon.SteamDb} size={30}/>
-                            </a>
-                        </div>
-                    </div>
+                    <Info acc={acc}/>
                 </div>
 
-                <div className="mt-5 gap-5">
-                    <TabPanel className="backdrop-primary flex-col sm:flex-row letter-space font-bold mb-5 py-3"
-                              activeKey="profile"
-                              indicator={
-                                  <motion.div className={styles.tabsIndicator}
-                                              layoutId="active-pill"
-                                              transition={{type: "spring", duration: 1, x: {duration: 0.5}}}/>
-                              }
-                    >
-                        <Tab key="profile" title={(active) =>
-                            <TabTitle title="Profile" icon={<SvgIcon icon={Icon.UserOutline} size={20}/>} active={active}/>
-                        } children={<ProfileTab/>}/>
+                {acc.id ?
+                    <div className="mt-5 gap-5">
+                        <TabPanel className="backdrop-primary flex-col sm:flex-row letter-space font-bold mb-5 py-3"
+                                  activeKey="profile"
+                                  indicator={
+                                      <motion.div className={styles.tabsIndicator}
+                                                  layoutId="active-pill"
+                                                  transition={{type: "spring", duration: 1, x: {duration: 0.5}}}/>
+                                  }
+                        >
+                            <Tab key="profile" title={(active) =>
+                                <TabTitle title="Profile" icon={<SvgIcon icon={Icon.UserOutline} size={20}/>}
+                                          active={active}/>
+                            } children={<ProfileTab acc={acc}/>}/>
 
-                        <Tab key="games" title={(active) =>
-                            <TabTitle title="Games" icon={<SvgIcon icon={Icon.Gamepad} size={20}/>} active={active}/>
-                        } children={<GamesTab/>}/>
+                            <Tab key="games" title={(active) =>
+                                <TabTitle title="Games" icon={<SvgIcon icon={Icon.Gamepad} size={20}/>}
+                                          active={active}/>
+                            } children={<GamesTab/>}/>
 
-                        <Tab key="friends" title={(active) =>
-                            <TabTitle title="Friends" icon={<SvgIcon icon={Icon.Users} size={20}/>} active={active}/>
-                        } children={<FriendsTab/>}/>
-                    </TabPanel>
-                </div>
+                            <Tab key="friends" title={(active) =>
+                                <TabTitle title="Friends" icon={<SvgIcon icon={Icon.Users} size={20}/>}
+                                          active={active}/>
+                            } children={<FriendsTab/>}/>
+                        </TabPanel>
+                    </div> :
+                    <ProfileTab acc={acc}/>
+                }
+
             </div>
         </div>
     )

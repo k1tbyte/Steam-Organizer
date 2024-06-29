@@ -1,4 +1,4 @@
-import {useEffect, useRef} from "react";
+import {DependencyList, useEffect, useRef} from "react";
 import {EventListeners, OverlayScrollbars, PartialOptions} from "overlayscrollbars";
 
 const options: PartialOptions = {
@@ -13,10 +13,9 @@ const options: PartialOptions = {
     }
 }
 
-export const useScrollbar = (events?: EventListeners | undefined) => {
+export const useScrollbar = (events?: EventListeners | undefined, deps: DependencyList = []) => {
     const hostRef = useRef<HTMLDivElement>(null)
     const scrollRef = useRef<HTMLElement>()
-
     useEffect(() => {
         if(!hostRef.current)
             return
@@ -24,7 +23,7 @@ export const useScrollbar = (events?: EventListeners | undefined) => {
         const scrollbars = OverlayScrollbars(hostRef.current!,options,events)
         scrollRef.current = scrollbars.elements().viewport
         return () => scrollbars.destroy()
-    },[])
+    }, deps)
 
     return { hostRef, scrollRef }
 }
