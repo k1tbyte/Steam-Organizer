@@ -40,7 +40,7 @@ const ModalBody: FC<IModalProps> = React.memo(
 
         return (
             <div ref={contentRef} className={"inset-0 fixed items-center pointer-events-none overflow-y-auto z-50 w-screen flex justify-center"}>
-                <motion.div className={cn("rounded-2xm bg-primary p-[10px] mb-12 pointer-events-auto", className)}
+                <motion.div className={cn("rounded-2xm bg-primary p-2.5 mb-12 pointer-events-auto", className)}
                             modal-id={id}
                             initial={{opacity: 0, marginTop: -80}}
                             animate={{opacity: 1, marginTop: 64}}
@@ -52,7 +52,7 @@ const ModalBody: FC<IModalProps> = React.memo(
                     }
 
                     <h2 className="text-lg mb-2 text-center font-semibold text-foreground-accent">{title}</h2>
-                    <div role="separator" className="bg-background h-1 -mx-[10px] mb-3"/>
+                    <div role="separator" className="bg-background h-1 -mx-2.5 mb-3"/>
                     {body}
                 </motion.div>
             </div>

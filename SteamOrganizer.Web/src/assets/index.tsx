@@ -48,7 +48,8 @@ export const enum Icon {
     CheckCircleOutline,
     Api,
     Incognito,
-    Lock
+    Lock,
+    GoogleDrive
 }
 
 export function Defs() {

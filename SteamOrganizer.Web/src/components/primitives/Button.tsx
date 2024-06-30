@@ -1,6 +1,20 @@
-import {ButtonHTMLAttributes, FC, ReactNode, RefObject, useEffect, useRef, useState} from "react";
+import {
+    ButtonHTMLAttributes,
+    forwardRef,
+    ReactNode,
+    RefObject,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState
+} from "react";
 import Ref from "../../types/ref.ts";
 import {cn} from "../../lib/utils.ts";
+
+export const enum EButtonVariant {
+    Primary,
+    Outlined,
+}
 
 export interface IButtonActions {
     invalidate: (delay: number) => void,
@@ -10,15 +24,29 @@ export interface IButtonActions {
 
 interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     className?: string,
-    children: ReactNode
-    actions?: Ref<IButtonActions>
+    children: ReactNode,
+    isLoading?: boolean;
+    actions?: Ref<IButtonActions>;
+    variant?: EButtonVariant;
 }
 
-const Button: FC<IButtonProps> = (
-    { className, children, actions,...props}) => {
+const variants = [
+    "font-semibold  flex-center  bg-secondary text-accent  hover:text-foreground-accent",
+    "bg-transparent border-tertiary py-1 px-3 border text-secondary font-thin hover:bg-tertiary"
+]
 
+const Button = forwardRef<HTMLButtonElement, IButtonProps>((
+    {
+        className,
+        children,
+        actions,
+        isLoading = false,
+        variant = EButtonVariant.Primary,
+        ...props}, ref) => {
     const buttonRef = useRef<HTMLButtonElement>(null)
-    const [isLoading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(isLoading);
+
+    useImperativeHandle(ref, () => buttonRef.current);
 
     if(actions) {
         useEffect(() => {
@@ -35,10 +63,10 @@ const Button: FC<IButtonProps> = (
     }
 
     return (
-        <button ref={buttonRef} disabled={isLoading}
-                className={cn("rounded-xm font-semibold select-none px-3 py-1 flex-center text-2xs min-h-7 bg-secondary text-accent transition-colors enabled:hover:text-foreground-accent " , className)} {...props}>
+        <button ref={buttonRef} disabled={loading}
+                className={cn("rounded-xm select-none px-3 py-1 text-2xs min-h-7 transition-colors",variants[variant], className)} {...props}>
 
-            {isLoading ?
+            {loading ?
                 <svg className="animate-spin h-5 w-5 text-foreground-accent" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" fill="transparent"
                             strokeWidth="4"/>
@@ -50,7 +78,7 @@ const Button: FC<IButtonProps> = (
             }
         </button>
     )
-}
+})
 
 
 export default Button;

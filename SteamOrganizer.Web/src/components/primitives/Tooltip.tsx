@@ -2,11 +2,11 @@ import {AnimatePresence, motion} from "framer-motion";
 import {
     ButtonHTMLAttributes,
     cloneElement,
-    FC,
+    FC, forwardRef,
     isValidElement,
     ReactElement,
     ReactNode,
-    useEffect,
+    useEffect, useImperativeHandle,
     useRef,
     useState
 } from "react";
@@ -38,19 +38,21 @@ const clamp = (anchor: DOMRect, tip: DOMRect, offset: number = 0) => {
 
 const rootId = document.getElementById("root")
 
-export const Tooltip: FC<ITooltipProps> =
+export const Tooltip = forwardRef<HTMLDivElement,ITooltipProps> (
     ({ children,
          message,
          offsetX = 5,
          offsetY = 5,
          alignBottom,
          openDelay = 300,
-         ...props }) => {
+         ...props },ref) => {
 
     const [isOpen, setOpen] = useState(false);
     const elementRef = useRef(null);
-    const tipRef = useRef<HTMLDivElement>(null)
+    const tipRef = useRef<HTMLDivElement>(null);
     let timer: number;
+
+    useImperativeHandle(ref, () => tipRef.current)
 
     useEffect(() => {
         if(!tipRef.current) {
@@ -112,4 +114,4 @@ export const Tooltip: FC<ITooltipProps> =
             )}
         </>
     );
-}
+})

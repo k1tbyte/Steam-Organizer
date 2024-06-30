@@ -28,18 +28,22 @@ export const loadBackup = (id: string) => {
     return getFileJson<BackupInfo>(id)
 }
 
-export const storeBackup = async () => {
+export const getLatestBackup = async () => {
+    const backup = await getFileList(backupsFolderName,1);
+    return backup.result.files?.[0];
+}
+
+export const storeBackup = async (timestamp: Date = new Date()) => {
     const backupData: BackupInfo = {
         accountCount: accounts.data.length,
         data: bufferToBase64(await exportAccounts())
     };
 
-    const date = new Date()
-    const fileName =  "auto_backup_" + date.toISOString()
+    const fileName =  "auto_backup_" + timestamp.toISOString()
     const remoteFile = await uploadFileJson(`${backupsFolderName}/${fileName}`, backupData)
     backups.mutate(data => {
         data.push({
-            date: date,
+            date: timestamp,
             fileId: remoteFile.result.id,
             name: remoteFile.result.name
         })
@@ -48,9 +52,6 @@ export const storeBackup = async () => {
 
 export const restoreBackup = async (backup: BackupInfo) => {
     const binString = atob(backup.data);
-    const bytes = Uint8Array.from(binString, m => m.codePointAt(0)!);
-    const result = await loadAccounts(bytes.buffer);
-    if(result !== EDecryptResult.Success) {
-        toast.open({ body: "Unable to restore backup", variant: ToastVariant.Error })
-    }
+    return Uint8Array.from(binString, m => m.codePointAt(0)!).buffer;
+   // return await loadAccounts(bytes.buffer);
 }

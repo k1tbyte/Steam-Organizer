@@ -27,7 +27,7 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
                         { acc.lastUpdateDate && "\nAccount updated: " + dateFormatter.format(acc.lastUpdateDate) }
                     </p>
                 }>
-                    <img loading="lazy"
+                    <img loading="lazy" decoding="async"
                          src={`https://avatars.steamstatic.com/${acc.avatarHash ?? defaultAvatar}_medium.jpg`}
                          alt=""
                          className={styles.avatar}

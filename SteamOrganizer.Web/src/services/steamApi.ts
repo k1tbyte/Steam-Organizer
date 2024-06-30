@@ -4,9 +4,17 @@ import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 
 const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/steam/webApi/`
 
-const handleResponse = <T>(response: Response) => {
+const handleResponse = async <T>(action: Promise<Response>) => {
+    let response: Response
+    try {
+        response = await action;
+    } catch {
+        toast.open({ body: "Can't connect to the server, try again later", variant: ToastVariant.Error })
+        throw Error()
+    }
+
     if(response.ok) {
-        return response.json() as Promise<T>
+        return await response.json() as T
     }
 
     let message: string;
@@ -32,11 +40,11 @@ const handleResponse = <T>(response: Response) => {
 }
 
 export const getPlayerInfo = async (id: number) => {
-    const response = await fetch(`${apiUrl}getSummaries?key=${config.steamApiKey}&ids=${id}&includeGames=true`);
-    return await handleResponse<SteamPlayerSummary | undefined>(response)
+    const request =  fetch(`${apiUrl}getSummaries?key=${config.steamApiKey}&ids=${id}&includeGames=true`);
+    return await handleResponse<SteamPlayerSummary | undefined>(request)
 }
 
-export const resolveVanityUrl = async (vanityUrl: string) => {
-    const response = await fetch(`${apiUrl}getAccountId?key=${config.steamApiKey}&vanityUrl=${vanityUrl}`);
-    return await handleResponse<number | undefined>(response)
+export const resolveVanityUrl = async (vanityUrl: string): Promise<number | undefined | null> => {
+    const request = fetch(`${apiUrl}getAccountId?key=${config.steamApiKey}&vanityUrl=${vanityUrl}`);
+    return await handleResponse<number | undefined>(request)
 }

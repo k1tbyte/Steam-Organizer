@@ -1,6 +1,6 @@
 import { gapi } from 'gapi-script';
 
-type File = {
+export type GDriveFile = {
     id: string;
     kind?: string;
     mimeType?: string;
@@ -9,7 +9,7 @@ type File = {
 }
 
 type FileList = {
-    files?: File[]
+    files?: GDriveFile[]
 }
 
 type GDriveResponse<T> = {
@@ -80,7 +80,7 @@ const getFileMetadata = (query: string, fields: string, limit: number = 1, pageT
             fields: `files(${fields})`,
             pageSize: limit,
             pageToken: pageToken,
-            orderBy: "createdTime asc"
+            orderBy: "createdTime desc"
         }
     }) as unknown as Promise<GDriveResponse<FileList>>
 
@@ -136,7 +136,7 @@ export const uploadFileJson = async (path: string, content: any) => {
             'Content-Type': `multipart/related; boundary="${boundary}"`,
         },
         body: body,
-    }) as unknown as Promise<GDriveResponse<File>>)
+    }) as unknown as Promise<GDriveResponse<GDriveFile>>)
 
     for(let i = 0; i < 2; i++) {
         const response = await send();

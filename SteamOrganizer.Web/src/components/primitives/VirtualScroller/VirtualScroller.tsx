@@ -9,20 +9,16 @@ interface IVirtualScrollerProps {
     collection: ObservableObject<any[]>;
     renderElement: (object: any, index: number) => ReactNode;
     layout: typeof BaseVirtualLayout,
-    emptyIndicator?: ReactElement,
-    loader?: ReactElement,
-    isLoading?: boolean;
+    emptyIndicator?: ReactElement
 }
 
 const VirtualScroller: FC<IVirtualScrollerProps> = (
     {
         collection,
         renderElement,
-        isLoading,
         layout,
         className,
-        emptyIndicator,
-        loader
+        emptyIndicator
 }) => {
     const [items, setItems] = useState<number[]>([])
     const areaRef = useRef<HTMLDivElement>(null!);
@@ -52,6 +48,7 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
             layoutRef.current?.dispose()
         }
     },[])
+
     useEffect(() => {
         if(!layoutRef.current.isInitialized) {
             layoutRef.current.refresh()
@@ -70,6 +67,7 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
         }
     }
 
+
     return (
         <div ref={hostRef} className="my-2 h-full">
             <div ref={sizerRef} className="h-full relative">
@@ -84,8 +82,7 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
                         }
                     )}
                 </div>
-                { isLoading || !collection.data ? loader
-                    : collection.data.length === 0 &&  emptyIndicator}
+                {collection.data?.length < 1 &&  emptyIndicator}
             </div>
         </div>
     );
