@@ -5,7 +5,7 @@ import { Icon, SvgIcon} from "@/assets";
 import {accounts} from "@/store/accounts.ts";
 import styles from "./AccountCard.module.pcss"
 import {defaultAvatar} from "@/store/config.ts";
-import {Tooltip} from "@/components/primitives/Tooltip.tsx";
+import {Tooltip} from "@/components/primitives/Popup.tsx";
 import {dateFormatter} from "@/lib/utils.ts";
 
 interface IAccountCardProps {

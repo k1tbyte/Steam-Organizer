@@ -1,4 +1,4 @@
-import {forwardRef, ReactNode} from "react";
+import {forwardRef, type ReactNode} from "react";
 import clsx from "clsx";
 
 interface IInputWrapperProps {

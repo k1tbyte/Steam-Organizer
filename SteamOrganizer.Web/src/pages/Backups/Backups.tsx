@@ -13,19 +13,23 @@ export default function Backups(){
     const [isLoading, setLoading] = useState(true)
 
     useEffect(() => {
-        if(!user.isLoggedIn || backups.data.length > 0) {
-            setLoading(false)
+        if(user.isLoggedIn) {
+            setLoading(true)
+            loadBackups().then(() => {
+                setLoading(false)
+            })
             return
         }
+        setLoading(user.isLoggedIn === undefined)
 
-        setLoading(true)
-        loadBackups().then(() => {
-            setLoading(false)
-        })
     },[user.isLoggedIn])
 
+    if(isLoading) {
+        return <Loader className="w-full h-full flex-center"/>
+    }
+
     return (
-        <VirtualScroller collection={backups} layout={GridLayout} isLoading={isLoading}
+        <VirtualScroller collection={backups} layout={GridLayout}
                          className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] mx-2 gap-2"
                          emptyIndicator={<p className="absolute translate-center text-foreground-muted text-center">
                              The list of backups is empty

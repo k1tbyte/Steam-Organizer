@@ -1,0 +1,37 @@
+.navItemOverlay {
+    @apply w-full -z-10 h-full origin-left border-l-secondary absolute duration-500 transition-all
+}
+
+.navItemText {
+    @apply mt-3 font-semibold text-sm z-10
+}
+
+.navItem {
+    @apply py-6 z-10 flex-col flex-center relative cursor-pointer
+}
+
+.sidebar {
+    @apply fixed lg:relative flex flex-shrink-0 h-full z-50
+}
+
+.nav {
+    @apply h-full flex flex-col bg-primary transition-all rounded-sm
+}
+
+.navTopStub {
+    @apply border-b-2 border-b-border;
+    height: 48px;
+}
+
+.expander {
+    @apply pl-1 items-center transition-all h-full opacity-0
+            active:opacity-100 hover:opacity-100 cursor-col-resize hidden lg:flex absolute -right-2
+}
+
+.expanderGrip {
+    @apply bg-secondary h-32 w-1  rounded-xl
+}
+
+.navOverlay {
+    @apply bg-black opacity-50 w-screen
+}

@@ -1,5 +1,5 @@
 import grid from "./images/grid.webp"
-import {FC, forwardRef, SVGAttributes} from "react";
+import { forwardRef, type SVGAttributes} from "react";
 
 export const enum Gradients {
     LightBlue = "url(#lightBlueGrad)",
@@ -49,7 +49,10 @@ export const enum Icon {
     Api,
     Incognito,
     Lock,
-    GoogleDrive
+    GoogleDrive,
+    DotsVertical,
+    Exit
+
 }
 
 export function Defs() {

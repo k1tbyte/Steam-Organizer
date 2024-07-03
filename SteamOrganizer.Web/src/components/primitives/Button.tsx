@@ -14,6 +14,7 @@ import {cn} from "../../lib/utils.ts";
 export const enum EButtonVariant {
     Primary,
     Outlined,
+    Transparent,
 }
 
 export interface IButtonActions {
@@ -31,8 +32,9 @@ interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants = [
-    "font-semibold  flex-center  bg-secondary text-accent  hover:text-foreground-accent",
-    "bg-transparent border-tertiary py-1 px-3 border text-secondary font-thin hover:bg-tertiary"
+    "font-semibold  flex-center  bg-secondary text-accent  hover:text-foreground-accent rounded-xm",
+    "border-tertiary py-1 px-3 border text-secondary font-thin hover:bg-tertiary rounded-xm",
+    "hover:bg-accent text-foreground-muted hover:text-foreground w-full text-left"
 ]
 
 const Button = forwardRef<HTMLButtonElement, IButtonProps>((
@@ -64,7 +66,7 @@ const Button = forwardRef<HTMLButtonElement, IButtonProps>((
 
     return (
         <button ref={buttonRef} disabled={loading}
-                className={cn("rounded-xm select-none px-3 py-1 text-2xs min-h-7 transition-colors",variants[variant], className)} {...props}>
+                className={cn("select-none px-3 py-1 transition-colors",variants[variant], className)} {...props}>
 
             {loading ?
                 <svg className="animate-spin h-5 w-5 text-foreground-accent" viewBox="0 0 24 24">

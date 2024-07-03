@@ -2,9 +2,8 @@ import {ObservableObject} from "@/lib/observableObject.ts";
 import {BackupInfo, BackupMetadata} from "@/types/backup.ts";
 import {getFileJson, getFileList, uploadFileJson} from "@/services/gDrive.ts";
 import {accounts, exportAccounts, loadAccounts} from "@/store/accounts.ts";
-import {bufferToBase64, jsonIgnoreNull} from "@/lib/utils.ts";
-import {EDecryptResult} from "@/store/config.ts";
-import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
+import {bufferToBase64 } from "@/lib/utils.ts";
+import {isAuthorized} from "@/services/gAuth.ts";
 
 const backupsFolderName = "Backups"
 

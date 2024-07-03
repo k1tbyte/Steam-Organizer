@@ -1,5 +1,5 @@
 import {FC} from "react";
-import {Sidebar, SidebarItem} from "../components/Sidebar.tsx";
+import {Sidebar, SidebarItem} from "../components/Sidebar/Sidebar.tsx";
 import {Header} from "../components/Header.tsx";
 import {Outlet} from "react-router-dom";
 import {Icon, SvgIcon} from "@/assets";
