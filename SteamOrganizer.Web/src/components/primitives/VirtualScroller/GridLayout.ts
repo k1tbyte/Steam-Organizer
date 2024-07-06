@@ -55,7 +55,8 @@ export class GridLayout extends BaseVirtualLayout {
         }
 
         this.calculateSizes()
-        this.sizer.style.height = `${this.collection?.length / this.columns * this.rowHeight}px`;
+        const height = this.collection?.length / this.columns * this.rowHeight;
+        this.sizer.style.height = height ? `${height}px` : null;
         this.render()
     }
 }

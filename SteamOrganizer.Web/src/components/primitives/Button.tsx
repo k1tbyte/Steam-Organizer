@@ -1,15 +1,14 @@
 import {
-    ButtonHTMLAttributes,
+    type ButtonHTMLAttributes,
+    type Dispatch,
     forwardRef,
-    ReactNode,
-    RefObject,
-    useEffect,
+    type ReactNode, Ref,
+    type SetStateAction,
     useImperativeHandle,
     useRef,
     useState
 } from "react";
-import Ref from "../../types/ref.ts";
-import {cn} from "../../lib/utils.ts";
+import {cn} from "@/lib/utils.ts";
 
 export const enum EButtonVariant {
     Primary,
@@ -17,10 +16,13 @@ export const enum EButtonVariant {
     Transparent,
 }
 
+export const enum EButtonSize {
+    Default
+}
+
 export interface IButtonActions {
     invalidate: (delay: number) => void,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>
-    ref: RefObject<HTMLButtonElement>
+    setLoading: Dispatch<SetStateAction<boolean>>
 }
 
 interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -29,12 +31,17 @@ interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     isLoading?: boolean;
     actions?: Ref<IButtonActions>;
     variant?: EButtonVariant;
+    size?: EButtonSize
 }
 
 const variants = [
-    "font-semibold  flex-center  bg-secondary text-accent  hover:text-foreground-accent rounded-xm",
-    "border-tertiary py-1 px-3 border text-secondary font-thin hover:bg-tertiary rounded-xm",
+    "font-semibold  flex-center  bg-secondary text-accent  hover:text-foreground-accent rounded-xm min-w-32",
+    "border-tertiary border text-secondary font-thin hover:bg-tertiary rounded-xm",
     "hover:bg-accent text-foreground-muted hover:text-foreground w-full text-left"
+]
+
+const sizes = [
+    "px-3 py-1 text-2xs"
 ]
 
 const Button = forwardRef<HTMLButtonElement, IButtonProps>((
@@ -44,29 +51,28 @@ const Button = forwardRef<HTMLButtonElement, IButtonProps>((
         actions,
         isLoading = false,
         variant = EButtonVariant.Primary,
+        size = EButtonSize.Default,
         ...props}, ref) => {
     const buttonRef = useRef<HTMLButtonElement>(null)
     const [loading, setLoading] = useState(isLoading);
 
     useImperativeHandle(ref, () => buttonRef.current);
 
-    if(actions) {
-        useEffect(() => {
-            actions.payload = {
-                ref: buttonRef,
-                setLoading: setLoading,
-                invalidate: (delay: number) => {
-                    buttonRef.current!.classList.add('invalidate');
-                    setTimeout(() =>
-                        buttonRef.current!.classList.remove('invalidate'), delay);
-                }
+    useImperativeHandle(actions,() => {
+        return {
+            setLoading: setLoading,
+            invalidate: (delay: number) => {
+                buttonRef.current!.classList.add('invalidate');
+                setTimeout(() =>
+                    buttonRef.current!.classList.remove('invalidate'), delay);
             }
-        },[actions])
-    }
+        }
+    })
+
 
     return (
         <button ref={buttonRef} disabled={loading}
-                className={cn("select-none px-3 py-1 transition-colors",variants[variant], className)} {...props}>
+                className={cn("select-none transition-colors",variants[variant],sizes[size], className)} {...props}>
 
             {loading ?
                 <svg className="animate-spin h-5 w-5 text-foreground-accent" viewBox="0 0 24 24">

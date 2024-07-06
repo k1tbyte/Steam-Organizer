@@ -2,11 +2,12 @@ import type { Account } from "@/entity/account.ts";
 import React, {FC } from "react";
 import {Link} from "react-router-dom";
 import { Icon, SvgIcon} from "@/assets";
-import {accounts} from "@/store/accounts.ts";
+import {accounts, saveAccounts} from "@/store/accounts.ts";
 import styles from "./AccountCard.module.pcss"
 import {defaultAvatar} from "@/store/config.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
 import {dateFormatter} from "@/lib/utils.ts";
+import {ConfirmPopup} from "@/components/elements/ConfirmPopup.tsx";
 
 interface IAccountCardProps {
     acc: Account,
@@ -82,13 +83,14 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
             <SvgIcon icon={Icon.Pin} role="button"
                      className={styles.pin}
                      size={20}/>
-            <SvgIcon icon={Icon.Trash} role="button"
-                     className={styles.trashBin} size={20}
-                     onClick={() => {
-                         accounts.mutate((o) => {
-                             o.splice(o.indexOf(acc), 1)
-                         })
-                     }}/>
+            <ConfirmPopup  text={`Are you sure you want to delete '${acc.login}'?`} onYes={async () => {
+                accounts.mutate((o) => {
+                    o.splice(o.indexOf(acc), 1)
+                })
+                await saveAccounts()
+            }}>
+                <SvgIcon icon={Icon.Trash} role="button" className={styles.trashBin} size={20}/>
+            </ConfirmPopup>
         </div>
     )
 }

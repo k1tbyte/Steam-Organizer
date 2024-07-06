@@ -53,7 +53,7 @@ export const isAccountCollided = (id: number | undefined, login: string | undefi
  * @param action The action after which saving is performed.
  * Return `false` from action if the action is unsuccessful. After this, no saving will be made.
  */
-export const saveAccounts = async (action: () => boolean | void = null) => {
+export const saveAccounts = async (action: () => boolean | void = null, sync: boolean = true) => {
 
     if(action?.() === false) {
         return;
@@ -64,7 +64,7 @@ export const saveAccounts = async (action: () => boolean | void = null) => {
         dbFieldName
     )
 
-    if(isAuthorized) {
+    if(isAuthorized && sync) {
         await storeBackup(timestamp)
     }
 }
@@ -81,7 +81,7 @@ export const importAccounts = async (json: string, save: boolean = false) => {
     accounts.set(col)
 
     if(save) {
-        await saveAccounts()
+        await saveAccounts(null, false)
     }
 }
 

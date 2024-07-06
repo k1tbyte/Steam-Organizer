@@ -42,7 +42,7 @@ interface ITooltipProps extends IPopupBaseProps {
     canHover?: boolean;
 }
 
-interface IPopupProps extends  IPopupBaseProps{
+export interface IPopupProps extends  IPopupBaseProps{
     children: ReactNode;
     content?: ContentType;
 }
@@ -134,15 +134,15 @@ const align = (trigger: HTMLElement,
     popup.style.left = clampX(triggerRect, popupRect, alignX, offset.x) + 'px'
 }
 
-export const Popup: FC<IPopupProps> = (
-    {
+export const Popup: FC<IPopupProps> = ({
         children,
         className,
         content,
         alignX= EPlacementX.Right,
         alignY = EPlacementY.Center,
-        offset= { x: 5, y: 0 }
-    }, ...props) => {
+        offset= { x: 5, y: 0 },
+        ...props
+    }) => {
     const [isOpen, setOpen] = useState(false);
     const triggerRef = useRef(null);
     const popupRef = useRef<HTMLDivElement>(null);

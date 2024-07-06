@@ -1,15 +1,14 @@
-import {FC, useRef} from "react";
+import {type FC, useRef} from "react";
 import {useModalActions} from "@/components/primitives/Modal.tsx";
 import InputWrapper from "@/components/elements/InputWrapper.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import Input from "@/components/primitives/Input.tsx";
-import Button, {IButtonActions} from "@/components/primitives/Button.tsx";
+import Button, {type IButtonActions} from "@/components/primitives/Button.tsx";
 import {Icon, SvgIcon} from "@/assets";
 import {Account} from "@/entity/account.ts";
 import {accounts, isAccountCollided, saveAccounts} from "@/store/accounts.ts";
 import {toAccountId} from "@/lib/steamIdConverter.ts";
 import {useFormValidation, validator} from "@/hooks/useInputValidation.ts";
-import Ref from "@/types/ref.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 
 interface IAddAccountProps {
@@ -20,11 +19,11 @@ export const AddAccount: FC<IAddAccountProps> = () => {
     const errorIdRef = useRef<HTMLDivElement>()
     const errorLoginRef = useRef<HTMLDivElement>()
     const { closeModal, contentRef }  = useModalActions<HTMLDivElement>();
-    const submitActions = new Ref<IButtonActions>()
+    const submitActions = useRef<IButtonActions>();
 
     const addClick = async (e) => {
         try {
-            submitActions.payload.setLoading(true)
+            submitActions.current.setLoading(true)
             const formData = new FormData(e.currentTarget);
             const steamId = formData.get("id").toString();
             const login = formData.get("login").toString();
@@ -56,7 +55,7 @@ export const AddAccount: FC<IAddAccountProps> = () => {
             closeModal()
         }
         finally {
-            submitActions.payload.setLoading(false)
+            submitActions.current.setLoading(false)
         }
     }
 

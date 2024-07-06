@@ -3,8 +3,7 @@ import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import {decrypt, deriveKey} from "@/services/cryptography.ts";
 import Button, {EButtonVariant, type IButtonActions} from "@/components/primitives/Button.tsx";
 import {useInputValidation, validator} from "@/hooks/useInputValidation.ts";
-import React, {createElement, type FC, useEffect, useRef, useState} from "react";
-import Ref from "@/types/ref.ts";
+import React, {type FC, useEffect, useRef, useState} from "react";
 import {modal, useModalActions} from "@/components/primitives/Modal.tsx";
 import {Icon, SvgIcon} from "@/assets";
 import {useAuth} from "@/providers/authProvider.tsx";
@@ -13,11 +12,11 @@ import {Loader} from "@/components/primitives/Loader.tsx";
 import {dateFormatter} from "@/lib/utils.ts";
 import {clearAccounts, importAccounts, initAccounts, storeEncryptionKey} from "@/store/accounts.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
-import { EDecryptResult} from "@/store/config.ts";
+import {EDecryptResult} from "@/store/config.ts";
 
 interface IDecryptProps {
     info: string,
-    onSuccess: (key: CryptoKey, data?: string) => void,
+    onSuccess: (key: CryptoKey, data?: string) => (void | Promise<void>),
     decryptData?: ArrayBuffer,
     resetText?: string,
     onReset?: () => void,
@@ -97,8 +96,8 @@ export const Authorization: FC<IAuthorizationProps> = ({ reason,  buffer}) => {
                     backup === null ? <Loader size={20}/> :
                         backup === undefined ?
                         <span className="text-center text-foreground-muted font-bold">No backups to restore</span> :
-                            <div className="flex-y-center  text-foreground">
-                                <p className="text-2xs">You can restore latest backup, it contains {backup.accountCount} account(s)
+                            <div className="flex-y-center  text-foreground text-2xs">
+                                <p>You can restore latest backup, it contains {backup.accountCount} account(s)
                                     <br/>
                                     <span className="text-xs opacity-60">{dateFormatter.format(new Date(backup.date))}</span>
                                 </p>
@@ -108,7 +107,8 @@ export const Authorization: FC<IAuthorizationProps> = ({ reason,  buffer}) => {
                                 </Button>
                             </div> :
                     <Button onClick={signIn}
-                            className="bg-transparent border-tertiary border text-secondary hover:text-success py-2 px-4 gap-2">
+                            variant={EButtonVariant.Outlined}
+                            className="py-2 px-4 gap-2 flex-center">
                         Sync with Google Drive
                         <SvgIcon icon={Icon.GoogleDrive} size={20}/>
                     </Button>
@@ -124,26 +124,25 @@ export const DecryptionPopup: FC<IDecryptProps> = (props) => {
         = useInputValidation(validator.password);
     const {closeModal, contentRef} = useModalActions<HTMLDivElement>();
     const resetTooltipRef = useRef<HTMLDivElement>(null);
+    const submitActions = useRef<IButtonActions>()
     let tapCount = props.resetTapsCount
-
-    const submitActions = new Ref<IButtonActions>()
 
 
     const tryDecrypt = async () => {
         const key = await deriveKey({secret: inputRef.current!.value.trimEnd(), extractable: true})
         try {
-            props.onSuccess(key, await decrypt(key,props.decryptData!));
+            await props.onSuccess(key, await decrypt(key,props.decryptData!));
             closeModal()
         } catch {
             inputRef.current!.value = "";
-            submitActions.payload!.invalidate(700)
+            submitActions.current!.invalidate(700)
         }
     }
 
     const getResetMessage = () => "Click " + tapCount + " more time(s) to reset.\nAll data will be lost!"
 
     return (
-        <div className="flex flex-col items-center w-full" ref={contentRef}>
+        <div className="w-full" ref={contentRef}>
             <div className="text-[12px] text-foreground relative pl-5 text-justify pr-2 mb-3">
                 <SvgIcon icon={Icon.InfoMark} size={18} className="text-foreground-accent absolute -left-0.5 top-0.5"/>
                 <span>{props.info}</span>
@@ -169,12 +168,12 @@ export const DecryptionPopup: FC<IDecryptProps> = (props) => {
                                 }}/>
                     </Tooltip>
                 }
-                <Button children="Confirm" className="w-full max-w-36" actions={submitActions}
+                <Button children="Confirm" className="mx-auto" actions={submitActions}
                         onClick={async () => {
                             if (!validateRef.current!()) {
                                 return
                             }
-                            submitActions.payload!.setLoading(true)
+                            submitActions.current!.setLoading(true)
                             if(props.decryptData === undefined) {
                                 props.onSuccess(
                                     await deriveKey({secret: inputRef.current!.value.trimEnd(), extractable: true}))
@@ -182,7 +181,7 @@ export const DecryptionPopup: FC<IDecryptProps> = (props) => {
                                 return
                             }
                             await tryDecrypt();
-                            submitActions.payload!.setLoading(false)
+                            submitActions.current!.setLoading(false)
                         }}
                 />
             </div>
