@@ -6,6 +6,7 @@ import {accounts} from "@/store/accounts.ts";
 import { LoaderStatic} from "@/components/primitives/Loader.tsx";
 import {useLoader} from "@/hooks/useLoader.ts";
 
+
 export default function Accounts() {
    const isLoading = useLoader(accounts)
     return (

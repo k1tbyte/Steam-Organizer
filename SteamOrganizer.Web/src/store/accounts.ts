@@ -108,6 +108,9 @@ export const loadAccounts = async (bytes: ArrayBuffer | null = null) => {
         }
         try {
             await importAccounts(await decrypt(databaseKey, bytes))
+            for(let i =0 ; i < 100; i++) {
+                accounts.data.push(new Account("account_" + i,"s", i))
+            }
         }
         catch {
             initAccounts()

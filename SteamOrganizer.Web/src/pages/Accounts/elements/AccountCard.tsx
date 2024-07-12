@@ -1,7 +1,7 @@
 import type { Account } from "@/entity/account.ts";
 import React, {FC } from "react";
 import {Link} from "react-router-dom";
-import { Icon, SvgIcon} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "@/assets";
 import {accounts, saveAccounts} from "@/store/accounts.ts";
 import styles from "./AccountCard.module.pcss"
 import {defaultAvatar} from "@/store/config.ts";
@@ -13,13 +13,28 @@ interface IAccountCardProps {
     acc: Account,
 }
 
+let dragAcc: Account;
+const dragType = 'account'
 
 const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
     // @ts-ignore
     const bansCount = acc.haveCommunityBan + !!acc.vacBansCount + !!acc.gameBansCount +  !!acc.economyBan
 
     return (
-        <div className={styles.card}>
+        <div className={styles.card} onDragEnter={e => {
+            if(dragAcc && dragAcc != acc && e.dataTransfer.types[0] === dragType) {
+                (e.currentTarget as HTMLElement).id = styles.cardAccent;
+            }
+        }} onDragLeave={(e) => {
+            if(!e.currentTarget.contains(e.relatedTarget as HTMLElement)) {
+                (e.currentTarget as HTMLElement).removeAttribute('id')
+            }
+        }} onDragOver={e => e.preventDefault()}
+             onDrop={(e) => {
+            console.log("drop ", dragAcc.nickname, " to ", acc.nickname);
+            (e.currentTarget as HTMLElement).removeAttribute('id')
+        }}
+        >
 
             <div className="shrink-0">
                 <Tooltip message={() =>
@@ -80,9 +95,19 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
                 </div>
             </div>
 
-            <SvgIcon icon={Icon.Pin} role="button"
-                     className={styles.pin}
-                     size={20}/>
+            <div draggable onDragStart={(e)=> {
+                e.dataTransfer.effectAllowed = 'move';
+                const ghostNode = (e.target as HTMLElement).parentElement
+                e.dataTransfer.setDragImage(ghostNode, ghostNode.clientWidth-15, 15);
+                dragAcc = acc
+                e.dataTransfer.setData(dragType,'');
+
+            }}>
+                <SvgIcon icon={Icon.Pin} role="button"
+                         className={styles.pin}
+                         size={20}/>
+            </div>
+
             <ConfirmPopup  text={`Are you sure you want to delete '${acc.login}'?`} onYes={async () => {
                 accounts.mutate((o) => {
                     o.splice(o.indexOf(acc), 1)

@@ -1,12 +1,10 @@
 import BackupCard from "./BackupCard.tsx";
 import VirtualScroller from "@/components/primitives/VirtualScroller/VirtualScroller.tsx";
 import {GridLayout} from "@/components/primitives/VirtualScroller/GridLayout.ts";
-import AccountCard from "@/pages/Accounts/elements/AccountCard.tsx";
 import {backups, loadBackups} from "@/store/backups.ts";
 import {useEffect, useState} from "react";
 import {useAuth} from "@/providers/authProvider.tsx";
-import {Loader} from "@/components/primitives/Loader.tsx";
-import {uploadFileJson} from "@/services/gDrive.ts";
+import {Loader, LoaderStatic} from "@/components/primitives/Loader.tsx";
 
 export default function Backups(){
     const { user  } = useAuth()
@@ -26,6 +24,10 @@ export default function Backups(){
 
     if(isLoading) {
         return <Loader className="w-full h-full flex-center"/>
+    }
+
+    if(user.isLoggedIn === false) {
+        return <LoaderStatic text="Log in to view backups"/>
     }
 
     return (

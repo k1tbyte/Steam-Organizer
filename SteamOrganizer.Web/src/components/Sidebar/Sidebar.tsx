@@ -34,8 +34,13 @@ interface ISidebarProps {
     children: ReactNode
 }
 
+interface ISidebarState {
+    state: ESidebarState,
+    small: boolean
+}
+
 export let setState: Dispatch<SetStateAction<ESidebarState>>
-const SidebarContext = createContext<ESidebarState>(0)
+const SidebarContext = createContext<ISidebarState>({ state: 0, small: false })
 const mediaBreak = "(max-width: 1023px)"
 
 const getState = () => (Number(localStorage.getItem("sidebar")) ?? ESidebarState.Full);
@@ -43,12 +48,12 @@ const getState = () => (Number(localStorage.getItem("sidebar")) ?? ESidebarState
 export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
     let location=useLocation();
     let navigate = useNavigate();
-    const state = useContext(SidebarContext)
+    const sidebar = useContext(SidebarContext)
     const isActive = location.pathname.startsWith(link)
 
     let containerCn: string;
     let activeCn: string;
-    let textCn = state != ESidebarState.Full ? " hidden" : "";
+    let textCn = sidebar.state != ESidebarState.Full ? " hidden" : "";
 
     if(isActive) {
         containerCn = " text-blue-400"
@@ -62,9 +67,14 @@ export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
 
     return (
         <Tooltip message={text}
-                 wrapIf={state === ESidebarState.Partial}
+                 wrapIf={sidebar.state === ESidebarState.Partial}
                  {...popup.right()}>
-            <div className={styles.navItem + containerCn} draggable={false} onMouseDown={() => navigate(link)}>
+            <div className={styles.navItem + containerCn} draggable={false} onMouseDown={() => {
+                if(sidebar.small) {
+                    setState(ESidebarState.Hidden)
+                }
+                navigate(link);
+            }}>
                 {isActive ? React.cloneElement(icon, { stroke: Gradients.LightBlue }) : icon}
                 <p className={styles.navItemText + textCn}>{text}</p>
                 <div className={styles.navItemOverlay + activeCn}/>
@@ -113,7 +123,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
         <aside className={styles.sidebar}>
             <nav className={`${styles.nav} ${state === ESidebarState.Full ? "w-52" : state == ESidebarState.Partial ? "w-16" : "w-0 overflow-clip"}`}>
                 {!isSmallScreen && <div className={styles.navTopStub}/>}
-                <SidebarContext.Provider value={ state }>
+                <SidebarContext.Provider value={ { state: state, small: isSmallScreen } }>
                     <ul className="flex-1">
                         {children}
                     </ul>

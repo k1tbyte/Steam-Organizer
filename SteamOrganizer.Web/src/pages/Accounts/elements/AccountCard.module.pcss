@@ -2,6 +2,12 @@
     @apply flex bg-primary p-4 pb-0 pr-10 rounded-[3px] h-full relative;
 }
 
+#cardAccent {
+    background: theme('colors.accent');
+    box-shadow: 0 0 0 1px inset theme('colors.chip');
+}
+
+
 .body {
     @apply text-xs mt-[7px] font-bold text-background overflow-visible;
 }
@@ -44,7 +50,8 @@
 }
 
 .pin {
-    @apply absolute text-foreground-muted right-3 top-3 hover:text-yellow-300 btn rotate-45
+    @apply absolute text-foreground-muted right-3 top-3 hover:text-yellow-300 btn rotate-45;
+    cursor: grab !important;
 }
 
 .edit {

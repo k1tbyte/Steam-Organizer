@@ -3,7 +3,6 @@ import {modal} from "@/components/primitives/Modal.tsx";
 import {ESidebarState, setState } from "@/components/Sidebar/Sidebar.tsx";
 import {Icon, SvgIcon} from "@/assets";
 import {Settings} from "@/pages/Modals/Settings.tsx";
-import {Tooltip} from "@/components/primitives/Popup.tsx";
 
 export const Header: FC = () => {
 
