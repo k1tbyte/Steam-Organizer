@@ -69,7 +69,6 @@ const Button = forwardRef<HTMLButtonElement, IButtonProps>((
         }
     })
 
-
     return (
         <button ref={buttonRef} disabled={loading}
                 className={cn("select-none transition-colors",variants[variant],sizes[size], className)} {...props}>

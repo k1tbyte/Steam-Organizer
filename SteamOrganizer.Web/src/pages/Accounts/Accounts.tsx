@@ -1,17 +1,16 @@
 import AccountCard from "./elements/AccountCard.tsx";
-import Toolbar from "./elements/Toolbar.tsx";
+import Toolbar from "./elements/AccountsNav.tsx";
 import VirtualScroller from "@/components/primitives/VirtualScroller/VirtualScroller.tsx";
 import {GridLayout} from "@/components/primitives/VirtualScroller/GridLayout.ts";
 import {accounts} from "@/store/accounts.ts";
 import { LoaderStatic} from "@/components/primitives/Loader.tsx";
 import {useLoader} from "@/hooks/useLoader.ts";
-
+import {useState} from "react";
 
 export default function Accounts() {
    const isLoading = useLoader(accounts)
     return (
-        <>
-            <Toolbar/>
+        <Toolbar>
             { isLoading ? <LoaderStatic/> :
                 <VirtualScroller
                     collection={accounts} layout={GridLayout}
@@ -22,6 +21,6 @@ export default function Accounts() {
                     renderElement={(o,i) => <AccountCard acc={o} key={i}/>}
                 />
             }
-        </>
+        </Toolbar>
     )
 }

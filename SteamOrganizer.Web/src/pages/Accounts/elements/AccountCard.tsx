@@ -1,40 +1,26 @@
 import type { Account } from "@/entity/account.ts";
-import React, {FC } from "react";
+import React, {FC, useContext} from "react";
 import {Link} from "react-router-dom";
-import {Gradients, Icon, SvgIcon} from "@/assets";
+import { Icon, SvgIcon} from "@/assets";
 import {accounts, saveAccounts} from "@/store/accounts.ts";
 import styles from "./AccountCard.module.pcss"
 import {defaultAvatar} from "@/store/config.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
 import {dateFormatter} from "@/lib/utils.ts";
 import {ConfirmPopup} from "@/components/elements/ConfirmPopup.tsx";
+import {AccountsContext} from "@/pages/Accounts/elements/AccountsNav.tsx";
 
 interface IAccountCardProps {
     acc: Account,
 }
 
-let dragAcc: Account;
-const dragType = 'account'
-
 const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
     // @ts-ignore
     const bansCount = acc.haveCommunityBan + !!acc.vacBansCount + !!acc.gameBansCount +  !!acc.economyBan
+    const context =  useContext(AccountsContext)
 
     return (
-        <div className={styles.card} onDragEnter={e => {
-            if(dragAcc && dragAcc != acc && e.dataTransfer.types[0] === dragType) {
-                (e.currentTarget as HTMLElement).id = styles.cardAccent;
-            }
-        }} onDragLeave={(e) => {
-            if(!e.currentTarget.contains(e.relatedTarget as HTMLElement)) {
-                (e.currentTarget as HTMLElement).removeAttribute('id')
-            }
-        }} onDragOver={e => e.preventDefault()}
-             onDrop={(e) => {
-            console.log("drop ", dragAcc.nickname, " to ", acc.nickname);
-            (e.currentTarget as HTMLElement).removeAttribute('id')
-        }}
-        >
+        <div className={styles.card}>
 
             <div className="shrink-0">
                 <Tooltip message={() =>
@@ -95,20 +81,15 @@ const AccountCard: FC<IAccountCardProps> = ({acc} ) => {
                 </div>
             </div>
 
-            <div draggable onDragStart={(e)=> {
-                e.dataTransfer.effectAllowed = 'move';
-                const ghostNode = (e.target as HTMLElement).parentElement
-                e.dataTransfer.setDragImage(ghostNode, ghostNode.clientWidth-15, 15);
-                dragAcc = acc
-                e.dataTransfer.setData(dragType,'');
-
-            }}>
+            {context.isSorting ?
+                <SvgIcon icon={Icon.DragZone} className={styles.grip}
+                         size={25}/>:
                 <SvgIcon icon={Icon.Pin} role="button"
-                         className={styles.pin}
-                         size={20}/>
-            </div>
+                           className={styles.pin}
+                           size={20}/>
+            }
 
-            <ConfirmPopup  text={`Are you sure you want to delete '${acc.login}'?`} onYes={async () => {
+            <ConfirmPopup text={`Are you sure you want to delete '${acc.login}'?`} onYes={async () => {
                 accounts.mutate((o) => {
                     o.splice(o.indexOf(acc), 1)
                 })

@@ -51,7 +51,9 @@ export const enum Icon {
     Lock,
     GoogleDrive,
     DotsVertical,
-    Exit
+    Exit,
+    CheckSquareOutline,
+    DragZone
 
 }
 
