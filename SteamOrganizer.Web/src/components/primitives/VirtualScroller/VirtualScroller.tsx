@@ -1,8 +1,7 @@
-import {FC, ReactElement, ReactNode, useEffect, useRef, useState} from "react";
+import React, {FC, ReactElement, ReactNode, useEffect, useRef, useState} from "react";
 import {useScrollbar} from "@/hooks/useScrollbar.ts";
 import {BaseVirtualLayout} from "./BaseVirtualLayout.ts";
 import {ObservableObject} from "@/lib/observableObject.ts";
-import {Loader} from "@/components/primitives/Loader.tsx";
 
 interface IVirtualScrollerProps {
     className?: string;
@@ -10,6 +9,7 @@ interface IVirtualScrollerProps {
     renderElement: (object: any, index: number) => ReactNode;
     layout: typeof BaseVirtualLayout,
     emptyIndicator?: ReactElement
+    useDragMoving?: boolean
 }
 
 const VirtualScroller: FC<IVirtualScrollerProps> = (
@@ -18,7 +18,8 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
         renderElement,
         layout,
         className,
-        emptyIndicator
+        emptyIndicator,
+        useDragMoving
 }) => {
     const [items, setItems] = useState<number[]>([])
     const areaRef = useRef<HTMLDivElement>(null!);
@@ -38,7 +39,11 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
             },30)
         });
 
-        // @ts-ignore
+        if(useDragMoving) {
+            scrollRef.current.setAttribute("drag-scroller","");
+        }
+
+        // @ts-ignore - We are sure that layout is not abstract
         layoutRef.current =  new layout(collection, setItems,
             scrollRef.current!, sizerRef.current, areaRef.current)
         observer.observe(sizerRef.current!)

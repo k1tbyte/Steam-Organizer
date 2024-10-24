@@ -8,29 +8,24 @@ import {
 interface IToggleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     onContent: ReactNode;
     offContent: ReactNode;
-    onChanged?: (isChecked: boolean) => void;
-    isChecked?: boolean;
+    setEnabled?:  React.Dispatch<React.SetStateAction<boolean>>;
+    isEnabled?: boolean;
 }
 
 export const ToggleButton = forwardRef<HTMLButtonElement,IToggleButtonProps>((
     {
         onContent,
         offContent,
-        onChanged,
-        isChecked = false,
+        setEnabled,
+        isEnabled = false,
         ...props
     }, ref) => {
 
-    const [checked, setChecked] = useState(isChecked)
-
     return (
-        <button ref={ref} onClick={() => {
-            setChecked(prev => {
-                onChanged?.(!prev)
-                return !prev;
-            });
-        }} {...props}>
-            {checked ? onContent : offContent}
+        <button ref={ref}
+                onClick={() => setEnabled(prev => !prev)}
+                {...props}>
+            {isEnabled ? onContent : offContent}
         </button>
     )
 });

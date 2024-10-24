@@ -7,7 +7,6 @@ import { ClickScrollPlugin, OverlayScrollbars } from "overlayscrollbars";
 
 OverlayScrollbars.plugin(ClickScrollPlugin);
 
-
 ReactDOM.createRoot(document.getElementById('root')).render(
     //<React.StrictMode>
         <App />
