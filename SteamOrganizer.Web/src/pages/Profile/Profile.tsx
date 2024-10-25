@@ -89,7 +89,7 @@ export const Profile: FC = () => {
     }
 
     const numId = parseFloat(id)
-    const acc = accounts.data.find(!isNaN(numId) ?
+    const acc = accounts.value.find(!isNaN(numId) ?
         (o => o.id === numId) : (o => o.login === id))
 
 

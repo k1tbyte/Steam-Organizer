@@ -20,6 +20,7 @@ export const enum ToastVariant {
 interface IToastProps {
     id?: number;
     body: ReactElement | string;
+    clickAction?: () => void;
     autoClosable?: boolean;
     canClose?: boolean;
     delay?: number;
@@ -27,7 +28,7 @@ interface IToastProps {
 }
 
 const Toast: FC<IToastProps> = React.memo(
-    ({id, body,
+    ({id, body, clickAction = undefined,
          autoClosable = true, canClose = true,
          delay = 3000, variant = ToastVariant.Info}) => {
 
@@ -53,6 +54,14 @@ const Toast: FC<IToastProps> = React.memo(
         <motion.div onMouseEnter={() => clearTimeout(timer)}
                     onMouseLeave={setTimer}
                     onMouseDown={e => e.button === 1 && onClose()}
+                    onClick={() => {
+                        if(!clickAction) {
+                            return;
+                        }
+                        clickAction();
+                        clickAction = undefined
+                        onClose()
+                    }}
                     initial={{ marginRight: "-384px" }}
                     animate={{ marginRight: "0px" }}
                     exit={{ marginRight: "-384px"}} layout
@@ -63,7 +72,11 @@ const Toast: FC<IToastProps> = React.memo(
                     <span className="font-medium text-foreground-accent">{title}</span>
                 </div>
                 {canClose && <SvgIcon className="fill-foreground hover:fill-foreground-accent transition-colors"
-                                      icon={Icon.Close} role="button" onClick={onClose} size={18} />}
+                                      icon={Icon.Close} role="button"
+                                      onClick={(e) => {
+                                          e.stopPropagation();
+                                          onClose();}}
+                                      size={18} />}
             </div>
             <div className="text-2xs mt-1.5 ml-9 mr-5 text-foreground">
                 {body}

@@ -1,8 +1,9 @@
 import {FC} from "react";
 import {modal} from "@/components/primitives/Modal.tsx";
 import {ESidebarState, setState } from "@/components/Sidebar/Sidebar.tsx";
-import {Icon, SvgIcon} from "@/assets";
-import {Settings} from "@/pages/Modals/Settings.tsx";
+import {Gradients, Icon, SvgIcon} from "@/assets";
+import {openSettings, Settings} from "@/pages/Modals/Settings.tsx";
+import {SaveIndicator} from "@/components/Header/SaveIndicator.tsx";
 
 export const Header: FC = () => {
 
@@ -16,13 +17,9 @@ export const Header: FC = () => {
             </div>
 
             <div className="flex items-center gap-5 mr-1">
+                <SaveIndicator/>
                 <SvgIcon icon={Icon.Bell} size={17} />
-                <SvgIcon icon={Icon.Cog} size={17} className="cursor-pointer" onClick={() => {
-                    modal.open({
-                        title: "Settings",
-                        body: <Settings/>
-                    })
-                }}/>
+                <SvgIcon icon={Icon.Cog} size={17} className="cursor-pointer" onClick={openSettings}/>
             </div>
         </div>
     )

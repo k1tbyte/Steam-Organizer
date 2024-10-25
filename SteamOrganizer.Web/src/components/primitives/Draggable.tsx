@@ -27,11 +27,21 @@ interface IDraggableProps {
     children: ReactElement;
     hoverOnId: string;
     index: number;
+    onDrop?: (index: number) => boolean | void;
 }
 
-export const Draggable: FC<IDraggableProps> = ({ context, children, hoverOnId, gripRef, index }) => {
+export const Draggable: FC<IDraggableProps> = (
+    {
+        context,
+        children,
+        hoverOnId,
+        gripRef,
+        index,
+        onDrop
+    }) => {
     const ref = useRef<HTMLDivElement>(null);
     const props = context.infoRef.current;
+    index = index + 1;
 
     const onDragStart = (e) => {
         context.setIsDragging(true);
@@ -91,8 +101,11 @@ export const Draggable: FC<IDraggableProps> = ({ context, children, hoverOnId, g
         const onDragEnd = () => {
             if (props.hoverOn) {
                 props.hoverOn.id = "";
-                props.hoverOnIndex = undefined;
-                props.hoverOn = undefined;
+                if(onDrop?.(props.hoverOnIndex - 1)) {
+                    props.original.style.opacity = "1"
+                    props.hoverOn.style.opacity = "0"
+                    props.original = props.hoverOn
+                }
             }
 
             let delay = 0;

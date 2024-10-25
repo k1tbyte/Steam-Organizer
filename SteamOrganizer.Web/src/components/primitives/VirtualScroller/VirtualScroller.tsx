@@ -87,7 +87,7 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
                         }
                     )}
                 </div>
-                {collection.data?.length < 1 &&  emptyIndicator}
+                {collection.value?.length < 1 &&  emptyIndicator}
             </div>
         </div>
     );

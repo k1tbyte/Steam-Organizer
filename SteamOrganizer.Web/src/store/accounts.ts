@@ -8,12 +8,14 @@ import {storeBackup} from "@/store/backups.ts";
 import {jsonDateReviver, jsonIgnoreNull} from "@/lib/utils.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 import { openAuthPopup} from "@/pages/Modals/Authentication.tsx";
+import {ESavingState, setSavingState} from "@/components/Header/SaveIndicator.tsx";
 
 export const accounts = new ObservableObject<Account[]>(undefined)
 export let timestamp: Date | undefined;
 export let databaseKey: CryptoKey | undefined;
 
 const dbFieldName = "accounts"
+let saveTimer: number | undefined;
 
 export const getAccountsBuffer = () => db.get(dbFieldName) as Promise<ArrayBuffer | undefined>
 
@@ -24,7 +26,7 @@ export const getAccountsBuffer = () => db.get(dbFieldName) as Promise<ArrayBuffe
  * @returns {Promise<ArrayBuffer>} - A promise that resolves to the encrypted JSON string buffer of the exported accounts data.
  */
 export const exportAccounts = async (timestamp: Date | undefined = undefined): Promise<ArrayBuffer> => {
-    const data = timestamp ? { timestamp: timestamp, data: accounts.data } : accounts.data;
+    const data = timestamp ? { timestamp: timestamp, data: accounts.value } : accounts.value;
     return encrypt(databaseKey!, JSON.stringify(data, jsonIgnoreNull));
 }
 
@@ -50,7 +52,7 @@ export const isAccountCollided = (id?: number, login?: string): [boolean, boolea
     let byId: boolean
     let byLogin: boolean
 
-    const contains = accounts.data.some(o =>
+    const contains = accounts.value.some(o =>
         (byId = (o.id && o.id === id)) || (byLogin =(login && o.login === login))
     )
 
@@ -70,14 +72,38 @@ export const saveAccounts = async (action: () => boolean | void = null, sync: bo
         return;
     }
 
-    await db.save(
-        await exportAccounts(timestamp = new Date()),
-        dbFieldName
-    )
+    try {
+        await db.save(
+            await exportAccounts(timestamp = new Date()),
+            dbFieldName
+        )
 
-    if(isAuthorized && sync) {
-        await storeBackup(timestamp)
+        if(isAuthorized.value && sync) {
+            setSavingState(ESavingState.Syncing)
+            await storeBackup(timestamp)
+        }
+        setSavingState(ESavingState.Saved)
+    } catch {
+        setSavingState(ESavingState.Error)
     }
+}
+
+/**
+ * Debounces the saveAccounts function to prevent frequent saves.
+ *
+ * @param {() => boolean | void} [action=null] - The action to perform before saving.
+ * @param {boolean} [sync=true] - Whether to sync the backup if authorized.
+ */
+export const delayedSaveAccounts = (action: () => boolean | void = null, sync: boolean = true) => {
+
+    if(saveTimer) {
+        clearTimeout(saveTimer);
+    }
+
+    saveTimer = setTimeout(async () => {
+        saveTimer = undefined;
+        await saveAccounts(action, sync)
+    }, 2000)
 }
 
 export const initAccounts = () => accounts.set([])
@@ -150,9 +176,9 @@ export const loadAccounts = async (bytes: ArrayBuffer | null = null): Promise<vo
             result = EDecryptResult.BadCredentials;
         }
 
-        for(let i =0 ; i < 100; i++) {
-            accounts.data.push(new Account("account_" + i,"s", i))
-        }
+/*        for(let i =0 ; i < 100; i++) {
+            accounts.value.push(new Account("account_" + i,"s", i))
+        }*/
     } catch {
         // Show error toast on unknown critical error
         toast.open({

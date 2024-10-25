@@ -22,7 +22,7 @@ export abstract class BaseVirtualLayout {
                           sizer: HTMLDivElement,
                           layout: HTMLDivElement) {
 
-        this.collection = observer.data;
+        this.collection = observer.value;
         this.chunkSetter = chunkSetter;
         this.scroller = scroller;
         this.observer = observer;

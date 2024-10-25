@@ -33,16 +33,16 @@ export const getLatestBackup = async () => {
 }
 
 export const storeBackup = async (timestamp: Date = new Date()) => {
-    if(accounts.data.length === 0) {
+    if(accounts.value.length === 0) {
         return;
     }
 
     const backupData: BackupInfo = {
-        accountCount: accounts.data.length,
+        accountCount: accounts.value.length,
         data: bufferToBase64(await exportAccounts())
     };
 
-    const fileName =  `auto (+${accounts.data.length})`
+    const fileName =  `auto (+${accounts.value.length})`
     const remoteFile = await uploadFileJson(`${backupsFolderName}/${fileName}`, backupData)
     backups.mutate(data => {
         data.push({

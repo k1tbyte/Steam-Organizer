@@ -9,6 +9,7 @@ import {config} from "@/store/config.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 import {ToggleButton} from "@/components/primitives/ToggleButton.tsx";
 import {IDraggableContext, IDraggableInfo} from "@/components/primitives/Draggable.tsx";
+import {openSettings} from "@/pages/Modals/Settings.tsx";
 
 interface IAccountsNavProps {
     children: ReactNode;
@@ -50,8 +51,11 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children }) => {
                     <button className={styles.addButton} onClick={() => {
                         setExpanded(false)
                         if(!config.steamApiKey) {
-                            toast.open({ body: "Steam API key not specified. Do this in settings",
-                                variant: ToastVariant.Warning })
+                            toast.open({
+                                body: "Steam API key not specified. Do this in settings",
+                                variant: ToastVariant.Warning,
+                                clickAction: openSettings
+                            })
                             return;
                         }
                         modal.open({

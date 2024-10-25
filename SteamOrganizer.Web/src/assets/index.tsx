@@ -53,7 +53,8 @@ export const enum Icon {
     DotsVertical,
     Exit,
     CheckSquareOutline,
-    DragZone
+    DragZone,
+    SyncCircle
 
 }
 

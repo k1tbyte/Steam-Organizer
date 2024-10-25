@@ -2,7 +2,7 @@ import type { Account } from "@/entity/account.ts";
 import React, {FC, useContext, useEffect, useRef} from "react";
 import {Link} from "react-router-dom";
 import { Icon, SvgIcon} from "@/assets";
-import {accounts, saveAccounts} from "@/store/accounts.ts";
+import {accounts, delayedSaveAccounts, saveAccounts} from "@/store/accounts.ts";
 import styles from "./AccountCard.module.pcss"
 import {defaultAvatar} from "@/store/config.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
@@ -22,7 +22,21 @@ const AccountCard: FC<IAccountCardProps> = ({acc, index} ) => {
     const context = useContext(AccountsContext)
     const gripRef = useRef<SVGSVGElement>(null)
 
-    return <Draggable context={context} gripRef={gripRef} index={index} hoverOnId={styles.cardAccent}>
+    const onDrop = (i: number) => {
+        accounts.mutate((o) => {
+            const acc = o.splice(index, 1)[0]
+            o.splice(i, 0, acc)
+        })
+
+        delayedSaveAccounts()
+        return true
+    }
+
+    return <Draggable context={context}
+                      gripRef={gripRef}
+                      index={index}
+                      hoverOnId={styles.cardAccent}
+                      onDrop={onDrop}>
         <div className={styles.card}>
             <div className="shrink-0">
                 <Tooltip message={() =>

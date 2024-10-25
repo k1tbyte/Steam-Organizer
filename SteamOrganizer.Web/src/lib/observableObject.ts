@@ -3,11 +3,11 @@ import {EventEmitter} from "@/lib/eventEmitter.ts";
 export class ObservableObject<T> {
     private subscribers: EventEmitter<T | undefined> = new EventEmitter<T>()
 
-    // Original data
-    public data: T | undefined;
+    // Original value
+    public value: T | undefined;
 
     public constructor(object: T) {
-        this.data = object
+        this.value = object
     }
 
     public onChanged(callback: (newData: T) => void) {
@@ -25,21 +25,21 @@ export class ObservableObject<T> {
      * @param mutation A function that returns a new object or nothing (if the current value is mutated)
      * @param overrideOrigin Set to true if you want to overwrite the original object
      */
-    public mutate(mutation: (data: T) => T | void, overrideOrigin: boolean = false) {
-        const newData = mutation(this.data)
-        if(!newData) {
-            this.subscribers.emit(this.data)
+    public mutate(mutation: (value: T) => T | void, overrideOrigin: boolean = false) {
+        const newValue = mutation(this.value)
+        if(!newValue) {
+            this.subscribers.emit(this.value)
             return
         }
         if(overrideOrigin) {
-            this.data = newData;
+            this.value = newValue;
         }
 
-        this.subscribers.emit(newData)
+        this.subscribers.emit(newValue)
     }
 
-    public set(data: T) {
-        this.data = data;
-        this.subscribers.emit(data)
+    public set(newValue: T) {
+        this.value = newValue;
+        this.subscribers.emit(newValue)
     }
 }

@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {ObservableObject} from "@/lib/observableObject.ts";
 
 export const useLoader = (object: ObservableObject<any>) => {
-    const [isLoading, setLoading] = useState<boolean>(object.data === undefined)
+    const [isLoading, setLoading] = useState<boolean>(object.value === undefined)
 
     useEffect(() => {
         const callback = (data: any | undefined) => {

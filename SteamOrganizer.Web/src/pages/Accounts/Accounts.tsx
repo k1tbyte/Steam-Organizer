@@ -18,7 +18,7 @@ export default function Accounts() {
                     emptyIndicator={<p className="absolute translate-center text-foreground-muted text-center">
                         The list of accounts is empty
                     </p>}
-                    renderElement={(o, i) => <AccountCard index={i + 1} acc={o} key={i}/>}
+                    renderElement={(o, i) => <AccountCard index={i} acc={o} key={i}/>}
                 />
             }
         </AccountsNav>
