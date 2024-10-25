@@ -50,7 +50,7 @@ const Info: FC<IAccountProps> = ({ acc }) => {
                 }</p>
             </div>
 
-            { acc.id &&
+            { acc.id > 0 &&
                 <>
                     <div className="text-center">
                         <p className={styles.infoTitle}>Updated</p>

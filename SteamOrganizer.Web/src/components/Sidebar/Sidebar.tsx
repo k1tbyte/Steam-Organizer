@@ -69,7 +69,7 @@ export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
         <Tooltip message={text}
                  wrapIf={sidebar.state === ESidebarState.Partial}
                  {...popup.right()}>
-            <div className={styles.navItem + containerCn} draggable={false} onMouseDown={() => {
+            <div className={styles.navItem + containerCn} draggable={false} onClick={() => {
                 if(sidebar.small) {
                     setState(ESidebarState.Hidden)
                 }

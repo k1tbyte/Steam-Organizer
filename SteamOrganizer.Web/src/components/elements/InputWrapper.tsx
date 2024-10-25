@@ -22,7 +22,7 @@ const InputWrapper = forwardRef<HTMLSpanElement,IInputWrapperProps>(
             </div>
 
             <div className="flex mb-1">
-                <div className="grad-purple w-[35px] h-[35px]
+                <div className="grad-purple w-[35px] h-[35px] text-foreground-accent
                                 rounded-xm flex-shrink-0 flex items-center justify-center mr-2.5">
                     {icon}
                 </div>

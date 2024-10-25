@@ -54,8 +54,9 @@ export const enum Icon {
     Exit,
     CheckSquareOutline,
     DragZone,
-    SyncCircle
-
+    SyncCircle,
+    Phone,
+    NoteEdit
 }
 
 export function Defs() {
