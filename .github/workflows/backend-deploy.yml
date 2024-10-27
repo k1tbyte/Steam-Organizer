@@ -1,0 +1,43 @@
+﻿name: Backend CI/CD
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'SteamOrganizer.Server/**'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'SteamOrganizer.Server/**'
+        
+env:
+  publish-folder: '/var/www/steam-organizer/backend'
+  service-name: 'so-backend'
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    
+    strategy:
+      matrix:
+        dotnet: ["8.0.x"]
+    
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+          
+      - name: Restore dependencies
+        run: dotnet restore
+        
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+        
+      - name: Publish
+        run: dotnet publish -c Release -o ${{ env.publish-folder }}
+        
+      - name: Restart the app
+        run: systemctl --user restart ${{ env.service-name }}.service

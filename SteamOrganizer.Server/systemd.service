@@ -1,0 +1,18 @@
+﻿[Unit]
+Description=Steam organizer backend service
+
+[Service]
+WorkingDirectory=/var/www/steam-organizer/backend
+ExecStart=/usr/bin/dotnet /var/www/steam-organizer/backend/SteamOrganizer.Server.dll --urls "http://0.0.0.0:1331"
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=so-backend
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=default.target
+
+# systemctl --user enable so-backend.service
+# systemctl --user start so-backend.service
