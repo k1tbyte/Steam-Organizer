@@ -105,12 +105,17 @@ const CommunityArea: FC<IAccountProps> = ({ acc }) => {
                     Games on account
                     <br/>
                     <span className="text-secondary"> {acc.gamesCount} </span>
-                    <br/>
-                    Of them played
-                    <br/>
-                    <span className="text-secondary">
-                        {acc.playedGamesCount} ({((acc.playedGamesCount / acc.gamesCount) * 100).toFixed(1)}%) {acc.hoursOnPlayed.toFixed(1)} h
-                    </span>
+
+                    { acc.playedGamesCount > 0 &&
+                        <>
+                            <br/>
+                            Of them played
+                            <br/>
+                            <span className="text-secondary">
+                                {acc.playedGamesCount} ({((acc.playedGamesCount / acc.gamesCount) * 100).toFixed(1)}%) {acc.hoursOnPlayed.toFixed(1)} h
+                            </span>
+                        </>
+                    }
                 </p>}
             />
         }
@@ -121,7 +126,7 @@ const ProfileTab: FC<IAccountProps> = ({acc}) => {
 
     const noteArea = <Expander className="backdrop-primary w-full md:order-none self-start"
                                icon={<SvgIcon icon={Icon.NoteEdit} size={24}/>} title="Note about account">
-        <div className="p-4">
+    <div className="p-4">
             <TextArea className="grad-chip rounded-xl resize-none"
                       onInput={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                           acc.note = e.target.value

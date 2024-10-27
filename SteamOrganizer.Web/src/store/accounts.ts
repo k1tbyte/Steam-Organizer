@@ -5,7 +5,7 @@ import {config, EDecryptResult, saveConfig} from "@/store/config.ts";
 import {ObservableObject} from "@/lib/observableObject.ts";
 import {isAuthorized} from "@/services/gAuth.ts";
 import {storeBackup} from "@/store/backups.ts";
-import {debounce, jsonDateReviver, jsonIgnoreNull} from "@/lib/utils.ts";
+import {debounce, jsonIgnoreNull} from "@/lib/utils.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 import { openAuthPopup} from "@/pages/Modals/Authentication.tsx";
 import {ESavingState, setSavingState} from "@/components/Header/SaveIndicator.tsx";
@@ -100,14 +100,14 @@ export const initAccounts = () => accounts.set([])
  */
 export const importAccounts = async (json: string, save: boolean = false): Promise<void> => {
     // Parse the JSON string with a date reviver
-    const object = JSON.parse(json, jsonDateReviver);
+    const object = JSON.parse(json);
 
     // Set the timestamp to the parsed timestamp or the current date
-    timestamp = object.timestamp ?? new Date();
+    timestamp = object.timestamp ? new Date(object.timestamp) : new Date();
 
-    const col = object.data ?? object;
+    const col = (object.data ?? object) as Account[];
     for (const acc of col) {
-        Object.setPrototypeOf(acc, Account.prototype);
+        Account.initAccount(acc)
     }
 
     // Update the accounts observable object with the new data

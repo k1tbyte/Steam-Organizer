@@ -78,15 +78,3 @@ export const jsonIgnoreNull = (key: string, value: any) => {
         return value
     }
 }
-
-export function jsonDateReviver(key, value) {
-    // Checking if the value is a string and if it matches the date format
-    if (typeof value === 'string') {
-        const date = new Date(value);
-        // @ts-ignore
-        if (!isNaN(date)) {
-            return date;
-        }
-    }
-    return value;
-}

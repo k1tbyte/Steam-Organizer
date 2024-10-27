@@ -43,7 +43,7 @@ export class Account {
             return this._years
         }
         // @ts-ignore
-        const diffInYears = (new Date() - new Date(this.createdDate)) / (1000 * 60 * 60 * 24 * 365.25);
+        const diffInYears = (new Date() - this.createdDate) / (1000 * 60 * 60 * 24 * 365.25);
         return (this._years = Math.floor(diffInYears * 10) / 10);
     }
 
@@ -104,7 +104,15 @@ export class Account {
             return undefined;
         }
         acc.assignInfo(info)
+        Account.initAccount(acc);
         return acc;
+    }
+
+    public static initAccount(acc: Account) {
+        Object.setPrototypeOf(acc, Account.prototype);
+        acc.createdDate = acc.createdDate ? new Date(acc.createdDate) : undefined;
+        acc.lastUpdateDate = acc.lastUpdateDate ? new Date(acc.lastUpdateDate) : undefined;
+        acc.addedDate = new Date(acc.addedDate);
     }
 
     constructor(login: string, password: string, accountId?: number) {
