@@ -225,16 +225,14 @@ export const Tooltip = forwardRef<HTMLDivElement,ITooltipProps> (
 })
 
 export const popup = {
-    right: () => {
-        return {
-            openDelay: 0,
-            offset: { x: 20, y: 0 },
-            alignX: EPlacementX.Right,
-            alignY: EPlacementY.Center,
-            initial: { opacity: 0, translateX: "-10px" },
-            animate: { opacity: 1, translateX: 0 },
-            exit: { opacity: 0, translateX: "10px" },
-            canHover: false
-        };
+    right:  {
+        openDelay: 0,
+        offset: { x: 20, y: 0 },
+        alignX: EPlacementX.Right,
+        alignY: EPlacementY.Center,
+        initial: { opacity: 0, translateX: "-10px" },
+        animate: { opacity: 1, translateX: 0 },
+        exit: { opacity: 0, translateX: "10px" },
+        canHover: false
     }
 }

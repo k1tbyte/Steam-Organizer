@@ -62,7 +62,7 @@ export const UserInfo: FC<IUserInfoProps> = ({ state }) => {
                         <div className="pt-2 text-nowrap">
                             <Tooltip message={"Logout"}
                                      wrapIf={state === ESidebarState.Partial}
-                                {...popup.right()}>
+                                {...popup.right}>
                                 <Button className="py-2 px-0 rounded-md" variant={EButtonVariant.Transparent}
                                         onClick={signOut}>
                                     <SvgIcon className={styles.btnIcon} icon={Icon.Exit} size={23}/>

@@ -1,8 +1,8 @@
-import InputWrapper from "@/components/elements/InputWrapper.tsx";
+import {InputValidationWrapper} from "@/components/elements/FieldWrapper.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import {decrypt, deriveKey} from "@/services/cryptography.ts";
 import Button, {EButtonVariant, type IButtonActions} from "@/components/primitives/Button.tsx";
-import {useInputValidation, validator} from "@/hooks/useInputValidation.ts";
+import {useFormValidation, validators} from "@/hooks/useFormValidation.ts";
 import React, {type FC, useEffect, useRef, useState} from "react";
 import {modal, useModalActions} from "@/components/primitives/Modal.tsx";
 import {Icon, SvgIcon} from "@/assets";
@@ -10,7 +10,7 @@ import {useAuth} from "@/providers/authProvider.tsx";
 import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups.ts";
 import {Loader} from "@/components/primitives/Loader.tsx";
 import {dateFormatter} from "@/lib/utils.ts";
-import {clearAccounts, importAccounts, initAccounts, storeEncryptionKey} from "@/store/accounts.ts";
+import {accounts, clearAccounts, importAccounts, initAccounts, storeEncryptionKey} from "@/store/accounts.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
 import {EDecryptResult} from "@/store/config.ts";
 
@@ -68,9 +68,10 @@ export const Authorization: FC<IAuthorizationProps> = ({ reason,  buffer}) => {
         } onSuccess={onSuccess} resetTapsCount={3}
                                 resetText="Reset"
                                 preventClosing
-                                onReset={() =>
+                                onReset={() => {
                                     clearAccounts().then(() => setHasKey(false))
-                                } decryptData={buffer}/>
+                                    buffer = undefined
+                                }} decryptData={buffer}/>
     }
 
     if(restoring && backup) {
@@ -118,11 +119,23 @@ export const Authorization: FC<IAuthorizationProps> = ({ reason,  buffer}) => {
     )
 }
 
-
 export const DecryptionPopup: FC<IDecryptProps> = (props) => {
-    const [inputRef, messageRef, validateRef]
-        = useInputValidation(validator.password);
-    const {closeModal, contentRef} = useModalActions<HTMLDivElement>();
+
+    const onSubmit = async () => {
+        submitActions.current!.setLoading(true)
+        if(!props.decryptData) {
+            props.onSuccess(
+                await deriveKey({secret: inputRef.current!.value.trimEnd(), extractable: true}))
+            closeModal()
+            return
+        }
+        await tryDecrypt();
+        submitActions.current!.setLoading(false)
+    }
+
+    const formRef = useFormValidation([validators.password], onSubmit)
+    const { closeModal } = useModalActions<HTMLFormElement>(formRef);
+    const inputRef = useRef<HTMLInputElement>(null);
     const resetTooltipRef = useRef<HTMLDivElement>(null);
     const submitActions = useRef<IButtonActions>()
     let tapCount = props.resetTapsCount
@@ -142,23 +155,26 @@ export const DecryptionPopup: FC<IDecryptProps> = (props) => {
     const getResetMessage = () => "Click " + tapCount + " more time(s) to reset.\nAll data will be lost!"
 
     return (
-        <div className="w-full" ref={contentRef}>
+        <form className="w-full" ref={formRef}>
             <div className="text-[12px] text-foreground relative pl-5 text-justify pr-2 mb-3">
                 <SvgIcon icon={Icon.InfoMark} size={18} className="text-foreground-accent absolute -left-0.5 top-0.5"/>
                 <span>{props.info}</span>
             </div>
-            <InputWrapper ref={messageRef} title="Password" className="mb-7 w-full"
+            <InputValidationWrapper title="Password" className="mb-7 w-full"
                           icon={<SvgIcon icon={Icon.Key} size={18}/>}>
-                <PasswordBox ref={inputRef}/>
-            </InputWrapper>
+                <PasswordBox validator={validators.password} ref={inputRef}/>
+            </InputValidationWrapper>
             <div className="flex gap-3">
                 { props.resetText &&
-                    <Tooltip message={tapCount ? getResetMessage : null} ref={resetTooltipRef}>
-                        <Button className={props.resetTapsCount ? "bg-danger" : ""} children={props.resetText}
+                    <Tooltip className="text-center" message={tapCount ? getResetMessage : null} ref={resetTooltipRef}>
+                        <Button type="button" className={props.resetTapsCount ? "bg-danger" : ""} children={props.resetText}
                                 onClick={() => {
                                     if(tapCount > 1) {
                                         tapCount--;
-                                        resetTooltipRef.current.textContent = getResetMessage()
+
+                                        if(resetTooltipRef.current) {
+                                            resetTooltipRef.current.textContent = getResetMessage()
+                                        }
                                         return
                                     }
                                     props.onReset()
@@ -168,24 +184,9 @@ export const DecryptionPopup: FC<IDecryptProps> = (props) => {
                                 }}/>
                     </Tooltip>
                 }
-                <Button children="Confirm" className="mx-auto" actions={submitActions}
-                        onClick={async () => {
-                            if (!validateRef.current!()) {
-                                return
-                            }
-                            submitActions.current!.setLoading(true)
-                            if(props.decryptData === undefined) {
-                                props.onSuccess(
-                                    await deriveKey({secret: inputRef.current!.value.trimEnd(), extractable: true}))
-                                closeModal()
-                                return
-                            }
-                            await tryDecrypt();
-                            submitActions.current!.setLoading(false)
-                        }}
-                />
+                <Button children="Confirm" className="mx-auto" actions={submitActions}/>
             </div>
-        </div>
+        </form>
     )
 }
 

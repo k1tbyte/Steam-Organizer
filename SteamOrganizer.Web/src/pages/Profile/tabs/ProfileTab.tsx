@@ -3,11 +3,13 @@ import {Expander} from "@/components/primitives/Expander.tsx";
 import {Gradients, Icon, SvgIcon} from "@/assets";
 import {type IAccountProps} from "@/pages/Profile/Profile.tsx";
 import {dateFormatter} from "@/lib/utils.ts";
-import InputWrapper from "@/components/elements/InputWrapper.tsx";
+import {FieldWrapper, InputValidationWrapper} from "@/components/elements/FieldWrapper.tsx";
 import Input from "@/components/primitives/Input.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import {TextArea} from "@/components/primitives/TextArea.tsx";
 import {EEconomyBanType} from "@/types/steamPlayerSummary.ts";
+import {validators} from "@/hooks/useFormValidation.ts";
+import {delayedSaveAccounts} from "@/store/accounts.ts";
 
 interface IBanChipProps {
     name: string;
@@ -53,17 +55,25 @@ const CredentialsArea: FC<IAccountProps> = ({ acc }) => {
         <Expander className="backdrop-primary" icon={<SvgIcon icon={Icon.Fingerprint} size={28}/>} title="Credentials">
             <div className="p-4 ml-3 max-w-80">
 
-                <InputWrapper title="Login" icon={<SvgIcon icon={Icon.UserText} size={20}/>}>
-                   <Input className="rounded"/>
-                </InputWrapper>
+                <FieldWrapper title="Login" icon={<SvgIcon icon={Icon.UserText} size={20}/>}>
+                   <Input className="rounded" defaultValue={acc.login} readOnly/>
+                </FieldWrapper>
 
-                <InputWrapper title="Password" icon={<SvgIcon icon={Icon.Key} size={20}/>}>
-                    <PasswordBox className="rounded"/>
-                </InputWrapper>
+                <InputValidationWrapper title="Password" icon={<SvgIcon icon={Icon.Key} size={20}/>}>
+                    <PasswordBox className="rounded" maxLength={50}
+                                 onChanged={delayedSaveAccounts}
+                                 validator={validators.password}
+                                 bindTo={acc} bindKey={nameof(acc.password)}/>
+                </InputValidationWrapper>
 
-                <InputWrapper title="Linked phone number" icon={<SvgIcon icon={Icon.Phone} size={20}/>}>
-                    <Input className="rounded"/>
-                </InputWrapper>
+                <InputValidationWrapper title="Linked phone number" icon={<SvgIcon icon={Icon.Phone} size={20}/>}>
+                    <Input className="rounded" maxLength={15}
+                           bindTo={acc} bindKey={nameof(acc.phone)}
+                           converter={Number}
+                           validator={validators.phone}
+                           filter={/[0-9]/}
+                           onChanged={delayedSaveAccounts}/>
+                </InputValidationWrapper>
             </div>
         </Expander>
     )
@@ -71,7 +81,7 @@ const CredentialsArea: FC<IAccountProps> = ({ acc }) => {
 
 const CommunityArea: FC<IAccountProps> = ({ acc }) => {
     return (
-        <div className=" sm:grid" style={{gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))"}}>
+        <div className="sm:grid" style={{gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))"}}>
         {acc.getYears() > 1 &&
             <BadgeChip
                 name="Years of service"
@@ -113,6 +123,11 @@ const ProfileTab: FC<IAccountProps> = ({acc}) => {
                                icon={<SvgIcon icon={Icon.NoteEdit} size={24}/>} title="Note about account">
         <div className="p-4">
             <TextArea className="grad-chip rounded-xl resize-none"
+                      onInput={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                          acc.note = e.target.value
+                          delayedSaveAccounts();
+                      }}
+                      defaultValue={acc.note}
                       autoResize={true} maxRows={10} rows={5} maxLength={200}
                       placeholder="Some information about the account . . ."/>
         </div>
@@ -120,7 +135,7 @@ const ProfileTab: FC<IAccountProps> = ({acc}) => {
 
     if (!acc.id) {
         return (
-            <div className="md:grid grid-cols-2 gap-3">
+            <div className="grid md:grid-cols-2 gap-3 mt-3">
                 <CredentialsArea acc={acc}/>
                 {noteArea}
             </div>
@@ -128,11 +143,11 @@ const ProfileTab: FC<IAccountProps> = ({acc}) => {
     }
 
     return (
-        <div className="flex flex-col md:grid grid-cols-3 gap-3">
+        <div className="flex flex-col md:grid grid-cols-3 gap-3 ">
             <div className="row-span-2 col-span-2 order-last md:order-none">
                 {
                     (acc.getYears() > 0 || acc.gamesCount) &&
-                    <Expander className="backdrop-primary "
+                    <Expander className="backdrop-primary mb-3"
                               icon={<SvgIcon icon={Icon.BadgeAward} size={24}/>} title="Community">
                         <CommunityArea acc={acc}/>
                     </Expander>
@@ -161,8 +176,6 @@ const ProfileTab: FC<IAccountProps> = ({acc}) => {
             <div className="row-span-2 order-last">
                 {noteArea}
             </div>
-
-
         </div>
     );
 }

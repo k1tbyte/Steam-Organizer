@@ -5,7 +5,7 @@ import {config, EDecryptResult, saveConfig} from "@/store/config.ts";
 import {ObservableObject} from "@/lib/observableObject.ts";
 import {isAuthorized} from "@/services/gAuth.ts";
 import {storeBackup} from "@/store/backups.ts";
-import {jsonDateReviver, jsonIgnoreNull} from "@/lib/utils.ts";
+import {debounce, jsonDateReviver, jsonIgnoreNull} from "@/lib/utils.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 import { openAuthPopup} from "@/pages/Modals/Authentication.tsx";
 import {ESavingState, setSavingState} from "@/components/Header/SaveIndicator.tsx";
@@ -15,7 +15,6 @@ export let timestamp: Date | undefined;
 export let databaseKey: CryptoKey | undefined;
 
 const dbFieldName = "accounts"
-let saveTimer: number | undefined;
 
 export const getAccountsBuffer = () => db.get(dbFieldName) as Promise<ArrayBuffer | undefined>
 
@@ -83,29 +82,13 @@ export const saveAccounts = async (action: () => boolean | void = null, sync: bo
             await storeBackup(timestamp)
         }
         setSavingState(ESavingState.Saved)
-    } catch {
+    } catch(err) {
         setSavingState(ESavingState.Error)
+        throw err;
     }
 }
 
-/**
- * Debounces the saveAccounts function to prevent frequent saves.
- *
- * @param {() => boolean | void} [action=null] - The action to perform before saving.
- * @param {boolean} [sync=true] - Whether to sync the backup if authorized.
- */
-export const delayedSaveAccounts = (action: () => boolean | void = null, sync: boolean = true) => {
-
-    if(saveTimer) {
-        clearTimeout(saveTimer);
-    }
-
-    saveTimer = setTimeout(async () => {
-        saveTimer = undefined;
-        await saveAccounts(action, sync)
-    }, 2000)
-}
-
+export const delayedSaveAccounts = debounce(saveAccounts, 3000)
 export const initAccounts = () => accounts.set([])
 
 /**

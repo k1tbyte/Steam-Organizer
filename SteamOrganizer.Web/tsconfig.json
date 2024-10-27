@@ -28,6 +28,9 @@
       ]
     }
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "node_modules/@typescript-nameof/types/index.d.cts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

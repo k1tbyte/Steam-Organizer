@@ -1,13 +1,11 @@
 import {forwardRef, InputHTMLAttributes, useState} from "react";
 import clsx from 'clsx';
-import Input from "@/components/primitives/Input.tsx";
+import Input, {IInputProps} from "@/components/primitives/Input.tsx";
 import {Icon, SvgIcon} from "@/assets";
 
-interface IPasswordBoxProps extends InputHTMLAttributes<HTMLInputElement> {
-    className?: string,
-}
+interface IPasswordBoxProps extends IInputProps { }
 
-export const PasswordBox = forwardRef<HTMLInputElement,IPasswordBoxProps> (
+export const PasswordBox = forwardRef<HTMLInputElement, IPasswordBoxProps> (
     ({className, ...props}, ref) => {
     const [passwordVisible,setPasswordVisibility]= useState(false);
 

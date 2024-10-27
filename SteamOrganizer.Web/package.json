@@ -16,7 +16,6 @@
     "gapi-script": "^1.2.0",
     "overlayscrollbars": "^2.7.3",
     "react": "^18.2.0",
-    "react-cool-virtual": "^0.7.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
     "tailwind-merge": "^2.3.0"
@@ -28,6 +27,8 @@
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
+    "@typescript-nameof/common-types": "^0.0.11",
+    "@typescript-nameof/types": "^0.0.11",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
@@ -37,6 +38,7 @@
     "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
+    "vite-plugin-ts-nameof": "^3.0.0",
     "vite-tsconfig-paths": "^4.3.2"
   }
 }

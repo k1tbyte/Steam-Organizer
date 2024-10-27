@@ -103,6 +103,7 @@ export const Profile: FC = () => {
                 <div className={styles.header}>
                     <div className={styles.avatarContainer}>
                         <img style={{maskImage: "url(#avatarMask)"}}
+                             decoding="async" draggable={false}
                              src={`https://avatars.akamai.steamstatic.com/${acc.avatarHash ?? defaultAvatar}_full.jpg`}
                              className={styles.avatar} alt="avatar"/>
 

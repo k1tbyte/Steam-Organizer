@@ -1,6 +1,7 @@
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import db from "../services/indexedDb.ts"
 import {decrypt, deriveKey, encrypt } from "../services/cryptography.ts";
+import {debounce} from "@/lib/utils.ts";
 
 interface IAppConfig {
     encryptionKey?: string
@@ -23,7 +24,10 @@ export let config: IAppConfig;
 export const  loadConfig = async () => {
     const agent = await FingerprintJS.load();
     let { visitorId } = await agent.get();
-    visitorId = "visitorId"
+
+    if(import.meta.env.VITE_SKIP_FINGERPRINT) {
+        visitorId = "test"
+    }
     fingerprint = await deriveKey({ secret: visitorId, iterations: 1})
     const configBytes = await db.get("config") as ArrayBuffer | undefined
 
@@ -48,3 +52,5 @@ export const saveConfig = async () => {
         "config"
     )
 }
+
+export const delayedSaveConfig = debounce(saveConfig, 3000)

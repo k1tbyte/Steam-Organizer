@@ -1,4 +1,4 @@
-import {forwardRef, TextareaHTMLAttributes} from "react";
+import {forwardRef, TextareaHTMLAttributes, useEffect, useImperativeHandle, useRef} from "react";
 
 interface ITextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
     className?: string,
@@ -9,21 +9,28 @@ interface ITextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 
 const getLineBreaks = (str: string) => str.match(/\n/g)?.length ?? 0;
 
-export const TextArea = forwardRef<HTMLTextAreaElement,ITextAreaProps>(({ className, autoResize, maxRows, ...props},ref) => {
+export const TextArea = forwardRef<HTMLTextAreaElement,ITextAreaProps>(({ className, autoResize, maxRows, ...props}, forwardedRef) => {
 
-    const onInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
-        const target = e.target as HTMLTextAreaElement;
+    const ref = useRef<HTMLTextAreaElement>();
 
-        if (autoResize) {
+    useImperativeHandle(forwardedRef, () => ref.current);
 
+    useEffect(() => {
+        if (!autoResize) {
+            return;
+        }
+
+        const target = ref.current;
+        const resize = () => {
             target.style.height = "auto";
             target.style.height = `${target.scrollHeight}px`;
         }
 
-        if (props.onInput) {
-            props.onInput(e);
-        }
-    }
+        resize()
+        target.addEventListener("input", resize);
+
+        return () => target.removeEventListener("input", resize);
+    }, []);
 
     const onBeforeInput = (e) => {
         if (!maxRows) {
@@ -37,10 +44,8 @@ export const TextArea = forwardRef<HTMLTextAreaElement,ITextAreaProps>(({ classN
         }
     }
 
-
     return (
         <textarea ref={ref} {...props} onBeforeInput={onBeforeInput}
-                  onInput={onInput}
-                  className={`w-full placeholder-foreground-muted p-2.5 outline-0 outline-none rounded text-foreground text-2xs focus:placeholder:opacity-50 placeholder:duration-300 placeholder:transition-opacity bg-transparent ${className}`}/>
+                  className={`w-full placeholder-foreground-muted p-3 outline-0 outline-none rounded text-foreground text-2xs focus:placeholder:opacity-50 placeholder:duration-300 placeholder:transition-opacity bg-transparent ${className}`}/>
     )
 })

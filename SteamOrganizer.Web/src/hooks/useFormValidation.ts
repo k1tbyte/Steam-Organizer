@@ -6,10 +6,6 @@ const loginRegex = new RegExp("^(?=.*[A-Za-z0-9])(?!.*[/*\\-.+_@!&$#%]{2})[A-Za-
 
 export type TypeInputValidator = (input: string) => string | null;
 
-interface InputValidators {
-    [key: string]: TypeInputValidator;
-}
-
 const validate = (validator: TypeInputValidator, input: HTMLInputElement, message: Element | undefined) => {
     const validateResult = validator(input.value);
     if(validateResult) {
@@ -21,40 +17,6 @@ const validate = (validator: TypeInputValidator, input: HTMLInputElement, messag
         message.textContent = null
     }
     return true;
-}
-
-/**
- * Usage: [inputRef, messageRef, validateRef] = useInputValidate()
- *
- * `[in] inputRef`: reference to input for validation
- *
- * `[in] messageRef`: reference to an object to display a validation error (p, span, etc.)
- *
- * `[out] validateRef`: manual validator call
- */
-export const useInputValidation = (validator: TypeInputValidator, onSuccess?: (input: string) => void):
-    [RefObject<HTMLInputElement>, RefObject<HTMLDivElement>, RefObject<() => boolean>] => {
-    const inputRef = useRef<HTMLInputElement>(null)
-    const messageRef = useRef<HTMLDivElement>(null)
-    const validateRef = useRef<() => boolean>(() => false)
-
-    useEffect(() => {
-        const input = inputRef.current;
-        const message = messageRef.current;
-        if(!input || !message) {
-            return;
-        }
-
-        validateRef.current = () => // @ts-ignore
-            validate(validator, input, message) && (!onSuccess?.(input.value))
-
-        input.addEventListener('input', validateRef.current)
-
-        return () => {
-            input.removeEventListener('input', validateRef.current)
-        }
-    }, []);
-    return [inputRef, messageRef, validateRef]
 }
 
 export const useFormValidation = (validators: TypeInputValidator[],
@@ -98,15 +60,16 @@ export const useFormValidation = (validators: TypeInputValidator[],
             form.removeEventListener('submit', onSubmit)
             actions.forEach((o,i) => inputs[i].removeEventListener('input', o))
         }
-    },[])
+    },[validators, onSuccess])
 
     return formRef;
 }
 
-export const validator: InputValidators = {
+export const validators = {
     required:  input =>  input.length == 0 ? "Required" : null,
     login: input => loginRegex.test(input) ? null : "Invalid login",
     password: input => input.length < 6 ? "Must be minimum 6 characters" : null,
+    phone: input => input.length < 8 ? "Invalid phone number" : null,
     email: input => emailRegex.test(input) ? null : "Must be an email",
     steamApiKey: input =>  steamApiKeyRegex.test(input) ? null : "Invalid api key"
 }

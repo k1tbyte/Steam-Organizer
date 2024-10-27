@@ -1,9 +1,9 @@
 import {FC} from "react";
-import InputWrapper from "@/components/elements/InputWrapper.tsx";
+import {InputValidationWrapper} from "@/components/elements/FieldWrapper.tsx";
 import {Icon, SvgIcon} from "@/assets";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
-import {useInputValidation, validator} from "@/hooks/useInputValidation.ts";
-import {config, saveConfig} from "@/store/config.ts";
+import { validators} from "@/hooks/useFormValidation.ts";
+import {config, delayedSaveConfig} from "@/store/config.ts";
 import {modal} from "@/components/primitives/Modal.tsx";
 
 export const openSettings = () => {
@@ -14,21 +14,13 @@ export const openSettings = () => {
 }
 
 export const Settings: FC = () => {
-    const [inputRef, messageRef] = useInputValidation(
-        input => input.length === 0 ? null : validator.steamApiKey(input),
-        i => {
-        if(config.steamApiKey === i) {
-            return
-        }
-        config.steamApiKey = i;
-        return saveConfig()
-    })
-
     return (
         <div>
-            <InputWrapper ref={messageRef} title="Steam API key" icon={<SvgIcon icon={Icon.Api} size={24}/>}>
-                <PasswordBox ref={inputRef} defaultValue={config.steamApiKey}/>
-            </InputWrapper>
+            <InputValidationWrapper title="Steam API key" icon={<SvgIcon icon={Icon.Api} size={24}/>}>
+                <PasswordBox bindTo={config} bindKey={nameof(config.steamApiKey)}
+                             onChanged={delayedSaveConfig}
+                             validator={s => (s && validators.steamApiKey(s))} />
+            </InputValidationWrapper>
         </div>
     )
 }

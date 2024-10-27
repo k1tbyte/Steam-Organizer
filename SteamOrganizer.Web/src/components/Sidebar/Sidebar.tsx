@@ -1,7 +1,7 @@
 import React, {
     createContext,
     type Dispatch,
-    type FC,
+    type FC, forwardRef,
     type ReactElement,
     type ReactNode,
     type SetStateAction,
@@ -45,7 +45,7 @@ const mediaBreak = "(max-width: 1023px)"
 
 const getState = () => (Number(localStorage.getItem("sidebar")) ?? ESidebarState.Full);
 
-export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
+const NavLink = forwardRef<HTMLDivElement, ISidebarItemProps>(({ link, icon, text, ...props }, ref) => {
     let location=useLocation();
     let navigate = useNavigate();
     const sidebar = useContext(SidebarContext)
@@ -66,19 +66,29 @@ export const SidebarItem: FC<ISidebarItemProps> = ({icon,text,link }) => {
     }
 
     return (
-        <Tooltip message={text}
-                 wrapIf={sidebar.state === ESidebarState.Partial}
-                 {...popup.right()}>
-            <div className={styles.navItem + containerCn} draggable={false} onClick={() => {
-                if(sidebar.small) {
-                    setState(ESidebarState.Hidden)
-                }
+        <div ref={ref} {...props} className={styles.navItem + containerCn} draggable={false} onClick={() => {
+            if (sidebar.small) {
+                setState(ESidebarState.Hidden)
+            }
+            if (location.pathname != link) {
                 navigate(link);
-            }}>
-                {isActive ? React.cloneElement(icon, { stroke: Gradients.LightBlue }) : icon}
-                <p className={styles.navItemText + textCn}>{text}</p>
-                <div className={styles.navItemOverlay + activeCn}/>
-            </div>
+            }
+        }}>
+            {isActive ? React.cloneElement(icon, {stroke: Gradients.LightBlue}) : icon}
+            <p className={styles.navItemText + textCn}>{text}</p>
+            <div className={styles.navItemOverlay + activeCn}/>
+        </div>
+    )
+})
+
+export const SidebarItem: FC<ISidebarItemProps> = (props) => {
+    const sidebar = useContext(SidebarContext)
+
+    return (
+        <Tooltip message={props.text}
+                 wrapIf={sidebar.state === ESidebarState.Partial}
+                 {...popup.right}>
+           <NavLink {...props}/>
         </Tooltip>
     );
 }
