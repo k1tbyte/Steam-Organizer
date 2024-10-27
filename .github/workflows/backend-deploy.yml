@@ -40,4 +40,6 @@ jobs:
         run: dotnet publish -c Release -o ${{ env.publish-folder }}
         
       - name: Restart the app
-        run: systemctl --user restart ${{ env.service-name }}.service
+        run: |
+          export XDG_RUNTIME_DIR=/run/user/$(id -u)
+          systemctl --user restart ${{ env.service-name }}.service
