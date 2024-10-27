@@ -370,5 +370,3 @@ FodyWeavers.xsd
 # User
 .idea/
 .env*
-./SteamOrganizer.Server/appsettings.Development.json
-./SteamOrganizer.Server/appsettings.json
