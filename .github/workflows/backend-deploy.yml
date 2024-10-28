@@ -42,4 +42,6 @@ jobs:
       - name: Restart the app
         run: |
           export XDG_RUNTIME_DIR=/run/user/$(id -u)
+          touch .env
+          echo FRONTEND_URL=${{ vars.FRONTEND_URL }} >> .env
           systemctl --user restart ${{ env.service-name }}.service

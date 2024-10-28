@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Http;
 using Microsoft.OpenApi.Models;
 using SteamOrganizer.Server.Filters;
@@ -17,8 +18,7 @@ public static class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
-        // Add services to the container.
+        LoadEnv(builder.Configuration);
 
         builder.Services.AddControllers(config =>
         {
@@ -78,6 +78,44 @@ public static class Program
         app.MapControllers();
 
         app.Run();
+    }
+    
+    private static void LoadEnv(ConfigurationManager configuration)
+    {
+        var path = File.Exists(".env") ? ".env" 
+#if DEBUG
+            : File.Exists("../../../.env") ? "../../../.env" 
+#endif
+            : null;
+
+        if (path == null)
+        {
+            return;
+        }
+        
+        var placeholderPattern = new Regex(@"\$\{(\w+)\}");
+        var text = File.ReadAllText(path);
+        var dict = text
+            .Split('\n')
+            .Where(o => !string.IsNullOrEmpty(o))
+            .Select(var => var.Split('='))
+            .ToDictionary(parts => parts[0].Trim(), parts => parts[1].Trim());
+
+        foreach (var keyValue in configuration.AsEnumerable())
+        {
+            if(keyValue.Value == null)
+                continue;
+            
+            placeholderPattern.Replace(keyValue.Value, match =>
+            {
+                if (dict.TryGetValue(match.Groups[1].Value, out var value))
+                {
+                    configuration[keyValue.Key] = value;
+                }
+                    
+                return value!;
+            });
+        }
     }
 
     private static void OnShutdown()
