@@ -56,7 +56,16 @@ export const enum Icon {
     DragZone,
     SyncCircle,
     Phone,
-    NoteEdit
+    NoteEdit,
+    Email,
+    EpicGames,
+    ElectronicArts,
+    UPlay,
+    RockstarGames,
+    Square,
+    Xbox,
+    BattleNet,
+    Wargaming,
 }
 
 export function Defs() {

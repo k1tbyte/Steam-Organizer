@@ -1,5 +1,6 @@
-import {EVisibilityState, SteamPlayerBans, SteamPlayerGames, SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
+import { type EVisibilityState, type SteamPlayerBans, type SteamPlayerGames, type SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
 import {getPlayerInfo} from "@/services/steamApi.ts";
+import type {IAccountCredential} from "@/types/accountCredentials.ts";
 
 export class Account {
     nickname: string;
@@ -7,6 +8,7 @@ export class Account {
     password: string;
     phone?: number;
     note?: string;
+    credentials?: IAccountCredential[];
 
     id?: number;
     visibilityState?: EVisibilityState;

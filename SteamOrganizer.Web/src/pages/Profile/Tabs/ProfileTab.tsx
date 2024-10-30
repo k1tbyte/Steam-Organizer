@@ -1,4 +1,4 @@
-import {FC, ReactElement} from "react";
+import React, {type FC, type ReactElement} from "react";
 import {Expander} from "@/components/primitives/Expander.tsx";
 import {Gradients, Icon, SvgIcon} from "@/assets";
 import {type IAccountProps} from "@/pages/Profile/Profile.tsx";
@@ -7,9 +7,13 @@ import {FieldWrapper, InputValidationWrapper} from "@/components/elements/FieldW
 import Input from "@/components/primitives/Input.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import {TextArea} from "@/components/primitives/TextArea.tsx";
-import {EEconomyBanType} from "@/types/steamPlayerSummary.ts";
+import {  EEconomyBanType } from "@/types/steamPlayerSummary.ts";
 import {validators} from "@/hooks/useFormValidation.ts";
 import {delayedSaveAccounts} from "@/store/accounts.ts";
+import { RadioButtonGroup} from "@/components/primitives/RadioButton.tsx";
+import {Tooltip} from "@/components/primitives/Popup.tsx";
+import {ECredentialType, serviceNames} from "@/types/accountCredentials.ts";
+import {modal} from "@/components/primitives/Modal.tsx";
 
 interface IBanChipProps {
     name: string;
@@ -24,10 +28,139 @@ interface IBadgeChipProps {
     description: ReactElement;
 }
 
-const BanChip: FC<IBanChipProps> = ({ name, banned, banDescription }) => (
+interface ICredentialsFieldProps {
+    type: ECredentialType;
+    bindTo: object;
+    bindKey: string;
+    readOnly?: boolean
+}
+
+const CredentialsField:FC<ICredentialsFieldProps> = ({ type, ...props }) => {
+
+    let input: ReactElement | undefined;
+    let title: string;
+    let icon: Icon | undefined = undefined;
+    let withWrapper: boolean;
+    const inputProps = { ...props/*, onChanged: delayedSaveAccounts */}
+
+    switch (type) {
+        case ECredentialType.Password:
+            title = "Password";
+            icon = Icon.Key;
+            withWrapper = true
+            input = <PasswordBox  maxLength={50}
+                                  validator={validators.password} {...inputProps}/>
+            break;
+        case ECredentialType.Phone:
+            withWrapper = true
+            title = "Phone number"
+            icon = Icon.Phone;
+            input = <Input maxLength={15}
+                           converter={Number}
+                           validator={validators.phone}
+                           filter={/[0-9]/} {...inputProps}/>
+            break;
+        case ECredentialType.Email:
+            title = "Email";
+            icon = Icon.Email;
+            break;
+        case ECredentialType.Login:
+            title = "Login";
+            break;
+        case ECredentialType.SecretWord:
+            title = "Secret word";
+            break;
+    }
+
+    icon = icon ?? Icon.UserText;
+    return (
+        withWrapper ?
+            <InputValidationWrapper title={title} icon={<SvgIcon icon={icon} size={20}/>}>
+                {input}
+            </InputValidationWrapper>
+            : <FieldWrapper title={title} icon={<SvgIcon icon={icon} size={20}/>}>
+                {input ?? <Input {...inputProps}/>}
+            </FieldWrapper>
+
+    )
+}
+
+const CredentialsButton: FC<{icon: Icon, title: string, shift?: boolean, onClick?: () => void}> =
+    React.memo(({icon, title, onClick, shift = false}) =>
+    {
+        return (
+            <Tooltip message={title} >
+                <SvgIcon className={`p-1.5 ${shift ? "-ml-4" : ""}`} role="button" onClick={onClick} icon={icon} size={38}/>
+            </Tooltip>
+        )
+    })
+
+
+const CredentialsArea: FC<IAccountProps> = ({ acc }) => {
+    const [active, setActive] = React.useState(0);
+    const credential = acc.credentials?.[active - 1];
+    const field = credential?.f;
+
+    return (
+        <Expander className="backdrop-primary" icon={<SvgIcon
+            icon={Icon.Fingerprint} size={28}/>}
+                  title={
+                    <span>
+                        Credentials
+                        <small className="text-secondary">
+                            {`${active === 0 ? " (Steam)" : ( credential ? ` (${(credential.n ?? serviceNames[credential.i])})` : "")}`}
+                        </small>
+                    </span>
+                  }>
+
+            <div className="p-4 max-w-80 ml-0 md:ml-3">
+
+                <div className="flex gap-3 flex-wrap justify-center md:justify-normal mb-3">
+                    <RadioButtonGroup activeIndex={active} setActive={setActive}>
+                        <CredentialsButton icon={Icon.Steam} title={"Steam"}/>
+                        { acc.credentials &&
+                            {...acc.credentials.map(o => {
+                                return <CredentialsButton icon={o.i} title={o.n ?? serviceNames[o.i]}/>
+                            })}
+                        }
+                    </RadioButtonGroup>
+                    <CredentialsButton icon={Icon.Plus} title="Add"
+                                       onClick={() => {
+                                           modal.open({
+                                               title: "Add new credentials",
+                                               body: "This feature is not implemented yet."
+                                           })
+                                       }}
+                                       shift={true}/>
+                </div>
+
+                    {active === 0 ?
+                        <>
+                            <CredentialsField type={ECredentialType.Login} bindTo={acc} bindKey={nameof(acc.login)}
+                                              readOnly/>
+                            <CredentialsField type={ECredentialType.Password} bindTo={acc}
+                                              bindKey={nameof(acc.password)}/>
+                            <CredentialsField type={ECredentialType.Phone} bindTo={acc} bindKey={nameof(acc.phone)}/>
+                        </> :
+                        <>
+                            {
+                                Object.entries(field).map(([key]) => {
+                                    return <CredentialsField key={field[key]} type={Number(key)} bindTo={field}
+                                                             bindKey={key}/>
+                                })
+                            }
+                        </>
+                    }
+            </div>
+        </Expander>
+    )
+}
+
+
+const BanChip: FC<IBanChipProps> = ({name, banned, banDescription}) => (
     <div className="grad-chip px-4 py-4 text-sm  rounded-lg flex-y-center flex-wrap justify-between">
         <span className="font-bold letter-space">{name}</span>
-        { (banned) ?
+        {(banned) ?
             <>
                 <SvgIcon className="text-danger" icon={Icon.AlertDecagram} size={32}/>
                 <p className="w-full text-xs text-close mr-10">{banDescription}</p>
@@ -49,35 +182,6 @@ const BadgeChip: FC<IBadgeChipProps> = ({name, icon, description, badge}) => (
         </div>
     </div>
 )
-
-const CredentialsArea: FC<IAccountProps> = ({ acc }) => {
-    return (
-        <Expander className="backdrop-primary" icon={<SvgIcon icon={Icon.Fingerprint} size={28}/>} title="Credentials">
-            <div className="p-4 ml-3 max-w-80">
-
-                <FieldWrapper title="Login" icon={<SvgIcon icon={Icon.UserText} size={20}/>}>
-                   <Input className="rounded" defaultValue={acc.login} readOnly/>
-                </FieldWrapper>
-
-                <InputValidationWrapper title="Password" icon={<SvgIcon icon={Icon.Key} size={20}/>}>
-                    <PasswordBox className="rounded" maxLength={50}
-                                 onChanged={delayedSaveAccounts}
-                                 validator={validators.password}
-                                 bindTo={acc} bindKey={nameof(acc.password)}/>
-                </InputValidationWrapper>
-
-                <InputValidationWrapper title="Linked phone number" icon={<SvgIcon icon={Icon.Phone} size={20}/>}>
-                    <Input className="rounded" maxLength={15}
-                           bindTo={acc} bindKey={nameof(acc.phone)}
-                           converter={Number}
-                           validator={validators.phone}
-                           filter={/[0-9]/}
-                           onChanged={delayedSaveAccounts}/>
-                </InputValidationWrapper>
-            </div>
-        </Expander>
-    )
-}
 
 const CommunityArea: FC<IAccountProps> = ({ acc }) => {
     return (

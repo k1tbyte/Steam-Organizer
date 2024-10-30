@@ -7,7 +7,7 @@ import {Icon, SvgIcon} from "@/assets";
 
 interface IExpanderProps {
     children: ReactNode;
-    title: string;
+    title: string | ReactElement<HTMLSpanElement>;
     className?: string;
     isExpanded?: boolean;
     icon?: ReactElement;
