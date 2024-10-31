@@ -7,6 +7,7 @@ import { ClickScrollPlugin, OverlayScrollbars } from "overlayscrollbars";
 
 OverlayScrollbars.plugin(ClickScrollPlugin);
 
+document.title = "Steam Organizer"
 ReactDOM.createRoot(document.getElementById('root')).render(
     //<React.StrictMode>
         <App />

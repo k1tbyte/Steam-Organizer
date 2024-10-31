@@ -5,6 +5,7 @@ import {backups, loadBackups} from "@/store/backups.ts";
 import {useEffect, useState} from "react";
 import {useAuth} from "@/providers/authProvider.tsx";
 import {Loader, LoaderStatic} from "@/components/primitives/Loader.tsx";
+import {setDocumentTitle} from "@/lib/utils.ts";
 
 export default function Backups(){
     const { user  } = useAuth()
@@ -21,6 +22,8 @@ export default function Backups(){
         setLoading(user.isLoggedIn === undefined)
 
     },[user.isLoggedIn])
+
+    useEffect(() => setDocumentTitle("Backups"), []);
 
     if(isLoading) {
         return <Loader className="w-full h-full flex-center"/>

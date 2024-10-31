@@ -1,6 +1,10 @@
 import {Gradients} from "@/assets";
+import {useEffect} from "react";
+import {setDocumentTitle} from "@/lib/utils.ts";
 
 export default function Actions(){
+    useEffect(() => setDocumentTitle("Actions"), []);
+
     return(
         <div className="flex-center flex-wrap gap-2 p-2 w-full h-full">
             <svg width="54" height="54" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"

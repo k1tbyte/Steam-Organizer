@@ -78,3 +78,9 @@ export const jsonIgnoreNull = (key: string, value: any) => {
         return value
     }
 }
+
+export const setDocumentTitle = (title: string) => {
+    document.title = `${title ? `${title} - ` : ""}Steam Organizer`;
+}
+
+

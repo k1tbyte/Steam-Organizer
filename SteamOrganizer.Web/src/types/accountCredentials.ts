@@ -22,7 +22,7 @@ export const enum ECredentialType {
 
 export interface IAccountCredential {
     // Icon of the credential
-    i: Icon,
+    i?: Icon,
     // Name of the credential
     n?: string,
     f: Record<number, string>

@@ -1,19 +1,22 @@
-import React, {FC, ReactElement, useEffect} from "react";
+import React, {type FC, type ReactElement, useEffect, useRef} from "react";
 import {useParams} from "react-router-dom";
 import {Tab, TabPanel} from "@/components/primitives/Tabs.tsx";
-import {Gradients, Icon, SvgIcon} from "@/assets";
+import { Gradients,  Icon, SvgIcon} from "@/assets";
 import {motion} from "framer-motion";
 import styles from "./Profile.module.pcss";
-import ProfileTab from "@/pages/Profile/Tabs/ProfileTab.tsx";
-import GamesTab from "@/pages/Profile/Tabs/GamesTab.tsx";
-import FriendsTab from "@/pages/Profile/Tabs/FriendsTab.tsx";
 import {useScrollbar} from "@/hooks/useScrollbar.ts";
 import {accounts} from "@/store/accounts.ts";
 import {defaultAvatar} from "@/store/config.ts";
-import {dateFormatter} from "@/lib/utils.ts";
-import {Account} from "@/entity/account.ts";
+import {dateFormatter, setDocumentTitle} from "@/lib/utils.ts";
+import { type Account} from "@/entity/account.ts";
 import {useLoader} from "@/hooks/useLoader.ts";
-import {Loader, LoaderStatic} from "@/components/primitives/Loader.tsx";
+import { LoaderStatic } from "@/components/primitives/Loader.tsx";
+import SummariesTab from "./SummariesTab";
+import GamesTab from "./GamesTab";
+import FriendsTab from "./FriendsTab";
+import {ComboBox} from "@/components/primitives/ComboBox/ComboBox.tsx";
+import {converters} from "@/lib/steamIdConverter.ts";
+import {Tooltip} from "@/components/primitives/Popup.tsx";
 
 interface ITabTitleProps {
     active: boolean;
@@ -41,6 +44,9 @@ const TabTitle: FC<ITabTitleProps> = ( { active, icon, title }) => (
 )
 
 const Info: FC<IAccountProps> = ({ acc }) => {
+    const idRef = useRef<HTMLParagraphElement>(null)
+    const idTooltipRef = useRef<HTMLDivElement>(null)
+
     return (
         <div className={styles.infoContainer}>
             <div className="text-center">
@@ -72,6 +78,27 @@ const Info: FC<IAccountProps> = ({ acc }) => {
                             <SvgIcon icon={Icon.SteamDb} size={30}/>
                         </a>
                     </div>
+
+                    <div style={{width: "150px"}}>
+                        <ComboBox style={{ height: "30px"}} selectedIndex={0}
+                                  items={["Account ID", "Steam ID", "Steam2 ID", "Steam3 ID", "CS2 Friend code", "Steam3 Hex"]} onSelected={(i) => {
+                                      idRef.current.textContent = converters[i].from(acc.id)
+                        }}/>
+                        <Tooltip ref={idTooltipRef} message="Click to copy" openDelay={0}>
+                            <b>
+                                <p ref={idRef} className="text-center text-secondary text-xs mt-2 cursor-pointer"
+                                   onClick={async () => {
+                                       await navigator.clipboard.writeText(idRef.current.textContent)
+                                       if (idTooltipRef.current) {
+                                           idTooltipRef.current.textContent = "Copied"
+                                       }
+                                   }}>
+                                    {acc.id}
+                                </p>
+                            </b>
+                        </Tooltip>
+                    </div>
+
                 </>
             }
         </div>
@@ -80,18 +107,20 @@ const Info: FC<IAccountProps> = ({ acc }) => {
 
 
 export const Profile: FC = () => {
+    let acc: Account | undefined;
+
     const {id} = useParams();
     const isLoading = useLoader(accounts);
-    const { hostRef} = useScrollbar(undefined, [isLoading]);
+    const {hostRef} = useScrollbar(undefined, [isLoading]);
+    useEffect(() => setDocumentTitle(acc?.nickname), [isLoading]);
 
     if(isLoading) {
         return <LoaderStatic/>
     }
 
     const numId = parseFloat(id)
-    const acc = accounts.value.find(!isNaN(numId) ?
+    acc = accounts.value.find(!isNaN(numId) ?
         (o => o.id === numId) : (o => o.login === id))
-
 
     if (!acc) {
         return <p>Account not found</p>
@@ -134,7 +163,7 @@ export const Profile: FC = () => {
                             <Tab key="profile" title={(active) =>
                                 <TabTitle title="Profile" icon={<SvgIcon icon={Icon.UserOutline} size={20}/>}
                                           active={active}/>
-                            } children={<ProfileTab acc={acc}/>}/>
+                            } children={<SummariesTab acc={acc}/>}/>
 
                             <Tab key="games" title={(active) =>
                                 <TabTitle title="Games" icon={<SvgIcon icon={Icon.Gamepad} size={20}/>}
@@ -147,7 +176,7 @@ export const Profile: FC = () => {
                             } children={<FriendsTab/>}/>
                         </TabPanel>
                     </div> :
-                    <ProfileTab acc={acc}/>
+                    <SummariesTab acc={acc}/>
                 }
 
             </div>

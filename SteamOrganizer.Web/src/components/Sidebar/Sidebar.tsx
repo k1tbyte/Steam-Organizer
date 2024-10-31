@@ -40,7 +40,7 @@ interface ISidebarState {
 }
 
 export let setState: Dispatch<SetStateAction<ESidebarState>>
-const SidebarContext = createContext<ISidebarState>({ state: 0, small: false })
+const SidebarContext = createContext<ISidebarState>({ state: ESidebarState.Full, small: false })
 const mediaBreak = "(max-width: 1023px)"
 
 const getState = () => (Number(localStorage.getItem("sidebar")) ?? ESidebarState.Full);

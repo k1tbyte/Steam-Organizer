@@ -5,9 +5,12 @@ import {GridLayout} from "@/components/primitives/VirtualScroller/GridLayout.ts"
 import {accounts} from "@/store/accounts.ts";
 import { LoaderStatic} from "@/components/primitives/Loader.tsx";
 import {useLoader} from "@/hooks/useLoader.ts";
+import {useEffect} from "react";
+import {setDocumentTitle} from "@/lib/utils.ts";
 
 export default function Accounts() {
    const isLoading = useLoader(accounts)
+    useEffect(() => setDocumentTitle('Accounts'), []);
 
     return (
         <AccountsNav>

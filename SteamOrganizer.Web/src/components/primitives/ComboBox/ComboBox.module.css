@@ -1,0 +1,15 @@
+.listItem {
+    @apply px-2 py-1 hover:bg-secondary rounded hover:text-foreground-accent transition-colors cursor-pointer;
+}
+
+.header {
+    @apply flex justify-between items-center px-3 py-2 cursor-pointer;
+}
+
+.dropDown {
+    @apply absolute z-10 bg-accent w-full rounded-b overflow-clip drop-shadow-md;
+}
+
+.dropList {
+    @apply py-2 px-2 text-2xs;
+}

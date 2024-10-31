@@ -15,12 +15,10 @@ export const openSettings = () => {
 
 export const Settings: FC = () => {
     return (
-        <div>
-            <InputValidationWrapper title="Steam API key" icon={<SvgIcon icon={Icon.Api} size={24}/>}>
-                <PasswordBox bindTo={config} bindKey={nameof(config.steamApiKey)}
-                             onChanged={delayedSaveConfig}
-                             validator={s => (s && validators.steamApiKey(s))} />
-            </InputValidationWrapper>
-        </div>
+        <InputValidationWrapper title="Steam API key" icon={<SvgIcon icon={Icon.Api} size={24}/>}>
+            <PasswordBox bindTo={config} bindKey={nameof(config.steamApiKey)}
+                         onChanged={delayedSaveConfig}
+                         validator={s => (s && validators.steamApiKey(s))} />
+        </InputValidationWrapper>
     )
 }
