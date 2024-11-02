@@ -13,6 +13,7 @@ import {dateFormatter} from "@/lib/utils.ts";
 import {accounts, clearAccounts, importAccounts, initAccounts, storeEncryptionKey} from "@/store/accounts.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
 import {EDecryptResult} from "@/store/config.ts";
+import {InfoNote} from "@/pages/Modals/elements/InfoNote.tsx";
 
 interface IDecryptProps {
     info: string,
@@ -155,11 +156,8 @@ export const DecryptionPopup: FC<IDecryptProps> = (props) => {
     const getResetMessage = () => "Click " + tapCount + " more time(s) to reset.\nAll data will be lost!"
 
     return (
-        <form className="w-full" ref={formRef}>
-            <div className="text-[12px] text-foreground relative pl-5 text-justify pr-2 mb-3">
-                <SvgIcon icon={Icon.InfoMark} size={18} className="text-foreground-accent absolute -left-0.5 top-0.5"/>
-                <span>{props.info}</span>
-            </div>
+        <form style={{maxWidth: "280px"}} ref={formRef}>
+            <InfoNote title={props.info}/>
             <InputValidationWrapper title="Password" className="mb-7 w-full"
                           icon={<SvgIcon icon={Icon.Key} size={18}/>}>
                 <PasswordBox validator={validators.password} ref={inputRef}/>

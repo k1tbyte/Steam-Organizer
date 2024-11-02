@@ -12,7 +12,13 @@ import {IDraggableContext, IDraggableInfo} from "@/components/primitives/Draggab
 import {openSettings} from "@/pages/Modals/Settings.tsx";
 import {type ObservableProxy} from "@/lib/observer/observableProxy.ts";
 import {type Account} from "@/entity/account.ts";
-import {accounts} from "@/store/accounts.ts";
+import {accounts, exportAccounts, importAccounts} from "@/store/accounts.ts";
+import {AnimatePresence, motion} from "framer-motion";
+import {ExportData} from "@/pages/Modals/ExportData.tsx";
+import {formatFileDate} from "@/lib/utils.ts";
+import {Tooltip} from "@/components/primitives/Popup.tsx";
+import {verifyVersion} from "@/services/cryptography.ts";
+import {DecryptionPopup} from "@/pages/Modals/Authentication.tsx";
 
 interface IAccountsNavProps {
     children: ReactNode;
@@ -25,8 +31,10 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
     const [expanded, setExpanded] = useState(false);
     const [isDragging, setDragging] = useState(false);
     const [isDragState, setDragState] = useState(false);
+    const [open, setOpen] = useState(false);
     const infoRef = useRef<IDraggableInfo>({});
     const searchRef = useRef<HTMLInputElement>(null!);
+    const fileInputRef = useRef<HTMLInputElement>(null!);
 
     useEffect(() => {
         const filter = (data: Account[]) => {
@@ -43,9 +51,65 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
 
         return () => {
             proxy.removeMiddleware(filter);
-            searchRef.current.removeEventListener("input", onInput);
+            searchRef.current?.removeEventListener("input", onInput);
         }
     }, []);
+
+
+    const addClicked = () => {
+        setExpanded(false)
+        if(!config.steamApiKey) {
+            toast.open({
+                body: "Steam API key not specified. Do this in settings",
+                variant: ToastVariant.Warning,
+                clickAction: openSettings
+            })
+            return;
+        }
+        modal.open({
+            title: "New account",
+            body: <AddAccount/>
+        })
+    }
+
+    const exportClicked = () => {
+        modal.open({
+            body: <ExportData getData={() => [`Database Backup ${formatFileDate()}`, accounts.value]}
+                              encryptedExtension="sodb"/>,
+            title: "Export database"
+        })
+    }
+
+    const importFileSelected = (e:   React.ChangeEvent<HTMLInputElement>) => {
+        if(!e.target.files?.length) return;
+
+        const reader = new FileReader();
+        reader.onload = e => {
+            if(!verifyVersion(e.target.result as ArrayBuffer)) {
+                toast.open({
+                    body: "Failed importing database. File corrupted or incompatible",
+                    variant: ToastVariant.Error
+                })
+                return
+            }
+
+            modal.open({
+                body: <DecryptionPopup decryptData={e.target.result as ArrayBuffer}
+                                       info={`Enter password to import database${accounts.value.length ? ". Warning! Your current database will be lost" : ""}`}
+                                       onSuccess={(_, d) => importAccounts(d, true) }/>,
+                title: "Import database"
+            })
+        };
+
+        reader.onerror = () => {
+            toast.open({
+                body: "Failed importing database, cannot read file",
+                variant: ToastVariant.Error
+            })
+        }
+
+        reader.readAsArrayBuffer(e.target.files[0]);
+    }
 
     return (
         <AccountsContext.Provider value={ { isEnabled: isDragState, isDragging: isDragging, setIsDragging: setDragging, infoRef: infoRef } }>
@@ -74,23 +138,38 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
                             </div>
                         </div>
                     </div>
-                    <button className={styles.addButton} onClick={() => {
-                        setExpanded(false)
-                        if(!config.steamApiKey) {
-                            toast.open({
-                                body: "Steam API key not specified. Do this in settings",
-                                variant: ToastVariant.Warning,
-                                clickAction: openSettings
-                            })
-                            return;
-                        }
-                        modal.open({
-                            title: "New account",
-                            body: <AddAccount/>
-                        })
-                    }}>
-                        <SvgIcon icon={Icon.Plus} size={20} fill={Gradients.LightBlue}/>
-                    </button>
+                    <div className={styles.btnsPanel}>
+                        <Tooltip message="Update accounts info">
+                            <button className="px-3">
+                                <SvgIcon icon={Icon.DatabaseUpdate} size={20} fill={Gradients.LightBlue}/>
+                            </button>
+                        </Tooltip>
+                        <div className={styles.separator}/>
+                        <Tooltip message="Export accounts database">
+                            <button className="px-3" onClick={exportClicked}>
+                                <SvgIcon icon={Icon.DatabaseExport} size={20} fill={Gradients.LightBlue}/>
+                            </button>
+                        </Tooltip>
+                        <div className={styles.separator}/>
+                        <Tooltip message="Import accounts database">
+                            <button className="px-3" onClick={() => {
+                                fileInputRef.current.value = "";
+                                fileInputRef.current.click();
+                            }}>
+                                <SvgIcon icon={Icon.DatabaseImport} size={20} fill={Gradients.LightBlue}/>
+                            </button>
+                        </Tooltip>
+                        <div className={styles.separator}/>
+                        <Tooltip message="Add account">
+                            <button className="px-3" onClick={addClicked}>
+                                <SvgIcon icon={Icon.Plus} size={20} fill={Gradients.LightBlue}/>
+                            </button>
+                        </Tooltip>
+                        <input ref={fileInputRef} type="file"
+                               onChange={importFileSelected}
+                               style={{display: "none"}}
+                               accept=".sodb"/>
+                    </div>
                 </div>
             </nav>
             {children}

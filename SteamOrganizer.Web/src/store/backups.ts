@@ -1,7 +1,7 @@
 import {ObservableObject} from "@/lib/observer/observableObject.ts";
 import {BackupInfo, BackupMetadata} from "@/types/backup.ts";
 import {getFileJson, getFileList, uploadFileJson} from "@/services/gDrive.ts";
-import {accounts, exportAccounts, loadAccounts} from "@/store/accounts.ts";
+import {accounts, exportAccounts } from "@/store/accounts.ts";
 import {bufferToBase64 } from "@/lib/utils.ts";
 import {isAuthorized} from "@/services/gAuth.ts";
 

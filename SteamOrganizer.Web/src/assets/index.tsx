@@ -66,7 +66,10 @@ export const enum Icon {
     Xbox,
     BattleNet,
     Wargaming,
-    CardText
+    CardText,
+    DatabaseUpdate,
+    DatabaseExport,
+    DatabaseImport,
 }
 
 export function Defs() {
