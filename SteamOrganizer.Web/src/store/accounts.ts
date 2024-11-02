@@ -16,7 +16,7 @@ export let databaseKey: CryptoKey | undefined;
 
 const dbFieldName = "accounts"
 
-export const getAccountsBuffer = () => db.get(dbFieldName) as Promise<ArrayBuffer | undefined>
+export const getAccountsBuffer = () => db.get<ArrayBuffer>(dbFieldName)
 
 /**
  * Exports the accounts data, optionally including a timestamp.

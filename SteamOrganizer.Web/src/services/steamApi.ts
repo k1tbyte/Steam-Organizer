@@ -1,10 +1,11 @@
 import {config} from "@/store/config.ts";
 import {SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
+import db, {EDbStore} from "@/services/indexedDb.ts";
 
 const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/steam/webApi/`
 
-const handleResponse = async <T>(action: Promise<Response>) => {
+const handleResponse = async <T>(action: Promise<Response>, onSuccess: (o: T) => void = null) => {
     let response: Response
     try {
         response = await action;
@@ -14,7 +15,9 @@ const handleResponse = async <T>(action: Promise<Response>) => {
     }
 
     if(response.ok) {
-        return await response.json() as T
+        const result = await response.json() as T
+        onSuccess(result)
+        return result
     }
 
     let message: string;
@@ -41,7 +44,9 @@ const handleResponse = async <T>(action: Promise<Response>) => {
 
 export const getPlayerInfo = async (id: number) => {
     const request =  fetch(`${apiUrl}getSummaries?key=${config.steamApiKey}&ids=${id}&includeGames=true`);
-    return await handleResponse<SteamPlayerSummary | undefined>(request)
+    return await handleResponse<SteamPlayerSummary | undefined>(request, (o) => {
+        db.save(o.gamesSummaries.games, id, EDbStore.Games)
+    })
 }
 
 export const resolveVanityUrl = async (vanityUrl: string): Promise<number | undefined | null> => {

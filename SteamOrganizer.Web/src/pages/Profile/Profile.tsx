@@ -16,7 +16,7 @@ import GamesTab from "./GamesTab";
 import FriendsTab from "./FriendsTab";
 import {ComboBox} from "@/components/primitives/ComboBox/ComboBox.tsx";
 import {converters} from "@/lib/steamIdConverter.ts";
-import {EPlacementX, EPlacementY, popup, Tooltip} from "@/components/primitives/Popup.tsx";
+import {EPlacementX, popup, Tooltip} from "@/components/primitives/Popup.tsx";
 import {localProps, saveLocalProps} from "@/store/local.ts";
 import Button, {EButtonVariant, IButtonActions} from "@/components/primitives/Button.tsx";
 
@@ -139,6 +139,7 @@ export const Profile: FC = () => {
                     <div className={styles.avatarContainer}>
                         <img style={{maskImage: "url(#avatarMask)"}}
                              decoding="async" draggable={false}
+                             loading={"lazy"}
                              src={`https://avatars.akamai.steamstatic.com/${acc.avatarHash ?? defaultAvatar}_full.jpg`}
                              className={styles.avatar} alt="avatar"/>
 
@@ -174,7 +175,7 @@ export const Profile: FC = () => {
                             <Tab key="games" title={(active) =>
                                 <TabTitle title="Games" icon={<SvgIcon icon={Icon.Gamepad} size={20}/>}
                                           active={active}/>
-                            } children={<GamesTab/>}/>
+                            } children={<GamesTab acc={acc}/>}/>
 
                             <Tab key="friends" title={(active) =>
                                 <TabTitle title="Friends" icon={<SvgIcon icon={Icon.Users} size={20}/>}

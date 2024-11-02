@@ -29,7 +29,7 @@ export const  loadConfig = async () => {
         visitorId = "test"
     }
     fingerprint = await deriveKey({ secret: visitorId, iterations: 1})
-    const configBytes = await db.get("config") as ArrayBuffer | undefined
+    const configBytes = await db.get<ArrayBuffer>("config")
 
     config = {}
     if(configBytes === undefined) {

@@ -79,6 +79,7 @@ public sealed class WebApiController(SteamParser parser, HttpClient httpClient) 
         return result == null ? null : Tools.ToSteamId32(result.Value);
     }
 
+    [HttpGet]
     public async Task<IActionResult> GetSteamServerTime()
     {
         var response = await httpClient.PostAsync("https://api.steampowered.com/ITwoFactorService/QueryTime/v0001?steamid=0", null);

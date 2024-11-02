@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef} from "react";
+import { useEffect, useRef} from "react";
 
 const emailRegex = new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$');
 const steamApiKeyRegex = new RegExp('^[A-Fa-f0-9]{32}$')
@@ -69,7 +69,7 @@ export const validators = {
     required:  input =>  input.length == 0 ? "Required" : null,
     login: input => loginRegex.test(input) ? null : "Invalid login",
     password: input => input.length < 6 ? "Must be minimum 6 characters" : null,
-    phone: input => input.length < 8 ? "Invalid phone number" : null,
+    phone: input => input.length > 0 && input.length < 8 ? "Invalid phone number" : null,
     email: input => emailRegex.test(input) ? null : "Must be an email",
     steamApiKey: input =>  steamApiKeyRegex.test(input) ? null : "Invalid api key"
 }

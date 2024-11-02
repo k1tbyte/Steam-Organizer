@@ -11,7 +11,6 @@ if ('serviceWorker' in navigator) {
 
 OverlayScrollbars.plugin(ClickScrollPlugin);
 
-document.title = "Steam Organizer"
 ReactDOM.createRoot(document.getElementById('root')).render(
     //<React.StrictMode>
         <App />

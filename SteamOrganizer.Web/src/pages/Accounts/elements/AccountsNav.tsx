@@ -12,8 +12,7 @@ import {IDraggableContext, IDraggableInfo} from "@/components/primitives/Draggab
 import {openSettings} from "@/pages/Modals/Settings.tsx";
 import {type ObservableProxy} from "@/lib/observer/observableProxy.ts";
 import {type Account} from "@/entity/account.ts";
-import {accounts, exportAccounts, importAccounts} from "@/store/accounts.ts";
-import {AnimatePresence, motion} from "framer-motion";
+import {accounts, importAccounts} from "@/store/accounts.ts";
 import {ExportData} from "@/pages/Modals/ExportData.tsx";
 import {formatFileDate} from "@/lib/utils.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
@@ -31,7 +30,6 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
     const [expanded, setExpanded] = useState(false);
     const [isDragging, setDragging] = useState(false);
     const [isDragState, setDragState] = useState(false);
-    const [open, setOpen] = useState(false);
     const infoRef = useRef<IDraggableInfo>({});
     const searchRef = useRef<HTMLInputElement>(null!);
     const fileInputRef = useRef<HTMLInputElement>(null!);
@@ -73,6 +71,7 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
     }
 
     const exportClicked = () => {
+        setExpanded(false)
         modal.open({
             body: <ExportData getData={() => [`Database Backup ${formatFileDate()}`, accounts.value]}
                               encryptedExtension="sodb"/>,
@@ -81,6 +80,7 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
     }
 
     const importFileSelected = (e:   React.ChangeEvent<HTMLInputElement>) => {
+        setExpanded(false)
         if(!e.target.files?.length) return;
 
         const reader = new FileReader();

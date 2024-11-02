@@ -10,7 +10,7 @@ import {useAuth} from "@/providers/authProvider.tsx";
 import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups.ts";
 import {Loader} from "@/components/primitives/Loader.tsx";
 import {dateFormatter} from "@/lib/utils.ts";
-import {accounts, clearAccounts, importAccounts, initAccounts, storeEncryptionKey} from "@/store/accounts.ts";
+import { clearAccounts, importAccounts, initAccounts, storeEncryptionKey} from "@/store/accounts.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
 import {EDecryptResult} from "@/store/config.ts";
 import {InfoNote} from "@/pages/Modals/elements/InfoNote.tsx";
