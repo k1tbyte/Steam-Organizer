@@ -112,7 +112,7 @@ const AccountCard: FC<IAccountCardProps> = ({acc, index} ) => {
                 accounts.mutate((o) => {
                     o.splice(o.indexOf(acc), 1)
                 })
-                await saveAccounts()
+                 await saveAccounts()
             }}>
                 <SvgIcon icon={Icon.Trash} role="button" className={styles.trashBin} size={20}/>
             </ConfirmPopup>

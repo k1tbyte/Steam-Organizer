@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {ObservableObject} from "@/lib/observableObject.ts";
+import {ObservableObject} from "@/lib/observer/observableObject.ts";
 
 export const useLoader = (object: ObservableObject<any>) => {
     const [isLoading, setLoading] = useState<boolean>(object.value === undefined)

@@ -58,6 +58,16 @@ export class Account {
         return this.haveCommunityBan || this.vacBansCount || this.gameBansCount || this.daysSinceLastBan || this.economyBan;
     }
 
+    public isUpToDate() {
+        if(!this.id) {
+            return true;
+        }
+
+        const now = new Date().getTime()
+        const last = this.lastUpdateDate?.getTime() ?? this.addedDate.getTime()
+        return now - last < 1000 * 60 * 60;
+    }
+
     public assignBans(bans: SteamPlayerBans | undefined) {
         if(!bans) {
             return
@@ -97,17 +107,18 @@ export class Account {
         this.assignGames(info.gamesSummaries)
     }
 
-    public static async new(login: string, password: string, accountId?: number) {
-        const acc = new Account(login,password,accountId);
-        if(!accountId) return acc;
-        const info = await getPlayerInfo(acc.id)
+    public async update() {
+        if(this.id) {
+            const info = await getPlayerInfo(this.id)
 
-        if(!info) {
-            return undefined;
+            if(!info) {
+                return undefined;
+            }
+            this.assignInfo(info)
+            Account.initAccount(this);
         }
-        acc.assignInfo(info)
-        Account.initAccount(acc);
-        return acc;
+
+        return this;
     }
 
     public static initAccount(acc: Account) {

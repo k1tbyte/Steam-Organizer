@@ -14,6 +14,7 @@ import {Profile} from "@/pages/Profile/Profile.tsx";
 import {AuthProvider} from "@/providers/authProvider.tsx";
 import { ToastsHost } from "@/components/primitives/Toast.tsx";
 import {getAccountsBuffer, loadAccounts, storeEncryptionKey} from "@/store/accounts.ts";
+import {loadLocalProps} from "@/store/local.ts";
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,7 @@ export default function App() {
       await loadAccounts()
     })
   }, []);
+
 
   return (
       <>

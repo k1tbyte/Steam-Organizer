@@ -1,5 +1,5 @@
 export class EventEmitter<T> {
-    private listeners: Array<(data: T) => void> = new Array<(data: T) => void>();
+    private listeners: Array<(data: T) => void> = [];
 
     subscribe(listener: (data: T) => void): void {
         this.listeners.push(listener);

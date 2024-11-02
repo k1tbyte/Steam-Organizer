@@ -1,12 +1,13 @@
 import React, {FC} from "react";
 import type {IAccountProps} from "@/pages/Profile/Profile.tsx";
-import {Expander} from "@/components/primitives/Expander.tsx";
+import {Expander, withStateSaving} from "@/components/primitives/Expander.tsx";
 import {Gradients, Icon, SvgIcon} from "@/assets";
 import {TextArea} from "@/components/primitives/TextArea.tsx";
 import {delayedSaveAccounts} from "@/store/accounts.ts";
 import {EEconomyBanType} from "@/types/steamPlayerSummary.ts";
 import CommunityArea from "./CommunityArea.tsx";
 import CredentialsArea from "./CredentialsArea.tsx";
+import { localProps } from "@/store/local.ts";
 
 interface IBanChipProps {
     name: string;
@@ -29,7 +30,8 @@ const BanChip: FC<IBanChipProps> = ({name, banned, banDescription}) => (
 
 const SummariesTab: FC<IAccountProps> = ({acc}) => {
 
-    const noteArea = <Expander className="backdrop-primary w-full md:order-none self-start"
+    const noteArea = <Expander {...withStateSaving(nameof(localProps.collapsed.note))}
+                               className="backdrop-primary w-full md:order-none self-start"
                                icon={<SvgIcon icon={Icon.NoteEdit} size={24}/>} title="Note about account">
         <div className="p-4">
             <TextArea className="grad-chip rounded-xl resize-none"
@@ -58,6 +60,7 @@ const SummariesTab: FC<IAccountProps> = ({acc}) => {
                 {
                     (acc.getYears() > 0 || acc.gamesCount) &&
                     <Expander className="backdrop-primary mb-3"
+                              {...withStateSaving(nameof(localProps.collapsed.community))}
                               icon={<SvgIcon icon={Icon.BadgeAward} size={24}/>} title="Community">
                         <CommunityArea acc={acc}/>
                     </Expander>
@@ -69,7 +72,9 @@ const SummariesTab: FC<IAccountProps> = ({acc}) => {
 
             </div>
 
-            <Expander className="backdrop-primary" icon={<SvgIcon icon={Icon.Block} size={24}/>} title="Bans">
+            <Expander className="backdrop-primary"
+                      {...withStateSaving(nameof(localProps.collapsed.bans))}
+                      icon={<SvgIcon icon={Icon.Block} size={24}/>} title="Bans">
                 <div className="p-4 space-y-5">
                     <BanChip name="VAC ban" banned={acc.vacBansCount}
                              banDescription={`This account has been banned by VAC${

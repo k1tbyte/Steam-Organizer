@@ -2,7 +2,7 @@ import {Account} from "@/entity/account.ts";
 import db from "@/services/indexedDb.ts";
 import {decrypt, encrypt, exportKey, importKey} from "@/services/cryptography.ts";
 import {config, EDecryptResult, saveConfig} from "@/store/config.ts";
-import {ObservableObject} from "@/lib/observableObject.ts";
+import {ObservableObject} from "@/lib/observer/observableObject.ts";
 import {isAuthorized} from "@/services/gAuth.ts";
 import {storeBackup} from "@/store/backups.ts";
 import {debounce, jsonIgnoreNull} from "@/lib/utils.ts";

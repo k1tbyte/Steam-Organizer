@@ -37,7 +37,7 @@ export const AddAccount: FC = () => {
                 error.textContent = `Account with same ${collision[0] ? 'id' : 'login'} already exists`
                 return
             }
-            const account = await Account.new(login, formData.get("password").toString(), id)
+            const account = await new Account(login, formData.get("password").toString(), id).update()
             if(!account) {
                 toast.open({ body: "Failed to retrieve account information", variant: ToastVariant.Error })
                 return

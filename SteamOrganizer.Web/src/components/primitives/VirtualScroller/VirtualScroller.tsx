@@ -1,11 +1,11 @@
 import React, {FC, ReactElement, ReactNode, useEffect, useRef, useState} from "react";
 import {useScrollbar} from "@/hooks/useScrollbar.ts";
 import {BaseVirtualLayout} from "./BaseVirtualLayout.ts";
-import {ObservableObject} from "@/lib/observableObject.ts";
+import {Observer} from "@/lib/observer/observer.ts";
 
 interface IVirtualScrollerProps {
     className?: string;
-    collection: ObservableObject<any[]>;
+    collection: Observer<any[]>;
     renderElement: (object: any, index: number) => ReactNode;
     layout: typeof BaseVirtualLayout,
     emptyIndicator?: ReactElement

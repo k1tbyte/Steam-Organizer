@@ -6,17 +6,21 @@ import {accounts} from "@/store/accounts.ts";
 import { LoaderStatic} from "@/components/primitives/Loader.tsx";
 import {useLoader} from "@/hooks/useLoader.ts";
 import {useEffect} from "react";
-import {setDocumentTitle} from "@/lib/utils.ts";
+import {debounce, setDocumentTitle} from "@/lib/utils.ts";
+import {ObservableProxy} from "@/lib/observer/observableProxy.ts";
+import {Account} from "@/entity/account.ts";
+
+const filterProxy = new ObservableProxy<Account[]>(accounts)
 
 export default function Accounts() {
    const isLoading = useLoader(accounts)
     useEffect(() => setDocumentTitle('Accounts'), []);
 
     return (
-        <AccountsNav>
+        <AccountsNav proxy={filterProxy}>
             {isLoading ? <LoaderStatic/> :
                 <VirtualScroller
-                    collection={accounts} layout={GridLayout} useDragMoving
+                    collection={filterProxy} layout={GridLayout} useDragMoving
                     className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] mx-2 gap-2 auto-rows"
                     emptyIndicator={<p className="absolute translate-center text-foreground-muted text-center">
                         The list of accounts is empty

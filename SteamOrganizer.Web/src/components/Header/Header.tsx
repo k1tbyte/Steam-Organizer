@@ -1,9 +1,9 @@
 import {FC} from "react";
-import {modal} from "@/components/primitives/Modal.tsx";
-import {ESidebarState, setState } from "@/components/Sidebar/Sidebar.tsx";
-import {Gradients, Icon, SvgIcon} from "@/assets";
-import {openSettings, Settings} from "@/pages/Modals/Settings.tsx";
+import { setState } from "@/components/Sidebar/Sidebar.tsx";
+import { Icon, SvgIcon} from "@/assets";
+import {openSettings } from "@/pages/Modals/Settings.tsx";
 import {SaveIndicator} from "@/components/Header/SaveIndicator.tsx";
+import {ESidebarState} from "@/types/uiMetadata.ts";
 
 export const Header: FC = () => {
 

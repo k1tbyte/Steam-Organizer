@@ -1,22 +1,24 @@
-import React, {type FC, type ReactElement, useEffect, useRef} from "react";
+import React, {type FC, type ReactElement, useEffect, useRef, useState} from "react";
 import {useParams} from "react-router-dom";
 import {Tab, TabPanel} from "@/components/primitives/Tabs.tsx";
-import { Gradients,  Icon, SvgIcon} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "@/assets";
 import {motion} from "framer-motion";
 import styles from "./Profile.module.pcss";
 import {useScrollbar} from "@/hooks/useScrollbar.ts";
-import {accounts} from "@/store/accounts.ts";
+import {accounts, saveAccounts} from "@/store/accounts.ts";
 import {defaultAvatar} from "@/store/config.ts";
 import {dateFormatter, setDocumentTitle} from "@/lib/utils.ts";
-import { type Account} from "@/entity/account.ts";
+import {type Account} from "@/entity/account.ts";
 import {useLoader} from "@/hooks/useLoader.ts";
-import { LoaderStatic } from "@/components/primitives/Loader.tsx";
+import {LoaderStatic} from "@/components/primitives/Loader.tsx";
 import SummariesTab from "./SummariesTab";
 import GamesTab from "./GamesTab";
 import FriendsTab from "./FriendsTab";
 import {ComboBox} from "@/components/primitives/ComboBox/ComboBox.tsx";
 import {converters} from "@/lib/steamIdConverter.ts";
-import {Tooltip} from "@/components/primitives/Popup.tsx";
+import {EPlacementX, EPlacementY, popup, Tooltip} from "@/components/primitives/Popup.tsx";
+import {localProps, saveLocalProps} from "@/store/local.ts";
+import Button, {EButtonVariant, IButtonActions} from "@/components/primitives/Button.tsx";
 
 interface ITabTitleProps {
     active: boolean;
@@ -80,8 +82,9 @@ const Info: FC<IAccountProps> = ({ acc }) => {
                     </div>
 
                     <div style={{width: "150px"}}>
-                        <ComboBox style={{ height: "30px"}} selectedIndex={0}
+                        <ComboBox style={{ height: "30px"}} selectedIndex={localProps.displayingId}
                                   items={["Account ID", "Steam ID", "Steam2 ID", "Steam3 ID", "CS2 Friend code", "Steam3 Hex"]} onSelected={(i) => {
+                                      saveLocalProps(localProps.displayingId = i)
                                       idRef.current.textContent = converters[i].from(acc.id)
                         }}/>
                         <Tooltip ref={idTooltipRef} message="Click to copy" openDelay={0}>
@@ -109,6 +112,8 @@ const Info: FC<IAccountProps> = ({ acc }) => {
 export const Profile: FC = () => {
     let acc: Account | undefined;
 
+    let [updated, setUpdate] = useState(false);
+    const updateBtn = useRef<IButtonActions>();
     const {id} = useParams();
     const isLoading = useLoader(accounts);
     const {hostRef} = useScrollbar(undefined, [isLoading]);
@@ -125,6 +130,7 @@ export const Profile: FC = () => {
     if (!acc) {
         return <p>Account not found</p>
     }
+
 
     return (
         <div className={styles.wrapper} ref={hostRef}>
@@ -179,6 +185,22 @@ export const Profile: FC = () => {
                     <SummariesTab acc={acc}/>
                 }
 
+                {  !updated && !acc.isUpToDate() &&
+                    <Tooltip {...popup.side} alignX={EPlacementX.Left} message="Update account info" >
+                        <Button actions={updateBtn} variant={EButtonVariant.Outlined} className="absolute right-3 top-5 h-10 z-10 rounded-xl"
+                                onClick={async () => {
+                                    updateBtn.current.setLoading(true)
+                                    if(await acc.update()) {
+                                        setUpdate(true)
+                                        await saveAccounts()
+                                        return;
+                                    }
+                                    updateBtn.current.setLoading(false)
+                                }}>
+                            <SvgIcon icon={Icon.SyncCircle} size={20}/>
+                        </Button>
+                    </Tooltip>
+                }
             </div>
         </div>
     )

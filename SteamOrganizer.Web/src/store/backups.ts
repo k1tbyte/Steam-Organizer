@@ -1,4 +1,4 @@
-import {ObservableObject} from "@/lib/observableObject.ts";
+import {ObservableObject} from "@/lib/observer/observableObject.ts";
 import {BackupInfo, BackupMetadata} from "@/types/backup.ts";
 import {getFileJson, getFileList, uploadFileJson} from "@/services/gDrive.ts";
 import {accounts, exportAccounts, loadAccounts} from "@/store/accounts.ts";

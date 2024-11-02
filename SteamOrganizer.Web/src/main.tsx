@@ -5,6 +5,10 @@ import 'overlayscrollbars/overlayscrollbars.css';
 import './assets/index.css'
 import { ClickScrollPlugin, OverlayScrollbars } from "overlayscrollbars";
 
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+}
+
 OverlayScrollbars.plugin(ClickScrollPlugin);
 
 document.title = "Steam Organizer"

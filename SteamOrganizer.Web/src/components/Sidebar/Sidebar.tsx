@@ -16,13 +16,8 @@ import {Gradients} from "@/assets";
 import { popup, Tooltip} from "@/components/primitives/Popup.tsx";
 import {UserInfo} from "@/components/Sidebar/UserInfo.tsx";
 import styles from "./Sidebar.module.pcss"
-
-
-export const enum ESidebarState {
-    Hidden,
-    Partial,
-    Full
-}
+import {localProps, saveLocalProps} from "@/store/local.ts";
+import {ESidebarState} from "@/types/uiMetadata.ts";
 
 interface ISidebarItemProps {
     icon: ReactElement
@@ -42,8 +37,6 @@ interface ISidebarState {
 export let setState: Dispatch<SetStateAction<ESidebarState>>
 const SidebarContext = createContext<ISidebarState>({ state: ESidebarState.Full, small: false })
 const mediaBreak = "(max-width: 1023px)"
-
-const getState = () => (Number(localStorage.getItem("sidebar")) ?? ESidebarState.Full);
 
 const NavLink = forwardRef<HTMLDivElement, ISidebarItemProps>(({ link, icon, text, ...props }, ref) => {
     let location=useLocation();
@@ -87,7 +80,7 @@ export const SidebarItem: FC<ISidebarItemProps> = (props) => {
     return (
         <Tooltip message={props.text}
                  wrapIf={sidebar.state === ESidebarState.Partial}
-                 {...popup.right}>
+                 {...popup.side}>
            <NavLink {...props}/>
         </Tooltip>
     );
@@ -95,7 +88,7 @@ export const SidebarItem: FC<ISidebarItemProps> = (props) => {
 
 export const Sidebar: FC<ISidebarProps> = ({children}) => {
     const [state, setSidebarState] = useState<ESidebarState>(
-        window.matchMedia(mediaBreak).matches ? ESidebarState.Hidden : getState()
+        window.matchMedia(mediaBreak).matches ? ESidebarState.Hidden : localProps.sidebarState
     )
 
     const prevState = useRef(state)
@@ -105,7 +98,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
     const isSmallScreen = useMediaQuery( {
         query: mediaBreak,
         callback: (match: boolean) => {
-            setState(match ? ESidebarState.Hidden : getState());
+            setState(match ? ESidebarState.Hidden : localProps.sidebarState);
         }
     });
 
@@ -125,7 +118,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
         if(newState != null) {
             prevState.current = newState;
             setState(newState)
-            localStorage.setItem("sidebar", newState.toString())
+            saveLocalProps(localProps.sidebarState = newState)
         }
     });
 

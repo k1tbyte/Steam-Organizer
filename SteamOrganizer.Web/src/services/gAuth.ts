@@ -1,4 +1,4 @@
-import {ObservableObject} from "@/lib/observableObject.ts";
+import {ObservableObject} from "@/lib/observer/observableObject.ts";
 import { gapi } from 'gapi-script';
 
 export const isAuthorized = new ObservableObject<boolean>(undefined!)

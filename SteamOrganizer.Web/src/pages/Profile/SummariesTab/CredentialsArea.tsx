@@ -10,10 +10,11 @@ import {modal, ModalSeparator, useModalActions} from "@/components/primitives/Mo
 import {ComboBox} from "@/components/primitives/ComboBox/ComboBox.tsx";
 import Button, {EButtonVariant} from "@/components/primitives/Button.tsx";
 import type {IAccountProps} from "@/pages/Profile/Profile.tsx";
-import {Expander} from "@/components/primitives/Expander.tsx";
+import {Expander, withStateSaving} from "@/components/primitives/Expander.tsx";
 import {RadioButtonGroup} from "@/components/primitives/RadioButton.tsx";
 import {ConfirmPopup} from "@/components/elements/ConfirmPopup.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
+import {localProps, saveLocalProps} from "@/store/local.ts";
 
 interface ICredentialsFieldProps extends Omit<IInputProps, 'type'> {
     type: ECredentialType;
@@ -160,8 +161,8 @@ const CredentialsArea: FC<IAccountProps> = ({acc}) => {
     }) : []
 
     return (
-        <Expander className="backdrop-primary" icon={<SvgIcon
-            icon={Icon.Fingerprint} size={28}/>}
+        <Expander className="backdrop-primary" {...withStateSaving(nameof(localProps.collapsed.credentials))}
+                  icon={<SvgIcon icon={Icon.Fingerprint} size={28}/>}
                   title={
                       <span>
                         Credentials

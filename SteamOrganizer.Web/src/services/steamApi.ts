@@ -10,7 +10,7 @@ const handleResponse = async <T>(action: Promise<Response>) => {
         response = await action;
     } catch {
         toast.open({ body: "Can't connect to the server, try again later", variant: ToastVariant.Error })
-        throw Error()
+        return;
     }
 
     if(response.ok) {
