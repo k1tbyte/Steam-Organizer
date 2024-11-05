@@ -19,6 +19,7 @@ import {converters} from "@/lib/steamIdConverter.ts";
 import {EPlacementX, popup, Tooltip} from "@/components/primitives/Popup.tsx";
 import {localProps, saveLocalProps} from "@/store/local.ts";
 import Button, {EButtonVariant, IButtonActions} from "@/components/primitives/Button.tsx";
+import {useDatabase} from "@/providers/databaseProvider.tsx";
 
 interface ITabTitleProps {
     active: boolean;
@@ -117,6 +118,7 @@ export const Profile: FC = () => {
     const {id} = useParams();
     const isLoading = useLoader(accounts);
     const {hostRef} = useScrollbar(undefined, [isLoading]);
+    const db = useDatabase();
     useEffect(() => setDocumentTitle(acc?.nickname), [isLoading]);
 
     if(isLoading) {
@@ -186,7 +188,7 @@ export const Profile: FC = () => {
                     <SummariesTab acc={acc}/>
                 }
 
-                {  !updated && !acc.isUpToDate() &&
+                {  !updated && !acc.isUpToDate() && !db.isUpdating &&
                     <Tooltip {...popup.side} alignX={EPlacementX.Left} message="Update account info" >
                         <Button actions={updateBtn} variant={EButtonVariant.Outlined} className="absolute right-3 top-5 h-10 z-10 rounded-xl"
                                 onClick={async () => {

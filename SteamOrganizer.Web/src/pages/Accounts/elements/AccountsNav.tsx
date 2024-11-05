@@ -113,10 +113,6 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
         reader.readAsArrayBuffer(e.target.files[0]);
     }
 
-    const updateClicked = async () => {
-        await updateAccounts(db.isUpdating)
-    }
-
     return (
         <AccountsContext.Provider value={ { isEnabled: isDragState, isDragging: isDragging, setIsDragging: setDragging, infoRef: infoRef } }>
             <nav className="w-full mt-[7px] flex-shrink-0 h-[40px] relative">
@@ -152,7 +148,7 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
                                 </button>
                             </Tooltip> :
                             <Tooltip message="Update accounts info">
-                                <button className="px-3" onClick={updateClicked}>
+                                <button className="px-3" onClick={() => updateAccounts(db.isUpdating)}>
                                     <SvgIcon icon={Icon.DatabaseUpdate} size={20} fill={Gradients.LightBlue}/>
                                 </button>
                             </Tooltip>

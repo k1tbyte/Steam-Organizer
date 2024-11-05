@@ -197,7 +197,7 @@ export const updateAccounts = async (cancel: boolean = false) => {
     }
 
     if(!ids.length) {
-        toast.open({ body: "All accounts are up to date", variant: ToastVariant.Info })
+        toast.open({ body: "All accounts are up to date", variant: ToastVariant.Info, id: "accs-up-to-date" })
         return
     }
 
