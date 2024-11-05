@@ -54,7 +54,7 @@ export const enum Icon {
     Exit,
     CheckSquareOutline,
     DragZone,
-    SyncCircle,
+    LoaderCircle,
     Phone,
     NoteEdit,
     Email,
@@ -70,6 +70,9 @@ export const enum Icon {
     DatabaseUpdate,
     DatabaseExport,
     DatabaseImport,
+    SyncRightBelow,
+    CloudSlotRightBelow,
+    SyncRenew
 }
 
 export function Defs() {

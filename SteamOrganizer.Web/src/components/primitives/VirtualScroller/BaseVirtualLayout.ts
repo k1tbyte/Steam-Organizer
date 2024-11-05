@@ -14,7 +14,6 @@ export abstract class BaseVirtualLayout {
     rowHeight: number = 0;
     offsetIndex: number = 0;
     limit: number = 0;
-    timer: number = 0;
 
     public constructor(observer: Observer<ArrayLike<any>>,
                           chunkSetter: Dispatch<SetStateAction<number[]>>,

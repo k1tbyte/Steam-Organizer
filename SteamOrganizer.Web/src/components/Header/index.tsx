@@ -2,8 +2,9 @@ import {FC} from "react";
 import { setState } from "@/components/Sidebar/Sidebar.tsx";
 import { Icon, SvgIcon} from "@/assets";
 import {openSettings } from "@/pages/Modals/Settings.tsx";
-import {SaveIndicator} from "@/components/Header/SaveIndicator.tsx";
+import {SaveIndicator} from "./SaveIndicator";
 import {ESidebarState} from "@/types/uiMetadata.ts";
+import {UpdateIndicator} from "@/components/Header/UpdateIndicator.tsx";
 
 export const Header: FC = () => {
 
@@ -16,9 +17,10 @@ export const Header: FC = () => {
                 }} />
             </div>
 
-            <div className="flex items-center gap-5 mr-1">
+            <div className="flex items-center gap-2 mr-1">
+                <UpdateIndicator/>
                 <SaveIndicator/>
-                <SvgIcon icon={Icon.Bell} size={17} />
+                <SvgIcon icon={Icon.Bell} size={17} className="cursor-pointer ml-5 mr-2" />
                 <SvgIcon icon={Icon.Cog} size={17} className="cursor-pointer" onClick={openSettings}/>
             </div>
         </div>

@@ -41,9 +41,23 @@ export default {
           '75%': { transform: 'translateX(-5px)' },
           '100%': { transform: 'translateX(0)' },
         },
+        pulsingRotate: {
+          '0%': {
+            transform: 'rotate(0)',
+            animationTimingFunction: 'cubic-bezier(0.55, 0.055, 0.675, 0.19)',
+          },
+          '50%': {
+            transform: 'rotate(900deg)',
+            animationTimingFunction: 'cubic-bezier(0.215, 0.61, 0.355, 1)',
+          },
+          '100%': {
+            transform: 'rotate(1800deg)',
+          },
+        },
       },
       animation: {
         'shaking': 'shake 500ms',
+        'spin-fast': 'pulsingRotate 2s infinite',
       },
       fontFamily: {
         code: "var(--font-code)"

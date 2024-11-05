@@ -15,6 +15,7 @@ import {AuthProvider} from "@/providers/authProvider.tsx";
 import { ToastsHost } from "@/components/primitives/Toast.tsx";
 import {getAccountsBuffer, loadAccounts, storeEncryptionKey} from "@/store/accounts.ts";
 import {loadLocalProps} from "@/store/local.ts";
+import {DatabaseProvider} from "@/providers/databaseProvider.tsx";
 
 const router = createBrowserRouter([
   {
@@ -62,9 +63,11 @@ export default function App() {
   return (
       <>
         <AuthProvider>
-          <RouterProvider router={router}/>
-          <ModalsHost/>
-          <ToastsHost/>
+          <DatabaseProvider>
+            <RouterProvider router={router}/>
+            <ModalsHost/>
+            <ToastsHost/>
+          </DatabaseProvider>
         </AuthProvider>
         <Defs/>
       </>

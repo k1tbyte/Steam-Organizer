@@ -2,6 +2,26 @@ import { BaseVirtualLayout } from "./BaseVirtualLayout.ts";
 
 export class GridLayout extends BaseVirtualLayout {
     public columns: number = NaN;
+    private timer: number = 0;
+    private resizeObserver: ResizeObserver;
+
+    public constructor(...args: ConstructorParameters<typeof BaseVirtualLayout>) {
+        super(...args);
+
+        this.resizeObserver = new ResizeObserver(() => {
+            clearTimeout(this.timer)
+            this.timer = setTimeout(() => {
+                this.refresh(false)
+                this.timer = 0;
+            },30)
+        });
+        this.resizeObserver.observe(this.sizer)
+    }
+
+    public override dispose() {
+        super.dispose()
+        this.resizeObserver.disconnect()
+    }
 
     private calculateSizes() {
         const gridStyles = window.getComputedStyle(this.layout);

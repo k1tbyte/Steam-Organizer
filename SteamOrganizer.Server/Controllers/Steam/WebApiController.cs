@@ -44,7 +44,6 @@ public sealed class WebApiController(SteamParser parser, HttpClient httpClient) 
             .GetPlayerInfo(request.Ids, request.IncludeGames, async (player,token) =>
             {
                 await locker.WaitAsync(token);
-                await Response.WriteAsync("data: ",token);
                 await JsonSerializer.SerializeAsync(responseStream, player, Defines.JsonOptions, token);
                 await Response.WriteAsync("\r\r", token);
                 await Response.Body.FlushAsync(token);

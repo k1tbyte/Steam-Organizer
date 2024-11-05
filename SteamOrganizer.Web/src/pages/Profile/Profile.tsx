@@ -198,7 +198,7 @@ export const Profile: FC = () => {
                                     }
                                     updateBtn.current.setLoading(false)
                                 }}>
-                            <SvgIcon icon={Icon.SyncCircle} size={20}/>
+                            <SvgIcon icon={Icon.SyncRenew} size={20}/>
                         </Button>
                     </Tooltip>
                 }

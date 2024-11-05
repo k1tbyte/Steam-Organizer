@@ -10,6 +10,7 @@ import {dateFormatter} from "@/lib/utils.ts";
 import {ConfirmPopup} from "@/components/elements/ConfirmPopup.tsx";
 import {AccountsContext} from "@/pages/Accounts/elements/AccountsNav.tsx";
 import {Draggable} from "@/components/primitives/Draggable.tsx";
+import {useDatabase} from "@/providers/databaseProvider.tsx";
 
 interface IAccountCardProps {
     acc: Account,
@@ -21,6 +22,7 @@ const AccountCard: FC<IAccountCardProps> = ({acc, index} ) => {
     const bansCount = acc.haveCommunityBan + !!acc.vacBansCount + !!acc.gameBansCount +  !!acc.economyBan
     const context = useContext(AccountsContext)
     const gripRef = useRef<SVGSVGElement>(null)
+    const db = useDatabase()
 
     const onDrop = (i: number) => {
         accounts.mutate((o) => {
@@ -108,14 +110,16 @@ const AccountCard: FC<IAccountCardProps> = ({acc, index} ) => {
                          size={20}/>
             }
 
-            <ConfirmPopup text={`Are you sure you want to delete '${acc.login}'?`} onYes={async () => {
-                accounts.mutate((o) => {
-                    o.splice(o.indexOf(acc), 1)
-                })
-                 await saveAccounts()
-            }}>
-                <SvgIcon icon={Icon.Trash} role="button" className={styles.trashBin} size={20}/>
-            </ConfirmPopup>
+            {!db.isUpdating &&
+                <ConfirmPopup text={`Are you sure you want to delete '${acc.login}'?`} onYes={async () => {
+                    accounts.mutate((o) => {
+                        o.splice(o.indexOf(acc), 1)
+                    })
+                    await saveAccounts()
+                }}>
+                    <SvgIcon icon={Icon.Trash} role="button" className={styles.trashBin} size={20}/>
+                </ConfirmPopup>
+            }
         </div>
     </Draggable>
 }

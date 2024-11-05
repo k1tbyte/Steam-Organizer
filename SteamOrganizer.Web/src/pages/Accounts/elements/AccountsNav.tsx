@@ -12,12 +12,13 @@ import {IDraggableContext, IDraggableInfo} from "@/components/primitives/Draggab
 import {openSettings} from "@/pages/Modals/Settings.tsx";
 import {type ObservableProxy} from "@/lib/observer/observableProxy.ts";
 import {type Account} from "@/entity/account.ts";
-import {accounts, importAccounts} from "@/store/accounts.ts";
+import {accounts, importAccounts, updateAccounts} from "@/store/accounts.ts";
 import {ExportData} from "@/pages/Modals/ExportData.tsx";
 import {formatFileDate} from "@/lib/utils.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
 import {verifyVersion} from "@/services/cryptography.ts";
 import {DecryptionPopup} from "@/pages/Modals/Authentication.tsx";
+import {useDatabase} from "@/providers/databaseProvider.tsx";
 
 interface IAccountsNavProps {
     children: ReactNode;
@@ -33,6 +34,7 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
     const infoRef = useRef<IDraggableInfo>({});
     const searchRef = useRef<HTMLInputElement>(null!);
     const fileInputRef = useRef<HTMLInputElement>(null!);
+    const db = useDatabase();
 
     useEffect(() => {
         const filter = (data: Account[]) => {
@@ -111,6 +113,10 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
         reader.readAsArrayBuffer(e.target.files[0]);
     }
 
+    const updateClicked = async () => {
+        await updateAccounts(db.isUpdating)
+    }
+
     return (
         <AccountsContext.Provider value={ { isEnabled: isDragState, isDragging: isDragging, setIsDragging: setDragging, infoRef: infoRef } }>
             <nav className="w-full mt-[7px] flex-shrink-0 h-[40px] relative">
@@ -139,11 +145,19 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
                         </div>
                     </div>
                     <div className={styles.btnsPanel}>
-                        <Tooltip message="Update accounts info">
-                            <button className="px-3">
-                                <SvgIcon icon={Icon.DatabaseUpdate} size={20} fill={Gradients.LightBlue}/>
-                            </button>
-                        </Tooltip>
+                        { db.isUpdating ?
+                            <Tooltip message="Stop updating accounts">
+                                <button className="px-3" onClick={() => updateAccounts(true)}>
+                                    <SvgIcon icon={Icon.Close} size={20} className="fill-danger"/>
+                                </button>
+                            </Tooltip> :
+                            <Tooltip message="Update accounts info">
+                                <button className="px-3" onClick={updateClicked}>
+                                    <SvgIcon icon={Icon.DatabaseUpdate} size={20} fill={Gradients.LightBlue}/>
+                                </button>
+                            </Tooltip>
+                        }
+
                         <div className={styles.separator}/>
                         <Tooltip message="Export accounts database">
                             <button className="px-3" onClick={exportClicked}>

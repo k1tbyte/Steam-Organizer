@@ -9,10 +9,15 @@ import {debounce, jsonIgnoreNull} from "@/lib/utils.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 import { openAuthPopup} from "@/pages/Modals/Authentication.tsx";
 import {ESavingState, setSavingState} from "@/components/Header/SaveIndicator.tsx";
+import {getPlayerInfoStream} from "@/services/steamApi.ts";
+import {setUpdatingCount} from "@/components/Header/UpdateIndicator.tsx";
+import {setUpdating} from "@/providers/databaseProvider.tsx";
 
 export const accounts = new ObservableObject<Account[]>(undefined)
 export let timestamp: Date | undefined;
 export let databaseKey: CryptoKey | undefined;
+
+let updateCancellation: AbortController | undefined;
 
 const dbFieldName = "accounts"
 
@@ -175,3 +180,48 @@ export const loadAccounts = async (bytes: ArrayBuffer | null = null): Promise<vo
         }
     }
 };
+
+export const updateAccounts = async (cancel: boolean = false) => {
+    if(cancel) {
+        updateCancellation?.abort()
+        return
+    }
+
+    const accs = new Map<number, Account>()
+    const ids: number[] = [];
+    for(const acc of accounts.value) {
+        if(!acc.isUpToDate()) {
+            accs.set(acc.id, acc)
+            ids.push(acc.id)
+        }
+    }
+
+    if(!ids.length) {
+        toast.open({ body: "All accounts are up to date", variant: ToastVariant.Info })
+        return
+    }
+
+    setUpdating(true)
+    updateCancellation = new AbortController();
+    let remaining = ids.length;
+    setUpdatingCount(remaining)
+    try {
+        await getPlayerInfoStream(ids,updateCancellation.signal, (data) => {
+            accs.get(data.steamId).assignInfo(data)
+            setUpdatingCount(--remaining)
+            delayedSaveAccounts()
+        })
+        toast.open({ body: "Accounts updated successfully", variant: ToastVariant.Success })
+    } catch (err) {
+        if(err.name !== "AbortError") {
+            toast.open({
+                body: `Failed updating accounts. Some accounts have not been updated (${remaining})`,
+                variant: ToastVariant.Error
+            })
+        }
+    }
+
+    updateCancellation = undefined;
+    setUpdatingCount(0)
+    setUpdating(false)
+}

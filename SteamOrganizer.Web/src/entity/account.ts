@@ -105,17 +105,17 @@ export class Account {
         this.createdDate = info.timeCreated ?? this.createdDate
         this.assignBans(info.bans)
         this.assignGames(info.gamesSummaries)
+        Account.initAccount(this);
     }
 
     public async update() {
         if(this.id) {
-            const info = await getPlayerInfo(this.id)
+            const info = await getPlayerInfo(this.id);
 
             if(!info) {
                 return undefined;
             }
             this.assignInfo(info)
-            Account.initAccount(this);
         }
 
         return this;
