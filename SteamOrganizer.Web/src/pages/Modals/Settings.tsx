@@ -15,7 +15,12 @@ export const openSettings = () => {
 
 export const Settings: FC = () => {
     return (
-        <InputValidationWrapper title="Steam API key" icon={<SvgIcon icon={Icon.Api} size={24}/>}>
+        <InputValidationWrapper title={
+            <span className="cursor-pointer" onClick={() => window.open("https://steamcommunity.com/dev/apikey", '_blank')}>
+                Steam API key
+                <SvgIcon className="ml-1 mb-0.5 inline" icon={Icon.OpenLink} size={15}/>
+            </span>}
+                                icon={<SvgIcon icon={Icon.Api} size={24}/>}>
             <PasswordBox bindTo={config} bindKey={nameof(config.steamApiKey)}
                          onChanged={delayedSaveConfig}
                          validator={s => (s && validators.steamApiKey(s))} />

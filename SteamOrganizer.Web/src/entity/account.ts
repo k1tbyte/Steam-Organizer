@@ -33,7 +33,6 @@ export class Account {
     totalGamesPrice?: string;
     paidGames?: number;
 
-    pinned?: boolean;
     unpinIndex?: number;
 
     _years?: number;

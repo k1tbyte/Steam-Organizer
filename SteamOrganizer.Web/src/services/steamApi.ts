@@ -80,6 +80,8 @@ export const getPlayerInfoStream = async (id: number[], cancellation: AbortSigna
             callback(obj);
         }
     }))
+
+    return response;
 }
 
 export const resolveVanityUrl = async (vanityUrl: string): Promise<number | undefined | null> => {

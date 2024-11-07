@@ -94,6 +94,12 @@ export const saveAccounts = async (action: () => boolean | void = null, sync: bo
 }
 
 export const delayedSaveAccounts = debounce(saveAccounts, 3000)
+
+export const saveDbMutation = (e?: (value: Account[]) => any) => {
+    accounts.mutate(e)
+    delayedSaveAccounts()
+}
+
 export const initAccounts = () => accounts.set([])
 
 /**
@@ -206,12 +212,15 @@ export const updateAccounts = async (cancel: boolean = false) => {
     let remaining = ids.length;
     setUpdatingCount(remaining)
     try {
-        await getPlayerInfoStream(ids,updateCancellation.signal, (data) => {
+        const response = await getPlayerInfoStream(ids,updateCancellation.signal, (data) => {
             accs.get(data.steamId).assignInfo(data)
             setUpdatingCount(--remaining)
             delayedSaveAccounts()
         })
-        toast.open({ body: "Accounts updated successfully", variant: ToastVariant.Success })
+
+        if(response) {
+            toast.open({ body: "Accounts updated successfully", variant: ToastVariant.Success })
+        }
     } catch (err) {
         if(err.name !== "AbortError") {
             toast.open({

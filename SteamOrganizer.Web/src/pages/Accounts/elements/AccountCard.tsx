@@ -1,8 +1,8 @@
 import type { Account } from "@/entity/account.ts";
-import React, {FC, useContext, useEffect, useRef} from "react";
+import React, {type FC, useContext, useRef} from "react";
 import {Link} from "react-router-dom";
 import { Icon, SvgIcon} from "@/assets";
-import {accounts, delayedSaveAccounts, saveAccounts} from "@/store/accounts.ts";
+import {accounts, saveDbMutation} from "@/store/accounts.ts";
 import styles from "./AccountCard.module.pcss"
 import {defaultAvatar} from "@/store/config.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
@@ -24,12 +24,10 @@ const onDragOver = (from: number, to: number) => {
 }
 
 const onDrop = (from: number, to: number) => {
-    accounts.mutate((o) => {
+    saveDbMutation((o) => {
         const acc = o.splice(from, 1)[0]
         o.splice(to, 0, acc)
     })
-
-    delayedSaveAccounts()
     return true
 }
 
@@ -48,9 +46,7 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
                 acc.moveTo(index, targetIndex);
             }
         }
-
-        accounts.mutate(() => {
-        })
+        saveDbMutation()
     }
 
     const unpinAccount = () => {
@@ -63,8 +59,7 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
 
         acc.moveTo(index, targetIndex);
         acc.unpinIndex = undefined;
-        accounts.mutate(() => {
-        })
+        saveDbMutation()
     }
 
     return (
@@ -141,11 +136,10 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
             }
 
             {!db.isUpdating &&
-                <ConfirmPopup text={`Are you sure you want to delete '${acc.login}'?`} onYes={async () => {
-                    accounts.mutate((o) => {
+                <ConfirmPopup text={`Are you sure you want to delete '${acc.login}'?`} onYes={() => {
+                    saveDbMutation((o) => {
                         o.splice(o.indexOf(acc), 1)
                     })
-                    await saveAccounts()
                 }}>
                     <SvgIcon icon={Icon.Trash} role="button" className={styles.trashBin} size={20}/>
                 </ConfirmPopup>

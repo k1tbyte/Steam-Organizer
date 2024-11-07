@@ -7,8 +7,8 @@ export class ObservableObject<T> extends Observer<T> {
         this.value = object
     }
 
-    public mutate(mutation: (value: T) => any) {
-        mutation(this.value)
+    public mutate(mutation?: (value: T) => any) {
+        mutation?.(this.value)
         this.subscribers.emit(this.value)
     }
 

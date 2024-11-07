@@ -72,7 +72,8 @@ export const enum Icon {
     DatabaseImport,
     SyncRightBelow,
     CloudSlotRightBelow,
-    SyncRenew
+    SyncRenew,
+    OpenLink
 }
 
 export function Defs() {

@@ -4,14 +4,14 @@ import Input, {IInputProps} from "@/components/primitives/Input.tsx";
 
 interface IFieldWrapperProps {
     className?: string,
-    title: string,
+    title: string | ReactElement<HTMLSpanElement>,
     children: ReactNode,
     icon: ReactNode,
     titleChildren?: ReactElement
 }
 
 interface IInputWrapperProps {
-    title: string,
+    title: string | ReactElement<HTMLSpanElement>,
     icon: ReactElement,
     children: ReactElement,
     className?: string,

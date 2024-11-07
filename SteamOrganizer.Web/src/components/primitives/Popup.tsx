@@ -199,15 +199,19 @@ export const Tooltip = forwardRef<HTMLDivElement,ITooltipProps> (
         useEffect(() => {
             const close = () => setOpen(false)
             if(isOpen) {
-                document.addEventListener('pointerdown', close)
+                document.addEventListener('touchstart', close)
             }
-            return () => document.removeEventListener('pointerdown', close)
+            return () => document.removeEventListener('touchstart', close)
         }, [isOpen]);
 
-        const debounceOpen = () => {
+        const debounceOpen = (e: MouseEvent) => {
             clearTimeout(timer)
             if(!isOpen) {
-                timer = setTimeout(() => setOpen(true), openDelay);
+                timer = setTimeout(() => {
+                    if(e.relatedTarget) {
+                        setOpen(true);
+                    }
+                }, openDelay);
             }
         }
 
