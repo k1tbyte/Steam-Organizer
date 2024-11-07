@@ -14,32 +14,61 @@ import {useDatabase} from "@/providers/databaseProvider.tsx";
 
 interface IAccountCardProps {
     acc: Account,
+    pinned: boolean;
     index: number,
 }
 
-const AccountCard: FC<IAccountCardProps> = ({acc, index} ) => {
+
+const onDragOver = (from: number, to: number) => {
+    return (accounts.value[from].unpinIndex === undefined) === (accounts.value[to].unpinIndex === undefined)
+}
+
+const onDrop = (from: number, to: number) => {
+    accounts.mutate((o) => {
+        const acc = o.splice(from, 1)[0]
+        o.splice(to, 0, acc)
+    })
+
+    delayedSaveAccounts()
+    return true
+}
+
+const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.MutableRefObject<SVGSVGElement> }> =
+    ({acc, pinned, index, isEnabled, gripRef }) => {
     // @ts-ignore
-    const bansCount = acc.haveCommunityBan + !!acc.vacBansCount + !!acc.gameBansCount +  !!acc.economyBan
-    const context = useContext(AccountsContext)
-    const gripRef = useRef<SVGSVGElement>(null)
+    const bansCount = acc.haveCommunityBan + !!acc.vacBansCount + !!acc.gameBansCount + !!acc.economyBan
     const db = useDatabase()
 
-    const onDrop = (i: number) => {
-        accounts.mutate((o) => {
-            const acc = o.splice(index, 1)[0]
-            o.splice(i, 0, acc)
-        })
+    const pinAccount = () => {
+        acc.unpinIndex = index;
 
-        delayedSaveAccounts()
-        return true
+        if (index > 0 && accounts.value[index - 1].unpinIndex === undefined) {
+            const targetIndex = accounts.value.findIndex((a, i) => i < index && a.unpinIndex === undefined);
+            if (targetIndex !== -1) {
+                acc.moveTo(index, targetIndex);
+            }
+        }
+
+        accounts.mutate(() => {
+        })
     }
 
-    return <Draggable context={context}
-                      gripRef={gripRef}
-                      index={index}
-                      hoverOnId={styles.cardAccent}
-                      onDrop={onDrop}>
-        <div className={styles.card}>
+    const unpinAccount = () => {
+        const end = accounts.value.length - 1;
+        let targetIndex = acc.unpinIndex > end ? end : acc.unpinIndex;
+        if (index < end && accounts.value[index + 1].unpinIndex !== undefined) {
+            const minIndex = accounts.value.findIndex(a => a.unpinIndex === undefined) - 1;
+            targetIndex = (minIndex !== -1 && acc.unpinIndex <= minIndex) ? minIndex : acc.unpinIndex;
+        }
+
+        acc.moveTo(index, targetIndex);
+        acc.unpinIndex = undefined;
+        accounts.mutate(() => {
+        })
+    }
+
+    return (
+        <div className={`${styles.card} ${isEnabled && pinned ? styles.cardAccentPinned : ""}`}>
             <div className="shrink-0">
                 <Tooltip message={() =>
                     <p>
@@ -100,13 +129,14 @@ const AccountCard: FC<IAccountCardProps> = ({acc, index} ) => {
                 </div>
             </div>
 
-            {context.isEnabled ?
+            {isEnabled ?
                 <SvgIcon icon={Icon.DragZone}
                          ref={gripRef}
                          className={styles.grip}
                          size={25}/> :
                 <SvgIcon icon={Icon.Pin} role="button"
-                         className={styles.pin}
+                         onClick={pinned ? unpinAccount : pinAccount}
+                         className={`${styles.pin} ${pinned ? "text-warn" : "rotate-45"}`}
                          size={20}/>
             }
 
@@ -121,6 +151,20 @@ const AccountCard: FC<IAccountCardProps> = ({acc, index} ) => {
                 </ConfirmPopup>
             }
         </div>
+    )
+}
+
+const AccountCard: FC<IAccountCardProps> = ({acc, pinned, index}) => {
+    const context = useContext(AccountsContext)
+    const gripRef = useRef<SVGSVGElement>(null)
+
+    return <Draggable context={context}
+                      gripRef={gripRef}
+                      index={index}
+                      hoverStyleId={styles.cardAccent}
+                      onOver={onDragOver}
+                      onDrop={onDrop}>
+        <CardMain acc={acc} pinned={pinned} index={index} isEnabled={context.isEnabled} gripRef={gripRef}/>
     </Draggable>
 }
 

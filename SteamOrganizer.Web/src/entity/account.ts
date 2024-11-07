@@ -1,6 +1,7 @@
 import { type EVisibilityState, type SteamPlayerBans, type SteamPlayerGames, type SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
 import {getPlayerInfo} from "@/services/steamApi.ts";
 import type {IAccountCredential} from "@/types/accountCredentials.ts";
+import {accounts} from "@/store/accounts.ts";
 
 export class Account {
     nickname: string;
@@ -126,6 +127,13 @@ export class Account {
         acc.createdDate = acc.createdDate ? new Date(acc.createdDate) : undefined;
         acc.lastUpdateDate = acc.lastUpdateDate ? new Date(acc.lastUpdateDate) : undefined;
         acc.addedDate = new Date(acc.addedDate);
+    }
+
+    public moveTo(selfIndex: number, newIndex: number) {
+        if(newIndex === selfIndex) {
+            return
+        }
+        accounts.value.splice(newIndex, 0, accounts.value.splice(selfIndex, 1)[0]);
     }
 
     constructor(login: string, password: string, accountId?: number) {
