@@ -1,13 +1,22 @@
 import {cloneElement, FC, forwardRef, ReactElement, type ReactNode, useImperativeHandle, useRef} from "react";
 import clsx from "clsx";
 import Input, {IInputProps} from "@/components/primitives/Input.tsx";
+import {CheckBox} from "@/components/primitives/CheckBox";
+import {config, delayedSaveConfig} from "@/store/config.ts";
+
+export const enum ETitlePosition {
+    Top,
+    Inline
+}
 
 interface IFieldWrapperProps {
     className?: string,
     title: string | ReactElement<HTMLSpanElement>,
     children: ReactNode,
     icon: ReactNode,
-    titleChildren?: ReactElement
+    titleChildren?: ReactElement,
+    titlePos?: ETitlePosition
+
 }
 
 interface IInputWrapperProps {
@@ -17,27 +26,36 @@ interface IInputWrapperProps {
     className?: string,
 }
 
-export const FieldWrapper:FC<IFieldWrapperProps> = ({className,title, children, icon, titleChildren}) => {
+export const FieldWrapper:FC<IFieldWrapperProps> = ({className,title, titlePos, children, icon, titleChildren}) => {
     return  (
         <div className={className}>
-            <div className="flex justify-between mb-0.5 ml-0.5 relative gap-3">
-                <p className="text-chip text-[13px] font-semibold text-nowrap">{title}</p>
-                {titleChildren}
-            </div>
+            {titlePos !== ETitlePosition.Inline &&
+                <div className="flex justify-between mb-0.5 ml-0.5 relative gap-3">
+                    <p className="text-chip text-[13px] font-semibold text-nowrap">{title}</p>
+                    {titleChildren}
+                </div>
+            }
 
             <div className="flex mb-1">
                 <div className="grad-purple w-[35px] h-[35px] text-foreground-accent
                                 rounded-xm flex-shrink-0 flex items-center justify-center mr-2.5">
                     {icon}
                 </div>
-                {children}
+                { titlePos === ETitlePosition.Inline ?
+                    <div className="justify-between flex-y-center w-full text-foreground text-xs">
+                        {title}
+                        {children}
+                    </div>
+                    : children
+                }
+
             </div>
         </div>
     )
 }
 
-export const InputValidationWrapper = forwardRef<HTMLSpanElement, IInputWrapperProps> (
-    ({ title, icon, className, children }, forwardedRef) => {
+export const InputValidationWrapper = forwardRef<HTMLSpanElement, IInputWrapperProps>(
+    ({title, icon, className, children }, forwardedRef) => {
 
         const ref = useRef<HTMLSpanElement>(null);
         useImperativeHandle(forwardedRef, () => ref.current as HTMLSpanElement);

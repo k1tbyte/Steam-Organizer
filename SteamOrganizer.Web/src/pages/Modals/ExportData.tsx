@@ -1,6 +1,6 @@
 import React, {FC} from "react";
 import { InputValidationWrapper } from "@/components/elements/FieldWrapper.tsx";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import Button from "@/components/primitives/Button.tsx";
 import {InfoNote} from "@/pages/Modals/elements/InfoNote.tsx";

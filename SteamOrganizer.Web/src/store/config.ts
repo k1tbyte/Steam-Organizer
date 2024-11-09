@@ -6,6 +6,7 @@ import {debounce} from "@/lib/utils.ts";
 interface IAppConfig {
     encryptionKey?: string
     steamApiKey?: string
+    autoSync?: boolean
 }
 
 export const enum EDecryptResult {

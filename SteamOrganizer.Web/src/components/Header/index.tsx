@@ -1,6 +1,6 @@
 import {FC} from "react";
 import { setState } from "@/components/Sidebar/Sidebar.tsx";
-import { Icon, SvgIcon} from "@/assets";
+import { Icon, SvgIcon} from "src/defines";
 import {openSettings } from "@/pages/Modals/Settings.tsx";
 import {SaveIndicator} from "./SaveIndicator";
 import {ESidebarState} from "@/types/uiMetadata.ts";

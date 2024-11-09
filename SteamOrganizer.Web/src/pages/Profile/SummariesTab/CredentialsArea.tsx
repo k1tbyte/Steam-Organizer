@@ -1,7 +1,7 @@
 import Input, {IInputProps} from "@/components/primitives/Input.tsx";
 import {ECredentialType, IAccountCredential, serviceNames} from "@/types/accountCredentials.ts";
 import React, {FC} from "react";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import {delayedSaveAccounts, saveAccounts} from "@/store/accounts.ts";
 import {validators} from "@/hooks/useFormValidation.ts";
 import {FieldWrapper, InputValidationWrapper} from "@/components/elements/FieldWrapper.tsx";
@@ -14,7 +14,7 @@ import {Expander, withStateSaving} from "@/components/primitives/Expander.tsx";
 import {RadioButtonGroup} from "@/components/primitives/RadioButton.tsx";
 import {ConfirmPopup} from "@/components/elements/ConfirmPopup.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
-import {localProps, saveLocalProps} from "@/store/local.ts";
+import {localProps } from "@/store/local.ts";
 
 interface ICredentialsFieldProps extends Omit<IInputProps, 'type'> {
     type: ECredentialType;
@@ -172,7 +172,7 @@ const CredentialsArea: FC<IAccountProps> = ({acc}) => {
                     </span>
                   }>
 
-            <div className="p-4 ml-0 md:ml-3">
+            <div className="p-4 ml-0 md:ml-3" style={{ maxWidth: "350px" }}>
                 <div className="flex gap-3 flex-wrap justify-center md:justify-normal mb-3">
                     <RadioButtonGroup activeIndex={active} setActive={setActive}>
                         <CredentialsButton icon={Icon.Steam} title={"Steam"}/>

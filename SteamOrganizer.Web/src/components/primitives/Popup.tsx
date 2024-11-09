@@ -207,7 +207,7 @@ export const Tooltip = forwardRef<HTMLDivElement,ITooltipProps> (
         const debounceOpen = (e: MouseEvent) => {
             clearTimeout(timer)
             if(!isOpen) {
-                timer = setTimeout(() => {
+                timer = window.setTimeout(() => {
                     if(e.relatedTarget) {
                         setOpen(true);
                     }
@@ -218,7 +218,7 @@ export const Tooltip = forwardRef<HTMLDivElement,ITooltipProps> (
         const debounceClose = () => {
             clearTimeout(timer)
             if(isOpen) {
-                timer = setTimeout(() => setOpen(false), 50);
+                timer = window.setTimeout(() => setOpen(false), 50);
             }
         }
 

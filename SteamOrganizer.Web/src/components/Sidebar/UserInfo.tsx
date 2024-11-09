@@ -1,6 +1,6 @@
 import React, {FC, useState} from "react";
 import Button, {EButtonVariant} from "@/components/primitives/Button.tsx";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import {useAuth} from "@/providers/authProvider.tsx";
 import {Loader} from "@/components/primitives/Loader.tsx";
 import {AnimatePresence, motion} from "framer-motion";

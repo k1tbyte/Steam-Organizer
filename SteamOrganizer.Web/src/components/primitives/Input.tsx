@@ -1,24 +1,20 @@
 import {type ChangeEvent, forwardRef, type InputHTMLAttributes, type CompositionEvent, useImperativeHandle, useRef} from "react";
 import {cn} from "@/lib/utils.ts";
 import {type TypeInputValidator} from "@/hooks/useFormValidation.ts";
+import {type IBindable} from "@/components/primitives/types/IBindable.ts";
 
 export const enum EPropertyChangedTrigger {
     OnLostFocus,
     Reactive
 }
 
-export interface IInputProps extends InputHTMLAttributes<HTMLInputElement> {
+export interface IInputProps extends InputHTMLAttributes<HTMLInputElement>, IBindable {
     className?: string,
-    bindTo?: object,
-    bindKey?: string,
     filter?: RegExp,
     onValidate?: (value: string) => void,
     validator?: TypeInputValidator,
     converter?: (value: string) => any,
     trigger?: EPropertyChangedTrigger,
-
-    // Fired when bindable value changed and new value is different from the old one
-    onChanged?: () => void
 }
 
 

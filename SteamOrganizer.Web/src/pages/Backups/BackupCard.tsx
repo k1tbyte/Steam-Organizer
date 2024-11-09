@@ -1,5 +1,5 @@
 import {FC} from "react";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import {BackupMetadata} from "@/types/backup.ts";
 import {deleteFile} from "@/services/gDrive.ts";
 import {backups} from "@/store/backups.ts";

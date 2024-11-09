@@ -2,7 +2,7 @@ import {FC, ReactElement, ReactNode, useState} from "react";
 import {cn} from "@/lib/utils.ts";
 import {AnimatePresence, motion} from "framer-motion";
 import clsx from "clsx";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import {localProps, saveLocalProps} from "@/store/local.ts";
 
 

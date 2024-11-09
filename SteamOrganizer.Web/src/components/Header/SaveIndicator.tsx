@@ -1,5 +1,5 @@
 import {FC, useState} from "react";
-import {Gradients, Icon, SvgIcon} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "src/defines";
 
 export const enum ESavingState {
     None,

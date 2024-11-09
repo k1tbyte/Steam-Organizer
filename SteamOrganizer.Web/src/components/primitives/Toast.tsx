@@ -1,6 +1,6 @@
 import React, {FC, ReactElement, useState} from "react";
 import {AnimatePresence, motion} from "framer-motion";
-import {Gradients, Icon, SvgIcon} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "src/defines";
 
 let setToasts: React.Dispatch<React.SetStateAction<IToastProps[]>>;
 const variants: [string, ReactElement][] = [
@@ -44,7 +44,7 @@ const Toast: FC<IToastProps> = React.memo(
             return
         }
         clearTimeout(timer)
-        timer = setTimeout(onClose, delay);
+        timer = window.setTimeout(onClose, delay);
     }
     setTimer();
 

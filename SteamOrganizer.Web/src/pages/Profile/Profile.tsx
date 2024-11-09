@@ -1,7 +1,7 @@
 import React, {type FC, type ReactElement, useEffect, useRef, useState} from "react";
 import {useParams} from "react-router-dom";
 import {Tab, TabPanel} from "@/components/primitives/Tabs.tsx";
-import {Gradients, Icon, SvgIcon} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "src/defines";
 import {motion} from "framer-motion";
 import styles from "./Profile.module.pcss";
 import {useScrollbar} from "@/hooks/useScrollbar.ts";
@@ -15,11 +15,13 @@ import SummariesTab from "./SummariesTab";
 import GamesTab from "./GamesTab";
 import FriendsTab from "./FriendsTab";
 import {ComboBox} from "@/components/primitives/ComboBox/ComboBox.tsx";
-import {converters} from "@/lib/steamIdConverter.ts";
+import {converters, ESteamIdType} from "@/lib/steamIdConverter.ts";
 import {EPlacementX, popup, Tooltip} from "@/components/primitives/Popup.tsx";
 import {localProps, saveLocalProps} from "@/store/local.ts";
 import Button, {EButtonVariant, IButtonActions} from "@/components/primitives/Button.tsx";
 import {useDatabase} from "@/providers/databaseProvider.tsx";
+import {steamBase} from "@/services/steamApi.ts";
+import {EVisibilityState} from "@/types/steamPlayerSummary.ts";
 
 interface ITabTitleProps {
     active: boolean;
@@ -31,13 +33,17 @@ export interface IAccountProps {
     acc: Account
 }
 
+const links = [
+    "Profile", "Games", "Friends", "Inventory", "Badges", "Groups"
+]
+
 const TabTitle: FC<ITabTitleProps> = ( { active, icon, title }) => (
     <div className="flex-center gap-3">
         {
             active ? (
                 <>
                     {React.cloneElement(icon, { fill: Gradients.LightBlue })}
-                    <span className="test">{title}</span>
+                    <span>{title}</span>
                 </>
             ) : (
                 <> {icon} {title} </>
@@ -49,6 +55,10 @@ const TabTitle: FC<ITabTitleProps> = ( { active, icon, title }) => (
 const Info: FC<IAccountProps> = ({ acc }) => {
     const idRef = useRef<HTMLParagraphElement>(null)
     const idTooltipRef = useRef<HTMLDivElement>(null)
+    const idType = ["Account ID", "Steam ID", "Steam2 ID", "Steam3 ID", "CS2 Friend code", "Steam3 Hex"];
+    if(acc.vanityUrl) {
+        idType.push("Vanity URL")
+    }
 
     return (
         <div className={styles.infoContainer}>
@@ -84,7 +94,11 @@ const Info: FC<IAccountProps> = ({ acc }) => {
 
                     <div style={{width: "150px"}}>
                         <ComboBox style={{ height: "30px"}} selectedIndex={localProps.displayingId}
-                                  items={["Account ID", "Steam ID", "Steam2 ID", "Steam3 ID", "CS2 Friend code", "Steam3 Hex"]} onSelected={(i) => {
+                                  items={idType} onSelected={(i) => {
+                                      if(acc.vanityUrl && i === idType.length - 1) {
+                                          idRef.current.textContent = acc.vanityUrl
+                                          return
+                                      }
                                       saveLocalProps(localProps.displayingId = i)
                                       idRef.current.textContent = converters[i].from(acc.id)
                         }}/>
@@ -134,6 +148,7 @@ export const Profile: FC = () => {
     }
 
 
+    const isPublic = acc.visibilityState === EVisibilityState.Public
     return (
         <div className={styles.wrapper} ref={hostRef}>
             <div className={styles.mainContainer}>
@@ -154,46 +169,67 @@ export const Profile: FC = () => {
                             {acc.steamLevel ?? '—'}
                         </div>
                     </div>
-                    <p className={styles.nicknameTitle}>{acc.nickname}</p>
+                    <div>
+                        <p className={styles.nicknameTitle}>{acc.nickname}
+                            <Tooltip message={`Steam profile is ${isPublic ? "public" : "private" }` }>
+                                <SvgIcon className={`inline ml-1 ${isPublic ? "fill-success" : "fill-warn"}`}
+                                         icon={isPublic ? Icon.Eye : Icon.EyeOff}
+                                         size={14}/>
+                            </Tooltip>
+                        </p>
+
+                    </div>
                     <div className="w-full bg-background my-5 h-0.5"/>
                     <Info acc={acc}/>
                 </div>
-
                 {acc.id ?
-                    <div className="mt-5 gap-5">
-                        <TabPanel className="backdrop-primary flex-col sm:flex-row letter-space font-bold mb-5 py-3"
-                                  activeKey="profile"
-                                  indicator={
-                                      <motion.div className={styles.tabsIndicator}
-                                                  layoutId="active-pill"
-                                                  transition={{type: "spring", duration: 1, x: {duration: 0.5}}}/>
-                                  }
-                        >
-                            <Tab key="profile" title={(active) =>
-                                <TabTitle title="Profile" icon={<SvgIcon icon={Icon.UserOutline} size={20}/>}
-                                          active={active}/>
-                            } children={<SummariesTab acc={acc}/>}/>
+                    <>
+                        <div
+                            className="backdrop-primary flex flex-col md:flex-row justify-between text-center rounded-lg mt-5 text-foreground font-bold">
+                            {links.map((link, i) => (
+                                <button key={i} className={styles.linkButton} onClick={() => {
+                                    open(`${steamBase}profiles/${converters[ESteamIdType.SteamID64].from(acc.id)}/${link.toLowerCase()}`, "_blank")
+                                }}>
+                                    {link}
+                                </button>))
+                            }
+                        </div>
+                        <div className="mt-5 gap-5">
+                            <TabPanel className="backdrop-primary flex-col sm:flex-row letter-space font-bold mb-5 py-3"
+                                      activeKey="profile"
+                                      indicator={
+                                          <motion.div className={styles.tabsIndicator}
+                                                      layoutId="active-pill"
+                                                      transition={{type: "spring", duration: 1, x: {duration: 0.5}}}/>
+                                      }
+                            >
+                                <Tab key="profile" title={(active) =>
+                                    <TabTitle title="Profile" icon={<SvgIcon icon={Icon.UserOutline} size={20}/>}
+                                              active={active}/>
+                                } children={<SummariesTab acc={acc}/>}/>
 
-                            <Tab key="games" title={(active) =>
-                                <TabTitle title="Games" icon={<SvgIcon icon={Icon.Gamepad} size={20}/>}
-                                          active={active}/>
-                            } children={<GamesTab acc={acc}/>}/>
+                                <Tab key="games" title={(active) =>
+                                    <TabTitle title="Games" icon={<SvgIcon icon={Icon.Gamepad} size={20}/>}
+                                              active={active}/>
+                                } children={<GamesTab acc={acc}/>}/>
 
-                            <Tab key="friends" title={(active) =>
-                                <TabTitle title="Friends" icon={<SvgIcon icon={Icon.Users} size={20}/>}
-                                          active={active}/>
-                            } children={<FriendsTab/>}/>
-                        </TabPanel>
-                    </div> :
+                                <Tab key="friends" title={(active) =>
+                                    <TabTitle title="Friends" icon={<SvgIcon icon={Icon.Users} size={20}/>}
+                                              active={active}/>
+                                } children={<FriendsTab/>}/>
+                            </TabPanel>
+                        </div>
+                    </> :
                     <SummariesTab acc={acc}/>
-                }
+            }
 
-                {  !updated && !acc.isUpToDate() && !db.isUpdating &&
-                    <Tooltip {...popup.side} alignX={EPlacementX.Left} message="Update account info" >
-                        <Button actions={updateBtn} variant={EButtonVariant.Outlined} className="absolute right-3 top-5 h-10 z-10 rounded-xl"
-                                onClick={async () => {
-                                    updateBtn.current.setLoading(true)
-                                    if(await acc.update()) {
+            {!updated && !acc.isUpToDate() && !db.isUpdating &&
+                <Tooltip {...popup.side} alignX={EPlacementX.Left} message="Update account info">
+                    <Button actions={updateBtn} variant={EButtonVariant.Outlined}
+                            className="absolute right-3 top-5 h-10 z-10 rounded-xl"
+                            onClick={async () => {
+                                updateBtn.current.setLoading(true)
+                                if (await acc.update()) {
                                         setUpdate(true)
                                         await saveAccounts()
                                         return;

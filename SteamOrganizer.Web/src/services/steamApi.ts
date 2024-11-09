@@ -3,6 +3,7 @@ import {SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 import db, {EDbStore} from "@/services/indexedDb.ts";
 
+export const steamBase = "https://steamcommunity.com/"
 const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/steam/webApi/`
 
 const handleResponse = async <T>(action: Promise<Response>,

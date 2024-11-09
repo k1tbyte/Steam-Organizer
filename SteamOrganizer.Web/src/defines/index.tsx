@@ -1,4 +1,3 @@
-import grid from "./images/grid.webp"
 import { forwardRef, type SVGAttributes} from "react";
 
 export const enum Gradients {
@@ -120,7 +119,3 @@ export const SvgIcon = forwardRef<SVGSVGElement, ISvgIconProps>(
         </svg>
     );
 });
-
-export {
-    grid
-}

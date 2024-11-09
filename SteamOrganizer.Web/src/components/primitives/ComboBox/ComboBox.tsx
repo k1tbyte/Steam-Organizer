@@ -1,5 +1,5 @@
 import {CSSProperties, type FC, ReactElement, type ReactNode, useState} from "react";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import { motion } from "framer-motion";
 import styles from "./ComboBox.module.css";
 import {clsx} from "clsx";

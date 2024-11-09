@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import type {IAccountProps} from "@/pages/Profile/Profile.tsx";
 import {Expander, withStateSaving} from "@/components/primitives/Expander.tsx";
-import {Gradients, Icon, SvgIcon} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "src/defines";
 import {TextArea} from "@/components/primitives/TextArea.tsx";
 import {delayedSaveAccounts} from "@/store/accounts.ts";
 import {EEconomyBanType} from "@/types/steamPlayerSummary.ts";

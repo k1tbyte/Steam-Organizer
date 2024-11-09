@@ -2,7 +2,7 @@ import React, {createContext, type FC, type ReactNode, useEffect, useRef, useSta
 import clsx from "clsx";
 import styles from "./AccountsNav.module.pcss";
 import Input from "@/components/primitives/Input.tsx";
-import {Gradients, Icon, SvgIcon} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "src/defines";
 import {modal} from "@/components/primitives/Modal.tsx";
 import {AddAccount} from "@/pages/Modals/AddAccount.tsx";
 import {config} from "@/store/config.ts";
@@ -128,7 +128,7 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
                     <div className="w-full flex-center relative -order-1 z-20 h-[40px]">
                         <div className={clsx(styles.searchOverlay, expanded || "h-0")}></div>
                         <Input className="rounded-lg pr-24 h-full bg-primary placeholder:font-semibold"
-                               ref={searchRef}
+                               ref={searchRef} autoComplete={"off"}
                                maxLength={60} placeholder="Search in accounts"/>
                         <div className={styles.searchPanel}>
                             <SvgIcon icon={Icon.ChevronDown} size={15}

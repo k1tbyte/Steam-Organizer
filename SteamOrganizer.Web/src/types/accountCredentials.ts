@@ -1,4 +1,4 @@
-import { Icon } from "@/assets";
+import { Icon } from "src/defines";
 
 export const serviceNames = {
     [Icon.UPlay]: "UPlay",

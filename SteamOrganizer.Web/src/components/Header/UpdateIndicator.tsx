@@ -1,6 +1,6 @@
 import {FC, useState} from "react";
 import {ESavingState} from "@/components/Header/SaveIndicator.tsx";
-import {Gradients, Icon, SvgIcon} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "src/defines";
 
 export let setUpdatingCount: React.Dispatch<React.SetStateAction<number>>
 

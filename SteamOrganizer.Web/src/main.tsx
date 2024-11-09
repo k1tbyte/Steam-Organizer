@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import 'overlayscrollbars/overlayscrollbars.css';
-import './assets/index.css'
+import '@/defines/index.css'
 import { ClickScrollPlugin, OverlayScrollbars } from "overlayscrollbars";
 
 if ('serviceWorker' in navigator) {

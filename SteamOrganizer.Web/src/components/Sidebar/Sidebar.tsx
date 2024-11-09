@@ -12,7 +12,7 @@ import React, {
 import {useSlider} from "@/hooks/useSlider.ts";
 import useMediaQuery from "@/hooks/useMediaQuery.ts";
 import { useLocation, useNavigate} from "react-router-dom";
-import {Gradients} from "@/assets";
+import {Gradients} from "src/defines";
 import { popup, Tooltip} from "@/components/primitives/Popup.tsx";
 import {UserInfo} from "@/components/Sidebar/UserInfo.tsx";
 import styles from "./Sidebar.module.pcss"

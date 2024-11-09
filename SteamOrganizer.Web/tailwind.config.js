@@ -114,6 +114,10 @@ export default {
         },
         '.auto-rows': {
           gridAutoRows: "1fr"
+        },
+        '.focus-shadow': {
+          outline: "none",
+          boxShadow: "0 0 0 3px theme('colors.border')"
         }
       })
     })

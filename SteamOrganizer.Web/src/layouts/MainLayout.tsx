@@ -2,7 +2,7 @@ import { type FC } from "react";
 import {Sidebar, SidebarItem} from "../components/Sidebar/Sidebar.tsx";
 import {Header} from "../components/Header";
 import { Outlet } from "react-router-dom";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import {RouterProvider} from "@/providers/routerProvider.tsx";
 
 

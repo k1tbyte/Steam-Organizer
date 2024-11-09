@@ -14,7 +14,7 @@ import {setUpdatingCount} from "@/components/Header/UpdateIndicator.tsx";
 import {setUpdating} from "@/providers/databaseProvider.tsx";
 
 export const accounts = new ObservableObject<Account[]>(undefined)
-export let timestamp: Date | undefined;
+export let dbTimestamp: Date | undefined;
 export let databaseKey: CryptoKey | undefined;
 
 let updateCancellation: AbortController | undefined;
@@ -78,13 +78,13 @@ export const saveAccounts = async (action: () => boolean | void = null, sync: bo
 
     try {
         await db.save(
-            await exportAccounts(timestamp = new Date()),
+            await exportAccounts(dbTimestamp = new Date()),
             dbFieldName
         )
 
         if(isAuthorized.value && sync) {
             setSavingState(ESavingState.Syncing)
-            await storeBackup(timestamp)
+            await storeBackup(dbTimestamp)
         }
         setSavingState(ESavingState.Saved)
     } catch(err) {
@@ -114,7 +114,7 @@ export const importAccounts = async (json: string, save: boolean = false): Promi
     const object = JSON.parse(json);
 
     // Set the timestamp to the parsed timestamp or the current date
-    timestamp = object.timestamp ? new Date(object.timestamp) : new Date();
+    dbTimestamp = object.timestamp ? new Date(object.timestamp) : new Date();
 
     const col = (object.data ?? object) as Account[];
     for (const acc of col) {

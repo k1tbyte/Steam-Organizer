@@ -10,7 +10,7 @@ export class GridLayout extends BaseVirtualLayout {
 
         this.resizeObserver = new ResizeObserver(() => {
             clearTimeout(this.timer)
-            this.timer = setTimeout(() => {
+            this.timer = window.setTimeout(() => {
                 this.refresh(false)
                 this.timer = 0;
             },30)

@@ -5,7 +5,7 @@ import Button, {EButtonVariant, type IButtonActions} from "@/components/primitiv
 import {useFormValidation, validators} from "@/hooks/useFormValidation.ts";
 import React, {type FC, useEffect, useRef, useState} from "react";
 import {modal, useModalActions} from "@/components/primitives/Modal.tsx";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import {useAuth} from "@/providers/authProvider.tsx";
 import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups.ts";
 import {Loader} from "@/components/primitives/Loader.tsx";

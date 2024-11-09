@@ -1,5 +1,5 @@
 import React, {type FC} from "react";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 
 export const InfoNote: FC<{title: string}> = ({ title }) => {
     return (

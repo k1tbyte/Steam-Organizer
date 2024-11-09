@@ -1,5 +1,5 @@
 import React, {FC, type ReactElement} from "react";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import type {IAccountProps} from "@/pages/Profile/Profile.tsx";
 import {dateFormatter} from "@/lib/utils.ts";
 

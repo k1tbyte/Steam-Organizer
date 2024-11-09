@@ -63,7 +63,7 @@ const Button = forwardRef<HTMLButtonElement, IButtonProps>((
             setLoading: setLoading,
             invalidate: (delay: number) => {
                 buttonRef.current!.classList.add('invalidate');
-                setTimeout(() =>
+                window.setTimeout(() =>
                     buttonRef.current!.classList.remove('invalidate'), delay);
             }
         }

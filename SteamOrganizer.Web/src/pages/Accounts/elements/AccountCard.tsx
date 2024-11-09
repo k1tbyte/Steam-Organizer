@@ -1,7 +1,7 @@
 import type { Account } from "@/entity/account.ts";
 import React, {type FC, useContext, useRef} from "react";
 import {Link} from "react-router-dom";
-import { Icon, SvgIcon} from "@/assets";
+import { Icon, SvgIcon} from "src/defines";
 import {accounts, saveDbMutation} from "@/store/accounts.ts";
 import styles from "./AccountCard.module.pcss"
 import {defaultAvatar} from "@/store/config.ts";

@@ -1,4 +1,4 @@
-import {Gradients} from "@/assets";
+import {Gradients} from "src/defines";
 import {useEffect} from "react";
 import {setDocumentTitle} from "@/lib/utils.ts";
 

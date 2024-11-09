@@ -4,7 +4,7 @@ import { InputValidationWrapper } from "@/components/elements/FieldWrapper.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import Input from "@/components/primitives/Input.tsx";
 import Button, {type IButtonActions} from "@/components/primitives/Button.tsx";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import {Account} from "@/entity/account.ts";
 import {accounts, isAccountCollided, saveAccounts} from "@/store/accounts.ts";
 import {toAccountId} from "@/lib/steamIdConverter.ts";
