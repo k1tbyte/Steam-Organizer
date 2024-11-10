@@ -5,6 +5,7 @@ import {openSettings } from "@/pages/Modals/Settings.tsx";
 import {SaveIndicator} from "./SaveIndicator";
 import {ESidebarState} from "@/types/uiMetadata.ts";
 import {UpdateIndicator} from "@/components/Header/UpdateIndicator.tsx";
+import {NetworkIndicator} from "@/components/Header/NetworkIndicator.tsx";
 
 export const Header: FC = () => {
 
@@ -18,6 +19,7 @@ export const Header: FC = () => {
             </div>
 
             <div className="flex items-center gap-2 mr-1">
+                <NetworkIndicator/>
                 <UpdateIndicator/>
                 <SaveIndicator/>
                 <SvgIcon icon={Icon.Bell} size={17} className="cursor-pointer ml-5 mr-2" />

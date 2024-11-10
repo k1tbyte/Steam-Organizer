@@ -10,7 +10,7 @@ import {dateFormatter} from "@/lib/utils.ts";
 import {ConfirmPopup} from "@/components/elements/ConfirmPopup.tsx";
 import {AccountsContext} from "@/pages/Accounts/elements/AccountsNav.tsx";
 import {Draggable} from "@/components/primitives/Draggable.tsx";
-import {useDatabase} from "@/providers/databaseProvider.tsx";
+import {flagStore, useFlagStore} from "@/store/local.tsx";
 
 interface IAccountCardProps {
     acc: Account,
@@ -35,7 +35,7 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
     ({acc, pinned, index, isEnabled, gripRef }) => {
     // @ts-ignore
     const bansCount = acc.haveCommunityBan + !!acc.vacBansCount + !!acc.gameBansCount + !!acc.economyBan
-    const db = useDatabase()
+    const [isUpdating] = useFlagStore<boolean>(nameof(flagStore.store.isDbUpdating))
 
     const pinAccount = () => {
         acc.unpinIndex = index;
@@ -135,7 +135,7 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
                          size={20}/>
             }
 
-            {!db.isUpdating &&
+            {!isUpdating &&
                 <ConfirmPopup text={`Are you sure you want to delete '${acc.login}'?`} onYes={() => {
                     saveDbMutation((o) => {
                         o.splice(o.indexOf(acc), 1)

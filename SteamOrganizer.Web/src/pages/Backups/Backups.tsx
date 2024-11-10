@@ -6,10 +6,13 @@ import {useEffect, useState} from "react";
 import {useAuth} from "@/providers/authProvider.tsx";
 import {Loader, LoaderStatic} from "@/components/primitives/Loader.tsx";
 import {setDocumentTitle} from "@/lib/utils.ts";
+import { useOfflineRedirect } from "@/store/local.tsx";
 
 export default function Backups(){
     const { user  } = useAuth()
     const [isLoading, setLoading] = useState(true)
+    useOfflineRedirect()
+
 
     useEffect(() => {
         if(user.isLoggedIn) {
@@ -24,6 +27,7 @@ export default function Backups(){
     },[user.isLoggedIn])
 
     useEffect(() => setDocumentTitle("Backups"), []);
+
 
     if(isLoading) {
         return <Loader className="w-full h-full flex-center"/>

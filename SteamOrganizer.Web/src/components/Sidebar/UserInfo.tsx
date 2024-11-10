@@ -7,10 +7,16 @@ import {AnimatePresence, motion} from "framer-motion";
 import {popup, Tooltip} from "@/components/primitives/Popup.tsx";
 import styles from "./UserInfo.module.pcss"
 import {ESidebarState} from "@/types/uiMetadata.ts";
+import {useIsOffline} from "@/store/local.tsx";
 
 export const UserInfo: FC<{state: ESidebarState}> = ({ state }) => {
     const {user, signIn, signOut } = useAuth()
     const [expanded, setExpand] = useState(false)
+    const isOffline = useIsOffline()
+
+    if(isOffline) {
+        return;
+    }
 
     if(!user.isLoggedIn) {
         return  (

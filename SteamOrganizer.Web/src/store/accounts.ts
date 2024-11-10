@@ -10,8 +10,7 @@ import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 import { openAuthPopup} from "@/pages/Modals/Authentication.tsx";
 import {ESavingState, setSavingState} from "@/components/Header/SaveIndicator.tsx";
 import {getPlayerInfoStream} from "@/services/steamApi.ts";
-import {setUpdatingCount} from "@/components/Header/UpdateIndicator.tsx";
-import {setUpdating} from "@/providers/databaseProvider.tsx";
+import {flagStore} from "@/store/local.tsx";
 
 export const accounts = new ObservableObject<Account[]>(undefined)
 export let dbTimestamp: Date | undefined;
@@ -207,14 +206,18 @@ export const updateAccounts = async (cancel: boolean = false) => {
         return
     }
 
-    setUpdating(true)
+    const updateEmitter = flagStore.getEmitter(nameof(flagStore.store.isDbUpdating))
+    updateEmitter(true)
+
     updateCancellation = new AbortController();
     let remaining = ids.length;
-    setUpdatingCount(remaining)
+    const countEmitter = flagStore.getEmitter(nameof(flagStore.store.dbUpdateCount))
+
+    countEmitter(remaining)
     try {
         const response = await getPlayerInfoStream(ids,updateCancellation.signal, (data) => {
             accs.get(data.steamId).assignInfo(data)
-            setUpdatingCount(--remaining)
+            countEmitter(--remaining)
             delayedSaveAccounts()
         })
 
@@ -231,6 +234,6 @@ export const updateAccounts = async (cancel: boolean = false) => {
     }
 
     updateCancellation = undefined;
-    setUpdatingCount(0)
-    setUpdating(false)
+    countEmitter(0)
+    updateEmitter(false)
 }

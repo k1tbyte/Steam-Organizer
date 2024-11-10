@@ -12,21 +12,17 @@ import React, {
 import {useSlider} from "@/hooks/useSlider.ts";
 import useMediaQuery from "@/hooks/useMediaQuery.ts";
 import { useLocation, useNavigate} from "react-router-dom";
-import {Gradients} from "src/defines";
+import {Gradients, Icon, SvgIcon} from "src/defines";
 import { popup, Tooltip} from "@/components/primitives/Popup.tsx";
 import {UserInfo} from "@/components/Sidebar/UserInfo.tsx";
 import styles from "./Sidebar.module.pcss"
-import {localProps, saveLocalProps} from "@/store/local.ts";
 import {ESidebarState} from "@/types/uiMetadata.ts";
+import {uiStore, useIsOffline} from "@/store/local.tsx";
 
 interface ISidebarItemProps {
     icon: ReactElement
     text: string
     link:string
-}
-
-interface ISidebarProps {
-    children: ReactNode
 }
 
 interface ISidebarState {
@@ -86,9 +82,10 @@ export const SidebarItem: FC<ISidebarItemProps> = (props) => {
     );
 }
 
-export const Sidebar: FC<ISidebarProps> = ({children}) => {
+export const Sidebar: FC = () => {
+    const isOffline = useIsOffline()
     const [state, setSidebarState] = useState<ESidebarState>(
-        window.matchMedia(mediaBreak).matches ? ESidebarState.Hidden : localProps.sidebarState
+        window.matchMedia(mediaBreak).matches ? ESidebarState.Hidden : uiStore.store.sidebarState
     )
 
     const prevState = useRef(state)
@@ -98,7 +95,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
     const isSmallScreen = useMediaQuery( {
         query: mediaBreak,
         callback: (match: boolean) => {
-            setState(match ? ESidebarState.Hidden : localProps.sidebarState);
+            setState(match ? ESidebarState.Hidden : uiStore.store.sidebarState);
         }
     });
 
@@ -118,7 +115,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
         if(newState != null) {
             prevState.current = newState;
             setState(newState)
-            saveLocalProps(localProps.sidebarState = newState)
+            uiStore.emit(nameof(uiStore.store.sidebarState), newState)
         }
     });
 
@@ -128,7 +125,11 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
                 {!isSmallScreen && <div className={styles.navTopStub}/>}
                 <SidebarContext.Provider value={ { state: state, small: isSmallScreen } }>
                     <ul className="flex-1">
-                        {children}
+                        <SidebarItem icon={<SvgIcon icon={Icon.UsersOutline} size={20}/>} text="Accounts" link="/accounts"/>
+                        <SidebarItem icon={<SvgIcon icon={Icon.LightningOutline} size={20}/>} text="Actions" link="/actions"/>
+                        { !isOffline &&
+                            <SidebarItem icon={<SvgIcon icon={Icon.FolderSync} size={20}/>} text={"Backups"} link="/backups"/>
+                        }
                     </ul>
                 </SidebarContext.Provider>
                 <UserInfo state={state}/>

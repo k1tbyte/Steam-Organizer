@@ -3,7 +3,7 @@ import {cn} from "@/lib/utils.ts";
 import {AnimatePresence, motion} from "framer-motion";
 import clsx from "clsx";
 import {Icon, SvgIcon} from "src/defines";
-import {localProps, saveLocalProps} from "@/store/local.ts";
+import {uiStore} from "@/store/local.tsx";
 
 
 interface IExpanderProps {
@@ -17,8 +17,8 @@ interface IExpanderProps {
 
 export const withStateSaving = (key: string) => {
     return {
-        onChanged: (o: boolean) => saveLocalProps(localProps.collapsed[key] = o),
-        collapsed: localProps.collapsed[key]
+        onChanged: (o: boolean) => uiStore.emit(key, o),
+        collapsed: uiStore.store[key]
     }
 }
 

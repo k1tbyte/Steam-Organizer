@@ -14,10 +14,10 @@ import {Profile} from "@/pages/Profile/Profile.tsx";
 import {AuthProvider} from "@/providers/authProvider.tsx";
 import {toast, ToastsHost, ToastVariant} from "@/components/primitives/Toast.tsx";
 import {databaseKey, dbTimestamp, importAccounts, loadAccounts} from "@/store/accounts.ts";
-import {DatabaseProvider} from "@/providers/databaseProvider.tsx";
 import {isAuthorized} from "@/services/gAuth.ts";
 import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups.ts";
 import {decrypt} from "@/services/cryptography.ts";
+import {flagStore} from "@/store/local.tsx";
 
 const router = createBrowserRouter([
     {
@@ -53,35 +53,38 @@ const router = createBrowserRouter([
     },
 ]);
 
+const syncBackup = async (isAuth: boolean) => {
+    if(!isAuth || !databaseKey || !navigator.onLine)  {
+        return;
+    }
+
+    getLatestBackup().then(async (info) => {
+        if(new Date(info.createdTime) < dbTimestamp) {
+            return;
+        }
+
+        try {
+            const buffer = await restoreBackup(await loadBackup(info.id))
+            const db = await decrypt(databaseKey, buffer)
+            await importAccounts(db, true);
+        } catch {
+            toast.open({ variant: ToastVariant.Error, body: "Unable to restore the latest backup!" })
+        }
+    })
+}
+
 export default function App() {
     useEffect( () => {
         db.openConnection().then(async () => {
             await loadConfig()
             await loadAccounts()
 
-            if(!config.autoSync) {
-                return;
+            if(config.autoSync) {
+                isAuthorized.onChanged(syncBackup)
             }
 
-            isAuthorized.onChanged(async (state) => {
-                if(!state || !databaseKey)  {
-                    return;
-                }
-
-                getLatestBackup().then(async (info) => {
-                    if(new Date(info.createdTime) < dbTimestamp) {
-                        return;
-                    }
-
-                    try {
-                        const buffer = await restoreBackup(await loadBackup(info.id))
-                        const db = await decrypt(databaseKey, buffer)
-                        await importAccounts(db, true);
-                    } catch {
-                        toast.open({ variant: ToastVariant.Error, body: "Unable to restore the latest backup!" })
-                    }
-                })
-            })
+            window.addEventListener('offline', () => flagStore.emit(nameof(flagStore.store.offlineMode), true))
+            window.addEventListener('online', () => flagStore.emit(nameof(flagStore.store.offlineMode), false))
         })
     }, []);
 
@@ -89,11 +92,9 @@ export default function App() {
     return (
         <>
             <AuthProvider>
-                <DatabaseProvider>
                     <RouterProvider router={router}/>
                     <ModalsHost/>
                     <ToastsHost/>
-                </DatabaseProvider>
             </AuthProvider>
             <Defs/>
         </>

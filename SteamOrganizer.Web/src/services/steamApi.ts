@@ -2,16 +2,23 @@ import {config} from "@/store/config.ts";
 import {SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 import db, {EDbStore} from "@/services/indexedDb.ts";
+import {flagStore} from "@/store/local.tsx";
 
 export const steamBase = "https://steamcommunity.com/"
 const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/steam/webApi/`
 
-const handleResponse = async <T>(action: Promise<Response>,
+const handleResponse = async <T>(input: string | URL | globalThis.Request,
+                                 init?: RequestInit,
                                  onSuccess: (o: T) => void = null,
                                  asJson: boolean = true): Promise<T | Response> => {
+    if(flagStore.store.offlineMode) {
+        toast.open({ body: "You are in offline mode, please connect to the internet", variant: ToastVariant.Warning, id: "offline" })
+        return;
+    }
+
     let response: Response
     try {
-        response = await action;
+        response = await fetch(input, init);
     }
     catch (err) {
         if(err.name === "AbortError") {
@@ -54,14 +61,13 @@ const handleResponse = async <T>(action: Promise<Response>,
 }
 
 export const getPlayerInfo = async (id: number) => {
-    const request =  fetch(`${apiUrl}getSummaries?key=${config.steamApiKey}&ids=${id}&includeGames=true`);
-    return await handleResponse<SteamPlayerSummary | undefined>(request, (o) => {
+    return await handleResponse<SteamPlayerSummary | undefined>(`${apiUrl}getSummaries?key=${config.steamApiKey}&ids=${id}&includeGames=true`,null, (o) => {
         db.save(o.gamesSummaries.games, id, EDbStore.Games)
     }) as SteamPlayerSummary | undefined
 }
 
 export const getPlayerInfoStream = async (id: number[], cancellation: AbortSignal, callback: (data: SteamPlayerSummary) => void) => {
-    const response = await handleResponse(fetch(`${apiUrl}getSummariesStream?key=${config.steamApiKey}`, {
+    const response = await handleResponse(`${apiUrl}getSummariesStream?key=${config.steamApiKey}`, {
         method: "POST",
         headers: {
             'Accept': 'application/json, text/plain',
@@ -72,7 +78,7 @@ export const getPlayerInfoStream = async (id: number[], cancellation: AbortSigna
             ids: id,
             includeGames: true
         }),
-    }), null, false) as Response;
+    }, null, false) as Response;
 
     await response?.body.pipeThrough(new TextDecoderStream()).pipeTo(new WritableStream({
         write(chunk) {
@@ -86,6 +92,5 @@ export const getPlayerInfoStream = async (id: number[], cancellation: AbortSigna
 }
 
 export const resolveVanityUrl = async (vanityUrl: string): Promise<number | undefined | null> => {
-    const request = fetch(`${apiUrl}getAccountId?key=${config.steamApiKey}&vanityUrl=${vanityUrl}`);
-    return await handleResponse<number | undefined>(request) as number
+    return await handleResponse<number | undefined>(`${apiUrl}getAccountId?key=${config.steamApiKey}&vanityUrl=${vanityUrl}`) as number
 }

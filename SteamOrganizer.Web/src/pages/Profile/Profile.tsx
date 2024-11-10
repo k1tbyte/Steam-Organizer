@@ -17,11 +17,10 @@ import FriendsTab from "./FriendsTab";
 import {ComboBox} from "@/components/primitives/ComboBox/ComboBox.tsx";
 import {converters, ESteamIdType} from "@/lib/steamIdConverter.ts";
 import {EPlacementX, popup, Tooltip} from "@/components/primitives/Popup.tsx";
-import {localProps, saveLocalProps} from "@/store/local.ts";
 import Button, {EButtonVariant, IButtonActions} from "@/components/primitives/Button.tsx";
-import {useDatabase} from "@/providers/databaseProvider.tsx";
 import {steamBase} from "@/services/steamApi.ts";
 import {EVisibilityState} from "@/types/steamPlayerSummary.ts";
+import {flagStore, uiStore, useFlagStore} from "@/store/local.tsx";
 
 interface ITabTitleProps {
     active: boolean;
@@ -93,13 +92,13 @@ const Info: FC<IAccountProps> = ({ acc }) => {
                     </div>
 
                     <div style={{width: "150px"}}>
-                        <ComboBox style={{ height: "30px"}} selectedIndex={localProps.displayingId}
+                        <ComboBox style={{ height: "30px"}} selectedIndex={uiStore.store.displayingId}
                                   items={idType} onSelected={(i) => {
                                       if(acc.vanityUrl && i === idType.length - 1) {
                                           idRef.current.textContent = acc.vanityUrl
                                           return
                                       }
-                                      saveLocalProps(localProps.displayingId = i)
+                                      uiStore.emit(nameof(uiStore.store.displayingId), i)
                                       idRef.current.textContent = converters[i].from(acc.id)
                         }}/>
                         <Tooltip ref={idTooltipRef} message="Click to copy" openDelay={0}>
@@ -132,7 +131,7 @@ export const Profile: FC = () => {
     const {id} = useParams();
     const isLoading = useLoader(accounts);
     const {hostRef} = useScrollbar(undefined, [isLoading]);
-    const db = useDatabase();
+    const [isUpdating] = useFlagStore<boolean>(nameof(flagStore.store.isDbUpdating))
     useEffect(() => setDocumentTitle(acc?.nickname), [isLoading]);
 
     if(isLoading) {
@@ -171,11 +170,14 @@ export const Profile: FC = () => {
                     </div>
                     <div>
                         <p className={styles.nicknameTitle}>{acc.nickname}
-                            <Tooltip message={`Steam profile is ${isPublic ? "public" : "private" }` }>
-                                <SvgIcon className={`inline ml-1 ${isPublic ? "fill-success" : "fill-warn"}`}
-                                         icon={isPublic ? Icon.Eye : Icon.EyeOff}
-                                         size={14}/>
-                            </Tooltip>
+                            {acc.id &&
+                                <Tooltip message={`Steam profile is ${isPublic ? "public" : "private"}`}>
+                                    <SvgIcon className={`inline ml-2 ${isPublic ? "fill-success" : "fill-warn"}`}
+                                             icon={isPublic ? Icon.Eye : Icon.EyeOff}
+                                             size={14}/>
+                                </Tooltip>
+                            }
+
                         </p>
 
                     </div>
@@ -221,15 +223,15 @@ export const Profile: FC = () => {
                         </div>
                     </> :
                     <SummariesTab acc={acc}/>
-            }
+                }
 
-            {!updated && !acc.isUpToDate() && !db.isUpdating &&
-                <Tooltip {...popup.side} alignX={EPlacementX.Left} message="Update account info">
-                    <Button actions={updateBtn} variant={EButtonVariant.Outlined}
-                            className="absolute right-3 top-5 h-10 z-10 rounded-xl"
-                            onClick={async () => {
-                                updateBtn.current.setLoading(true)
-                                if (await acc.update()) {
+                {!updated && !acc.isUpToDate() && !isUpdating &&
+                    <Tooltip {...popup.side} alignX={EPlacementX.Left} message="Update account info">
+                        <Button actions={updateBtn} variant={EButtonVariant.Outlined}
+                                className="absolute right-3 top-5 h-10 z-10 rounded-xl"
+                                onClick={async () => {
+                                    updateBtn.current.setLoading(true)
+                                    if (await acc.update()) {
                                         setUpdate(true)
                                         await saveAccounts()
                                         return;

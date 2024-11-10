@@ -14,7 +14,7 @@ import {Expander, withStateSaving} from "@/components/primitives/Expander.tsx";
 import {RadioButtonGroup} from "@/components/primitives/RadioButton.tsx";
 import {ConfirmPopup} from "@/components/elements/ConfirmPopup.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
-import {localProps } from "@/store/local.ts";
+import {uiStore} from "@/store/local.tsx";
 
 interface ICredentialsFieldProps extends Omit<IInputProps, 'type'> {
     type: ECredentialType;
@@ -161,7 +161,7 @@ const CredentialsArea: FC<IAccountProps> = ({acc}) => {
     }) : []
 
     return (
-        <Expander className="backdrop-primary" {...withStateSaving(nameof(localProps.collapsed.credentials))}
+        <Expander className="backdrop-primary" {...withStateSaving(nameof(uiStore.store.credentials))}
                   icon={<SvgIcon icon={Icon.Fingerprint} size={28}/>}
                   title={
                       <span>

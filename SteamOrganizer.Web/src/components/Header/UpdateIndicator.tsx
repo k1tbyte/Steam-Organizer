@@ -1,12 +1,10 @@
 import {FC, useState} from "react";
 import {ESavingState} from "@/components/Header/SaveIndicator.tsx";
 import {Gradients, Icon, SvgIcon} from "src/defines";
-
-export let setUpdatingCount: React.Dispatch<React.SetStateAction<number>>
+import {flagStore, useFlagStore} from "@/store/local.tsx";
 
 export const UpdateIndicator: FC = () => {
-    const [count,setCount] = useState<number>(0)
-    setUpdatingCount = setCount
+    const [count,] = useFlagStore<number>(nameof(flagStore.store.dbUpdateCount));
 
     if(!count) {
         return;

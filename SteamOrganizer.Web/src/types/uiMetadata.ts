@@ -9,10 +9,10 @@ export const enum ESidebarState {
 export interface IUiMetadata {
     sidebarState: ESidebarState,
     displayingId: ESteamIdType,
-    collapsed: {
-        community?: boolean,
-        bans?: boolean,
-        note?: boolean,
-        credentials?: boolean,
-    }
+
+    // Collapsed sections
+    community?: boolean,
+    bans?: boolean,
+    note?: boolean,
+    credentials?: boolean,
 }

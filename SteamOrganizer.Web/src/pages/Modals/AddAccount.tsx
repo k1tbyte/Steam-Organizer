@@ -10,12 +10,14 @@ import {accounts, isAccountCollided, saveAccounts} from "@/store/accounts.ts";
 import {toAccountId} from "@/lib/steamIdConverter.ts";
 import {useFormValidation, validators} from "@/hooks/useFormValidation.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
+import {useIsOffline} from "@/store/local.tsx";
 
 export const AddAccount: FC = () => {
     const errorIdRef = useRef<HTMLDivElement>()
     const errorLoginRef = useRef<HTMLDivElement>()
     const { closeModal, contentRef }  = useModalActions<HTMLDivElement>();
     const submitActions = useRef<IButtonActions>();
+    const isOffline = useIsOffline()
 
     const addClick = async (e) => {
         try {
@@ -39,7 +41,6 @@ export const AddAccount: FC = () => {
             }
             const account = await new Account(login, formData.get("password").toString(), id).update()
             if(!account) {
-                toast.open({ body: "Failed to retrieve account information", variant: ToastVariant.Error })
                 return
             }
 
@@ -77,11 +78,14 @@ export const AddAccount: FC = () => {
                     <PasswordBox name="password"/>
                 </InputValidationWrapper>
 
-                <InputValidationWrapper className="mb-7 w-full" ref={errorIdRef}
-                                        title="Steam ID in any format"
-                                        icon={<SvgIcon icon={Icon.Identifier} size={36}/>}>
-                    <Input name="id"/>
-                </InputValidationWrapper>
+                { !isOffline &&
+                    <InputValidationWrapper className="mb-7 w-full" ref={errorIdRef}
+                                            title="Steam ID in any format"
+                                            icon={<SvgIcon icon={Icon.Identifier} size={36}/>}>
+                        <Input name="id"/>
+                    </InputValidationWrapper>
+                }
+
 
                 <Button actions={submitActions} className="w-full max-w-28 mx-auto" type="submit">
                     Add

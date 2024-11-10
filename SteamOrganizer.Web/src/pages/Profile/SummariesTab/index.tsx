@@ -7,7 +7,7 @@ import {delayedSaveAccounts} from "@/store/accounts.ts";
 import {EEconomyBanType} from "@/types/steamPlayerSummary.ts";
 import CommunityArea from "./CommunityArea.tsx";
 import CredentialsArea from "./CredentialsArea.tsx";
-import { localProps } from "@/store/local.ts";
+import {uiStore} from "@/store/local.tsx";
 
 interface IBanChipProps {
     name: string;
@@ -30,7 +30,7 @@ const BanChip: FC<IBanChipProps> = ({name, banned, banDescription}) => (
 
 const SummariesTab: FC<IAccountProps> = ({acc}) => {
 
-    const noteArea = <Expander {...withStateSaving(nameof(localProps.collapsed.note))}
+    const noteArea = <Expander {...withStateSaving(nameof(uiStore.store.note))}
                                className="backdrop-primary w-full md:order-none self-start"
                                icon={<SvgIcon icon={Icon.NoteEdit} size={24}/>} title="Note about account">
         <div className="p-4">
@@ -60,7 +60,7 @@ const SummariesTab: FC<IAccountProps> = ({acc}) => {
                 {
                     (acc.getYears() > 0 || acc.gamesCount) &&
                     <Expander className="backdrop-primary mb-3"
-                              {...withStateSaving(nameof(localProps.collapsed.community))}
+                              {...withStateSaving(nameof(uiStore.store.community))}
                               icon={<SvgIcon icon={Icon.BadgeAward} size={24}/>} title="Community">
                         <CommunityArea acc={acc}/>
                     </Expander>
@@ -73,7 +73,7 @@ const SummariesTab: FC<IAccountProps> = ({acc}) => {
             </div>
 
             <Expander className="backdrop-primary"
-                      {...withStateSaving(nameof(localProps.collapsed.bans))}
+                      {...withStateSaving(nameof(uiStore.store.bans))}
                       icon={<SvgIcon icon={Icon.Block} size={24}/>} title="Bans">
                 <div className="p-4 space-y-5">
                     <BanChip name="VAC ban" banned={acc.vacBansCount}

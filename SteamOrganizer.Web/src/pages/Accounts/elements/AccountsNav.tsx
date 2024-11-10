@@ -18,7 +18,7 @@ import {formatFileDate} from "@/lib/utils.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
 import {verifyVersion} from "@/services/cryptography.ts";
 import {DecryptionPopup} from "@/pages/Modals/Authentication.tsx";
-import {useDatabase} from "@/providers/databaseProvider.tsx";
+import {flagStore, useFlagStore} from "@/store/local.tsx";
 
 interface IAccountsNavProps {
     children: ReactNode;
@@ -34,7 +34,7 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
     const infoRef = useRef<IDraggableInfo>({});
     const searchRef = useRef<HTMLInputElement>(null!);
     const fileInputRef = useRef<HTMLInputElement>(null!);
-    const db = useDatabase();
+    const [isUpdating] = useFlagStore<boolean>(nameof(flagStore.store.isDbUpdating))
 
     useEffect(() => {
         const filter = (data: Account[]) => {
@@ -62,6 +62,7 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
             toast.open({
                 body: "Steam API key not specified. Do this in settings",
                 variant: ToastVariant.Warning,
+                id: "noApiKey",
                 clickAction: openSettings
             })
             return;
@@ -141,14 +142,14 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
                         </div>
                     </div>
                     <div className={styles.btnsPanel}>
-                        { db.isUpdating ?
+                        { isUpdating ?
                             <Tooltip message="Stop updating accounts">
                                 <button className="px-3" onClick={() => updateAccounts(true)}>
                                     <SvgIcon icon={Icon.Close} size={20} className="fill-danger"/>
                                 </button>
                             </Tooltip> :
                             <Tooltip message="Update accounts info">
-                                <button className="px-3" onClick={() => updateAccounts(db.isUpdating)}>
+                                <button className="px-3" onClick={() => updateAccounts(isUpdating)}>
                                     <SvgIcon icon={Icon.DatabaseUpdate} size={20} fill={Gradients.LightBlue}/>
                                 </button>
                             </Tooltip>

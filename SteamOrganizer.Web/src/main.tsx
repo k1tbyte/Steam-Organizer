@@ -5,8 +5,10 @@ import 'overlayscrollbars/overlayscrollbars.css';
 import '@/defines/index.css'
 import { ClickScrollPlugin, OverlayScrollbars } from "overlayscrollbars";
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
+if(import.meta.env.MODE === 'production') {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+    }
 }
 
 OverlayScrollbars.plugin(ClickScrollPlugin);
