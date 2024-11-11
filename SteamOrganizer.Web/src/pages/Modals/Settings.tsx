@@ -39,6 +39,11 @@ export const Settings: FC = () => {
                                   title="Auto sync">
                         <CheckBox bindTo={config} bindKey={nameof(config.autoSync)} onChanged={delayedSaveConfig}/>
                     </FieldWrapper>
+                    <FieldWrapper icon={<SvgIcon icon={Icon.PushBackupCloud} size={20}/>}
+                                  titlePos={ETitlePosition.Inline}
+                                  title="Make backups automatically">
+                        <CheckBox bindTo={config} bindKey={nameof(config.autoBackup)} onChanged={delayedSaveConfig}/>
+                    </FieldWrapper>
                 </>
             }
         </form>

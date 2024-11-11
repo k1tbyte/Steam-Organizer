@@ -18,6 +18,7 @@ import {isAuthorized} from "@/services/gAuth.ts";
 import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups.ts";
 import {decrypt} from "@/services/cryptography.ts";
 import {flagStore} from "@/store/local.tsx";
+import Logo from "@/components/elements/Logo.tsx";
 
 const router = createBrowserRouter([
     {
@@ -92,11 +93,14 @@ export default function App() {
     return (
         <>
             <AuthProvider>
-                    <RouterProvider router={router}/>
-                    <ModalsHost/>
-                    <ToastsHost/>
+                <RouterProvider router={router}/>
+                <ModalsHost/>
+                <ToastsHost/>
             </AuthProvider>
             <Defs/>
+            <div className="pointer-events-none fixed opacity-5" style={{ right: "-10%", bottom: "-10%"}}>
+                <Logo/>
+            </div>
         </>
     )
 }

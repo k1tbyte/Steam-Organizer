@@ -87,7 +87,7 @@ public sealed class WebApiController(SteamParser parser, HttpClient httpClient) 
             return StatusCode((int) response.StatusCode);
         }
         var json = await response.Content.ReadAsStringAsync();
-        return Ok(JsonSerializer.Deserialize<JsonNode>(json)?["response"]?["server_time"]?.GetValue<int>());
+        return Ok(JsonSerializer.Deserialize<JsonNode>(json)?["response"]);
     }
 }
 

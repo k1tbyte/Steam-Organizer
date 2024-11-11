@@ -4,7 +4,7 @@ import styles from "./AccountsNav.module.pcss";
 import Input from "@/components/primitives/Input.tsx";
 import {Gradients, Icon, SvgIcon} from "src/defines";
 import {modal} from "@/components/primitives/Modal.tsx";
-import {AddAccount} from "@/pages/Modals/AddAccount.tsx";
+import {AddAccount, openAddAccount} from "@/pages/Modals/AddAccount.tsx";
 import {config} from "@/store/config.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 import {ToggleButton} from "@/components/primitives/ToggleButton.tsx";
@@ -58,19 +58,7 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
 
     const addClicked = () => {
         setExpanded(false)
-        if(!config.steamApiKey) {
-            toast.open({
-                body: "Steam API key not specified. Do this in settings",
-                variant: ToastVariant.Warning,
-                id: "noApiKey",
-                clickAction: openSettings
-            })
-            return;
-        }
-        modal.open({
-            title: "New account",
-            body: <AddAccount/>
-        })
+        openAddAccount()
     }
 
     const exportClicked = () => {

@@ -1,5 +1,5 @@
-import {type FC, useRef} from "react";
-import {useModalActions} from "@/components/primitives/Modal.tsx";
+import React, {type FC, useRef} from "react";
+import {modal, useModalActions} from "@/components/primitives/Modal.tsx";
 import { InputValidationWrapper } from "@/components/elements/FieldWrapper.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import Input from "@/components/primitives/Input.tsx";
@@ -11,6 +11,25 @@ import {toAccountId} from "@/lib/steamIdConverter.ts";
 import {useFormValidation, validators} from "@/hooks/useFormValidation.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 import {useIsOffline} from "@/store/local.tsx";
+import {config} from "@/store/config.ts";
+import {openSettings} from "@/pages/Modals/Settings.tsx";
+
+
+export const openAddAccount = () => {
+    if(!config.steamApiKey) {
+        toast.open({
+            body: "Steam API key not specified. Do this in settings",
+            variant: ToastVariant.Warning,
+            id: "noApiKey",
+            clickAction: openSettings
+        })
+        return;
+    }
+    modal.open({
+        title: "New account",
+        body: <AddAccount/>
+    })
+}
 
 export const AddAccount: FC = () => {
     const errorIdRef = useRef<HTMLDivElement>()

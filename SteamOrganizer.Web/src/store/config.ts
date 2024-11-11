@@ -7,6 +7,7 @@ interface IAppConfig {
     encryptionKey?: string
     steamApiKey?: string
     autoSync?: boolean
+    autoBackup?: boolean
 }
 
 export const enum EDecryptResult {
@@ -32,7 +33,7 @@ export const  loadConfig = async () => {
     fingerprint = await deriveKey({ secret: visitorId, iterations: 1})
     const configBytes = await db.get<ArrayBuffer>("config")
 
-    config = {}
+    config = { autoBackup: true }
     if(configBytes === undefined) {
         return
     }

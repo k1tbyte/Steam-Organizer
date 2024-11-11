@@ -72,7 +72,11 @@ export const enum Icon {
     SyncRightBelow,
     CloudSlotRightBelow,
     SyncRenew,
-    OpenLink
+    OpenLink,
+    AccountAdd,
+    SearchInList,
+    NoDataToDisplay,
+    PushBackupCloud
 }
 
 export function Defs() {

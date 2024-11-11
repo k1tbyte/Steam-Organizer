@@ -7,6 +7,9 @@ import {flagStore} from "@/store/local.tsx";
 export const steamBase = "https://steamcommunity.com/"
 const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/steam/webApi/`
 
+
+let steamTimeDifference: number | null = null;
+
 const handleResponse = async <T>(input: string | URL | globalThis.Request,
                                  init?: RequestInit,
                                  onSuccess: (o: T) => void = null,
@@ -34,7 +37,7 @@ const handleResponse = async <T>(input: string | URL | globalThis.Request,
             return response;
         }
         const result = await response.json() as T
-        onSuccess(result)
+        onSuccess?.(result)
         return result
     }
 
@@ -62,7 +65,9 @@ const handleResponse = async <T>(input: string | URL | globalThis.Request,
 
 export const getPlayerInfo = async (id: number) => {
     return await handleResponse<SteamPlayerSummary | undefined>(`${apiUrl}getSummaries?key=${config.steamApiKey}&ids=${id}&includeGames=true`,null, (o) => {
-        db.save(o.gamesSummaries.games, id, EDbStore.Games)
+        if(o.gamesSummaries?.games) {
+            db.save(o.gamesSummaries.games, id, EDbStore.Games)
+        }
     }) as SteamPlayerSummary | undefined
 }
 
@@ -83,7 +88,9 @@ export const getPlayerInfoStream = async (id: number[], cancellation: AbortSigna
     await response?.body.pipeThrough(new TextDecoderStream()).pipeTo(new WritableStream({
         write(chunk) {
             const obj = JSON.parse(chunk) as SteamPlayerSummary;
-            db.save(obj.gamesSummaries.games, obj.steamId, EDbStore.Games)
+            if(obj.gamesSummaries?.games) {
+                db.save(obj.gamesSummaries.games, obj.steamId, EDbStore.Games)
+            }
             callback(obj);
         }
     }))
@@ -93,4 +100,16 @@ export const getPlayerInfoStream = async (id: number[], cancellation: AbortSigna
 
 export const resolveVanityUrl = async (vanityUrl: string): Promise<number | undefined | null> => {
     return await handleResponse<number | undefined>(`${apiUrl}getAccountId?key=${config.steamApiKey}&vanityUrl=${vanityUrl}`) as number
+}
+
+export const getSteamTime = async () => {
+    const now = Math.floor(Date.now() / 1000);
+
+    if (steamTimeDifference != null) {
+        return now + steamTimeDifference;
+    }
+
+    const server_time = Number((await handleResponse(`${apiUrl}getSteamServerTime?key=${config.steamApiKey}`) as { server_time: string}).server_time);
+    steamTimeDifference =  server_time - now;
+    return server_time;
 }

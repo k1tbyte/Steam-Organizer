@@ -67,9 +67,9 @@ export const isAccountCollided = (id?: number, login?: string): [boolean, boolea
  * Return `false` from the action if it is unsuccessful to prevent saving.
  *
  * @param {() => boolean | void} [action=null] - The action to perform before saving.
- * @param {boolean} [sync=true] - Whether to sync the backup if authorized.
+ * @param {boolean} [backup=true] - Whether to sync the backup if authorized.
  */
-export const saveAccounts = async (action: () => boolean | void = null, sync: boolean = true) => {
+export const saveAccounts = async (action: () => boolean | void = null, backup: boolean = true) => {
 
     if(action?.() === false) {
         return;
@@ -81,7 +81,7 @@ export const saveAccounts = async (action: () => boolean | void = null, sync: bo
             dbFieldName
         )
 
-        if(isAuthorized.value && sync) {
+        if(isAuthorized.value && backup && config.autoBackup) {
             setSavingState(ESavingState.Syncing)
             await storeBackup(dbTimestamp)
         }

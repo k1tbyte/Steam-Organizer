@@ -1,7 +1,11 @@
 import { type EVisibilityState, type SteamPlayerBans, type SteamPlayerGames, type SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
-import {getPlayerInfo} from "@/services/steamApi.ts";
+import {getPlayerInfo, getSteamTime} from "@/services/steamApi.ts";
 import type {IAccountCredential} from "@/types/accountCredentials.ts";
 import {accounts} from "@/store/accounts.ts";
+import {ISteamAuth} from "@/entity/steamAuth.ts";
+
+const codeInterval = 30;
+const steamCodeCharacters = "23456789BCDFGHJKMNPQRTVWXY";
 
 export class Account {
     nickname: string;
@@ -19,6 +23,8 @@ export class Account {
     addedDate: Date;
     lastUpdateDate?: Date;
     avatarHash?: string;
+
+    authenticator?: ISteamAuth;
 
     haveCommunityBan?: boolean;
     vacBansCount?: number;
@@ -47,10 +53,6 @@ export class Account {
         // @ts-ignore
         const diffInYears = (new Date() - this.createdDate) / (1000 * 60 * 60 * 24 * 365.25);
         return (this._years = Math.floor(diffInYears * 10) / 10);
-    }
-
-    public isAnonymous() {
-        return this.id === undefined;
     }
 
     public isBanned(): boolean {
@@ -133,6 +135,42 @@ export class Account {
             return
         }
         accounts.value.splice(newIndex, 0, accounts.value.splice(selfIndex, 1)[0]);
+    }
+
+    public async generate2faCode (): Promise<string | null> {
+        const time = await getSteamTime();
+        const sharedSecret = this.authenticator?.shared_secret;
+        if (!sharedSecret || !time) {
+            return null;
+        }
+
+        const sharedSecretArray = Uint8Array.from(atob(sharedSecret), c => c.charCodeAt(0));
+        const timeBuffer = new ArrayBuffer(8);
+        const timeArray = new DataView(timeBuffer);
+        timeArray.setUint32(4, Math.floor(time / codeInterval), false);
+
+        const key = await crypto.subtle.importKey(
+            "raw",
+            sharedSecretArray,
+            { name: "HMAC", hash: "SHA-1" },
+            false,
+            ["sign"]
+        );
+
+        const hashedData = new Uint8Array(await crypto.subtle.sign("HMAC", key, timeBuffer));
+        const codeArray = new Array(5);
+        const b = hashedData[19] & 0xF;
+        let codePoint = ((hashedData[b] & 0x7F) << 24) |
+            ((hashedData[b + 1] & 0xFF) << 16) |
+            ((hashedData[b + 2] & 0xFF) << 8) |
+            (hashedData[b + 3] & 0xFF);
+
+        for (let i = 0; i < 5; ++i) {
+            codeArray[i] = steamCodeCharacters[codePoint % steamCodeCharacters.length];
+            codePoint = Math.floor(codePoint / steamCodeCharacters.length);
+        }
+
+        return codeArray.join('');
     }
 
     constructor(login: string, password: string, accountId?: number) {

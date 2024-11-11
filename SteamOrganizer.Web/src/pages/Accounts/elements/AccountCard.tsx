@@ -79,11 +79,18 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
                 </Tooltip>
 
                 <div className={styles.indicators}>
-                    {/* <SvgIcon icon={Icon.Lock} size={16} className="fill-success"/> */}
                     {!acc.id &&
                         <Tooltip
                             message={() => "This is an anonymous account and does not contain any\ninformation other than credentials"}>
                             <SvgIcon icon={Icon.Incognito} size={16} className="fill-yellow-300"/>
+                        </Tooltip>
+                    }
+                    { acc.authenticator &&
+                        <Tooltip
+                            message={() => "This account is 2FA protected\nClick to copy the code"}>
+                            <SvgIcon icon={Icon.Lock} size={16}
+                                     onClick={async () => navigator.clipboard.writeText(await acc.generate2faCode() ?? "")}
+                                     className="fill-success cursor-pointer"/>
                         </Tooltip>
                     }
                 </div>

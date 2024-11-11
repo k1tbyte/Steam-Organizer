@@ -8,7 +8,8 @@ interface IVirtualScrollerProps {
     collection: Observer<any[]>;
     renderElement: (object: any, index: number) => ReactNode;
     layout: typeof BaseVirtualLayout,
-    emptyIndicator?: ReactElement
+    emptyIndicator?: ReactElement,
+    searchEmptyIndicator?: ReactElement,
     useDragMoving?: boolean
 }
 
@@ -19,6 +20,7 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
         layout,
         className,
         emptyIndicator,
+        searchEmptyIndicator,
         useDragMoving
 }) => {
     const [items, setItems] = useState<number[]>([])
@@ -76,7 +78,7 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
                         }
                     )}
                 </div>
-                {collection.value?.length < 1 &&  emptyIndicator}
+                {collection.value?.length < 1 ? emptyIndicator : (items.length < 1 && searchEmptyIndicator )}
             </div>
         </div>
     );
