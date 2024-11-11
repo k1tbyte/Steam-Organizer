@@ -2,21 +2,25 @@ import {Account} from "@/entity/account.ts";
 import db from "@/services/indexedDb.ts";
 import {decrypt, encrypt, exportKey, importKey} from "@/services/cryptography.ts";
 import {config, EDecryptResult, saveConfig} from "@/store/config.ts";
-import {ObservableObject} from "@/lib/observableObject.ts";
+import {ObservableObject} from "@/lib/observer/observableObject.ts";
 import {isAuthorized} from "@/services/gAuth.ts";
 import {storeBackup} from "@/store/backups.ts";
 import {debounce, jsonIgnoreNull} from "@/lib/utils.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
 import { openAuthPopup} from "@/pages/Modals/Authentication.tsx";
 import {ESavingState, setSavingState} from "@/components/Header/SaveIndicator.tsx";
+import {getPlayerInfoStream} from "@/services/steamApi.ts";
+import {flagStore} from "@/store/local.tsx";
 
 export const accounts = new ObservableObject<Account[]>(undefined)
-export let timestamp: Date | undefined;
+export let dbTimestamp: Date | undefined;
 export let databaseKey: CryptoKey | undefined;
+
+let updateCancellation: AbortController | undefined;
 
 const dbFieldName = "accounts"
 
-export const getAccountsBuffer = () => db.get(dbFieldName) as Promise<ArrayBuffer | undefined>
+export const getAccountsBuffer = () => db.get<ArrayBuffer>(dbFieldName)
 
 /**
  * Exports the accounts data, optionally including a timestamp.
@@ -63,9 +67,9 @@ export const isAccountCollided = (id?: number, login?: string): [boolean, boolea
  * Return `false` from the action if it is unsuccessful to prevent saving.
  *
  * @param {() => boolean | void} [action=null] - The action to perform before saving.
- * @param {boolean} [sync=true] - Whether to sync the backup if authorized.
+ * @param {boolean} [backup=true] - Whether to sync the backup if authorized.
  */
-export const saveAccounts = async (action: () => boolean | void = null, sync: boolean = true) => {
+export const saveAccounts = async (action: () => boolean | void = null, backup: boolean = true) => {
 
     if(action?.() === false) {
         return;
@@ -73,13 +77,13 @@ export const saveAccounts = async (action: () => boolean | void = null, sync: bo
 
     try {
         await db.save(
-            await exportAccounts(timestamp = new Date()),
+            await exportAccounts(dbTimestamp = new Date()),
             dbFieldName
         )
 
-        if(isAuthorized.value && sync) {
+        if(isAuthorized.value && backup && config.autoBackup) {
             setSavingState(ESavingState.Syncing)
-            await storeBackup(timestamp)
+            await storeBackup(dbTimestamp)
         }
         setSavingState(ESavingState.Saved)
     } catch(err) {
@@ -89,6 +93,12 @@ export const saveAccounts = async (action: () => boolean | void = null, sync: bo
 }
 
 export const delayedSaveAccounts = debounce(saveAccounts, 3000)
+
+export const saveDbMutation = (e?: (value: Account[]) => any) => {
+    accounts.mutate(e)
+    delayedSaveAccounts()
+}
+
 export const initAccounts = () => accounts.set([])
 
 /**
@@ -103,7 +113,7 @@ export const importAccounts = async (json: string, save: boolean = false): Promi
     const object = JSON.parse(json);
 
     // Set the timestamp to the parsed timestamp or the current date
-    timestamp = object.timestamp ? new Date(object.timestamp) : new Date();
+    dbTimestamp = object.timestamp ? new Date(object.timestamp) : new Date();
 
     const col = (object.data ?? object) as Account[];
     for (const acc of col) {
@@ -175,3 +185,55 @@ export const loadAccounts = async (bytes: ArrayBuffer | null = null): Promise<vo
         }
     }
 };
+
+export const updateAccounts = async (cancel: boolean = false) => {
+    if(cancel) {
+        updateCancellation?.abort()
+        return
+    }
+
+    const accs = new Map<number, Account>()
+    const ids: number[] = [];
+    for(const acc of accounts.value) {
+        if(!acc.isUpToDate()) {
+            accs.set(acc.id, acc)
+            ids.push(acc.id)
+        }
+    }
+
+    if(!ids.length) {
+        toast.open({ body: "All accounts are up to date", variant: ToastVariant.Info, id: "accs-up-to-date" })
+        return
+    }
+
+    const updateEmitter = flagStore.getEmitter(nameof(flagStore.store.isDbUpdating))
+    updateEmitter(true)
+
+    updateCancellation = new AbortController();
+    let remaining = ids.length;
+    const countEmitter = flagStore.getEmitter(nameof(flagStore.store.dbUpdateCount))
+
+    countEmitter(remaining)
+    try {
+        const response = await getPlayerInfoStream(ids,updateCancellation.signal, (data) => {
+            accs.get(data.steamId).assignInfo(data)
+            countEmitter(--remaining)
+            delayedSaveAccounts()
+        })
+
+        if(response) {
+            toast.open({ body: "Accounts updated successfully", variant: ToastVariant.Success })
+        }
+    } catch (err) {
+        if(err.name !== "AbortError") {
+            toast.open({
+                body: `Failed updating accounts. Some accounts have not been updated (${remaining})`,
+                variant: ToastVariant.Error
+            })
+        }
+    }
+
+    updateCancellation = undefined;
+    countEmitter(0)
+    updateEmitter(false)
+}

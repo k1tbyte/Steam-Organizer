@@ -1,14 +1,15 @@
 import React, {FC, ReactElement, ReactNode, useEffect, useRef, useState} from "react";
 import {useScrollbar} from "@/hooks/useScrollbar.ts";
 import {BaseVirtualLayout} from "./BaseVirtualLayout.ts";
-import {ObservableObject} from "@/lib/observableObject.ts";
+import {Observer} from "@/lib/observer/observer.ts";
 
 interface IVirtualScrollerProps {
     className?: string;
-    collection: ObservableObject<any[]>;
+    collection: Observer<any[]>;
     renderElement: (object: any, index: number) => ReactNode;
     layout: typeof BaseVirtualLayout,
-    emptyIndicator?: ReactElement
+    emptyIndicator?: ReactElement,
+    searchEmptyIndicator?: ReactElement,
     useDragMoving?: boolean
 }
 
@@ -19,6 +20,7 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
         layout,
         className,
         emptyIndicator,
+        searchEmptyIndicator,
         useDragMoving
 }) => {
     const [items, setItems] = useState<number[]>([])
@@ -31,13 +33,6 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
     });
 
     useEffect(() => {
-        const observer = new ResizeObserver(() => {
-            clearTimeout(layoutRef.current!.timer)
-            layoutRef.current!.timer = setTimeout(() => {
-                layoutRef.current!.refresh(false)
-                layoutRef.current!.timer = 0;
-            },30)
-        });
 
         if(useDragMoving) {
             scrollRef.current.setAttribute("drag-scroller","");
@@ -46,12 +41,8 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
         // @ts-ignore - We are sure that layout is not abstract
         layoutRef.current =  new layout(collection, setItems,
             scrollRef.current!, sizerRef.current, areaRef.current)
-        observer.observe(sizerRef.current!)
 
-        return () => {
-            observer.disconnect();
-            layoutRef.current?.dispose()
-        }
+        return () => layoutRef.current?.dispose()
     },[])
 
     useEffect(() => {
@@ -87,7 +78,7 @@ const VirtualScroller: FC<IVirtualScrollerProps> = (
                         }
                     )}
                 </div>
-                {collection.value?.length < 1 &&  emptyIndicator}
+                {collection.value?.length < 1 ? emptyIndicator : (items.length < 1 && searchEmptyIndicator )}
             </div>
         </div>
     );

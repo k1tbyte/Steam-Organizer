@@ -36,7 +36,7 @@ interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants = [
     "font-semibold  flex-center  bg-secondary text-accent  hover:text-foreground-accent rounded-xm min-w-32",
-    "border-tertiary border text-secondary font-thin hover:bg-tertiary rounded-xm",
+    "border-tertiary border text-secondary font-thin hover:bg-tertiary rounded",
     "hover:bg-accent text-foreground-muted hover:text-foreground w-full text-left"
 ]
 
@@ -63,7 +63,7 @@ const Button = forwardRef<HTMLButtonElement, IButtonProps>((
             setLoading: setLoading,
             invalidate: (delay: number) => {
                 buttonRef.current!.classList.add('invalidate');
-                setTimeout(() =>
+                window.setTimeout(() =>
                     buttonRef.current!.classList.remove('invalidate'), delay);
             }
         }

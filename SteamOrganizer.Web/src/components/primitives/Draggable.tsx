@@ -25,19 +25,21 @@ interface IDraggableProps {
     context: IDraggableContext;
     gripRef: React.RefObject<Element>;
     children: ReactElement;
-    hoverOnId: string;
+    hoverStyleId: string;
     index: number;
-    onDrop?: (index: number) => boolean | void;
+    onDrop?: (from: number, to: number) => boolean | void;
+    onOver?: (from: number, to: number) => boolean | void;
 }
 
 export const Draggable: FC<IDraggableProps> = (
     {
         context,
         children,
-        hoverOnId,
+        hoverStyleId,
         gripRef,
         index,
-        onDrop
+        onDrop,
+        onOver
     }) => {
     const ref = useRef<HTMLDivElement>(null);
     const props = context.infoRef.current;
@@ -89,19 +91,19 @@ export const Draggable: FC<IDraggableProps> = (
                 props.hoverOn = undefined;
             }
 
-            if (!numberIndex || numberIndex === props.hoverOnIndex || numberIndex === index) {
+            if (!numberIndex || numberIndex === props.hoverOnIndex || numberIndex === index || !onOver?.(props.draggingIndex - 1, numberIndex - 1)) {
                 return;
             }
 
             props.hoverOn = element.children[0] as HTMLElement;
             props.hoverOnIndex = numberIndex;
-            props.hoverOn.id = hoverOnId;
+            props.hoverOn.id = hoverStyleId;
         };
 
         const onDragEnd = () => {
             if (props.hoverOn) {
                 props.hoverOn.id = "";
-                if(onDrop?.(props.hoverOnIndex - 1)) {
+                if(onDrop?.(props.draggingIndex - 1, props.hoverOnIndex - 1)) {
                     props.original.style.opacity = "1"
                     props.hoverOn.style.opacity = "0"
                     props.original = props.hoverOn

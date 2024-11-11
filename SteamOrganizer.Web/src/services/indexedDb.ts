@@ -1,14 +1,21 @@
 const DB_NAME = 'sodb';
 
+export const enum EDbStore {
+    User,
+    Games,
+    Friends,
+}
+
 let dbConnection : IDBDatabase | undefined;
 
-function dbAction(mode: IDBTransactionMode, action: (store: IDBObjectStore) => IDBRequest) {
+function dbAction(mode: IDBTransactionMode, storeName: EDbStore, action: (store: IDBObjectStore) => IDBRequest) {
     return new Promise((resolve,reject) => {
         if(!dbConnection) {
             reject("No connection")
             return
         }
-        const store = dbConnection.transaction(  'user' , mode ).objectStore('user');
+        const name = storeName === EDbStore.User ? 'user' : storeName === EDbStore.Games ? 'games' : 'friends'
+        const store = dbConnection.transaction( name, mode ).objectStore(name);
         const request = action(store)
         request.onsuccess = () => resolve( request.result );
         request.onerror = reject;
@@ -46,6 +53,8 @@ function openConnection() {
         dbOpenRequest.onupgradeneeded = function () {
             const db = dbOpenRequest.result;
             db.createObjectStore( 'user');
+            db.createObjectStore('games');
+            db.createObjectStore('friends');
         };
     })
 }
@@ -55,16 +64,16 @@ function closeConnection() {
     dbConnection = undefined
 }
 
-const save = (data: any, key: IDBValidKey) => {
-    return dbAction('readwrite',(store) => store.put(data,key))
+const save = (data: any, key: IDBValidKey, store: EDbStore = EDbStore.User) => {
+    return dbAction('readwrite',store, (s) => s.put(data,key))
 }
 
-const remove = (key: IDBValidKey) => {
-    return dbAction('readwrite', (store) => store.delete(key))
+const remove = (key: IDBValidKey, store: EDbStore = EDbStore.User) => {
+    return dbAction('readwrite',store, (s) => s.delete(key))
 }
 
-const get = (key: IDBValidKey) => {
-    return dbAction('readonly', (store) => store.get(key))
+const get = <T>(key: IDBValidKey, store: EDbStore = EDbStore.User) => {
+    return dbAction('readonly',store, (s) => s.get(key)) as Promise<T | undefined>
 }
 
 export default { get, remove, save, closeConnection, openConnection }

@@ -1,9 +1,11 @@
 import {FC} from "react";
-import {modal} from "@/components/primitives/Modal.tsx";
-import {ESidebarState, setState } from "@/components/Sidebar/Sidebar.tsx";
-import {Gradients, Icon, SvgIcon} from "@/assets";
-import {openSettings, Settings} from "@/pages/Modals/Settings.tsx";
-import {SaveIndicator} from "@/components/Header/SaveIndicator.tsx";
+import { setState } from "@/components/Sidebar/Sidebar.tsx";
+import { Icon, SvgIcon} from "src/defines";
+import {openSettings } from "@/pages/Modals/Settings.tsx";
+import {SaveIndicator} from "./SaveIndicator";
+import {ESidebarState} from "@/types/uiMetadata.ts";
+import {UpdateIndicator} from "@/components/Header/UpdateIndicator.tsx";
+import {NetworkIndicator} from "@/components/Header/NetworkIndicator.tsx";
 
 export const Header: FC = () => {
 
@@ -16,9 +18,11 @@ export const Header: FC = () => {
                 }} />
             </div>
 
-            <div className="flex items-center gap-5 mr-1">
+            <div className="flex items-center gap-2 mr-1">
+                <NetworkIndicator/>
+                <UpdateIndicator/>
                 <SaveIndicator/>
-                <SvgIcon icon={Icon.Bell} size={17} />
+                <SvgIcon icon={Icon.Bell} size={17} className="cursor-pointer ml-5 mr-2" />
                 <SvgIcon icon={Icon.Cog} size={17} className="cursor-pointer" onClick={openSettings}/>
             </div>
         </div>

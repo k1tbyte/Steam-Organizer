@@ -1,5 +1,11 @@
-import {EVisibilityState, SteamPlayerBans, SteamPlayerGames, SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
-import {getPlayerInfo} from "@/services/steamApi.ts";
+import { type EVisibilityState, type SteamPlayerBans, type SteamPlayerGames, type SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
+import {getPlayerInfo, getSteamTime} from "@/services/steamApi.ts";
+import type {IAccountCredential} from "@/types/accountCredentials.ts";
+import {accounts} from "@/store/accounts.ts";
+import {ISteamAuth} from "@/entity/steamAuth.ts";
+
+const codeInterval = 30;
+const steamCodeCharacters = "23456789BCDFGHJKMNPQRTVWXY";
 
 export class Account {
     nickname: string;
@@ -7,6 +13,7 @@ export class Account {
     password: string;
     phone?: number;
     note?: string;
+    credentials?: IAccountCredential[];
 
     id?: number;
     visibilityState?: EVisibilityState;
@@ -16,6 +23,8 @@ export class Account {
     addedDate: Date;
     lastUpdateDate?: Date;
     avatarHash?: string;
+
+    authenticator?: ISteamAuth;
 
     haveCommunityBan?: boolean;
     vacBansCount?: number;
@@ -30,7 +39,6 @@ export class Account {
     totalGamesPrice?: string;
     paidGames?: number;
 
-    pinned?: boolean;
     unpinIndex?: number;
 
     _years?: number;
@@ -47,13 +55,19 @@ export class Account {
         return (this._years = Math.floor(diffInYears * 10) / 10);
     }
 
-    public isAnonymous() {
-        return this.id === undefined;
-    }
-
     public isBanned(): boolean {
         // @ts-ignore
         return this.haveCommunityBan || this.vacBansCount || this.gameBansCount || this.daysSinceLastBan || this.economyBan;
+    }
+
+    public isUpToDate() {
+        if(!this.id) {
+            return true;
+        }
+
+        const now = new Date().getTime()
+        const last = this.lastUpdateDate?.getTime() ?? this.addedDate.getTime()
+        return now - last < 1000 * 60 * 60;
     }
 
     public assignBans(bans: SteamPlayerBans | undefined) {
@@ -93,19 +107,20 @@ export class Account {
         this.createdDate = info.timeCreated ?? this.createdDate
         this.assignBans(info.bans)
         this.assignGames(info.gamesSummaries)
+        Account.initAccount(this);
     }
 
-    public static async new(login: string, password: string, accountId?: number) {
-        const acc = new Account(login,password,accountId);
-        if(!accountId) return acc;
-        const info = await getPlayerInfo(acc.id)
+    public async update() {
+        if(this.id) {
+            const info = await getPlayerInfo(this.id);
 
-        if(!info) {
-            return undefined;
+            if(!info) {
+                return undefined;
+            }
+            this.assignInfo(info)
         }
-        acc.assignInfo(info)
-        Account.initAccount(acc);
-        return acc;
+
+        return this;
     }
 
     public static initAccount(acc: Account) {
@@ -113,6 +128,49 @@ export class Account {
         acc.createdDate = acc.createdDate ? new Date(acc.createdDate) : undefined;
         acc.lastUpdateDate = acc.lastUpdateDate ? new Date(acc.lastUpdateDate) : undefined;
         acc.addedDate = new Date(acc.addedDate);
+    }
+
+    public moveTo(selfIndex: number, newIndex: number) {
+        if(newIndex === selfIndex) {
+            return
+        }
+        accounts.value.splice(newIndex, 0, accounts.value.splice(selfIndex, 1)[0]);
+    }
+
+    public async generate2faCode (): Promise<string | null> {
+        const time = await getSteamTime();
+        const sharedSecret = this.authenticator?.shared_secret;
+        if (!sharedSecret || !time) {
+            return null;
+        }
+
+        const sharedSecretArray = Uint8Array.from(atob(sharedSecret), c => c.charCodeAt(0));
+        const timeBuffer = new ArrayBuffer(8);
+        const timeArray = new DataView(timeBuffer);
+        timeArray.setUint32(4, Math.floor(time / codeInterval), false);
+
+        const key = await crypto.subtle.importKey(
+            "raw",
+            sharedSecretArray,
+            { name: "HMAC", hash: "SHA-1" },
+            false,
+            ["sign"]
+        );
+
+        const hashedData = new Uint8Array(await crypto.subtle.sign("HMAC", key, timeBuffer));
+        const codeArray = new Array(5);
+        const b = hashedData[19] & 0xF;
+        let codePoint = ((hashedData[b] & 0x7F) << 24) |
+            ((hashedData[b + 1] & 0xFF) << 16) |
+            ((hashedData[b + 2] & 0xFF) << 8) |
+            (hashedData[b + 3] & 0xFF);
+
+        for (let i = 0; i < 5; ++i) {
+            codeArray[i] = steamCodeCharacters[codePoint % steamCodeCharacters.length];
+            codePoint = Math.floor(codePoint / steamCodeCharacters.length);
+        }
+
+        return codeArray.join('');
     }
 
     constructor(login: string, password: string, accountId?: number) {

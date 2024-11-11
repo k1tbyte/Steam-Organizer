@@ -2,6 +2,7 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder()
 
 const saltBytes = new Uint8Array ( [0x45, 0x4F, 0x74, 0x7A, 0x61, 0x6E, 0x6E, 0x58, 0x45, 0x4F, 0x53, 0x64, 0x35, 0x48, 0x47, 0x42, 0x53, 0x4A, 0x76, 0x73, 0x30, 0x6F, 0x70, 0x31, 0x42, 0x48, 0x52, 0x75, 0x76, 0x46, 0x77, 0x6C])
+const version = 0x0A
 
 export interface IKeyProps {
     secret: string,
@@ -36,6 +37,7 @@ export const importKey = (key: string) =>
 
 export async function encrypt(key: CryptoKey, data: string) : Promise<ArrayBuffer> {
     const iv = window.crypto.getRandomValues(new Uint8Array(16));
+    iv[12] = iv[3] = version;
     const encryptedContent = await window.crypto.subtle.encrypt(
         {
             name: "AES-CBC",
@@ -49,6 +51,11 @@ export async function encrypt(key: CryptoKey, data: string) : Promise<ArrayBuffe
     vector.set(iv, 0);
     vector.set(new Uint8Array(encryptedContent), iv.length)
     return vector.buffer
+}
+
+export function verifyVersion(data: ArrayBuffer) {
+    data = new Uint8Array(data, 3, 10);
+    return data[0] === version && data[9] === version
 }
 
 export async function decrypt(key: CryptoKey, data: ArrayBuffer) {

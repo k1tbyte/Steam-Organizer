@@ -1,21 +1,42 @@
-import {type FC, useRef} from "react";
-import {useModalActions} from "@/components/primitives/Modal.tsx";
+import React, {type FC, useRef} from "react";
+import {modal, useModalActions} from "@/components/primitives/Modal.tsx";
 import { InputValidationWrapper } from "@/components/elements/FieldWrapper.tsx";
 import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
 import Input from "@/components/primitives/Input.tsx";
 import Button, {type IButtonActions} from "@/components/primitives/Button.tsx";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import {Account} from "@/entity/account.ts";
 import {accounts, isAccountCollided, saveAccounts} from "@/store/accounts.ts";
 import {toAccountId} from "@/lib/steamIdConverter.ts";
 import {useFormValidation, validators} from "@/hooks/useFormValidation.ts";
 import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
+import {useIsOffline} from "@/store/local.tsx";
+import {config} from "@/store/config.ts";
+import {openSettings} from "@/pages/Modals/Settings.tsx";
+
+
+export const openAddAccount = () => {
+    if(!config.steamApiKey) {
+        toast.open({
+            body: "Steam API key not specified. Do this in settings",
+            variant: ToastVariant.Warning,
+            id: "noApiKey",
+            clickAction: openSettings
+        })
+        return;
+    }
+    modal.open({
+        title: "New account",
+        body: <AddAccount/>
+    })
+}
 
 export const AddAccount: FC = () => {
     const errorIdRef = useRef<HTMLDivElement>()
     const errorLoginRef = useRef<HTMLDivElement>()
     const { closeModal, contentRef }  = useModalActions<HTMLDivElement>();
     const submitActions = useRef<IButtonActions>();
+    const isOffline = useIsOffline()
 
     const addClick = async (e) => {
         try {
@@ -37,9 +58,8 @@ export const AddAccount: FC = () => {
                 error.textContent = `Account with same ${collision[0] ? 'id' : 'login'} already exists`
                 return
             }
-            const account = await Account.new(login, formData.get("password").toString(), id)
+            const account = await new Account(login, formData.get("password").toString(), id).update()
             if(!account) {
-                toast.open({ body: "Failed to retrieve account information", variant: ToastVariant.Error })
                 return
             }
 
@@ -77,11 +97,14 @@ export const AddAccount: FC = () => {
                     <PasswordBox name="password"/>
                 </InputValidationWrapper>
 
-                <InputValidationWrapper className="mb-7 w-full" ref={errorIdRef}
-                                        title="Steam ID in any format"
-                                        icon={<SvgIcon icon={Icon.Identifier} size={36}/>}>
-                    <Input name="id"/>
-                </InputValidationWrapper>
+                { !isOffline &&
+                    <InputValidationWrapper className="mb-7 w-full" ref={errorIdRef}
+                                            title="Steam ID in any format"
+                                            icon={<SvgIcon icon={Icon.Identifier} size={36}/>}>
+                        <Input name="id"/>
+                    </InputValidationWrapper>
+                }
+
 
                 <Button actions={submitActions} className="w-full max-w-28 mx-auto" type="submit">
                     Add

@@ -1,20 +1,22 @@
 import React, {FC, useState} from "react";
-import {ESidebarState} from "@/components/Sidebar/Sidebar.tsx";
 import Button, {EButtonVariant} from "@/components/primitives/Button.tsx";
-import {Icon, SvgIcon} from "@/assets";
+import {Icon, SvgIcon} from "src/defines";
 import {useAuth} from "@/providers/authProvider.tsx";
 import {Loader} from "@/components/primitives/Loader.tsx";
 import {AnimatePresence, motion} from "framer-motion";
 import {popup, Tooltip} from "@/components/primitives/Popup.tsx";
 import styles from "./UserInfo.module.pcss"
+import {ESidebarState} from "@/types/uiMetadata.ts";
+import {useIsOffline} from "@/store/local.tsx";
 
-interface IUserInfoProps {
-    state: ESidebarState
-}
-
-export const UserInfo: FC<IUserInfoProps> = ({ state }) => {
+export const UserInfo: FC<{state: ESidebarState}> = ({ state }) => {
     const {user, signIn, signOut } = useAuth()
     const [expanded, setExpand] = useState(false)
+    const isOffline = useIsOffline()
+
+    if(isOffline) {
+        return;
+    }
 
     if(!user.isLoggedIn) {
         return  (
@@ -62,7 +64,7 @@ export const UserInfo: FC<IUserInfoProps> = ({ state }) => {
                         <div className="pt-2 text-nowrap">
                             <Tooltip message={"Logout"}
                                      wrapIf={state === ESidebarState.Partial}
-                                {...popup.right}>
+                                {...popup.side}>
                                 <Button className="py-2 px-0 rounded-md" variant={EButtonVariant.Transparent}
                                         onClick={signOut}>
                                     <SvgIcon className={styles.btnIcon} icon={Icon.Exit} size={23}/>

@@ -1,6 +1,6 @@
 import React, {FC, ReactElement, useState} from "react";
 import {AnimatePresence, motion} from "framer-motion";
-import {Gradients, Icon, SvgIcon} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "src/defines";
 
 let setToasts: React.Dispatch<React.SetStateAction<IToastProps[]>>;
 const variants: [string, ReactElement][] = [
@@ -18,7 +18,7 @@ export const enum ToastVariant {
 }
 
 interface IToastProps {
-    id?: number;
+    id?: number | string;
     body: ReactElement | string;
     clickAction?: () => void;
     autoClosable?: boolean;
@@ -44,7 +44,7 @@ const Toast: FC<IToastProps> = React.memo(
             return
         }
         clearTimeout(timer)
-        timer = setTimeout(onClose, delay);
+        timer = window.setTimeout(onClose, delay);
     }
     setTimer();
 
@@ -109,11 +109,17 @@ export const ToastsHost: FC = () => {
 
 export const toast = {
     open: (props: IToastProps) => {
-        props.id = Math.random();
-        setToasts((prev) => prev ? [...prev, props] : [props])
+        props.id = props.id ?? Math.random();
+        setToasts((prev) => {
+            if(prev && prev.findIndex(o => o.id === props.id) !== -1) {
+                return prev
+            }
+
+            return prev ? [...prev, props] : [props];
+        })
         return props.id
     },
-    close: (id: number) => {
+    close: (id: number | string) => {
         setToasts((prev) =>
             prev?.filter(o => o.id !== id)
         )

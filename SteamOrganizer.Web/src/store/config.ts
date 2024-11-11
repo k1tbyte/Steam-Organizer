@@ -6,6 +6,8 @@ import {debounce} from "@/lib/utils.ts";
 interface IAppConfig {
     encryptionKey?: string
     steamApiKey?: string
+    autoSync?: boolean
+    autoBackup?: boolean
 }
 
 export const enum EDecryptResult {
@@ -29,9 +31,9 @@ export const  loadConfig = async () => {
         visitorId = "test"
     }
     fingerprint = await deriveKey({ secret: visitorId, iterations: 1})
-    const configBytes = await db.get("config") as ArrayBuffer | undefined
+    const configBytes = await db.get<ArrayBuffer>("config")
 
-    config = {}
+    config = { autoBackup: true }
     if(configBytes === undefined) {
         return
     }

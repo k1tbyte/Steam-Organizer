@@ -153,8 +153,8 @@ export const Popup: FC<IPopupProps> = ({
         }
         const onClickOutside = () => setOpen(false);
         align(triggerRef.current, popupRef.current, alignX, alignY, offset)
-        setTimeout(() => document.addEventListener('click', onClickOutside), 10)
-        return () => document.removeEventListener('click', onClickOutside)
+        setTimeout(() => document.addEventListener('pointerdown', onClickOutside), 10)
+        return () => document.removeEventListener('pointerdown', onClickOutside)
     }, [isOpen]);
 
     const triggerProps = {
@@ -175,57 +175,69 @@ export const Tooltip = forwardRef<HTMLDivElement,ITooltipProps> (
          offset= { x: 5, y: 5 },
          openDelay = 300,
          canHover = true,
-        wrapIf = true,
+         wrapIf = true,
          ...props },ref) => {
 
-    if(!wrapIf) {
-        return children;
-    }
-
-    const [isOpen, setOpen] = useState(false);
-    const triggerRef = useRef(null);
-    const tipRef = useRef<HTMLDivElement>(null);
-    let timer: number;
-
-    useImperativeHandle(ref, () => tipRef.current)
-
-    useEffect(() => {
-        if(!tipRef.current) {
-            return
+        if(!wrapIf) {
+            return children;
         }
-        align(triggerRef.current, tipRef.current, alignX, alignY, offset)
-    }, [isOpen, children]);
 
-    const debounceOpen = () => {
-        clearTimeout(timer)
-        if(!isOpen) {
-            timer = setTimeout(() => setOpen(true), openDelay);
+        const [isOpen, setOpen] = useState(false);
+        const triggerRef = useRef(null);
+        const tipRef = useRef<HTMLDivElement>(null);
+        let timer: number;
+
+        useImperativeHandle(ref, () => tipRef.current)
+
+        useEffect(() => {
+            if(!tipRef.current) {
+                return
+            }
+            align(triggerRef.current, tipRef.current, alignX, alignY, offset)
+        }, [isOpen, children]);
+
+        useEffect(() => {
+            const close = () => setOpen(false)
+            if(isOpen) {
+                document.addEventListener('touchstart', close)
+            }
+            return () => document.removeEventListener('touchstart', close)
+        }, [isOpen]);
+
+        const debounceOpen = (e: MouseEvent) => {
+            clearTimeout(timer)
+            if(!isOpen) {
+                timer = window.setTimeout(() => {
+                    if(e.relatedTarget) {
+                        setOpen(true);
+                    }
+                }, openDelay);
+            }
         }
-    }
 
-    const debounceClose = () => {
-        clearTimeout(timer)
-        if(isOpen) {
-            timer = setTimeout(() => setOpen(false), 50);
+        const debounceClose = () => {
+            clearTimeout(timer)
+            if(isOpen) {
+                timer = window.setTimeout(() => setOpen(false), 50);
+            }
         }
-    }
 
-    const events = {
-        onMouseOver: debounceOpen,
-        onFocus: debounceOpen,
-        onMouseLeave: debounceClose
-    }
+        const events = {
+            onMouseOver: debounceOpen,
+            onFocus: debounceOpen,
+            onMouseLeave: debounceClose,
+        }
 
-    if(canHover) {
-        Object.assign(props, events)
-    }
+        if(canHover) {
+            Object.assign(props, events)
+        }
 
-    return getPopup(tipRef, { ref: triggerRef, ...events }, children,
-        {...props}, isOpen, className, message)
-})
+        return getPopup(tipRef, { ref: triggerRef, ...events }, children,
+            {...props}, isOpen, className, message)
+    })
 
 export const popup = {
-    right:  {
+    side:  {
         openDelay: 0,
         offset: { x: 20, y: 0 },
         alignX: EPlacementX.Right,

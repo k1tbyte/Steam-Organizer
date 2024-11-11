@@ -1,45 +1,62 @@
-import {forwardRef, InputHTMLAttributes, useImperativeHandle, useRef} from "react";
+import {type ChangeEvent, forwardRef, type InputHTMLAttributes, type CompositionEvent, useImperativeHandle, useRef} from "react";
 import {cn} from "@/lib/utils.ts";
-import {TypeInputValidator} from "@/hooks/useFormValidation.ts";
-import {config} from "@/store/config.ts";
+import {type TypeInputValidator} from "@/hooks/useFormValidation.ts";
+import {type IBindable} from "@/components/primitives/types/IBindable.ts";
 
-export interface IInputProps extends InputHTMLAttributes<HTMLInputElement> {
+export const enum EPropertyChangedTrigger {
+    OnLostFocus,
+    Reactive
+}
+
+export interface IInputProps extends InputHTMLAttributes<HTMLInputElement>, IBindable {
     className?: string,
-    bindTo?: object,
-    bindKey?: string,
     filter?: RegExp,
     onValidate?: (value: string) => void,
     validator?: TypeInputValidator,
     converter?: (value: string) => any,
-
-    // Fired when bindable value changed and new value is different from the old one
-    onChanged?: () => void
+    trigger?: EPropertyChangedTrigger,
 }
 
+
 const  Input = forwardRef<HTMLInputElement, IInputProps>((
-    { className,bindTo, bindKey, onValidate, validator, onChanged, filter, converter, ...props}, forwardedRef) => {
-    const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        props.onInput?.(e)
+    { className,bindTo, bindKey, onValidate, validator, onChanged, filter, converter, trigger = EPropertyChangedTrigger.OnLostFocus, ...props}, forwardedRef) => {
 
-        if (validator) {
-            const result = validator(e.target.value)
-            onValidate?.(result)
-
-            if(result) {
-                return;
-            }
-        }
-
-
-        if(bindTo && bindKey && bindTo[bindKey] !== (converter ? converter(e.target.value) : e.target.value)) {
-            bindTo[bindKey] = e.target.value
+    const onChanging = (value: string) => {
+        if(bindTo && bindKey && bindTo[bindKey] !== (converter ? (value = converter(value)) : value)) {
+            bindTo[bindKey] = value
             onChanged?.()
         }
     }
 
+    const isValid = (value: string) => {
+        if(!validator) {
+            return true;
+        }
+
+        const result = validator(value)
+        onValidate?.(result)
+        return !result
+    }
+
+    if (validator) {
+        props.onInput = (e: ChangeEvent<HTMLInputElement>) => {
+            if(isValid(e.target.value) && trigger === EPropertyChangedTrigger.Reactive) {
+                onChanging(e.target.value)
+            }
+        }
+    }
+
+    if(trigger === EPropertyChangedTrigger.OnLostFocus) {
+        props.onBlur = (e) => {
+            if(isValid(e.target.value)) {
+                onChanging(e.target.value)
+            }
+        }
+    }
+
     return (
-        <input type="text" ref={forwardedRef} defaultValue={bindTo?.[bindKey]} {...props} onInput={onInput}
-               onBeforeInput={filter ? (e: React.CompositionEvent<HTMLInputElement>) => {
+        <input type="text" ref={forwardedRef} defaultValue={bindTo?.[bindKey]} {...props}
+               onBeforeInput={filter ? (e: CompositionEvent<HTMLInputElement>) => {
                    if(!filter.test(e.data)) {
                        e.preventDefault()
                    }

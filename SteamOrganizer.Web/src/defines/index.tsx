@@ -1,4 +1,3 @@
-import grid from "./images/grid.webp"
 import { forwardRef, type SVGAttributes} from "react";
 
 export const enum Gradients {
@@ -54,9 +53,30 @@ export const enum Icon {
     Exit,
     CheckSquareOutline,
     DragZone,
-    SyncCircle,
+    LoaderCircle,
     Phone,
-    NoteEdit
+    NoteEdit,
+    Email,
+    EpicGames,
+    ElectronicArts,
+    UPlay,
+    RockstarGames,
+    Square,
+    Xbox,
+    BattleNet,
+    Wargaming,
+    CardText,
+    DatabaseUpdate,
+    DatabaseExport,
+    DatabaseImport,
+    SyncRightBelow,
+    CloudSlotRightBelow,
+    SyncRenew,
+    OpenLink,
+    AccountAdd,
+    SearchInList,
+    NoDataToDisplay,
+    PushBackupCloud
 }
 
 export function Defs() {
@@ -103,7 +123,3 @@ export const SvgIcon = forwardRef<SVGSVGElement, ISvgIconProps>(
         </svg>
     );
 });
-
-export {
-    grid
-}

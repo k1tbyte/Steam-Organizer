@@ -12,26 +12,17 @@ import React, {
 import {useSlider} from "@/hooks/useSlider.ts";
 import useMediaQuery from "@/hooks/useMediaQuery.ts";
 import { useLocation, useNavigate} from "react-router-dom";
-import {Gradients} from "@/assets";
+import {Gradients, Icon, SvgIcon} from "src/defines";
 import { popup, Tooltip} from "@/components/primitives/Popup.tsx";
 import {UserInfo} from "@/components/Sidebar/UserInfo.tsx";
 import styles from "./Sidebar.module.pcss"
-
-
-export const enum ESidebarState {
-    Hidden,
-    Partial,
-    Full
-}
+import {ESidebarState} from "@/types/uiMetadata.ts";
+import {uiStore, useIsOffline} from "@/store/local.tsx";
 
 interface ISidebarItemProps {
     icon: ReactElement
     text: string
     link:string
-}
-
-interface ISidebarProps {
-    children: ReactNode
 }
 
 interface ISidebarState {
@@ -40,10 +31,8 @@ interface ISidebarState {
 }
 
 export let setState: Dispatch<SetStateAction<ESidebarState>>
-const SidebarContext = createContext<ISidebarState>({ state: 0, small: false })
+const SidebarContext = createContext<ISidebarState>({ state: ESidebarState.Full, small: false })
 const mediaBreak = "(max-width: 1023px)"
-
-const getState = () => (Number(localStorage.getItem("sidebar")) ?? ESidebarState.Full);
 
 const NavLink = forwardRef<HTMLDivElement, ISidebarItemProps>(({ link, icon, text, ...props }, ref) => {
     let location=useLocation();
@@ -87,15 +76,16 @@ export const SidebarItem: FC<ISidebarItemProps> = (props) => {
     return (
         <Tooltip message={props.text}
                  wrapIf={sidebar.state === ESidebarState.Partial}
-                 {...popup.right}>
+                 {...popup.side}>
            <NavLink {...props}/>
         </Tooltip>
     );
 }
 
-export const Sidebar: FC<ISidebarProps> = ({children}) => {
+export const Sidebar: FC = () => {
+    const isOffline = useIsOffline()
     const [state, setSidebarState] = useState<ESidebarState>(
-        window.matchMedia(mediaBreak).matches ? ESidebarState.Hidden : getState()
+        window.matchMedia(mediaBreak).matches ? ESidebarState.Hidden : uiStore.store.sidebarState
     )
 
     const prevState = useRef(state)
@@ -105,7 +95,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
     const isSmallScreen = useMediaQuery( {
         query: mediaBreak,
         callback: (match: boolean) => {
-            setState(match ? ESidebarState.Hidden : getState());
+            setState(match ? ESidebarState.Hidden : uiStore.store.sidebarState);
         }
     });
 
@@ -125,7 +115,7 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
         if(newState != null) {
             prevState.current = newState;
             setState(newState)
-            localStorage.setItem("sidebar", newState.toString())
+            uiStore.emit(nameof(uiStore.store.sidebarState), newState)
         }
     });
 
@@ -135,7 +125,11 @@ export const Sidebar: FC<ISidebarProps> = ({children}) => {
                 {!isSmallScreen && <div className={styles.navTopStub}/>}
                 <SidebarContext.Provider value={ { state: state, small: isSmallScreen } }>
                     <ul className="flex-1">
-                        {children}
+                        <SidebarItem icon={<SvgIcon icon={Icon.UsersOutline} size={20}/>} text="Accounts" link="/accounts"/>
+                        <SidebarItem icon={<SvgIcon icon={Icon.LightningOutline} size={20}/>} text="Actions" link="/actions"/>
+                        { !isOffline &&
+                            <SidebarItem icon={<SvgIcon icon={Icon.FolderSync} size={20}/>} text={"Backups"} link="/backups"/>
+                        }
                     </ul>
                 </SidebarContext.Provider>
                 <UserInfo state={state}/>

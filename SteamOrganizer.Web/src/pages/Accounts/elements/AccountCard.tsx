@@ -1,8 +1,8 @@
 import type { Account } from "@/entity/account.ts";
-import React, {FC, useContext, useEffect, useRef} from "react";
+import React, {type FC, useContext, useRef} from "react";
 import {Link} from "react-router-dom";
-import { Icon, SvgIcon} from "@/assets";
-import {accounts, delayedSaveAccounts, saveAccounts} from "@/store/accounts.ts";
+import { Icon, SvgIcon} from "src/defines";
+import {accounts, saveDbMutation} from "@/store/accounts.ts";
 import styles from "./AccountCard.module.pcss"
 import {defaultAvatar} from "@/store/config.ts";
 import {Tooltip} from "@/components/primitives/Popup.tsx";
@@ -10,34 +10,60 @@ import {dateFormatter} from "@/lib/utils.ts";
 import {ConfirmPopup} from "@/components/elements/ConfirmPopup.tsx";
 import {AccountsContext} from "@/pages/Accounts/elements/AccountsNav.tsx";
 import {Draggable} from "@/components/primitives/Draggable.tsx";
+import {flagStore, useFlagStore} from "@/store/local.tsx";
 
 interface IAccountCardProps {
     acc: Account,
+    pinned: boolean;
     index: number,
 }
 
-const AccountCard: FC<IAccountCardProps> = ({acc, index} ) => {
+
+const onDragOver = (from: number, to: number) => {
+    return (accounts.value[from].unpinIndex === undefined) === (accounts.value[to].unpinIndex === undefined)
+}
+
+const onDrop = (from: number, to: number) => {
+    saveDbMutation((o) => {
+        const acc = o.splice(from, 1)[0]
+        o.splice(to, 0, acc)
+    })
+    return true
+}
+
+const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.MutableRefObject<SVGSVGElement> }> =
+    ({acc, pinned, index, isEnabled, gripRef }) => {
     // @ts-ignore
-    const bansCount = acc.haveCommunityBan + !!acc.vacBansCount + !!acc.gameBansCount +  !!acc.economyBan
-    const context = useContext(AccountsContext)
-    const gripRef = useRef<SVGSVGElement>(null)
+    const bansCount = acc.haveCommunityBan + !!acc.vacBansCount + !!acc.gameBansCount + !!acc.economyBan
+    const [isUpdating] = useFlagStore<boolean>(nameof(flagStore.store.isDbUpdating))
 
-    const onDrop = (i: number) => {
-        accounts.mutate((o) => {
-            const acc = o.splice(index, 1)[0]
-            o.splice(i, 0, acc)
-        })
+    const pinAccount = () => {
+        acc.unpinIndex = index;
 
-        delayedSaveAccounts()
-        return true
+        if (index > 0 && accounts.value[index - 1].unpinIndex === undefined) {
+            const targetIndex = accounts.value.findIndex((a, i) => i < index && a.unpinIndex === undefined);
+            if (targetIndex !== -1) {
+                acc.moveTo(index, targetIndex);
+            }
+        }
+        saveDbMutation()
     }
 
-    return <Draggable context={context}
-                      gripRef={gripRef}
-                      index={index}
-                      hoverOnId={styles.cardAccent}
-                      onDrop={onDrop}>
-        <div className={styles.card}>
+    const unpinAccount = () => {
+        const end = accounts.value.length - 1;
+        let targetIndex = acc.unpinIndex > end ? end : acc.unpinIndex;
+        if (index < end && accounts.value[index + 1].unpinIndex !== undefined) {
+            const minIndex = accounts.value.findIndex(a => a.unpinIndex === undefined) - 1;
+            targetIndex = (minIndex !== -1 && acc.unpinIndex <= minIndex) ? minIndex : acc.unpinIndex;
+        }
+
+        acc.moveTo(index, targetIndex);
+        acc.unpinIndex = undefined;
+        saveDbMutation()
+    }
+
+    return (
+        <div className={`${styles.card} ${isEnabled && pinned ? styles.cardAccentPinned : ""}`}>
             <div className="shrink-0">
                 <Tooltip message={() =>
                     <p>
@@ -53,11 +79,18 @@ const AccountCard: FC<IAccountCardProps> = ({acc, index} ) => {
                 </Tooltip>
 
                 <div className={styles.indicators}>
-                    {/* <SvgIcon icon={Icon.Lock} size={16} className="fill-success"/> */}
                     {!acc.id &&
                         <Tooltip
                             message={() => "This is an anonymous account and does not contain any\ninformation other than credentials"}>
                             <SvgIcon icon={Icon.Incognito} size={16} className="fill-yellow-300"/>
+                        </Tooltip>
+                    }
+                    { acc.authenticator &&
+                        <Tooltip
+                            message={() => "This account is 2FA protected\nClick to copy the code"}>
+                            <SvgIcon icon={Icon.Lock} size={16}
+                                     onClick={async () => navigator.clipboard.writeText(await acc.generate2faCode() ?? "")}
+                                     className="fill-success cursor-pointer"/>
                         </Tooltip>
                     }
                 </div>
@@ -98,25 +131,41 @@ const AccountCard: FC<IAccountCardProps> = ({acc, index} ) => {
                 </div>
             </div>
 
-            {context.isEnabled ?
+            {isEnabled ?
                 <SvgIcon icon={Icon.DragZone}
                          ref={gripRef}
                          className={styles.grip}
                          size={25}/> :
                 <SvgIcon icon={Icon.Pin} role="button"
-                         className={styles.pin}
+                         onClick={pinned ? unpinAccount : pinAccount}
+                         className={`${styles.pin} ${pinned ? "text-warn" : "rotate-45"}`}
                          size={20}/>
             }
 
-            <ConfirmPopup text={`Are you sure you want to delete '${acc.login}'?`} onYes={async () => {
-                accounts.mutate((o) => {
-                    o.splice(o.indexOf(acc), 1)
-                })
-                await saveAccounts()
-            }}>
-                <SvgIcon icon={Icon.Trash} role="button" className={styles.trashBin} size={20}/>
-            </ConfirmPopup>
+            {!isUpdating &&
+                <ConfirmPopup text={`Are you sure you want to delete '${acc.login}'?`} onYes={() => {
+                    saveDbMutation((o) => {
+                        o.splice(o.indexOf(acc), 1)
+                    })
+                }}>
+                    <SvgIcon icon={Icon.Trash} role="button" className={styles.trashBin} size={20}/>
+                </ConfirmPopup>
+            }
         </div>
+    )
+}
+
+const AccountCard: FC<IAccountCardProps> = ({acc, pinned, index}) => {
+    const context = useContext(AccountsContext)
+    const gripRef = useRef<SVGSVGElement>(null)
+
+    return <Draggable context={context}
+                      gripRef={gripRef}
+                      index={index}
+                      hoverStyleId={styles.cardAccent}
+                      onOver={onDragOver}
+                      onDrop={onDrop}>
+        <CardMain acc={acc} pinned={pinned} index={index} isEnabled={context.isEnabled} gripRef={gripRef}/>
     </Draggable>
 }
 

@@ -1,10 +1,10 @@
 import {Dispatch, SetStateAction} from "react";
-import {ObservableObject} from "@/lib/observableObject.ts";
+import {Observer} from "@/lib/observer/observer.ts";
 
 export abstract class BaseVirtualLayout {
     protected readonly chunkSetter: Dispatch<SetStateAction<number[]>>;
     protected readonly scroller: HTMLElement;
-    protected readonly observer: ObservableObject<ArrayLike<any>>;
+    protected readonly observer: Observer<ArrayLike<any>>;
     protected readonly sizer: HTMLDivElement;
     protected readonly layout: HTMLDivElement;
     public isInitialized: boolean = false;
@@ -14,9 +14,8 @@ export abstract class BaseVirtualLayout {
     rowHeight: number = 0;
     offsetIndex: number = 0;
     limit: number = 0;
-    timer: number = 0;
 
-    public constructor(observer: ObservableObject<ArrayLike<any>>,
+    public constructor(observer: Observer<ArrayLike<any>>,
                           chunkSetter: Dispatch<SetStateAction<number[]>>,
                           scroller: HTMLElement,
                           sizer: HTMLDivElement,
