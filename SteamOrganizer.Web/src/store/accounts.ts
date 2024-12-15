@@ -157,6 +157,9 @@ export const loadAccounts = async (bytes: ArrayBuffer | null = null): Promise<vo
         // Initialize accounts if no bytes are provided
         if (!bytes) {
             initAccounts();
+/*            for(let i =0 ; i < 100; i++) {
+                accounts.value.push(new Account("account_" + i,"s", i))
+            }*/
             return;
         }
 
@@ -168,10 +171,6 @@ export const loadAccounts = async (bytes: ArrayBuffer | null = null): Promise<vo
             initAccounts();
             result = EDecryptResult.BadCredentials;
         }
-
-/*        for(let i =0 ; i < 100; i++) {
-            accounts.value.push(new Account("account_" + i,"s", i))
-        }*/
     } catch {
         // Show error toast on unknown critical error
         toast.open({

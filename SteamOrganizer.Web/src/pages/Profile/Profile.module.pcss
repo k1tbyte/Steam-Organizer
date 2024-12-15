@@ -3,7 +3,7 @@
 }
 
 .wrapper {
-    @apply p-3 h-full gap-2.5 pt-10 overflow-auto;
+    @apply  h-full px-3 overflow-auto;
     background-image: linear-gradient(theme('colors.primary') 1px, transparent 1px),
     linear-gradient(90deg, theme('colors.primary') 1px, transparent 1px);
     background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
@@ -41,12 +41,12 @@
 }
 
 .header {
-    @apply backdrop-primary z-10 mt-10 py-9 w-full rounded-3xl flex flex-col
+    @apply backdrop-primary z-10 mt-20 py-9 w-full rounded-3xl flex flex-col
            justify-center items-center border-t-[6px] border-tertiary/50 relative;
 }
 
 .tabsIndicator {
-    @apply absolute -bottom-3.5 w-full h-0.5;
+    @apply absolute bottom-0 w-full h-0.5;
     background: linear-gradient(to right, transparent 0%, #6c5ecf 50%, transparent 100%);
 }
 

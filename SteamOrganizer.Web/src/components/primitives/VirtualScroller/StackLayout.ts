@@ -1,22 +1,11 @@
-import {BaseVirtualLayout} from "@/components/primitives/VirtualScroller/BaseVirtualLayout.ts";
+import { BaseVirtualLayout } from "./BaseVirtualLayout.ts";
 
 export class StackLayout extends BaseVirtualLayout {
-
-    public isInitialized: boolean = true;
-
-    public render() {
-        this.rowHeight = 200;
-        this.startRow = Math.floor(this.scroller.scrollTop / this.rowHeight)
-        const visibleRows =Math.ceil(this.scroller.clientHeight / this.rowHeight);
-        const endIndex = Math.min(this.startRow + visibleRows, this.collection.length);
-        const limitCount = endIndex - this.startRow;
-
-        this.chunkSetter(Array.from({ length: limitCount },
-            (_,i) => i + this.startRow));
+    public render(): void {
+        this.renderDefault(() => this.startRow, (visibleRows) => this.startRow + visibleRows)
     }
 
-    public refresh() {
-        this.render()
+    protected override getSizerHeight(): number {
+        return Math.ceil(this.rowHeight * this.source.length) - this.rowGap;
     }
-
 }

@@ -1,87 +1,157 @@
-import React, {FC, ReactElement, ReactNode, useEffect, useRef, useState} from "react";
+import React, {
+    Dispatch,
+    FC,
+    MutableRefObject,
+    ReactElement,
+    SetStateAction,
+    useEffect,
+    useRef,
+    useState
+} from "react";
 import {useScrollbar} from "@/hooks/useScrollbar.ts";
 import {BaseVirtualLayout} from "./BaseVirtualLayout.ts";
 import {Observer} from "@/lib/observer/observer.ts";
+import clsx from "clsx";
 
-interface IVirtualScrollerProps {
+export type ScrollerInitializer = (MutableRefObject<HTMLElement>) | ((onScroll: () => void) => HTMLElement);
+type RenderFunction<T> = (object: T, index: number, mediaMatch?: boolean) => ReactElement;
+
+interface IVirtualListProps<T> {
+    collection: Observer<T[]>;
+    layout: typeof BaseVirtualLayout;
+    onRenderElement: RenderFunction<T>;
+    scroller?: ScrollerInitializer;
     className?: string;
-    collection: Observer<any[]>;
-    renderElement: (object: any, index: number) => ReactNode;
-    layout: typeof BaseVirtualLayout,
+    scrollerClassName?: string;
+    withDragMoving?: boolean;
     emptyIndicator?: ReactElement,
     searchEmptyIndicator?: ReactElement,
-    useDragMoving?: boolean
+    onSizeChanging?: (height: number) => boolean;
 }
 
-const VirtualScroller: FC<IVirtualScrollerProps> = (
-    {
-        collection,
-        renderElement,
-        layout,
-        className,
-        emptyIndicator,
-        searchEmptyIndicator,
-        useDragMoving
-}) => {
-    const [items, setItems] = useState<number[]>([])
-    const areaRef = useRef<HTMLDivElement>(null!);
-    const sizerRef = useRef<HTMLDivElement>(null!);
-    const layoutRef = useRef<BaseVirtualLayout>();
+interface IVirtualGeneratorProps {
+    data: ArrayLike<any>;
+    onRenderElement: RenderFunction<any>;
+    setRef: MutableRefObject<Dispatch<SetStateAction<number[]>>>;
+    layoutRef: MutableRefObject<BaseVirtualLayout>;
+}
 
-    const {hostRef, scrollRef} = useScrollbar({
-        scroll: () => layoutRef.current!.render()
-    });
+const VirtualGenerator: FC<IVirtualGeneratorProps> = ({ data, onRenderElement,setRef, layoutRef  }) => {
+    const [items, setItems] = useState<number[]>(data?.length ? [0] : [])
 
     useEffect(() => {
+        setRef.current = setItems
+    }, []);
 
-        if(useDragMoving) {
-            scrollRef.current.setAttribute("drag-scroller","");
+    if(layoutRef.current?.isScrollAsync === false) {
+        layoutRef.current.updateScrollPadding()
+    }
+
+    return (
+        items.map((i) => onRenderElement(data![i], i))
+    )
+}
+
+const ListIndicator: FC<{ setRef: MutableRefObject<Dispatch<SetStateAction<ReactElement>>>, value: ReactElement }>
+    = ({ value,  setRef }) => {
+    const [indicator, setIndicator] = useState<ReactElement>(value);
+    setRef.current = setIndicator;
+    return indicator;
+}
+
+const getScrollElement = (scroller: ScrollerInitializer, onRender: () => void): HTMLElement => {
+    if (scroller instanceof Function) {
+        return scroller(onRender);
+    } else {
+        scroller.current.addEventListener("scroll", onRender);
+        return scroller.current;
+    }
+};
+
+export const VirtualScroller = <T,>({
+                                        collection, layout, scroller,
+                                        className, onRenderElement, withDragMoving,
+                                        searchEmptyIndicator, emptyIndicator, scrollerClassName,
+                                        onSizeChanging
+                                    }: IVirtualListProps<T>) => {
+    const [initialized, setInitialized] = useState(collection.value?.length);
+    const layoutRef = useRef<BaseVirtualLayout>(null!);
+    const sizerRef = useRef<HTMLDivElement>(null!);
+    const listRef = useRef<HTMLDivElement>(null!);
+    const setIndicator = useRef<Dispatch<SetStateAction<ReactElement>>>(null!);
+    const chunkSetter = useRef<Dispatch<SetStateAction<number[]>>>(null!);
+
+    let info = layoutRef.current!
+
+    const {scrollRef, hostRef} = useScrollbar({scroll: () => info.render()});
+
+    useEffect(() => {
+        const onRender = () => layoutRef.current?.render()
+        const onCollectionChanged = (data: ArrayLike<any>) => {
+            info.source = data;
+
+            setInitialized((prevInitialized) => {
+                setIndicator.current(collection.value?.length < 1 ? emptyIndicator : data.length < 1 ? searchEmptyIndicator : null);
+                if (!prevInitialized && collection.value?.length) {
+                    chunkSetter.current([0]);
+                    return 1;
+                }
+                info.refresh();
+                return prevInitialized;
+            });
+        };
+
+        let timer = 0;
+        const resizeObserver = new ResizeObserver(() => {
+            clearTimeout(timer)
+            timer = window.setTimeout(() => {
+                const reset = onSizeChanging ? onSizeChanging(sizerRef.current.clientHeight) : false;
+                info.refresh(reset)
+                timer = 0;
+            }, 30)
+        });
+
+        let scrollElement: HTMLElement = scroller ? getScrollElement(scroller, onRender) : scrollRef.current!;
+
+        if(withDragMoving) {
+            scrollElement.setAttribute("drag-scroller","");
         }
 
         // @ts-ignore - We are sure that layout is not abstract
-        layoutRef.current =  new layout(collection, setItems,
-            scrollRef.current!, sizerRef.current, areaRef.current)
+        info = layoutRef.current = new layout(collection.value, chunkSetter.current,
+            scrollElement, sizerRef.current, listRef.current)
 
-        return () => layoutRef.current?.dispose()
-    },[])
+        collection.onChanged(onCollectionChanged)
+        resizeObserver.observe(sizerRef.current)
+
+        return () => {
+            if (typeof scroller !== "function") {
+                scroller?.current.removeEventListener("scroll", onRender);
+            }
+            collection.unsubscribe(onCollectionChanged);
+            resizeObserver.disconnect()
+        }
+    }, [])
 
     useEffect(() => {
-        if(!layoutRef.current.isInitialized) {
-            layoutRef.current.refresh()
+        if (initialized) {
+            info.refresh()
         }
-    },[items])
+    }, [initialized])
 
-    let padding = 0, top = 0, opacity = 0;
-
-    if(layoutRef.current) {
-        const layout = layoutRef.current;
-        padding = layout.rowHeight * layout?.startRow;
-        top = padding + layout.rowHeight;
-
-        if(layout.isInitialized) {
-            opacity = 1;
-        }
-    }
-
-
-    return (
-        <div ref={hostRef} className="my-2 h-full">
-            <div ref={sizerRef} className="h-full relative">
-                <div ref={areaRef} style={{
-                    top: `-${top}px`,
-                    paddingTop: `${padding}px`,
-                    opacity: opacity
-                }}
-                     className={"sticky " + className}>
-                    {items.map((i) => {
-                            return renderElement(layoutRef.current.collection[i], i);
-                        }
-                    )}
-                </div>
-                {collection.value?.length < 1 ? emptyIndicator : (items.length < 1 && searchEmptyIndicator )}
+    const list =
+        <div ref={sizerRef} className={clsx("h-full relative")} virtual-wrapper="">
+            <div ref={listRef} style={{
+                opacity: initialized ? 1 : 0
+            }}
+                 className={"sticky " + (className || "")}>
+                <VirtualGenerator layoutRef={layoutRef}
+                                  data={info ? info.source : collection.value}
+                                  onRenderElement={onRenderElement} setRef={chunkSetter}/>
             </div>
+            <ListIndicator value={collection.value.length ? null : emptyIndicator} setRef={setIndicator}/>
         </div>
-    );
-};
 
-export default VirtualScroller;
+    return scroller ? list :
+        <div ref={hostRef} className={clsx("h-full", scrollerClassName)}>{list}</div>
+}

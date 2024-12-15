@@ -1,7 +1,7 @@
 import {cloneElement, FC, forwardRef, ReactElement, type ReactNode, useImperativeHandle, useRef} from "react";
 import clsx from "clsx";
 import Input, {IInputProps} from "@/components/primitives/Input.tsx";
-import {CheckBox} from "@/components/primitives/CheckBox";
+import {CheckBox} from "@/components/primitives/CheckBox/CheckBox.tsx";
 import {config, delayedSaveConfig} from "@/store/config.ts";
 
 export const enum ETitlePosition {

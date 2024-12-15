@@ -15,13 +15,13 @@ interface ITabPanelProps {
 }
 
 export const TabPanel: FC<ITabPanelProps> = forwardRef<HTMLDivElement,ITabPanelProps> (
-    ({ children, activeKey, className, indicator }, ref) => {
+    ({ children, activeKey, className, indicator, ...props }, ref) => {
     const [active, setActive] = useState(activeKey)
     let renderContent: ReactNode;
 
     return (
         <div className="flex-x-center flex-col" ref={ref}>
-            <div className={cn("flex-x-center w-full gap-8 mb-5 bg-primary p-2 rounded-lg",className)}>
+            <div className={cn("flex-x-center w-full mb-5 bg-primary rounded-lg",className)}>
                 {
                     React.Children.map(children, (child) => {
                         let isActive: boolean = false;
@@ -31,7 +31,7 @@ export const TabPanel: FC<ITabPanelProps> = forwardRef<HTMLDivElement,ITabPanelP
                         }
                         return (
                             <button key={child.key} onClick={() => setActive(child.key!)}
-                                    className="relative py-1.5 text-sm text-foreground">
+                                    className="relative text-sm text-foreground">
                                 {isActive &&
                                     (indicator ??
                                         <motion.div layoutId="active-pill" style={{borderRadius: 8}}
@@ -49,7 +49,7 @@ export const TabPanel: FC<ITabPanelProps> = forwardRef<HTMLDivElement,ITabPanelP
                 }
             </div>
 
-            <div className="w-full">
+            <div className="w-full" {...props}>
                 <AnimatePresence>
                     <motion.div initial={{opacity: 0, marginTop: 20}} key={active}
                                 animate={{opacity: 1, marginTop: 0}}>

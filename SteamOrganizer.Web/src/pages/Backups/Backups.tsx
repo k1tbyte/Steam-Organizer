@@ -1,5 +1,4 @@
 import BackupCard from "./BackupCard.tsx";
-import VirtualScroller from "@/components/primitives/VirtualScroller/VirtualScroller.tsx";
 import {GridLayout} from "@/components/primitives/VirtualScroller/GridLayout.ts";
 import {backups, loadBackups} from "@/store/backups.ts";
 import {useEffect, useState} from "react";
@@ -8,6 +7,7 @@ import {Loader, LoaderStatic} from "@/components/primitives/Loader.tsx";
 import {setDocumentTitle} from "@/lib/utils.ts";
 import { useOfflineRedirect } from "@/store/local.tsx";
 import {EmptyCollectionIndicator} from "@/components/elements/CollectionIndicator.tsx";
+import {VirtualScroller} from "@/components/primitives/VirtualScroller/VirtualScroller.tsx";
 
 export default function Backups(){
     const { user  } = useAuth()
@@ -42,7 +42,7 @@ export default function Backups(){
         <VirtualScroller collection={backups} layout={GridLayout}
                          className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] mx-2 gap-2"
                          emptyIndicator={<EmptyCollectionIndicator/>}
-                         renderElement={(o,i) => <BackupCard backup={o} key={i}/>}
+                         onRenderElement={(o,i) => <BackupCard backup={o} key={i}/>}
         />
     );
 }

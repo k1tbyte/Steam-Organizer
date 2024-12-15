@@ -12,7 +12,7 @@ import {type Account} from "@/entity/account.ts";
 import {useLoader} from "@/hooks/useLoader.ts";
 import {LoaderStatic} from "@/components/primitives/Loader.tsx";
 import SummariesTab from "./SummariesTab";
-import GamesTab from "./GamesTab";
+import GamesTab from "./GamesTab/GamesTab.tsx";
 import FriendsTab from "./FriendsTab";
 import {ComboBox} from "@/components/primitives/ComboBox/ComboBox.tsx";
 import {converters, ESteamIdType} from "@/lib/steamIdConverter.ts";
@@ -37,12 +37,12 @@ const links = [
 ]
 
 const TabTitle: FC<ITabTitleProps> = ( { active, icon, title }) => (
-    <div className="flex-center gap-3">
+    <div className="flex-center gap-3 py-5 hover:text-foreground-accent transition-colors border-blue-500 px-4">
         {
             active ? (
                 <>
                     {React.cloneElement(icon, { fill: Gradients.LightBlue })}
-                    <span>{title}</span>
+                    <span className="text-foreground-accent">{title}</span>
                 </>
             ) : (
                 <> {icon} {title} </>
@@ -94,12 +94,12 @@ const Info: FC<IAccountProps> = ({ acc }) => {
                     <div style={{width: "150px"}}>
                         <ComboBox style={{ height: "30px"}} selectedIndex={uiStore.store.displayingId}
                                   items={idType} onSelected={(i) => {
-                                      if(acc.vanityUrl && i === idType.length - 1) {
-                                          idRef.current.textContent = acc.vanityUrl
-                                          return
-                                      }
-                                      uiStore.emit(nameof(uiStore.store.displayingId), i)
-                                      idRef.current.textContent = converters[i].from(acc.id)
+                            if(acc.vanityUrl && i === idType.length - 1) {
+                                idRef.current.textContent = acc.vanityUrl
+                                return
+                            }
+                            uiStore.emit(nameof(uiStore.store.displayingId), i)
+                            idRef.current.textContent = converters[i].from(acc.id)
                         }}/>
                         <Tooltip ref={idTooltipRef} message="Click to copy" openDelay={0}>
                             <b>
@@ -122,7 +122,6 @@ const Info: FC<IAccountProps> = ({ acc }) => {
     )
 }
 
-
 export const Profile: FC = () => {
     let acc: Account | undefined;
 
@@ -130,9 +129,12 @@ export const Profile: FC = () => {
     const updateBtn = useRef<IButtonActions>();
     const {id} = useParams();
     const isLoading = useLoader(accounts);
-    const {hostRef} = useScrollbar(undefined, [isLoading]);
     const [isUpdating] = useFlagStore<boolean>(nameof(flagStore.store.isDbUpdating))
     useEffect(() => setDocumentTitle(acc?.nickname), [isLoading]);
+    const onScrollRef = useRef<() => void>();
+    const { hostRef, scrollRef } = useScrollbar({
+        scroll: () => onScrollRef.current?.()
+    }, [isLoading]);
 
     if(isLoading) {
         return <LoaderStatic/>
@@ -144,6 +146,11 @@ export const Profile: FC = () => {
 
     if (!acc) {
         return <p>Account not found</p>
+    }
+
+    const onScrollInitialize = (onScroll: () => void) => {
+        onScrollRef.current = onScroll
+        return scrollRef.current
     }
 
 
@@ -196,9 +203,9 @@ export const Profile: FC = () => {
                                 </button>))
                             }
                         </div>
-                        <div className="mt-5 gap-5">
-                            <TabPanel className="backdrop-primary flex-col sm:flex-row letter-space font-bold mb-5 py-3"
-                                      activeKey="profile"
+                        <div>
+                            <TabPanel className="backdrop-primary flex-col sm:flex-row letter-space font-bold my-5"
+                                      activeKey="profile" virtual-wrapper=""
                                       indicator={
                                           <motion.div className={styles.tabsIndicator}
                                                       layoutId="active-pill"
@@ -210,12 +217,12 @@ export const Profile: FC = () => {
                                               active={active}/>
                                 } children={<SummariesTab acc={acc}/>}/>
 
-                                <Tab key="games" title={(active) =>
+                                <Tab key="games"  title={(active) =>
                                     <TabTitle title="Games" icon={<SvgIcon icon={Icon.Gamepad} size={20}/>}
                                               active={active}/>
-                                } children={<GamesTab acc={acc}/>}/>
+                                } children={<GamesTab scroller={onScrollInitialize} acc={acc}/>}/>
 
-                                <Tab key="friends" title={(active) =>
+                                <Tab  key="friends" title={(active) =>
                                     <TabTitle title="Friends" icon={<SvgIcon icon={Icon.Users} size={20}/>}
                                               active={active}/>
                                 } children={<FriendsTab/>}/>

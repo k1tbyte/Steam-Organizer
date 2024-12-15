@@ -100,6 +100,9 @@ export default {
         '.grad-primary': {
           "@apply bg-gradient-to-r from-[#87CEFA] to-[#6c5ecf]": {}
         },
+        '.grad-success': {
+          background: "linear-gradient(to right, #26F596 0%, #0499F2 100%)"
+        },
         '.invalidate': {
           "@apply pointer-events-none bg-danger animate-shaking": {}
         },

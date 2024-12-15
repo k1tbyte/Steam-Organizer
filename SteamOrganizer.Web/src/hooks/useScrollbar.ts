@@ -13,6 +13,10 @@ const options: PartialOptions = {
     }
 }
 
+export const getOverlayScrollbar = (host: HTMLDivElement, events?: EventListeners | undefined) => {
+    return OverlayScrollbars(host, options, events)
+}
+
 export const useScrollbar = (events?: EventListeners | undefined, deps: DependencyList = []) => {
     const hostRef = useRef<HTMLDivElement>(null)
     const scrollRef = useRef<HTMLElement>()
@@ -20,7 +24,7 @@ export const useScrollbar = (events?: EventListeners | undefined, deps: Dependen
         if(!hostRef.current)
             return
 
-        const scrollbars = OverlayScrollbars(hostRef.current!,options,events)
+        const scrollbars = getOverlayScrollbar(hostRef.current, events)
         scrollRef.current = scrollbars.elements().viewport
         return () => scrollbars.destroy()
     }, deps)

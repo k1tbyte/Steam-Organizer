@@ -6,7 +6,7 @@ import { validators} from "@/hooks/useFormValidation.ts";
 import {config, delayedSaveConfig} from "@/store/config.ts";
 import {modal} from "@/components/primitives/Modal.tsx";
 import {steamBase} from "@/services/steamApi.ts";
-import {CheckBox} from "@/components/primitives/CheckBox";
+import {CheckBox} from "@/components/primitives/CheckBox/CheckBox.tsx";
 import {useAuth} from "@/providers/authProvider.tsx";
 
 export const openSettings = () => {

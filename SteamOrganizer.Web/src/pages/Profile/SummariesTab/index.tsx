@@ -55,7 +55,7 @@ const SummariesTab: FC<IAccountProps> = ({acc}) => {
     }
 
     return (
-        <div className="flex flex-col md:grid grid-cols-3 gap-3 ">
+        <div className="flex flex-col md:grid grid-cols-3 gap-3 mb-3">
             <div className="row-span-2 col-span-2 order-last md:order-none">
                 {
                     (acc.getYears() > 0 || acc.gamesCount) &&
