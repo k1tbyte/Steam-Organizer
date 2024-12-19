@@ -1,11 +1,12 @@
 import {Observer} from "./observer.ts";
+import {ObservableObject} from "@/lib/observer/observableObject.ts";
 
 export class ObservableProxy<T> extends Observer<T> {
     private middleware: Array<(data: T) => T> = [];
 
-    private observer: Observer<T>;
+    public readonly observer: ObservableObject<T>;
 
-    constructor(observer: Observer<T>) {
+    constructor(observer: ObservableObject<T>) {
         super();
         this.observer = observer
         this.value = observer.value

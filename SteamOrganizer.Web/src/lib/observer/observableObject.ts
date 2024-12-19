@@ -1,5 +1,6 @@
 import {Observer} from "./observer.ts";
 
+export type ObservableCollection<T> = ObservableObject<T[]>
 
 export class ObservableObject<T> extends Observer<T> {
     public constructor(object: T) {

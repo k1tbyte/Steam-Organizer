@@ -48,7 +48,7 @@ const VirtualGenerator: FC<IVirtualGeneratorProps> = ({ data, onRenderElement,se
     }
 
     return (
-        items.map((i) => onRenderElement(data![i], i))
+        items.map((i) => onRenderElement(layoutRef.current ? layoutRef.current.source[i] : data![i], i))
     )
 }
 
@@ -96,7 +96,7 @@ export const VirtualScroller = <T,>({
                     chunkSetter.current([0]);
                     return 1;
                 }
-                info.refresh();
+                info.refresh(true);
                 return prevInitialized;
             });
         };

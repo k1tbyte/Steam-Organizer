@@ -1,6 +1,6 @@
 import {config} from "@/store/config.ts";
-import {SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
-import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
+import { type SteamPlayerGames, type SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
+import {toast,  ToastVariant} from "@/components/primitives/Toast.tsx";
 import db, {EDbStore} from "@/services/indexedDb.ts";
 import {flagStore} from "@/store/local.tsx";
 
@@ -16,6 +16,11 @@ const handleResponse = async <T>(input: string | URL | globalThis.Request,
                                  asJson: boolean = true): Promise<T | Response> => {
     if(flagStore.store.offlineMode) {
         toast.open({ body: "You are in offline mode, please connect to the internet", variant: ToastVariant.Warning, id: "offline" })
+        return;
+    }
+
+    if(!config.steamApiKey) {
+        toast.open({ body: "You need to set your Steam API key in the settings", variant: ToastVariant.Warning })
         return;
     }
 
@@ -63,12 +68,22 @@ const handleResponse = async <T>(input: string | URL | globalThis.Request,
     toast.open({ body: message, variant: ToastVariant.Error })
 }
 
+const saveGames = (games:  SteamPlayerGames, id: number) => {
+    if(games?.games) {
+        return db.save(games.games, id, EDbStore.Games)
+    }
+}
+
 export const getPlayerInfo = async (id: number) => {
     return await handleResponse<SteamPlayerSummary | undefined>(`${apiUrl}getSummaries?key=${config.steamApiKey}&ids=${id}&includeGames=true`,null, (o) => {
-        if(o.gamesSummaries?.games) {
-            db.save(o.gamesSummaries.games, id, EDbStore.Games)
-        }
+        saveGames(o.gamesSummaries, id)
     }) as SteamPlayerSummary | undefined
+}
+
+export const getPlayerGames = async (id: number) => {
+    return await handleResponse<SteamPlayerGames | undefined>(`${apiUrl}getGames?key=${config.steamApiKey}&steamId=${id}&withDetails=true`, null, (o) => {
+        saveGames(o, id)
+    }) as SteamPlayerGames | undefined
 }
 
 export const getPlayerInfoStream = async (id: number[], cancellation: AbortSignal, callback: (data: SteamPlayerSummary) => void) => {
