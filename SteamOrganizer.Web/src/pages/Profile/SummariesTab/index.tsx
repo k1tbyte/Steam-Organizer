@@ -1,8 +1,8 @@
 import React, {FC} from "react";
 import type {IAccountProps} from "@/pages/Profile/Profile.tsx";
-import {Expander, withStateSaving} from "@/components/primitives/Expander.tsx";
+import {Expander, withStateSaving} from "@/shared/ui/Expander.tsx";
 import {Gradients, Icon, SvgIcon} from "src/defines";
-import {TextArea} from "@/components/primitives/TextArea.tsx";
+import {TextArea} from "@/shared/ui/TextArea.tsx";
 import {delayedSaveAccounts} from "@/store/accounts.ts";
 import {EEconomyBanType} from "@/types/steamPlayerSummary.ts";
 import CommunityArea from "./CommunityArea.tsx";
@@ -65,7 +65,7 @@ const SummariesTab: FC<IAccountProps> = ({acc}) => {
                         <CommunityArea acc={acc}/>
                     </Expander>
                 }
-                <div className="flex flex-col md:grid grid-cols-2 gap-3">
+                <div className="flex items-start flex-col md:grid grid-cols-2 gap-3">
                     <CredentialsArea acc={acc}/>
                     {noteArea}
                 </div>

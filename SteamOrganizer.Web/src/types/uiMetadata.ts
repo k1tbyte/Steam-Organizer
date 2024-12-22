@@ -1,4 +1,4 @@
-import { type ESteamIdType} from "@/lib/steamIdConverter.ts";
+import { type ESteamIdType} from "@/shared/lib/steamIdConverter.ts";
 
 export const enum ESidebarState {
     Hidden,

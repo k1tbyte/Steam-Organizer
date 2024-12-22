@@ -1,13 +1,13 @@
 import BackupCard from "./BackupCard.tsx";
-import {GridLayout} from "@/components/primitives/VirtualScroller/GridLayout.ts";
+import {GridLayout} from "@/shared/ui/VirtualScroller/GridLayout.ts";
 import {backups, loadBackups} from "@/store/backups.ts";
 import {useEffect, useState} from "react";
 import {useAuth} from "@/providers/authProvider.tsx";
-import {Loader, LoaderStatic} from "@/components/primitives/Loader.tsx";
-import {setDocumentTitle} from "@/lib/utils.ts";
+import {Loader, LoaderStatic} from "@/shared/ui/Loader.tsx";
+import {setDocumentTitle} from "@/shared/lib/utils.ts";
 import { useOfflineRedirect } from "@/store/local.tsx";
-import {EmptyCollectionIndicator} from "@/components/elements/CollectionIndicator.tsx";
-import {VirtualScroller} from "@/components/primitives/VirtualScroller/VirtualScroller.tsx";
+import {EmptyCollectionIndicator} from "@/components/CollectionIndicator.tsx";
+import {VirtualScroller} from "@/shared/ui/VirtualScroller/VirtualScroller.tsx";
 
 export default function Backups(){
     const { user  } = useAuth()

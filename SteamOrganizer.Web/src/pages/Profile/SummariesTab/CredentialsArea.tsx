@@ -1,27 +1,26 @@
-import Input, {IInputProps} from "@/components/primitives/Input.tsx";
+import Input, {IInputProps} from "@/shared/ui/Input.tsx";
 import {ECredentialType, IAccountCredential, serviceNames} from "@/types/accountCredentials.ts";
-import React, {FC} from "react";
+import React, {FC, MouseEvent, useEffect} from "react";
 import {Icon, SvgIcon} from "src/defines";
 import {delayedSaveAccounts, saveAccounts} from "@/store/accounts.ts";
-import {validators} from "@/hooks/useFormValidation.ts";
-import {FieldWrapper, InputValidationWrapper} from "@/components/elements/FieldWrapper.tsx";
-import {Tooltip} from "@/components/primitives/Popup.tsx";
-import {modal, ModalSeparator, useModalActions} from "@/components/primitives/Modal.tsx";
-import {ComboBox} from "@/components/primitives/ComboBox/ComboBox.tsx";
-import Button, {EButtonVariant} from "@/components/primitives/Button.tsx";
+import {validators} from "@/shared/hooks/useFormValidation.ts";
+import {FieldWrapper, InputValidationWrapper} from "@/components/FieldWrapper.tsx";
+import {modal, ModalSeparator, useModalActions} from "@/shared/ui/Modal.tsx";
+import {ComboBox} from "@/shared/ui/ComboBox/ComboBox.tsx";
+import Button, {EButtonVariant} from "@/shared/ui/Button.tsx";
 import type {IAccountProps} from "@/pages/Profile/Profile.tsx";
-import {Expander, withStateSaving} from "@/components/primitives/Expander.tsx";
-import {RadioButtonGroup} from "@/components/primitives/RadioButton.tsx";
-import {ConfirmPopup} from "@/components/elements/ConfirmPopup.tsx";
-import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
+import {Expander, withStateSaving} from "@/shared/ui/Expander.tsx";
+import {ConfirmPopup} from "@/components/ConfirmPopup.tsx";
+import {PasswordBox} from "@/shared/ui/PasswordBox.tsx";
 import {uiStore} from "@/store/local.tsx";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip.tsx";
+import {RadioButton} from "@/shared/ui/RadioButton/RadioButton.tsx";
+import {Tabs} from "@/shared/ui/Tabs.tsx";
 
 interface ICredentialsFieldProps extends Omit<IInputProps, 'type'> {
     type: ECredentialType;
     readOnly?: boolean
 }
-
-
 
 const NewCredentialsModal: FC<{onAdd: (value: IAccountCredential) => void}> = ({ onAdd }) => {
     const [fields, setFields] = React.useState<ECredentialType[]>([]);
@@ -141,24 +140,62 @@ const CredentialsField:FC<ICredentialsFieldProps> = ({ type, ...props }) => {
     )
 }
 
-const CredentialsButton: FC<{icon: Icon, title: string, shift?: boolean, onClick?: () => void}> =
-    React.memo(({icon, title, onClick, shift = false}) =>
-    {
-        return (
-            <Tooltip message={title} >
-                <SvgIcon className={`p-1.5 ${shift ? "-ml-1.5" : ""}`} role="button" onClick={onClick} icon={icon} size={38}/>
-            </Tooltip>
-        )
-    })
+const CredentialsButton: FC<{icon: Icon, title: string, shift?: boolean}> = ({icon, title, shift}) => {
+    return (
+        <Tooltip message={title}>
+            <SvgIcon className={`p-1.5 ${shift ? "-ml-1.5" : ""}`} role="button" icon={icon} size={38}/>
+        </Tooltip>
+    )
+}
+
 
 const CredentialsArea: FC<IAccountProps> = ({acc}) => {
-    const [active, setActive] = React.useState(0);
-    const credential = acc.credentials?.[active - 1];
-    const field = credential?.f;
+    const items = [null, ...acc.credentials, null];
+    const subtitleRef = React.useRef<HTMLElement>(null);
 
-    const radioButtons = acc.credentials ? acc.credentials.map(o => {
-        return <CredentialsButton icon={o.i ?? Icon.CardText} title={o.n ?? serviceNames[o.i]}/>
-    }) : []
+    const setSubtitle = (active: number) => {
+        const credential = acc.credentials?.[active - 1];
+        subtitleRef.current.innerText = active === 0 ? " (Steam)" :
+             credential ? ` (${(credential.n ?? credential.i ? serviceNames[credential.i] : "Other")})` : "";
+    }
+
+    useEffect(() => {
+        setSubtitle(0);
+    }, []);
+
+    const navigator = <RadioButton className="flex gap-3 flex-wrap justify-center md:justify-normal mb-3"
+                                   clickInterceptor={(i, setActive) => {
+                                       if(i !== items.length - 1) {
+                                           return;
+                                       }
+
+                                       modal.open({
+                                           title: "Add linked account",
+                                           body: <NewCredentialsModal onAdd={async (o) => {
+                                               acc.credentials = acc.credentials ?? [];
+                                               acc.credentials.push(o);
+                                               items.splice(items.length - 1, 0, o);
+                                               setActive(acc.credentials.length);
+                                               await saveAccounts()
+                                           }}/>
+                                       })
+
+                                       return true;
+                                   }}
+                                   indicator={null} generator={items}>
+        {(item, index, isActive) => {
+
+            if (index === items.length - 1) {
+                return (!acc.credentials || items.length < 9) && <CredentialsButton shift={true} icon={Icon.Plus} title="Add"/>
+            }
+
+            return <div
+                className={`rounded transition-transform cursor-pointer hover:scale-110 ${isActive ? "bg-chip text-foreground-accent" : "grad-chip text-foreground"}`}>
+                <CredentialsButton icon={item ? item.i ?? Icon.CardText : Icon.Steam}
+                                   title={item ? item.n ?? serviceNames[item.i] : "Steam"}/>
+            </div>
+        }}
+    </RadioButton>
 
     return (
         <Expander className="backdrop-primary" {...withStateSaving(nameof(uiStore.store.credentials))}
@@ -166,65 +203,47 @@ const CredentialsArea: FC<IAccountProps> = ({acc}) => {
                   title={
                       <span>
                         Credentials
-                        <small className="text-secondary">
-                            {`${active === 0 ? " (Steam)" : ( credential ? ` (${(credential.n ?? credential.i ? serviceNames[credential.i] : "Other")})` : "")}`}
-                        </small>
+                        <small ref={subtitleRef} className="text-secondary"/>
                     </span>
                   }>
 
-            <div className="p-4 ml-0 md:ml-3" style={{ maxWidth: "350px" }}>
-                <div className="flex gap-3 flex-wrap justify-center md:justify-normal mb-3">
-                    <RadioButtonGroup activeIndex={active} setActive={setActive}>
-                        <CredentialsButton icon={Icon.Steam} title={"Steam"}/>
-                        {...radioButtons}
-                    </RadioButtonGroup>
-                    {  (!acc.credentials || acc.credentials?.length < 9) &&
-                        <CredentialsButton icon={Icon.Plus} title="Add"
-                                           onClick={() => {
-                                               modal.open({
-                                                   title: "Add linked account",
-                                                   body: <NewCredentialsModal onAdd={async (o) => {
-                                                       acc.credentials = acc.credentials ?? [];
-                                                       acc.credentials.push(o);
-                                                       setActive(acc.credentials.length);
-                                                       await saveAccounts()
-                                                   }}/>
-                                               })
-                                           }}
-                                           shift={true}/>
-                    }
+            <div className="p-4 ml-0 md:ml-3" style={{maxWidth: "350px"}}>
+                <Tabs navigator={navigator} onStateChanged={setSubtitle}>
+                    {(index, setActive) => {
+                        const field = acc.credentials?.[index - 1]?.f;
+                        return index === 0 ?
+                            <>
+                                <CredentialsField type={ECredentialType.Login} bindTo={acc} bindKey={nameof(acc.login)}
+                                                  readOnly/>
+                                <CredentialsField type={ECredentialType.Password} bindTo={acc}
+                                                  bindKey={nameof(acc.password)}/>
+                                <CredentialsField type={ECredentialType.Phone} bindTo={acc}
+                                                  bindKey={nameof(acc.phone)}/>
+                            </> :
+                            <>
+                                {
+                                    // We need rerender every time when field changes, so we use random key
+                                    Object.entries(field).map(([key]) => {
+                                        return <CredentialsField key={Math.random()} type={Number(key)} bindTo={field}
+                                                                 bindKey={key}/>
+                                    })
+                                }
+                                <div className="w-full flex justify-end">
+                                    <ConfirmPopup text={`Delete this credentials?`} onYes={async () => {
+                                        acc.credentials.splice(index - 1, 1);
+                                        items.splice(index, 1);
+                                        setActive(index - 1);
+                                        await saveAccounts()
+                                    }}>
+                                        <Button variant={EButtonVariant.Primary} className="mt-4 bg-danger min-w-24">
+                                            Delete
+                                        </Button>
+                                    </ConfirmPopup>
+                                </div>
+                            </>
+                    }}
+                </Tabs>
 
-                </div>
-
-                {active === 0 ?
-                    <>
-                        <CredentialsField type={ECredentialType.Login} bindTo={acc} bindKey={nameof(acc.login)}
-                                          readOnly/>
-                        <CredentialsField type={ECredentialType.Password} bindTo={acc}
-                                          bindKey={nameof(acc.password)}/>
-                        <CredentialsField type={ECredentialType.Phone} bindTo={acc} bindKey={nameof(acc.phone)}/>
-                    </> :
-                    <>
-                        {
-                            // We need rerender every time when field changes, so we use random key
-                            Object.entries(field).map(([key]) => {
-                                return <CredentialsField key={Math.random()} type={Number(key)} bindTo={field}
-                                                         bindKey={key}/>
-                            })
-                        }
-                        <div className="w-full flex justify-end">
-                            <ConfirmPopup text={`Delete this credentials?`} onYes={async () => {
-                                acc.credentials.splice(active - 1, 1);
-                                setActive(active - 1);
-                                await saveAccounts()
-                            }}>
-                                <Button variant={EButtonVariant.Primary} className="mt-4 bg-danger min-w-24">
-                                    Delete
-                                </Button>
-                            </ConfirmPopup>
-                        </div>
-                    </>
-                }
             </div>
         </Expander>
     )

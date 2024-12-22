@@ -1,30 +1,30 @@
 import AccountCard from "./elements/AccountCard.tsx";
 import AccountsNav from "./elements/AccountsNav.tsx";
-import {GridLayout} from "@/components/primitives/VirtualScroller/GridLayout.ts";
+import {GridLayout} from "@/shared/ui/VirtualScroller/GridLayout.ts";
 import {accounts} from "@/store/accounts.ts";
-import {LoaderStatic} from "@/components/primitives/Loader.tsx";
-import {useLoader} from "@/hooks/useLoader.ts";
+import {LoaderStatic} from "@/shared/ui/Loader.tsx";
+import {useLoader} from "@/shared/hooks/useLoader.ts";
 import {useEffect} from "react";
-import {setDocumentTitle} from "@/lib/utils.ts";
-import {ObservableProxy} from "@/lib/observer/observableProxy.ts";
+import {setDocumentTitle} from "@/shared/lib/utils.ts";
 import {Account} from "@/entity/account.ts";
 import {Icon } from "@/defines";
-import Button, {EButtonVariant} from "@/components/primitives/Button.tsx";
-import {CollectionIndicator, SearchCollectionIndicator} from "@/components/elements/CollectionIndicator.tsx";
-import {VirtualScroller} from "@/components/primitives/VirtualScroller/VirtualScroller.tsx";
+import Button, {EButtonVariant} from "@/shared/ui/Button.tsx";
+import {CollectionIndicator, SearchCollectionIndicator} from "@/components/CollectionIndicator.tsx";
+import {VirtualScroller} from "@/shared/ui/VirtualScroller/VirtualScroller.tsx";
 import {openAddAccount} from "@/pages/Modals/AddAccount.tsx";
-
-const filterProxy = new ObservableProxy<Account[]>(accounts)
+import {useProxyFilter} from "@/shared/hooks/useProxyFilter.ts";
 
 export default function Accounts() {
-   const isLoading = useLoader(accounts)
+    const isLoading = useLoader(accounts)
     useEffect(() => setDocumentTitle('Accounts'), []);
+    const [applyFilter, proxy] = useProxyFilter(accounts)
+
 
     return (
-        <AccountsNav proxy={filterProxy}>
+        <AccountsNav filter={applyFilter}>
             {isLoading ? <LoaderStatic/> :
                 <VirtualScroller
-                    collection={filterProxy} layout={GridLayout} withDragMoving
+                    collection={proxy} layout={GridLayout} withDragMoving
                     scrollerClassName="my-2"
                     className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-2 auto-rows mx-2"
                     emptyIndicator={

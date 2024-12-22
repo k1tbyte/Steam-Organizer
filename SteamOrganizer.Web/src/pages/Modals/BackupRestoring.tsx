@@ -1,11 +1,11 @@
 import {type FC, useEffect, useState} from "react";
 import { type BackupMetadata} from "@/types/backup.ts";
-import Button from "@/components/primitives/Button.tsx";
-import {Loader} from "@/components/primitives/Loader.tsx";
+import Button from "@/shared/ui/Button.tsx";
+import {Loader} from "@/shared/ui/Loader.tsx";
 import {loadBackup, restoreBackup} from "@/store/backups.ts";
-import {dateFormatter} from "@/lib/utils.ts";
-import {decrypt} from "@/services/cryptography.ts";
-import {modal, useModalActions} from "@/components/primitives/Modal.tsx";
+import {dateFormatter} from "@/shared/lib/utils.ts";
+import {decrypt} from "@/shared/services/cryptography.ts";
+import {modal, useModalActions} from "@/shared/ui/Modal.tsx";
 import {databaseKey, importAccounts} from "@/store/accounts.ts";
 import {DecryptionPopup} from "@/pages/Modals/Authentication.tsx";
 import {router} from "@/providers/routerProvider.tsx";

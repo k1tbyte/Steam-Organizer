@@ -3,21 +3,21 @@ import React, {
     type Dispatch,
     type FC, forwardRef,
     type ReactElement,
-    type ReactNode,
     type SetStateAction,
     useContext,
     useRef,
     useState
 } from 'react'
-import {useSlider} from "@/hooks/useSlider.ts";
-import useMediaQuery from "@/hooks/useMediaQuery.ts";
+import {useSlider} from "@/shared/hooks/useSlider.ts";
+import useMediaQuery from "@/shared/hooks/useMediaQuery.ts";
 import { useLocation, useNavigate} from "react-router-dom";
 import {Gradients, Icon, SvgIcon} from "src/defines";
-import { popup, Tooltip} from "@/components/primitives/Popup.tsx";
 import {UserInfo} from "@/components/Sidebar/UserInfo.tsx";
 import styles from "./Sidebar.module.pcss"
 import {ESidebarState} from "@/types/uiMetadata.ts";
 import {uiStore, useIsOffline} from "@/store/local.tsx";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip.tsx";
+import { popupDefaults } from "@/shared/ui/Popup/Popup.tsx";
 
 interface ISidebarItemProps {
     icon: ReactElement
@@ -75,8 +75,8 @@ export const SidebarItem: FC<ISidebarItemProps> = (props) => {
 
     return (
         <Tooltip message={props.text}
-                 wrapIf={sidebar.state === ESidebarState.Partial}
-                 {...popup.side}>
+                 preventOpen={sidebar.state !== ESidebarState.Partial}
+                 {...popupDefaults.side}>
            <NavLink {...props}/>
         </Tooltip>
     );

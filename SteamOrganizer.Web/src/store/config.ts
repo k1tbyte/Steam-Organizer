@@ -1,7 +1,7 @@
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import db from "../services/indexedDb.ts"
-import {decrypt, deriveKey, encrypt } from "../services/cryptography.ts";
-import {debounce} from "@/lib/utils.ts";
+import db from "@/shared/services/indexedDb.ts"
+import {decrypt, deriveKey, encrypt } from "@/shared/services/cryptography.ts";
+import {debounce} from "@/shared/lib/utils.ts";
 
 interface IAppConfig {
     encryptionKey?: string

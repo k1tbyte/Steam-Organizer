@@ -1,57 +1,84 @@
-import React, {createContext, type FC, type ReactNode, useEffect, useRef, useState} from "react";
+import React, { type ChangeEvent, createContext, type FC, type ReactNode, useEffect, useRef, useState} from "react";
 import clsx from "clsx";
 import styles from "./AccountsNav.module.pcss";
-import Input from "@/components/primitives/Input.tsx";
+import Input from "@/shared/ui/Input.tsx";
 import {Gradients, Icon, SvgIcon} from "src/defines";
-import {modal} from "@/components/primitives/Modal.tsx";
+import {modal} from "@/shared/ui/Modal.tsx";
 import {openAddAccount } from "@/pages/Modals/AddAccount.tsx";
-import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
-import {ToggleButton} from "@/components/primitives/ToggleButton.tsx";
-import {IDraggableContext, IDraggableInfo} from "@/components/primitives/Draggable.tsx";
-import {type ObservableProxy} from "@/lib/observer/observableProxy.ts";
+import {toast, ToastVariant} from "@/shared/ui/Toast.tsx";
+import {ToggleButton} from "@/shared/ui/ToggleButton.tsx";
+import {IDraggableContext, IDraggableInfo} from "@/shared/ui/Draggable.tsx";
+import {type ObservableProxy} from "@/shared/lib/observer/observableProxy.ts";
 import {type Account} from "@/entity/account.ts";
 import {accounts, importAccounts, updateAccounts} from "@/store/accounts.ts";
 import {ExportData} from "@/pages/Modals/ExportData.tsx";
-import {formatFileDate} from "@/lib/utils.ts";
-import {Tooltip} from "@/components/primitives/Popup.tsx";
-import {verifyVersion} from "@/services/cryptography.ts";
+import {formatFileDate} from "@/shared/lib/utils.ts";
+import {verifyVersion} from "@/shared/services/cryptography.ts";
 import {DecryptionPopup} from "@/pages/Modals/Authentication.tsx";
 import {flagStore, useFlagStore} from "@/store/local.tsx";
+import {FilterFunction} from "@/shared/hooks/useProxyFilter.ts";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip.tsx";
 
 interface IAccountsNavProps {
     children: ReactNode;
-    proxy: ObservableProxy<Account[]>;
+    filter: (filter: FilterFunction<Account>) => void;
 }
 
 export const AccountsContext = createContext<IDraggableContext>(undefined!)
 
-const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
+/*const filters = [
+    {
+        type: "search",
+        fields: [
+            {
+                name: "Nickname",
+                prop: "nickname"
+            },
+            {
+                name: "Login",
+                prop: "login"
+            },
+            {
+                name: "Email",
+                prop: "email"
+            }
+        ]
+    },
+    {
+        type: "sort",
+        fields: [
+            {
+                name: "Nickname",
+                prop: "nickname"
+            },
+            {
+                name: "Login",
+                prop: "login"
+            },
+            {
+                name: "Email",
+                prop: "email"
+            }
+        ]
+    },
+    {
+        type: "flag",
+        fields: [
+            {
+                name: "Two-factor",
+                prop: "authenticator"
+            }
+        ]
+    },
+]*/
+
+const AccountsNav: FC<IAccountsNavProps> = ({ children, filter }) => {
     const [expanded, setExpanded] = useState(false);
     const [isDragging, setDragging] = useState(false);
     const [isDragState, setDragState] = useState(false);
     const infoRef = useRef<IDraggableInfo>({});
-    const searchRef = useRef<HTMLInputElement>(null!);
     const fileInputRef = useRef<HTMLInputElement>(null!);
     const [isUpdating] = useFlagStore<boolean>(nameof(flagStore.store.isDbUpdating))
-
-    useEffect(() => {
-        const filter = (data: Account[]) => {
-            if(!searchRef.current.value) return data;
-            return data.filter(acc =>
-                acc.nickname.toUpperCase().includes(searchRef.current.value.toUpperCase())
-            )
-        }
-
-        const onInput = () => proxy.proxyCallback(accounts.value);
-
-        proxy.addMiddleware(filter);
-        searchRef.current.addEventListener("input", onInput);
-
-        return () => {
-            proxy.removeMiddleware(filter);
-            searchRef.current?.removeEventListener("input", onInput);
-        }
-    }, []);
 
 
     const addClicked = () => {
@@ -68,7 +95,7 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
         })
     }
 
-    const importFileSelected = (e:   React.ChangeEvent<HTMLInputElement>) => {
+    const importFileSelected = (e:   ChangeEvent<HTMLInputElement>) => {
         setExpanded(false)
         if(!e.target.files?.length) return;
 
@@ -115,7 +142,11 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, proxy }) => {
                     <div className="w-full flex-center relative -order-1 z-20 h-[40px]">
                         <div className={clsx(styles.searchOverlay, expanded || "h-0")}></div>
                         <Input className="rounded-lg pr-24 h-full bg-primary placeholder:font-semibold"
-                               ref={searchRef} autoComplete={"off"}
+                               autoComplete={"off"} onInput={(e) => {
+                                filter(data => data.filter(acc =>
+                                    acc.nickname.toUpperCase().includes(e.currentTarget.value.toUpperCase())
+                                ))
+                        }}
                                maxLength={60} placeholder="Search in accounts"/>
                         <div className={styles.searchPanel}>
                             <SvgIcon icon={Icon.ChevronDown} size={15}

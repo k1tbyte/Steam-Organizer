@@ -1,6 +1,6 @@
 import {ESidebarState, IUiMetadata} from "@/types/uiMetadata.ts";
-import {  ESteamIdType } from "@/lib/steamIdConverter.ts";
-import {RxStore, useStoreState} from "@/lib/rxStore.tsx";
+import {  ESteamIdType } from "@/shared/lib/steamIdConverter.ts";
+import {RxStore, useStoreState} from "@/shared/lib/rxStore.tsx";
 import {IGlobalFlags} from "@/types/globalFlags.ts";
 import {router} from "@/providers/routerProvider.tsx";
 import {useEffect} from "react";

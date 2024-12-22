@@ -1,7 +1,7 @@
 import {FC} from "react";
 import {flagStore, useFlagStore, useIsOffline} from "@/store/local.tsx";
 import {Icon, SvgIcon} from "@/defines";
-import {Tooltip} from "@/components/primitives/Popup.tsx";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip";
 
 export const NetworkIndicator: FC = () => {
     const isOffline = useIsOffline();

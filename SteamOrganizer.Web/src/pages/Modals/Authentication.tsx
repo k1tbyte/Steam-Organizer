@@ -1,17 +1,17 @@
-import {InputValidationWrapper} from "@/components/elements/FieldWrapper.tsx";
-import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
-import {decrypt, deriveKey} from "@/services/cryptography.ts";
-import Button, {EButtonVariant, type IButtonActions} from "@/components/primitives/Button.tsx";
-import {useFormValidation, validators} from "@/hooks/useFormValidation.ts";
+import {InputValidationWrapper} from "@/components/FieldWrapper.tsx";
+import {PasswordBox} from "@/shared/ui/PasswordBox.tsx";
+import {decrypt, deriveKey} from "@/shared/services/cryptography.ts";
+import Button, {EButtonVariant, type IButtonActions} from "@/shared/ui/Button.tsx";
+import {useFormValidation, validators} from "@/shared/hooks/useFormValidation.ts";
 import React, {type FC, useEffect, useRef, useState} from "react";
-import {modal, useModalActions} from "@/components/primitives/Modal.tsx";
+import {modal, useModalActions} from "@/shared/ui/Modal.tsx";
 import {Icon, SvgIcon} from "src/defines";
 import {useAuth} from "@/providers/authProvider.tsx";
 import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups.ts";
-import {Loader} from "@/components/primitives/Loader.tsx";
-import {dateFormatter} from "@/lib/utils.ts";
+import {Loader} from "@/shared/ui/Loader.tsx";
+import {dateFormatter} from "@/shared/lib/utils.ts";
 import { clearAccounts, importAccounts, initAccounts, storeEncryptionKey} from "@/store/accounts.ts";
-import {Tooltip} from "@/components/primitives/Popup.tsx";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip";
 import {EDecryptResult} from "@/store/config.ts";
 import {InfoNote} from "@/pages/Modals/elements/InfoNote.tsx";
 

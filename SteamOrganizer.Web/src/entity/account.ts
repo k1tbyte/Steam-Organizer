@@ -1,5 +1,5 @@
 import { type EVisibilityState, type SteamPlayerBans, type SteamPlayerGames, type SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
-import {getPlayerInfo, getSteamTime} from "@/services/steamApi.ts";
+import {getPlayerInfo, getSteamTime} from "@/shared/api/steamApi.ts";
 import type {IAccountCredential} from "@/types/accountCredentials.ts";
 import {accounts} from "@/store/accounts.ts";
 import {ISteamAuth} from "@/entity/steamAuth.ts";

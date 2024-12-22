@@ -1,12 +1,12 @@
 import {FC, useState} from "react";
-import {ETitlePosition, FieldWrapper, InputValidationWrapper} from "@/components/elements/FieldWrapper.tsx";
+import {ETitlePosition, FieldWrapper, InputValidationWrapper} from "@/components/FieldWrapper.tsx";
 import {Icon, SvgIcon} from "src/defines";
-import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
-import { validators} from "@/hooks/useFormValidation.ts";
+import {PasswordBox} from "@/shared/ui/PasswordBox.tsx";
+import { validators} from "@/shared/hooks/useFormValidation.ts";
 import {config, delayedSaveConfig} from "@/store/config.ts";
-import {modal} from "@/components/primitives/Modal.tsx";
-import {steamBase} from "@/services/steamApi.ts";
-import {CheckBox} from "@/components/primitives/CheckBox/CheckBox.tsx";
+import {modal} from "@/shared/ui/Modal.tsx";
+import {steamBase} from "@/shared/api/steamApi.ts";
+import {CheckBox} from "@/shared/ui/CheckBox/CheckBox.tsx";
 import {useAuth} from "@/providers/authProvider.tsx";
 
 export const openSettings = () => {

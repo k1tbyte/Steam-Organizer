@@ -1,32 +1,29 @@
-import React, {type FC, type ReactElement, useEffect, useRef, useState} from "react";
+import React, {type FC, useEffect, useRef, useState} from "react";
 import {useParams} from "react-router-dom";
-import {Tab, TabPanel} from "@/components/primitives/Tabs.tsx";
+import { Tabs } from "@/shared/ui/Tabs.tsx";
 import {Gradients, Icon, SvgIcon} from "src/defines";
 import {motion} from "framer-motion";
-import styles from "./Profile.module.pcss";
-import {useScrollbar} from "@/hooks/useScrollbar.ts";
+import styles from "./Profile.module.css";
+import {useScrollbar} from "@/shared/hooks/useScrollbar.ts";
 import {accounts, saveAccounts} from "@/store/accounts.ts";
 import {defaultAvatar} from "@/store/config.ts";
-import {dateFormatter, setDocumentTitle} from "@/lib/utils.ts";
+import {dateFormatter, setDocumentTitle} from "@/shared/lib/utils.ts";
 import {type Account} from "@/entity/account.ts";
-import {useLoader} from "@/hooks/useLoader.ts";
-import {LoaderStatic} from "@/components/primitives/Loader.tsx";
+import {useLoader} from "@/shared/hooks/useLoader.ts";
+import {LoaderStatic} from "@/shared/ui/Loader.tsx";
 import SummariesTab from "./SummariesTab";
 import GamesTab from "./GamesTab/GamesTab.tsx";
 import FriendsTab from "./FriendsTab";
-import {ComboBox} from "@/components/primitives/ComboBox/ComboBox.tsx";
-import {converters, ESteamIdType} from "@/lib/steamIdConverter.ts";
-import {EPlacementX, popup, Tooltip} from "@/components/primitives/Popup.tsx";
-import Button, {EButtonVariant, IButtonActions} from "@/components/primitives/Button.tsx";
-import {steamBase} from "@/services/steamApi.ts";
+import {ComboBox} from "@/shared/ui/ComboBox/ComboBox.tsx";
+import {converters, ESteamIdType} from "@/shared/lib/steamIdConverter.ts";
+import Button, {EButtonVariant, IButtonActions} from "@/shared/ui/Button.tsx";
+import {steamBase} from "@/shared/api/steamApi.ts";
 import {EVisibilityState} from "@/types/steamPlayerSummary.ts";
 import {flagStore, uiStore, useFlagStore} from "@/store/local.tsx";
-
-interface ITabTitleProps {
-    active: boolean;
-    icon: ReactElement;
-    title: string
-}
+import {EPlacementX} from "@/shared/ui/Popup/positioning.ts";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip.tsx";
+import {popupDefaults} from "@/shared/ui/Popup/Popup.tsx";
+import {RadioButton} from "@/shared/ui/RadioButton/RadioButton.tsx";
 
 export interface IAccountProps {
     acc: Account
@@ -36,20 +33,11 @@ const links = [
     "Profile", "Games", "Friends", "Inventory", "Badges", "Groups"
 ]
 
-const TabTitle: FC<ITabTitleProps> = ( { active, icon, title }) => (
-    <div className="flex-center gap-3 py-5 hover:text-foreground-accent transition-colors border-blue-500 px-4">
-        {
-            active ? (
-                <>
-                    {React.cloneElement(icon, { fill: Gradients.LightBlue })}
-                    <span className="text-foreground-accent">{title}</span>
-                </>
-            ) : (
-                <> {icon} {title} </>
-            )
-        }
-    </div>
-)
+const tabs = [
+    { title: "Profile", i: Icon.UserOutline },
+    { title: "Games", i: Icon.Gamepad },
+    { title: "Friends", i: Icon.Users }
+]
 
 const Info: FC<IAccountProps> = ({ acc }) => {
     const idRef = useRef<HTMLParagraphElement>(null)
@@ -193,8 +181,7 @@ export const Profile: FC = () => {
                 </div>
                 {acc.id ?
                     <>
-                        <div
-                            className="backdrop-primary flex flex-col md:flex-row justify-between text-center rounded-lg mt-5 text-foreground font-bold">
+                        <div className={styles.linksPanel}>
                             {links.map((link, i) => (
                                 <button key={i} className={styles.linkButton} onClick={() => {
                                     open(`${steamBase}profiles/${converters[ESteamIdType.SteamID64].from(acc.id)}/${link.toLowerCase()}`, "_blank")
@@ -203,37 +190,31 @@ export const Profile: FC = () => {
                                 </button>))
                             }
                         </div>
-                        <div>
-                            <TabPanel className="backdrop-primary flex-col sm:flex-row letter-space font-bold my-5"
-                                      activeKey="profile" virtual-wrapper=""
-                                      indicator={
-                                          <motion.div className={styles.tabsIndicator}
-                                                      layoutId="active-pill"
-                                                      transition={{type: "spring", duration: 1, x: {duration: 0.5}}}/>
-                                      }
-                            >
-                                <Tab key="profile" title={(active) =>
-                                    <TabTitle title="Profile" icon={<SvgIcon icon={Icon.UserOutline} size={20}/>}
-                                              active={active}/>
-                                } children={<SummariesTab acc={acc}/>}/>
-
-                                <Tab key="games"  title={(active) =>
-                                    <TabTitle title="Games" icon={<SvgIcon icon={Icon.Gamepad} size={20}/>}
-                                              active={active}/>
-                                } children={<GamesTab scroller={onScrollInitialize} acc={acc}/>}/>
-
-                                <Tab  key="friends" title={(active) =>
-                                    <TabTitle title="Friends" icon={<SvgIcon icon={Icon.Users} size={20}/>}
-                                              active={active}/>
-                                } children={<FriendsTab/>}/>
-                            </TabPanel>
-                        </div>
+                        <Tabs virtual-wrapper="" navigator={
+                            <RadioButton indicator={
+                                <motion.div className={styles.tabsIndicator}
+                                            layoutId="active-pill"
+                                            transition={{type: "spring", duration: 1, x: {duration: 0.5}}}/>
+                            }
+                                         className={styles.tabsPanel} generator={tabs}>
+                                {(item, _, isActive) => (
+                                    <div className={styles.tabButton + (isActive ? " text-foreground-accent" : " text-foreground")}>
+                                        <SvgIcon icon={item.i} fill={isActive ? Gradients.LightBlue : null} size={20}/>
+                                        {item.title}
+                                    </div>
+                                )}
+                            </RadioButton>}
+                        >
+                            <SummariesTab acc={acc}/>
+                            <GamesTab scroller={onScrollInitialize} acc={acc}/>
+                            <FriendsTab/>
+                        </Tabs>
                     </> :
                     <SummariesTab acc={acc}/>
                 }
 
                 {!updated && !acc.isUpToDate() && !isUpdating &&
-                    <Tooltip {...popup.side} alignX={EPlacementX.Left} message="Update account info">
+                    <Tooltip {...popupDefaults.side} alignX={EPlacementX.Left} message="Update account info">
                         <Button actions={updateBtn} variant={EButtonVariant.Outlined}
                                 className="absolute right-3 top-5 h-10 z-10 rounded-xl"
                                 onClick={async () => {

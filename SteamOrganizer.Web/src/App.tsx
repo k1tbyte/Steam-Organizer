@@ -7,18 +7,18 @@ import SignIn from "./pages/SignIn.tsx";
 import Backups from "./pages/Backups/Backups.tsx";
 import {useEffect} from "react";
 import {config, loadConfig} from "./store/config.ts";
-import db from "./services/indexedDb.ts";
+import db from "@/shared/services/indexedDb.ts";
 import {Defs} from "./defines"
-import {ModalsHost} from "./components/primitives/Modal.tsx";
+import {ModalsHost} from "./shared/ui/Modal.tsx";
 import {Profile} from "@/pages/Profile/Profile.tsx";
 import {AuthProvider} from "@/providers/authProvider.tsx";
-import {toast, ToastsHost, ToastVariant} from "@/components/primitives/Toast.tsx";
+import {toast, ToastsHost, ToastVariant} from "@/shared/ui/Toast.tsx";
 import {databaseKey, dbTimestamp, importAccounts, loadAccounts} from "@/store/accounts.ts";
-import {isAuthorized} from "@/services/gAuth.ts";
+import {isAuthorized} from "@/shared/services/gAuth.ts";
 import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups.ts";
-import {decrypt} from "@/services/cryptography.ts";
+import {decrypt} from "@/shared/services/cryptography.ts";
 import {flagStore} from "@/store/local.tsx";
-import Logo from "@/components/elements/Logo.tsx";
+import Logo from "@/components/Logo.tsx";
 
 const router = createBrowserRouter([
     {

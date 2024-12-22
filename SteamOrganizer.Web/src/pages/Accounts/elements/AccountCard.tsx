@@ -5,11 +5,11 @@ import { Icon, SvgIcon} from "src/defines";
 import {accounts, saveDbMutation} from "@/store/accounts.ts";
 import styles from "./AccountCard.module.pcss"
 import {defaultAvatar} from "@/store/config.ts";
-import {Tooltip} from "@/components/primitives/Popup.tsx";
-import {dateFormatter} from "@/lib/utils.ts";
-import {ConfirmPopup} from "@/components/elements/ConfirmPopup.tsx";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip";
+import {dateFormatter} from "@/shared/lib/utils.ts";
+import {ConfirmPopup} from "@/components/ConfirmPopup.tsx";
 import {AccountsContext} from "@/pages/Accounts/elements/AccountsNav.tsx";
-import {Draggable} from "@/components/primitives/Draggable.tsx";
+import {Draggable} from "@/shared/ui/Draggable.tsx";
 import {flagStore, useFlagStore} from "@/store/local.tsx";
 
 interface IAccountCardProps {
@@ -65,7 +65,7 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
     return (
         <div className={`${styles.card} ${isEnabled && pinned ? styles.cardAccentPinned : ""}`}>
             <div className="shrink-0">
-                <Tooltip message={() =>
+                <Tooltip canHover={true} message={() =>
                     <p>
                         Account added: {dateFormatter.format(acc.addedDate)}
                         {acc.lastUpdateDate && `\nAccount updated: ${dateFormatter.format(acc.lastUpdateDate)}`}

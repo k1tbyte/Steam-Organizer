@@ -1,10 +1,10 @@
 import {FC} from "react";
 import {Icon, SvgIcon} from "src/defines";
 import {BackupMetadata} from "@/types/backup.ts";
-import {deleteFile} from "@/services/gDrive.ts";
+import {deleteFile} from "@/shared/services/gDrive.ts";
 import {backups} from "@/store/backups.ts";
-import {ConfirmPopup} from "@/components/elements/ConfirmPopup.tsx";
-import {modal} from "@/components/primitives/Modal.tsx";
+import {ConfirmPopup} from "@/components/ConfirmPopup.tsx";
+import {modal} from "@/shared/ui/Modal.tsx";
 import {BackupRestoring} from "@/pages/Modals/BackupRestoring.tsx";
 
 interface IBackupProps{

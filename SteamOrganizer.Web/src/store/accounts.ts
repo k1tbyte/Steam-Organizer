@@ -1,15 +1,15 @@
 import {Account} from "@/entity/account.ts";
-import db from "@/services/indexedDb.ts";
-import {decrypt, encrypt, exportKey, importKey} from "@/services/cryptography.ts";
+import db from "@/shared/services/indexedDb.ts";
+import {decrypt, encrypt, exportKey, importKey} from "@/shared/services/cryptography.ts";
 import {config, EDecryptResult, saveConfig} from "@/store/config.ts";
-import {ObservableObject} from "@/lib/observer/observableObject.ts";
-import {isAuthorized} from "@/services/gAuth.ts";
+import {ObservableObject} from "@/shared/lib/observer/observableObject.ts";
+import {isAuthorized} from "@/shared/services/gAuth.ts";
 import {storeBackup} from "@/store/backups.ts";
-import {debounce, jsonIgnoreNull} from "@/lib/utils.ts";
-import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
+import {debounce, jsonIgnoreNull} from "@/shared/lib/utils.ts";
+import {toast, ToastVariant} from "@/shared/ui/Toast.tsx";
 import { openAuthPopup} from "@/pages/Modals/Authentication.tsx";
 import {ESavingState, setSavingState} from "@/components/Header/SaveIndicator.tsx";
-import {getPlayerInfoStream} from "@/services/steamApi.ts";
+import {getPlayerInfoStream} from "@/shared/api/steamApi.ts";
 import {flagStore} from "@/store/local.tsx";
 
 export const accounts = new ObservableObject<Account[]>(undefined)
