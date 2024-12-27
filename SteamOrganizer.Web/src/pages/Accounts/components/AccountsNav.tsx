@@ -1,85 +1,38 @@
-import React, { type ChangeEvent, createContext, type FC, type ReactNode, useEffect, useRef, useState} from "react";
+import React, { type ChangeEvent, createContext, type FC, type ReactNode, useRef, useState} from "react";
 import clsx from "clsx";
-import styles from "./AccountsNav.module.pcss";
-import Input from "@/shared/ui/Input.tsx";
+import styles from "./AccountsNav.module.css";
 import {Gradients, Icon, SvgIcon} from "src/defines";
-import {modal} from "@/shared/ui/Modal.tsx";
-import {openAddAccount } from "@/pages/Modals/AddAccount.tsx";
-import {toast, ToastVariant} from "@/shared/ui/Toast.tsx";
-import {ToggleButton} from "@/shared/ui/ToggleButton.tsx";
-import {IDraggableContext, IDraggableInfo} from "@/shared/ui/Draggable.tsx";
-import {type ObservableProxy} from "@/shared/lib/observer/observableProxy.ts";
-import {type Account} from "@/entity/account.ts";
-import {accounts, importAccounts, updateAccounts} from "@/store/accounts.ts";
-import {ExportData} from "@/pages/Modals/ExportData.tsx";
-import {formatFileDate} from "@/shared/lib/utils.ts";
-import {verifyVersion} from "@/shared/services/cryptography.ts";
-import {DecryptionPopup} from "@/pages/Modals/Authentication.tsx";
-import {flagStore, useFlagStore} from "@/store/local.tsx";
-import {FilterFunction} from "@/shared/hooks/useProxyFilter.ts";
-import {Tooltip} from "@/shared/ui/Popup/Tooltip.tsx";
+import {modal} from "@/shared/ui/Modal";
+import {openAddAccount } from "@/pages/Modals/AddAccount";
+import {toast, ToastVariant} from "@/shared/ui/Toast";
+import {ToggleButton} from "@/shared/ui/ToggleButton";
+import {IDraggableContext, IDraggableInfo} from "@/shared/ui/Draggable";
+import {accounts, importAccounts, updateAccounts} from "@/store/accounts";
+import {ExportData} from "@/pages/Modals/ExportData";
+import {formatFileDate} from "@/shared/lib/utils";
+import {verifyVersion} from "@/shared/services/cryptography";
+import {DecryptionPopup} from "@/pages/Modals/Authentication";
+import {flagStore, useFlagStore} from "@/store/local";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip";
+import {FilterInput} from "@/components/FilterInput/FilterInput";
+import {IFilterConfig} from "@/components/FilterInput/types";
+import {accountsFilters} from "@/pages/Accounts/filtersDefinition";
 
 interface IAccountsNavProps {
     children: ReactNode;
-    filter: (filter: FilterFunction<Account>) => void;
+    callback: () => void;
+    filterConfig: IFilterConfig
 }
 
 export const AccountsContext = createContext<IDraggableContext>(undefined!)
 
-/*const filters = [
-    {
-        type: "search",
-        fields: [
-            {
-                name: "Nickname",
-                prop: "nickname"
-            },
-            {
-                name: "Login",
-                prop: "login"
-            },
-            {
-                name: "Email",
-                prop: "email"
-            }
-        ]
-    },
-    {
-        type: "sort",
-        fields: [
-            {
-                name: "Nickname",
-                prop: "nickname"
-            },
-            {
-                name: "Login",
-                prop: "login"
-            },
-            {
-                name: "Email",
-                prop: "email"
-            }
-        ]
-    },
-    {
-        type: "flag",
-        fields: [
-            {
-                name: "Two-factor",
-                prop: "authenticator"
-            }
-        ]
-    },
-]*/
-
-const AccountsNav: FC<IAccountsNavProps> = ({ children, filter }) => {
+const AccountsNav: FC<IAccountsNavProps> = ({ children, callback, filterConfig }) => {
     const [expanded, setExpanded] = useState(false);
     const [isDragging, setDragging] = useState(false);
     const [isDragState, setDragState] = useState(false);
     const infoRef = useRef<IDraggableInfo>({});
     const fileInputRef = useRef<HTMLInputElement>(null!);
     const [isUpdating] = useFlagStore<boolean>(nameof(flagStore.store.isDbUpdating))
-
 
     const addClicked = () => {
         setExpanded(false)
@@ -132,7 +85,7 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, filter }) => {
             <nav className="w-full mt-[7px] flex-shrink-0 h-[40px] relative">
                 <div className={clsx(styles.wrapper, expanded && "h-[110px]")}>
                     <ToggleButton className={styles.editButton}
-                                  isEnabled={isDragState} setEnabled={(e) => {
+                                  isEnabled={isDragState} setEnabled={e => {
                         setDragState(e)
                         setExpanded(false)
                     }}
@@ -141,13 +94,8 @@ const AccountsNav: FC<IAccountsNavProps> = ({ children, filter }) => {
                                   offContent={<SvgIcon icon={Icon.EditSquareOutline} size={21}/>}/>
                     <div className="w-full flex-center relative -order-1 z-20 h-[40px]">
                         <div className={clsx(styles.searchOverlay, expanded || "h-0")}></div>
-                        <Input className="rounded-lg pr-24 h-full bg-primary placeholder:font-semibold"
-                               autoComplete={"off"} onInput={(e) => {
-                                filter(data => data.filter(acc =>
-                                    acc.nickname.toUpperCase().includes(e.currentTarget.value.toUpperCase())
-                                ))
-                        }}
-                               maxLength={60} placeholder="Search in accounts"/>
+                        <FilterInput onFilterChanged={callback} config={filterConfig} filters={accountsFilters}
+                                     maxLength={60} placeholder="Search in accounts"/>
                         <div className={styles.searchPanel}>
                             <SvgIcon icon={Icon.ChevronDown} size={15}
                                      className={clsx("mr-2 text-foreground transition-transform sm:hidden", expanded && "rotate-180")}

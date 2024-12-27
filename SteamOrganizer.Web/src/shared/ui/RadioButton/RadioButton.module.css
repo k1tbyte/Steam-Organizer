@@ -1,0 +1,21 @@
+.btnBase {
+    @apply relative z-10;
+}
+
+.btn {
+    @apply relative z-10 py-1.5 px-5 text-foreground;
+}
+
+.active {
+    @apply  text-foreground-accent;
+}
+
+.indicator {
+    @apply absolute inset-0 bg-secondary;
+}
+
+.group {
+    > button {
+        position: relative;
+    }
+}

@@ -1,6 +1,6 @@
-import {forwardRef, InputHTMLAttributes, useState} from "react";
+import {forwardRef, useState} from "react";
 import clsx from 'clsx';
-import Input, {IInputProps} from "@/shared/ui/Input.tsx";
+import Input, { type IInputProps} from "@/shared/ui/Input";
 import {Icon, SvgIcon} from "@/defines";
 
 interface IPasswordBoxProps extends IInputProps { }

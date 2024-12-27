@@ -1,9 +1,9 @@
 import {FC, ReactElement, ReactNode, useState} from "react";
-import {cn} from "@/shared/lib/utils.ts";
+import {cn} from "@/shared/lib/utils";
 import {AnimatePresence, motion} from "framer-motion";
 import clsx from "clsx";
 import {Icon, SvgIcon} from "@/defines";
-import {uiStore} from "@/store/local.tsx";
+import {uiStore} from "@/store/local";
 
 
 interface IExpanderProps {

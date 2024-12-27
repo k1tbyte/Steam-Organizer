@@ -1,19 +1,26 @@
-import {forwardRef, type HTMLAttributes, useState} from "react";
-import {cn} from "@/shared/lib/utils.ts";
-import {IBindable} from "@/shared/types/IBindable.ts";
+import {forwardRef, ReactElement} from "react";
+import {cn} from "@/shared/lib/utils";
+import {withControlledState} from "@/shared/hoc/withControlledState";
+import {StatefulComponent} from "@/shared/hooks/useControlledState";
 
-interface ICheckBoxProps extends HTMLAttributes<HTMLButtonElement>, IBindable {
+interface ICheckBoxProps extends StatefulComponent<'button', boolean | null>{
     allowIndeterminate?: boolean
+    checkedSymbol?: ReactElement
+    unCheckedSymbol?: ReactElement
+    indeterminateSymbol?: ReactElement
 }
 
-export const CheckBox = forwardRef<HTMLButtonElement, ICheckBoxProps>(({ className, allowIndeterminate,bindKey, onChanged, bindTo, ...props }, ref) => {
-    const [checked, setChecked] = useState<boolean | null>(bindTo && bindKey ? bindTo[bindKey] : false);
-
+const CheckBoxBase = forwardRef<HTMLButtonElement, ICheckBoxProps>(({   className,
+                                                                        state,
+                                                                        setState,
+                                                                        checkedSymbol,
+                                                                        unCheckedSymbol,
+                                                                        indeterminateSymbol,
+                                                                        allowIndeterminate,
+                                                                        ...props }, ref) => {
     const toggleCheck = () => {
-        setChecked(prev => {
-            const value = prev === null ? false : prev ? (allowIndeterminate ? null : false) : true;
-            bindTo && bindKey && (bindTo[bindKey] = value) && onChanged?.();
-            return value;
+        setState(prev => {
+            return prev === null ? false : prev ? (allowIndeterminate ? null : false) : true;
         });
     };
 
@@ -25,7 +32,9 @@ export const CheckBox = forwardRef<HTMLButtonElement, ICheckBoxProps>(({ classNa
                 }
                 style={{width: 25, height: 25}} {...props}
                 onClick={toggleCheck}>
-            {checked === null ? "—" : checked && "✔"}
+            {state === null ? (indeterminateSymbol || "—") : state ? (checkedSymbol || "✔") : unCheckedSymbol}
         </button>
     )
 })
+
+export const CheckBox = withControlledState<ICheckBoxProps, boolean | null>(CheckBoxBase, false);

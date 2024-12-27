@@ -1,19 +1,21 @@
-import {ComponentType, Dispatch, forwardRef} from "react";
-import {IControlledStateOptions, useControlledState} from "@/shared/hooks/useControlledState.ts";
+import {ComponentType, Dispatch, forwardRef, SetStateAction} from "react";
+import {IControlledStateOptions, useControlledState} from "@/shared/hooks/useControlledState";
 
 /**
  * HOC to wrap a component with controlled state
  * @param WrappedComponent Component to wrap
  * @param defaultValue Default value for the controlled state
  */
-export function withControlledState<P extends object, T = any>(
-    WrappedComponent: ComponentType<P & { value: T; setValue: Dispatch<T> }>,
+export function withControlledState<P extends object, T>(
+    WrappedComponent: ComponentType<P & { state: T; setState:  Dispatch<SetStateAction<T>> }>,
     defaultValue?: T
 ) {
     return forwardRef<any, P & IControlledStateOptions<T>>((props, ref) => {
         const {
             state,
             initialState = defaultValue,
+            bindTo,
+            bindKey,
             setState,
             onStateChanged,
             ...componentProps
@@ -23,6 +25,8 @@ export function withControlledState<P extends object, T = any>(
             state,
             initialState,
             setState,
+            bindTo,
+            bindKey,
             onStateChanged
         });
 
@@ -30,8 +34,8 @@ export function withControlledState<P extends object, T = any>(
             <WrappedComponent
                 {...(componentProps as P)}
                 ref={ref}
-                value={value}
-                setValue={setValue}
+                state={value}
+                setState={setValue}
             />
         );
     });

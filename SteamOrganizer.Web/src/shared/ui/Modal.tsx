@@ -1,6 +1,6 @@
 import {AnimatePresence, motion} from "framer-motion";
 import React, {Dispatch, FC, Fragment, ReactNode, SetStateAction, useEffect, useRef, useState} from "react";
-import {cn} from "@/shared/lib/utils.ts";
+import {cn} from "@/shared/lib/utils";
 
 interface IModalOptions {
     onClosing?: () => boolean | undefined;

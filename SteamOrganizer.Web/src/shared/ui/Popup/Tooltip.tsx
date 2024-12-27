@@ -1,22 +1,17 @@
 import {
     MouseEvent,
     forwardRef,
-    ReactElement,
     useCallback,
     useEffect,
     useRef,
     useState,
     useImperativeHandle
 } from "react";
-import {ContentType, IPopupBaseProps, Popup} from "./Popup.tsx";
-import {cn} from "@/shared/lib/utils.ts";
-import {EPlacementX, EPlacementY} from "@/shared/ui/Popup/positioning.ts";
+import {ContentType, IPopupProps, Popup} from "./Popup";
+import {  EPlacement } from "@/shared/ui/Popup/positioning";
 
 
-interface ITooltipProps extends IPopupBaseProps {
-    /** The element that triggers the tooltip */
-    children: ReactElement;
-
+interface ITooltipProps extends Omit<IPopupProps, 'content' | 'triggerProps'> {
     /** Content to be displayed in the tooltip. Can be a ReactNode or a function returning ReactNode */
     message: ContentType;
 
@@ -69,8 +64,7 @@ export const Tooltip = forwardRef<HTMLDivElement, ITooltipProps>(({
                                                                       message,
                                                                       openDelay = 200,
                                                                       closeDelay = 150,
-                                                                      alignY = EPlacementY.Top,
-                                                                      alignX = EPlacementX.Center,
+                                                                      placement = EPlacement.TopCenter,
                                                                       offset = { x: 5, y: 5 },
                                                                       className,
                                                                       children,
@@ -153,8 +147,7 @@ export const Tooltip = forwardRef<HTMLDivElement, ITooltipProps>(({
 
     return (
         <Popup
-            alignX={alignX}
-            alignY={alignY}
+            placement={placement}
             offset={offset}
             {...props}
             state={shouldShow}
@@ -173,7 +166,7 @@ export const Tooltip = forwardRef<HTMLDivElement, ITooltipProps>(({
                 onMouseLeave: handleMouseLeave,
                 onFocus: handleMouseEnter,
                 onBlur: handleMouseLeave,
-                onClick: undefined
+                onClick: children.props.onClick
             }}
         >
             {children}

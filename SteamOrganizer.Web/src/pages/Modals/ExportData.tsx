@@ -1,13 +1,13 @@
 import React, {FC} from "react";
-import { InputValidationWrapper } from "@/components/FieldWrapper.tsx";
+import { InputValidationWrapper } from "@/components/FieldWrapper";
 import {Icon, SvgIcon} from "src/defines";
-import {PasswordBox} from "@/shared/ui/PasswordBox.tsx";
-import Button from "@/shared/ui/Button.tsx";
-import {InfoNote} from "@/pages/Modals/elements/InfoNote.tsx";
-import {jsonIgnoreNull} from "@/shared/lib/utils.ts";
-import {deriveKey, encrypt } from "@/shared/services/cryptography.ts";
-import {useModalActions} from "@/shared/ui/Modal.tsx";
-import {validators} from "@/shared/hooks/useFormValidation.ts";
+import {PasswordBox} from "@/shared/ui/PasswordBox";
+import Button from "@/shared/ui/Button";
+import {InfoNote} from "@/pages/Modals/elements/InfoNote";
+import {jsonIgnoreNull} from "@/shared/lib/utils";
+import {deriveKey, encrypt } from "@/shared/services/cryptography";
+import {useModalActions} from "@/shared/ui/Modal";
+import {validators} from "@/shared/hooks/useFormValidation";
 
 interface IExportDataProps {
     getData: () => [string, Object]

@@ -1,5 +1,5 @@
 import {FC} from "react";
-import {flagStore, useFlagStore, useIsOffline} from "@/store/local.tsx";
+import {flagStore, useFlagStore, useIsOffline} from "@/store/local";
 import {Icon, SvgIcon} from "@/defines";
 import {Tooltip} from "@/shared/ui/Popup/Tooltip";
 

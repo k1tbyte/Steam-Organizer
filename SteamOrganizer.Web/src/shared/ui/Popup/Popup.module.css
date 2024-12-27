@@ -1,0 +1,3 @@
+.popupDefault {
+    @apply absolute bg-accent drop-shadow-md px-2.5 py-1 text-2xs rounded-2xm text-foreground whitespace-pre;
+}

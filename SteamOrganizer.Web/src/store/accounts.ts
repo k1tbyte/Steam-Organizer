@@ -1,16 +1,16 @@
-import {Account} from "@/entity/account.ts";
-import db from "@/shared/services/indexedDb.ts";
-import {decrypt, encrypt, exportKey, importKey} from "@/shared/services/cryptography.ts";
-import {config, EDecryptResult, saveConfig} from "@/store/config.ts";
-import {ObservableObject} from "@/shared/lib/observer/observableObject.ts";
-import {isAuthorized} from "@/shared/services/gAuth.ts";
-import {storeBackup} from "@/store/backups.ts";
-import {debounce, jsonIgnoreNull} from "@/shared/lib/utils.ts";
-import {toast, ToastVariant} from "@/shared/ui/Toast.tsx";
-import { openAuthPopup} from "@/pages/Modals/Authentication.tsx";
-import {ESavingState, setSavingState} from "@/components/Header/SaveIndicator.tsx";
-import {getPlayerInfoStream} from "@/shared/api/steamApi.ts";
-import {flagStore} from "@/store/local.tsx";
+import {Account} from "@/entity/account";
+import db from "@/shared/services/indexedDb";
+import {decrypt, encrypt, exportKey, importKey} from "@/shared/services/cryptography";
+import {config, EDecryptResult, saveConfig} from "@/store/config";
+import {ObservableObject} from "@/shared/lib/observer/observableObject";
+import {isAuthorized} from "@/shared/services/gAuth";
+import {storeBackup} from "@/store/backups";
+import {debounce, jsonIgnoreNull} from "@/shared/lib/utils";
+import {toast, ToastVariant} from "@/shared/ui/Toast";
+import { openAuthPopup} from "@/pages/Modals/Authentication";
+import {ESavingState, setSavingState} from "@/components/Header/SaveIndicator";
+import {getPlayerInfoStream} from "@/shared/api/steamApi";
+import {flagStore} from "@/store/local";
 
 export const accounts = new ObservableObject<Account[]>(undefined)
 export let dbTimestamp: Date | undefined;
@@ -171,12 +171,13 @@ export const loadAccounts = async (bytes: ArrayBuffer | null = null): Promise<vo
             initAccounts();
             result = EDecryptResult.BadCredentials;
         }
-    } catch {
+    } catch (err) {
         // Show error toast on unknown critical error
         toast.open({
             body: "An unknown critical error occurred while loading accounts",
             variant: ToastVariant.Error
         });
+        throw err;
     } finally {
         // Open authentication popup if result is not success (bad credentials or need auth)
         if (result) {

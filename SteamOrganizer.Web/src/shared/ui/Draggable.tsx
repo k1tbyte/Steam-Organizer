@@ -1,5 +1,5 @@
 import React, {FC, ReactElement, useEffect, useRef} from "react";
-import {applyStyles, findParentByAttribute, getEventCords} from "@/shared/lib/utils.ts";
+import {applyStyles, findParentByAttribute, getEventCords} from "@/shared/lib/utils";
 
 export interface IDraggableContext {
     isEnabled: boolean,

@@ -68,7 +68,7 @@ export abstract class BaseVirtualLayout {
         const headerSize = this.getElementHeight(this.scroller.querySelector(`[virtual-header]`) as HTMLElement);
         const scrollerTop = this.scroller.getBoundingClientRect().top;
         this.offsetBefore = wrapperTop - scrollerTop + this.scroller.scrollTop + headerSize;
-        console.log(wrapperTop, scrollerTop, this.offsetBefore)
+        //console.log(wrapperTop, scrollerTop, this.offsetBefore)
 
         const sample = this.list.children[0] as HTMLElement;
 

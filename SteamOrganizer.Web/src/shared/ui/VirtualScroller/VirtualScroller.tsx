@@ -8,9 +8,9 @@ import React, {
     useRef,
     useState
 } from "react";
-import {useScrollbar} from "@/shared/hooks/useScrollbar.ts";
-import {BaseVirtualLayout} from "./BaseVirtualLayout.ts";
-import {Observer} from "@/shared/lib/observer/observer.ts";
+import {useScrollbar} from "@/shared/hooks/useScrollbar";
+import {BaseVirtualLayout} from "./BaseVirtualLayout";
+import {Observer} from "@/shared/lib/observer/observer";
 import clsx from "clsx";
 
 export type ScrollerInitializer = (MutableRefObject<HTMLElement>) | ((onScroll: () => void) => HTMLElement);
@@ -24,8 +24,7 @@ interface IVirtualListProps<T> {
     className?: string;
     scrollerClassName?: string;
     withDragMoving?: boolean;
-    emptyIndicator?: ReactElement,
-    searchEmptyIndicator?: ReactElement,
+    emptyIndicator?: ReactElement | (() => ReactElement),
     onSizeChanging?: (height: number) => boolean;
 }
 
@@ -52,7 +51,7 @@ const VirtualGenerator: FC<IVirtualGeneratorProps> = ({ data, onRenderElement,se
     )
 }
 
-const ListIndicator: FC<{ setRef: MutableRefObject<Dispatch<SetStateAction<ReactElement>>>, value: ReactElement }>
+const ListIndicator: FC<{ setRef: MutableRefObject<Dispatch<SetStateAction<ReactElement>>>, value?: ReactElement }>
     = ({ value,  setRef }) => {
     const [indicator, setIndicator] = useState<ReactElement>(value);
     setRef.current = setIndicator;
@@ -71,7 +70,7 @@ const getScrollElement = (scroller: ScrollerInitializer, onRender: () => void): 
 export const VirtualScroller = <T,>({
                                         collection, layout, scroller,
                                         className, onRenderElement, withDragMoving,
-                                        searchEmptyIndicator, emptyIndicator, scrollerClassName,
+                                        emptyIndicator, scrollerClassName,
                                         onSizeChanging
                                     }: IVirtualListProps<T>) => {
     const [initialized, setInitialized] = useState(collection.value?.length);
@@ -86,12 +85,15 @@ export const VirtualScroller = <T,>({
     const {scrollRef, hostRef} = useScrollbar({scroll: () => info.render()});
 
     useEffect(() => {
+        const updateIndicator = () => setIndicator.current(collection.value?.length ? null :
+            emptyIndicator instanceof Function ? emptyIndicator() : emptyIndicator);
+
         const onRender = () => layoutRef.current?.render()
         const onCollectionChanged = (data: ArrayLike<any>) => {
             info.source = data ?? info.source;
 
             setInitialized((prevInitialized) => {
-                setIndicator.current(collection.value?.length < 1 ? emptyIndicator : info.source.length < 1 ? searchEmptyIndicator : null);
+                updateIndicator()
                 if (!prevInitialized && collection.value?.length) {
                     chunkSetter.current([0]);
                     return 1;
@@ -123,6 +125,7 @@ export const VirtualScroller = <T,>({
 
         collection.onChanged(onCollectionChanged)
         resizeObserver.observe(sizerRef.current)
+        updateIndicator()
 
         return () => {
             if (typeof scroller !== "function") {
@@ -148,7 +151,7 @@ export const VirtualScroller = <T,>({
                                   data={info ? info.source : collection.value}
                                   onRenderElement={onRenderElement} setRef={chunkSetter}/>
             </div>
-            <ListIndicator value={collection.value.length ? null : emptyIndicator} setRef={setIndicator}/>
+            <ListIndicator setRef={setIndicator}/>
         </div>
 
     return scroller ? list :

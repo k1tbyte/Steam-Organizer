@@ -1,0 +1,3 @@
+.colorful {
+    @apply text-secondary font-bold w-fit text-2xs bg-tertiary px-3 py-1 rounded-lg;
+}

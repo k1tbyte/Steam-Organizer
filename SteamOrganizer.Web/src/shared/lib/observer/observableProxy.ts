@@ -1,5 +1,5 @@
-import {Observer} from "./observer.ts";
-import {ObservableObject} from "@/shared/lib/observer/observableObject.ts";
+import {Observer} from "./observer";
+import {ObservableObject} from "@/shared/lib/observer/observableObject";
 
 export class ObservableProxy<T> extends Observer<T> {
     private middleware: Array<(data: T) => T> = [];
@@ -10,15 +10,19 @@ export class ObservableProxy<T> extends Observer<T> {
         super();
         this.observer = observer
         this.value = observer.value
-        observer.onChanged(this.proxyCallback)
+        observer.onChanged((newData) => {
+            this.value = newData;
+            this.proxyCallback(newData)
+        })
     }
 
     public proxyCallback = (data: T) => {
-        this.value = data
         for(const middleware of this.middleware) {
             data = middleware(data)
         }
-        return this.subscribers.emit(data)
+
+        this.value = data
+        this.subscribers.emit(data)
     }
 
     public addMiddleware(middleware: (data: T) => T) {

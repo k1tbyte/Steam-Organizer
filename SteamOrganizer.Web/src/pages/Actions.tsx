@@ -1,17 +1,14 @@
-import React, {
-    useEffect,
-    useState
-} from "react";
-import { setDocumentTitle} from "@/shared/lib/utils.ts";
+import React, { useState} from "react";
 import clsx from "clsx";
-import {RadioButton} from "@/shared/ui/RadioButton/RadioButton.tsx";
-import {EPlacementX, EPlacementY} from "@/shared/ui/Popup/positioning.ts";
-import Button from "@/shared/ui/Button.tsx";
-import {Popup} from "@/shared/ui/Popup/Popup.tsx";
-import { Tooltip } from "@/shared/ui/Popup/Tooltip";
+import {RadioButton} from "@/shared/ui/RadioButton/RadioButton";
+import Button from "@/shared/ui/Button";
+import {Popup} from "@/shared/ui/Popup/Popup";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip";
+import {EPlacement} from "@/shared/ui/Popup/positioning";
+import {useTitle} from "@/shared/hooks/useTitle";
 
 export default function Actions() {
-    useEffect(() => setDocumentTitle("Actions"), []);
+    useTitle("Actions")
 
     const [activeIndex, setActive] = useState(0);
 
@@ -27,13 +24,14 @@ export default function Actions() {
                 }}
             </RadioButton>
 
-            <Popup alignY={EPlacementY.Bottom} alignX={EPlacementX.Center} offset={{ y: 5, x:0 }} content={<div>sasas</div>}>
+            <Popup placement={EPlacement.BottomCenter} offset={{ y: 5, x:0 }} content={<div>Test</div>}>
                 <Button>This is context popup</Button>
             </Popup>
 
             <Tooltip message={"This is a tooltip"} canHover={true}>
                 <Button>Hover for tooltip</Button>
             </Tooltip>
+
 
 {/*            <RadioButton initialState={activeIndex}
                          className="text-sm bg-primary p-2 flex-y-center rounded-xl text-foreground gap-3"

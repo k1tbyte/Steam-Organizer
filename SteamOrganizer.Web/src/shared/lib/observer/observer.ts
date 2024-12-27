@@ -1,4 +1,4 @@
-import {EventEmitter} from "./eventEmitter.ts";
+import {EventEmitter} from "./eventEmitter";
 
 export abstract class Observer<T> {
     // Original value

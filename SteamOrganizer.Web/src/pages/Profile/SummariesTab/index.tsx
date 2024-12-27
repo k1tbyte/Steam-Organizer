@@ -1,13 +1,13 @@
 import React, {FC} from "react";
 import type {IAccountProps} from "@/pages/Profile/Profile.tsx";
-import {Expander, withStateSaving} from "@/shared/ui/Expander.tsx";
+import {Expander, withStateSaving} from "@/shared/ui/Expander";
 import {Gradients, Icon, SvgIcon} from "src/defines";
-import {TextArea} from "@/shared/ui/TextArea.tsx";
-import {delayedSaveAccounts} from "@/store/accounts.ts";
-import {EEconomyBanType} from "@/types/steamPlayerSummary.ts";
-import CommunityArea from "./CommunityArea.tsx";
-import CredentialsArea from "./CredentialsArea.tsx";
-import {uiStore} from "@/store/local.tsx";
+import {TextArea} from "@/shared/ui/TextArea";
+import {delayedSaveAccounts} from "@/store/accounts";
+import {EEconomyBanType} from "@/types/steamPlayerSummary";
+import CommunityArea from "./CommunityArea";
+import CredentialsArea from "./CredentialsArea";
+import {uiStore} from "@/store/local";
 
 interface IBanChipProps {
     name: string;

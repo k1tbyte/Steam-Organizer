@@ -1,5 +1,5 @@
 import {useState, useEffect, type Dispatch, type SetStateAction} from 'react';
-import {debounce} from "@/shared/lib/utils.ts";
+import {debounce} from "@/shared/lib/utils";
 
 export class RxStore<T> {
     public readonly store: T = {} as T;
@@ -53,9 +53,9 @@ export class RxStore<T> {
     }
 }
 
-export const useStoreState = <S,T> (store: RxStore<S>, key: string):
-    [state: T, value:  (value: SetStateAction<T>, serialize?: boolean) => void] => {
-    const [state, setState] = useState<T>(store.store[key]);
+export const useStoreState = <S,T> (store: RxStore<S>, key: string, defaultValue?: T):
+    [state: T, value:  (value: T, serialize?: boolean) => void] => {
+    const [state, setState] = useState<T>(store.store[key] ?? defaultValue);
 
     useEffect(() => {
         store.set(key, setState)

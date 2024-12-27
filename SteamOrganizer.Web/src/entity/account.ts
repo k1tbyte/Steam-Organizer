@@ -1,8 +1,8 @@
-import { type EVisibilityState, type SteamPlayerBans, type SteamPlayerGames, type SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
-import {getPlayerInfo, getSteamTime} from "@/shared/api/steamApi.ts";
+import { type EVisibilityState, type SteamPlayerBans, type SteamPlayerGames, type SteamPlayerSummary} from "@/types/steamPlayerSummary";
+import {getPlayerInfo, getSteamTime} from "@/shared/api/steamApi";
 import type {IAccountCredential} from "@/types/accountCredentials.ts";
-import {accounts} from "@/store/accounts.ts";
-import {ISteamAuth} from "@/entity/steamAuth.ts";
+import {accounts} from "@/store/accounts";
+import {ISteamAuth} from "@/entity/steamAuth";
 
 const codeInterval = 30;
 const steamCodeCharacters = "23456789BCDFGHJKMNPQRTVWXY";

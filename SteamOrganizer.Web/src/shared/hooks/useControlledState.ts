@@ -1,4 +1,12 @@
-import {type ComponentProps, type Dispatch, FC, type JSXElementConstructor, useCallback, useState} from "react";
+import {
+    type ComponentProps,
+    type Dispatch,
+    type JSXElementConstructor,
+    ReactHTML, SetStateAction,
+    useCallback,
+    useState
+} from "react";
+import type {HTMLMotionProps} from "framer-motion";
 
 type JSXComponent = keyof JSX.IntrinsicElements | JSXElementConstructor<any>;
 
@@ -14,10 +22,13 @@ export interface IControlledStateOptions<T> {
     initialState?: T;
 
     /** State setter function for controlled mode */
-    setState?: Dispatch<T>;
+    setState?:  Dispatch<SetStateAction<T>>;
 
     /** Callback fired when state changes in uncontrolled mode */
     onStateChanged?: (value: T) => void;
+
+    bindTo?: object;
+    bindKey?: string;
 }
 
 /**
@@ -29,7 +40,7 @@ interface IControlledStateResult<T> {
     value: T;
 
     /** Function to update the state */
-    setValue: Dispatch<T>;
+    setValue: Dispatch<SetStateAction<T>>;
 
     /** Whether the component is in controlled mode */
     isControlled: boolean;
@@ -39,34 +50,29 @@ interface IControlledStateResult<T> {
  * Type for creating stateful component props
  * Combines base props, controlled state options, and native element props
  *
- * @template P Base component props
- * @template T Component type
- * @template V State value type
- */
-export type StatefulComponentProps<
-    P extends object,
-    T extends JSXComponent,
-    V
-> = P & IControlledStateOptions<V> & Omit<ComponentProps<T>, keyof P>;
-
-/**
- * Type for creating stateful functional components
- *
- * @template P Base component props
- * @template T Component type
- * @template V State value type
+ * @template T Component HTML type
+ * @template S State value type
  */
 export type StatefulComponent<
-    P extends object,
     T extends JSXComponent,
     V
-> = FC<StatefulComponentProps<P, T, V>>;
+> = IControlledStateOptions<V> & ComponentProps<T>;
+
+/*
+* @template T Component HTML type
+* @template S State value type
+*/
+export type StatefulMotionComponent<
+    T extends keyof ReactHTML,
+    V
+> = IControlledStateOptions<V> & HTMLMotionProps<T>;
+
 
 /**
  * A hook that provides both controlled and uncontrolled state management
  *
  * This hook allows components to work in both controlled and uncontrolled modes,
- * similar to how native HTML form elements work.
+ * similar to how native HTML form components work.
  *
  * @template T The type of the state value
  *
@@ -102,21 +108,27 @@ export function useControlledState<T>({
                                           state,
                                           initialState,
                                           setState,
+                                          bindTo,
+                                          bindKey,
                                           onStateChanged
                                       }: IControlledStateOptions<T>): IControlledStateResult<T> {
-    const [internalValue, setInternalValue] = useState<T>(initialState);
+    const [internalValue, setInternalValue] = useState<T>(bindTo && bindKey ? bindTo[bindKey] : initialState);
     const isControlled = state !== undefined;
     const currentValue = isControlled ? state : internalValue;
 
-    const setter = useCallback((newValue: T) => {
+    const setter = useCallback((newValue: SetStateAction<T>) => {
+        newValue = newValue instanceof Function ? newValue(internalValue) : newValue;
+        bindTo && bindKey && (bindTo[bindKey] = newValue)
+
         if (isControlled) {
             setState?.(newValue);
             return;
         }
-
-        setInternalValue(newValue);
-        onStateChanged?.(newValue);
-    }, [isControlled, setState, onStateChanged]);
+        if (newValue !== internalValue) {
+            setInternalValue(newValue);
+            onStateChanged?.(newValue);
+        }
+    }, [isControlled, setState, onStateChanged, internalValue, bindTo, bindKey]);
 
     return {
         value: currentValue,

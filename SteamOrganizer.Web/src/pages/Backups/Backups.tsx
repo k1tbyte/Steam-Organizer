@@ -1,13 +1,13 @@
-import BackupCard from "./BackupCard.tsx";
-import {GridLayout} from "@/shared/ui/VirtualScroller/GridLayout.ts";
-import {backups, loadBackups} from "@/store/backups.ts";
+import BackupCard from "./BackupCard";
+import {GridLayout} from "@/shared/ui/VirtualScroller/GridLayout";
+import {backups, loadBackups} from "@/store/backups";
 import {useEffect, useState} from "react";
-import {useAuth} from "@/providers/authProvider.tsx";
-import {Loader, LoaderStatic} from "@/shared/ui/Loader.tsx";
-import {setDocumentTitle} from "@/shared/lib/utils.ts";
-import { useOfflineRedirect } from "@/store/local.tsx";
-import {EmptyCollectionIndicator} from "@/components/CollectionIndicator.tsx";
-import {VirtualScroller} from "@/shared/ui/VirtualScroller/VirtualScroller.tsx";
+import {useAuth} from "@/providers/authProvider";
+import {Loader, LoaderStatic} from "@/shared/ui/Loader";
+import { useOfflineRedirect } from "@/store/local";
+import {EmptyCollectionIndicator} from "@/components/CollectionIndicator";
+import {VirtualScroller} from "@/shared/ui/VirtualScroller/VirtualScroller";
+import {useTitle} from "@/shared/hooks/useTitle";
 
 export default function Backups(){
     const { user  } = useAuth()
@@ -27,7 +27,7 @@ export default function Backups(){
 
     },[user.isLoggedIn])
 
-    useEffect(() => setDocumentTitle("Backups"), []);
+    useTitle("Backups")
 
 
     if(isLoading) {

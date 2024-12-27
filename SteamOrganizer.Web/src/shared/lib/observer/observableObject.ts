@@ -1,4 +1,4 @@
-import {Observer} from "./observer.ts";
+import {Observer} from "./observer";
 
 export type ObservableCollection<T> = ObservableObject<T[]>
 

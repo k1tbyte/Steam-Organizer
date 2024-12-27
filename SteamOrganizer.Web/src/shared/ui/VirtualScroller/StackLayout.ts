@@ -1,4 +1,4 @@
-import { BaseVirtualLayout } from "./BaseVirtualLayout.ts";
+import { BaseVirtualLayout } from "./BaseVirtualLayout";
 
 export class StackLayout extends BaseVirtualLayout {
     public render(): void {

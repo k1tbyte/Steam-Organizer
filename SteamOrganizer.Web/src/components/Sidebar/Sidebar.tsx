@@ -8,16 +8,16 @@ import React, {
     useRef,
     useState
 } from 'react'
-import {useSlider} from "@/shared/hooks/useSlider.ts";
-import useMediaQuery from "@/shared/hooks/useMediaQuery.ts";
+import {useSlider} from "@/shared/hooks/useSlider";
+import useMediaQuery from "@/shared/hooks/useMediaQuery";
 import { useLocation, useNavigate} from "react-router-dom";
 import {Gradients, Icon, SvgIcon} from "src/defines";
-import {UserInfo} from "@/components/Sidebar/UserInfo.tsx";
+import {UserInfo} from "@/components/Sidebar/UserInfo";
 import styles from "./Sidebar.module.pcss"
-import {ESidebarState} from "@/types/uiMetadata.ts";
-import {uiStore, useIsOffline} from "@/store/local.tsx";
-import {Tooltip} from "@/shared/ui/Popup/Tooltip.tsx";
-import { popupDefaults } from "@/shared/ui/Popup/Popup.tsx";
+import {ESidebarState} from "@/types/uiMetadata";
+import {uiStore, useIsOffline} from "@/store/local";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip";
+import { popupDefaults } from "@/shared/ui/Popup/Popup";
 
 interface ISidebarItemProps {
     icon: ReactElement

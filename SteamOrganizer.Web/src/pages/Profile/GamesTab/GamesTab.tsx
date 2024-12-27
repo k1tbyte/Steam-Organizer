@@ -1,20 +1,19 @@
 import {FC, useEffect} from "react";
-import {IAccountProps} from "@/pages/Profile/Profile.tsx";
-import {EVisibilityState, SteamGameInfo} from "@/types/steamPlayerSummary.ts";
-import {Loader} from "@/shared/ui/Loader.tsx";
-import db, {EDbStore} from "@/shared/services/indexedDb.ts";
-import {ScrollerInitializer, VirtualScroller} from "@/shared/ui/VirtualScroller/VirtualScroller.tsx";
-import {StackLayout} from "@/shared/ui/VirtualScroller/StackLayout.ts";
-import {GameCard} from "@/pages/Profile/GamesTab/elements/GameCard.tsx";
-import {useProxyFilter} from "@/shared/hooks/useProxyFilter.ts";
-import {useLoader} from "@/shared/hooks/useLoader.ts";
-import {getPlayerGames} from "@/shared/api/steamApi.ts";
-import {EmptyCollectionIndicator, SearchCollectionIndicator} from "@/components/CollectionIndicator.tsx";
+import {IAccountProps} from "@/pages/Profile/Profile";
+import {EVisibilityState, SteamGameInfo} from "@/types/steamPlayerSummary";
+import {Loader} from "@/shared/ui/Loader";
+import db, {EDbStore} from "@/shared/services/indexedDb";
+import {ScrollerInitializer, VirtualScroller} from "@/shared/ui/VirtualScroller/VirtualScroller";
+import {StackLayout} from "@/shared/ui/VirtualScroller/StackLayout";
+import {GameCard} from "@/pages/Profile/GamesTab/components/GameCard";
+import {useLoader} from "@/shared/hooks/useLoader";
+import {getPlayerGames} from "@/shared/api/steamApi";
+import {EmptyCollectionIndicator, SearchCollectionIndicator} from "@/components/CollectionIndicator";
 import styles from "./GamesTab.module.css"
 
 
 const GamesTab: FC<IAccountProps & { scroller: ScrollerInitializer }> = ({acc, scroller}) => {
-    const [applyFilter,proxy, games] = useProxyFilter<SteamGameInfo>()
+/*    const [applyFilter,proxy, games] = useProxyFilter<SteamGameInfo>()
     const loading = useLoader(games)
 
     useEffect(() => {
@@ -50,7 +49,8 @@ const GamesTab: FC<IAccountProps & { scroller: ScrollerInitializer }> = ({acc, s
                          onRenderElement={(game) => <GameCard key={game.appId} game={game}/>}
                          layout={StackLayout}/>
         </>
-    )
+    )*/
+    return <></>
 }
 
 export default GamesTab;

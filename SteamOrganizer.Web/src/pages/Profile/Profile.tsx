@@ -1,29 +1,30 @@
 import React, {type FC, useEffect, useRef, useState} from "react";
 import {useParams} from "react-router-dom";
-import { Tabs } from "@/shared/ui/Tabs.tsx";
+import {Tabs} from "@/shared/ui/Tabs";
 import {Gradients, Icon, SvgIcon} from "src/defines";
 import {motion} from "framer-motion";
 import styles from "./Profile.module.css";
-import {useScrollbar} from "@/shared/hooks/useScrollbar.ts";
-import {accounts, saveAccounts} from "@/store/accounts.ts";
-import {defaultAvatar} from "@/store/config.ts";
-import {dateFormatter, setDocumentTitle} from "@/shared/lib/utils.ts";
-import {type Account} from "@/entity/account.ts";
-import {useLoader} from "@/shared/hooks/useLoader.ts";
-import {LoaderStatic} from "@/shared/ui/Loader.tsx";
+import {useScrollbar} from "@/shared/hooks/useScrollbar";
+import {accounts, saveAccounts} from "@/store/accounts";
+import {defaultAvatar} from "@/store/config";
+import {dateFormatter, setDocumentTitle} from "@/shared/lib/utils";
+import {type Account} from "@/entity/account";
+import {useLoader} from "@/shared/hooks/useLoader";
+import {LoaderStatic} from "@/shared/ui/Loader";
 import SummariesTab from "./SummariesTab";
-import GamesTab from "./GamesTab/GamesTab.tsx";
+import GamesTab from "./GamesTab/GamesTab";
 import FriendsTab from "./FriendsTab";
-import {ComboBox} from "@/shared/ui/ComboBox/ComboBox.tsx";
-import {converters, ESteamIdType} from "@/shared/lib/steamIdConverter.ts";
-import Button, {EButtonVariant, IButtonActions} from "@/shared/ui/Button.tsx";
-import {steamBase} from "@/shared/api/steamApi.ts";
-import {EVisibilityState} from "@/types/steamPlayerSummary.ts";
-import {flagStore, uiStore, useFlagStore} from "@/store/local.tsx";
-import {EPlacementX} from "@/shared/ui/Popup/positioning.ts";
-import {Tooltip} from "@/shared/ui/Popup/Tooltip.tsx";
-import {popupDefaults} from "@/shared/ui/Popup/Popup.tsx";
-import {RadioButton} from "@/shared/ui/RadioButton/RadioButton.tsx";
+import {ComboBox} from "@/shared/ui/ComboBox/ComboBox";
+import {converters, ESteamIdType} from "@/shared/lib/steamIdConverter";
+import Button, {EButtonVariant, IButtonActions} from "@/shared/ui/Button";
+import {steamBase} from "@/shared/api/steamApi";
+import {EVisibilityState} from "@/types/steamPlayerSummary";
+import {flagStore, uiStore, useFlagStore} from "@/store/local";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip";
+import {popupDefaults} from "@/shared/ui/Popup/Popup";
+import {RadioButton} from "@/shared/ui/RadioButton/RadioButton";
+import {EPlacement} from "@/shared/ui/Popup/positioning";
+import {useTitle} from "@/shared/hooks/useTitle";
 
 export interface IAccountProps {
     acc: Account
@@ -118,7 +119,7 @@ export const Profile: FC = () => {
     const {id} = useParams();
     const isLoading = useLoader(accounts);
     const [isUpdating] = useFlagStore<boolean>(nameof(flagStore.store.isDbUpdating))
-    useEffect(() => setDocumentTitle(acc?.nickname), [isLoading]);
+    useTitle(acc?.nickname, [isLoading])
     const onScrollRef = useRef<() => void>();
     const { hostRef, scrollRef } = useScrollbar({
         scroll: () => onScrollRef.current?.()
@@ -214,7 +215,7 @@ export const Profile: FC = () => {
                 }
 
                 {!updated && !acc.isUpToDate() && !isUpdating &&
-                    <Tooltip {...popupDefaults.side} alignX={EPlacementX.Left} message="Update account info">
+                    <Tooltip {...popupDefaults.side} placement={EPlacement.Left} message="Update account info">
                         <Button actions={updateBtn} variant={EButtonVariant.Outlined}
                                 className="absolute right-3 top-5 h-10 z-10 rounded-xl"
                                 onClick={async () => {

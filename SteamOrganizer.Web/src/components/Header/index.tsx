@@ -1,11 +1,11 @@
 import {FC} from "react";
-import { setState } from "@/components/Sidebar/Sidebar.tsx";
+import { setState } from "@/components/Sidebar/Sidebar";
 import { Icon, SvgIcon} from "src/defines";
-import {openSettings } from "@/pages/Modals/Settings.tsx";
+import {openSettings } from "@/pages/Modals/Settings";
 import {SaveIndicator} from "./SaveIndicator";
-import {ESidebarState} from "@/types/uiMetadata.ts";
-import {UpdateIndicator} from "@/components/Header/UpdateIndicator.tsx";
-import {NetworkIndicator} from "@/components/Header/NetworkIndicator.tsx";
+import {ESidebarState} from "@/types/uiMetadata";
+import {UpdateIndicator} from "@/components/Header/UpdateIndicator";
+import {NetworkIndicator} from "@/components/Header/NetworkIndicator";
 
 export const Header: FC = () => {
 

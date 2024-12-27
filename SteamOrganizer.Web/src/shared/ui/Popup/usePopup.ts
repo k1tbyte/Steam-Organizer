@@ -1,17 +1,13 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import {align, EPlacementX, EPlacementY} from "@/shared/ui/Popup/positioning.ts";
+import {align, EPlacement} from "./positioning";
 import {Point} from "framer-motion";
-import {IControlledStateOptions, useControlledState} from "@/shared/hooks/useControlledState.ts";
+import {IControlledStateOptions, useControlledState} from "@/shared/hooks/useControlledState";
 
 /**
  * Props for usePopup hook
  */
 interface UsePopupProps extends IControlledStateOptions<boolean> {
-    /** Horizontal alignment of the popup relative to the trigger */
-    alignX: EPlacementX;
-
-    /** Vertical alignment of the popup relative to the trigger */
-    alignY: EPlacementY;
+    position: EPlacement;
 
     /** Offset from the calculated position. @default { x: 5, y: 0 } */
     offset?: Point;
@@ -59,8 +55,7 @@ interface UsePopupProps extends IControlledStateOptions<boolean> {
  * ```
  */
 export const usePopup = ({
-                             alignX,
-                             alignY,
+                             position,
                              offset = { x: 5, y: 0 },
                              ...props
                          }: UsePopupProps) => {
@@ -77,15 +72,14 @@ export const usePopup = ({
         /** Updates popup position based on trigger position and alignment settings */
         const updatePosition = () => {
             if (popupRef.current && triggerRef.current) {
-                align(triggerRef.current, popupRef.current, alignX, alignY, offset);
+                align(triggerRef.current, popupRef.current, position, offset);
             }
         };
 
         updatePosition();
         window.addEventListener('resize', updatePosition);
-        window.addEventListener('scroll', updatePosition, true);
 
-        /** Handles clicks outside popup and trigger elements */
+        /** Handles clicks outside popup and trigger components */
         const closeOnClickOutside = (e: MouseEvent) => {
             if (!popupRef.current?.contains(e.target as Node) &&
                 !triggerRef.current?.contains(e.target as Node)) {
@@ -97,10 +91,9 @@ export const usePopup = ({
 
         return () => {
             window.removeEventListener('resize', updatePosition);
-            window.removeEventListener('scroll', updatePosition, true);
             document.removeEventListener('mousedown', closeOnClickOutside);
         };
-    }, [isOpen, alignX, alignY, offset, setIsOpen]);
+    }, [isOpen, position, offset, setIsOpen]);
 
     /** Toggles popup open state */
     const toggle = useCallback(() => setIsOpen(!isOpen), [isOpen, setIsOpen]);

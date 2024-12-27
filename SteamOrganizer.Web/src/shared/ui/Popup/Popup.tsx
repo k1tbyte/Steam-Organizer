@@ -1,10 +1,11 @@
 import {AnimatePresence, HTMLMotionProps, motion, Point} from "framer-motion";
 import {cloneElement, forwardRef, ReactElement, ReactNode, useImperativeHandle} from "react";
 import {createPortal} from "react-dom";
-import {cn} from "@/shared/lib/utils.ts";
-import { usePopup} from "@/shared/ui/Popup/usePopup.ts";
-import {EPlacementX, EPlacementY} from "@/shared/ui/Popup/positioning.ts";
-import {IControlledStateOptions} from "@/shared/hooks/useControlledState.ts";
+import {cn} from "@/shared/lib/utils";
+import { usePopup} from "@/shared/ui/Popup/usePopup";
+import { EPlacement } from "@/shared/ui/Popup/positioning";
+import {IControlledStateOptions} from "@/shared/hooks/useControlledState";
+import styles from "./Popup.module.css";
 
 /**
  * Type for popup content that can be either a ReactNode or a function returning ReactNode
@@ -12,27 +13,16 @@ import {IControlledStateOptions} from "@/shared/hooks/useControlledState.ts";
 export type ContentType = ReactNode | (() => ReactNode);
 
 /**
- * Base props for popup positioning and styling
- * Extends motion.div props but omits the "content" prop to avoid conflicts
+ * Main popup component props
  */
-export interface IPopupBaseProps extends Omit<HTMLMotionProps<"div">, "content"> {
+export interface IPopupProps extends Omit<HTMLMotionProps<"div">, "content">, IControlledStateOptions<boolean> {
     /** Offset from the trigger element. @default { x: 5, y: 0 } */
     offset?: Point;
-
-    /** Horizontal alignment relative to trigger. @default EPlacementX.Right */
-    alignX?: EPlacementX;
-
-    /** Vertical alignment relative to trigger. @default EPlacementY.Center */
-    alignY?: EPlacementY;
+    placement?: EPlacement;
 
     /** Additional CSS classes for the popup container */
     className?: string;
-}
 
-/**
- * Main popup component props
- */
-interface IPopupProps extends IPopupBaseProps, IControlledStateOptions<boolean> {
     /** Trigger element that toggles the popup */
     children: ReactElement;
 
@@ -41,11 +31,26 @@ interface IPopupProps extends IPopupBaseProps, IControlledStateOptions<boolean> 
 
     /** Additional props to be spread onto the trigger element */
     triggerProps?: Record<string, any>;
+
+    /** Variant of the popup */
+    variant?: PopupVariant;
+
+    asToggle?: boolean;
+}
+
+export const enum PopupVariant {
+    Raw,
+    Default
+}
+
+const popupVariants = {
+    [PopupVariant.Raw]: "z-50 absolute",
+    [PopupVariant.Default]: `z-50 ${styles.popupDefault}`
 }
 
 /**
  * A base popup component that provides flexible positioning and animation capabilities.
- * Used as a foundation for context menus, tooltips, and other floating UI elements.
+ * Used as a foundation for context menus, tooltips, and other floating UI components.
  *
  * @example
  * ```tsx
@@ -103,8 +108,9 @@ export const Popup = forwardRef<HTMLDivElement, IPopupProps>(({
                                                                   setState,
                                                                   state,
                                                                   initialState,
-                                                                  alignX = EPlacementX.Right,
-                                                                  alignY = EPlacementY.Center,
+                                                                  asToggle = true,
+                                                                  variant = PopupVariant.Default,
+                                                                  placement = EPlacement.MiddleRight,
                                                                   onStateChanged, offset,
                                                                   ...props
                                                               }, ref) => {
@@ -112,14 +118,15 @@ export const Popup = forwardRef<HTMLDivElement, IPopupProps>(({
         isOpen,
         toggle,
         triggerRef,
+        setIsOpen,
         popupRef,
-    } = usePopup({ setState, state, initialState, onStateChanged, offset, alignX, alignY  })
+    } = usePopup({ setState, state, initialState, onStateChanged, offset, position: placement  })
 
     useImperativeHandle(ref, () => popupRef.current);
 
     const trigger = cloneElement(children, {
         ref: triggerRef,
-        onClick: toggle,
+        onClick: asToggle ? toggle : () => setIsOpen(true),
         ...triggerProps
     });
 
@@ -132,7 +139,7 @@ export const Popup = forwardRef<HTMLDivElement, IPopupProps>(({
                         <motion.div
                             ref={popupRef}
                             className={cn(
-                                "z-50 absolute bg-accent drop-shadow-md px-2.5 py-1 text-2xs rounded-2xm text-foreground whitespace-pre",
+                                popupVariants[variant],
                                 className
                             )}
                             initial={{opacity: 0, translateY: "10px"}}
@@ -158,8 +165,7 @@ export const popupDefaults = {
         openDelay: 0,
         closeDelay: 0,
         offset: { x: 20, y: 0 },
-        alignX: EPlacementX.Right,
-        alignY: EPlacementY.Center,
+        placement: EPlacement.MiddleRight,
         initial: { opacity: 0, translateX: "-10px" },
         animate: { opacity: 1, translateX: 0 },
         exit: { opacity: 0, translateX: "10px" },

@@ -2,15 +2,15 @@ import type { Account } from "@/entity/account.ts";
 import React, {type FC, useContext, useRef} from "react";
 import {Link} from "react-router-dom";
 import { Icon, SvgIcon} from "src/defines";
-import {accounts, saveDbMutation} from "@/store/accounts.ts";
-import styles from "./AccountCard.module.pcss"
-import {defaultAvatar} from "@/store/config.ts";
+import {accounts, saveDbMutation} from "@/store/accounts";
+import styles from "./AccountCard.module.css"
+import {defaultAvatar} from "@/store/config";
 import {Tooltip} from "@/shared/ui/Popup/Tooltip";
-import {dateFormatter} from "@/shared/lib/utils.ts";
-import {ConfirmPopup} from "@/components/ConfirmPopup.tsx";
-import {AccountsContext} from "@/pages/Accounts/elements/AccountsNav.tsx";
-import {Draggable} from "@/shared/ui/Draggable.tsx";
-import {flagStore, useFlagStore} from "@/store/local.tsx";
+import {dateFormatter} from "@/shared/lib/utils";
+import {ConfirmPopup} from "@/components/ConfirmPopup";
+import {AccountsContext} from "@/pages/Accounts/components/AccountsNav";
+import {Draggable} from "@/shared/ui/Draggable";
+import {flagStore, useFlagStore} from "@/store/local";
 
 interface IAccountCardProps {
     acc: Account,

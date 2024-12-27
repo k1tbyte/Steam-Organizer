@@ -1,21 +1,21 @@
-import Input, {IInputProps} from "@/shared/ui/Input.tsx";
-import {ECredentialType, IAccountCredential, serviceNames} from "@/types/accountCredentials.ts";
-import React, {FC, MouseEvent, useEffect} from "react";
+import Input, { EPropertyChangedTrigger, type IInputProps} from "@/shared/ui/Input";
+import {ECredentialType, type IAccountCredential, serviceNames} from "@/types/accountCredentials";
+import React, {type FC, useEffect} from "react";
 import {Icon, SvgIcon} from "src/defines";
-import {delayedSaveAccounts, saveAccounts} from "@/store/accounts.ts";
-import {validators} from "@/shared/hooks/useFormValidation.ts";
-import {FieldWrapper, InputValidationWrapper} from "@/components/FieldWrapper.tsx";
-import {modal, ModalSeparator, useModalActions} from "@/shared/ui/Modal.tsx";
-import {ComboBox} from "@/shared/ui/ComboBox/ComboBox.tsx";
-import Button, {EButtonVariant} from "@/shared/ui/Button.tsx";
-import type {IAccountProps} from "@/pages/Profile/Profile.tsx";
-import {Expander, withStateSaving} from "@/shared/ui/Expander.tsx";
-import {ConfirmPopup} from "@/components/ConfirmPopup.tsx";
-import {PasswordBox} from "@/shared/ui/PasswordBox.tsx";
-import {uiStore} from "@/store/local.tsx";
-import {Tooltip} from "@/shared/ui/Popup/Tooltip.tsx";
-import {RadioButton} from "@/shared/ui/RadioButton/RadioButton.tsx";
-import {Tabs} from "@/shared/ui/Tabs.tsx";
+import {delayedSaveAccounts, saveAccounts} from "@/store/accounts";
+import {validators} from "@/shared/hooks/useFormValidation";
+import {FieldWrapper, InputValidationWrapper} from "@/components/FieldWrapper";
+import {modal, ModalSeparator, useModalActions} from "@/shared/ui/Modal";
+import {ComboBox} from "@/shared/ui/ComboBox/ComboBox";
+import Button, {EButtonVariant} from "@/shared/ui/Button";
+import type {IAccountProps} from "@/pages/Profile/Profile";
+import {Expander, withStateSaving} from "@/shared/ui/Expander";
+import {ConfirmPopup} from "@/components/ConfirmPopup";
+import {PasswordBox} from "@/shared/ui/PasswordBox";
+import {uiStore} from "@/store/local";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip";
+import {RadioButton} from "@/shared/ui/RadioButton/RadioButton";
+import {Tabs} from "@/shared/ui/Tabs";
 
 interface ICredentialsFieldProps extends Omit<IInputProps, 'type'> {
     type: ECredentialType;
@@ -135,7 +135,7 @@ const CredentialsField:FC<ICredentialsFieldProps> = ({ type, ...props }) => {
 
     return (
         <Wrapper title={fieldNames[type]} icon={<SvgIcon icon={icon ?? Icon.UserText} size={20}/>}>
-            <FieldInput {...props}/>
+            <FieldInput trigger={EPropertyChangedTrigger.OnLostFocus} {...props}/>
         </Wrapper>
     )
 }

@@ -1,0 +1,19 @@
+.filterInput {
+    @apply bg-primary mt-2 rounded-lg border-tertiary border p-3 flex flex-wrap gap-8 pointer-events-auto;
+}
+
+.popup {
+    @apply rounded-none rounded-b-lg bg-transparent p-0 flex-x-center gap-3 pointer-events-none;
+}
+
+.searchFilter {
+    @apply flex-x-center flex-wrap bg-accent rounded-lg my-3 gap-y-3;
+}
+
+.flagFilter {
+    @apply w-full justify-between flex-y-center mt-1;
+}
+
+.orderFilter {
+    @apply flex-x-center flex-wrap bg-accent rounded-lg gap-y-3;
+}

@@ -1,5 +1,5 @@
 import { FC, memo } from "react";
-import { type SteamGameInfo } from "@/types/steamPlayerSummary.ts";
+import { type SteamGameInfo } from "@/types/steamPlayerSummary";
 import styles from "./GameCard.module.css";
 
 const getPlaytimeColor = (playtime: number) => {

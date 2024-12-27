@@ -1,6 +1,9 @@
-import React, {Dispatch, memo, ReactElement, ReactNode} from "react";
+import React, {Dispatch, memo, ReactElement, ReactNode, SetStateAction} from "react";
 import {motion} from "framer-motion";
-import { StatefulComponentProps, useControlledState} from "@/shared/hooks/useControlledState.ts";
+import { StatefulComponent, useControlledState} from "@/shared/hooks/useControlledState";
+import styles from "./RadioButton.module.css";
+import clsx from "clsx";
+import {withControlledState} from "@/shared/hoc/withControlledState";
 
 type RadioButtonContentCallback = (item: any, index: number, isActive: boolean, setActive: Dispatch<number>) => ReactNode;
 type RadioButtonClickInterceptor = (index: number, setActive: Dispatch<number>) => boolean | void;
@@ -10,13 +13,13 @@ type RadioButtonClickInterceptor = (index: number, setActive: Dispatch<number>) 
  */
 interface RadioButtonContentProps {
     /** Render function for radio button content */
-    children: RadioButtonContentCallback;
+    children?: RadioButtonContentCallback;
 
     /** Whether this radio button is currently active */
     isActive: boolean;
 
     /** Function to set this radio button as active */
-    setActive: (index: number) => void;
+    setActive: Dispatch<SetStateAction<number>>;
 
     /** Index of this radio button in the group */
     index: number;
@@ -29,20 +32,21 @@ interface RadioButtonContentProps {
 
     /** Optional click interceptor for radio buttons */
     clickInterceptor?: RadioButtonClickInterceptor;
+    layoutId?: string;
 }
 
 /**
  * Props for the main RadioButton component
  * @template T Type of items in the generator array
  */
-export interface IRadioButtonProps<T> {
+export interface IRadioButtonProps<T> extends Omit<StatefulComponent<'div', number>, 'children'>{
     /**
      * Render function for each radio button
      * @param item Current item from generator array
      * @param index Index of current item
      * @param isActive Whether this item is currently selected
      */
-    children: RadioButtonContentCallback;
+    children?: RadioButtonContentCallback;
     /** Array of items to generate radio buttons from */
     generator: T[];
     /** Optional custom indicator element for active state */
@@ -50,6 +54,7 @@ export interface IRadioButtonProps<T> {
 
     /** Optional click interceptor for radio buttons. Return true if event has been handled */
     clickInterceptor?: RadioButtonClickInterceptor;
+    layoutId?: string;
 }
 
 /**
@@ -63,6 +68,7 @@ function RadioButtonContent({
                                    index,
                                    item,
                                    indicator,
+                                layoutId,
                                 clickInterceptor
                                }: RadioButtonContentProps) {
     return (
@@ -72,19 +78,17 @@ function RadioButtonContent({
                     return;
                 }
                 setActive(index);
-            }}
-            className="relative"
-        >
+            }}>
             {isActive && (indicator === undefined ?
                 <motion.div
-                    layoutId="active-pill"
+                    layoutId={layoutId ?? "radio-indicator"}
                     style={{borderRadius: 8}}
                     transition={{type: "spring", duration: 0.6}}
-                    className="absolute inset-0 bg-secondary"
+                    className={styles.indicator}
                 /> : indicator
             )}
-            <div className="relative z-10">
-                {children(item, index, isActive, setActive)}
+            <div className={clsx(children ? styles.btnBase : styles.btn, isActive && styles.active)}>
+                {children ? children(item, index, isActive, setActive) : item}
             </div>
         </button>
     );
@@ -126,38 +130,35 @@ const MemoizedRadioButtonContent = memo(RadioButtonContent);
  * </RadioButton>
  * ```
  */
-export function RadioButton<T>({
+function RadioButtonBase<T>({
                                    children,
                                    generator,
-                                   state,
-                                   initialState,
                                    setState,
-                                   onStateChanged,
+                                   state,
                                    indicator,
                                    clickInterceptor,
+                                   layoutId,
+                                   className,
                                    ...props
-                               }: StatefulComponentProps<IRadioButtonProps<T>, 'div', number>) {
-    const { value, setValue } = useControlledState({
-        state,
-        initialState,
-        setState,
-        onStateChanged
-    });
+                               }: IRadioButtonProps<T>) {
 
     return (
-        <div {...props} role="radiogroup">
+        <div className={clsx(styles.group, className)} {...props} role="radiogroup">
             {generator.map((item, index) => (
                 <MemoizedRadioButtonContent
                     key={index}
                     clickInterceptor={clickInterceptor}
                     indicator={indicator}
                     children={children}
-                    isActive={value === index}
+                    layoutId={layoutId}
+                    isActive={state === index}
                     index={index}
                     item={item}
-                    setActive={setValue}
+                    setActive={setState}
                 />
             ))}
         </div>
     );
 }
+
+export const RadioButton = withControlledState(RadioButtonBase, 0);

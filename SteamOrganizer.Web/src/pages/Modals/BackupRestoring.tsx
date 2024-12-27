@@ -1,14 +1,14 @@
 import {type FC, useEffect, useState} from "react";
-import { type BackupMetadata} from "@/types/backup.ts";
-import Button from "@/shared/ui/Button.tsx";
-import {Loader} from "@/shared/ui/Loader.tsx";
-import {loadBackup, restoreBackup} from "@/store/backups.ts";
-import {dateFormatter} from "@/shared/lib/utils.ts";
-import {decrypt} from "@/shared/services/cryptography.ts";
-import {modal, useModalActions} from "@/shared/ui/Modal.tsx";
-import {databaseKey, importAccounts} from "@/store/accounts.ts";
-import {DecryptionPopup} from "@/pages/Modals/Authentication.tsx";
-import {router} from "@/providers/routerProvider.tsx";
+import { type BackupMetadata} from "@/types/backup";
+import Button from "@/shared/ui/Button";
+import {Loader} from "@/shared/ui/Loader";
+import {loadBackup, restoreBackup} from "@/store/backups";
+import {dateFormatter} from "@/shared/lib/utils";
+import {decrypt} from "@/shared/services/cryptography";
+import {modal, useModalActions} from "@/shared/ui/Modal";
+import {databaseKey, importAccounts} from "@/store/accounts";
+import {DecryptionPopup} from "@/pages/Modals/Authentication";
+import {router} from "@/providers/routerProvider";
 
 interface IBackupRestoringProps {
     backup: BackupMetadata

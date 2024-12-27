@@ -1,7 +1,7 @@
 import React, {FC, type ReactElement} from "react";
 import {Icon, SvgIcon} from "src/defines";
 import type {IAccountProps} from "@/pages/Profile/Profile.tsx";
-import {dateFormatter} from "@/shared/lib/utils.ts";
+import {dateFormatter} from "@/shared/lib/utils";
 
 interface IBadgeChipProps {
     name: string;

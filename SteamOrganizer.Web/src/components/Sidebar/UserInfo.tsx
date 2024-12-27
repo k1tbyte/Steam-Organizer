@@ -1,14 +1,14 @@
-import React, {FC, useState} from "react";
-import Button, {EButtonVariant} from "@/shared/ui/Button.tsx";
+import React, {type FC, useState} from "react";
+import Button, {EButtonVariant} from "@/shared/ui/Button";
 import {Icon, SvgIcon} from "src/defines";
-import {useAuth} from "@/providers/authProvider.tsx";
-import {Loader} from "@/shared/ui/Loader.tsx";
+import {useAuth} from "@/providers/authProvider";
+import {Loader} from "@/shared/ui/Loader";
 import {AnimatePresence, motion} from "framer-motion";
 import styles from "./UserInfo.module.pcss"
-import {ESidebarState} from "@/types/uiMetadata.ts";
-import {useIsOffline} from "@/store/local.tsx";
-import {popupDefaults} from "@/shared/ui/Popup/Popup.tsx";
-import {Tooltip} from "@/shared/ui/Popup/Tooltip.tsx";
+import {ESidebarState} from "@/types/uiMetadata";
+import {useIsOffline} from "@/store/local";
+import {popupDefaults} from "@/shared/ui/Popup/Popup";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip";
 
 export const UserInfo: FC<{state: ESidebarState}> = ({ state }) => {
     const {user, signIn, signOut } = useAuth()

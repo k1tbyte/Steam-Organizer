@@ -1,32 +1,31 @@
-import {AnimatePresence, type HTMLMotionProps, motion} from "framer-motion";
+import {AnimatePresence, motion} from "framer-motion";
 import React, {Dispatch, forwardRef, type ReactElement, type ReactNode} from "react";
-import { type StatefulComponentProps } from "@/shared/hooks/useControlledState.ts";
-import {withControlledState} from "@/shared/hoc/withControlledState.tsx";
+import {type StatefulComponent, StatefulMotionComponent} from "@/shared/hooks/useControlledState";
+import {withControlledState} from "@/shared/hoc/withControlledState";
 
-interface ITabsProps extends Omit<HTMLMotionProps<"div">, "children"> {
+interface ITabsProps extends Omit<StatefulMotionComponent<'div', number>, "children"> {
     children: ReactNode[] | ((index: number, setActive: Dispatch<number>) => ReactNode) ;
-    navigator: ReactElement<StatefulComponentProps<any, any, number>>;
-    activeTab?: number;
+    navigator: ReactElement<StatefulComponent<any, number>>;
 }
 
-const BaseTabs = forwardRef<HTMLDivElement, ITabsProps & { value: number; setValue: Dispatch<number> }>(
-    ({ navigator, children, value, setValue, ...props }, ref) => {
+const BaseTabs = forwardRef<HTMLDivElement, ITabsProps>(
+    ({ navigator, children, state, setState, ...props }, ref) => {
         return (
             <>
             {React.cloneElement(navigator, {
-                setState: setValue,
-                state: value
-            } satisfies StatefulComponentProps<object, any, number>)}
+                setState: setState,
+                state: state
+            } satisfies StatefulComponent<any, number>)}
 
                 <AnimatePresence mode="wait">
                     <motion.div
                         ref={ref}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        key={value}
+                        key={state}
                         {...props}
                     >
-                        {typeof children === "function" ? children(value, setValue) : children[value]}
+                        {typeof children === "function" ? children(state, setState) : children[state]}
                     </motion.div>
                 </AnimatePresence>
             </>

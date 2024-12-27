@@ -1,6 +1,6 @@
 import { md5 } from "@/shared/lib/md5.js";
-import {fromLittleEndian, toLittleEndian} from "@/shared/lib/utils.ts";
-import {resolveVanityUrl} from "@/shared/api/steamApi.ts";
+import {fromLittleEndian, toLittleEndian} from "@/shared/lib/utils";
+import {resolveVanityUrl} from "@/shared/api/steamApi";
 
 export const id64Indent = 76561197960265728n;
 const Base32 = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

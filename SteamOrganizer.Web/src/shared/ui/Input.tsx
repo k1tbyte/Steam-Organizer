@@ -1,9 +1,10 @@
-import {type ChangeEvent, forwardRef, type InputHTMLAttributes, type CompositionEvent, useImperativeHandle, useRef} from "react";
-import {cn} from "@/shared/lib/utils.ts";
-import {type TypeInputValidator} from "@/shared/hooks/useFormValidation.ts";
-import {type IBindable} from "@/shared/types/IBindable.ts";
+import {type ChangeEvent, forwardRef, type InputHTMLAttributes, type CompositionEvent } from "react";
+import {cn} from "@/shared/lib/utils";
+import {type TypeInputValidator} from "@/shared/hooks/useFormValidation";
+import {type IBindable} from "@/shared/types/IBindable";
 
 export const enum EPropertyChangedTrigger {
+    None,
     OnLostFocus,
     Reactive
 }
@@ -19,7 +20,7 @@ export interface IInputProps extends InputHTMLAttributes<HTMLInputElement>, IBin
 
 
 const  Input = forwardRef<HTMLInputElement, IInputProps>((
-    { className,bindTo, bindKey, onValidate, validator, onChanged, filter, converter, trigger = EPropertyChangedTrigger.OnLostFocus, ...props}, forwardedRef) => {
+    { className,bindTo, bindKey, onValidate, validator, onChanged, filter, converter, trigger = EPropertyChangedTrigger.None, ...props}, forwardedRef) => {
 
     const onChanging = (value: string) => {
         if(bindTo && bindKey && bindTo[bindKey] !== (converter ? (value = converter(value)) : value)) {

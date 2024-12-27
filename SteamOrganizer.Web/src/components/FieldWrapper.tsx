@@ -1,8 +1,4 @@
 import {cloneElement, FC, forwardRef, ReactElement, type ReactNode, useImperativeHandle, useRef} from "react";
-import clsx from "clsx";
-import Input, {IInputProps} from "@/shared/ui/Input.tsx";
-import {CheckBox} from "@/shared/ui/CheckBox/CheckBox.tsx";
-import {config, delayedSaveConfig} from "@/store/config.ts";
 
 export const enum ETitlePosition {
     Top,
@@ -31,7 +27,7 @@ export const FieldWrapper:FC<IFieldWrapperProps> = ({className,title, titlePos, 
         <div className={className}>
             {titlePos !== ETitlePosition.Inline &&
                 <div className="flex justify-between mb-0.5 ml-0.5 relative gap-3">
-                    <p className="text-chip text-[13px] font-semibold text-nowrap">{title}</p>
+                    <p className="text-chip text-2xs font-semibold text-nowrap">{title}</p>
                     {titleChildren}
                 </div>
             }

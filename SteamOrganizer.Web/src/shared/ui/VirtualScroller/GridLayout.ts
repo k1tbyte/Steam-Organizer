@@ -1,5 +1,5 @@
 
-import { BaseVirtualLayout } from "./BaseVirtualLayout.ts";
+import { BaseVirtualLayout } from "./BaseVirtualLayout";
 
 export class GridLayout extends BaseVirtualLayout {
     private columns: number = NaN;

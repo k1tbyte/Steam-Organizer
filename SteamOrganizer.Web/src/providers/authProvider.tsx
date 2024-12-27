@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useState, type ReactNode, useEffect} from 'react';
-import {getUserProfile, initGapi, isAuthorized, signIn, signOut} from "@/shared/services/gAuth.ts";
+import {getUserProfile, initGapi, isAuthorized, signIn, signOut} from "@/shared/services/gAuth";
 
 interface IAuthUser {
     isLoggedIn?: boolean | undefined;

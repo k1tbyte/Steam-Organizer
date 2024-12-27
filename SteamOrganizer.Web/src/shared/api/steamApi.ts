@@ -1,8 +1,8 @@
-import {config} from "@/store/config.ts";
-import { type SteamPlayerGames, type SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
-import {toast,  ToastVariant} from "@/shared/ui/Toast.tsx";
-import db, {EDbStore} from "@/shared/services/indexedDb.ts";
-import {flagStore} from "@/store/local.tsx";
+import {config} from "@/store/config";
+import { type SteamPlayerGames, type SteamPlayerSummary} from "@/types/steamPlayerSummary";
+import {toast,  ToastVariant} from "@/shared/ui/Toast";
+import db, {EDbStore} from "@/shared/services/indexedDb";
+import {flagStore} from "@/store/local";
 
 export const steamBase = "https://steamcommunity.com/"
 const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/steam/webApi/`
