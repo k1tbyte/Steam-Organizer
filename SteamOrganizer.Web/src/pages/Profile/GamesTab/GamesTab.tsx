@@ -1,20 +1,62 @@
-import {FC, useEffect} from "react";
+import React, {FC, useEffect} from "react";
 import {IAccountProps} from "@/pages/Profile/Profile";
-import {EVisibilityState, SteamGameInfo} from "@/types/steamPlayerSummary";
+import {SteamGameInfo} from "@/types/steamPlayerSummary";
 import {Loader} from "@/shared/ui/Loader";
 import db, {EDbStore} from "@/shared/services/indexedDb";
 import {ScrollerInitializer, VirtualScroller} from "@/shared/ui/VirtualScroller/VirtualScroller";
 import {StackLayout} from "@/shared/ui/VirtualScroller/StackLayout";
 import {GameCard} from "@/pages/Profile/GamesTab/components/GameCard";
-import {useLoader} from "@/shared/hooks/useLoader";
 import {getPlayerGames} from "@/shared/api/steamApi";
 import {EmptyCollectionIndicator, SearchCollectionIndicator} from "@/components/CollectionIndicator";
 import styles from "./GamesTab.module.css"
+import {useFilterManager} from "@/components/FilterInput/useFilterManager";
+import {EFilterType, FiltersDefinition, IFilterConfig} from "@/components/FilterInput/types";
+import {FilterInput} from "@/components/FilterInput/FilterInput";
 
+const gamesFilters = [
+    [
+        {
+            type: EFilterType.Search,
+            fields: [
+                {
+                    name: null,
+                    prop: nameof.typed<SteamGameInfo>().name
+                }
+            ]
+        },
+        {
+            type: EFilterType.Order,
+            label: "Order by",
+            fields: [
+                {
+                    name: "Price",
+                    prop: nameof.typed<SteamGameInfo>().formattedPrice
+                },
+                {
+                    name: "Name",
+                    prop: nameof.typed<SteamGameInfo>().name
+                },
+                {
+                    name: "Id",
+                    prop: nameof.typed<SteamGameInfo>().appId
+                },
+                {
+                    name: "Playtime",
+                    prop: nameof.typed<SteamGameInfo>().playtime_forever
+                }
+            ]
+        }
+    ]
+] satisfies FiltersDefinition
+
+const defaultConfig = {
+    [EFilterType.Search]: { by: [0, nameof.typed<SteamGameInfo>().name] },
+    [EFilterType.Flags]: {},
+    [EFilterType.Order]: {}
+} as IFilterConfig
 
 const GamesTab: FC<IAccountProps & { scroller: ScrollerInitializer }> = ({acc, scroller}) => {
-/*    const [applyFilter,proxy, games] = useProxyFilter<SteamGameInfo>()
-    const loading = useLoader(games)
+    const {proxy, callback, filterConfig, collection } = useFilterManager<SteamGameInfo>(defaultConfig)
 
     useEffect(() => {
         db.get<SteamGameInfo[]>(acc.id, EDbStore.Games).then(async (o) => {
@@ -25,11 +67,11 @@ const GamesTab: FC<IAccountProps & { scroller: ScrollerInitializer }> = ({acc, s
                     o = result.games
                 }
             }
-            games.set(o || [])
+            collection.set(o || [])
         })
     }, [acc]);
 
-    if (loading) {
+    if (!collection.value) {
         return <Loader className="flex-center h-full py-20"/>
     }
 
@@ -37,20 +79,19 @@ const GamesTab: FC<IAccountProps & { scroller: ScrollerInitializer }> = ({acc, s
         <>
             <div className={styles.tableHeader} virtual-header="">
                 <p className="text-center">Price</p>
-                <p>Name</p>
+                <FilterInput onFilterChanged={callback} config={filterConfig} filters={gamesFilters}
+                             className="h-12 bg-transparent col-span-4 sm:col-auto md:pl-0"
+                             maxLength={60} placeholder="Click to sort or search"/>
                 <p className="text-center">ID</p>
                 <p className="text-center">Playtime</p>
-
             </div>
-        <VirtualScroller collection={proxy} scroller={scroller}
-                         className="min-h-72"
-                         emptyIndicator={<EmptyCollectionIndicator/>}
-                         searchEmptyIndicator={<SearchCollectionIndicator/>}
-                         onRenderElement={(game) => <GameCard key={game.appId} game={game}/>}
-                         layout={StackLayout}/>
+            <VirtualScroller collection={proxy} scroller={scroller}
+                             className="min-h-72"
+                             emptyIndicator={() => collection.value.length ? <SearchCollectionIndicator/> : <EmptyCollectionIndicator/>}
+                             onRenderElement={(game) => <GameCard key={game.appId} game={game}/>}
+                             layout={StackLayout}/>
         </>
-    )*/
-    return <></>
+    )
 }
 
 export default GamesTab;

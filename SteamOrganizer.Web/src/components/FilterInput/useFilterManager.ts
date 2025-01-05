@@ -5,8 +5,8 @@ import {ObservableProxy} from "@/shared/lib/observer/observableProxy";
 import {debounce} from "@/shared/lib/utils";
 
 export const useFilterManager = <T>(
-    source: ObservableProxy<T[]> | ObservableCollection<T>,
     initialConfig: IFilterConfig,
+    source?: ObservableProxy<T[]> | ObservableCollection<T>,
     serializeName?: string,
     filterFunction?: (data: T[]) => T[],
 ) => {

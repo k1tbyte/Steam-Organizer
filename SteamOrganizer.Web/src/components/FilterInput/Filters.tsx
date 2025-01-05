@@ -51,6 +51,10 @@ const FlagsFilter: FilterComponent = ({ fields, config, callback }) => {
 const SearchFilter: FilterComponent = ({ fields, config, callback }) => {
     const node = config[EFilterType.Search];
 
+    if(fields.length == 1) {
+        return;
+    }
+
     return (
         <RadioButton layoutId="search" generator={fields.map(field => field.name)}
                      initialState={node.by[0]}

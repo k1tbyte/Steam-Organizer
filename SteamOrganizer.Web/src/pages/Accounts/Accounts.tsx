@@ -24,7 +24,7 @@ const defaultConfig = {
 export default function Accounts() {
     const isLoading = useLoader(accounts)
 
-    const { proxy, callback, filterConfig } = useFilterManager(accountsProxy, defaultConfig, "accountsFilter");
+    const { proxy, callback, filterConfig } = useFilterManager(defaultConfig, accountsProxy, "accountsFilter");
 
     if(isLoading) {
         return <LoaderStatic/>

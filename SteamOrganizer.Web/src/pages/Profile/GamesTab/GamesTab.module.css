@@ -1,5 +1,12 @@
 .tableHeader {
-    @apply backdrop-primary py-3 mb-1 rounded-md text-foreground text-sm;
+    @apply backdrop-primary mb-1 rounded-md text-foreground text-sm items-center;
     display: grid;
-    grid-template-columns: 148px  5fr 1fr 1fr;
+    grid-template-columns: 148px  5fr 100px 140px;
+}
+
+.tableHeader p {
+    display: none;
+    @screen sm {
+        display: block;
+    }
 }
