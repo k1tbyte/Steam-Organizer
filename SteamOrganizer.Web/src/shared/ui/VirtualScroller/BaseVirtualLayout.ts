@@ -4,6 +4,8 @@ export abstract class BaseVirtualLayout {
     protected readonly scroller: HTMLElement;
     protected readonly sizer: HTMLDivElement;
     protected readonly list: HTMLDivElement;
+    private header?: HTMLElement;
+    private isHeaderPinned: boolean;
     protected readonly chunkSetter: Dispatch<SetStateAction<number[]>>;
 
     lastScrollTop: number = 0;
@@ -28,6 +30,7 @@ export abstract class BaseVirtualLayout {
     {
         this.chunkSetter = chunkSetter;
         this.scroller = scroller;
+        this.header = scroller.querySelector(`[virtual-header]`) as HTMLElement;
         this.source = source;
         this.sizer = sizer;
         this.list = list;
@@ -65,9 +68,8 @@ export abstract class BaseVirtualLayout {
         }*/
 
         const wrapperTop = this.scroller.querySelector(`[virtual-wrapper]`)?.getBoundingClientRect().top || 0;
-        const headerSize = this.getElementHeight(this.scroller.querySelector(`[virtual-header]`) as HTMLElement);
         const scrollerTop = this.scroller.getBoundingClientRect().top;
-        this.offsetBefore = wrapperTop - scrollerTop + this.scroller.scrollTop + headerSize;
+        this.offsetBefore = wrapperTop - scrollerTop + this.scroller.scrollTop + this.getElementHeight(this.header);
         //console.log(wrapperTop, scrollerTop, this.offsetBefore)
 
         const sample = this.list.children[0] as HTMLElement;
@@ -98,6 +100,16 @@ export abstract class BaseVirtualLayout {
             const timeDiff = now - this.lastScrollTime;
             const scrollDiff = Math.abs(currentScrollTop - this.lastScrollTop);
             this.isScrollAsync = (scrollDiff / timeDiff) > 2.5; // px/ms
+        }
+
+        const isScrollingDown = currentScrollTop > this.lastScrollTop;
+
+        if (!isScrollingDown && this.isHeaderPinned) {
+            this.isHeaderPinned = false;
+            this.header?.classList.remove("sticky");
+        } else if (isScrollingDown && !this.isHeaderPinned) {
+            this.isHeaderPinned = true;
+            this.header?.classList.add("sticky");
         }
 
         this.lastScrollTop = currentScrollTop;

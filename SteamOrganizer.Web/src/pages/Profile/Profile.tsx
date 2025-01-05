@@ -9,7 +9,7 @@ import {accounts, saveAccounts} from "@/store/accounts";
 import {defaultAvatar} from "@/store/config";
 import {dateFormatter, setDocumentTitle} from "@/shared/lib/utils";
 import {type Account} from "@/entity/account";
-import {useLoader} from "@/shared/hooks/useLoader";
+import {useObservableLoader} from "@/shared/hooks/useObservableLoader";
 import {LoaderStatic} from "@/shared/ui/Loader";
 import SummariesTab from "./SummariesTab";
 import GamesTab from "./GamesTab/GamesTab";
@@ -117,7 +117,7 @@ export const Profile: FC = () => {
     let [updated, setUpdate] = useState(false);
     const updateBtn = useRef<IButtonActions>();
     const {id} = useParams();
-    const isLoading = useLoader(accounts);
+    const isLoading = useObservableLoader(accounts);
     const [isUpdating] = useFlagStore<boolean>(nameof(flagStore.store.isDbUpdating))
     useTitle(acc?.nickname, [isLoading])
     const onScrollRef = useRef<() => void>();

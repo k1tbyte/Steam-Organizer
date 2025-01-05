@@ -2,6 +2,7 @@ import {useCallback, useEffect, useRef, useState} from "react";
 import {align, EPlacement} from "./positioning";
 import {Point} from "framer-motion";
 import {IControlledStateOptions, useControlledState} from "@/shared/hooks/useControlledState";
+import {getScrollParent} from "@/shared/lib/utils";
 
 /**
  * Props for usePopup hook
@@ -69,6 +70,10 @@ export const usePopup = ({
     useEffect(() => {
         if (!isOpen || !popupRef.current || !triggerRef.current) return;
 
+        const onScrollChanged = () => setIsOpen(false)
+        const scroller = getScrollParent(triggerRef.current);
+        scroller.addEventListener("scroll", onScrollChanged)
+
         /** Updates popup position based on trigger position and alignment settings */
         const updatePosition = () => {
             if (popupRef.current && triggerRef.current) {
@@ -87,11 +92,12 @@ export const usePopup = ({
             }
         };
 
-        document.addEventListener('mousedown', closeOnClickOutside);
+        document.addEventListener('pointerdown', closeOnClickOutside);
 
         return () => {
             window.removeEventListener('resize', updatePosition);
-            document.removeEventListener('mousedown', closeOnClickOutside);
+            document.removeEventListener('pointerdown', closeOnClickOutside);
+            scroller.removeEventListener('scroll', onScrollChanged);
         };
     }, [isOpen, position, offset, setIsOpen]);
 

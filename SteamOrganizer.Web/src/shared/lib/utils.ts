@@ -49,6 +49,20 @@ export const debounce = <T extends (...args: any[]) => any>(func: T, delay: numb
     };
 };
 
+export function getScrollParent(element: HTMLElement) {
+    while (element && element !== document.body) {
+        const style = window.getComputedStyle(element);
+        const overflowY = style.overflowY;
+
+        if (overflowY === 'scroll' || overflowY === 'auto') {
+            return element;
+        }
+        element = element.parentElement;
+    }
+
+    return window;
+}
+
 /**
  * Utility function to get event coordinates.
  *

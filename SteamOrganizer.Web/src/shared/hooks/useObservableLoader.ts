@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {ObservableObject} from "@/shared/lib/observer/observableObject";
 
-export const useLoader = (object: ObservableObject<any>) => {
+export const useObservableLoader = (object: ObservableObject<any>) => {
     const [isLoading, setLoading] = useState<boolean>(object.value === undefined)
 
     useEffect(() => {

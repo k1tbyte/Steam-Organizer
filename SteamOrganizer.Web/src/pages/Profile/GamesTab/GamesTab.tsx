@@ -12,6 +12,7 @@ import styles from "./GamesTab.module.css"
 import {useFilterManager} from "@/components/FilterInput/useFilterManager";
 import {EFilterType, FiltersDefinition, IFilterConfig} from "@/components/FilterInput/types";
 import {FilterInput} from "@/components/FilterInput/FilterInput";
+import {useObservableLoader} from "@/shared/hooks/useObservableLoader";
 
 const gamesFilters = [
     [
@@ -57,6 +58,7 @@ const defaultConfig = {
 
 const GamesTab: FC<IAccountProps & { scroller: ScrollerInitializer }> = ({acc, scroller}) => {
     const {proxy, callback, filterConfig, collection } = useFilterManager<SteamGameInfo>(defaultConfig)
+    const isLoading = useObservableLoader(collection)
 
     useEffect(() => {
         db.get<SteamGameInfo[]>(acc.id, EDbStore.Games).then(async (o) => {
@@ -71,7 +73,7 @@ const GamesTab: FC<IAccountProps & { scroller: ScrollerInitializer }> = ({acc, s
         })
     }, [acc]);
 
-    if (!collection.value) {
+    if (isLoading) {
         return <Loader className="flex-center h-full py-20"/>
     }
 

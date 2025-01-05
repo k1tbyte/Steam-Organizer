@@ -3,7 +3,7 @@ import AccountsNav from "./components/AccountsNav";
 import {GridLayout} from "@/shared/ui/VirtualScroller/GridLayout";
 import {accounts} from "@/store/accounts";
 import {LoaderStatic} from "@/shared/ui/Loader";
-import {useLoader} from "@/shared/hooks/useLoader";
+import {useObservableLoader} from "@/shared/hooks/useObservableLoader";
 import {Account} from "@/entity/account";
 import {Icon } from "@/defines";
 import Button, {EButtonVariant} from "@/shared/ui/Button";
@@ -22,7 +22,7 @@ const defaultConfig = {
 } as IFilterConfig
 
 export default function Accounts() {
-    const isLoading = useLoader(accounts)
+    const isLoading = useObservableLoader(accounts)
 
     const { proxy, callback, filterConfig } = useFilterManager(defaultConfig, accountsProxy, "accountsFilter");
 
