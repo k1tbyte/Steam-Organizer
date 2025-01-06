@@ -12,6 +12,7 @@ interface UsePopupProps extends IControlledStateOptions<boolean> {
 
     /** Offset from the calculated position. @default { x: 5, y: 0 } */
     offset?: Point;
+    timeout?: number;
 }
 
 /**
@@ -57,6 +58,7 @@ interface UsePopupProps extends IControlledStateOptions<boolean> {
  */
 export const usePopup = ({
                              position,
+                             timeout,
                              offset = { x: 5, y: 0 },
                              ...props
                          }: UsePopupProps) => {
@@ -69,6 +71,10 @@ export const usePopup = ({
     // Position update and click outside handling
     useEffect(() => {
         if (!isOpen || !popupRef.current || !triggerRef.current) return;
+
+        if(timeout) {
+            setTimeout(() => setIsOpen(false), timeout)
+        }
 
         const onScrollChanged = () => setIsOpen(false)
         const scroller = getScrollParent(triggerRef.current);

@@ -244,7 +244,7 @@ public sealed class SteamParser : IDisposable
 
                     if (details.Data?.Price_overview != null)
                     {
-                        details.Data.Price_overview.Initial /= 100;
+                        details.Data.Price_overview.Final =  (decimal)details.Data.Price_overview.Initial! / 100u;
                     }
                     FormatPrice(games,info, details);
 
@@ -301,13 +301,20 @@ public sealed class SteamParser : IDisposable
     {
         if (details.Data?.Price_overview == null)
         {
-            gameInfo.FormattedPrice = details.Success ? "Free" : "Unknown";
+            if (details.Success)
+            {
+                gameInfo.Price = 0;
+                gameInfo.FormattedPrice = "Free";
+                return;
+            }
+            gameInfo.FormattedPrice = "Unknown";
             return;
         }
 
         var price = details.Data.Price_overview;
-        games.GamesPrice += price.Initial;
-        gameInfo.FormattedPrice = price.Formatted ?? (price.Formatted = _currency.Format(price.Initial));
+        games.GamesPrice += price.Final;
+        gameInfo.Price = price.Initial;
+        gameInfo.FormattedPrice = price.Formatted ?? (price.Formatted = _currency.Format(price.Final));
         games.PaidGames++;
     }
     

@@ -13,6 +13,7 @@ import {openAddAccount} from "@/pages/Modals/AddAccount";
 import {ObservableProxy} from "@/shared/lib/observer/observableProxy";
 import {EFilterType, IFilterConfig} from "@/components/FilterInput/types";
 import {useFilterManager} from "@/components/FilterInput/useFilterManager";
+import {useTitle} from "@/shared/hooks/useTitle";
 
 const accountsProxy = new ObservableProxy(accounts)
 const defaultConfig = {
@@ -22,8 +23,8 @@ const defaultConfig = {
 } as IFilterConfig
 
 export default function Accounts() {
+    useTitle('Accounts')
     const isLoading = useObservableLoader(accounts)
-
     const { proxy, callback, filterConfig } = useFilterManager(defaultConfig, accountsProxy, "accountsFilter");
 
     if(isLoading) {

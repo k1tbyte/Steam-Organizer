@@ -1,5 +1,5 @@
 import {AnimatePresence, HTMLMotionProps, motion, Point} from "framer-motion";
-import {cloneElement, forwardRef, ReactElement, ReactNode, useImperativeHandle} from "react";
+import {cloneElement, forwardRef, MutableRefObject, ReactElement, ReactNode, useImperativeHandle} from "react";
 import {createPortal} from "react-dom";
 import {cn} from "@/shared/lib/utils";
 import { usePopup} from "@/shared/ui/Popup/usePopup";
@@ -25,6 +25,7 @@ export interface IPopupProps extends Omit<HTMLMotionProps<"div">, "content">, IC
 
     /** Trigger element that toggles the popup */
     children: ReactElement;
+    childrenRef?: MutableRefObject<HTMLElement>;
 
     /** Content to be displayed in the popup */
     content: ContentType;
@@ -36,6 +37,7 @@ export interface IPopupProps extends Omit<HTMLMotionProps<"div">, "content">, IC
     variant?: PopupVariant;
 
     asToggle?: boolean;
+    timeout?: number;
 }
 
 export const enum PopupVariant {
@@ -108,6 +110,8 @@ export const Popup = forwardRef<HTMLDivElement, IPopupProps>(({
                                                                   setState,
                                                                   state,
                                                                   initialState,
+                                                                  timeout,
+                                                                  childrenRef,
                                                                   asToggle = true,
                                                                   variant = PopupVariant.Default,
                                                                   placement = EPlacement.MiddleRight,
@@ -120,9 +124,10 @@ export const Popup = forwardRef<HTMLDivElement, IPopupProps>(({
         triggerRef,
         setIsOpen,
         popupRef,
-    } = usePopup({ setState, state, initialState, onStateChanged, offset, position: placement  })
+    } = usePopup({ setState, state, initialState, onStateChanged, offset, position: placement, timeout  })
 
     useImperativeHandle(ref, () => popupRef.current);
+    useImperativeHandle(childrenRef, () => triggerRef.current)
 
     const trigger = cloneElement(children, {
         ref: triggerRef,

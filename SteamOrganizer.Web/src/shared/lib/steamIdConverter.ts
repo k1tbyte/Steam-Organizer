@@ -21,7 +21,7 @@ type ISteamIdConverter = {
     from: (accountId: number) => string;
 }
 
-export const converters: ISteamIdConverter[] = [
+export const idConverters: ISteamIdConverter[] = [
     {
         matcher: new RegExp("^[0-9]{1,10}$"),
         to: id => Number(id),
@@ -62,7 +62,7 @@ const idFromUrl = new RegExp("/(?:id|profiles)/([^/, ]+)")
 export const toAccountId = async (steamId: string) => {
     if(!steamId) return undefined
     const id =   steamId.match(idFromUrl)?.[1] ?? steamId
-    for (const converter of converters) {
+    for (const converter of idConverters) {
         if(converter.matcher.test(id)) {
             return converter.to(id)
         }

@@ -1,4 +1,4 @@
-import React, {type FC, useEffect, useRef, useState} from "react";
+import React, {type FC, useRef, useState} from "react";
 import {useParams} from "react-router-dom";
 import {Tabs} from "@/shared/ui/Tabs";
 import {Gradients, Icon, SvgIcon} from "src/defines";
@@ -15,16 +15,15 @@ import SummariesTab from "./SummariesTab";
 import GamesTab from "./GamesTab/GamesTab";
 import FriendsTab from "./FriendsTab";
 import {ComboBox} from "@/shared/ui/ComboBox/ComboBox";
-import {converters, ESteamIdType} from "@/shared/lib/steamIdConverter";
+import {ESteamIdType, idConverters} from "@/shared/lib/steamIdConverter";
 import Button, {EButtonVariant, IButtonActions} from "@/shared/ui/Button";
 import {steamBase} from "@/shared/api/steamApi";
 import {EVisibilityState} from "@/types/steamPlayerSummary";
 import {flagStore, uiStore, useFlagStore} from "@/store/local";
 import {Tooltip} from "@/shared/ui/Popup/Tooltip";
-import {popupDefaults} from "@/shared/ui/Popup/Popup";
+import {Popup, popupDefaults} from "@/shared/ui/Popup/Popup";
 import {RadioButton} from "@/shared/ui/RadioButton/RadioButton";
 import {EPlacement} from "@/shared/ui/Popup/positioning";
-import {useTitle} from "@/shared/hooks/useTitle";
 
 export interface IAccountProps {
     acc: Account
@@ -42,6 +41,7 @@ const tabs = [
 
 const Info: FC<IAccountProps> = ({ acc }) => {
     const idRef = useRef<HTMLParagraphElement>(null)
+    const id64 =    acc.id ? idConverters[ESteamIdType.SteamID64].from(acc.id) : null
     const idTooltipRef = useRef<HTMLDivElement>(null)
     const idType = ["Account ID", "Steam ID", "Steam2 ID", "Steam3 ID", "CS2 Friend code", "Steam3 Hex"];
     if(acc.vanityUrl) {
@@ -72,10 +72,10 @@ const Info: FC<IAccountProps> = ({ acc }) => {
                     </div>
 
                     <div className="flex gap-3">
-                        <a className={styles.iconLink}>
+                        <a className={styles.iconLink} href={`https://steamcommunity.com/profiles/${id64}`} target="_blank">
                             <SvgIcon icon={Icon.Steam} size={30}/>
                         </a>
-                        <a className={styles.iconLink}>
+                        <a className={styles.iconLink} href={`https://steamdb.info/calculator/${id64}`} target="_blank">
                             <SvgIcon icon={Icon.SteamDb} size={30}/>
                         </a>
                     </div>
@@ -88,19 +88,20 @@ const Info: FC<IAccountProps> = ({ acc }) => {
                                 return
                             }
                             uiStore.emit(nameof(uiStore.store.displayingId), i)
-                            idRef.current.textContent = converters[i].from(acc.id)
+                            idRef.current.textContent = idConverters[i].from(acc.id)
                         }}/>
                         <Tooltip ref={idTooltipRef} message="Click to copy" openDelay={0}>
                             <b>
-                                <p ref={idRef} className="text-center text-secondary text-xs mt-2 cursor-pointer"
-                                   onClick={async () => {
-                                       await navigator.clipboard.writeText(idRef.current.textContent)
-                                       if (idTooltipRef.current) {
-                                           idTooltipRef.current.textContent = "Copied"
-                                       }
-                                   }}>
-                                    {acc.id}
-                                </p>
+                                <Popup childrenRef={idRef} className="bg-secondary text-foreground-accent" content="Copied!" timeout={250}
+                                       placement={EPlacement.TopCenter}>
+                                    <p className="text-center text-secondary text-xs mt-2 cursor-pointer"
+                                       onPointerDown={async () => {
+                                           console.log(idRef.current)
+                                           await navigator.clipboard.writeText(idRef.current.textContent)
+                                       }}>
+                                        {acc.id}
+                                    </p>
+                                </Popup>
                             </b>
                         </Tooltip>
                     </div>
@@ -119,9 +120,8 @@ export const Profile: FC = () => {
     const {id} = useParams();
     const isLoading = useObservableLoader(accounts);
     const [isUpdating] = useFlagStore<boolean>(nameof(flagStore.store.isDbUpdating))
-    useTitle(acc?.nickname, [isLoading])
     const onScrollRef = useRef<() => void>();
-    const { hostRef, scrollRef } = useScrollbar({
+    const {hostRef, scrollRef} = useScrollbar({
         scroll: () => onScrollRef.current?.()
     }, [isLoading]);
 
@@ -132,6 +132,7 @@ export const Profile: FC = () => {
     const numId = parseFloat(id)
     acc = accounts.value.find(!isNaN(numId) ?
         (o => o.id === numId) : (o => o.login === id))
+    setDocumentTitle(acc.nickname)
 
     if (!acc) {
         return <p>Account not found</p>
@@ -185,7 +186,7 @@ export const Profile: FC = () => {
                         <div className={styles.linksPanel}>
                             {links.map((link, i) => (
                                 <button key={i} className={styles.linkButton} onClick={() => {
-                                    open(`${steamBase}profiles/${converters[ESteamIdType.SteamID64].from(acc.id)}/${link.toLowerCase()}`, "_blank")
+                                    open(`${steamBase}profiles/${idConverters[ESteamIdType.SteamID64].from(acc.id)}/${link.toLowerCase()}`, "_blank")
                                 }}>
                                     {link}
                                 </button>))
