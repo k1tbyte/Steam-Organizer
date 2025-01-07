@@ -66,7 +66,7 @@ export const Tooltip = forwardRef<HTMLDivElement, ITooltipProps>(({
                                                                       closeDelay = 150,
                                                                       placement = EPlacement.TopCenter,
                                                                       offset = { x: 5, y: 5 },
-                                                                      className,
+                                                                      className = "",
                                                                       children,
                                                                       canHover = false,
                                                                       preventOpen,
@@ -99,7 +99,7 @@ export const Tooltip = forwardRef<HTMLDivElement, ITooltipProps>(({
 
     const handleMouseLeave = useCallback((event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
         // Checking if the cursor has moved to the tooltip
-        if (canHover && tooltipRef.current?.contains(event.relatedTarget as Node)) {
+        if (canHover && event.relatedTarget instanceof Node && tooltipRef.current?.contains(event.relatedTarget)) {
             isHoveringTooltip.current = true;
             return;
         }
@@ -134,6 +134,16 @@ export const Tooltip = forwardRef<HTMLDivElement, ITooltipProps>(({
         }
     }, [canHover, handleMouseLeave]);
 
+    const contentCallback = useCallback(() => {
+        return <div
+            ref={tooltipRef}
+            onMouseEnter={handleTooltipMouseEnter}
+            onMouseLeave={handleTooltipMouseLeave}
+        >
+            {message instanceof Function ? message() : message}
+        </div>
+    }, [message])
+
     /* Without this effect, the following problem could occur:
      *|
      *| - The user hovers over the trigger
@@ -149,18 +159,11 @@ export const Tooltip = forwardRef<HTMLDivElement, ITooltipProps>(({
         <Popup
             placement={placement}
             offset={offset}
+            className={canHover ? className : className + " pointer-events-none"}
             {...props}
             state={shouldShow}
             setState={setShouldShow}
-            content={
-                <div
-                    ref={tooltipRef}
-                    onMouseEnter={handleTooltipMouseEnter}
-                    onMouseLeave={handleTooltipMouseLeave}
-                >
-                    {message instanceof Function ? message() : message}
-                </div>
-            }
+            content={contentCallback}
             triggerProps={{
                 onMouseEnter: handleMouseEnter,
                 onMouseLeave: handleMouseLeave,

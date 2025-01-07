@@ -1,0 +1,11 @@
+.container {
+    @apply grad-chip px-4 py-4 text-sm  rounded-lg flex-y-center flex-wrap justify-between;
+}
+
+.container span {
+    @apply font-bold letter-space;
+}
+
+.banned {
+    @apply w-full text-xs text-close mr-10;
+}

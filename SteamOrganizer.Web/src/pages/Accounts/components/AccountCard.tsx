@@ -6,11 +6,12 @@ import {accounts, saveDbMutation} from "@/store/accounts";
 import styles from "./AccountCard.module.css"
 import {defaultAvatar} from "@/store/config";
 import {Tooltip} from "@/shared/ui/Popup/Tooltip";
-import {dateFormatter} from "@/shared/lib/utils";
+import {dateFormatter} from "@/shared/lib/timeFormatting";
 import {ConfirmPopup} from "@/components/ConfirmPopup";
 import {AccountsContext} from "@/pages/Accounts/components/AccountsNav";
 import {Draggable} from "@/shared/ui/Draggable";
 import {flagStore, useFlagStore} from "@/store/local";
+import {CopyArea} from "@/shared/ui/CopyButton/CopyButton";
 
 interface IAccountCardProps {
     acc: Account,
@@ -86,8 +87,7 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
                         </Tooltip>
                     }
                     { acc.authenticator &&
-                        <Tooltip
-                            message={() => "This account is 2FA protected\nClick to copy the code"}>
+                        <Tooltip message={() => "This account is 2FA protected\nClick to copy the code"}>
                             <SvgIcon icon={Icon.Lock} size={16}
                                      onClick={async () => navigator.clipboard.writeText(await acc.generate2faCode() ?? "")}
                                      className="fill-success cursor-pointer"/>
@@ -98,7 +98,10 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
 
             <div className={styles.main}>
                 <div className="flex">
-                    <span className={styles.nick}>{acc.nickname}</span>
+                    <Tooltip preventOpen={!acc.note?.length}
+                             className="max-w-56" message={acc.note?.length > 300 ? acc.note.substring(0, 300) + " ..." : acc.note}>
+                        <span className={styles.nick}>{acc.nickname}</span>
+                    </Tooltip>
                     <Link className={styles.edit} to={`/accounts/${acc.id ?? acc.login}`} draggable={false}>
                         <SvgIcon icon={Icon.EditSquare} size={14}/>
                     </Link>
@@ -109,25 +112,32 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
                 <div className={styles.body}>
 
                     <div className={styles.topInfo}>
-                        <div className="chip">Level: {acc.steamLevel ?? '—'}</div>
-                        <div className="chip">Years: {acc.getYears() ?? '—'}</div>
+                        <div>Level: {acc.steamLevel ?? '—'}</div>
+                        <Tooltip canHover={true} preventOpen={acc.createdDate == null} message={() => `Registration: ` + dateFormatter.format(acc.createdDate)}>
+                            <div>Years: {acc.getYears() ?? '—'}</div>
+                        </Tooltip>
+
                     </div>
 
                     {bansCount ?
                         <div className={styles.bans}>
-                            {bansCount > 2 && <span className={styles.banChip}>+{bansCount - 2}</span>}
-                            {!!acc.vacBansCount && <div className={styles.banChip}>VAC</div>}
-                            {!!acc.gameBansCount && <div className={styles.banChip}>Game</div>}
-                            {!!acc.haveCommunityBan && <div className={styles.banChip}>Community</div>}
-                            {!!acc.economyBan && <div className={styles.banChip}>Trade</div>}
-                        </div> :
-                        <div className="h-[20px]">
-                            <div className={styles.anyBans}>No bans &#10003;</div>
-                        </div>
+                            {bansCount > 2 && <span className="chip bg-close">+{bansCount - 2}</span>}
+                            {!!acc.vacBansCount &&
+                                <Tooltip message={() => acc.getVacBanInfo()}>
+                                    <div>VAC</div>
+                                </Tooltip>}
+                            {!!acc.gameBansCount &&
+                                <Tooltip message={() => acc.getGameBanInfo()}>
+                                    <div>Game</div>
+                                </Tooltip>}
+                            {!!acc.haveCommunityBan && <Tooltip message={() => acc.getCommunityBanInfo()}><div>Community</div></Tooltip>}
+                            {!!acc.economyBan && <Tooltip message={() => acc.getTradeBanInfo()}><div>Trade</div></Tooltip>}
+                        </div> : <div className={styles.anyBans}>No bans &#10003;</div>
                     }
 
-                    <p className={styles.id}><b
-                        className="text-secondary">ID:</b> {acc.id ?? '—'}</p>
+                    <CopyArea as={"p"} className={styles.id} copyContent={acc.id}>
+                        <b>ID:</b> {acc.id ?? '—'}
+                    </CopyArea>
                 </div>
             </div>
 

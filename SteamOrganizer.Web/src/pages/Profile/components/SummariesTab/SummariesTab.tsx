@@ -1,37 +1,19 @@
 import React, {FC} from "react";
 import type {IAccountProps} from "@/pages/Profile/Profile.tsx";
 import {Expander, withStateSaving} from "@/shared/ui/Expander";
-import {Gradients, Icon, SvgIcon} from "src/defines";
+import { Icon, SvgIcon} from "@/defines";
 import {TextArea} from "@/shared/ui/TextArea";
 import {delayedSaveAccounts} from "@/store/accounts";
 import {EEconomyBanType} from "@/types/steamPlayerSummary";
-import CommunityArea from "./CommunityArea";
-import CredentialsArea from "./CredentialsArea";
+import CommunityArea from "./components/CommunityArea";
+import Credentials from "./components/Credentials/Credentials";
 import {uiStore} from "@/store/local";
-
-interface IBanChipProps {
-    name: string;
-    banDescription?: string;
-    banned?: boolean | number;
-}
-
-const BanChip: FC<IBanChipProps> = ({name, banned, banDescription}) => (
-    <div className="grad-chip px-4 py-4 text-sm  rounded-lg flex-y-center flex-wrap justify-between">
-        <span className="font-bold letter-space">{name}</span>
-        {(banned) ?
-            <>
-                <SvgIcon className="text-danger" icon={Icon.AlertDecagram} size={32}/>
-                <p className="w-full text-xs text-close mr-10">{banDescription}</p>
-            </>
-            : <SvgIcon fill={Gradients.Success} icon={Icon.CheckDecagram} size={32}/>
-        }
-    </div>
-)
+import {ProfileBanChip} from "./components/BanChip/BanChip";
 
 const SummariesTab: FC<IAccountProps> = ({acc}) => {
 
     const noteArea = <Expander {...withStateSaving(nameof(uiStore.store.note))}
-                               className="backdrop-primary w-full md:order-none self-start"
+                               className="backdrop-primary md:order-none self-start flex-1 min-w-72"
                                icon={<SvgIcon icon={Icon.NoteEdit} size={24}/>} title="Note about account">
         <div className="p-4">
             <TextArea className="grad-chip rounded-xl resize-none"
@@ -48,7 +30,7 @@ const SummariesTab: FC<IAccountProps> = ({acc}) => {
     if (!acc.id) {
         return (
             <div className="grid md:grid-cols-2 gap-3 mt-3">
-                <CredentialsArea acc={acc}/>
+                <Credentials acc={acc}/>
                 {noteArea}
             </div>
         )
@@ -65,8 +47,8 @@ const SummariesTab: FC<IAccountProps> = ({acc}) => {
                         <CommunityArea acc={acc}/>
                     </Expander>
                 }
-                <div className="flex items-start flex-col md:grid grid-cols-2 gap-3">
-                    <CredentialsArea acc={acc}/>
+                <div className="flex flex-wrap items-start justify-stretch  gap-3">
+                    <Credentials acc={acc}/>
                     {noteArea}
                 </div>
 
@@ -76,19 +58,14 @@ const SummariesTab: FC<IAccountProps> = ({acc}) => {
                       {...withStateSaving(nameof(uiStore.store.bans))}
                       icon={<SvgIcon icon={Icon.Block} size={24}/>} title="Bans">
                 <div className="p-4 space-y-5">
-                    <BanChip name="VAC ban" banned={acc.vacBansCount}
-                             banDescription={`This account has been banned by VAC${
-                                 (acc.vacBansCount > 1 ? ` in several games (${acc.vacBansCount})` : "")}`}/>
-                    <BanChip name="Game ban" banned={acc.gameBansCount}
-                             banDescription={`This account has a game ban${
-                                 (acc.gameBansCount > 1 ? ` in several games (${acc.gameBansCount})` : "")
-                             }`}/>
-                    <BanChip name="Community ban" banned={acc.haveCommunityBan}
-                             banDescription="The account is not allowed to interact with the Steam community."/>
-                    <BanChip name="Trade ban" banned={acc.economyBan}
-                             banDescription={`${(acc.economyBan === EEconomyBanType.Probation ?
-                                     "The account is temporarily blocked." : "The account is permanently blocked."
-                             )} Trade/exchange/sending of gifts is prohibited on this account`}/>
+                    <ProfileBanChip name="VAC ban" banned={acc.vacBansCount}
+                             banDescription={acc.getVacBanInfo()}/>
+                    <ProfileBanChip name="Game ban" banned={acc.gameBansCount}
+                             banDescription={acc.getGameBanInfo()}/>
+                    <ProfileBanChip name="Community ban" banned={acc.haveCommunityBan}
+                             banDescription={acc.getCommunityBanInfo()}/>
+                    <ProfileBanChip name="Trade ban" banned={acc.economyBan}
+                             banDescription={acc.getTradeBanInfo()}/>
                 </div>
             </Expander>
         </div>

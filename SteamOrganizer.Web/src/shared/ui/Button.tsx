@@ -11,12 +11,14 @@ import {
 import {cn} from "@/shared/lib/utils";
 
 export const enum EButtonVariant {
+    None,
     Primary,
     Outlined,
     Transparent,
 }
 
 export const enum EButtonSize {
+    None,
     Default
 }
 
@@ -34,15 +36,15 @@ interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     size?: EButtonSize
 }
 
-const variants = [
-    "font-semibold  flex-center  bg-secondary text-accent  hover:text-foreground-accent rounded-xm min-w-32",
-    "border-tertiary border text-secondary font-thin hover:bg-tertiary rounded",
-    "hover:bg-accent text-foreground-muted hover:text-foreground w-full text-left"
-]
+const variants = {
+    [EButtonVariant.Primary]: "font-semibold  flex-center  bg-secondary text-accent  hover:text-foreground-accent rounded-xm min-w-32",
+    [EButtonVariant.Outlined]: "border-tertiary border text-secondary font-thin hover:bg-tertiary rounded",
+    [EButtonVariant.Transparent]: "hover:bg-accent text-foreground-muted hover:text-foreground w-full text-left"
+}
 
-const sizes = [
-    "px-3 py-1 text-2xs"
-]
+const sizes = {
+    [EButtonSize.Default]: "px-3 py-1 text-2xs"
+}
 
 const Button = forwardRef<HTMLButtonElement, IButtonProps>((
     {

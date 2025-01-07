@@ -30,7 +30,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement,ITextAreaProps>(({ classN
         target.addEventListener("input", resize);
 
         return () => target.removeEventListener("input", resize);
-    }, []);
+    }, [autoResize]);
 
     const onBeforeInput = (e) => {
         if (!maxRows) {

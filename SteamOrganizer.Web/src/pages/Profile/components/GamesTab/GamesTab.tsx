@@ -5,7 +5,7 @@ import {Loader} from "@/shared/ui/Loader";
 import db, {EDbStore} from "@/shared/services/indexedDb";
 import {ScrollerInitializer, VirtualScroller} from "@/shared/ui/VirtualScroller/VirtualScroller";
 import {StackLayout} from "@/shared/ui/VirtualScroller/StackLayout";
-import {GameCard} from "@/pages/Profile/GamesTab/components/GameCard";
+import {GameCard} from "@/pages/Profile/components/GamesTab/components/GameCard";
 import {getPlayerGames} from "@/shared/api/steamApi";
 import {EmptyCollectionIndicator, SearchCollectionIndicator} from "@/components/CollectionIndicator";
 import styles from "./GamesTab.module.css"

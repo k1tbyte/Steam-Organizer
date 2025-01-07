@@ -18,7 +18,7 @@ const formatPlaytime = (playtime: number) => {
 const Card: FC<{ game: SteamGameInfo }> = ({ game }) => (
     <div className={styles.gameRow}>
         <div className={styles.leftContainer}>
-            <img className={styles.image}
+            <img className={styles.image} draggable={false}
                  src={`https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/${game.appId}/capsule_231x87.jpg`} />
             <div className={styles.price}>{game.formattedPrice}</div>
         </div>

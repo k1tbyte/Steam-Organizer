@@ -76,7 +76,9 @@ export const enum Icon {
     AccountAdd,
     SearchInList,
     NoDataToDisplay,
-    PushBackupCloud
+    PushBackupCloud,
+    Copy,
+    Sack
 }
 
 export function Defs() {

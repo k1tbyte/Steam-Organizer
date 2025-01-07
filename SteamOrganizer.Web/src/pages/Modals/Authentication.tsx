@@ -9,7 +9,7 @@ import {Icon, SvgIcon} from "src/defines";
 import {useAuth} from "@/providers/authProvider";
 import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups";
 import {Loader} from "@/shared/ui/Loader";
-import {dateFormatter} from "@/shared/lib/utils";
+import {dateFormatter} from "@/shared/lib/timeFormatting";
 import { clearAccounts, importAccounts, initAccounts, storeEncryptionKey} from "@/store/accounts";
 import {Tooltip} from "@/shared/ui/Popup/Tooltip";
 import {EDecryptResult} from "@/store/config";

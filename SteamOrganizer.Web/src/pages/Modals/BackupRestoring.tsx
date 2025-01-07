@@ -3,7 +3,7 @@ import { type BackupMetadata} from "@/types/backup";
 import Button from "@/shared/ui/Button";
 import {Loader} from "@/shared/ui/Loader";
 import {loadBackup, restoreBackup} from "@/store/backups";
-import {dateFormatter} from "@/shared/lib/utils";
+import {dateFormatter} from "@/shared/lib/timeFormatting";
 import {decrypt} from "@/shared/services/cryptography";
 import {modal, useModalActions} from "@/shared/ui/Modal";
 import {databaseKey, importAccounts} from "@/store/accounts";

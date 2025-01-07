@@ -31,18 +31,23 @@
         }
     }
 }
-
-.banChip {
-    @apply chip bg-close
+.bans > div {
+    @apply chip bg-close;
 }
 
 .anyBans {
-    @apply chip bg-success inline-block
+    height: 20px;
+    @apply chip bg-success inline-block;
 }
 
 .id {
-    @apply text-foreground font-medium w-full mt-2 mb-3
+    @apply text-foreground font-medium cursor-pointer w-fit mt-2 mb-3
 }
+
+.id b {
+    @apply text-secondary;
+}
+
 
 .nick {
     @apply text-sm text-nowrap overflow-hidden text-ellipsis
@@ -52,6 +57,10 @@
     @apply flex text-nowrap mr-2;
     gap: 5px;
     margin-bottom: 5px;
+}
+
+.topInfo > div {
+    @apply chip;
 }
 
 .main {

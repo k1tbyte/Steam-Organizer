@@ -9,7 +9,7 @@ import {ToggleButton} from "@/shared/ui/ToggleButton";
 import {IDraggableContext, IDraggableInfo} from "@/shared/ui/Draggable";
 import {accounts, importAccounts, updateAccounts} from "@/store/accounts";
 import {ExportData} from "@/pages/Modals/ExportData";
-import {formatFileDate} from "@/shared/lib/utils";
+import {formatFileDate} from "@/shared/lib/timeFormatting";
 import {verifyVersion} from "@/shared/services/cryptography";
 import {DecryptionPopup} from "@/pages/Modals/Authentication";
 import {flagStore, useFlagStore} from "@/store/local";
