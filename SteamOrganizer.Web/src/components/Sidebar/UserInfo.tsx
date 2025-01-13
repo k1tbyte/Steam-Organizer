@@ -4,11 +4,11 @@ import {Icon, SvgIcon} from "src/defines";
 import {useAuth} from "@/providers/authProvider";
 import {Loader} from "@/shared/ui/Loader";
 import {AnimatePresence, motion} from "framer-motion";
-import styles from "./UserInfo.module.pcss"
+import styles from "./UserInfo.module.css"
 import {ESidebarState} from "@/types/uiMetadata";
 import {useIsOffline} from "@/store/local";
 import {popupDefaults} from "@/shared/ui/Popup/Popup";
-import {Tooltip} from "@/shared/ui/Popup/Tooltip";
+import {TooltipConditional} from "@/shared/ui/Popup/Tooltip";
 
 export const UserInfo: FC<{state: ESidebarState}> = ({ state }) => {
     const {user, signIn, signOut } = useAuth()
@@ -63,7 +63,7 @@ export const UserInfo: FC<{state: ESidebarState}> = ({ state }) => {
                                 transition={{delay: 0.05}}
                                 exit={{height: 0}}>
                         <div className="pt-2 text-nowrap">
-                            <Tooltip message={"Logout"}
+                            <TooltipConditional message={"Logout"}
                                      preventOpen={state !== ESidebarState.Partial}
                                 {...popupDefaults.side}>
                                 <Button className="py-2 px-0 rounded-md" variant={EButtonVariant.Transparent}
@@ -71,7 +71,7 @@ export const UserInfo: FC<{state: ESidebarState}> = ({ state }) => {
                                     <SvgIcon className={styles.btnIcon} icon={Icon.Exit} size={23}/>
                                     {state === ESidebarState.Full && <span className="font-bold text-2xs">Logout</span>}
                                 </Button>
-                            </Tooltip>
+                            </TooltipConditional>
                         </div>
                     </motion.div>
                 }

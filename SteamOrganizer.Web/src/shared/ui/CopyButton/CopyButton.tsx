@@ -3,7 +3,7 @@ import {Icon, SvgIcon} from "@/defines";
 import {type ComponentProps, type ElementType, type FC, ReactElement, type ReactNode} from "react";
 import {ContentType, Popup} from "@/shared/ui/Popup/Popup";
 import {EPlacement} from "@/shared/ui/Popup/positioning";
-import styles from "./CopyButtun.module.css"
+import styles from "./CopyButton.module.css"
 import {clsx} from "clsx";
 
 type ClipboardDataType = string | number | (() =>  (string | number));

@@ -1,8 +1,8 @@
 import {ObservableObject} from "@/shared/lib/observer/observableObject";
 import {BackupInfo, BackupMetadata} from "@/types/backup";
 import {getFileJson, getFileList, uploadFileJson} from "@/shared/services/gDrive";
-import {accounts, exportAccounts } from "@/store/accounts";
-import {bufferToBase64 } from "@/shared/lib/utils";
+import {accounts, exportAccounts} from "@/store/accounts";
+import {bufferToBase64} from "@/shared/lib/utils";
 
 const backupsFolderName = "Backups"
 

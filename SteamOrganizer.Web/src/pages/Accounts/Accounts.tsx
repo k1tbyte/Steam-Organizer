@@ -5,7 +5,7 @@ import {accounts} from "@/store/accounts";
 import {LoaderStatic} from "@/shared/ui/Loader";
 import {useObservableLoader} from "@/shared/hooks/useObservableLoader";
 import {Account} from "@/entity/account";
-import {Icon } from "@/defines";
+import {Icon} from "@/defines";
 import Button, {EButtonVariant} from "@/shared/ui/Button";
 import {CollectionIndicator, SearchCollectionIndicator} from "@/components/CollectionIndicator";
 import {VirtualScroller} from "@/shared/ui/VirtualScroller/VirtualScroller";
@@ -47,7 +47,7 @@ export default function Accounts() {
                     </CollectionIndicator>
                 }
                 onRenderElement={(o: Account, i) => <AccountCard pinned={o.unpinIndex !== undefined}
-                                                                 index={i} acc={o} key={i}/>}
+                                                                 index={i} acc={o} key={o.id || o.nickname}/>}
             />
         </AccountsNav>
     )

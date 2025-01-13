@@ -13,13 +13,13 @@ interface ILabelProps extends ComponentProps<"span"> {
 }
 
 const variants = {
-    [ELabelVariant.Primary]: "text-foreground-accent text-2xs font-semibold",
+    [ELabelVariant.Primary]: "text-foreground-accent font-semibold",
     [ELabelVariant.Colorful]: styles.colorful
 }
 
 export const Label = forwardRef<HTMLSpanElement, ILabelProps>(({ children, className, variant = ELabelVariant.Primary, ...props }, ref) => {
     return (
-        <span ref={ref} className={clsx(variants[variant], "")} {...props}>
+        <span ref={ref} className={clsx("text-2xs", variants[variant], className)} {...props}>
             {children}
         </span>
     )

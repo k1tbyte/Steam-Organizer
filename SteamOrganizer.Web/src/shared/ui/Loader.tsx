@@ -1,5 +1,6 @@
-import { type FC} from "react";
+import {type FC} from "react";
 import {cn} from "@/shared/lib/utils";
+import {ELabelVariant, Label} from "@/shared/ui/Label/Label";
 
 interface ILoaderProps {
     className?: string;
@@ -25,8 +26,8 @@ export const Loader: FC<ILoaderProps> = ({ className, size = 54 }) => {
 
 export const LoaderStatic: FC<IStaticLoaderProps> = ({className, text, absolute = false}) => {
     return (
-        <div className={cn("text-3xl text-foreground-muted font-bold", absolute ? "absolute translate-center" : "w-full h-full flex-center", className)}>
-            {text ?? "Loading . . ."}
+        <div className={cn("font-bold", absolute ? "absolute translate-center" : "w-full h-full flex-center", className)}>
+            <Label children={text ?? "Loading . . ."} className="text-lg px-6 py-2 font-code" variant={ELabelVariant.Colorful}/>
         </div>
     )
 }

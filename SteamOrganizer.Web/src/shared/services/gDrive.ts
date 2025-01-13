@@ -1,4 +1,4 @@
-import { gapi } from 'gapi-script';
+import {gapi} from 'gapi-script';
 
 export type GDriveFile = {
     id: string;
@@ -10,6 +10,7 @@ export type GDriveFile = {
 
 type FileList = {
     files?: GDriveFile[]
+    nextPageToken?: string
 }
 
 type GDriveResponse<T> = {
@@ -77,7 +78,7 @@ const getFileMetadata = (query: string, fields: string, limit: number = 1, pageT
         method: "GET",
         params: {
             q: query,
-            fields: `files(${fields})`,
+            fields: `files(${fields}), nextPageToken`,
             pageSize: limit,
             pageToken: pageToken,
             orderBy: "createdTime desc"

@@ -1,11 +1,11 @@
-import type { Account } from "@/entity/account.ts";
+import type {Account} from "@/entity/account.ts";
 import React, {type FC, useContext, useRef} from "react";
 import {Link} from "react-router-dom";
-import { Icon, SvgIcon} from "src/defines";
+import {Icon, SvgIcon} from "src/defines";
 import {accounts, saveDbMutation} from "@/store/accounts";
 import styles from "./AccountCard.module.css"
 import {defaultAvatar} from "@/store/config";
-import {Tooltip} from "@/shared/ui/Popup/Tooltip";
+import {Tooltip, TooltipConditional} from "@/shared/ui/Popup/Tooltip";
 import {dateFormatter} from "@/shared/lib/timeFormatting";
 import {ConfirmPopup} from "@/components/ConfirmPopup";
 import {AccountsContext} from "@/pages/Accounts/components/AccountsNav";
@@ -98,10 +98,10 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
 
             <div className={styles.main}>
                 <div className="flex">
-                    <Tooltip preventOpen={!acc.note?.length}
+                    <TooltipConditional preventOpen={!acc.note?.length}
                              className="max-w-56" message={acc.note?.length > 300 ? acc.note.substring(0, 300) + " ..." : acc.note}>
                         <span className={styles.nick}>{acc.nickname}</span>
-                    </Tooltip>
+                    </TooltipConditional>
                     <Link className={styles.edit} to={`/accounts/${acc.id ?? acc.login}`} draggable={false}>
                         <SvgIcon icon={Icon.EditSquare} size={14}/>
                     </Link>
@@ -113,9 +113,9 @@ const CardMain: FC<IAccountCardProps & { isEnabled: boolean, gripRef: React.Muta
 
                     <div className={styles.topInfo}>
                         <div>Level: {acc.steamLevel ?? '—'}</div>
-                        <Tooltip canHover={true} preventOpen={acc.createdDate == null} message={() => `Registration: ` + dateFormatter.format(acc.createdDate)}>
+                        <TooltipConditional canHover={true} preventOpen={acc.createdDate == null} message={() => `Registration: ` + dateFormatter.format(acc.createdDate)}>
                             <div>Years: {acc.getYears() ?? '—'}</div>
-                        </Tooltip>
+                        </TooltipConditional>
 
                     </div>
 

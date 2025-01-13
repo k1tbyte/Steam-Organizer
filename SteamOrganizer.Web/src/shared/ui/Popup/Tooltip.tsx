@@ -1,14 +1,6 @@
-import {
-    MouseEvent,
-    forwardRef,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-    useImperativeHandle
-} from "react";
+import {forwardRef, MouseEvent, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
 import {ContentType, IPopupProps, Popup} from "./Popup";
-import {  EPlacement } from "@/shared/ui/Popup/positioning";
+import {EPlacement} from "@/shared/ui/Popup/positioning";
 
 
 interface ITooltipProps extends Omit<IPopupProps, 'content' | 'triggerProps'> {
@@ -27,7 +19,6 @@ interface ITooltipProps extends Omit<IPopupProps, 'content' | 'triggerProps'> {
      * @default false
      */
     canHover?: boolean;
-    preventOpen?: boolean;
 }
 
 /**
@@ -69,13 +60,8 @@ export const Tooltip = forwardRef<HTMLDivElement, ITooltipProps>(({
                                                                       className = "",
                                                                       children,
                                                                       canHover = false,
-                                                                      preventOpen,
                                                                       ...props
                                                                   }, ref) => {
-    if(preventOpen) {
-        return children;
-    }
-
     const [shouldShow, setShouldShow] = useState(false);
     const timerRef = useRef<number>();
     const tooltipRef = useRef<HTMLDivElement>(null);
@@ -176,5 +162,11 @@ export const Tooltip = forwardRef<HTMLDivElement, ITooltipProps>(({
         </Popup>
     );
 });
+
+export const TooltipConditional = forwardRef<HTMLDivElement, ITooltipProps & { preventOpen?: boolean }>((
+        {preventOpen, ...props}, ref) => {
+        return preventOpen ? props.children : <Tooltip {...props} ref={ref}/>;
+    }
+);
 
 Tooltip.displayName = 'Tooltip';
