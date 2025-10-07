@@ -146,22 +146,27 @@ Contributions are welcome! Please feel free to submit pull requests or open issu
 
 ### Accounts Management
 ![Accounts List](./assets/accounts.png)
+
 *Manage all your Steam accounts in one place with virtual scrolling*
 
 ### Advanced Search & Filtering
 ![Search & Filters](./assets/accounts-search.png)
-*Powerful search and filtering capabilities*
+
+*Search and filtering capabilities*
 
 ### Account Profile
 ![Account Profile](./assets/profile.png)
+
 *Detailed account information and statistics*
 
 ### Games Library
 ![Games Library](./assets/profile-games.png)
+
 *View all games with their values and playtime*
 
 ### Encrypted Backups
 ![Google Drive Backups](./assets/backups.png)
+
 *Manage your encrypted backups in Google Drive*
 
 
