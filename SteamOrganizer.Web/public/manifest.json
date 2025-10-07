@@ -1,0 +1,20 @@
+{
+  "name": "Steam Organizer",
+  "short_name": "Steam Organizer",
+  "description": "Organize and manage your Steam library",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1b2838",
+  "theme_color": "#1b2838",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["games", "utilities"]
+}
+

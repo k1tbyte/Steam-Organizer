@@ -13,10 +13,11 @@ export default defineConfig({
             tsNameof(),
             react(),
             {
-                name: 'minify-sw',
+                name: 'build-pwa',
                 apply: "build",
                 enforce: "post",
                 transformIndexHtml() {
+                    // Build and minify service worker
                     buildSync({
                         minify: true,
                         bundle: true,
@@ -25,5 +26,18 @@ export default defineConfig({
                     });
                 },
             }
-        ]
+        ],
+    build: {
+        rollupOptions: {
+            output: {
+                // Ensure manifest.json is copied to dist
+                assetFileNames: (assetInfo) => {
+                    if (assetInfo.name === 'manifest.json') {
+                        return 'manifest.json';
+                    }
+                    return 'assets/[name]-[hash][extname]';
+                }
+            }
+        }
+    }
 })
