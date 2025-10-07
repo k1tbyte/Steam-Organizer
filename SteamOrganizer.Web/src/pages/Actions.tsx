@@ -14,7 +14,7 @@ export default function Actions() {
 
     return(
         <div className="flex-center flex-wrap gap-2 p-2 w-full h-full text-foreground-muted">
-            <RadioButton initialState={activeIndex}
+{/*            <RadioButton initialState={activeIndex}
                          className="text-sm bg-primary p-2 rounded-xl text-foreground"
                          generator={["First tab", "Second tab", "Third tab"]}>
                 {(item, index, isActive) => {
@@ -30,7 +30,8 @@ export default function Actions() {
 
             <Tooltip message={"This is a tooltip"} canHover={true}>
                 <Button>Hover for tooltip</Button>
-            </Tooltip>
+            </Tooltip>*/}
+            In development...
 
 
 {/*            <RadioButton initialState={activeIndex}

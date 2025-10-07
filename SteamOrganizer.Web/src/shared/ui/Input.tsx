@@ -57,7 +57,7 @@ const  Input = forwardRef<HTMLInputElement, IInputProps>((
 
     return (
         <input type="text" ref={forwardedRef} defaultValue={bindTo?.[bindKey]} {...props}
-               onBeforeInput={filter ? (e: CompositionEvent<HTMLInputElement>) => {
+               onBeforeInput={filter ? (e) => {
                    if(!filter.test(e.data)) {
                        e.preventDefault()
                    }

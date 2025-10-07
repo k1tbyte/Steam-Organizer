@@ -5,7 +5,7 @@ import db, {EDbStore} from "@/shared/services/indexedDb";
 import {flagStore} from "@/store/local";
 
 export const steamBase = "https://steamcommunity.com/"
-const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/steam/webApi/`
+const apiUrl = `/api/v1/steam/webApi/`
 
 
 let steamTimeDifference: number | null = null;

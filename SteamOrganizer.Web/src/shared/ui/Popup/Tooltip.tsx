@@ -19,6 +19,8 @@ interface ITooltipProps extends Omit<IPopupProps, 'content' | 'triggerProps'> {
      * @default false
      */
     canHover?: boolean;
+
+    enabled?: boolean;
 }
 
 /**
@@ -60,6 +62,7 @@ export const Tooltip = forwardRef<HTMLDivElement, ITooltipProps>(({
                                                                       className = "",
                                                                       children,
                                                                       canHover = false,
+                                                                      enabled = true,
                                                                       ...props
                                                                   }, ref) => {
     const [shouldShow, setShouldShow] = useState(false);
@@ -78,10 +81,13 @@ export const Tooltip = forwardRef<HTMLDivElement, ITooltipProps>(({
 
     const handleMouseEnter = useCallback(() => {
         clearTimer();
+        if(!enabled) {
+            return;
+        }
         timerRef.current = window.setTimeout(() => {
             setShouldShow(true);
         }, openDelay);
-    }, [openDelay, clearTimer]);
+    }, [openDelay, clearTimer, enabled]);
 
     const handleMouseLeave = useCallback((event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
         // Checking if the cursor has moved to the tooltip

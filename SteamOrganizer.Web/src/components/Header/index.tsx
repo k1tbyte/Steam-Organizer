@@ -6,6 +6,8 @@ import {SaveIndicator} from "./SaveIndicator";
 import {ESidebarState} from "@/types/uiMetadata";
 import {UpdateIndicator} from "@/components/Header/UpdateIndicator";
 import {NetworkIndicator} from "@/components/Header/NetworkIndicator";
+import {EPlacement} from "@/shared/ui/Popup/positioning";
+import {Popup} from "@/shared/ui/Popup/Popup";
 
 export const Header: FC = () => {
 
@@ -22,7 +24,13 @@ export const Header: FC = () => {
                 <NetworkIndicator/>
                 <UpdateIndicator/>
                 <SaveIndicator/>
-                <SvgIcon icon={Icon.Bell} size={17} className="cursor-pointer ml-5 mr-2" />
+                <Popup placement={EPlacement.MiddleLeft} offset={{ y: 15, x: -15 }} content={
+                    <div className="px-10 py-5">
+                        <p className="text-sm">No notifications</p>
+                    </div>
+                }>
+                    <SvgIcon icon={Icon.Bell} size={17} className="cursor-pointer ml-5 mr-2" />
+                </Popup>
                 <SvgIcon icon={Icon.Cog} size={17} className="cursor-pointer" onClick={openSettings}/>
             </div>
         </div>

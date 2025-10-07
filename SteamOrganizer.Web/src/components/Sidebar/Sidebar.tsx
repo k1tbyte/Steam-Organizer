@@ -73,13 +73,12 @@ const NavLink = forwardRef<HTMLDivElement, ISidebarItemProps>(({ link, icon, tex
 export const SidebarItem: FC<ISidebarItemProps> = (props) => {
     const sidebar = useContext(SidebarContext)
 
-    return (
-        <Tooltip message={props.text}
-                 preventOpen={sidebar.state !== ESidebarState.Partial}
-                 {...popupDefaults.side}>
+    return sidebar.state === ESidebarState.Partial ?
+        <Tooltip message={props.text}{...popupDefaults.side}>
            <NavLink {...props}/>
         </Tooltip>
-    );
+        :
+        <NavLink {...props} />;
 }
 
 export const Sidebar: FC = () => {
