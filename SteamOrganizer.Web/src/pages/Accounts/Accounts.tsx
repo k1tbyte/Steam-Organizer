@@ -1,46 +1,54 @@
-import AccountCard from "./elements/AccountCard.tsx";
-import AccountsNav from "./elements/AccountsNav.tsx";
-import VirtualScroller from "@/components/primitives/VirtualScroller/VirtualScroller.tsx";
-import {GridLayout} from "@/components/primitives/VirtualScroller/GridLayout.ts";
-import {accounts} from "@/store/accounts.ts";
-import {LoaderStatic} from "@/components/primitives/Loader.tsx";
-import {useLoader} from "@/hooks/useLoader.ts";
-import {useEffect} from "react";
-import {setDocumentTitle} from "@/lib/utils.ts";
-import {ObservableProxy} from "@/lib/observer/observableProxy.ts";
-import {Account} from "@/entity/account.ts";
-import {Icon } from "@/defines";
-import Button, {EButtonVariant} from "@/components/primitives/Button.tsx";
-import {openAddAccount} from "@/pages/Modals/AddAccount.tsx";
-import {CollectionIndicator, SearchCollectionIndicator} from "@/components/elements/CollectionIndicator.tsx";
-import Logo from "@/components/elements/Logo.tsx";
+import AccountCard from "./components/AccountCard";
+import AccountsNav from "./components/AccountsNav";
+import {GridLayout} from "@/shared/ui/VirtualScroller/GridLayout";
+import {accounts} from "@/store/accounts";
+import {LoaderStatic} from "@/shared/ui/Loader";
+import {useObservableLoader} from "@/shared/hooks/useObservableLoader";
+import {Account} from "@/entity/account";
+import {Icon} from "@/defines";
+import Button, {EButtonVariant} from "@/shared/ui/Button";
+import {CollectionIndicator, SearchCollectionIndicator} from "@/components/CollectionIndicator";
+import {VirtualScroller} from "@/shared/ui/VirtualScroller/VirtualScroller";
+import {openAddAccount} from "@/pages/Modals/AddAccount";
+import {ObservableProxy} from "@/shared/lib/observer/observableProxy";
+import {EFilterType, IFilterConfig} from "@/components/FilterInput/types";
+import {useFilterManager} from "@/components/FilterInput/useFilterManager";
+import {useTitle} from "@/shared/hooks/useTitle";
 
-const filterProxy = new ObservableProxy<Account[]>(accounts)
+const accountsProxy = new ObservableProxy(accounts)
+const defaultConfig = {
+    [EFilterType.Search]: { by: [0, nameof(Account.prototype.nickname)] },
+    [EFilterType.Flags]: {},
+    [EFilterType.Order]: {}
+} as IFilterConfig
 
 export default function Accounts() {
-   const isLoading = useLoader(accounts)
-    useEffect(() => setDocumentTitle('Accounts'), []);
+    useTitle('Accounts')
+    const isLoading = useObservableLoader(accounts)
+    const { proxy, callback, filterConfig } = useFilterManager(defaultConfig, accountsProxy, "accountsFilter");
+
+    if(isLoading) {
+        return <LoaderStatic/>
+    }
 
     return (
-        <AccountsNav proxy={filterProxy}>
-            {isLoading ? <LoaderStatic/> :
-                <VirtualScroller
-                    collection={filterProxy} layout={GridLayout} useDragMoving
-                    className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] mx-2 gap-2 auto-rows"
-                    emptyIndicator={
-                        <CollectionIndicator title="No accounts yet"
-                                             icon={Icon.AccountAdd}
-                                             subtitle={<span>Import backup or add new account <br/> using the button below</span>}>
-                            <Button variant={EButtonVariant.Outlined} onClick={openAddAccount}>
-                                Add account
-                            </Button>
-                        </CollectionIndicator>
-                    }
-                    searchEmptyIndicator={<SearchCollectionIndicator/>}
-                    renderElement={(o: Account, i) => <AccountCard pinned={o.unpinIndex !== undefined}
-                                                                   index={i} acc={o} key={i}/>}
-                />
-            }
+        <AccountsNav callback={callback} filterConfig={filterConfig}>
+            <VirtualScroller
+                collection={proxy} layout={GridLayout} withDragMoving
+                scrollerClassName="my-2"
+                className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-2 auto-rows mx-2"
+                emptyIndicator={() => accounts.value.length ? <SearchCollectionIndicator/> :
+                    <CollectionIndicator title="No accounts yet"
+                                         icon={Icon.AccountAdd}
+                                         subtitle={<span>Import backup or add new account <br/> using the button below</span>}>
+                        <Button variant={EButtonVariant.Outlined} onClick={openAddAccount}>
+                            Add account
+                        </Button>
+                    </CollectionIndicator>
+                }
+                onRenderElement={(o: Account, i) => <AccountCard pinned={o.unpinIndex !== undefined}
+                                                                 index={i} acc={o} key={o.id || o.nickname}/>}
+            />
         </AccountsNav>
-)
+    )
 }

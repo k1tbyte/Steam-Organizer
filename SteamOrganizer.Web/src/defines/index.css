@@ -24,3 +24,8 @@
 .os-theme-light {
     --os-size: 7px;
 }
+
+.animate-test {
+    animation: ping 1s cubic-bezier(0, 0, 0.2, 1);
+    animation-iteration-count: 1;
+}

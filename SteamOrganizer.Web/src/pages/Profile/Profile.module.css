@@ -1,0 +1,38 @@
+.mainContainer {
+    @apply mx-auto w-full max-w-[1200px] relative;
+}
+
+.wrapper {
+    @apply  h-full px-3 overflow-auto;
+    background-image: linear-gradient(theme('colors.primary') 1px, transparent 1px),
+    linear-gradient(90deg, theme('colors.primary') 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+    background-position:-2px -2px, -2px -2px, -1px -1px, -1px -1px;
+}
+
+.tabsIndicator {
+    @apply absolute bottom-0 w-full h-0.5;
+    background: linear-gradient(to right, transparent 0%, #6c5ecf 50%, transparent 100%);
+}
+
+.linksPanel {
+    @apply backdrop-primary flex flex-col md:flex-row justify-between text-center rounded-lg mt-4 text-foreground font-bold;
+}
+
+.linkButton {
+    @apply w-full p-4 border-background cursor-pointer hover:text-foreground-accent transition-colors
+           border-b-2 md:border-b-0 md:border-r-2 last:border-0;
+}
+
+.tabButton {
+    padding: 18px 0;
+    @apply text-sm flex-center gap-3 hover:text-foreground-accent transition-colors px-4;
+}
+
+.tabsPanel {
+    @apply backdrop-primary flex-col sm:flex-row flex-x-center my-4 letter-space font-bold rounded-lg;
+}
+
+.updateBtn {
+    @apply absolute right-3 top-5 h-10 z-10;
+}

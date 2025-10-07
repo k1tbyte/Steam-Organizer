@@ -8,6 +8,7 @@ public sealed class PlayerGameInfo
     public float Playtime_forever { get; set; }
     public required string Name { get; set; }
     public string? FormattedPrice { get; set; }
+    public int? Price { get; set; }
 }
 
 public sealed class PlayerGames
@@ -32,7 +33,8 @@ public sealed class PlayerGamesResponse
 
 public sealed class GamePrice
 {
-    public decimal Initial { get; set; }
+    public int? Initial { get; set; }
+    public decimal Final { get; set; }
     public string? Formatted { get; set; }
 }
 

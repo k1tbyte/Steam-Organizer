@@ -1,8 +1,15 @@
-import { type EVisibilityState, type SteamPlayerBans, type SteamPlayerGames, type SteamPlayerSummary} from "@/types/steamPlayerSummary.ts";
-import {getPlayerInfo, getSteamTime} from "@/services/steamApi.ts";
+import {
+    EEconomyBanType,
+    type EVisibilityState,
+    type SteamPlayerBans,
+    type SteamPlayerGames,
+    type SteamPlayerSummary
+} from "@/types/steamPlayerSummary";
+import {getPlayerInfo, getSteamTime} from "@/shared/api/steamApi";
 import type {IAccountCredential} from "@/types/accountCredentials.ts";
-import {accounts} from "@/store/accounts.ts";
-import {ISteamAuth} from "@/entity/steamAuth.ts";
+import {accounts} from "@/store/accounts";
+import {ISteamAuth} from "@/entity/steamAuth";
+import {ETimeUnit, formatTimeDifference, TimeFormat} from "@/shared/lib/timeFormatting";
 
 const codeInterval = 30;
 const steamCodeCharacters = "23456789BCDFGHJKMNPQRTVWXY";
@@ -42,6 +49,36 @@ export class Account {
     unpinIndex?: number;
 
     _years?: number;
+
+    private _getBanSinceInfo() {
+        const total = this.gameBansCount + this.vacBansCount;
+        return this.daysSinceLastBan ?
+            (total > 1 ? "\nLast ban received " : "\nBan received ") +
+                `${formatTimeDifference(this.daysSinceLastBan, ETimeUnit.Days, TimeFormat.Years | TimeFormat.Days)} ago` :
+            null
+    }
+
+    public getVacBanInfo() {
+        return this.vacBansCount ?
+            `This account has been banned by VAC${(this.vacBansCount > 1 ? ` in several games (${this.vacBansCount})` : "")}.${this._getBanSinceInfo()}` :
+            null
+    }
+
+    public getGameBanInfo() {
+        return this.gameBansCount ?
+            `This account has a game ban${(this.gameBansCount > 1 ? ` in several games (${this.gameBansCount})` : "")}.${this._getBanSinceInfo()}` :
+            null
+    }
+
+    public getCommunityBanInfo() {
+        return this.haveCommunityBan ? "The account is not allowed to interact with the Steam community" : null;
+    }
+
+    public getTradeBanInfo() {
+        return `${(this.economyBan === EEconomyBanType.Probation ?
+                "The account is temporarily blocked." : "The account is permanently blocked."
+        )} Trade/exchange/sending of gifts is prohibited on this account`
+    }
 
     public getYears() {
         if(!this.createdDate) {

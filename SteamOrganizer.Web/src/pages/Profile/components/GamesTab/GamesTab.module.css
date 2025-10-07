@@ -1,0 +1,12 @@
+.tableHeader {
+    @apply backdrop-primary mb-1 rounded-md text-foreground text-sm items-center z-10 top-0;
+    display: grid;
+    grid-template-columns: 148px  5fr 100px 140px;
+}
+
+.tableHeader p {
+    display: none;
+    @screen sm {
+        display: block;
+    }
+}

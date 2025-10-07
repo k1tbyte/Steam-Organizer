@@ -1,19 +1,19 @@
-import {InputValidationWrapper} from "@/components/elements/FieldWrapper.tsx";
-import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
-import {decrypt, deriveKey} from "@/services/cryptography.ts";
-import Button, {EButtonVariant, type IButtonActions} from "@/components/primitives/Button.tsx";
-import {useFormValidation, validators} from "@/hooks/useFormValidation.ts";
+import {InputValidationWrapper} from "@/components/FieldWrapper";
+import {PasswordBox} from "@/shared/ui/PasswordBox";
+import {decrypt, deriveKey} from "@/shared/services/cryptography";
+import Button, {EButtonVariant, type IButtonActions} from "@/shared/ui/Button";
+import {useFormValidation, validators} from "@/shared/hooks/useFormValidation";
 import React, {type FC, useEffect, useRef, useState} from "react";
-import {modal, useModalActions} from "@/components/primitives/Modal.tsx";
+import {modal, useModalActions} from "@/shared/ui/Modal";
 import {Icon, SvgIcon} from "src/defines";
-import {useAuth} from "@/providers/authProvider.tsx";
-import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups.ts";
-import {Loader} from "@/components/primitives/Loader.tsx";
-import {dateFormatter} from "@/lib/utils.ts";
-import { clearAccounts, importAccounts, initAccounts, storeEncryptionKey} from "@/store/accounts.ts";
-import {Tooltip} from "@/components/primitives/Popup.tsx";
-import {EDecryptResult} from "@/store/config.ts";
-import {InfoNote} from "@/pages/Modals/elements/InfoNote.tsx";
+import {useAuth} from "@/providers/authProvider";
+import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups";
+import {Loader} from "@/shared/ui/Loader";
+import {dateFormatter} from "@/shared/lib/timeFormatting";
+import { clearAccounts, importAccounts, initAccounts, storeEncryptionKey} from "@/store/accounts";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip";
+import {EDecryptResult} from "@/store/config";
+import {InfoNote} from "@/pages/Modals/elements/InfoNote";
 
 interface IDecryptProps {
     info: string,

@@ -27,7 +27,7 @@ export type SteamPlayerBans = {
 export type SteamGameInfo = {
     appId: number;
     playtime_forever: number;
-    name: number;
+    name: string;
     formattedPrice?: string;
 }
 

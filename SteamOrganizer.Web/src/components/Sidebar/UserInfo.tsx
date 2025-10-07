@@ -1,13 +1,14 @@
-import React, {FC, useState} from "react";
-import Button, {EButtonVariant} from "@/components/primitives/Button.tsx";
+import React, {type FC, useState} from "react";
+import Button, {EButtonVariant} from "@/shared/ui/Button";
 import {Icon, SvgIcon} from "src/defines";
-import {useAuth} from "@/providers/authProvider.tsx";
-import {Loader} from "@/components/primitives/Loader.tsx";
+import {useAuth} from "@/providers/authProvider";
+import {Loader} from "@/shared/ui/Loader";
 import {AnimatePresence, motion} from "framer-motion";
-import {popup, Tooltip} from "@/components/primitives/Popup.tsx";
-import styles from "./UserInfo.module.pcss"
-import {ESidebarState} from "@/types/uiMetadata.ts";
-import {useIsOffline} from "@/store/local.tsx";
+import styles from "./UserInfo.module.css"
+import {ESidebarState} from "@/types/uiMetadata";
+import {useIsOffline} from "@/store/local";
+import {popupDefaults} from "@/shared/ui/Popup/Popup";
+import {TooltipConditional} from "@/shared/ui/Popup/Tooltip";
 
 export const UserInfo: FC<{state: ESidebarState}> = ({ state }) => {
     const {user, signIn, signOut } = useAuth()
@@ -62,15 +63,15 @@ export const UserInfo: FC<{state: ESidebarState}> = ({ state }) => {
                                 transition={{delay: 0.05}}
                                 exit={{height: 0}}>
                         <div className="pt-2 text-nowrap">
-                            <Tooltip message={"Logout"}
-                                     wrapIf={state === ESidebarState.Partial}
-                                {...popup.side}>
+                            <TooltipConditional message={"Logout"}
+                                     preventOpen={state !== ESidebarState.Partial}
+                                {...popupDefaults.side}>
                                 <Button className="py-2 px-0 rounded-md" variant={EButtonVariant.Transparent}
                                         onClick={signOut}>
                                     <SvgIcon className={styles.btnIcon} icon={Icon.Exit} size={23}/>
                                     {state === ESidebarState.Full && <span className="font-bold text-2xs">Logout</span>}
                                 </Button>
-                            </Tooltip>
+                            </TooltipConditional>
                         </div>
                     </motion.div>
                 }

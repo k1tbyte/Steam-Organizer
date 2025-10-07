@@ -3,21 +3,21 @@ import React, {
     type Dispatch,
     type FC, forwardRef,
     type ReactElement,
-    type ReactNode,
     type SetStateAction,
     useContext,
     useRef,
     useState
 } from 'react'
-import {useSlider} from "@/hooks/useSlider.ts";
-import useMediaQuery from "@/hooks/useMediaQuery.ts";
+import {useSlider} from "@/shared/hooks/useSlider";
+import useMediaQuery from "@/shared/hooks/useMediaQuery";
 import { useLocation, useNavigate} from "react-router-dom";
 import {Gradients, Icon, SvgIcon} from "src/defines";
-import { popup, Tooltip} from "@/components/primitives/Popup.tsx";
-import {UserInfo} from "@/components/Sidebar/UserInfo.tsx";
-import styles from "./Sidebar.module.pcss"
-import {ESidebarState} from "@/types/uiMetadata.ts";
-import {uiStore, useIsOffline} from "@/store/local.tsx";
+import {UserInfo} from "@/components/Sidebar/UserInfo";
+import styles from "./Sidebar.module.css"
+import {ESidebarState} from "@/types/uiMetadata";
+import {uiStore, useIsOffline} from "@/store/local";
+import {Tooltip} from "@/shared/ui/Popup/Tooltip";
+import { popupDefaults } from "@/shared/ui/Popup/Popup";
 
 interface ISidebarItemProps {
     icon: ReactElement
@@ -73,13 +73,12 @@ const NavLink = forwardRef<HTMLDivElement, ISidebarItemProps>(({ link, icon, tex
 export const SidebarItem: FC<ISidebarItemProps> = (props) => {
     const sidebar = useContext(SidebarContext)
 
-    return (
-        <Tooltip message={props.text}
-                 wrapIf={sidebar.state === ESidebarState.Partial}
-                 {...popup.side}>
+    return sidebar.state === ESidebarState.Partial ?
+        <Tooltip message={props.text}{...popupDefaults.side}>
            <NavLink {...props}/>
         </Tooltip>
-    );
+        :
+        <NavLink {...props} />;
 }
 
 export const Sidebar: FC = () => {

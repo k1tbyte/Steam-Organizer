@@ -1,24 +1,24 @@
-import Accounts from "./pages/Accounts/Accounts.tsx";
-import {MainLayout} from "./layouts/MainLayout.tsx";
-import NotFoundPage from "./pages/NotFoundPage.tsx";
+import Accounts from "./pages/Accounts/Accounts";
+import {MainLayout} from "./layouts/MainLayout";
+import NotFoundPage from "./pages/NotFoundPage";
 import {createBrowserRouter, Navigate, RouterProvider} from 'react-router-dom'
-import Actions from "./pages/Actions.tsx";
-import SignIn from "./pages/SignIn.tsx";
-import Backups from "./pages/Backups/Backups.tsx";
+import Actions from "./pages/Actions";
+import SignIn from "./pages/SignIn";
+import Backups from "./pages/Backups/Backups";
 import {useEffect} from "react";
-import {config, loadConfig} from "./store/config.ts";
-import db from "./services/indexedDb.ts";
+import {config, loadConfig} from "./store/config";
+import db from "@/shared/services/indexedDb";
 import {Defs} from "./defines"
-import {ModalsHost} from "./components/primitives/Modal.tsx";
-import {Profile} from "@/pages/Profile/Profile.tsx";
-import {AuthProvider} from "@/providers/authProvider.tsx";
-import {toast, ToastsHost, ToastVariant} from "@/components/primitives/Toast.tsx";
-import {databaseKey, dbTimestamp, importAccounts, loadAccounts} from "@/store/accounts.ts";
-import {isAuthorized} from "@/services/gAuth.ts";
-import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups.ts";
-import {decrypt} from "@/services/cryptography.ts";
-import {flagStore} from "@/store/local.tsx";
-import Logo from "@/components/elements/Logo.tsx";
+import {ModalsHost} from "./shared/ui/Modal";
+import {Profile} from "@/pages/Profile/Profile";
+import {AuthProvider} from "@/providers/authProvider";
+import {toast, ToastsHost, ToastVariant} from "@/shared/ui/Toast";
+import {databaseKey, dbTimestamp, importAccounts, loadAccounts} from "@/store/accounts";
+import {isAuthorized} from "@/shared/services/gAuth";
+import {getLatestBackup, loadBackup, restoreBackup} from "@/store/backups";
+import {decrypt} from "@/shared/services/cryptography";
+import {flagStore} from "@/store/local";
+import Logo from "@/components/Logo";
 
 const router = createBrowserRouter([
     {

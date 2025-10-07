@@ -53,10 +53,10 @@ public sealed class WebApiController(SteamParser parser, HttpClient httpClient) 
     }
 
     [HttpGet]
-    public async Task<PlayerGames?> GetGames(GamesRequest request)
+    public async Task<PlayerGames?> GetGames([FromQuery] GamesRequest request)
     {
         var response = await parser.SetCurrency(request.Currency).GetGames(
-            request.SteamId!.Value,
+            Tools.ToSteamId64(request.SteamId!.Value),
             request.WithDetails
         ).ConfigureAwait(false);
         

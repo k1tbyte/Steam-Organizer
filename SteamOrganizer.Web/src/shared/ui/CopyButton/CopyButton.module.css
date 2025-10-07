@@ -1,0 +1,12 @@
+.copyButton {
+    @apply bg-secondary p-1 text-foreground-accent rounded-2xm shrink-0;
+}
+
+.copyButton:active {
+    @apply animate-ping;
+}
+
+.copyButton svg {
+    @apply mx-auto;
+    pointer-events: none;
+}

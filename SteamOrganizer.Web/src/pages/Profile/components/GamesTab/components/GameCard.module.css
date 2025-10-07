@@ -1,0 +1,45 @@
+.gameRow {
+    @apply bg-primary mb-1 rounded items-center w-full text-foreground-muted md:pb-0 text-xs grid;
+    height: 69px;
+    grid-template-columns: 148px  5fr 1fr 1fr;
+    grid-template-rows: auto 1fr 1fr;
+
+    @screen sm {
+        grid-template-columns: 148px  5fr 100px 140px;
+    }
+}
+
+.image {
+    width: 140px;
+    height: 53px;
+    @apply rounded-tl opacity-90;
+}
+
+.leftContainer {
+    @apply row-span-3;
+    width: 140px;
+}
+
+.price {
+    @apply w-full grad-success text-center rounded-bl text-background font-bold;
+}
+
+.name {
+    @apply font-bold text-sm text-nowrap overflow-hidden overflow-ellipsis sm:col-auto col-span-3 mt-2 mb-2 sm:mb-0 pr-2;
+}
+
+.appId {
+    @apply sm:text-center text-secondary;
+    grid-row: 2;
+    grid-column: 2;
+    @screen sm {
+        grid-column: 3;
+    }
+}
+
+.time {
+    @apply text-right sm:mr-0 mr-3 sm:text-center min-w-20;
+    grid-row: 2;
+    grid-column: 4;
+}
+

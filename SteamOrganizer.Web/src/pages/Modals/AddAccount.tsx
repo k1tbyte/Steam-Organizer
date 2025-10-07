@@ -1,18 +1,18 @@
 import React, {type FC, useRef} from "react";
-import {modal, useModalActions} from "@/components/primitives/Modal.tsx";
-import { InputValidationWrapper } from "@/components/elements/FieldWrapper.tsx";
-import {PasswordBox} from "@/components/primitives/PasswordBox.tsx";
-import Input from "@/components/primitives/Input.tsx";
-import Button, {type IButtonActions} from "@/components/primitives/Button.tsx";
+import {modal, useModalActions} from "@/shared/ui/Modal";
+import { InputValidationWrapper } from "@/components/FieldWrapper";
+import {PasswordBox} from "@/shared/ui/PasswordBox";
+import Input from "@/shared/ui/Input";
+import Button, {type IButtonActions} from "@/shared/ui/Button";
 import {Icon, SvgIcon} from "src/defines";
-import {Account} from "@/entity/account.ts";
-import {accounts, isAccountCollided, saveAccounts} from "@/store/accounts.ts";
-import {toAccountId} from "@/lib/steamIdConverter.ts";
-import {useFormValidation, validators} from "@/hooks/useFormValidation.ts";
-import {toast, ToastVariant} from "@/components/primitives/Toast.tsx";
-import {useIsOffline} from "@/store/local.tsx";
-import {config} from "@/store/config.ts";
-import {openSettings} from "@/pages/Modals/Settings.tsx";
+import {Account} from "@/entity/account";
+import {accounts, isAccountCollided, saveAccounts} from "@/store/accounts";
+import {toAccountId} from "@/shared/lib/steamIdConverter";
+import {useFormValidation, validators} from "@/shared/hooks/useFormValidation";
+import {toast, ToastVariant} from "@/shared/ui/Toast";
+import {useIsOffline} from "@/store/local";
+import {config} from "@/store/config";
+import {openSettings} from "@/pages/Modals/Settings";
 
 
 export const openAddAccount = () => {
