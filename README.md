@@ -3,7 +3,7 @@
 ![logo](./SteamOrganizer.Web/public/favicon.svg)
 
 
-  <h1>WeMod Patcher</h1>
+  <h1>Steam Organizer</h1>
 </div>
 
 <h4>A comprehensive Steam account management service with advanced features for organizing, securing, and tracking your Steam accounts.</h4>
