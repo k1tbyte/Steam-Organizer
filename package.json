@@ -1,0 +1,24 @@
+{
+  "name": "steam-organizer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "dev:pwa": "turbo run dev --filter=@steam-organizer/pwa",
+    "dev:desktop": "turbo run tauri:dev --filter=@steam-organizer/desktop",
+    "dev:extension": "turbo run dev --filter=@steam-organizer/extension",
+    "build:desktop": "turbo run tauri:build --filter=@steam-organizer/desktop",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "turbo": "latest"
+  },
+  "packageManager": "pnpm@10.17.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "esbuild"
+    ]
+  }
+}

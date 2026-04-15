@@ -1,0 +1,43 @@
+@import url("/public/fonts/Inter.css");
+@import url("/public/fonts/SourceCodePro.css");
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@import "@steam-organizer/ui/styles/theme.css";
+@source "../../../packages/ui/src";
+
+:root {
+    font-family: Inter, sans-serif;
+    --app-font-sans: Inter, sans-serif;
+    --app-font-mono: "Source Code Pro", monospace;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    @apply caret-foreground;
+}
+
+html {
+    @apply selection:bg-primary selection:text-primary-foreground;
+}
+
+html,
+body,
+#root {
+    min-height: 100svh;
+}
+
+#root {
+    max-width: 100svw;
+    max-height: 100svh;
+    @apply flex h-svh w-svw overflow-clip bg-background;
+}
+
+.os-theme-dark,
+.os-theme-light {
+    --os-size: 7px;
+}
+
+.animate-test {
+    animation: ping 1s cubic-bezier(0, 0, 0.2, 1);
+    animation-iteration-count: 1;
+}

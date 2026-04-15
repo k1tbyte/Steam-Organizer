@@ -1,0 +1,31 @@
+@reference "#app.css";
+
+.wrapper {
+    @apply w-full flex-wrap sm:flex-nowrap flex justify-center gap-2.5 absolute px-2  h-[40px] transition-all overflow-clip
+}
+
+.editButton {
+    @apply bg-primary max-w-[60px] w-full h-[40px] rounded-xl flex-center text-foreground sm:-order-2 z-20
+}
+
+.searchPanel {
+    @apply absolute right-0 top-0 flex-center h-full
+}
+
+.iconWrapper {
+    @apply bg-accent h-full w-16 rounded-r-lg rounded-l-3xl flex-center text-blue-400
+}
+
+.searchOverlay {
+    @apply bg-primary/70 h-[75px] rounded-b-xl w-full absolute top-8 sm:hidden -z-10 backdrop-blur-md transition-all
+}
+
+.separator {
+    @apply h-full bg-background;
+    width: 1px;
+}
+
+.btnsPanel {
+    @apply bg-accent rounded-xl flex px-1  z-20 text-foreground;
+    height: 40px;
+}
