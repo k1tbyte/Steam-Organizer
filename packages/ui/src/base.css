@@ -1,0 +1,497 @@
+@layer base {
+    html {
+        background: var(--bg-base);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        scrollbar-color: var(--stroke-2) transparent;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background: transparent;
+        color: var(--text-2);
+        font-size: var(--font-base);
+        font-feature-settings: var(--font-features);
+        letter-spacing: var(--track-body);
+        min-height: 100dvh;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-weight: 600;
+        letter-spacing: var(--track-title);
+        color: var(--text-1);
+        text-wrap: balance;
+    }
+
+    /* iOS zooms into inputs set below 16px. */
+    @media (pointer: coarse) {
+        input,
+        textarea,
+        select {
+            font-size: max(1em, 16px);
+        }
+    }
+
+    ::selection {
+        background: color-mix(in oklch, var(--accent) 35%, transparent);
+        color: var(--text-1);
+    }
+
+    button,
+    summary,
+    label[for],
+    [role="button"],
+    [role="tab"],
+    [role="switch"],
+    [role="radio"],
+    [role="checkbox"],
+    [role="menuitem"],
+    [role="menuitemcheckbox"],
+    [role="menuitemradio"],
+    [role="option"] {
+        cursor: pointer;
+    }
+
+    :disabled,
+    [data-disabled],
+    [aria-disabled="true"] {
+        cursor: not-allowed;
+    }
+
+    /* Element radius clips focused input carets and selection highlights. */
+    :focus-visible {
+        outline: 2px solid var(--accent-ring);
+        outline-offset: 2px;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--stroke-2);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--stroke-3);
+        background-clip: padding-box;
+        border: 2px solid transparent;
+    }
+
+    /* Pin outline color so transition-colors cannot flash focus rings. */
+    /* A default border color keeps one-sided borders visible as surface edges. */
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--stroke-1);
+        outline-color: var(--accent-ring);
+    }
+}
+
+@layer components {
+    .surface,
+    .glass {
+        /* Re-declare this so overrides cannot leak into nested panels. */
+        --surface-stroke: var(--surf-stroke);
+        position: relative;
+        background: var(--surf-bg);
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+            saturate(var(--glass-saturate));
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+        color: var(--text-1);
+    }
+
+    .glass {
+        border-radius: var(--radius);
+        box-shadow: var(--elev-1);
+    }
+
+    .surface::before,
+    .glass::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: var(--surface-stroke);
+        -webkit-mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+        mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .surface > *,
+    .glass > * {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* An outer backdrop filter is a backdrop root: an inner one cannot see the stage, only costs a pass. */
+    :is(.surface, .glass) :is(.surface, .glass) {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    .glass-hi {
+        background: var(--surf-bg-hi);
+    }
+
+    .glass-lo {
+        background: var(--surf-bg-lo);
+    }
+
+    /* Opaque surfaces do not need a backdrop filter. */
+    :root[data-surface="solid"] .surface,
+    :root[data-surface="solid"] .glass {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    .surface-opaque {
+        background:
+            linear-gradient(var(--surf-bg), var(--surf-bg)), var(--bg-base);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    .surface-opaque-hi {
+        background:
+            linear-gradient(var(--surf-bg-hi), var(--surf-bg-hi)),
+            var(--bg-base);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    /* Light glass over a dark scrim muddies to gray. */
+    :root[data-mode="light"] :is(.surface, .glass).on-scrim {
+        background:
+            linear-gradient(var(--surf-bg), var(--surf-bg)), var(--bg-base);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    /* The one uppercase role: micro-label naming the value under it. */
+    .eyebrow {
+        color: var(--text-3);
+        font-size: var(--text-2xs);
+        font-weight: 600;
+        letter-spacing: var(--track-eyebrow);
+        line-height: 1.4;
+        text-transform: uppercase;
+    }
+
+    /* Row rhythm shared by every data table; the edge cells line up with the
+       padding of the card around them. */
+    .data-table :is(th, td) {
+        padding-inline: 0.75rem;
+        vertical-align: middle;
+    }
+
+    .data-table th {
+        height: 2.25rem;
+    }
+
+    .data-table td {
+        padding-block: 0.5rem;
+        font-size: var(--text-sm);
+    }
+
+    .data-table :is(th, td):first-child {
+        padding-inline-start: 1rem;
+    }
+
+    .data-table :is(th, td):last-child {
+        padding-inline-end: 1rem;
+    }
+
+    /* Expands a link over an openable row at the cost of text selection. */
+    .link-stretch::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+    }
+
+    /* Surface children are positioned, so the stretched empty link must be last. */
+    .surface > .link-cover,
+    .glass > .link-cover {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+    }
+
+    .field {
+        background: var(--surf-bg-hi);
+        box-shadow:
+            inset 0 0 0 1px var(--stroke-2),
+            0 1px 0 color-mix(in oklch, white 6%, transparent) inset;
+        transition: box-shadow var(--dur-fast) var(--ease-out);
+    }
+
+    .field:hover {
+        box-shadow: inset 0 0 0 1px var(--stroke-3);
+    }
+
+    .field:focus-within {
+        box-shadow:
+            inset 0 0 0 1px var(--accent),
+            0 0 0 3px var(--accent-ring);
+    }
+
+    .field:focus-visible {
+        outline: none;
+    }
+
+    /* Advisory, never aria-invalid; the invalid rules below come later and win. */
+    .field[data-warning],
+    .field[data-warning]:hover {
+        box-shadow: inset 0 0 0 1px var(--warning);
+    }
+
+    .field[data-warning]:focus-within {
+        box-shadow:
+            inset 0 0 0 1px var(--warning),
+            0 0 0 3px color-mix(in oklch, var(--warning) 25%, transparent);
+    }
+
+    .field[aria-invalid="true"],
+    .field:has([aria-invalid="true"]),
+    .field[aria-invalid="true"]:hover,
+    .field:has([aria-invalid="true"]):hover {
+        box-shadow: inset 0 0 0 1px var(--danger);
+    }
+
+    .field[aria-invalid="true"]:focus-within,
+    .field:has([aria-invalid="true"]):focus-within {
+        box-shadow:
+            inset 0 0 0 1px var(--danger),
+            0 0 0 3px color-mix(in oklch, var(--danger) 25%, transparent);
+    }
+
+    /* Portaled popper content cannot match scoped selectors. */
+    .fp-float {
+        max-width: var(--reka-popper-available-width);
+        transform-origin: var(--reka-popper-transform-origin);
+    }
+
+    .fp-float[data-side="top"] {
+        --float-slide: 0 4px;
+    }
+    .fp-float[data-side="bottom"] {
+        --float-slide: 0 -4px;
+    }
+    .fp-float[data-side="left"] {
+        --float-slide: 4px 0;
+    }
+    .fp-float[data-side="right"] {
+        --float-slide: -4px 0;
+    }
+
+    .fp-float[data-state="open"],
+    .fp-float[data-state="delayed-open"],
+    .fp-float[data-state="instant-open"] {
+        animation: fp-float-in var(--dur-base) var(--ease-spring);
+    }
+
+    /* Tips are read in passing: a quick fade, no spring. */
+    .fp-tip.fp-float[data-state="open"],
+    .fp-tip.fp-float[data-state="delayed-open"],
+    .fp-tip.fp-float[data-state="instant-open"] {
+        animation: fade-in var(--dur-fast) var(--ease-out);
+    }
+
+    .fp-float[data-state="closed"] {
+        animation: fade-out var(--dur-fast) var(--ease-out);
+    }
+
+    @keyframes fp-float-in {
+        from {
+            opacity: 0;
+            scale: 0.95;
+            translate: var(--float-slide, 0 4px);
+        }
+    }
+
+    /* Menus fit the space Reka measured. The inner `.fp-scroll` scrolls, never the
+       surface itself: its hairline is an absolute pseudo-element. */
+    .fp-menu {
+        display: flex;
+        flex-direction: column;
+        max-height: var(--reka-popper-available-height);
+        overflow: hidden;
+        box-shadow: 0 12px 32px -12px
+            color-mix(in oklch, black 50%, transparent);
+    }
+
+    /* A flex column, so bounded children such as FpPanel still shrink to fit. */
+    .fp-scroll {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    /* Short text tips: a readable measure that never outgrows the viewport. */
+    .fp-tip {
+        max-width: min(20rem, var(--reka-popper-available-width));
+    }
+
+    .bg-stage {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: var(--bg-base);
+        overflow: hidden;
+    }
+
+    .bg-stage::after {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        background-size: 240px 240px;
+        /* Blending this viewport layer would force every backdrop filter to flatten it. */
+        opacity: 0.06;
+    }
+
+    /* White grain is invisible on the light page, so skip the layer. */
+    :root[data-mode="light"] .bg-stage::after {
+        content: none;
+    }
+
+    .bg-stage::before {
+        content: "";
+        position: absolute;
+        inset: -20%;
+        background-repeat: no-repeat;
+    }
+
+    :root[data-bg="noisy"] .bg-stage::before,
+    :root:not([data-bg]) .bg-stage::before {
+        background-image:
+            radial-gradient(
+                circle,
+                color-mix(in oklch, var(--text-1) 8%, transparent) 1px,
+                transparent 1.5px
+            ),
+            radial-gradient(
+                ellipse 60% 50% at 20% 10%,
+                color-mix(in oklch, var(--accent) 28%, transparent),
+                transparent 70%
+            ),
+            radial-gradient(
+                ellipse 55% 45% at 85% 80%,
+                color-mix(in oklch, var(--accent) 22%, transparent),
+                transparent 70%
+            ),
+            radial-gradient(
+                ellipse 40% 40% at 60% 50%,
+                color-mix(in oklch, var(--accent) 12%, transparent),
+                transparent 70%
+            );
+        background-size:
+            22px 22px,
+            auto,
+            auto,
+            auto;
+        background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+    }
+
+    :root[data-bg="clean"] .bg-stage::before {
+        background-image:
+            radial-gradient(
+                circle,
+                color-mix(in oklch, var(--text-1) 8%, transparent) 1px,
+                transparent 1.5px
+            ),
+            radial-gradient(
+                ellipse 80% 60% at 50% 0%,
+                color-mix(in oklch, var(--accent) 8%, transparent),
+                transparent 60%
+            );
+        background-size:
+            22px 22px,
+            auto;
+        background-repeat: repeat, no-repeat;
+    }
+}
+
+/* Reduced motion: every state change lands at once. Zero specificity lets loaders opt
+   back into a gentle loop with `motion-reduce:animate-pulse!`. Keep both blocks identical. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-delay: 0s !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-delay: 0s !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+:where([data-reduce-motion="true"]),
+:where([data-reduce-motion="true"]) *,
+:where([data-reduce-motion="true"]) *::before,
+:where([data-reduce-motion="true"]) *::after {
+    animation-delay: 0s !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-delay: 0s !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}
+
+:root[data-theme-swap] *,
+:root[data-theme-swap] *::before,
+:root[data-theme-swap] *::after {
+    transition: none !important;
+}
+
+/* The reveal owns the clip path, so disable the browser cross-fade. */
+:root:active-view-transition-type(theme)::view-transition-old(root),
+:root:active-view-transition-type(theme)::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+:root:active-view-transition-type(theme)::view-transition-old(root) {
+    z-index: 1;
+}
+:root:active-view-transition-type(theme)::view-transition-new(root) {
+    z-index: 2;
+}
+
+/* Keep the resize cursor and suppress selection beyond the captured grip. */
+:root[data-resizing="col"] * {
+    cursor: col-resize !important;
+    user-select: none !important;
+}
+
+@utility surface-stroke-none {
+    --surface-stroke: transparent;
+}

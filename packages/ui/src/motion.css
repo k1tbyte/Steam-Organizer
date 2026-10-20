@@ -1,0 +1,102 @@
+/* Motion: easing and duration tokens, the reduced-motion variants and the keyframes components share. */
+/* Imported by theme.css, so the package export and styles.css keep one entry. */
+
+/* Static: component styles and scripts (easingToken) read these without a utility. */
+@theme static {
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-anticipate: cubic-bezier(0.36, 0, 0.66, -0.56);
+}
+
+/* Durations by role (`duration-*`, `delay-*`); plain literals so scripts can read them (motion.ts). */
+@theme static {
+    --dur-press: 90ms;
+    --dur-fast: 120ms;
+    --dur-base: 220ms;
+    --dur-slow: 380ms;
+    --dur-reveal: 600ms;
+    --dur-cycle: 1200ms;
+    --dur-stagger: 50ms;
+}
+
+@utility duration-* {
+    --tw-duration: --value(--dur-*);
+    transition-duration: --value(--dur-*);
+}
+
+@utility delay-* {
+    transition-delay: --value(--dur-*);
+}
+
+/* Reduced motion is the OS setting or the in-app toggle (`data-reduce-motion` on <html>). */
+@custom-variant motion-reduce {
+    @media (prefers-reduced-motion: reduce) {
+        @slot;
+    }
+
+    :where([data-reduce-motion="true"]) & {
+        @slot;
+    }
+}
+
+@custom-variant motion-safe {
+    @media (prefers-reduced-motion: no-preference) {
+        :where(:root:not([data-reduce-motion="true"])) & {
+            @slot;
+        }
+    }
+}
+
+@theme {
+    --animate-overlay-in: fade-in var(--dur-base) var(--ease-out);
+    --animate-overlay-out: fade-out var(--dur-fast) var(--ease-out);
+    /* visibility holds descendants without the isolation caused by opacity or transform. */
+    --animate-presence-hold: presence-hold var(--dur-fast) linear;
+    --animate-spin: spin var(--dur-cycle) linear infinite;
+    --animate-pulse: pulse calc(var(--dur-cycle) * 2) var(--ease-in-out)
+        infinite;
+    /* Feedback: something arrives, a value changes, content settles into place. */
+    --animate-pop: pop var(--dur-slow) var(--ease-spring);
+    --animate-bump: bump var(--dur-slow) var(--ease-spring);
+    --animate-settle: settle var(--dur-base) var(--ease-out);
+
+    @keyframes pop {
+        from {
+            opacity: 0;
+            scale: 0.5;
+        }
+    }
+
+    @keyframes bump {
+        from {
+            scale: 1.25;
+        }
+    }
+
+    /* Transform only: opacity on an ancestor would switch off its glass. */
+    @keyframes settle {
+        from {
+            translate: 0 0.375rem;
+        }
+    }
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+    }
+
+    @keyframes fade-out {
+        to {
+            opacity: 0;
+        }
+    }
+
+    @keyframes presence-hold {
+        from {
+            visibility: visible;
+        }
+    }
+}

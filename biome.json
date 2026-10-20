@@ -1,0 +1,103 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "includes": ["**", "!!**/*.svg"]
+    },
+    "html": {
+        "experimentalFullSupportEnabled": true
+    },
+    "css": {
+        "parser": {
+            "tailwindDirectives": true
+        }
+    },
+    "formatter": {
+        "indentStyle": "space",
+        "indentWidth": 4
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "semicolons": "asNeeded"
+        }
+    },
+    "linter": {
+        "rules": {
+            "preset": "recommended"
+        }
+    },
+    "assist": {
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
+    },
+    "overrides": [
+        {
+            "includes": [
+                "packages/app/src/**",
+                "!packages/app/src/core/storage.ts"
+            ],
+            "linter": {
+                "rules": {
+                    "style": {
+                        "noRestrictedGlobals": {
+                            "level": "error",
+                            "options": {
+                                "deniedGlobals": {
+                                    "localStorage": "Persist through core/storage - one module owns client storage.",
+                                    "sessionStorage": "Persist through core/storage - one module owns client storage."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "includes": [
+                "packages/app/src/**",
+                "!packages/app/src/core/reportError.ts"
+            ],
+            "linter": {
+                "rules": {
+                    "suspicious": {
+                        "noConsole": "error"
+                    }
+                }
+            }
+        },
+        {
+            "includes": ["packages/ui/src/components/**/*.vue"],
+            "linter": {
+                "rules": {
+                    "style": {
+                        "useVueMultiWordComponentNames": "off"
+                    }
+                }
+            }
+        },
+        {
+            "includes": [
+                "packages/ui/src/base.css",
+                "packages/ui/src/components/fields/ErrorTip.vue"
+            ],
+            "linter": {
+                "rules": {
+                    "complexity": {
+                        "noImportantStyles": "off"
+                    },
+                    "style": {
+                        "noDescendingSpecificity": "off"
+                    }
+                }
+            }
+        }
+    ]
+}

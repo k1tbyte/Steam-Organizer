@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@import "@so/ui/styles.css";
+
+/* Required: Tailwind cannot scan workspace packages without it. */
+@source ".";

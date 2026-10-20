@@ -1,0 +1,30 @@
+{
+    "name": "@so/ui",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts",
+        "./accents": "./src/accents.ts",
+        "./theme-reveal": "./src/theme-reveal.ts",
+        "./useTimer": "./src/composables/useTimer.ts",
+        "./styles.css": "./src/styles.css",
+        "./theme.css": "./src/theme.css"
+    },
+    "scripts": {
+        "typecheck": "vue-tsc --noEmit"
+    },
+    "dependencies": {
+        "@iconify-json/lucide": "^1.2.147",
+        "@iconify/tailwind4": "^1.2.3",
+        "reka-ui": "^2.11.0"
+    },
+    "peerDependencies": {
+        "vue": "^3.5.0"
+    },
+    "devDependencies": {
+        "typescript": "~6.0.3",
+        "vite": "^8.3.4",
+        "vue": "^3.5.44",
+        "vue-tsc": "^3.3.13"
+    }
+}

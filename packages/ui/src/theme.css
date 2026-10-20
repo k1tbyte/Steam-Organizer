@@ -1,0 +1,427 @@
+@import "./motion.css";
+
+/* Required: Tailwind cannot scan this package without it. */
+@source "./components";
+
+@plugin "@iconify/tailwind4";
+
+/* Registered so scripts read the safe area as resolved pixels. */
+@property --safe-top {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+}
+
+@property --safe-right {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+}
+
+@property --safe-bottom {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+}
+
+@property --safe-left {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+}
+
+:root {
+    --accent: #7c86f8;
+    --accent-hover: color-mix(in oklch, var(--accent), white 12%);
+    --accent-active: color-mix(in oklch, var(--accent), black 8%);
+    --accent-soft: color-mix(in oklch, var(--accent) 22%, transparent);
+    --accent-faint: color-mix(in oklch, var(--accent) 10%, transparent);
+    --accent-ring: color-mix(in oklch, var(--accent) 45%, transparent);
+    --accent-glow: color-mix(in oklch, var(--accent) 35%, transparent);
+    --glow: 0 2px 8px -2px var(--accent-glow);
+    /* Threshold 0.6: WCAG break-even between black and white text sits near
+     L 0.56-0.6, so both sides stay >=4.2:1 worst-case. */
+    --accent-fg: oklch(from var(--accent) clamp(0, (0.6 - l) * 1000, 1) 0 h);
+
+    --success: oklch(0.74 0.16 152);
+    --warning: oklch(0.82 0.16 75);
+    --danger: oklch(0.66 0.21 25);
+    --info: oklch(0.74 0.14 235);
+    --success-soft: color-mix(in oklch, var(--success) 18%, transparent);
+    --warning-soft: color-mix(in oklch, var(--warning) 18%, transparent);
+    --danger-soft: color-mix(in oklch, var(--danger) 18%, transparent);
+    --info-soft: color-mix(in oklch, var(--info) 18%, transparent);
+    --success-fg: oklch(from var(--success) clamp(0, (0.6 - l) * 1000, 1) 0 h);
+    --warning-fg: oklch(from var(--warning) clamp(0, (0.6 - l) * 1000, 1) 0 h);
+    --danger-fg: oklch(from var(--danger) clamp(0, (0.6 - l) * 1000, 1) 0 h);
+    --info-fg: oklch(from var(--info) clamp(0, (0.6 - l) * 1000, 1) 0 h);
+
+    --hover-bg: color-mix(in oklch, var(--text-1) 8%, transparent);
+    --hover-bg-hi: color-mix(in oklch, var(--text-1) 13%, transparent);
+
+    --glass-blur: 28px;
+    --glass-saturate: 160%;
+
+    /* Video and thumbnails stay dark in every mode, and so does what sits on them. */
+    --media: black;
+    --on-media: white;
+    --on-media-2: color-mix(in oklch, white 80%, transparent);
+    --on-media-3: color-mix(in oklch, white 55%, transparent);
+    /* The scrim has no blur, so its tint carries the separation alone. */
+    --scrim: color-mix(in oklch, var(--media) 40%, transparent);
+    --scrim-strong: color-mix(in oklch, var(--media) 70%, transparent);
+
+    --radius-base: 16px;
+    --space-unit: 4px;
+    --font-base: 15px;
+
+    --track-body: -0.01em;
+    --track-title: -0.022em;
+    --track-display: -0.025em;
+    --track-eyebrow: 0.16em;
+
+    --font-features: "cv11", "ss01", "ss03";
+
+    /* Device safe area; non-zero only under viewport-fit=cover on notched screens. */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* Phones are read up close: the whole type scale lands on iOS steps (sm 14.5, base 17). */
+:root {
+    @variant max-lg {
+        --font-base: 17px;
+    }
+}
+
+:root,
+:root[data-mode="dark"] {
+    color-scheme: dark;
+
+    --bg-base: oklch(from var(--accent) 0.12 min(calc(c * 0.3), 0.05) h);
+    --bg-elev: oklch(from var(--accent) 0.16 min(calc(c * 0.3), 0.05) h);
+
+    --surf-bg: color-mix(in oklch, white 6%, transparent);
+    --surf-bg-hi: color-mix(in oklch, white 10%, transparent);
+    --surf-bg-lo: color-mix(in oklch, white 3%, transparent);
+
+    --surf-stroke: linear-gradient(
+        135deg,
+        color-mix(in oklch, white 13%, transparent) 0%,
+        color-mix(in oklch, white 3%, transparent) 38%,
+        color-mix(in oklch, white 1.5%, transparent) 62%,
+        color-mix(in oklch, white 8%, transparent) 100%
+    );
+
+    --text-1: oklch(from var(--accent) 0.97 0.005 h);
+    --text-2: color-mix(in oklch, white 72%, transparent);
+    --text-3: color-mix(in oklch, white 50%, transparent);
+    --text-faint: color-mix(in oklch, white 32%, transparent);
+
+    --stroke-1: color-mix(in oklch, white 8%, transparent);
+    --stroke-2: color-mix(in oklch, white 14%, transparent);
+    --stroke-3: color-mix(in oklch, white 22%, transparent);
+
+    --elev-1:
+        0 1px 0 color-mix(in oklch, white 8%, transparent) inset,
+        0 8px 24px -8px rgb(0 0 0 / 0.4);
+    --elev-2:
+        0 1px 0 color-mix(in oklch, white 10%, transparent) inset,
+        0 16px 40px -12px rgb(0 0 0 / 0.5);
+}
+
+:root[data-mode="light"] {
+    color-scheme: light;
+
+    --bg-base: oklch(from var(--accent) 0.97 calc(c * 0.2) h);
+    --bg-elev: oklch(from var(--accent) 0.94 calc(c * 0.2) h);
+
+    --surf-bg: color-mix(in oklch, white 55%, transparent);
+    --surf-bg-hi: color-mix(in oklch, white 75%, transparent);
+    --surf-bg-lo: color-mix(in oklch, white 35%, transparent);
+
+    --surf-stroke: linear-gradient(
+        135deg,
+        color-mix(in oklch, white 70%, transparent) 0%,
+        color-mix(in oklch, white 38%, transparent) 38%,
+        color-mix(in oklch, black 3%, transparent) 62%,
+        color-mix(in oklch, black 5%, transparent) 100%
+    );
+
+    --success: oklch(0.62 0.17 152);
+    --warning: oklch(0.72 0.16 70);
+    --danger: oklch(0.56 0.23 25);
+    --info: oklch(0.58 0.19 250);
+
+    --text-1: oklch(from var(--accent) 0.18 min(calc(c * 0.4), 0.03) h);
+    --text-2: color-mix(in oklch, black 68%, transparent);
+    --text-3: color-mix(in oklch, black 50%, transparent);
+    --text-faint: color-mix(in oklch, black 32%, transparent);
+
+    --stroke-1: color-mix(in oklch, black 8%, transparent);
+    --stroke-2: color-mix(in oklch, black 14%, transparent);
+    --stroke-3: color-mix(in oklch, black 22%, transparent);
+
+    --elev-1:
+        0 1px 0 rgb(255 255 255 / 0.5) inset, 0 6px 20px -6px rgb(0 0 0 / 0.12);
+    --elev-2:
+        0 1px 0 rgb(255 255 255 / 0.6) inset,
+        0 18px 40px -10px rgb(0 0 0 / 0.16);
+}
+
+:root[data-accent="flat"] {
+    --bg-base: oklch(0.11 0 0);
+    --bg-elev: oklch(0.15 0 0);
+    --select-bg: var(--accent);
+    --select-fg: var(--accent-fg);
+}
+
+:root[data-mode="light"][data-accent="flat"] {
+    --bg-base: oklch(0.99 0 0);
+    --bg-elev: oklch(0.96 0 0);
+}
+
+:root,
+:root[data-surface="glass"] {
+    --surf-style: glass;
+}
+
+:root[data-surface="solid"] {
+    --surf-style: solid;
+    --surf-bg: oklch(from var(--bg-base) calc(l + 0.05) c h);
+    --surf-bg-hi: oklch(from var(--bg-base) calc(l + 0.08) c h);
+    --surf-bg-lo: oklch(from var(--bg-base) calc(l + 0.02) c h);
+    --surf-stroke: linear-gradient(var(--stroke-1), var(--stroke-1));
+    --glass-blur: 0px;
+}
+
+:root[data-surface="subtle"] {
+    --surf-style: subtle;
+    --surf-bg: color-mix(in oklch, currentColor 3%, transparent);
+    --surf-bg-hi: color-mix(in oklch, currentColor 5%, transparent);
+    --surf-bg-lo: color-mix(in oklch, currentColor 1%, transparent);
+    --surf-stroke: linear-gradient(var(--stroke-1), var(--stroke-1));
+    --glass-blur: 6px;
+}
+
+@theme {
+    --color-*: initial;
+}
+
+@theme inline {
+    --color-accent: var(--accent);
+    --color-accent-hover: var(--accent-hover);
+    --color-accent-active: var(--accent-active);
+    --color-accent-soft: var(--accent-soft);
+    --color-accent-faint: var(--accent-faint);
+    --color-accent-ring: var(--accent-ring);
+    --color-accent-glow: var(--accent-glow);
+    --color-accent-fg: var(--accent-fg);
+
+    --color-success: var(--success);
+    --color-success-soft: var(--success-soft);
+    --color-success-fg: var(--success-fg);
+    --color-warning: var(--warning);
+    --color-warning-soft: var(--warning-soft);
+    --color-warning-fg: var(--warning-fg);
+    --color-danger: var(--danger);
+    --color-danger-soft: var(--danger-soft);
+    --color-danger-fg: var(--danger-fg);
+    --color-info: var(--info);
+    --color-info-soft: var(--info-soft);
+    --color-info-fg: var(--info-fg);
+
+    --color-canvas: var(--bg-base);
+    --color-canvas-elev: var(--bg-elev);
+
+    --color-surface: var(--surf-bg);
+    --color-surface-hi: var(--surf-bg-hi);
+    --color-surface-lo: var(--surf-bg-lo);
+
+    --color-hover: var(--hover-bg);
+    --color-hover-hi: var(--hover-bg-hi);
+
+    --color-fg-1: var(--text-1);
+    --color-fg-2: var(--text-2);
+    --color-fg-3: var(--text-3);
+    --color-fg-faint: var(--text-faint);
+
+    --color-stroke-1: var(--stroke-1);
+    --color-stroke-2: var(--stroke-2);
+    --color-stroke-3: var(--stroke-3);
+
+    --color-media: var(--media);
+    --color-on-media: var(--on-media);
+    --color-on-media-2: var(--on-media-2);
+    --color-on-media-3: var(--on-media-3);
+    --color-scrim: var(--scrim);
+    --color-scrim-strong: var(--scrim-strong);
+}
+
+@theme {
+    --radius-*: initial;
+    --text-*: initial;
+    --tracking-*: initial;
+    --shadow-*: initial;
+}
+
+@theme inline {
+    --font-sans:
+        "Inter Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+
+    --spacing: var(--space-unit);
+
+    --spacing-gutter: clamp(
+        calc(var(--space-unit) * 4),
+        3vi,
+        calc(var(--space-unit) * 12)
+    );
+    --spacing-section: clamp(
+        calc(var(--space-unit) * 8),
+        5vi,
+        calc(var(--space-unit) * 24)
+    );
+
+    --radius: calc(var(--radius-base) * 0.5);
+    --radius-xs: calc(var(--radius-base) * 0.25);
+    --radius-sm: calc(var(--radius-base) * 0.5);
+    --radius-md: var(--radius-base);
+    --radius-lg: calc(var(--radius-base) * 1.5);
+    --radius-xl: calc(var(--radius-base) * 2);
+    --radius-2xl: calc(var(--radius-base) * 2.5);
+    --radius-3xl: calc(var(--radius-base) * 3);
+
+    --text-3xs: calc(var(--font-base) * 0.55);
+    --text-3xs--line-height: 1.3;
+    --text-2xs: calc(var(--font-base) * 0.65);
+    --text-2xs--line-height: 1.4;
+    --text-xs: calc(var(--font-base) * 0.75);
+    --text-xs--line-height: 1.4;
+    --text-sm: calc(var(--font-base) * 0.85);
+    --text-sm--line-height: 1.45;
+    --text-base: var(--font-base);
+    --text-base--line-height: 1.55;
+    --text-lg: calc(var(--font-base) * 1.125);
+    --text-lg--line-height: 1.5;
+    --text-xl: calc(var(--font-base) * 1.375);
+    --text-xl--line-height: 1.35;
+    --text-xl--letter-spacing: var(--track-title);
+    --text-2xl: calc(var(--font-base) * 1.75);
+    --text-2xl--line-height: 1.2;
+    --text-2xl--letter-spacing: var(--track-title);
+    --text-3xl: calc(var(--font-base) * 2.25);
+    --text-3xl--line-height: 1.1;
+    --text-3xl--letter-spacing: var(--track-display);
+    --text-4xl: calc(var(--font-base) * 3);
+    --text-4xl--line-height: 1.05;
+    --text-4xl--letter-spacing: var(--track-display);
+
+    --tracking-body: var(--track-body);
+    --tracking-title: var(--track-title);
+    --tracking-display: var(--track-display);
+    --tracking-eyebrow: var(--track-eyebrow);
+
+    --shadow-1: var(--elev-1);
+    --shadow-2: var(--elev-2);
+    --shadow-glow: var(--glow);
+}
+
+/* `lg:` starts the desktop layout. Static: useDesktopLayout reads it. */
+@theme static {
+    --breakpoint-lg: 64rem;
+}
+
+/* Global stacking layers (`layer-*`). Floats clear any modal stack; local stacking stays below 30.
+   Static: Modal and captcha also read them inline. */
+@theme static {
+    --layer-chrome: 30;
+    --layer-dock: 40;
+    --layer-overlay: 50;
+    --layer-float: 80;
+    --layer-toast: 90;
+}
+
+@utility layer-* {
+    z-index: --value(--layer-*);
+}
+
+/* Safe-area padding, named after Tailwind's p / px / py / pt / pr / pb / pl. */
+@utility safe-p {
+    padding: var(--safe-top) var(--safe-right) var(--safe-bottom)
+        var(--safe-left);
+}
+
+@utility safe-px {
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+}
+
+@utility safe-py {
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+}
+
+@utility safe-pt {
+    padding-top: var(--safe-top);
+}
+
+@utility safe-pr {
+    padding-right: var(--safe-right);
+}
+
+@utility safe-pb {
+    padding-bottom: var(--safe-bottom);
+}
+
+@utility safe-pl {
+    padding-left: var(--safe-left);
+}
+
+/* Touch: compact controls get an invisible 44px hit area; rows grow to 44px. */
+@utility touch-target {
+    @media (pointer: coarse) {
+        :where(&) {
+            position: relative;
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: max(100%, 2.75rem);
+            height: max(100%, 2.75rem);
+            translate: -50% -50%;
+        }
+    }
+}
+
+@utility touch-row {
+    @media (pointer: coarse) {
+        min-height: 2.75rem;
+    }
+}
+
+/* Touch heights per control size, shared by buttons, fields and segmented tracks so a row lines up. */
+@theme static {
+    --touch-control-sm: 2.25rem;
+    --touch-control-md: 2.75rem;
+    --touch-control-lg: 3rem;
+}
+
+@utility touch-control-* {
+    @media (pointer: coarse) {
+        min-height: --value(--touch-control-*);
+    }
+}
+
+/* `auto-grid-80`: as many columns as fit, none narrower than 80 spacing steps or wider than the box. */
+@utility auto-grid-* {
+    grid-template-columns: repeat(
+            auto-fill,
+            minmax(min(100%, calc(var(--spacing) * --value(integer))), 1fr)
+        );
+}

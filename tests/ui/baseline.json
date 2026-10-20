@@ -1,0 +1,22 @@
+{
+    "raw-control": {},
+    "raw-text": {},
+    "hover-only-reveal": {},
+    "layer-literal": {},
+    "token-class": {},
+    "motion-literal": {},
+    "reduced-motion-source": {},
+    "color-literal": {
+        "packages/ui/src/components/buttons/Button.vue": 5,
+        "packages/ui/src/components/feedback/Toast/Toast.vue": 1,
+        "packages/ui/src/components/fields/Slider.vue": 1,
+        "packages/ui/src/components/fields/choice/Switch.vue": 1,
+        "packages/ui/src/components/fields/choice/ToggleGroup.vue": 2,
+        "packages/ui/src/components/display/navigation/Tabs.vue": 2,
+        "packages/ui/src/components/overlays/Drawer.vue": 1
+    },
+    "radius-off-scale": {},
+    "text-off-scale": {},
+    "crowded-folder": {},
+    "route-query-owner": {}
+}

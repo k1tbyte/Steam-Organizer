@@ -1,202 +1,247 @@
-# Steam Organizer — Architecture & Roadmap (v2)
+# Steam Organizer - Architecture & Roadmap (v3)
 
-## 1. Motivation: Why We're Rewriting
+## 1. Principles
 
-The original application relied on a **C# .NET backend** that acted as a CORS proxy between the browser and Steam's API. While functional, this architecture fundamentally undermines user trust — routing Steam API keys, SteamIDs, and session data through any third-party server is a dealbreaker for security-conscious users managing accounts worth thousands of dollars.
-
-**Decision**: The backend has been **permanently removed**. All Steam API communication now happens exclusively from environments that natively bypass CORS:
-- Native desktop/mobile binaries (Tauri's Rust HTTP client)
-- Browser extensions (manifest-granted host permissions)
-
-The web PWA degrades to a **read-only viewer** when neither of these environments is available.
+- **No backend.** Steam is called only from CORS-free environments: browser extension (`host_permissions`) and desktop (Tauri native HTTP).
+- **Web PWA is a read-only viewer**: Drive backups, credentials after unlock, field editing. No Steam API.
+- **Full rewrite** React → Vue 3. Old vault/backup format is not supported.
+- One Vue app, thin shells per platform. Shells never leak into each other's bundles.
+- Feature list: [features.md](features.md).
 
 ---
 
-## 2. Monorepo Structure
+## 2. Stack
 
-The project uses **pnpm workspaces** + **Turborepo** for task orchestration and caching.
-
-```
-/Steam-Organizer
-├── apps/
-│   ├── pwa/              # React + Vite (core UI, also serves as Tauri frontend)
-│   ├── desktop/          # Tauri v2 shell (src-tauri/ with Rust backend)
-│   └── extension/        # Browser extension (Vite + CRXJS)
-├── packages/
-│   ├── core/             # Pure TS: encryption, models, Steam API types, sync logic
-│   └── ui/               # Shared component library (TailwindCSS + Shadcn)
-├── pnpm-workspace.yaml
-├── turbo.json
-└── package.json          # Root scripts (dev:pwa, dev:desktop, dev:extension, etc.)
-```
-
-### Key commands (run from root):
-| Command | What it does |
+| Area | Choice |
 |---|---|
-| `pnpm run dev:pwa` | Starts Vite dev server (browser PWA) |
-| `pnpm run dev:desktop` | Starts Tauri dev (launches native window + Vite) |
-| `pnpm run dev:extension` | Starts extension dev with HMR via CRXJS |
-| `pnpm run build` | Parallel production build of all packages |
-| `pnpm run build:desktop` | Builds .exe / .dmg / .AppImage |
+| UI | Vue 3 + TypeScript + Vite |
+| Components | UI kit ported from author's other project (Vue + **Reka UI** + Tailwind v4), design system updated per new mockups |
+| State / routing / i18n | Pinia, vue-router, vue-i18n |
+| Virtual list | Port own VirtualScroller (grid + stack layouts) |
+| Extension | **WXT** + `@wxt-dev/module-vue` |
+| Desktop / mobile shell | Tauri v2 |
+| Monorepo | pnpm workspaces + Turborepo |
 
 ---
 
-## 3. Application Targets & Their Capabilities
+## 3. Monorepo Layout
 
-### 3.1 PWA (Web)
-- **Purpose**: Quick access read-only dashboard. User visits the site from any device, authenticates via Google, pulls encrypted backup from Drive, views account info.
-- **Can do**: View accounts, credentials (after master password unlock), backups, basic field editing (passwords, notes).
-- **Cannot do**: Fetch/update Steam profile data (blocked by CORS), add new accounts via Steam API.
-- **Rationale**: Zero cost to maintain. Same codebase as desktop, just deployed as static files. Provides value even without extension/desktop installed.
-
-### 3.2 Browser Extension
-- **Purpose**: The **primary browser-based client**. Full functionality.
-- **UI**: Opens the **full PWA interface** inside `chrome-extension://<id>/index.html` as a dedicated tab. Also has a compact Popup for quick access.
-- **Can do**: Everything the PWA can, PLUS:
-  - Direct Steam API requests (CORS bypassed via manifest `host_permissions`)
-  - Autofill Steam login forms via Content Scripts on `steamcommunity.com` / `store.steampowered.com`
-  - Connect to Desktop via local WebSocket for real-time telemetry
-- **Engine support target**: Blink (Chrome/Edge), Gecko (Firefox), WebKit (Safari) — Manifest V3
-- **Build tool**: Vite + CRXJS Vite Plugin (same bundler as PWA, shared React components from `packages/ui`)
-
-### 3.3 Desktop (Tauri v2)
-- **Purpose**: The **power user client**. Full functionality + advanced features.
-- **UI**: Renders `apps/pwa/dist` inside a native WebView2 window. Supports custom window chrome (frameless mode with `data-tauri-drag-region`).
-- **Can do**: Everything the Extension can, PLUS:
-  - Native HTTP client (`@tauri-apps/plugin-http`) — zero CORS, zero browser dependency
-  - Local WebSocket server for Extension/bot telemetry
-  - Headless bot operations (SteamKit-like login, farming, trade confirmations)
-  - System tray residence (background operation without visible window)
-  - Future: Remote control capabilities
-- **Platforms**: Windows, macOS, Linux (immediate), Android/iOS (Tauri v2 mobile support, future)
-
-### 3.4 Mobile (Tauri v2 Mobile)
-- **Purpose**: Same as Desktop but on phone/tablet.
-- **Status**: Architecture-ready. Tauri v2 supports `tauri android init` / `tauri ios init` out of the box. Same PWA frontend, compiled to native APK/IPA.
-- **Priority**: Low. Parked until desktop + extension are stable.
-
----
-
-## 4. Data Architecture & Synchronization
-
-### 4.1 Encryption Model
-- All sensitive data encrypted with **AES-256** using a user-provided master password.
-- Master password is **never stored or transmitted** anywhere.
-- Encrypted blobs are opaque — even with access to Google Drive backups, data is unreadable without the master password.
-
-### 4.2 Local Storage
-- Each client (PWA, Extension, Desktop) maintains its own local copy of the encrypted database.
-- **PWA**: IndexedDB / localStorage
-- **Extension**: `chrome.storage.local`
-- **Desktop/Mobile**: Filesystem via Tauri APIs
-
-### 4.3 Cold Sync (Google Drive)
-Google Drive serves as the **global Source of Truth** for persistent account state.
-
-**Flow**:
-1. Client modifies data (add account, update password) → local DB updated
-2. Local DB encrypted → pushed to Google Drive with new timestamp
-3. Other clients periodically check Google Drive (on app focus, manual sync, or configurable interval)
-4. If `cloud.timestamp > local.timestamp` → download, decrypt, merge/overwrite
-5. Conflict resolution: Last-write-wins based on timestamp (simple, sufficient for single-user app)
-
-### 4.4 Hot Sync (Local WebSocket — Desktop ↔ Extension)
-For real-time scenarios where Google Drive latency is unacceptable.
-
-**Architecture**:
-- Desktop (Tauri/Rust) spawns a local WebSocket server on a fixed port (e.g., `ws://127.0.0.1:42069`)
-- Server runs in a background Rust thread (via `tokio`), independent of whether the UI window is visible
-- Extension's Background Script maintains a persistent connection, with reconnection polling
-
-**Use cases**:
-| Scenario | Flow |
-|---|---|
-| Bot status monitoring | Desktop broadcasts bot state changes → Extension shows live badges/dashboard |
-| Remote command (start/stop farm) | Extension sends RPC command via WS → Desktop executes |
-| Quick credential sharing | Extension requests specific account data → Desktop responds instantly (no Drive roundtrip) |
-| Multi-account login orchestration | Desktop manages parallel Steam sessions → streams progress to Extension |
-
----
-
-## 5. Environment-Based Code Splitting
-
-To ensure zero code leakage between targets (e.g., Tauri APIs should never appear in PWA web bundles):
-
-### Vite Environment Files
-- `apps/pwa/.env` — default (web PWA mode, no special flags)
-- `apps/pwa/.env.tauri` — loaded when Tauri runs Vite with `--mode tauri`, sets `VITE_IS_TAURI=1`
-
-### Usage in code
-```tsx
-// Compile-time constant — Vite replaces with literal 'true'/'false' at build time
-// Dead code is then tree-shaken away completely
-const isTauri = import.meta.env.VITE_IS_TAURI === '1';
+```
+apps/
+  web/         PWA shell: Vite + service worker, read-only
+  extension/   WXT: app page, popup, background, autofill content script
+  desktop/     Tauri v2 shell (src-tauri/) - parked
+  obsidian/    Obsidian plugin shell - later
+packages/
+  core/        pure TS: crypto, models, Steam client, Drive sync, storage
+  ui/          @so/ui: Fp* kit (Reka + Tailwind v4), tokens, theme engine
+  app/         @so/app: features, core infra, router, i18n
 ```
 
-### Tauri config (`tauri.conf.json`)
-```json
-{
-  "beforeDevCommand": "pnpm --filter=@steam-organizer/pwa run dev --mode tauri",
-  "beforeBuildCommand": "pnpm --filter=@steam-organizer/pwa run build --mode tauri"
+- Dependencies point down: `apps/*` → `app` → `core`. No cycles.
+- `core` has no Vue and no platform imports.
+- `app` doesn't know its shell - it receives a `Platform` (see 4).
+- The legacy React app lives in `artifacts/legacy` (local only) as reference.
+
+---
+
+## 4. Platform Abstraction
+
+Each shell has its own entry and passes its adapter. Only that adapter is imported → other shells' code never reaches the bundle (no `VITE_IS_TAURI` flags).
+
+```ts
+interface Platform {
+  fetch: typeof fetch | null        // null = Steam API unavailable (web)
+  getGoogleToken(): Promise<string> // OAuth differs per shell
 }
 ```
 
-This ensures that when building for web deployment, **all Tauri-specific imports and components are completely eliminated** from the bundle by Vite's tree-shaking.
+| Shell | `fetch` | Google OAuth |
+|---|---|---|
+| web | `null` | Google Identity Services token client |
+| extension | global `fetch` (host_permissions) | `identity.launchWebAuthFlow` |
+| desktop | `@tauri-apps/plugin-http` | system browser + loopback redirect (PKCE) |
+
+- Storage: IndexedDB in every shell (extension pages, WebView2/WKWebView). Extension requests `unlimitedStorage`.
+- Drive via plain REST + token. No `gapi` - MV3 forbids remotely hosted code.
 
 ---
 
-## 6. Shared Package Architecture
+## 5. Targets
 
-### `packages/core`
-Pure TypeScript, zero UI dependencies. Importable by all apps.
-- `crypto/` — AES-256 encrypt/decrypt wrappers
-- `models/` — Account, Game, BackupInfo interfaces/types
-- `steam/` — Steam API endpoint definitions, response parsers
-- `sync/` — Google Drive backup/restore logic, merge strategies
-- `constants/` — Shared configuration values
+| Capability | Web | Extension | Desktop |
+|---|---|---|---|
+| Unlock vault, view/edit credentials | ✓ | ✓ | ✓ |
+| Drive sync | ✓ | ✓ | ✓ |
+| Steam Guard codes (TOTP from `shared_secret`) | ✓ local clock | ✓ | ✓ |
+| Steam profiles, games, bans, prices | - | ✓ | ✓ |
+| Steam login autofill | - | ✓ | - |
+| Bots via ASF (see 9) | - | ✓ | ✓ |
 
-### `packages/ui`
-React component library built with TailwindCSS + Shadcn UI.
-- Atomic components: Button, Input, Card, Badge, Modal, Toast
-- Composite components: AccountCard, AccountList, SearchBar, FilterPanel
-- Consumed by `apps/pwa` and `apps/extension` (both use Vite + React)
+### Extension browsers
+- Chrome, Edge, Firefox (desktop + Android). Safari is not supported.
+- Full UI opens as an extension page (WXT unlisted page), compact popup for quick access.
+- Extension pages fetch Steam directly. Content scripts can't bypass CORS - they go through background.
+- Firefox MV3: `host_permissions` are optional - app requests them via `permissions.request` and shows grant state.
+
+### Desktop (parked)
+Built after web + extension. Chromeless window with custom title bar (`data-tauri-drag-region`). Main extra over extension: managing a local ASF.
+
+### Obsidian plugin (later)
+Same Vue app mounted in an Obsidian view. Folder vault via Obsidian Vault API, Steam API via `requestUrl` (no CORS). Runs on Obsidian desktop, Android, iOS.
+
+### Mobile
+Firefox Android extension covers Android. iOS only via Obsidian plugin (later), Tauri mobile is parked.
 
 ---
 
-## 7. Implementation Roadmap
+## 6. Data & Encryption
 
-### Phase 1: Strip Legacy & Establish API Abstraction
-- [x] Remove .NET backend and `.sln`
-- [x] Restructure into pnpm monorepo
-- [x] Initialize Tauri v2 in `apps/desktop`
-- [x] Generate platform icons from SVG logo
-- [ ] Audit and remove all old backend API call sites in `apps/pwa`
-- [ ] Implement `SteamApiClient` abstraction with environment-aware routing
-- [ ] Install and configure `@tauri-apps/plugin-http` for Desktop
+- Master password is never stored.
+- Extension: unlocked vault key is shared by app page, popup and autofill via extension storage (see lock policy). Content scripts get credentials only via background messages.
+- Steam Web API key is stored inside the vault.
 
-### Phase 2: Extension Foundation
-- [ ] Initialize `apps/extension` with Vite + CRXJS
-- [ ] Configure Manifest V3 with Steam host permissions
-- [ ] Implement Background Script with CORS-free fetch proxy
-- [ ] Render full PWA UI inside extension tab (`chrome-extension://id/index.html`)
-- [ ] Implement Steam login autofill via Content Scripts
-- [ ] Cross-browser testing (Chrome, Firefox, Safari)
+### Vault locations
+User picks where each vault lives; several vaults, switch on unlock screen. Every client keeps a working copy in IndexedDB, the location is the source of truth.
 
-### Phase 3: Package Extraction
-- [ ] Extract encryption logic into `packages/core`
-- [ ] Extract IndexedDB/storage wrappers into `packages/core`
-- [ ] Build `packages/ui` with Shadcn components
-- [ ] Refactor `apps/pwa` to consume shared packages
+| Location | Container | Sync |
+|---|---|---|
+| This device | standalone file, kept in IndexedDB | none |
+| Google Drive | standalone file | Drive; history = backups |
+| Folder | Markdown notes, Obsidian Bases compatible | user's own (Obsidian Sync, git, Syncthing) |
 
-### Phase 4: Real-Time Telemetry Bridge
-- [ ] Implement `tokio`-based WebSocket server in `src-tauri/src/`
-- [ ] Implement connection manager in Extension Background Script
-- [ ] Define JSON-RPC-like message protocol for commands and telemetry
-- [ ] Build live dashboard view for bot monitoring
+- **Standalone file**: header (version, KDF params, vault slots) + body sealed with vault key = JSONL of records. Nothing readable without unlock: no record count, ids or timestamps.
+- **Folder**: `vault.md` header note + one note per record. Frontmatter (app-owned) = `public` fields + sealed `data` / `secret`; note body is user-owned and never touched. Note file name = nickname only if nickname is `public`, else record id.
+- Folder writes: Chrome/Edge via File System Access API (web, extension page), Obsidian plugin, desktop. Not in Firefox (no API).
+- `core` owns the model; each location is only a serializer + IO adapter.
 
-### Phase 5: Bot & Automation Engine
-- [ ] Implement headless Steam login (SteamKit-like) in Rust
-- [ ] Parallel session management for multiple accounts
-- [ ] Farm/idle automation
-- [ ] Trade confirmation handling
-- [ ] Remote control via Extension → Desktop WebSocket RPC
+### Keys (envelope encryption)
+Data is encrypted with a random 256-bit **vault key**. Unlock slots wrap (encrypt) that key:
+
+| Slot | Wrapping key from | Stored |
+|---|---|---|
+| Master password | PBKDF2-HMAC-SHA256, 600k iterations, random salt | in vault file (synced) |
+| PIN | PBKDF2 over PIN | this device only |
+| Biometrics | WebAuthn PRF of a passkey (Windows Hello, Touch ID, Android) | this device only |
+
+- Changing master password only rewraps the vault key and recovery slots of locked accounts (old KEK is at hand while the old password is typed), data is not re-encrypted.
+- PIN is low entropy → its slot never leaves the device (offline brute force).
+- PRF in 2026: Windows Hello (Win 11 Feb 2026 update, Chrome/Edge 147+, Firefox 148+), macOS (Chrome 132+, Firefox 139+), Android passkeys. Extension pages: Chrome 122+, Firefox 150+.
+
+### Lock policy (user setting, Bitwarden-like)
+- Timeout: immediately, 1 / 5 / 15 / 30 min, 1 / 4 h, on browser restart, never.
+- Vault key is a non-extractable `CryptoKey`: page JS can use it, not read it. `storage.*` can't hold a `CryptoKey` → to survive popup close / restart it is wrapped by a non-extractable device key in IndexedDB, wrapped blob kept in `storage.session` (until restart) or `storage.local` ("never", warned).
+- Option "master password on browser restart": PIN slot kept in `storage.session` only.
+
+### Records
+Account = `{ ...public, ...data, ...secret }`. Each record also has a random `id` (UUID, not SteamID) and `updatedAt`.
+
+| Part | Sealed with | Opened | Default fields |
+|---|---|---|---|
+| `public` | - (plaintext) | - | folder vault only: fields the user picks for Obsidian |
+| `data` | vault key | at unlock: list, search, sort | nickname, avatar, SteamID, stats, bans, login, note |
+| `secret` | vault key, or account key (locked account) | on demand, reference dropped after use | password, phone, email, linked credentials, authenticator |
+
+- User moves fields between `data` and `secret` (vault default + per account). Password, linked credentials and authenticator are always `secret` and never `public`.
+- Search and sort see only `public` + `data`.
+- Sealing: AES-256-GCM, random IV, AAD = record id + part name (blobs can't be swapped between records). WebCrypto only, no compression - sealed parts don't compress.
+- Same record format in every container; standalone additionally seals the whole body.
+
+### Locked accounts
+Own password on a single account, asked even in an unlocked vault. Any length (PIN or 50 chars) - crypto is the same, entropy is the user's choice.
+- Random **account key** seals that account's `secret`. Slots wrap it, same as vault slots:
+  - account password: HKDF(vault key, PBKDF2(account password)) → needs both.
+  - recovery (on by default, per-account switch; off = slot deleted, on again = account unlocked + master password): HKDF(master password KEK, "recovery"). KEK is dropped after vault unlock (only vault key stays in memory), so this slot needs the master password typed again - PIN / biometrics can't open it.
+- Changing account password only rewraps the account key.
+- Re-locks on leaving the account and on vault lock.
+
+### Sync
+1. Local change → encrypt → push to Drive with timestamp.
+2. Clients check Drive on focus, manual sync or interval.
+3. Merge by record: newer `updatedAt` wins per account, deletions kept as tombstones. Concurrent edits of different accounts never conflict.
+
+---
+
+## 7. Steam Data (replaces old backend)
+
+The old backend aggregated these calls and cached prices server-side for all users. Now `core` does it per client.
+
+| Data | Endpoint |
+|---|---|
+| Summaries (≤100 ids) | `ISteamUser/GetPlayerSummaries/v2` |
+| Bans (≤100 ids) | `ISteamUser/GetPlayerBans/v1` |
+| Games | `IPlayerService/GetOwnedGames/v1` |
+| Level | `IPlayerService/GetSteamLevel/v1` |
+| Friends | `ISteamUser/GetFriendList/v1` |
+| Vanity URL | `ISteamUser/ResolveVanityURL/v1` |
+| Server time (TOTP) | `POST ITwoFactorService/QueryTime/v1` |
+| Prices | `store.steampowered.com/api/appdetails?filters=price_overview&appids=...` |
+
+- Store API limit ~200 req / 5 min per IP → batch appids + request queue.
+- Games and prices cached in IndexedDB with TTL.
+- Batch refresh of many accounts streams results into UI as they arrive.
+
+---
+
+## 8. Desktop ↔ Extension Bridge (Native Messaging, parked with desktop)
+
+No localhost WebSocket: any website can connect to `ws://127.0.0.1` (WebSocket ignores CORS) and read credentials.
+
+- Browser spawns a registered native host, talks over stdio, only for listed extension IDs (`allowed_origins` / `allowed_extensions`).
+- Host is a small proxy relaying to the running desktop app over named pipe / unix socket (KeePassXC-browser pattern).
+- Desktop installer registers host manifests for Chrome, Edge, Firefox.
+- Uses: credential lookup without Drive roundtrip. Bots go through ASF IPC, not the bridge.
+
+---
+
+## 9. Bots via ArchiSteamFarm (parked)
+
+No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apache-2.0) already does login, Steam Guard, card farming, idling, trades, confirmations. The app is an ASF client over its IPC (REST + Swagger, default `http://127.0.0.1:1242`).
+
+- ASF runs anywhere: user's PC, server, Docker. Extension (host_permission for the IPC URL) and desktop talk to it directly - bots don't require desktop.
+- `IPCPassword` is mandatory: without it ASF trusts any request from localhost, including browser tabs. URL + password are stored in the vault.
+- Vault is the master: account ↔ bot mapping by SteamID, config pushed via `POST /Api/Bot/{name}`.
+- Steam password is not written to ASF config: ASF runs `Headless`, the app answers login prompts via `input` command (TOTP generated from vault). After first login ASF keeps its session in `Bot.db`.
+- ASF 2FA (auto-confirmations) is imported only as `BotName.maFile` in ASF `config/` (no IPC endpoint) - manual step, or desktop does it when it manages a local ASF.
+- Missing features → ASF plugin (C#), not own SteamKit service.
+
+---
+
+## 10. Roadmap
+
+### Phase 0: Design port
+- [ ] `packages/ui` retuned to the mockups, appearance knobs, shell, settings container
+- [ ] All screens on mock view-models: accounts, vault, backups, settings, profile, extension popup and autofill
+
+### Phase 1: Core
+- [ ] `packages/core`: models, vault crypto (format v1), storage
+- [ ] Steam client: endpoints from 7, batching, caching
+- [ ] Drive sync over REST
+- [ ] Tests: crypto, Steam parsers, sync
+
+### Phase 2: Vue App + Web Shell
+- [ ] Wire view-models to core, drop mocks screen by screen
+- [ ] Pages: accounts, profile (summary, games, friends), backups, settings
+- [ ] `apps/web`: PWA shell, read-only mode
+
+### Phase 3: Extension
+- [ ] `apps/extension` on WXT: app page, popup, background
+- [ ] Host permission flow (Firefox optional permissions)
+- [ ] Google OAuth via `identity.launchWebAuthFlow`
+- [ ] Steam login autofill content script
+- [ ] Builds: Chrome, Edge, Firefox
+
+### Phase 4: Desktop (parked)
+- [ ] Tauri shell over `packages/app` + `plugin-http`
+- [ ] Chromeless window with custom title bar
+- [ ] Native Messaging host + bridge
+
+### Phase 5: Obsidian plugin (later)
+- [ ] Folder vault serializer (notes + `.base` views)
+- [ ] `apps/obsidian` shell: view, Vault API IO, `requestUrl` fetch
+
+### Phase 6: Bots via ASF (parked)
+- [ ] ASF IPC client in `core` (types from its OpenAPI)
+- [ ] Account ↔ bot mapping, config push, `input` answers for login
+- [ ] Bot dashboard: status, farming, confirmations
+- [ ] Optional, desktop: download and run local ASF, import maFiles
