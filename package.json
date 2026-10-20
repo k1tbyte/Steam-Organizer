@@ -15,7 +15,7 @@
         "format": "biome check --write .",
         "test": "vitest run",
         "test:watch": "vitest",
-        "arch": "depcruise --config tests/arch/dependency-cruiser.cjs packages/app/src packages/ui/src apps/web/src"
+        "arch": "depcruise --config tests/arch/dependency-cruiser.cjs packages/app/src packages/ui/src apps/web/src apps/extension/entrypoints"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.5.15",

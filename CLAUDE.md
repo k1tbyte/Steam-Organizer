@@ -7,11 +7,13 @@ Steam account manager: encrypted vault, Steam profiles, Steam Guard codes, Drive
 | `packages/ui` | `@so/ui`: the Fp* kit (Vue + Reka UI + Tailwind v4), tokens and theme engine |
 | `packages/app` | `@so/app`: features, core infra, router, i18n; `mountApp(el, { platform, history })` |
 | `apps/web` | PWA shell |
+| `apps/extension` | WXT shell: full app as the unlisted page `app.html`, background; popup later |
 | `artifacts/` | local only: `mockup/` (design source of truth), `legacy/` (old React app, reference), `shots/`, `orch/` |
 
 ## Commands
 
 - `pnpm dev` - web app on `localhost:3000`
+- `pnpm dev:ext` - extension in Chrome with HMR (`pnpm --filter @so/extension dev:firefox` for Firefox)
 - `pnpm lint` / `pnpm format` - Biome
 - `pnpm typecheck` - vue-tsc in every package
 - `pnpm test` - Vitest, including the UI contract (`tests/ui/rules.ts`; `baseline.json` counts only go down)

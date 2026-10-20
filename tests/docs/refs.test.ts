@@ -13,8 +13,6 @@ const NOT_A_PATH = /^[@#/]|^https?:|[<>*{}()=|]|\.\.\./
 
 // Paths the docs name before any file exists. Delete an entry once it lands.
 const PLANNED = new Set([
-    // WXT shell, not scaffolded yet.
-    'apps/extension',
     // Feature subfolders: no feature slice exists yet, so none of these do either.
     'services',
     'stores',
