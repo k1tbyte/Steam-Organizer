@@ -28,7 +28,7 @@ const current = computed(() => find(overlay.value.value))
                 :current="overlay.value.value"
                 @select="overlay.show" />
             <div class="flex min-h-0 min-w-0 flex-col">
-                <div class="flex shrink-0 items-start gap-3 pt-5.5 pr-3.5 pb-3.5 pl-8">
+                <div class="flex shrink-0 items-start gap-3 pt-5.5 pr-5.5 pb-3.5 pl-8">
                     <div class="flex min-w-0 flex-1 flex-col gap-1">
                         <span class="font-title text-20 text-fg-1">{{ current?.title }}</span>
                         <span class="text-13 text-fg-3">{{ current?.description }}</span>

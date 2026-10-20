@@ -212,7 +212,7 @@ function onWrapperPointerUp(event: PointerEvent) {
                                 <slot />
                             </div>
                             <template v-else>
-                                <div class="flex items-start justify-between gap-2.5 pt-4 pr-3 pb-1 pl-5">
+                                <div class="flex items-start justify-between gap-2.5 pt-4 pr-4 pb-1 pl-5">
                                     <div class="min-w-0 flex-1" :class="centered && 'text-center'">
                                         <slot name="hero" />
                                         <DialogTitle class="font-semibold text-17">{{ title }}</DialogTitle>
