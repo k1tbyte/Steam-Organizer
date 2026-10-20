@@ -1,1 +1,0 @@
-export const credentialFieldNames = ["Login", "Email", "Password", "Secret word", "Phone"];
