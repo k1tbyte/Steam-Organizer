@@ -29,7 +29,7 @@ const anchor = computed(() => splitPlacement(props.placement))
                 :align="anchor.align"
                 :side-offset="sideOffset"
                 :collision-padding="8"
-                class="fp-float fp-tip surface layer-float rounded px-2.5 py-1 text-fg-1 text-xs">
+                class="fp-float fp-tip surface-pop layer-float rounded-sm px-2.5 py-1 text-12 text-fg-1">
                 <slot name="content">{{ text }}</slot>
             </TooltipContent>
         </TooltipPortal>

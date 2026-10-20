@@ -6,6 +6,8 @@ import { useFormField } from '../FormField/form-field'
 withDefaults(
     defineProps<{
         length?: number
+        /** Shows dots instead of digits, for a PIN typed in public. */
+        masked?: boolean
         disabled?: boolean
     }>(),
     { length: 6 },
@@ -33,6 +35,7 @@ const field = useFormField()
     <PinInputRoot
         v-model="characters"
         otp
+        :mask="masked"
         :disabled
         class="contents"
         @complete="(value) => emit('complete', value.join(''))">
@@ -49,7 +52,7 @@ const field = useFormField()
                 :index
                 inputmode="numeric"
                 :aria-invalid="field?.invalid.value || undefined"
-                class="field size-11 min-w-0 rounded text-center font-semibold text-fg-1 text-lg caret-accent outline-none" />
+                class="field size-11 min-w-0 rounded text-center font-semibold text-fg-1 text-17 caret-accent outline-none" />
         </fieldset>
     </PinInputRoot>
 </template>

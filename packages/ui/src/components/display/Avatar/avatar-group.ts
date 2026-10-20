@@ -14,12 +14,12 @@ import {
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 
 export const AVATAR_SIZES: Record<AvatarSize, string> = {
-    xs: 'size-5 text-2xs',
-    sm: 'size-6 text-xs',
-    md: 'size-8 text-xs',
-    lg: 'size-10 text-sm',
-    xl: 'size-12 text-base',
-    '2xl': 'size-20 text-2xl',
+    xs: 'size-5 text-10',
+    sm: 'size-6 text-12',
+    md: 'size-8 text-12',
+    lg: 'size-10 text-13',
+    xl: 'size-12 text-15',
+    '2xl': 'size-20 text-26',
 }
 
 export const GROUP_OVERLAP: Record<AvatarSize, string> = {

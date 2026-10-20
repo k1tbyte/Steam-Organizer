@@ -8,7 +8,7 @@ defineOptions({ inheritAttrs: false })
 
 type Variant = 'solid' | 'soft' | 'outline' | 'ghost' | 'link' | 'scrim'
 type Color = Extract<SemanticColor, 'accent' | 'neutral' | 'danger'>
-type Size = 'sm' | 'md' | 'lg' | 'xl'
+type Size = 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 
 const props = withDefaults(
     defineProps<{
@@ -48,13 +48,20 @@ function preventInactive(event: MouseEvent) {
     event.stopImmediatePropagation()
 }
 
+// Heights are the mockup's: 32 compact, 34 toolbar, 36 dialog, 40 form row, 52 mobile primary.
 // Text buttons match field heights on touch.
 const SIZES: Record<Size, string> = {
-    sm: 'px-3 py-1.5 text-xs touch-control-sm',
-    md: 'px-4 py-2 text-sm touch-control-md',
-    lg: 'px-5 py-2.5 text-base touch-control-lg',
-    xl: 'px-6 py-3.5 text-lg',
+    sm: 'h-8 px-3 text-13 touch-control-sm',
+    md: 'h-8.5 px-3 text-13 touch-control-md',
+    lg: 'h-9 px-4 text-13.5 touch-control-md',
+    xl: 'h-10 px-4 text-14 touch-control-lg',
+    '2xl': 'h-13 px-5 text-15',
 }
+
+const radius = computed(() => {
+    if (props.round) return 'rounded-full'
+    return props.square && props.size === 'sm' ? 'rounded-sm' : 'rounded'
+})
 </script>
 
 <template>
@@ -62,11 +69,11 @@ const SIZES: Record<Size, string> = {
     <component
         :is="as"
         v-bind="forwardedAttrs"
-        class="btn touch-target inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap select-none disabled:pointer-events-none disabled:opacity-50"
+        class="btn touch-target inline-flex items-center justify-center gap-1.5 whitespace-nowrap select-none disabled:pointer-events-none"
         :class="[
             square ? SQUARE_SIZES[size] : SIZES[size],
             block && 'w-full',
-            round ? 'rounded-full' : 'rounded',
+            radius,
             !isButton && inactive && 'cursor-not-allowed opacity-50',
         ]"
         :data-variant="variant"
@@ -82,6 +89,7 @@ const SIZES: Record<Size, string> = {
 
 <style scoped>
 .btn {
+    font-weight: 500;
     transition:
         background var(--dur-fast) var(--ease-out),
         color var(--dur-fast) var(--ease-out),
@@ -94,86 +102,87 @@ const SIZES: Record<Size, string> = {
     transition-duration: var(--dur-press);
     transition-timing-function: var(--ease-out);
 }
+/* A busy button keeps its face: only a real disable dims it. */
+.btn:disabled:not([aria-busy]) {
+    opacity: 0.5;
+}
 
 [data-color='accent'] {
     --btn-tone: var(--accent);
     --btn-tone-fg: var(--accent-fg);
-    --btn-glow: var(--accent-glow);
+    --btn-hover: var(--accent-hover);
+    --btn-ink: var(--accent-ink);
+    --btn-soft: var(--accent-soft);
 }
 [data-color='neutral'] {
     --btn-tone: var(--text-1);
     --btn-tone-fg: var(--bg-base);
-    --btn-glow: transparent;
+    --btn-hover: color-mix(in oklch, var(--text-1) 88%, transparent);
+    --btn-ink: var(--text-1);
+    --btn-soft: var(--surf-bg-hi);
 }
 [data-color='danger'] {
     --btn-tone: var(--danger);
     --btn-tone-fg: var(--danger-fg);
-    --btn-glow: color-mix(in oklch, var(--danger) 50%, transparent);
+    --btn-hover: oklch(from var(--danger) calc(l + 0.04) c h);
+    --btn-ink: var(--danger);
+    --btn-soft: var(--danger-soft);
 }
 
 [data-variant='solid'] {
     background: var(--btn-tone);
     color: var(--btn-tone-fg);
-    box-shadow:
-        0 1px 0 color-mix(in oklch, white 22%, transparent) inset,
-        0 6px 20px -8px var(--btn-glow);
+    font-weight: 600;
 }
 [data-variant='solid']:hover {
-    background: oklch(from var(--btn-tone) calc(l + 0.04) c h);
+    background: var(--btn-hover);
 }
-[data-variant='solid']:active {
-    background: oklch(from var(--btn-tone) calc(l - 0.02) c h);
+/* A disabled primary reads as an empty control, not a dimmed one. */
+[data-variant='solid']:disabled:not([aria-busy]) {
+    background: var(--surf-bg-hi);
+    color: var(--text-faint);
+    opacity: 1;
 }
 
 [data-variant='soft'] {
-    background: color-mix(in oklch, var(--btn-tone) 16%, transparent);
-    color: var(--btn-tone);
-    box-shadow: 0 0 0 1px color-mix(in oklch, var(--btn-tone) 25%, transparent);
+    background: var(--btn-soft);
+    color: var(--btn-ink);
 }
 [data-variant='soft']:hover {
-    background: color-mix(in oklch, var(--btn-tone) 26%, transparent);
-}
-
-[data-variant='soft'][data-color='neutral'] {
-    background: var(--surf-bg-hi);
-    color: var(--text-1);
-    box-shadow:
-        0 0 0 1px var(--stroke-2),
-        0 1px 0 color-mix(in oklch, white 10%, transparent) inset;
+    background: color-mix(in oklch, var(--btn-ink) 26%, transparent);
 }
 [data-variant='soft'][data-color='neutral']:hover {
-    background: var(--surf-bg-hi);
-    box-shadow:
-        0 0 0 1px var(--stroke-3),
-        0 1px 0 color-mix(in oklch, white 14%, transparent) inset;
+    background: var(--hover-bg-hi);
 }
 
 [data-variant='outline'] {
-    background: var(--surf-bg-hi);
-    color: var(--text-1);
-    box-shadow:
-        0 0 0 1px var(--stroke-2),
-        0 1px 0 color-mix(in oklch, white 10%, transparent) inset;
+    background: transparent;
+    color: var(--text-2);
+    box-shadow: inset 0 0 0 1px var(--stroke-2);
 }
 [data-variant='outline']:hover {
-    box-shadow:
-        0 0 0 1px var(--stroke-3),
-        0 1px 0 color-mix(in oklch, white 14%, transparent) inset;
+    background: var(--hover-bg);
+    color: var(--text-1);
 }
 [data-variant='outline']:not([data-color='neutral']) {
-    color: var(--btn-tone);
-    box-shadow: 0 0 0 1px color-mix(in oklch, var(--btn-tone) 40%, transparent);
+    color: var(--btn-ink);
+    box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--btn-tone) 40%, transparent);
 }
 
 [data-variant='ghost'] {
     background: transparent;
-    color: var(--btn-tone);
+    color: var(--btn-ink);
 }
 [data-variant='ghost'][data-color='neutral'] {
-    color: var(--text-1);
+    color: var(--text-2);
 }
 [data-variant='ghost']:hover {
-    background: color-mix(in oklch, var(--btn-tone) 12%, transparent);
+    background: var(--hover-bg);
+    color: var(--text-1);
+}
+[data-variant='ghost'][data-color='danger']:hover {
+    background: var(--danger-soft);
+    color: var(--danger);
 }
 
 /* Over video or a thumbnail: the fill follows the media, not the theme, so color does not apply. */
@@ -188,16 +197,16 @@ const SIZES: Record<Size, string> = {
 
 /* Links sit in running text, so they keep the line's height on touch too. */
 [data-variant='link'] {
+    height: auto;
     padding: 0;
     min-height: 0;
     background: transparent;
-    color: var(--btn-tone);
-    text-underline-offset: 4px;
+    color: var(--btn-ink);
 }
 [data-variant='link'][data-color='neutral'] {
     color: var(--text-2);
 }
 [data-variant='link']:hover {
-    text-decoration: underline;
+    color: var(--text-1);
 }
 </style>

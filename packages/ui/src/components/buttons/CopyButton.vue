@@ -59,7 +59,7 @@ async function copy() {
         <FpIcon
             :key="result"
             :name="ICONS[result]"
-            :class="[iconOnly ? 'text-lg' : 'text-base', TONES[result], result !== 'idle' && 'animate-pop']" />
+            :class="[iconOnly ? 'text-17' : 'text-15', TONES[result], result !== 'idle' && 'animate-pop']" />
         <span v-if="!iconOnly">{{ text }}</span>
         <span class="sr-only" aria-live="polite">{{ result === 'idle' ? '' : text }}</span>
     </FpButton>

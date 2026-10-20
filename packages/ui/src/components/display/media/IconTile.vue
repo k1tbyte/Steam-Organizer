@@ -16,17 +16,17 @@ withDefaults(
 
 // The tile's font size is the glyph size (FpIcon is a 1em box).
 const SIZES: Record<IconTileSize, string> = {
-    xs: 'size-7 text-sm',
-    sm: 'size-9 text-base',
-    md: 'size-10 text-lg',
-    lg: 'size-12 text-xl',
-    xl: 'size-16 text-3xl',
-    '2xl': 'size-20 text-3xl',
+    xs: 'size-7 text-14',
+    sm: 'size-8 text-16',
+    md: 'size-11 text-20',
+    lg: 'size-12 text-22',
+    xl: 'size-16 text-28',
+    '2xl': 'size-20 text-28',
 }
 
 const COLORS: Record<SemanticColor, string> = {
-    neutral: 'bg-surface-hi text-fg-3',
-    accent: 'bg-accent-soft text-accent',
+    neutral: 'bg-surface-hi text-fg-2',
+    accent: 'bg-accent-soft text-accent-ink',
     success: 'bg-success-soft text-success',
     warning: 'bg-warning-soft text-warning',
     danger: 'bg-danger-soft text-danger',
@@ -37,7 +37,7 @@ const COLORS: Record<SemanticColor, string> = {
 <template>
     <span
         class="flex shrink-0 items-center justify-center"
-        :class="[SIZES[size], COLORS[color], round ? 'rounded-full' : 'rounded']">
+        :class="[SIZES[size], COLORS[color], round ? 'rounded-full' : ['xs', 'sm'].includes(size) ? 'rounded' : 'rounded-md']">
         <slot>
             <FpIcon v-if="name" :name="name" />
         </slot>

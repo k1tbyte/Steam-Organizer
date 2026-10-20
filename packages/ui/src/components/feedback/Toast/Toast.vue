@@ -66,20 +66,20 @@ onMounted(() => {
         @animationend="onAnimationEnd"
         @update:open="(value) => !value && emit('dismiss')">
         <!-- Cards hidden deep in the stack must not take focus or clicks. -->
-        <div class="fp-toast-panel surface h-full overflow-hidden rounded" :inert="stack.opacity === 0 || undefined">
+        <div class="fp-toast-panel surface-pop h-full overflow-hidden rounded-lg" :inert="stack.opacity === 0 || undefined">
             <div ref="content" class="fp-toast-body flex flex-col gap-2 p-4">
                 <div class="flex items-start gap-2.5">
                     <span class="fp-toast-dot mt-1.5 size-2 shrink-0 rounded-full" :class="DOT_COLORS[toast.color ?? 'neutral']" />
                     <div class="min-w-0 flex-1">
-                        <ToastTitle class="font-medium text-fg-1 text-sm">{{ toast.title }}</ToastTitle>
-                        <ToastDescription v-if="toast.description" class="mt-0.5 text-fg-3 text-xs">
+                        <ToastTitle class="font-medium text-fg-1 text-13">{{ toast.title }}</ToastTitle>
+                        <ToastDescription v-if="toast.description" class="mt-0.5 text-fg-3 text-12">
                             {{ toast.description }}
                         </ToastDescription>
                     </div>
                     <ToastClose
                         class="touch-target -m-1 shrink-0 cursor-pointer rounded-full p-1 text-fg-3 transition-colors duration-fast hover:text-fg-1"
                         aria-label="Dismiss">
-                        <FpIcon name="icon-[lucide--x]" class="text-sm" />
+                        <FpIcon name="icon-[lucide--x]" class="text-13" />
                     </ToastClose>
                 </div>
                 <div v-if="toast.actions?.length" class="flex justify-end gap-2 ps-4.5">

@@ -8,13 +8,17 @@
         "./theme-reveal": "./src/theme-reveal.ts",
         "./useTimer": "./src/composables/useTimer.ts",
         "./styles.css": "./src/styles.css",
-        "./theme.css": "./src/theme.css"
+        "./theme.css": "./src/theme.css",
+        "./logo.svg": "./src/assets/logo.svg"
     },
     "scripts": {
         "typecheck": "vue-tsc --noEmit"
     },
     "dependencies": {
+        "@fontsource-variable/geist": "^5.3.0",
+        "@fontsource-variable/geist-mono": "^5.3.0",
         "@iconify-json/lucide": "^1.2.147",
+        "@iconify-json/simple-icons": "^1.2.100",
         "@iconify/tailwind4": "^1.2.3",
         "reka-ui": "^2.11.0"
     },

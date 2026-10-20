@@ -38,11 +38,11 @@ provideFormField({
             <FpLabel :id="labelId" :for="id" :required="required">
                 {{ label }}
             </FpLabel>
-            <span v-if="hint" class="text-fg-3 text-xs">{{ hint }}</span>
+            <span v-if="hint" class="text-fg-3 text-12">{{ hint }}</span>
         </div>
-        <p v-if="description" :id="descriptionId" class="text-fg-3 text-xs">{{ description }}</p>
+        <p v-if="description" :id="descriptionId" class="text-fg-3 text-12">{{ description }}</p>
         <slot />
-        <p v-if="errorMessage" :id="messageId" class="text-danger text-xs" role="alert">{{ errorMessage }}</p>
-        <p v-else-if="help" :id="messageId" class="text-fg-3 text-xs">{{ help }}</p>
+        <p v-if="errorMessage" :id="messageId" class="text-danger text-12" role="alert">{{ errorMessage }}</p>
+        <p v-else-if="help" :id="messageId" class="text-fg-3 text-12">{{ help }}</p>
     </div>
 </template>

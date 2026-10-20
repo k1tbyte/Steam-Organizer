@@ -34,9 +34,9 @@ const normalized = computed<ToggleOption<T>[]>(() => props.items.map(toOption))
 const isMultiple = computed(() => props.multiple !== undefined && props.multiple !== false)
 
 const SIZES: Record<FieldSize, string> = {
-    sm: 'px-3 py-1 text-xs',
-    md: 'px-4 py-1.5 text-sm',
-    lg: 'px-5 py-2 text-base',
+    sm: 'h-6 px-2.5 text-12',
+    md: 'h-7 px-3 text-12.5',
+    lg: 'h-8 px-3 text-13',
 }
 
 // The track takes the control height, so a segmented row lines up with buttons and fields.
@@ -54,26 +54,16 @@ const TRACK: Record<FieldSize, string> = {
         :type="isMultiple ? 'multiple' : 'single'"
         @update:model-value="onUpdate"
         :disabled="disabled"
-        class="max-w-full items-stretch gap-1 rounded bg-surface-lo p-1"
+        class="max-w-full items-stretch gap-0.5 rounded bg-surface-hi p-0.75"
         :class="[TRACK[size], block ? 'flex w-full flex-nowrap' : 'inline-flex flex-wrap']">
         <ToggleGroupItem
             v-for="option in normalized"
             :key="option.value"
             :value="option.value"
             :disabled="option.disabled"
-            class="seg inline-flex grow cursor-pointer items-center justify-center gap-1.5 rounded font-medium text-fg-3 transition-colors duration-fast data-[state=on]:text-fg-1 hover:not-disabled:data-[state=off]:text-fg-2 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            class="seg inline-flex grow cursor-pointer items-center justify-center gap-1.5 rounded-sm font-medium text-fg-2 transition-colors duration-fast data-[state=on]:bg-accent-soft data-[state=on]:text-accent-ink hover:not-disabled:data-[state=off]:text-fg-1 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             :class="[SIZES[size], block && 'min-w-0 basis-0']">
             <slot :option="option">{{ option.label }}</slot>
         </ToggleGroupItem>
     </ToggleGroupRoot>
 </template>
-
-<style scoped>
-.seg[data-state='on'] {
-    background: var(--surf-bg-hi);
-    box-shadow:
-        0 0 0 1px var(--stroke-2),
-        0 1px 0 color-mix(in oklch, white 10%, transparent) inset,
-        0 2px 8px -2px color-mix(in oklch, black 40%, transparent);
-}
-</style>

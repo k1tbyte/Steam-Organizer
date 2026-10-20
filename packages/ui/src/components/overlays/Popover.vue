@@ -76,7 +76,7 @@ function close() {
                 :align-offset="alignOffset"
                 :collision-padding="8"
                 :aria-label="label"
-                class="fp-float glass layer-float flex flex-col overflow-hidden"
+                class="fp-float surface-pop layer-float flex flex-col overflow-hidden rounded-lg"
                 :style="{ width, maxHeight }">
                 <div class="fp-scroll" :class="{ 'p-2.5': padded }">
                     <slot name="content" :close="close" />

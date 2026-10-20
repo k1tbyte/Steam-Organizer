@@ -42,7 +42,7 @@ const model = defineModel<string | string[]>()
             :disabled="item.disabled">
             <AccordionHeader>
                 <AccordionTrigger
-                    class="trigger flex w-full cursor-pointer items-center justify-between gap-3 py-3 text-start font-medium text-fg-1 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+                    class="trigger flex w-full cursor-pointer items-center justify-between gap-3 py-3 text-start font-medium text-fg-1 text-13 outline-none disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
                     <slot name="trigger" :item="item" :index="index">{{ item.label }}</slot>
                     <svg
                         class="chevron shrink-0 text-fg-3"
@@ -60,7 +60,7 @@ const model = defineModel<string | string[]>()
                 </AccordionTrigger>
             </AccordionHeader>
             <AccordionContent class="body overflow-hidden" :class="morph && 'slide'">
-                <div class="settle pb-3 text-fg-3 text-sm">
+                <div class="settle pb-3 text-fg-3 text-13">
                     <slot name="content" :item="item" :index="index">{{ item.content }}</slot>
                 </div>
             </AccordionContent>

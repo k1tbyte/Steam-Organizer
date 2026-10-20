@@ -29,7 +29,7 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 
 - Subpath imports from `package.json#imports`: `#core`, `#features/<name>`, `#components/<File>.vue`. Inside a feature or `core/`, relative paths.
 - `core/` (`core/index.ts`) is shared infra and never imports features or components. Code moves there when a second feature needs it. A `services/` file imports a Vue-free core module by path.
-- App-root `components/` holds app-wide components with no feature owner (`MockPanel`).
+- App-root `components/` holds app-wide components with no feature owner (`MockPanel`, `PageTopbar`, `NotFound`).
 - Dependencies point one way, no cycles (`pnpm arch`).
 
 ## Reuse before building
@@ -42,6 +42,7 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | client state that survives a reload | `readStored` / `writeStored` with a key constant in `core/storage.ts`; `localStorage` fails lint |
 | failure | `reportError(error, scope, context?)`, the only `console.error` (`noConsole` fails lint) |
 | debounce, interval | `useTimer` from `@so/ui/useTimer` |
+| a screen's title, count, status, search and actions in the shell topbar | `PageTopbar` with its `status`, `center`, `actions`, `back` slots; the route sets `meta.nav` |
 | desktop or phone layout in script | `useDesktopLayout()` from `@so/ui`; prefer `lg:` CSS when markup alone differs |
 
 ## Routes and overlays

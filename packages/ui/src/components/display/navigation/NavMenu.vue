@@ -16,6 +16,8 @@ export interface NavMenuItem {
     label: string
     icon?: string
     disabled?: boolean
+    /** Small outlined tag at the end of the row ("Soon"). */
+    badge?: string
     to?: unknown
 }
 
@@ -148,20 +150,29 @@ const TRACK_DIR: Record<string, string> = {
                 :aria-current="item.value === modelValue ? 'page' : undefined"
                 :aria-disabled="item.disabled || undefined"
                 data-nav-item
-                class="relative z-10 flex shrink-0 items-center gap-2.5 rounded px-2.5 py-2 text-sm outline-none transition-[color,background-color] focus-visible:bg-hover focus-visible:text-fg-1"
+                class="relative z-10 flex h-9 shrink-0 items-center gap-2.5 rounded px-2.5 font-medium text-13.5 outline-none transition-[color,background-color] focus-visible:bg-hover focus-visible:text-fg-1"
                 :class="
                     item.value === modelValue
                         ? 'nav-item-active'
                         : [
                               'text-fg-2',
                               item.disabled
-                                  ? 'cursor-not-allowed opacity-50'
+                                  ? 'cursor-not-allowed text-fg-faint'
                                   : 'hover:bg-hover hover:text-fg-1',
                           ]
                 "
                 @click.capture="select(item, $event)">
-                <FpIcon v-if="item.icon" :name="item.icon" class="shrink-0 text-lg" />
-                <span class="truncate">{{ item.label }}</span>
+                <FpIcon
+                    v-if="item.icon"
+                    :name="item.icon"
+                    class="shrink-0 text-16"
+                    :class="item.value === modelValue && 'text-accent-ink'" />
+                <span class="min-w-0 flex-1 truncate text-left">{{ item.label }}</span>
+                <span
+                    v-if="item.badge"
+                    class="rounded-full px-1.75 py-px font-medium text-10.5 text-fg-3 ring-1 ring-stroke-2 ring-inset">
+                    {{ item.badge }}
+                </span>
             </component>
         </div>
     </nav>
@@ -169,9 +180,10 @@ const TRACK_DIR: Record<string, string> = {
 
 <style scoped>
 .nav-pill {
-    background: var(--select-bg, var(--accent-soft));
+    background: var(--hover-bg-hi);
 }
 .nav-item-active {
-    color: var(--select-fg, var(--text-1));
+    color: var(--text-1);
+    font-weight: 600;
 }
 </style>

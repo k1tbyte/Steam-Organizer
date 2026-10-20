@@ -62,7 +62,7 @@ const label = computed(() => {
             :aria-label="label"
             :aria-invalid="field?.invalid.value || undefined"
             :aria-describedby="field?.describedBy?.value"
-            class="field inline-flex cursor-pointer items-center gap-2 rounded text-fg-1 disabled:pointer-events-none disabled:opacity-50 data-placeholder:text-fg-faint"
+            class="field field-raised inline-flex cursor-pointer items-center gap-2 rounded text-fg-1 disabled:pointer-events-none disabled:opacity-50 data-placeholder:text-fg-faint"
             :class="square ? ['touch-target shrink-0 justify-center', SQUARE_SIZES[size]] : ['w-full justify-between', FIELD_SIZES[size]]">
             <SelectValue v-if="square" :placeholder="placeholder" class="flex">
                 <FpIcon :name="selectedOption?.icon ?? 'icon-[lucide--chevron-down]'" />
@@ -71,7 +71,7 @@ const label = computed(() => {
                 <FpIcon v-if="selectedOption?.icon" :name="selectedOption.icon" class="shrink-0 text-fg-2" />
                 <span class="truncate">{{ selectedOption?.label ?? placeholder }}</span>
             </SelectValue>
-            <span v-if="!square" class="chevron flex shrink-0 text-fg-3 text-sm">
+            <span v-if="!square" class="chevron flex shrink-0 text-fg-3 text-13">
                 <FpIcon name="icon-[lucide--chevron-down]" />
             </span>
         </SelectTrigger>
@@ -82,29 +82,29 @@ const label = computed(() => {
                 side="bottom"
                 :side-offset="6"
                 :collision-padding="8"
-                class="fp-float fp-menu surface layer-float min-w-(--reka-select-trigger-width) rounded">
+                class="fp-float fp-menu surface-pop layer-float min-w-(--reka-select-trigger-width) rounded-md">
                 <SelectScrollUpButton class="flex shrink-0 justify-center py-1 text-fg-3">
-                    <FpIcon name="icon-[lucide--chevron-up]" class="text-sm" />
+                    <FpIcon name="icon-[lucide--chevron-up]" class="text-13" />
                 </SelectScrollUpButton>
-                <SelectViewport class="fp-scroll p-1">
+                <SelectViewport class="fp-scroll p-1.25">
                     <SelectItem
                         v-for="option in normalizedItems"
                         :key="option.value"
                         :value="option.value"
                         :disabled="option.disabled"
-                        class="touch-row flex cursor-pointer items-center gap-2 rounded px-3 py-1.5 text-fg-2 text-sm outline-none data-highlighted:bg-hover data-highlighted:text-fg-1 data-disabled:pointer-events-none data-disabled:opacity-50">
+                        class="touch-row flex min-h-8 cursor-pointer items-center gap-2 rounded-sm px-2.5 text-fg-1 text-13 outline-none data-highlighted:bg-hover data-disabled:pointer-events-none data-disabled:opacity-50">
                         <FpIcon v-if="option.icon" :name="option.icon" class="shrink-0" />
                         <div class="min-w-0 flex-1">
                             <SelectItemText>{{ option.label }}</SelectItemText>
-                            <p v-if="option.description" class="text-fg-3 text-xs">{{ option.description }}</p>
+                            <p v-if="option.description" class="text-fg-3 text-12">{{ option.description }}</p>
                         </div>
-                        <SelectItemIndicator class="flex shrink-0 text-accent">
-                            <FpIcon name="icon-[lucide--check]" class="text-sm" />
+                        <SelectItemIndicator class="flex shrink-0 text-accent-ink">
+                            <FpIcon name="icon-[lucide--check]" class="text-13" />
                         </SelectItemIndicator>
                     </SelectItem>
                 </SelectViewport>
                 <SelectScrollDownButton class="flex shrink-0 justify-center py-1 text-fg-3">
-                    <FpIcon name="icon-[lucide--chevron-down]" class="text-sm" />
+                    <FpIcon name="icon-[lucide--chevron-down]" class="text-13" />
                 </SelectScrollDownButton>
             </SelectContent>
         </SelectPortal>

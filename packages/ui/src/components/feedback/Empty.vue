@@ -13,8 +13,8 @@ defineProps<{
             <slot name="leading" />
         </FpIconTile>
         <div v-if="title || description" class="space-y-1">
-            <h3 v-if="title" class="font-medium text-base text-fg-1">{{ title }}</h3>
-            <p v-if="description" class="max-w-sm text-fg-3 text-sm">{{ description }}</p>
+            <h3 v-if="title" class="font-medium text-15 text-fg-1">{{ title }}</h3>
+            <p v-if="description" class="max-w-sm text-fg-3 text-13">{{ description }}</p>
         </div>
         <slot />
         <div v-if="$slots.actions" class="flex flex-wrap items-center justify-center gap-2">

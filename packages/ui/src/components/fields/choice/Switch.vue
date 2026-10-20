@@ -21,21 +21,18 @@ const id = useId()
 // Squash only for the toggle a user caused, never for programmatic changes.
 const engaged = ref(false)
 
-const SIZES: Record<Size, { track: string; thumb: string; travel: string; text: string }> = {
-    sm: { track: 'h-4 w-7', thumb: 'size-3', travel: '12px', text: 'text-xs' },
-    md: { track: 'h-5 w-9', thumb: 'size-4', travel: '16px', text: 'text-sm' },
-    lg: { track: 'h-6 w-11', thumb: 'size-5', travel: '20px', text: 'text-base' },
+const SIZES: Record<Size, { track: string; thumb: string; travel: string; label: string; hint: string }> = {
+    sm: { track: 'h-4 w-7', thumb: 'size-3', travel: '12px', label: 'text-13', hint: 'text-12' },
+    md: { track: 'h-5 w-9', thumb: 'size-4', travel: '16px', label: 'text-14', hint: 'text-12.5' },
+    lg: { track: 'h-6 w-11', thumb: 'size-5', travel: '20px', label: 'text-15.5', hint: 'text-14' },
 }
 </script>
 
 <template>
-    <div class="flex items-center gap-4" :class="(label || description) && 'w-full'">
-        <div
-            v-if="label || description"
-            class="flex min-w-0 flex-1 flex-col"
-            :class="SIZES[size].text">
-            <Label :for="id" class="font-medium text-fg-1">{{ label }}</Label>
-            <p v-if="description" class="text-fg-3">{{ description }}</p>
+    <div class="flex items-center gap-6" :class="(label || description) && 'w-full'">
+        <div v-if="label || description" class="flex min-w-0 flex-1 flex-col gap-0.5">
+            <Label :for="id" class="font-medium text-fg-1" :class="SIZES[size].label">{{ label }}</Label>
+            <p v-if="description" class="text-fg-3" :class="SIZES[size].hint">{{ description }}</p>
         </div>
         <SwitchRoot
             :id="id"

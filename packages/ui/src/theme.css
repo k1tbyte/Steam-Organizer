@@ -32,55 +32,37 @@
 
 :root {
     --accent: #7c86f8;
-    --accent-hover: color-mix(in oklch, var(--accent), white 12%);
-    --accent-active: color-mix(in oklch, var(--accent), black 8%);
-    --accent-soft: color-mix(in oklch, var(--accent) 22%, transparent);
-    --accent-faint: color-mix(in oklch, var(--accent) 10%, transparent);
     --accent-ring: color-mix(in oklch, var(--accent) 45%, transparent);
-    --accent-glow: color-mix(in oklch, var(--accent) 35%, transparent);
-    --glow: 0 2px 8px -2px var(--accent-glow);
     /* Threshold 0.6: WCAG break-even between black and white text sits near
      L 0.56-0.6, so both sides stay >=4.2:1 worst-case. */
     --accent-fg: oklch(from var(--accent) clamp(0, (0.6 - l) * 1000, 1) 0 h);
 
-    --success: oklch(0.74 0.16 152);
-    --warning: oklch(0.82 0.16 75);
-    --danger: oklch(0.66 0.21 25);
     --info: oklch(0.74 0.14 235);
-    --success-soft: color-mix(in oklch, var(--success) 18%, transparent);
-    --warning-soft: color-mix(in oklch, var(--warning) 18%, transparent);
-    --danger-soft: color-mix(in oklch, var(--danger) 18%, transparent);
-    --info-soft: color-mix(in oklch, var(--info) 18%, transparent);
+    --success-soft: color-mix(in oklch, var(--success) 16%, transparent);
+    --warning-soft: color-mix(in oklch, var(--warning) 14%, transparent);
+    --danger-soft: color-mix(in oklch, var(--danger) 16%, transparent);
+    --info-soft: color-mix(in oklch, var(--info) 16%, transparent);
     --success-fg: oklch(from var(--success) clamp(0, (0.6 - l) * 1000, 1) 0 h);
     --warning-fg: oklch(from var(--warning) clamp(0, (0.6 - l) * 1000, 1) 0 h);
     --danger-fg: oklch(from var(--danger) clamp(0, (0.6 - l) * 1000, 1) 0 h);
     --info-fg: oklch(from var(--info) clamp(0, (0.6 - l) * 1000, 1) 0 h);
-
-    --hover-bg: color-mix(in oklch, var(--text-1) 8%, transparent);
-    --hover-bg-hi: color-mix(in oklch, var(--text-1) 13%, transparent);
-
-    --glass-blur: 28px;
-    --glass-saturate: 160%;
 
     /* Video and thumbnails stay dark in every mode, and so does what sits on them. */
     --media: black;
     --on-media: white;
     --on-media-2: color-mix(in oklch, white 80%, transparent);
     --on-media-3: color-mix(in oklch, white 55%, transparent);
-    /* The scrim has no blur, so its tint carries the separation alone. */
-    --scrim: color-mix(in oklch, var(--media) 40%, transparent);
+    --scrim: color-mix(in oklch, var(--media) 50%, transparent);
     --scrim-strong: color-mix(in oklch, var(--media) 70%, transparent);
 
     --radius-base: 16px;
-    --space-unit: 4px;
+    /* Density: only paddings and gaps written `p-u-*` / `gap-u-*` follow it, control sizes never do. */
+    --density-unit: 4px;
     --font-base: 15px;
 
-    --track-body: -0.01em;
-    --track-title: -0.022em;
-    --track-display: -0.025em;
-    --track-eyebrow: 0.16em;
-
-    --font-features: "cv11", "ss01", "ss03";
+    --track-body: 0em;
+    --track-title: -0.01em;
+    --track-eyebrow: 0.14em;
 
     /* Device safe area; non-zero only under viewport-fit=cover on notched screens. */
     --safe-top: env(safe-area-inset-top, 0px);
@@ -89,121 +71,262 @@
     --safe-left: env(safe-area-inset-left, 0px);
 }
 
-/* Phones are read up close: the whole type scale lands on iOS steps (sm 14.5, base 17). */
+/* Phones are read up close: every text step grows by the same 10%. */
 :root {
     @variant max-lg {
-        --font-base: 17px;
+        --font-base: 16.5px;
     }
 }
 
+:root[data-density="compact"] {
+    --density-unit: 3px;
+}
+
+:root[data-density="spacious"] {
+    --density-unit: 5px;
+}
+
+/* Dark is the default: it needs no attribute. W(n) / B(n) are white / black at n% alpha. */
 :root,
 :root[data-mode="dark"] {
     color-scheme: dark;
 
-    --bg-base: oklch(from var(--accent) 0.12 min(calc(c * 0.3), 0.05) h);
-    --bg-elev: oklch(from var(--accent) 0.16 min(calc(c * 0.3), 0.05) h);
+    /* Accent-hued chroma of the backgrounds; `data-tint="off"` zeroes it. */
+    --tint: min(calc(c * 0.25), 0.035);
 
-    --surf-bg: color-mix(in oklch, white 6%, transparent);
-    --surf-bg-hi: color-mix(in oklch, white 10%, transparent);
-    --surf-bg-lo: color-mix(in oklch, white 3%, transparent);
+    --bg-page: oklch(from var(--accent) 0.11 var(--tint) h);
+    --bg-base: oklch(from var(--accent) 0.155 var(--tint) h);
+    --bg-elev: oklch(from var(--accent) 0.175 var(--tint) h);
 
-    --surf-stroke: linear-gradient(
-        135deg,
-        color-mix(in oklch, white 13%, transparent) 0%,
-        color-mix(in oklch, white 3%, transparent) 38%,
-        color-mix(in oklch, white 1.5%, transparent) 62%,
-        color-mix(in oklch, white 8%, transparent) 100%
-    );
+    --surf-bg: oklch(from var(--accent) 0.205 var(--tint) h);
+    --surf-bg-hi: oklch(from var(--accent) 0.245 var(--tint) h);
+    --surf-bg-lo: color-mix(in oklch, var(--text-1) 3%, transparent);
+    --surf-hover: oklch(from var(--accent) 0.22 var(--tint) h);
+    --surf-pop: var(--surf-bg);
+    --surf-filter: none;
+    --pop-filter: none;
 
-    --text-1: oklch(from var(--accent) 0.97 0.005 h);
+    --accent-hover: color-mix(in oklch, var(--accent), white 10%);
+    --accent-ink: var(--accent);
+    --accent-soft: color-mix(in oklch, var(--accent) 20%, transparent);
+
+    --success: oklch(0.74 0.16 152);
+    --warning: oklch(0.82 0.16 75);
+    --danger: oklch(0.68 0.2 25);
+
+    --text-1: oklch(0.97 0.004 260);
     --text-2: color-mix(in oklch, white 72%, transparent);
     --text-3: color-mix(in oklch, white 50%, transparent);
-    --text-faint: color-mix(in oklch, white 32%, transparent);
+    --text-faint: color-mix(in oklch, white 30%, transparent);
 
     --stroke-1: color-mix(in oklch, white 8%, transparent);
-    --stroke-2: color-mix(in oklch, white 14%, transparent);
+    --stroke-2: color-mix(in oklch, white 15%, transparent);
     --stroke-3: color-mix(in oklch, white 22%, transparent);
 
-    --elev-1:
-        0 1px 0 color-mix(in oklch, white 8%, transparent) inset,
-        0 8px 24px -8px rgb(0 0 0 / 0.4);
-    --elev-2:
-        0 1px 0 color-mix(in oklch, white 10%, transparent) inset,
-        0 16px 40px -12px rgb(0 0 0 / 0.5);
+    --hover-bg: color-mix(in oklch, white 7%, transparent);
+    --hover-bg-hi: color-mix(in oklch, white 12%, transparent);
+
+    --grid-line: color-mix(in oklch, var(--text-1) 5%, transparent);
+    --blob-k: 1;
 }
 
 :root[data-mode="light"] {
     color-scheme: light;
 
-    --bg-base: oklch(from var(--accent) 0.97 calc(c * 0.2) h);
-    --bg-elev: oklch(from var(--accent) 0.94 calc(c * 0.2) h);
+    /* Light keeps a whisper of the hue: tinted near-whites read as a color cast. */
+    --tint: min(calc(c * 0.06), 0.008);
 
-    --surf-bg: color-mix(in oklch, white 55%, transparent);
-    --surf-bg-hi: color-mix(in oklch, white 75%, transparent);
-    --surf-bg-lo: color-mix(in oklch, white 35%, transparent);
+    --bg-page: oklch(from var(--accent) 0.94 var(--tint) h);
+    --bg-base: oklch(from var(--accent) 0.978 var(--tint) h);
+    --bg-elev: oklch(from var(--accent) 0.965 var(--tint) h);
 
-    --surf-stroke: linear-gradient(
-        135deg,
-        color-mix(in oklch, white 70%, transparent) 0%,
-        color-mix(in oklch, white 38%, transparent) 38%,
-        color-mix(in oklch, black 3%, transparent) 62%,
-        color-mix(in oklch, black 5%, transparent) 100%
-    );
+    --surf-bg: oklch(1 0 0);
+    --surf-bg-hi: oklch(from var(--accent) 0.955 var(--tint) h);
+    --surf-hover: oklch(1 0 0);
 
-    --success: oklch(0.62 0.17 152);
+    --accent-hover: color-mix(in oklch, var(--accent), black 10%);
+    --accent-ink: oklch(from var(--accent) min(l, 0.52) c h);
+    --accent-soft: color-mix(in oklch, var(--accent) 14%, transparent);
+
+    --success: oklch(0.6 0.17 152);
     --warning: oklch(0.72 0.16 70);
-    --danger: oklch(0.56 0.23 25);
+    --danger: oklch(0.56 0.22 25);
     --info: oklch(0.58 0.19 250);
 
-    --text-1: oklch(from var(--accent) 0.18 min(calc(c * 0.4), 0.03) h);
-    --text-2: color-mix(in oklch, black 68%, transparent);
-    --text-3: color-mix(in oklch, black 50%, transparent);
-    --text-faint: color-mix(in oklch, black 32%, transparent);
+    --text-1: oklch(0.22 0.005 260);
+    --text-2: color-mix(in oklch, black 66%, transparent);
+    --text-3: color-mix(in oklch, black 54%, transparent);
+    --text-faint: color-mix(in oklch, black 30%, transparent);
 
     --stroke-1: color-mix(in oklch, black 8%, transparent);
     --stroke-2: color-mix(in oklch, black 14%, transparent);
     --stroke-3: color-mix(in oklch, black 22%, transparent);
 
-    --elev-1:
-        0 1px 0 rgb(255 255 255 / 0.5) inset, 0 6px 20px -6px rgb(0 0 0 / 0.12);
-    --elev-2:
-        0 1px 0 rgb(255 255 255 / 0.6) inset,
-        0 18px 40px -10px rgb(0 0 0 / 0.16);
+    --hover-bg: color-mix(in oklch, black 4.5%, transparent);
+    --hover-bg-hi: color-mix(in oklch, black 8%, transparent);
+
+    --grid-line: color-mix(in oklch, var(--text-1) 6%, transparent);
+    --blob-k: 0.6;
 }
 
-:root[data-accent="flat"] {
-    --bg-base: oklch(0.11 0 0);
-    --bg-elev: oklch(0.15 0 0);
-    --select-bg: var(--accent);
-    --select-fg: var(--accent-fg);
+:root[data-tint="off"] {
+    --tint: 0;
 }
 
-:root[data-mode="light"][data-accent="flat"] {
-    --bg-base: oklch(0.99 0 0);
-    --bg-elev: oklch(0.96 0 0);
-}
-
-:root,
-:root[data-surface="glass"] {
-    --surf-style: glass;
-}
-
-:root[data-surface="solid"] {
-    --surf-style: solid;
-    --surf-bg: oklch(from var(--bg-base) calc(l + 0.05) c h);
-    --surf-bg-hi: oklch(from var(--bg-base) calc(l + 0.08) c h);
-    --surf-bg-lo: oklch(from var(--bg-base) calc(l + 0.02) c h);
-    --surf-stroke: linear-gradient(var(--stroke-1), var(--stroke-1));
-    --glass-blur: 0px;
-}
-
+/* Subtle: translucent washes with a light blur; floats stay unblurred. */
 :root[data-surface="subtle"] {
-    --surf-style: subtle;
-    --surf-bg: color-mix(in oklch, currentColor 3%, transparent);
-    --surf-bg-hi: color-mix(in oklch, currentColor 5%, transparent);
-    --surf-bg-lo: color-mix(in oklch, currentColor 1%, transparent);
-    --surf-stroke: linear-gradient(var(--stroke-1), var(--stroke-1));
-    --glass-blur: 6px;
+    --surf-bg: color-mix(in oklch, white 3.5%, transparent);
+    --surf-bg-hi: color-mix(in oklch, white 6.5%, transparent);
+    --surf-hover: color-mix(in oklch, white 5%, transparent);
+    --bg-elev: color-mix(in oklch, white 2%, transparent);
+    --surf-pop: oklch(from var(--accent) 0.19 var(--tint) h);
+    --surf-filter: blur(6px);
+}
+
+:root[data-mode="light"][data-surface="subtle"] {
+    --surf-bg: color-mix(in oklch, black 2.2%, transparent);
+    --surf-bg-hi: color-mix(in oklch, black 4.5%, transparent);
+    --surf-hover: color-mix(in oklch, black 3.2%, transparent);
+    --bg-elev: color-mix(in oklch, black 1.5%, transparent);
+    --surf-pop: oklch(1 0 0);
+}
+
+:root[data-surface="glass"] {
+    --surf-bg: color-mix(in oklch, white 6%, transparent);
+    --surf-bg-hi: color-mix(in oklch, white 10%, transparent);
+    --surf-hover: color-mix(in oklch, white 8%, transparent);
+    --stroke-1: color-mix(in oklch, white 10%, transparent);
+    --bg-elev: color-mix(
+        in oklch,
+        oklch(from var(--accent) 0.14 var(--tint) h) 55%,
+        transparent
+    );
+    --surf-pop: color-mix(
+        in oklch,
+        oklch(from var(--accent) 0.2 var(--tint) h) 82%,
+        transparent
+    );
+    --surf-filter: blur(28px) saturate(160%);
+    --pop-filter: blur(28px) saturate(160%);
+}
+
+:root[data-mode="light"][data-surface="glass"] {
+    --surf-bg: color-mix(in oklch, white 55%, transparent);
+    --surf-bg-hi: color-mix(in oklch, white 75%, transparent);
+    --surf-hover: color-mix(in oklch, white 65%, transparent);
+    --stroke-1: color-mix(in oklch, black 7%, transparent);
+    --bg-elev: color-mix(in oklch, white 40%, transparent);
+    --surf-pop: color-mix(in oklch, white 80%, transparent);
+}
+
+/* Floats and dialogs: the mockup shadows stay dark in light mode too. */
+:root {
+    --elev-1:
+        inset 0 0 0 1px var(--stroke-2),
+        0 16px 40px -12px color-mix(in oklch, black 45%, transparent);
+    --elev-2:
+        inset 0 0 0 1px var(--stroke-2),
+        0 24px 64px -16px color-mix(in oklch, black 60%, transparent);
+}
+
+/* The app stage: five backgrounds behind every surface (painted by `.bg-stage`).
+   Image is a pre-blurred picture in `--stage-image` under a dim of the page color. */
+:root {
+    --stage-dots:
+        radial-gradient(
+            circle,
+            color-mix(in oklch, var(--text-1) 8%, transparent) 1px,
+            transparent 1.5px
+        )
+        0 0 / 22px 22px;
+    --stage-grid:
+        linear-gradient(var(--grid-line) 1px, transparent 1px) -1px -1px / 32px
+        32px,
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) -1px -1px
+        / 32px 32px;
+    --stage: var(--bg-base);
+}
+
+:root[data-bg="clean"] {
+    --stage:
+        var(--stage-dots),
+        radial-gradient(
+            ellipse 80% 60% at 50% 0%,
+            color-mix(
+                in oklch,
+                var(--accent) calc(10% * var(--blob-k)),
+                transparent
+            ),
+            transparent 70%
+        ),
+        var(--bg-base);
+}
+
+:root[data-bg="noisy"] {
+    --stage:
+        var(--stage-dots),
+        radial-gradient(
+            ellipse 60% 50% at 20% 10%,
+            color-mix(
+                in oklch,
+                var(--accent) calc(28% * var(--blob-k)),
+                transparent
+            ),
+            transparent 70%
+        ),
+        radial-gradient(
+            ellipse 55% 45% at 85% 80%,
+            color-mix(
+                in oklch,
+                var(--accent) calc(22% * var(--blob-k)),
+                transparent
+            ),
+            transparent 70%
+        ),
+        radial-gradient(
+            ellipse 40% 40% at 60% 50%,
+            color-mix(
+                in oklch,
+                var(--accent) calc(12% * var(--blob-k)),
+                transparent
+            ),
+            transparent 70%
+        ),
+        var(--bg-base);
+}
+
+:root[data-bg="grid"] {
+    --stage:
+        var(--stage-grid),
+        radial-gradient(
+            ellipse 80% 60% at 50% 0%,
+            color-mix(
+                in oklch,
+                var(--accent) calc(8% * var(--blob-k)),
+                transparent
+            ),
+            transparent 70%
+        ),
+        var(--bg-base);
+}
+
+:root[data-bg="image"] {
+    --stage:
+        linear-gradient(
+            color-mix(
+                in oklch,
+                var(--bg-base) var(--stage-dim, 40%),
+                transparent
+            ),
+            color-mix(
+                in oklch,
+                var(--bg-base) var(--stage-dim, 40%),
+                transparent
+            )
+        ),
+        var(--stage-image, linear-gradient(transparent, transparent)) center /
+        cover no-repeat,
+        var(--bg-base);
 }
 
 @theme {
@@ -213,11 +336,9 @@
 @theme inline {
     --color-accent: var(--accent);
     --color-accent-hover: var(--accent-hover);
-    --color-accent-active: var(--accent-active);
+    --color-accent-ink: var(--accent-ink);
     --color-accent-soft: var(--accent-soft);
-    --color-accent-faint: var(--accent-faint);
     --color-accent-ring: var(--accent-ring);
-    --color-accent-glow: var(--accent-glow);
     --color-accent-fg: var(--accent-fg);
 
     --color-success: var(--success);
@@ -239,6 +360,8 @@
     --color-surface: var(--surf-bg);
     --color-surface-hi: var(--surf-bg-hi);
     --color-surface-lo: var(--surf-bg-lo);
+    --color-surface-hover: var(--surf-hover);
+    --color-surface-pop: var(--surf-pop);
 
     --color-hover: var(--hover-bg);
     --color-hover-hi: var(--hover-bg-hi);
@@ -267,66 +390,69 @@
     --shadow-*: initial;
 }
 
+/* Radius steps are `--radius-base` multiples. The mockup's fractions collapse to the nearest step:
+   .3-.36 xs, .38-.42 sm, .45-.5 (bare) base, .55-.65 md, .75-.85 lg, 1 xl, 1.25 2xl. */
 @theme inline {
     --font-sans:
-        "Inter Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
-
-    --spacing: var(--space-unit);
+        "Geist Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono:
+        "Geist Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
+    --font-weight-title: 650;
 
     --spacing-gutter: clamp(
-        calc(var(--space-unit) * 4),
+        calc(var(--spacing) * 4),
         3vi,
-        calc(var(--space-unit) * 12)
+        calc(var(--spacing) * 12)
     );
     --spacing-section: clamp(
-        calc(var(--space-unit) * 8),
+        calc(var(--spacing) * 8),
         5vi,
-        calc(var(--space-unit) * 24)
+        calc(var(--spacing) * 24)
     );
 
     --radius: calc(var(--radius-base) * 0.5);
-    --radius-xs: calc(var(--radius-base) * 0.25);
-    --radius-sm: calc(var(--radius-base) * 0.5);
-    --radius-md: var(--radius-base);
-    --radius-lg: calc(var(--radius-base) * 1.5);
-    --radius-xl: calc(var(--radius-base) * 2);
-    --radius-2xl: calc(var(--radius-base) * 2.5);
-    --radius-3xl: calc(var(--radius-base) * 3);
+    --radius-xs: calc(var(--radius-base) * 0.3);
+    --radius-sm: calc(var(--radius-base) * 0.4);
+    --radius-md: calc(var(--radius-base) * 0.6);
+    --radius-lg: calc(var(--radius-base) * 0.75);
+    --radius-xl: var(--radius-base);
+    --radius-2xl: calc(var(--radius-base) * 1.25);
 
-    --text-3xs: calc(var(--font-base) * 0.55);
-    --text-3xs--line-height: 1.3;
-    --text-2xs: calc(var(--font-base) * 0.65);
-    --text-2xs--line-height: 1.4;
-    --text-xs: calc(var(--font-base) * 0.75);
-    --text-xs--line-height: 1.4;
-    --text-sm: calc(var(--font-base) * 0.85);
-    --text-sm--line-height: 1.45;
-    --text-base: var(--font-base);
-    --text-base--line-height: 1.55;
-    --text-lg: calc(var(--font-base) * 1.125);
-    --text-lg--line-height: 1.5;
-    --text-xl: calc(var(--font-base) * 1.375);
-    --text-xl--line-height: 1.35;
-    --text-xl--letter-spacing: var(--track-title);
-    --text-2xl: calc(var(--font-base) * 1.75);
-    --text-2xl--line-height: 1.2;
-    --text-2xl--letter-spacing: var(--track-title);
-    --text-3xl: calc(var(--font-base) * 2.25);
-    --text-3xl--line-height: 1.1;
-    --text-3xl--letter-spacing: var(--track-display);
-    --text-4xl: calc(var(--font-base) * 3);
-    --text-4xl--line-height: 1.05;
-    --text-4xl--letter-spacing: var(--track-display);
+    /* Text steps are named by their desktop px and scale with --font-base on phones. */
+    --text-10: calc(10 / 15 * var(--font-base));
+    --text-10\.5: calc(10.5 / 15 * var(--font-base));
+    --text-11: calc(11 / 15 * var(--font-base));
+    --text-11\.5: calc(11.5 / 15 * var(--font-base));
+    --text-12: calc(12 / 15 * var(--font-base));
+    --text-12\.5: calc(12.5 / 15 * var(--font-base));
+    --text-13: calc(13 / 15 * var(--font-base));
+    --text-13\.5: calc(13.5 / 15 * var(--font-base));
+    --text-14: calc(14 / 15 * var(--font-base));
+    --text-14\.5: calc(14.5 / 15 * var(--font-base));
+    --text-15: var(--font-base);
+    --text-15\.5: calc(15.5 / 15 * var(--font-base));
+    --text-16: calc(16 / 15 * var(--font-base));
+    --text-17: calc(17 / 15 * var(--font-base));
+    --text-17--letter-spacing: -0.015em;
+    --text-18: calc(18 / 15 * var(--font-base));
+    --text-18--line-height: 1;
+    --text-19: calc(19 / 15 * var(--font-base));
+    --text-19--line-height: 1;
+    --text-20: calc(20 / 15 * var(--font-base));
+    --text-20--letter-spacing: -0.02em;
+    --text-22: calc(22 / 15 * var(--font-base));
+    --text-22--letter-spacing: -0.025em;
+    --text-26: calc(26 / 15 * var(--font-base));
+    --text-26--letter-spacing: -0.03em;
+    --text-28: calc(28 / 15 * var(--font-base));
+    --text-28--letter-spacing: -0.035em;
 
     --tracking-body: var(--track-body);
     --tracking-title: var(--track-title);
-    --tracking-display: var(--track-display);
     --tracking-eyebrow: var(--track-eyebrow);
 
     --shadow-1: var(--elev-1);
     --shadow-2: var(--elev-2);
-    --shadow-glow: var(--glow);
 }
 
 /* `lg:` starts the desktop layout. Static: useDesktopLayout reads it. */
@@ -346,6 +472,58 @@
 
 @utility layer-* {
     z-index: --value(--layer-*);
+}
+
+/* The surface and popover backdrop filters follow the Surface knob (none under flat). */
+@utility backdrop-surface {
+    -webkit-backdrop-filter: var(--surf-filter);
+    backdrop-filter: var(--surf-filter);
+}
+
+@utility backdrop-pop {
+    -webkit-backdrop-filter: var(--pop-filter);
+    backdrop-filter: var(--pop-filter);
+}
+
+/* Density spacing: `p-u-4` is 4 density units (16px at comfortable); halves work (`p-u-3.5`). */
+@utility p-u-* {
+    padding: calc(var(--density-unit) * --value(number));
+}
+
+@utility px-u-* {
+    padding-inline: calc(var(--density-unit) * --value(number));
+}
+
+@utility py-u-* {
+    padding-block: calc(var(--density-unit) * --value(number));
+}
+
+@utility pt-u-* {
+    padding-top: calc(var(--density-unit) * --value(number));
+}
+
+@utility pr-u-* {
+    padding-right: calc(var(--density-unit) * --value(number));
+}
+
+@utility pb-u-* {
+    padding-bottom: calc(var(--density-unit) * --value(number));
+}
+
+@utility pl-u-* {
+    padding-left: calc(var(--density-unit) * --value(number));
+}
+
+@utility gap-u-* {
+    gap: calc(var(--density-unit) * --value(number));
+}
+
+@utility gap-x-u-* {
+    column-gap: calc(var(--density-unit) * --value(number));
+}
+
+@utility gap-y-u-* {
+    row-gap: calc(var(--density-unit) * --value(number));
 }
 
 /* Safe-area padding, named after Tailwind's p / px / py / pt / pr / pb / pl. */

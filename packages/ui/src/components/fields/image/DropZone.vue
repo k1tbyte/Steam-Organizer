@@ -120,7 +120,7 @@ defineExpose({ open })
         :data-drag="state === 'idle' ? undefined : state"
         :data-compact="compact || undefined"
         class="dz group flex w-full cursor-pointer items-center justify-center rounded border-dashed text-center transition-colors duration-base disabled:pointer-events-none disabled:opacity-50"
-        :class="compact ? 'flex-row flex-wrap gap-2 border p-4 text-fg-2 text-xs' : 'flex-col gap-4 border-2 px-6 py-10'"
+        :class="compact ? 'flex-row flex-wrap gap-2 border p-4 text-fg-2 text-12' : 'flex-col gap-4 border-2 px-6 py-10'"
         @dragenter="onDragEnter"
         @dragover="onDragOver"
         @dragleave="onDragLeave"
@@ -141,12 +141,12 @@ defineExpose({ open })
                     :name="state === 'valid' ? 'icon-[lucide--download]' : icon"
                     class="transition-colors duration-base group-data-[drag=valid]:bg-success-soft group-data-[drag=valid]:text-success" />
                 <div v-if="!compact" class="space-y-1">
-                    <h3 class="font-medium text-base text-fg-1 group-data-[drag=valid]:text-success">
+                    <h3 class="font-medium text-15 text-fg-1 group-data-[drag=valid]:text-success">
                         {{ state === 'valid' ? dropLabel : title }}
                     </h3>
                     <p
                         v-if="description"
-                        class="max-w-sm text-fg-3 text-sm group-data-[drag=valid]:invisible">
+                        class="max-w-sm text-fg-3 text-13 group-data-[drag=valid]:invisible">
                         {{ description }}
                     </p>
                 </div>

@@ -9,7 +9,8 @@ const props = defineProps<{
     description?: string
     error?: string
     plain?: boolean
-    nowrap?: boolean
+    /** Control under the label at full width, for a grid of choices. */
+    stacked?: boolean
 }>()
 
 const id = useId()
@@ -28,23 +29,22 @@ provideFormField({
 })
 </script>
 
+<!-- One settings row: label and hint left, control right; hairline above, so rows stack as a list. -->
 <template>
-    <div class="flex  gap-2 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8"
-        :class="{ 'flex-col': !props.nowrap }"
-    >
-        <div class="flex flex-col gap-1 sm:flex-1">
-            <span v-if="plain" class="font-medium text-fg-1 text-sm">{{ label }}</span>
-            <FpLabel v-else :for="id">{{ label }}</FpLabel>
+    <div
+        class="flex flex-col gap-2.5 border-stroke-1 border-t py-3.5"
+        :class="!stacked && 'sm:flex-row sm:items-center sm:justify-between sm:gap-6'">
+        <div class="flex min-w-0 flex-col gap-0.5" :class="!stacked && 'sm:flex-1'">
+            <span v-if="plain" class="font-medium text-14 text-fg-1">{{ label }}</span>
+            <FpLabel v-else :for="id" class="text-14! text-fg-1!">{{ label }}</FpLabel>
             <p
                 v-if="description"
                 :id="descriptionId"
-                class="line-clamp-2 text-fg-3 text-xs">
+                class="text-12.5 text-fg-3">
                 {{ description }}
             </p>
         </div>
-        <div class="flex w-full flex-col gap-1 sm:w-64 sm:items-end"
-            :class="{ 'flex-1 justify-center items-end': props.nowrap }"
-        >
+        <div class="flex flex-col gap-1" :class="stacked ? 'w-full' : 'sm:shrink-0 sm:items-end'">
             <FpErrorTip :error="props.error">
                 <slot />
             </FpErrorTip>

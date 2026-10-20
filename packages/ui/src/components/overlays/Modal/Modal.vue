@@ -21,6 +21,8 @@ const props = withDefaults(
         dismissible?: boolean
         centered?: boolean
         clouds?: boolean
+        /** No chrome: the slot is the whole dialog (a settings window); the title stays for screen readers. */
+        bare?: boolean
         modal?: boolean
     }>(),
     { dismissible: true, modal: undefined },
@@ -174,19 +176,20 @@ function onWrapperPointerUp(event: PointerEvent) {
                             class="fp-modal-panel panel w-full shrink-0 origin-top duration-slow ease-spring"
                             :class="[
                                 clouds
-                                    ? 'fp-modal-clouds relative rounded transition-[transform,width,height]'
-                                    : 'glass on-scrim relative transition-[transform,opacity,width,height]',
+                                    ? 'fp-modal-clouds relative rounded-xl transition-[transform,width,height]'
+                                    : 'surface-pop relative rounded-xl transition-[transform,opacity,width,height]',
                                 above > 0 && 'pointer-events-none',
+                                bare && 'overflow-hidden',
                                 clipping && 'overflow-clip',
                             ]"
                             :style="layerStyle">
                             <template v-if="clouds">
                                 <slot name="hero" />
-                                <div class="glass on-scrim sticky top-2 z-10 px-4 py-2.5">
-                                    <DialogTitle class="text-lg" :class="(dismissible || $slots.close) && 'pr-10'">
+                                <div class="surface-pop sticky top-2 z-10 rounded-xl px-4 py-2.5">
+                                    <DialogTitle class="font-semibold text-17" :class="(dismissible || $slots.close) && 'pr-10'">
                                         {{ title }}
                                     </DialogTitle>
-                                    <DialogDescription v-if="description" class="mt-1 text-xs text-fg-3">
+                                    <DialogDescription v-if="description" class="mt-1 text-13 text-fg-3">
                                         {{ description }}
                                     </DialogDescription>
                                     <slot name="header" />
@@ -201,28 +204,35 @@ function onWrapperPointerUp(event: PointerEvent) {
                                     <slot />
                                 </div>
                             </template>
+                            <div v-else-if="bare" ref="content">
+                                <DialogTitle class="sr-only">{{ title }}</DialogTitle>
+                                <DialogDescription v-if="description" class="sr-only">
+                                    {{ description }}
+                                </DialogDescription>
+                                <slot />
+                            </div>
                             <template v-else>
-                                <div class="flex items-start justify-between gap-4 border-stroke-1 border-b px-5 pt-4.5 pb-3.5">
+                                <div class="flex items-start justify-between gap-2.5 pt-4 pr-3 pb-1 pl-5">
                                     <div class="min-w-0 flex-1" :class="centered && 'text-center'">
                                         <slot name="hero" />
-                                        <DialogTitle class="text-lg">{{ title }}</DialogTitle>
-                                        <DialogDescription v-if="description" class="mt-1 text-xs text-fg-3">
+                                        <DialogTitle class="font-semibold text-17">{{ title }}</DialogTitle>
+                                        <DialogDescription v-if="description" class="mt-1 text-13 text-fg-3">
                                             {{ description }}
                                         </DialogDescription>
                                     </div>
                                     <slot name="close" :close="close">
                                         <ModalClose
                                             v-if="dismissible"
-                                            :class="centered ? 'absolute top-3 right-3' : '-mt-1 -mr-1'"
+                                            :class="centered ? 'absolute top-3 right-3' : ''"
                                             :label="closeLabel" />
                                     </slot>
                                 </div>
-                                <div ref="content" class="px-5 py-4.5">
+                                <div ref="content" class="px-5 pt-3 pb-5">
                                     <slot />
                                 </div>
                                 <div
                                     v-if="$slots.footer || $slots['footer-start']"
-                                    class="flex items-center justify-between gap-4 border-stroke-1 border-t px-5 py-3.5">
+                                    class="flex items-center justify-between gap-4 border-stroke-1 border-t py-3 pr-4 pl-5">
                                     <div class="min-w-0">
                                         <slot name="footer-start" />
                                     </div>
@@ -275,14 +285,14 @@ function onWrapperPointerUp(event: PointerEvent) {
     transition-property: transform, opacity, width;
 }
 
-.fp-modal-panel.fp-modal-clouds .glass {
+.fp-modal-panel.fp-modal-clouds .surface-pop {
     opacity: var(--fp-modal-opacity, 1);
     transition: opacity var(--dur-slow) var(--ease-spring);
 }
-.fp-modal-shell[data-state='open'] .fp-modal-panel.fp-modal-clouds .glass {
+.fp-modal-shell[data-state='open'] .fp-modal-panel.fp-modal-clouds .surface-pop {
     animation: fade-in var(--dur-base) var(--ease-out);
 }
-.fp-modal-shell[data-state='closed'] .fp-modal-panel.fp-modal-clouds .glass {
+.fp-modal-shell[data-state='closed'] .fp-modal-panel.fp-modal-clouds .surface-pop {
     animation: fade-out var(--dur-fast) var(--ease-out);
 }
 </style>

@@ -1,0 +1,29 @@
+---
+paths:
+  - 'packages/app/src/core/appearance/**'
+  - 'packages/app/src/features/settings/sections/appearance/**'
+---
+
+# Appearance
+
+Nine device-local knobs restyle the whole app live: the kit reads them from `<html>` (`ui-kit.md`), `core/appearance` writes them.
+
+| Knob | Values (default first) | On `<html>` | Storage key |
+|---|---|---|---|
+| mode | `dark`, `light`, `system` | `data-mode` always set; `system` resolves through `matchMedia` and follows the OS live | `so:mode` |
+| accent | one of `ACCENT_PRESETS` | `--accent` | `so:accent` |
+| tint | `on`, `off` | `data-tint="off"` | `so:tint` |
+| surface | `flat`, `subtle`, `glass` | `data-surface` | `so:surface` |
+| background | `plain`, `clean`, `noisy`, `grid`, `image` | `data-bg`; image also `--stage-image`, `--stage-dim` | `so:bg` |
+| radius | 16, range 0 to 24 | `--radius-base` in px | `so:radius` |
+| density | `comfortable`, `compact`, `spacious` | `data-density` | `so:density` |
+| reduce motion | `false`, `true` | `data-reduce-motion` | `so:reduce-motion` |
+| language | `en`, `ru` | `lang` always set; `index.ts` also sets the i18n locale | `so:lang` |
+
+- `APPEARANCE_PREFS` in `appearance.ts` is the single source: key, target, allowed values or range, default. A new knob is one entry plus its CSS in the kit; `applyPref` and `useAppearancePref` need no change.
+- A default value removes its attribute or property, so CSS falls back to the base tokens and storage holds only deviations. A stored value outside the table reads as the default (`parsePref`).
+- `restoreAppearance()` runs in `mountApp` before the first render, so the first paint is already themed. `useAppearancePref(name)` returns shared state and `set(value)`, which stores and applies at once; a mode change reveals from the press point through `revealThemeChange`.
+- Reduced motion is read through the kit (`motion-reduce:`, `prefersReducedMotion()`), which honors the OS and `data-reduce-motion`. Only this folder names the attribute (contract rule `reduced-motion-source`).
+- The image background keeps its source at 1280px wide as a JPEG data URL in `so:bg-src` and its name in `so:bg-name`. It is blurred once on a 640px canvas, and the blob URL goes to `--stage-image`; blur and dim live in `so:bg-blur`, `so:bg-dim`. The sample image is `sample-bg.svg`. The picture is never synced or saved in the vault; a later pass moves it from `localStorage` to IndexedDB, which only changes `background.ts`.
+- Appearance state never reaches a store or the vault: components read `useAppearancePref`, and nothing else touches `<html>` styling.
+- `applyPref(root, name, value)` takes the root as an argument so node tests drive it with a plain object (`appearance.test.ts`).

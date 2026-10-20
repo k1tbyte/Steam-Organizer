@@ -35,9 +35,9 @@ const DOT_SIZES: Record<Size, string> = {
     lg: 'size-2.5',
 }
 const TEXT_SIZES: Record<Size, string> = {
-    sm: 'h-3.5 min-w-3.5 px-1 text-2xs',
-    md: 'h-4 min-w-4 px-1 text-xs',
-    lg: 'h-5 min-w-5 px-1.5 text-xs',
+    sm: 'h-3.75 min-w-3.75 px-1 text-10',
+    md: 'h-4 min-w-4 px-1.25 text-10',
+    lg: 'h-5 min-w-5 px-1.5 text-11',
 }
 
 const POSITIONS: Record<Position, { edge: string; out: string }> = {
@@ -54,13 +54,13 @@ const POSITIONS: Record<Position, { edge: string; out: string }> = {
         <Transition name="fp-chip">
             <span
                 v-if="show"
-                class="inline-flex items-center justify-center rounded-full font-medium whitespace-nowrap"
+                class="inline-flex items-center justify-center rounded-full font-mono font-semibold whitespace-nowrap"
                 :class="[
                     COLORS[color],
                     text === undefined ? DOT_SIZES[size] : TEXT_SIZES[size],
                     bumping && 'animate-bump',
                     !standalone && [
-                        'absolute',
+                        'absolute ring-2 ring-canvas',
                         POSITIONS[position].edge,
                         !inset && POSITIONS[position].out,
                     ],
