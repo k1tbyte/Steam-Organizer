@@ -15,7 +15,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 | Autofill overlay | UI injected into Steam login pages |
 | Web PWA | Same UI as app page, Steam data read-only, installable |
 | Mobile | Firefox Android (app page and popup open full screen) + web PWA on phones → every screen works on narrow widths |
-| Desktop `[later]` | Same UI in a chromeless window with custom title bar: drag region, minimize, maximize/restore, close |
+| Desktop `[later]` | Same UI in a chromeless window with custom title bar: drag region, minimize, maximize/restore, close; autofill popup over other apps (see 10) |
 | Obsidian plugin `[later]` | Same UI inside an Obsidian view; accounts also visible as notes and `.base` views |
 
 ---
@@ -146,6 +146,13 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Account picker next to the form, with search.
 - Fills login + password, then Steam Guard code if authenticator exists.
 - Locked vault or locked account: prompt to unlock.
+
+### Desktop autofill `[later]`
+- Windows first. Focus on a login, password or Steam Guard field in the Steam client opens a small popup next to the field: account picker with search, same as the extension's.
+- Fills on click or hotkey: login + password, then Steam Guard code if authenticator exists.
+- Same for game launchers with linked credentials: Epic, Battle.net, EA, Ubisoft.
+- Fills only verified apps (signed by the expected vendor).
+- Switch to an account Steam already remembers without typing.
 
 ---
 

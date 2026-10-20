@@ -75,7 +75,8 @@ interface Platform {
 | Drive sync | ✓ | ✓ | ✓ |
 | Steam Guard codes (TOTP from `shared_secret`) | ✓ local clock | ✓ | ✓ |
 | Steam profiles, games, bans, prices | - | ✓ | ✓ |
-| Steam login autofill | - | ✓ | - |
+| Steam login autofill | - | ✓ | ✓ Windows (see Desktop autofill) |
+| Game launcher autofill (Epic, Battle.net, EA, Ubisoft) | - | - | ✓ Windows |
 | Bots via ASF (see 9) | - | ✓ | ✓ |
 
 ### Extension browsers
@@ -85,7 +86,18 @@ interface Platform {
 - Firefox MV3: `host_permissions` are optional - app requests them via `permissions.request` and shows grant state.
 
 ### Desktop (parked)
-Built after web + extension. Chromeless window with custom title bar (`data-tauri-drag-region`). Main extra over extension: managing a local ASF.
+Built after web + extension. Chromeless window with custom title bar (`data-tauri-drag-region`). Extras over extension: managing a local ASF, desktop autofill.
+
+#### Desktop autofill (plan, Windows first)
+Popup next to a focused login / password / Steam Guard field in other apps, like the extension's autofill picker.
+- Detect: Rust side on a dedicated MTA thread, `SetWinEventHook(EVENT_OBJECT_FOCUS)` out of process, then UI Automation only for known windows: `ControlType` Edit, `IsPassword`, `ProcessId`, `BoundingRectangle`. Steam's CEF login window (class `SDL_app`, `steamwebhelper`) exposes its fields through UIA (SAM does the same via FlaUI).
+- Screen signatures (login: 2 Edit, one `IsPassword`; Steam Guard: 5 one-char Edits) are data, not code: Steam updates break them.
+- Popup: headless always-on-top Tauri window (same as a custom tray window) anchored to the field rect, rendering the shared account picker component.
+- Fill only on user action (click or hotkey): `ValuePattern.SetValue` or `SendInput` with `KEYEVENTF_UNICODE`; Steam Guard typed into the first cell (it advances itself).
+- Before typing a secret, verify the target process: image path + Authenticode signer (Valve, launcher vendor). No keyboard hooks (`WH_KEYBOARD_LL` reads as a keylogger to AV). Elevated windows are out of reach (UIPI) - fine for Steam.
+- Not via Steam's CEF remote debugging (`.cef-enable-remote-debugging`): it opens an unauthenticated local DevTools port that hands the Steam session to any local process.
+- Later: macOS AX API (`kAXFocusedUIElementChangedNotification`, `AXSecureTextField`, needs Accessibility permission). Linux: AT-SPI on X11 only, Wayland blocks input injection.
+- Related: switch between accounts Steam already remembers without typing (`loginusers.vdf` + `AutoLoginUser`).
 
 ### Obsidian plugin (later)
 Same Vue app mounted in an Obsidian view. Folder vault via Obsidian Vault API, Steam API via `requestUrl` (no CORS). Runs on Obsidian desktop, Android, iOS.
@@ -235,6 +247,7 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 - [ ] Tauri shell over `packages/app` + `plugin-http`
 - [ ] Chromeless window with custom title bar
 - [ ] Native Messaging host + bridge
+- [ ] Desktop autofill on Windows: focus detection, popup window, fill (see Desktop autofill)
 
 ### Phase 5: Obsidian plugin (later)
 - [ ] Folder vault serializer (notes + `.base` views)
