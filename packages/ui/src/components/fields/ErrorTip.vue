@@ -105,7 +105,7 @@ function keepFocus(event: Event) {
                 :collision-padding="8"
                 :arrow-padding="8"
                 :hide-shifted-arrow="false"
-                class="fp-float fp-tip fp-error-tip layer-float flex items-center rounded bg-danger px-2.5 py-1 font-medium text-danger-fg text-xs shadow-lg"
+                class="fp-float fp-tip fp-error-tip layer-float flex items-center rounded bg-danger px-2.5 py-1 font-medium text-12 text-danger-fg"
                 @open-auto-focus="keepFocus"
                 @close-auto-focus="keepFocus">
                 {{ error }}

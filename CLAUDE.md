@@ -27,6 +27,7 @@ Steam account manager: encrypted vault, Steam profiles, Steam Guard codes, Drive
 | `vue.md` | view-models, templates, kit primitives, cost on phones, Vapor constraints (`*.vue`) |
 | `styling.md` | tokens, surfaces, icons, phones, motion (`*.vue`, `*.css`) |
 | `ui-kit.md`, `ui-modal.md` | `packages/ui` internals: color derivation, components, modal stack |
+| `appearance.md` | the nine appearance knobs, `core/appearance`, background image (`core/appearance/**`, the Appearance section) |
 | `testing.md` | unit test placement and mocking |
 
 ## Design-first workflow

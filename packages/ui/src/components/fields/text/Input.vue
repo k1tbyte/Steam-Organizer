@@ -64,7 +64,7 @@ defineExpose({
         class="inline-flex w-full cursor-text items-center gap-2 text-fg-1"
         :class="[!bare && ['field rounded', FIELD_SIZES[size]], disabled && 'pointer-events-none opacity-50']"
         :data-warning="warning || undefined">
-        <span v-if="$slots.leading" class="flex shrink-0 items-center text-fg-3">
+        <span v-if="$slots.leading" class="flex shrink-0 items-center text-15 text-fg-3">
             <slot name="leading" />
         </span>
         <input
@@ -78,14 +78,14 @@ defineExpose({
             :autocomplete
             :aria-invalid="field?.invalid.value || undefined"
             :aria-describedby="field?.describedBy?.value"
-            class="w-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-fg-faint" />
-        <span v-if="$slots.trailing" class="flex shrink-0 items-center text-fg-3">
+            class="w-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-fg-3" />
+        <span v-if="$slots.trailing" class="flex shrink-0 items-center text-15 text-fg-3">
             <slot name="trailing" />
         </span>
         <button
             v-if="type === 'password'"
             type="button"
-            class="flex shrink-0 cursor-pointer items-center text-fg-3 transition-colors duration-fast hover:text-fg-1"
+            class="flex shrink-0 cursor-pointer items-center text-15 text-fg-3 transition-colors duration-fast hover:text-fg-1"
             :disabled
             :aria-label="revealed ? 'Hide password' : 'Show password'"
             :aria-pressed="revealed"

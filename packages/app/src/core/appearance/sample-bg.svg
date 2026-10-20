@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800">
+  <defs>
+    <radialGradient id="a" gradientUnits="userSpaceOnUse" cx="192" cy="160" r="640"><stop offset="0" stop-color="#ff7a59"/><stop offset="1" stop-color="#ff7a59" stop-opacity="0"/></radialGradient>
+    <radialGradient id="b" gradientUnits="userSpaceOnUse" cx="1088" cy="96" r="576"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#7c3aed" stop-opacity="0"/></radialGradient>
+    <radialGradient id="c" gradientUnits="userSpaceOnUse" cx="793.6" cy="720" r="704"><stop offset="0" stop-color="#0ea5e9"/><stop offset="1" stop-color="#0ea5e9" stop-opacity="0"/></radialGradient>
+    <radialGradient id="d" gradientUnits="userSpaceOnUse" cx="102.4" cy="760" r="512"><stop offset="0" stop-color="#f43f5e"/><stop offset="1" stop-color="#f43f5e" stop-opacity="0"/></radialGradient>
+    <radialGradient id="e" gradientUnits="userSpaceOnUse" cx="614.4" cy="336" r="358.4"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#fbbf24" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1280" height="800" fill="#140d26"/>
+  <rect width="1280" height="800" fill="url(#a)"/>
+  <rect width="1280" height="800" fill="url(#b)"/>
+  <rect width="1280" height="800" fill="url(#c)"/>
+  <rect width="1280" height="800" fill="url(#d)"/>
+  <rect width="1280" height="800" fill="url(#e)"/>
+  <circle cx="921.6" cy="304" r="110" fill="#fff" fill-opacity="0.22"/>
+  <rect x="153.6" y="464" width="409.6" height="80" fill="#080614" fill-opacity="0.55"/>
+</svg>

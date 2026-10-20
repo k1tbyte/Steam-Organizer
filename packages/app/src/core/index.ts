@@ -1,5 +1,7 @@
+export * from './appearance'
 export * from './mock/mocks'
 export * from './platform'
 export * from './reportError'
 export * from './storage'
+export * from './topbarOutlets'
 export * from './useQueryOverlay'

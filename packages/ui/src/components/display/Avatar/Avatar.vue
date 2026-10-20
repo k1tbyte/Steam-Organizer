@@ -53,7 +53,7 @@ const initials = computed(
     <span
         ref="avatar"
         v-show="!hidden"
-        class="fp-avatar surface-opaque-hi inline-flex shrink-0 items-center justify-center overflow-hidden font-medium text-fg-2 select-none"
+        class="fp-avatar surface-opaque inline-flex shrink-0 items-center justify-center overflow-hidden font-medium text-fg-2 select-none"
         :class="[AVATAR_SIZES[size], round ? 'rounded-full' : 'rounded']">
         <img
             v-if="!hidden && src && !error"

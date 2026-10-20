@@ -26,7 +26,7 @@ const props = withDefaults(
 // Avoid turning dense stop marks into a dashed line.
 const MAX_MARKS = 20
 
-const SIZES: Record<Size, string> = { xs: '2', sm: '3', md: '4.5', lg: '6.5' }
+const SIZES: Record<Size, string> = { xs: '1', sm: '3', md: '4.5', lg: '6.5' }
 
 // Keep reka's thumb array internal while preserving the caller's model shape.
 const model = defineModel<number | number[]>({ default: 0 })
@@ -88,6 +88,7 @@ function thumbId(index: number) {
         :aria-labelledby="field?.labelledBy?.value"
         :data-discrete="split || undefined"
         :data-range="range || undefined"
+        :data-size="size"
         :data-focus-ring="focusRing || undefined"
         :data-round="round || undefined"
         :style="rootStyle"
@@ -104,7 +105,7 @@ function thumbId(index: number) {
         </SliderTrack>
         <span
             v-if="bubble && !range"
-            class="bubble surface rounded px-2.5 py-1 text-fg-1 text-xs"
+            class="bubble surface-pop rounded-sm px-2.5 py-1 text-12 text-fg-1"
             aria-hidden="true">
             <slot name="value" :value="values[0] ?? min">{{ values[0] ?? min }}</slot>
         </span>
@@ -114,7 +115,7 @@ function thumbId(index: number) {
             v-for="(_, index) in values"
             :key="index"
             :id="thumbId(index)"
-            :aria-label="values.length === 1 && !field ? label : undefined"
+            :aria-label="values.length === 1 ? label : undefined"
             :aria-labelledby="values.length === 1 ? field?.labelledBy?.value : undefined"
             :aria-invalid="field?.invalid.value || undefined"
             :aria-describedby="field?.describedBy?.value"
@@ -259,5 +260,28 @@ function thumbId(index: number) {
 .slider:has(.grip:focus-visible) .bubble {
     opacity: 1;
     scale: 1;
+}
+
+/* xs is the plain range control: a hairline track and a round grip. */
+.slider[data-size='xs'] {
+    --sl-r: calc(infinity * 1px);
+    --sl-grip-w: 1rem;
+    padding: 0.5rem 0;
+}
+.slider[data-size='xs'] .rest {
+    background: var(--stroke-2);
+    box-shadow: none;
+}
+.slider[data-size='xs'] .grip {
+    height: 1rem;
+}
+.slider[data-size='xs'] .grip::before {
+    height: 1rem;
+    background: var(--accent);
+    box-shadow: none;
+}
+.slider[data-size='xs'] .grip:hover::before,
+.slider[data-size='xs'] .grip:focus-visible::before {
+    scale: 1.15;
 }
 </style>

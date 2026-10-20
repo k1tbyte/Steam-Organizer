@@ -1,7 +1,9 @@
 @layer base {
     html {
-        background: var(--bg-base);
+        background: var(--bg-page);
         font-family: var(--font-sans);
+        /* The mockups never set a line height: single-line labels measure as the font's own. */
+        line-height: normal;
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
         scrollbar-color: var(--stroke-2) transparent;
@@ -12,7 +14,6 @@
         background: transparent;
         color: var(--text-2);
         font-size: var(--font-base);
-        font-feature-settings: var(--font-features);
         letter-spacing: var(--track-body);
         min-height: 100dvh;
     }
@@ -105,78 +106,30 @@
 }
 
 @layer components {
-    .surface,
-    .glass {
-        /* Re-declare this so overrides cannot leak into nested panels. */
-        --surface-stroke: var(--surf-stroke);
-        position: relative;
+    /* Cards and panels on the stage: a real 1px edge, no shadow. */
+    .surface {
         background: var(--surf-bg);
-        -webkit-backdrop-filter: blur(var(--glass-blur))
-            saturate(var(--glass-saturate));
-        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-        color: var(--text-1);
+        border: 1px solid var(--stroke-1);
+        -webkit-backdrop-filter: var(--surf-filter);
+        backdrop-filter: var(--surf-filter);
     }
 
-    .glass {
-        border-radius: var(--radius);
+    /* Floats and dialogs; radius comes from the component. */
+    .surface-pop {
+        background: var(--surf-pop);
+        -webkit-backdrop-filter: var(--pop-filter);
+        backdrop-filter: var(--pop-filter);
         box-shadow: var(--elev-1);
     }
 
-    .surface::before,
-    .glass::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        padding: 1px;
-        background: var(--surface-stroke);
-        -webkit-mask:
-            linear-gradient(#000 0 0) content-box,
-            linear-gradient(#000 0 0);
-        mask:
-            linear-gradient(#000 0 0) content-box,
-            linear-gradient(#000 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    .surface > *,
-    .glass > * {
-        position: relative;
-        z-index: 2;
-    }
-
     /* An outer backdrop filter is a backdrop root: an inner one cannot see the stage, only costs a pass. */
-    :is(.surface, .glass) :is(.surface, .glass) {
+    :is(.surface, .surface-pop) :is(.surface, .surface-pop) {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
     }
 
-    .glass-hi {
-        background: var(--surf-bg-hi);
-    }
-
-    .glass-lo {
-        background: var(--surf-bg-lo);
-    }
-
-    /* Opaque surfaces do not need a backdrop filter. */
-    :root[data-surface="solid"] .surface,
-    :root[data-surface="solid"] .glass {
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-    }
-
+    /* A face that stays opaque over any stage (avatars). */
     .surface-opaque {
-        background:
-            linear-gradient(var(--surf-bg), var(--surf-bg)), var(--bg-base);
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-    }
-
-    .surface-opaque-hi {
         background:
             linear-gradient(var(--surf-bg-hi), var(--surf-bg-hi)),
             var(--bg-base);
@@ -184,18 +137,10 @@
         backdrop-filter: none;
     }
 
-    /* Light glass over a dark scrim muddies to gray. */
-    :root[data-mode="light"] :is(.surface, .glass).on-scrim {
-        background:
-            linear-gradient(var(--surf-bg), var(--surf-bg)), var(--bg-base);
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-    }
-
     /* The one uppercase role: micro-label naming the value under it. */
     .eyebrow {
         color: var(--text-3);
-        font-size: var(--text-2xs);
+        font-size: var(--text-11);
         font-weight: 600;
         letter-spacing: var(--track-eyebrow);
         line-height: 1.4;
@@ -215,7 +160,7 @@
 
     .data-table td {
         padding-block: 0.5rem;
-        font-size: var(--text-sm);
+        font-size: var(--text-13);
     }
 
     .data-table :is(th, td):first-child {
@@ -234,52 +179,45 @@
         z-index: 1;
     }
 
-    /* Surface children are positioned, so the stretched empty link must be last. */
-    .surface > .link-cover,
-    .glass > .link-cover {
-        position: absolute;
-        inset: 0;
-        z-index: 3;
-    }
-
+    /* Idle hairline; focus lifts it to the accent with a soft halo. */
     .field {
-        background: var(--surf-bg-hi);
-        box-shadow:
-            inset 0 0 0 1px var(--stroke-2),
-            0 1px 0 color-mix(in oklch, white 6%, transparent) inset;
+        background: var(--surf-bg);
+        box-shadow: inset 0 0 0 1px var(--stroke-1);
         transition: box-shadow var(--dur-fast) var(--ease-out);
-    }
-
-    .field:hover {
-        box-shadow: inset 0 0 0 1px var(--stroke-3);
     }
 
     .field:focus-within {
         box-shadow:
             inset 0 0 0 1px var(--accent),
-            0 0 0 3px var(--accent-ring);
+            0 0 0 3px var(--accent-soft);
     }
 
     .field:focus-visible {
         outline: none;
     }
 
+    /* A select is a raised button: its fill replaces the resting hairline. */
+    .field-raised {
+        background: var(--surf-bg-hi);
+    }
+
+    .field-raised:not(:focus-within, [aria-invalid="true"]) {
+        box-shadow: none;
+    }
+
     /* Advisory, never aria-invalid; the invalid rules below come later and win. */
-    .field[data-warning],
-    .field[data-warning]:hover {
+    .field[data-warning] {
         box-shadow: inset 0 0 0 1px var(--warning);
     }
 
     .field[data-warning]:focus-within {
         box-shadow:
             inset 0 0 0 1px var(--warning),
-            0 0 0 3px color-mix(in oklch, var(--warning) 25%, transparent);
+            0 0 0 3px var(--warning-soft);
     }
 
     .field[aria-invalid="true"],
-    .field:has([aria-invalid="true"]),
-    .field[aria-invalid="true"]:hover,
-    .field:has([aria-invalid="true"]):hover {
+    .field:has([aria-invalid="true"]) {
         box-shadow: inset 0 0 0 1px var(--danger);
     }
 
@@ -287,7 +225,7 @@
     .field:has([aria-invalid="true"]):focus-within {
         box-shadow:
             inset 0 0 0 1px var(--danger),
-            0 0 0 3px color-mix(in oklch, var(--danger) 25%, transparent);
+            0 0 0 3px var(--danger-soft);
     }
 
     /* Portaled popper content cannot match scoped selectors. */
@@ -335,14 +273,15 @@
     }
 
     /* Menus fit the space Reka measured. The inner `.fp-scroll` scrolls, never the
-       surface itself: its hairline is an absolute pseudo-element. */
+       surface itself. */
     .fp-menu {
         display: flex;
         flex-direction: column;
         max-height: var(--reka-popper-available-height);
         overflow: hidden;
-        box-shadow: 0 12px 32px -12px
-            color-mix(in oklch, black 50%, transparent);
+        box-shadow:
+            inset 0 0 0 1px var(--stroke-2),
+            0 16px 40px -12px color-mix(in oklch, black 50%, transparent);
     }
 
     /* A flex column, so bounded children such as FpPanel still shrink to fit. */
@@ -359,84 +298,14 @@
         max-width: min(20rem, var(--reka-popper-available-width));
     }
 
+    /* The app background (`--stage`, theme.css). The root never filters or blends it: that would
+       flatten every backdrop filter above. */
     .bg-stage {
         position: fixed;
         inset: 0;
         z-index: -1;
         pointer-events: none;
-        background: var(--bg-base);
-        overflow: hidden;
-    }
-
-    .bg-stage::after {
-        content: "";
-        position: absolute;
-        inset: -2px;
-        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-        background-size: 240px 240px;
-        /* Blending this viewport layer would force every backdrop filter to flatten it. */
-        opacity: 0.06;
-    }
-
-    /* White grain is invisible on the light page, so skip the layer. */
-    :root[data-mode="light"] .bg-stage::after {
-        content: none;
-    }
-
-    .bg-stage::before {
-        content: "";
-        position: absolute;
-        inset: -20%;
-        background-repeat: no-repeat;
-    }
-
-    :root[data-bg="noisy"] .bg-stage::before,
-    :root:not([data-bg]) .bg-stage::before {
-        background-image:
-            radial-gradient(
-                circle,
-                color-mix(in oklch, var(--text-1) 8%, transparent) 1px,
-                transparent 1.5px
-            ),
-            radial-gradient(
-                ellipse 60% 50% at 20% 10%,
-                color-mix(in oklch, var(--accent) 28%, transparent),
-                transparent 70%
-            ),
-            radial-gradient(
-                ellipse 55% 45% at 85% 80%,
-                color-mix(in oklch, var(--accent) 22%, transparent),
-                transparent 70%
-            ),
-            radial-gradient(
-                ellipse 40% 40% at 60% 50%,
-                color-mix(in oklch, var(--accent) 12%, transparent),
-                transparent 70%
-            );
-        background-size:
-            22px 22px,
-            auto,
-            auto,
-            auto;
-        background-repeat: repeat, no-repeat, no-repeat, no-repeat;
-    }
-
-    :root[data-bg="clean"] .bg-stage::before {
-        background-image:
-            radial-gradient(
-                circle,
-                color-mix(in oklch, var(--text-1) 8%, transparent) 1px,
-                transparent 1.5px
-            ),
-            radial-gradient(
-                ellipse 80% 60% at 50% 0%,
-                color-mix(in oklch, var(--accent) 8%, transparent),
-                transparent 60%
-            );
-        background-size:
-            22px 22px,
-            auto;
-        background-repeat: repeat, no-repeat;
+        background: var(--stage);
     }
 }
 
@@ -490,8 +359,4 @@
 :root[data-resizing="col"] * {
     cursor: col-resize !important;
     user-select: none !important;
-}
-
-@utility surface-stroke-none {
-    --surface-stroke: transparent;
 }

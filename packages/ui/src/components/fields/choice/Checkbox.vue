@@ -19,10 +19,10 @@ withDefaults(
 const checked = defineModel<boolean | 'indeterminate'>({ default: false })
 const id = useId()
 
-const SIZES: Record<Size, { box: string; text: string }> = {
-    sm: { box: 'size-4', text: 'text-xs' },
-    md: { box: 'size-4.5', text: 'text-sm' },
-    lg: { box: 'size-5', text: 'text-base' },
+const SIZES: Record<Size, { box: string; label: string; hint: string }> = {
+    sm: { box: 'size-4', label: 'text-13', hint: 'text-12' },
+    md: { box: 'size-4.5', label: 'text-13.5', hint: 'text-12.5' },
+    lg: { box: 'size-5', label: 'text-15', hint: 'text-13' },
 }
 </script>
 
@@ -48,30 +48,30 @@ const SIZES: Record<Size, { box: string; text: string }> = {
                 <path class="dash" pathLength="1" d="M5 12h14" />
             </svg>
         </CheckboxRoot>
-        <div v-if="label || description" class="flex flex-col" :class="SIZES[size].text">
-            <Label :for="id" class="font-medium text-fg-1">{{ label }}</Label>
-            <p v-if="description" class="text-fg-3">{{ description }}</p>
+        <div v-if="label || description" class="flex flex-col gap-0.5">
+            <Label :for="id" class="font-medium text-fg-1" :class="SIZES[size].label">{{ label }}</Label>
+            <p v-if="description" class="text-fg-3" :class="SIZES[size].hint">{{ description }}</p>
         </div>
     </div>
 </template>
 
 <style scoped>
 .box {
-    background: var(--surf-bg-hi);
-    box-shadow: inset 0 0 0 1px var(--stroke-2);
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--stroke-2);
     transition:
         box-shadow var(--dur-base) var(--ease-out),
         scale var(--dur-fast) var(--ease-out);
 }
 .box[data-state='unchecked']:hover {
-    box-shadow: inset 0 0 0 1px var(--stroke-3);
+    box-shadow: inset 0 0 0 1.5px var(--stroke-3);
 }
 .box:active {
     scale: 0.92;
 }
 .box[data-state='checked'],
 .box[data-state='indeterminate'] {
-    box-shadow: var(--glow);
+    box-shadow: none;
 }
 
 .box::before {

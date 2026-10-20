@@ -23,7 +23,8 @@ A `.dc.html` file is a canvas of frames, each marked `data-screen-label` ("Profi
 
 - Map every block to its domain owner (`features/*/index.ts` first). A block for a domain with no slice yet gets one via the `new-feature` skill shape, even if mock only.
 - Cross-feature blocks reach a screen through its facade or a slot the page fills; dependencies stay one-way (`pnpm arch`).
-- A look repeated across features with no domain (hold-to-confirm, countdown ring) is a kit primitive in `packages/ui`; a Steam-specific one (level ring avatar, ban letters) lives in its owning feature and is exported from its facade.
+- A screen's topbar parts go through `PageTopbar` (`#components/PageTopbar.vue`): `title` and `count` props, slots `status` (`SyncStatus` from `#features/shell`), `center` (the search), `actions`, `back`. The rail and tab bar entry comes from the route's `meta: { nav: 'accounts' }`; a drill-down screen sets `meta.tabBar: false`.
+- A look repeated across features with no domain (hold-to-confirm, countdown ring) is a kit primitive in `packages/ui` (`FpHoldButton`, `FpCountdownRing`, `FpSegmentedMeter`, `useHold` exist); a Steam-specific one (level ring avatar, ban letters) lives in its owning feature and is exported from its facade.
 
 ## 3. Mock view-models
 
@@ -46,12 +47,30 @@ List unwired intents too (Refresh, Delete, Copy password). When a block is wired
 
 ## 5. Style to kit
 
-Mockup vars map to kit tokens one to one; the table below is the whole translation.
+Mockup vars map to kit tokens one to one; this table is the whole translation (`styling.md` has the rules behind it).
 
 | Mockup | Use |
 |---|---|
-| (filled by the design-system pass: colors, surfaces, text sizes, `--u` density spacing, `--r` radius multiples) | |
+| `--bg`, `--bg-2` (rail, tab bar, topbar) | `bg-canvas`, `bg-canvas-elev backdrop-surface` |
+| `--surf` + `--blur` | `.surface`, or `bg-surface backdrop-surface` |
+| `--surf-hi`, `--surf-hover` | `bg-surface-hi`, `bg-surface-hover` |
+| `--surf-pop` + `--blur-pop` | `.surface-pop`, or `bg-surface-pop backdrop-pop` |
+| `--stage`, `--page` | `.bg-stage` in `App.vue`, the `html` background: never in a screen |
+| `--t1`, `--t2`, `--t3`, `--faint` | `text-fg-1`, `text-fg-2`, `text-fg-3`, `text-fg-faint` |
+| `--stroke-1`, `--stroke-2` | `border-stroke-1`, `ring-1 ring-inset ring-stroke-2` for `inset 0 0 0 1px` |
+| `--hover`, `--hover-hi` | `bg-hover`, `bg-hover-hi` |
+| `--acc`, `--acc-hover`, `--acc-ink`, `--acc-soft`, `--acc-fg` | `bg-accent`, `bg-accent-hover`, `text-accent-ink`, `bg-accent-soft`, `text-accent-fg` |
+| `--success`, `--warning`, `--danger`, `--info` (+ `-soft`, `-fg`) | `text-success`, `bg-warning-soft`, `text-danger-fg`, ... |
+| `calc(var(--r) * k)` | k .3-.36 `rounded-xs`, .38-.42 `rounded-sm`, .45-.5 bare `rounded`, .55-.65 `rounded-md`, .75-.85 `rounded-lg`, 1 `rounded-xl`; pills `rounded-full`. A kit primitive owns its radius; in the app only bare `rounded` and `rounded-full` pass the contract |
+| `calc(var(--u) * n)` | `p-u-n`, `px-u-n`, `gap-u-n` (halves work); a fixed px control size stays fixed |
+| `font-size: Npx` | `text-N`, named by desktop px (`text-12.5`, `text-13.5`, `text-14`); a size seen only in a phone frame is the step 10% lower (28 `text-26`, 15.5 `text-14`, 13 `text-12`, 11 `text-10`) |
+| weight 650 / 600 / 500, `-0.01em` | `font-title` / `font-semibold` / `font-medium`, `tracking-title` |
+| `'Geist Mono'` | `font-mono` |
+| 11px 600 `.14em` uppercase | `FpEyebrow` |
+| hairline row, label + hint + control | `FpFormRow`, `FpListRow` inside `FpCard flush` |
+| a pressable row or card | a plain `<button>` or `RouterLink` without own fill and padding |
 
+- Controls come from the kit, sized by `size`: buttons sm 32, md 34, lg 36, xl 40, 2xl 52px; fields sm 34, md 40, lg 48px. Match the frame's height with the size, never a class.
 - A kit primitive's own colors beat an unlayered scoped rule only with an important utility (`text-accent!`).
 - A plain `<button>` is fine as a pressable surface (a row, a card); one with its own fill and padding fails `raw-control`.
 - No token or primitive fits: add it to `packages/ui` (token in `theme.css`), never a literal.

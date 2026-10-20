@@ -2,9 +2,11 @@ export { ACCENT_PRESETS, DEFAULT_ACCENT } from './accents'
 export type { SemanticColor, StatusColor } from './color'
 export { default as FpButton } from './components/buttons/Button.vue'
 export { default as FpCopyButton } from './components/buttons/CopyButton.vue'
+export { default as FpHoldButton } from './components/buttons/HoldButton.vue'
 export { default as FpAvatar } from './components/display/Avatar/Avatar.vue'
 export { default as FpBadge } from './components/display/Badge.vue'
 export { default as FpChip } from './components/display/Chip.vue'
+export { default as FpCountdownRing } from './components/display/CountdownRing.vue'
 export {
     type DotSize,
     default as FpDot,
@@ -43,6 +45,7 @@ export {
 } from './components/feedback/AsyncView.vue'
 export { default as FpEmpty } from './components/feedback/Empty.vue'
 export { default as FpProgress } from './components/feedback/Progress.vue'
+export { default as FpSegmentedMeter } from './components/feedback/SegmentedMeter.vue'
 export { default as FpSkeleton } from './components/feedback/Skeleton.vue'
 export { default as FpSpinner } from './components/feedback/Spinner.vue'
 export {
@@ -88,10 +91,12 @@ export {
 export { default as FpConfirmModal } from './components/overlays/Modal/ConfirmModal.vue'
 export { default as FpModal } from './components/overlays/Modal/Modal.vue'
 export { default as FpModalActions } from './components/overlays/Modal/ModalActions.vue'
+export { default as FpModalClose } from './components/overlays/Modal/ModalClose.vue'
 export { default as FpPopover } from './components/overlays/Popover.vue'
 export { default as FpTooltip } from './components/overlays/Tooltip.vue'
 export { useCenterActive } from './composables/useCenterActive'
 export { useDesktopLayout } from './composables/useDesktopLayout'
+export { useHold } from './composables/useHold'
 export {
     FREE,
     type ResizeStop,

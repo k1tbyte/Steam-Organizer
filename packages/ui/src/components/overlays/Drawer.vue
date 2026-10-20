@@ -38,12 +38,12 @@ function onOpenChange(value: boolean, details?: { cancel(): void }) {
         <DrawerPortal>
             <DrawerOverlay class="overlay bg-scrim fixed inset-0 layer-overlay" />
             <DrawerContent
-                class="drawer surface on-scrim fixed inset-x-0 bottom-0 layer-overlay flex max-h-[92dvh] flex-col rounded-t-md safe-px safe-pb"
+                class="drawer surface-pop fixed inset-x-0 bottom-0 layer-overlay flex max-h-[92dvh] flex-col rounded-t-2xl safe-px safe-pb"
                 :aria-describedby="description ? undefined : ''">
-                <DrawerHandle class="mx-auto mt-3 h-1.5 w-10 shrink-0 cursor-grab rounded-full bg-surface-hi" />
+                <DrawerHandle class="mx-auto mt-2.5 h-1 w-9 shrink-0 cursor-grab rounded-full bg-stroke-2" />
                 <header :class="bare ? 'sr-only' : 'px-6 pt-4'">
-                    <DrawerTitle class="font-semibold text-fg-1 text-lg">{{ title }}</DrawerTitle>
-                    <DrawerDescription v-if="description" class="mt-1 text-fg-3 text-sm">
+                    <DrawerTitle class="font-semibold text-fg-1 text-17">{{ title }}</DrawerTitle>
+                    <DrawerDescription v-if="description" class="mt-1 text-fg-3 text-13">
                         {{ description }}
                     </DrawerDescription>
                 </header>
@@ -62,7 +62,7 @@ function onOpenChange(value: boolean, details?: { cancel(): void }) {
 /* The sheet follows the finger down only: pulling it up showed nothing but a cut edge.
    Enter and exit use translate so they compose with the swipe transform. */
 .drawer {
-    box-shadow: 0 -16px 48px -16px color-mix(in oklch, black 50%, transparent);
+    box-shadow: inset 0 1px 0 var(--stroke-2);
     transform: translateY(max(0px, var(--drawer-swipe-movement-y, 0px)));
     transition: transform var(--dur-slow) var(--ease-out);
 }
@@ -80,18 +80,6 @@ function onOpenChange(value: boolean, details?: { cancel(): void }) {
 }
 .overlay[data-state='closed'] {
     animation: var(--animate-overlay-out);
-}
-
-/* Masks the bottom hairline where the sheet meets the screen edge; paints above the surface stroke. */
-.drawer::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(var(--surf-bg), var(--surf-bg)), var(--bg-base);
-    z-index: 2;
 }
 
 @keyframes fp-drawer-in {

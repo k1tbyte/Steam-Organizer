@@ -16,10 +16,18 @@ export function toOption<T extends string | number>(
         : { label: String(item), value: item }
 }
 
+// Heights are the mockup's: 34 inline controls, 40 form rows, 48 mobile fields.
 export const FIELD_SIZES: Record<FieldSize, string> = {
-    sm: 'px-2 py-1.5 text-xs touch-control-sm',
-    md: 'px-3 py-2 text-sm touch-control-md',
-    lg: 'px-4 py-2.5 text-base touch-control-lg',
+    sm: 'h-8.5 px-3 text-13 touch-control-sm',
+    md: 'h-10 px-3 text-14 touch-control-md',
+    lg: 'h-12 px-3.5 text-16 touch-control-lg',
+}
+
+// Multi-line fields grow with their text instead of a fixed height.
+export const TEXTAREA_SIZES: Record<FieldSize, string> = {
+    sm: 'px-3 py-2 text-13',
+    md: 'px-3 py-2.5 text-14',
+    lg: 'px-3.5 py-3 text-16',
 }
 
 export const SEGMENT_CLASS =

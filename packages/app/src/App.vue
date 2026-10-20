@@ -6,6 +6,7 @@ import MockPanel from '#components/MockPanel.vue'
 </script>
 
 <template>
+    <div class="bg-stage" aria-hidden="true" />
     <TooltipProvider :delay-duration="300">
         <FpToaster>
             <RouterView />

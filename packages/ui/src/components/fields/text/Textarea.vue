@@ -2,7 +2,7 @@
 import { nextTick, onMounted, useTemplateRef, watch } from 'vue'
 import { useDesktopLayout } from '../../../composables/useDesktopLayout'
 import { useFormField } from '../FormField/form-field'
-import { FIELD_SIZES, type FieldSize } from '../field'
+import { type FieldSize, TEXTAREA_SIZES } from '../field'
 
 // Forward native-control attrs past the label wrapper.
 defineOptions({ inheritAttrs: false })
@@ -52,7 +52,7 @@ watch(useDesktopLayout(), resize)
     <!-- biome-ignore lint/a11y/noLabelWithoutControl: the label wraps the native textarea right below -->
     <label
         class="field flex w-full cursor-text rounded text-fg-1"
-        :class="[FIELD_SIZES[size], disabled && 'pointer-events-none opacity-50']"
+        :class="[TEXTAREA_SIZES[size], disabled && 'pointer-events-none opacity-50']"
         :data-warning="warning || undefined">
         <textarea
             ref="textarea"
@@ -64,7 +64,7 @@ watch(useDesktopLayout(), resize)
             :rows
             :aria-invalid="field?.invalid.value || undefined"
             :aria-describedby="field?.describedBy?.value"
-            class="w-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-fg-faint"
+            class="w-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-fg-3"
             :class="autoresize ? 'resize-none' : 'resize-y'" />
     </label>
 </template>

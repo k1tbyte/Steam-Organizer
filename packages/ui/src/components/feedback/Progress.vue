@@ -40,7 +40,7 @@ const percent = computed(() => {
 
 <template>
     <div class="flex w-full flex-col gap-1">
-        <div v-if="status && percent !== null" class="text-right text-xs text-fg-3">{{ percent }}%</div>
+        <div v-if="status && percent !== null" class="text-right text-12 text-fg-3">{{ percent }}%</div>
         <ProgressRoot
             v-bind="$attrs"
             :model-value="safeValue"
