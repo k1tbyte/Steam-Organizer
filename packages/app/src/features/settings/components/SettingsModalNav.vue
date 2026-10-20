@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpEyebrow, FpNavMenu } from '@so/ui'
+import { FpEyebrow, FpNavMenu, FpScrollArea } from '@so/ui'
 import logoUrl from '@so/ui/logo.svg'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -34,7 +34,7 @@ const menus = computed(() =>
             <img :src="logoUrl" alt="" class="size-5.5" />
             <span class="font-semibold text-15 tracking-title text-fg-1">{{ t('Settings') }}</span>
         </div>
-        <div class="min-h-0 flex-1 overflow-y-auto">
+        <FpScrollArea class="min-h-0 flex-1">
             <div v-for="menu in menus" :key="menu.key">
                 <FpEyebrow class="px-2.5 pt-3.5 pb-1">{{ menu.title }}</FpEyebrow>
                 <FpNavMenu
@@ -43,7 +43,7 @@ const menus = computed(() =>
                     :aria-label="menu.title"
                     @update:model-value="$emit('select', $event as SectionKey)" />
             </div>
-        </div>
+        </FpScrollArea>
         <div v-if="about" class="flex items-center gap-2 px-2.5 py-2 font-mono text-12 text-fg-3">
             {{ t('v{version}', { version: about.version }) }}
             <span class="flex-1" />

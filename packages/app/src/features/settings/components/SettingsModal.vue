@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpModal, FpModalClose } from '@so/ui'
+import { FpModal, FpModalClose, FpScrollArea } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -35,9 +35,11 @@ const current = computed(() => find(overlay.value.value))
                     </div>
                     <FpModalClose :label="t('Close (Esc)')" />
                 </div>
-                <div class="min-h-0 flex-1 overflow-y-auto px-8 pb-7">
-                    <SettingsSectionBody :section="overlay.value.value" />
-                </div>
+                <FpScrollArea class="min-h-0 flex-1">
+                    <div class="px-8 pb-7">
+                        <SettingsSectionBody :section="overlay.value.value" />
+                    </div>
+                </FpScrollArea>
             </div>
         </div>
     </FpModal>

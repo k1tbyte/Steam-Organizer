@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import { useDesktopLayout } from '@so/ui'
+import { FpScrollArea, useDesktopLayout } from '@so/ui'
+import { useTemplateRef } from 'vue'
 
 import { useTopbarOutlets } from '#core'
 import { SettingsHost } from '#features/settings'
 
 import { useShellNav } from '../composables/useShellNav'
+import { useShellScroll } from '../composables/useShellScroll'
 import ShellRail from './ShellRail.vue'
 import ShellTabBar from './ShellTabBar.vue'
 
 const desktop = useDesktopLayout()
 const { showTabBar } = useShellNav()
 const { bind } = useTopbarOutlets()
+
+// Overlay bars on desktop; phones keep the native scroller.
+const desktopScroll = useTemplateRef('desktopScroll')
+const phoneScroll = useTemplateRef('phoneScroll')
+useShellScroll(() => desktopScroll.value?.viewport ?? phoneScroll.value)
 </script>
 
 <template>
@@ -26,9 +33,9 @@ const { bind } = useTopbarOutlets()
                     <div :ref="bind.actions" class="flex items-center gap-2.5" />
                 </div>
             </header>
-            <main class="min-h-0 flex-1 overflow-y-auto">
+            <FpScrollArea ref="desktopScroll" as="main" class="min-h-0 flex-1">
                 <RouterView />
-            </main>
+            </FpScrollArea>
         </div>
     </div>
     <div v-else class="safe-pt flex h-dvh flex-col">
@@ -41,7 +48,7 @@ const { bind } = useTopbarOutlets()
             <div :ref="bind.actions" class="flex items-center gap-1" />
         </header>
         <div :ref="bind.center" class="shrink-0 px-4 pb-2.5 empty:hidden" />
-        <main class="min-h-0 flex-1 overflow-y-auto">
+        <main ref="phoneScroll" class="min-h-0 flex-1 overflow-y-auto">
             <RouterView />
         </main>
         <ShellTabBar v-if="showTabBar" />

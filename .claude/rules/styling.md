@@ -19,6 +19,7 @@ Tokens live in `packages/ui/src/theme.css`, shared surface classes in `packages/
 | radius | bare `rounded`; `rounded-full` only where the shape is the affordance (the kit keeps its own scale steps) | `rounded-lg`, `rounded-[10px]` outside `packages/ui` |
 | type | `text-10` .. `text-28`, named by desktop px (`text-12.5`, `text-13.5`); `font-title`, `tracking-title` | `text-[13px]`, `font-size: 13px`, `text-sm` |
 | density | `p-u-4`, `px-u-6`, `gap-u-3.5`: paddings and gaps the density knob scales (unit 3, 4, 5px) | `p-4` where the mockup writes `calc(var(--u) * 4)` |
+| scroll container | `FpScrollArea` on desktop (an overlay bar, no gutter in the layout); phones keep native `overflow-y-auto` | a bare `overflow-y-auto` on a desktop panel, `scrollbar-width` / `::-webkit-scrollbar` styling |
 | global stacking | `layer-chrome` (rail, topbar, tab bar), `layer-overlay` (modals), `layer-float` (popovers, menus, tooltips), `layer-toast` | `z-50`, `z-index: 100` (local stacking below 30 is fine) |
 | safe area | `safe-p`, `safe-px`, `safe-pt`, ... on the fixed container | `env(safe-area-inset-*)` by hand |
 | touch | `touch-target` on compact and icon controls, `touch-row` on rows, `touch-control-sm` / `md` / `lg` (kit controls carry it); targets at least 24px | shrinking a hit area to fit the layout |

@@ -14,6 +14,7 @@ import {
 import { computed } from 'vue'
 import { type Placement, splitPlacement } from '../../placement'
 import Kbd from '../display/Kbd.vue'
+import FpScrollArea from '../display/layout/ScrollArea.vue'
 import { keyItems } from './dropdownKeys'
 
 export interface DropdownItem {
@@ -76,45 +77,47 @@ const groups = computed<DropdownGroup[]>(() => {
                 :align-offset="alignOffset"
                 :collision-padding="8"
                 class="fp-float fp-menu surface-pop layer-float min-w-44 rounded-md">
-                <div class="fp-scroll p-1.5">
-                    <template v-for="(group, groupIndex) in groups" :key="groupIndex">
-                        <DropdownMenuSeparator v-if="groupIndex > 0" class="-mx-1.5 my-1 h-px bg-stroke-1" />
-                        <component :is="group.label ? DropdownMenuGroup : 'div'" class="contents">
-                            <DropdownMenuLabel v-if="group.label" class="eyebrow px-2.5 pt-1.5 pb-1">
-                                {{ group.label }}
-                            </DropdownMenuLabel>
-                            <component
-                                :is="item.checked === undefined ? DropdownMenuItem : DropdownMenuCheckboxItem"
-                                v-for="item in group.items"
-                                :key="item.key"
-                                v-bind="item.checked === undefined ? {} : { modelValue: item.checked }"
-                                :disabled="item.disabled"
-                                class="touch-row flex min-h-8 cursor-pointer gap-2 rounded-sm px-2.5 py-1 text-13 outline-none data-disabled:pointer-events-none data-disabled:opacity-50"
-                                :class="[
-                                    item.description ? 'items-start' : 'items-center',
-                                    item.color === 'danger'
-                                        ? 'text-danger data-highlighted:bg-danger-soft'
-                                        : 'text-fg-1 data-highlighted:bg-hover',
-                                ]"
-                                @select="item.onSelect?.()">
-                                <span v-if="item.checked !== undefined" class="flex w-4 shrink-0 text-accent-ink">
-                                    <DropdownMenuItemIndicator class="icon-[lucide--check]" aria-hidden="true" />
-                                </span>
-                                <span
-                                    v-else-if="item.icon"
-                                    class="shrink-0"
-                                    :class="[item.icon, item.description && 'mt-0.5 text-fg-3']"
-                                    aria-hidden="true" />
-                                <span v-if="item.description" class="flex min-w-0 flex-1 flex-col">
-                                    <span class="truncate text-fg-1">{{ item.label }}</span>
-                                    <span class="text-12 text-fg-3">{{ item.description }}</span>
-                                </span>
-                                <span v-else class="min-w-0 flex-1 truncate">{{ item.label }}</span>
-                                <Kbd v-if="item.kbd" :value="item.kbd" class="shrink-0" />
+                <FpScrollArea class="min-h-0">
+                    <div class="p-1.5">
+                        <template v-for="(group, groupIndex) in groups" :key="groupIndex">
+                            <DropdownMenuSeparator v-if="groupIndex > 0" class="-mx-1.5 my-1 h-px bg-stroke-1" />
+                            <component :is="group.label ? DropdownMenuGroup : 'div'" class="contents">
+                                <DropdownMenuLabel v-if="group.label" class="eyebrow px-2.5 pt-1.5 pb-1">
+                                    {{ group.label }}
+                                </DropdownMenuLabel>
+                                <component
+                                    :is="item.checked === undefined ? DropdownMenuItem : DropdownMenuCheckboxItem"
+                                    v-for="item in group.items"
+                                    :key="item.key"
+                                    v-bind="item.checked === undefined ? {} : { modelValue: item.checked }"
+                                    :disabled="item.disabled"
+                                    class="touch-row flex min-h-8 cursor-pointer gap-2 rounded-sm px-2.5 py-1 text-13 outline-none data-disabled:pointer-events-none data-disabled:opacity-50"
+                                    :class="[
+                                        item.description ? 'items-start' : 'items-center',
+                                        item.color === 'danger'
+                                            ? 'text-danger data-highlighted:bg-danger-soft'
+                                            : 'text-fg-1 data-highlighted:bg-hover',
+                                    ]"
+                                    @select="item.onSelect?.()">
+                                    <span v-if="item.checked !== undefined" class="flex w-4 shrink-0 text-accent-ink">
+                                        <DropdownMenuItemIndicator class="icon-[lucide--check]" aria-hidden="true" />
+                                    </span>
+                                    <span
+                                        v-else-if="item.icon"
+                                        class="shrink-0"
+                                        :class="[item.icon, item.description && 'mt-0.5 text-fg-3']"
+                                        aria-hidden="true" />
+                                    <span v-if="item.description" class="flex min-w-0 flex-1 flex-col">
+                                        <span class="truncate text-fg-1">{{ item.label }}</span>
+                                        <span class="text-12 text-fg-3">{{ item.description }}</span>
+                                    </span>
+                                    <span v-else class="min-w-0 flex-1 truncate">{{ item.label }}</span>
+                                    <Kbd v-if="item.kbd" :value="item.kbd" class="shrink-0" />
+                                </component>
                             </component>
-                        </component>
-                    </template>
-                </div>
+                        </template>
+                    </div>
+                </FpScrollArea>
             </DropdownMenuContent>
         </DropdownMenuPortal>
     </DropdownMenuRoot>

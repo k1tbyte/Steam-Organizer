@@ -3,6 +3,7 @@ import { PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka
 import { computed, onMounted, ref, watch } from 'vue'
 import { useDesktopLayout } from '../../composables/useDesktopLayout'
 import { type Placement, splitPlacement } from '../../placement'
+import FpScrollArea from '../display/layout/ScrollArea.vue'
 import FpDrawer from './Drawer.vue'
 
 const props = withDefaults(
@@ -78,9 +79,11 @@ function close() {
                 :aria-label="label"
                 class="fp-float surface-pop layer-float flex flex-col overflow-hidden rounded-lg"
                 :style="{ width, maxHeight }">
-                <div class="fp-scroll" :class="{ 'p-2.5': padded }">
-                    <slot name="content" :close="close" />
-                </div>
+                <FpScrollArea class="min-h-0">
+                    <div :class="{ 'p-2.5': padded }">
+                        <slot name="content" :close="close" />
+                    </div>
+                </FpScrollArea>
             </PopoverContent>
         </PopoverPortal>
     </PopoverRoot>

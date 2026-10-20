@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ScrollAreaRoot, ScrollAreaScrollbar, ScrollAreaThumb, ScrollAreaViewport } from 'reka-ui'
+import { computed, ref } from 'vue'
 
 withDefaults(
     defineProps<{
@@ -7,16 +8,22 @@ withDefaults(
     }>(),
     { type: 'hover' },
 )
+
+const root = ref<InstanceType<typeof ScrollAreaRoot>>()
+
+// The scrolling element, for virtualizers and scroll restoration.
+defineExpose({ viewport: computed(() => root.value?.viewport) })
 </script>
 
 <!-- Flex sizing preserves scrolling under a max-height cap. -->
 <!-- A compositing layer prevents Chromium from partially repainting backdrop blur. -->
 <template>
     <ScrollAreaRoot
+        ref="root"
         class="flex flex-col overflow-hidden"
         :type="type"
         :scroll-hide-delay="400">
-        <ScrollAreaViewport class="min-h-0 w-full flex-auto transform-gpu">
+        <ScrollAreaViewport class="min-h-0 w-full flex-auto transform-gpu overscroll-contain">
             <slot />
         </ScrollAreaViewport>
         <ScrollAreaScrollbar
