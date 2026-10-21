@@ -61,14 +61,11 @@ const menu = useProfileMenu({
                 <FpIcon name="icon-[lucide--refresh-cw]" />
             </FpButton>
             <FpDropdownMenu :items="menu.items.value" placement="bottom-end">
-                <FpButton
-                    square
-                    :round="!desktop"
-                    variant="ghost"
-                    :size="desktop ? 'md' : 'xl'"
-                    :aria-label="t('More')">
-                    <FpIcon name="icon-[lucide--ellipsis]" />
-                </FpButton>
+                <FpTooltip :text="t('More')" label>
+                    <FpButton square :round="!desktop" variant="ghost" :size="desktop ? 'md' : 'xl'">
+                        <FpIcon name="icon-[lucide--ellipsis]" />
+                    </FpButton>
+                </FpTooltip>
             </FpDropdownMenu>
         </template>
     </PageTopbar>
