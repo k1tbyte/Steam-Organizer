@@ -4,25 +4,19 @@ import { computed, watch } from 'vue'
 
 import { useMock } from '#core'
 
-import { accountsMock, refreshMock } from '../mocks'
+import { refreshMock } from '../mocks'
 import { filterAccounts, sortAccounts } from '../services/filters'
 import { useAccountsViewStore } from '../stores/accountsView'
+import { useVaultAccounts } from './useVaultAccounts'
 
 /** The accounts screen's data: the vault's accounts as the view filters and sorts them, pinned apart from the rest. */
 export function useAccountsList() {
     const desktop = useDesktopLayout()
     const store = useAccountsViewStore()
-    const { view, pins } = storeToRefs(store)
-    // The vault's accounts and the bulk refresh in flight have no source yet.
-    const sample = useMock(() => undefined, accountsMock)
+    const { view } = storeToRefs(store)
+    const { accounts, presetQuery, togglePin } = useVaultAccounts()
+    // The bulk refresh in flight has no source yet.
     const refresh = useMock(() => undefined, refreshMock)
-
-    const accounts = computed(() =>
-        (sample.value?.accounts ?? []).map((account) => {
-            const pinned = pins.value[account.id]
-            return pinned === undefined ? account : { ...account, pinned }
-        }),
-    )
     const visible = computed(() => {
         const { sort, direction } = view.value
         return sortAccounts(
@@ -32,11 +26,10 @@ export function useAccountsList() {
         )
     })
 
-    // A sample may open on a search, so "no results" can be reviewed without typing.
     watch(
-        sample,
-        (value) => {
-            if (value?.query !== undefined) store.setQuery(value.query)
+        presetQuery,
+        (query) => {
+            if (query !== undefined) store.setQuery(query)
         },
         { immediate: true },
     )
@@ -58,9 +51,6 @@ export function useAccountsList() {
         status: computed<AsyncStatus>(() =>
             visible.value.length === 0 ? 'empty' : 'ready',
         ),
-        togglePin(id: string) {
-            const current = accounts.value.find((a) => a.id === id)?.pinned
-            store.setPinned(id, !current)
-        },
+        togglePin,
     }
 }

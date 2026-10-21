@@ -2,6 +2,7 @@ export { default as AccountCard } from './components/card/AccountCard.vue'
 export { default as AgeChip } from './components/card/AgeChip.vue'
 export { default as BanLetters } from './components/card/BanLetters.vue'
 export { default as LevelAvatar } from './components/card/LevelAvatar.vue'
+export { useVaultAccounts } from './composables/useVaultAccounts'
 export type {
     Account,
     AccountTag,

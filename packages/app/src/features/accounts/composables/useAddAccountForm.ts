@@ -4,10 +4,11 @@ import { useI18n } from 'vue-i18n'
 
 import { useMock } from '#core'
 
-import { accountsMock, lookupMock } from '../mocks'
+import { lookupMock } from '../mocks'
 import { validateNewAccount } from '../services/newAccount'
 import { detectSteamId, type SteamIdFormat } from '../services/steamId'
 import { useBanLabels } from './useBanLabels'
+import { useVaultAccounts } from './useVaultAccounts'
 
 const LOOKUP_MS = 900
 
@@ -15,8 +16,8 @@ const LOOKUP_MS = 900
 export function useAddAccountForm(open: Ref<boolean>) {
     const { t } = useI18n()
     const timer = useTimer()
-    // The vault's accounts (for the duplicate check) and the Steam profile have no source yet.
-    const sample = useMock(() => undefined, accountsMock)
+    const { accounts } = useVaultAccounts()
+    // The Steam profile has no source yet.
     const lookup = useMock(() => undefined, lookupMock)
     const banLabels = useBanLabels()
 
@@ -28,10 +29,11 @@ export function useAddAccountForm(open: Ref<boolean>) {
     const looked = ref(false)
 
     const existing = computed(() => {
-        const accounts = sample.value?.accounts ?? []
         return {
-            logins: accounts.map((a) => a.login.toLowerCase()),
-            steamIds: accounts.flatMap((a) => (a.steamId ? [a.steamId] : [])),
+            logins: accounts.value.map((a) => a.login.toLowerCase()),
+            steamIds: accounts.value.flatMap((a) =>
+                a.steamId ? [a.steamId] : [],
+            ),
         }
     })
     const checks = computed(() =>
