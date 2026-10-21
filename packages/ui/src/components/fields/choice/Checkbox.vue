@@ -11,9 +11,11 @@ withDefaults(
         /** Name for a checkbox with no visible `label` (a table row). */
         ariaLabel?: string
         size?: Size
+        /** Danger for a box that confirms something destructive. */
+        color?: 'accent' | 'danger'
         disabled?: boolean
     }>(),
-    { size: 'md' },
+    { size: 'md', color: 'accent' },
 )
 
 const checked = defineModel<boolean | 'indeterminate'>({ default: false })
@@ -33,6 +35,7 @@ const SIZES: Record<Size, { box: string; label: string; hint: string }> = {
             v-model="checked"
             :aria-label="ariaLabel"
             :disabled="disabled"
+            :data-color="color"
             class="box touch-target relative flex shrink-0 items-center justify-center rounded-xs text-accent-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50"
             :class="SIZES[size].box">
             <svg
@@ -95,6 +98,17 @@ const SIZES: Record<Size, { box: string; label: string; hint: string }> = {
 .box[data-state='checked']:hover::before,
 .box[data-state='indeterminate']:hover::before {
     background: var(--accent-hover);
+}
+
+.box[data-color='danger'] {
+    color: var(--danger-fg);
+}
+.box[data-color='danger']::before {
+    background: var(--danger);
+}
+.box[data-color='danger'][data-state='checked']:hover::before,
+.box[data-color='danger'][data-state='indeterminate']:hover::before {
+    background: oklch(from var(--danger) calc(l + 0.04) c h);
 }
 
 .mark {
