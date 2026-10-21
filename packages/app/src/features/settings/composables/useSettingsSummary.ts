@@ -1,16 +1,25 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useAppearancePref, useMock } from '#core'
+import { useAppearancePref } from '#core'
 
-import { summaryMock } from '../mocks'
 import type { SectionKey } from '../model'
+import { FIELD_KEYS, secretCount } from '../services/fieldSecrecy'
+import { useSettingsStore } from '../stores/settingsStore'
+import { useDriveSync } from './sources/useDriveSync'
+import { useSteamAccess } from './sources/useSteamAccess'
+import { useVaultInfo } from './sources/useVaultInfo'
+import { useLockAfterOptions } from './useLockAfterOptions'
 
-/** Values on the phone index: each waits on its section's own setting. */
+/** Values on the phone index: each one reads what its section edits. */
 export function useSettingsSummary() {
     const { t } = useI18n()
     const mode = useAppearancePref('mode')
-    const summary = useMock(() => undefined, summaryMock)
+    const store = useSettingsStore()
+    const lock = useLockAfterOptions()
+    const vault = useVaultInfo()
+    const drive = useDriveSync()
+    const steam = useSteamAccess()
 
     const modeLabels = computed(() => ({
         dark: t('Dark'),
@@ -19,13 +28,30 @@ export function useSettingsSummary() {
     }))
 
     function summaryOf(key: SectionKey): string {
-        if (key === 'appearance') return modeLabels.value[mode.state.value]
-        if (key === 'bots') return t('Soon')
-        return summary.value?.values[key] ?? ''
+        switch (key) {
+            case 'appearance':
+                return modeLabels.value[mode.state.value]
+            case 'security':
+                return lock.labelOf(store.security.lockAfter)
+            case 'sync':
+                return store.sync.connected ? t('On') : t('Off')
+            case 'fields':
+                return t('{count} secret', {
+                    count: secretCount(FIELD_KEYS, store.fieldModes),
+                })
+            case 'vault':
+                return vault.value?.name ?? ''
+            case 'steam':
+                return steam.apiKey.value ? t('Key set') : t('Not set')
+            case 'bots':
+                return t('Soon')
+        }
     }
 
-    const vaultName = computed(() => summary.value?.vaultName ?? '')
-    const syncLine = computed(() => summary.value?.syncLine ?? '')
+    const vaultName = computed(() => vault.value?.name ?? '')
+    const syncLine = computed(() =>
+        t('Google Drive · {status}', { status: drive.statusText.value }),
+    )
 
-    return { summaryOf, vaultName, syncLine }
+    return { summaryOf, vaultName, syncLine, syncColor: drive.statusColor }
 }

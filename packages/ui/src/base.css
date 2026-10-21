@@ -205,6 +205,16 @@
         box-shadow: none;
     }
 
+    .field[data-valid] {
+        box-shadow: inset 0 0 0 1px var(--success);
+    }
+
+    .field[data-valid]:focus-within {
+        box-shadow:
+            inset 0 0 0 1px var(--success),
+            0 0 0 3px var(--success-soft);
+    }
+
     /* Advisory, never aria-invalid; the invalid rules below come later and win. */
     .field[data-warning] {
         box-shadow: inset 0 0 0 1px var(--warning);

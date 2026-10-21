@@ -31,6 +31,8 @@ const props = withDefaults(
         disabled?: boolean
         /** Icon-only trigger showing the selected option's icon; pass an `aria-label`. */
         square?: boolean
+        /** Leading icon of the trigger whatever is selected (a timer for a duration). */
+        icon?: string
     }>(),
     { size: 'md' },
 )
@@ -40,6 +42,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: T] }>()
 // Reka does not register closed or server-rendered menu items.
 const normalizedItems = computed(() => props.items.map(toOption))
 const selectedOption = computed(() => normalizedItems.value.find((option) => option.value === props.modelValue))
+const leadingIcon = computed(() => props.icon ?? selectedOption.value?.icon)
 
 const field = useFormField()
 
@@ -68,7 +71,7 @@ const label = computed(() => {
                 <FpIcon :name="selectedOption?.icon ?? 'icon-[lucide--chevron-down]'" />
             </SelectValue>
             <SelectValue v-else :placeholder="placeholder" class="flex min-w-0 items-center gap-2">
-                <FpIcon v-if="selectedOption?.icon" :name="selectedOption.icon" class="shrink-0 text-fg-2" />
+                <FpIcon v-if="leadingIcon" :name="leadingIcon" class="shrink-0 text-fg-2" />
                 <span class="truncate">{{ selectedOption?.label ?? placeholder }}</span>
             </SelectValue>
             <span v-if="!square" class="chevron flex shrink-0 text-fg-3 text-13">

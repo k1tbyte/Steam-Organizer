@@ -67,7 +67,7 @@ Mockup vars map to kit tokens one to one; this table is the whole translation (`
 | weight 650 / 600 / 500, `-0.01em` | `font-title` / `font-semibold` / `font-medium`, `tracking-title` |
 | `'Geist Mono'` | `font-mono` |
 | 11px 600 `.14em` uppercase | `FpEyebrow` |
-| hairline row, label + hint + control | `FpFormRow`, `FpListRow` inside `FpCard flush` |
+| hairline row, label + hint + control | `FpFormRow` (`#leading` icon, `compact` list rows, `inline` keeps a switch beside its label on phones), `FpListRow` inside `FpCard flush` |
 | a pressable row or card | a plain `<button>` or `RouterLink` without own fill and padding |
 
 - Controls come from the kit, sized by `size`: buttons sm 32, md 34, lg 36, xl 40, 2xl 52px; fields sm 34, md 40, lg 48px. Match the frame's height with the size, never a class.

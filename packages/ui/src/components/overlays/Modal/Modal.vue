@@ -169,6 +169,7 @@ function onWrapperPointerUp(event: PointerEvent) {
                     <DialogContent
                         class="fp-modal-shell shell flex w-[min(92vw,28rem)] justify-center outline-none"
                         :style="width ? { width } : undefined"
+                        v-bind="description ? {} : { 'aria-describedby': undefined }"
                         @escape-key-down="onEscapeKeyDown"
                         @interact-outside="onInteractOutside">
                         <div

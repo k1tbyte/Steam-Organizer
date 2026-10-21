@@ -17,6 +17,8 @@ const props = withDefaults(
         disabled?: boolean
         /** Advisory ring (a missing translation): never sets aria-invalid. */
         warning?: boolean
+        /** Success ring for a value that checks out (a repeated password); an invalid field still wins. */
+        valid?: boolean
         autocomplete?: string
     }>(),
     { type: 'text', size: 'md', autocomplete: 'off' },
@@ -63,7 +65,8 @@ defineExpose({
     <label
         class="inline-flex w-full cursor-text items-center gap-2 text-fg-1"
         :class="[!bare && ['field rounded', FIELD_SIZES[size]], disabled && 'pointer-events-none opacity-50']"
-        :data-warning="warning || undefined">
+        :data-warning="warning || undefined"
+        :data-valid="valid || undefined">
         <span v-if="$slots.leading" class="flex shrink-0 items-center text-15 text-fg-3">
             <slot name="leading" />
         </span>
