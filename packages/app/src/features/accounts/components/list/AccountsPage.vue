@@ -14,10 +14,7 @@ import AccountsEmpty from './AccountsEmpty.vue'
 import AccountsFilterBar from './AccountsFilterBar.vue'
 import AccountsGrid from './AccountsGrid.vue'
 import AccountsSearch from './AccountsSearch.vue'
-import BanFilterChips from './BanFilterChips.vue'
-import CardFieldsPanel from './CardFieldsPanel.vue'
 import RefreshActivity from './RefreshActivity.vue'
-import SortMenu from './SortMenu.vue'
 
 const { t } = useI18n()
 const desktop = useDesktopLayout()
@@ -29,16 +26,7 @@ const addOverlay = useAddAccountOverlay()
 <template>
     <PageTopbar :title="t('Accounts')" :count="list.count.value">
         <template #status><SyncStatus /></template>
-        <template #center>
-            <AccountsSearch />
-            <div v-if="!desktop" class="-mx-4 mt-2.5 flex items-center gap-1.5 overflow-x-auto px-4">
-                <SortMenu />
-                <span class="mx-0.5 h-5 w-px shrink-0 bg-stroke-1" />
-                <BanFilterChips />
-                <span class="mx-0.5 h-5 w-px shrink-0 bg-stroke-1" />
-                <CardFieldsPanel />
-            </div>
-        </template>
+        <template #center><AccountsSearch /></template>
         <template #actions>
             <RefreshActivity
                 v-if="list.refresh.value"
@@ -53,9 +41,9 @@ const addOverlay = useAddAccountOverlay()
                 <FpIcon name="icon-[lucide--plus]" />
             </FpButton>
         </template>
-        <template #strip><AccountsFilterBar /></template>
     </PageTopbar>
 
+    <AccountsFilterBar />
     <FpAsyncView :status="list.status.value">
         <AccountsGrid :pinned="list.pinned.value" :rest="list.rest.value" @toggle-pin="list.togglePin" />
         <template #empty>
