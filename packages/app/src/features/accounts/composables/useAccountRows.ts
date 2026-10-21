@@ -1,5 +1,5 @@
 import { useVirtualizer } from '@tanstack/vue-virtual'
-import { useElementSize } from '@vueuse/core'
+import { useResizeObserver } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { computed, type Ref, ref, watch } from 'vue'
 
@@ -31,7 +31,19 @@ export function useAccountRows(
     const { flags } = storeToRefs(useCardFieldsStore())
     const metrics = useCardMetrics(flags)
     const root = useScrollRoot()
-    const { width } = useElementSize(list)
+    const width = ref(0)
+    useResizeObserver(list, ([entry]) => {
+        if (entry) width.value = entry.contentRect.width
+    })
+    // The observer waits a frame, which a View Transition holds, so Back would capture one column
+    // (`useElementSize` resets its mount read to 0). Read at once, fractional like the observer.
+    watch(
+        list,
+        (el) => {
+            width.value = el ? Number.parseFloat(getComputedStyle(el).width) : 0
+        },
+        { flush: 'post' },
+    )
 
     const gap = computed(() => metrics.gapUnits.value * metrics.unit.value)
     const columns = computed(() => columnsFor(width.value, gap.value))
