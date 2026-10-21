@@ -7,7 +7,7 @@ Steam account manager: encrypted vault, Steam profiles, Steam Guard codes, Drive
 | `packages/ui` | `@so/ui`: the Fp* kit (Vue + Reka UI + Tailwind v4), tokens and theme engine |
 | `packages/app` | `@so/app`: features, core infra, router, i18n; `mountApp(el, { platform, history })` |
 | `apps/web` | PWA shell |
-| `apps/extension` | WXT shell: full app as the unlisted page `app.html`, background; popup later |
+| `apps/extension` | WXT shell: full app as the unlisted page `app.html`, the toolbar popup (`mountPopup`), the autofill content script on Steam login pages (`mountAutofill`, a shadow root), the background that opens the app for them |
 | `artifacts/` | local only: `mockup/` (design source of truth), `legacy/` (old React app, reference), `shots/`, `orch/` |
 
 ## Commands

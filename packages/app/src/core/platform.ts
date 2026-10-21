@@ -5,6 +5,8 @@ export interface Platform {
     kind: 'web' | 'extension'
     /** null: Steam API is unreachable (web has no CORS-free fetch). */
     fetch: typeof fetch | null
+    /** Opens the full app at a route path; absent where the app already is the page. */
+    openApp?: (path: string) => void
 }
 
 export const PLATFORM: InjectionKey<Platform> = Symbol('platform')

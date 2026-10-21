@@ -115,15 +115,23 @@
     }
 
     /* Floats and dialogs; radius comes from the component. */
-    .surface-pop {
+    .surface-pop,
+    .surface-float {
         background: var(--surf-pop);
         -webkit-backdrop-filter: var(--pop-filter);
         backdrop-filter: var(--pop-filter);
         box-shadow: var(--elev-1);
     }
 
+    /* A float that is no popper (injected into a host page): the popover's radius, clipped. */
+    .surface-float {
+        border-radius: calc(var(--radius-base) * 0.75);
+        overflow: hidden;
+    }
+
     /* An outer backdrop filter is a backdrop root: an inner one cannot see the stage, only costs a pass. */
-    :is(.surface, .surface-pop) :is(.surface, .surface-pop) {
+    :is(.surface, .surface-pop, .surface-float)
+    :is(.surface, .surface-pop, .surface-float) {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
     }

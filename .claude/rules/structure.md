@@ -5,7 +5,7 @@ paths:
 
 # App structure
 
-`packages/app` is the one Vue app; shells (`apps/web`, `apps/extension`) only call `mountApp` with their `Platform` and router history. The app never imports a shell, and branches on `usePlatform()` (`kind`, `fetch === null` on web), never on build flags.
+`packages/app` is the one Vue app; shells (`apps/web`, `apps/extension`) only call `mountApp` (the extension also `mountPopup` and `mountAutofill`) with their `Platform` and, for the app, router history. The app never imports a shell, and branches on `usePlatform()` (`kind`, `fetch === null` on web), never on build flags.
 
 ## Feature slices
 

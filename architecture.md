@@ -53,6 +53,7 @@ Each shell has its own entry and passes its adapter. Only that adapter is import
 interface Platform {
   fetch: typeof fetch | null        // null = Steam API unavailable (web)
   getGoogleToken(): Promise<string> // OAuth differs per shell
+  openApp?(path: string): void      // popup and content script: open the full app at a route
 }
 ```
 

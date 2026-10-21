@@ -6,5 +6,10 @@
         "verbatimModuleSyntax": true,
         "skipLibCheck": true
     },
-    "include": ["entrypoints/**/*.ts", "wxt.config.ts", ".wxt/wxt.d.ts"]
+    "include": [
+        "entrypoints/**/*.ts",
+        "utils/**/*.ts",
+        "wxt.config.ts",
+        ".wxt/wxt.d.ts"
+    ]
 }
