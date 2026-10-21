@@ -89,7 +89,7 @@ html[data-route-motion^='hero']::view-transition-new(root) {
 html[data-route-motion^='hero']::view-transition-group(account-hero) {
     overflow: clip;
     border-radius: var(--radius-lg);
-    /* The card's own surface: --surf-pop is opaque and tinted under Subtle and Glass. */
+    /* The card's own surface, not the float tint of --surf-pop. */
     background: var(--surf-bg);
     backdrop-filter: var(--surf-filter);
     animation-duration: var(--dur-slow);

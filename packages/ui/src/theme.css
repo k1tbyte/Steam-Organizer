@@ -173,14 +173,15 @@
     --tint: 0;
 }
 
-/* Subtle: translucent washes with a light blur; floats stay unblurred. */
+/* Subtle: translucent washes with a light blur; floats frost in dark, stay opaque in light. */
 :root[data-surface="subtle"] {
     --surf-bg: color-mix(in oklch, white 3.5%, transparent);
     --surf-bg-hi: color-mix(in oklch, white 6.5%, transparent);
     --surf-hover: color-mix(in oklch, white 5%, transparent);
     --bg-elev: color-mix(in oklch, white 2%, transparent);
-    --surf-pop: oklch(from var(--accent) 0.19 var(--tint) h);
+    --surf-pop: transparent;
     --surf-filter: blur(6px);
+    --pop-filter: blur(24px);
 }
 
 :root[data-mode="light"][data-surface="subtle"] {
@@ -189,6 +190,7 @@
     --surf-hover: color-mix(in oklch, black 3.2%, transparent);
     --bg-elev: color-mix(in oklch, black 1.5%, transparent);
     --surf-pop: oklch(1 0 0);
+    --pop-filter: none;
 }
 
 :root[data-surface="glass"] {

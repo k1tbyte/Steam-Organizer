@@ -20,15 +20,19 @@ const model = defineModel<string>({ required: true })
 </template>
 
 <style scoped>
+/* A hollow ring: a gap painted with --surf-pop would let the ring bleed through a translucent panel. */
 .swatch {
-    box-shadow:
-        0 0 0 2px var(--surf-pop),
-        0 0 0 4px transparent;
-    transition: box-shadow var(--dur-fast) var(--ease-out);
+    position: relative;
 }
-.swatch[data-selected] {
-    box-shadow:
-        0 0 0 2px var(--surf-pop),
-        0 0 0 4px var(--text-1);
+.swatch::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px solid transparent;
+    border-radius: inherit;
+    transition: border-color var(--dur-fast) var(--ease-out);
+}
+.swatch[data-selected]::after {
+    border-color: var(--text-1);
 }
 </style>

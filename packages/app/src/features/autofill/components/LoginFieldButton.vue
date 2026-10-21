@@ -14,7 +14,7 @@ const { t } = useI18n()
         square
         size="sm"
         variant="outline"
-        class="pointer-events-auto fixed bg-surface-pop! hover:bg-surface-hi!"
+        class="pointer-events-auto fixed bg-surface-pop! backdrop-pop hover:bg-surface-hi!"
         :aria-label="t('Steam Organizer')"
         :aria-expanded="open"
         @click="$emit('toggle')">
