@@ -27,12 +27,13 @@ const modeLabel = computed(
         placement="top-end"
         width="min(92vw, 20rem)"
         max-height="min(36rem, calc(100svh - 6rem))">
+        <!-- Rides above the phone dock, like toasts. -->
         <FpButton
             size="sm"
             round
             variant="soft"
             color="accent"
-            class="fixed right-3 bottom-3 layer-float">
+            class="fixed right-3 bottom-3 mb-(--toast-offset-bottom) layer-float">
             <FpIcon name="icon-[lucide--flask-conical]" aria-hidden="true" />
             {{ modeLabel }}
         </FpButton>
