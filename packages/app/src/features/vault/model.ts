@@ -1,0 +1,46 @@
+/** `new`: no vault yet (onboarding), `locked`: unlock screen, `unlocked`: the app. */
+export type SessionState = 'new' | 'locked' | 'unlocked'
+
+export type VaultLocation = 'device' | 'drive' | 'folder'
+
+export const LOCATION_ICON: Record<VaultLocation, string> = {
+    device: 'icon-[lucide--hard-drive]',
+    drive: 'icon-[simple-icons--googledrive]',
+    folder: 'icon-[lucide--folder-open]',
+}
+
+export type UnlockMethod = 'bio' | 'pin' | 'pw'
+
+export interface VaultSummary {
+    id: string
+    name: string
+    location: VaultLocation
+    /** The picker's second line: size and where it lives or last synced. */
+    meta: string
+    methods: UnlockMethod[]
+}
+
+export type Credential =
+    | { method: 'bio' }
+    | { method: 'pin'; pin: string }
+    | { method: 'pw'; password: string }
+
+export interface DriveAccount {
+    name: string
+    email: string
+}
+
+export interface DriveBackups {
+    latest: { date: string; meta: string; accounts: number }
+    /** Older backups beyond the latest. */
+    others: number
+}
+
+declare module 'vue-router' {
+    interface RouteMeta {
+        /** Session states that may open the page; unset means unlocked only. */
+        vaultAccess?: SessionState[]
+        /** Position in the create-vault path; Welcome and Restore sit outside it. */
+        onboardingStep?: 1 | 2 | 3
+    }
+}

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type Tone = 'accent' | 'success' | 'warning' | 'danger'
+type Tone = 'accent' | 'success' | 'warning' | 'danger' | 'neutral'
 
 withDefaults(
     defineProps<{
@@ -17,12 +17,14 @@ const FILL: Record<Tone, string> = {
     success: 'bg-success',
     warning: 'bg-warning',
     danger: 'bg-danger',
+    neutral: 'bg-fg-3',
 }
 const INK: Record<Tone, string> = {
     accent: 'text-accent-ink',
     success: 'text-success',
     warning: 'text-warning',
     danger: 'text-danger',
+    neutral: 'text-fg-3',
 }
 </script>
 

@@ -15,4 +15,4 @@ Mockup: `Accounts.dc.html` (Desktop, Mobile), `Backups.dc.html` (Backups · Desk
 |---|---|---|---|
 | `shell.sync` (Synced, Syncing, Error, Offline) | `SyncStatus`: dot and label, with the age on phones | the backups feature's sync service | `useSyncStatus` |
 
-Unwired intents: the rail's Lock button (the vault feature's lock), Bots (planned, disabled).
+The rail's Lock button calls `useVaultSession().lock` from `#features/vault`. Unwired intents: Bots (planned, disabled).
