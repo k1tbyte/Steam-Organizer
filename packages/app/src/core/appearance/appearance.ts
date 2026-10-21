@@ -89,6 +89,9 @@ export const APPEARANCE_PREFS = {
 
 export type PrefName = keyof typeof APPEARANCE_PREFS
 
+// Endonyms: each language names itself, never translated.
+export const LANGUAGE_NAMES = { en: 'English', ru: 'Русский' } as const
+
 // Literal unions where the table lists them, so a setter rejects a typo.
 export type PrefValue<K extends PrefName> =
     ((typeof APPEARANCE_PREFS)[K] extends { values: readonly (infer V)[] }

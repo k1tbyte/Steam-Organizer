@@ -1,9 +1,15 @@
 import { createPinia } from 'pinia'
-import { createApp } from 'vue'
+import { createApp, watch } from 'vue'
 import type { RouterHistory } from 'vue-router'
 
 import App from './App.vue'
-import { PLATFORM, type Platform, restoreAppearance, startMocks } from './core'
+import {
+    PLATFORM,
+    type Platform,
+    restoreAppearance,
+    startMocks,
+    useAppearancePref,
+} from './core'
 import { i18n } from './i18n'
 import { createAppRouter } from './router'
 
@@ -19,9 +25,16 @@ export function mountApp(
     { platform, history }: MountOptions,
 ) {
     startMocks(import.meta.env.DEV)
-    // Before mount: the first paint is already themed and `lang` is already the stored language.
+    // Before mount: the first paint is already themed.
     restoreAppearance()
-    i18n.global.locale.value = document.documentElement.lang as 'en'
+    // The locale follows the language pref; screens only set the pref.
+    watch(
+        useAppearancePref('language').state,
+        (language) => {
+            i18n.global.locale.value = language
+        },
+        { immediate: true },
+    )
     return createApp(App)
         .use(createPinia())
         .use(createAppRouter(history))

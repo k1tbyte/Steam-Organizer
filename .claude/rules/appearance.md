@@ -18,7 +18,7 @@ Nine device-local knobs restyle the whole app live: the kit reads them from `<ht
 | radius | 16, range 0 to 24 | `--radius-base` in px | `so:radius` |
 | density | `comfortable`, `compact`, `spacious` | `data-density` | `so:density` |
 | reduce motion | `false`, `true` | `data-reduce-motion` | `so:reduce-motion` |
-| language | `en`, `ru` | `lang` always set; `index.ts` also sets the i18n locale | `so:lang` |
+| language | `en`, `ru` | `lang` always set; the i18n locale follows the pref (a watch in `index.ts`), so screens only set the pref; names in `LANGUAGE_NAMES` | `so:lang` |
 
 - `APPEARANCE_PREFS` in `appearance.ts` is the single source: key, target, allowed values or range, default. A new knob is one entry plus its CSS in the kit; `applyPref` and `useAppearancePref` need no change.
 - A default value removes its attribute or property, so CSS falls back to the base tokens and storage holds only deviations. A stored value outside the table reads as the default (`parsePref`).

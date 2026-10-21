@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import {
+    LANGUAGE_NAMES,
     type PrefValue,
     reportError,
     useAppearancePref,
@@ -11,7 +12,7 @@ import {
 } from '#core'
 
 export function useAppearanceSection() {
-    const { t, locale } = useI18n()
+    const { t } = useI18n()
     const mode = useAppearancePref('mode')
     const accent = useAppearancePref('accent')
     const tint = useAppearancePref('tint')
@@ -55,7 +56,9 @@ export function useAppearanceSection() {
         item('comfortable', t('Comfortable')),
         item('spacious', t('Spacious')),
     ])
-    const languageItems = [item('en', 'English'), item('ru', 'Русский')]
+    const languageItems = Object.entries(LANGUAGE_NAMES).map(([value, label]) =>
+        item(value as PrefValue<'language'>, label),
+    )
 
     // The theme reveal grows from the press, which lands before the group emits.
     let pressed: RevealOrigin
@@ -75,11 +78,6 @@ export function useAppearanceSection() {
     const radiusPx = computed(() => Number(radius.state.value))
     function setRadius(px: number) {
         radius.set(String(px))
-    }
-
-    function setLanguage(value: PrefValue<'language'>) {
-        language.set(value)
-        locale.value = value
     }
 
     const isImage = computed(() => background.state.value === 'image')
@@ -129,6 +127,6 @@ export function useAppearanceSection() {
         setMotionReduced: motion.setReduced,
         language: language.state,
         languageItems,
-        setLanguage,
+        setLanguage: language.set,
     }
 }

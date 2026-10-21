@@ -1,34 +1,20 @@
 import type { DropdownItem } from '@so/ui'
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 
-import { useAppearancePref } from '#core'
+import { LANGUAGE_NAMES, type PrefValue, useAppearancePref } from '#core'
 
-const LANGUAGES = [
-    { value: 'en', label: 'English' },
-    { value: 'ru', label: 'Русский' },
-] as const
-
-/** The device-local language pref, shared with Settings: only the locale value changes until translations land. */
+/** The device-local language pref, the same one Settings › Appearance edits. */
 export function useLanguageMenu() {
-    const { locale } = useI18n()
     const language = useAppearancePref('language')
 
     const items = computed<DropdownItem[]>(() =>
-        LANGUAGES.map(({ value, label }) => ({
+        Object.entries(LANGUAGE_NAMES).map(([value, label]) => ({
             label,
             checked: value === language.state.value,
-            onSelect() {
-                language.set(value)
-                locale.value = value
-            },
+            onSelect: () => language.set(value as PrefValue<'language'>),
         })),
     )
-    const current = computed(
-        () =>
-            LANGUAGES.find((item) => item.value === language.state.value)
-                ?.label,
-    )
+    const current = computed(() => LANGUAGE_NAMES[language.state.value])
 
     return { items, current }
 }
