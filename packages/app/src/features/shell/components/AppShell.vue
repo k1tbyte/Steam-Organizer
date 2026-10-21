@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { FpScrollArea, useDesktopLayout } from '@so/ui'
-import { useTemplateRef } from 'vue'
+import { useDesktopLayout } from '@so/ui'
+import { shallowRef } from 'vue'
 
-import { useTopbarOutlets } from '#core'
+import { providePage, useTopbarOutlets } from '#core'
 import { SettingsHost } from '#features/settings'
 
 import { useShellNav } from '../composables/useShellNav'
-import { useShellScroll } from '../composables/useShellScroll'
 import ShellPages from './ShellPages.vue'
 import ShellRail from './ShellRail.vue'
 import ShellTabBar from './ShellTabBar.vue'
@@ -15,10 +14,9 @@ const desktop = useDesktopLayout()
 const { showTabBar } = useShellNav()
 const { bind } = useTopbarOutlets()
 
-// Overlay bars on desktop; phones keep the native scroller.
-const desktopScroll = useTemplateRef('desktopScroll')
-const phoneScroll = useTemplateRef('phoneScroll')
-useShellScroll(() => desktopScroll.value?.viewport ?? phoneScroll.value)
+// The shell's own readers (the dock) follow the current page's scroller.
+const scroller = shallowRef<HTMLElement | null>(null)
+providePage({ scroller, active: shallowRef(true) })
 </script>
 
 <template>
@@ -34,9 +32,9 @@ useShellScroll(() => desktopScroll.value?.viewport ?? phoneScroll.value)
                     <div :ref="bind.actions" class="flex items-center gap-2.5" />
                 </div>
             </header>
-            <FpScrollArea ref="desktopScroll" as="main" class="min-h-0 flex-1">
-                <ShellPages />
-            </FpScrollArea>
+            <main class="min-h-0 flex-1">
+                <ShellPages v-model:scroller="scroller" />
+            </main>
         </div>
     </div>
     <div v-else class="safe-pt flex h-dvh flex-col">
@@ -49,11 +47,8 @@ useShellScroll(() => desktopScroll.value?.viewport ?? phoneScroll.value)
             <div :ref="bind.actions" class="flex items-center gap-1" />
         </header>
         <div :ref="bind.center" class="shrink-0 px-4 pb-2.5 empty:hidden" />
-        <main
-            ref="phoneScroll"
-            class="relative min-h-0 flex-1 overflow-y-auto"
-            :class="showTabBar && 'pb-(--dock-clear)'">
-            <ShellPages />
+        <main class="min-h-0 flex-1">
+            <ShellPages v-model:scroller="scroller" />
         </main>
         <ShellTabBar v-if="showTabBar" />
     </div>

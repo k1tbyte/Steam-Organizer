@@ -36,7 +36,7 @@ function look(item: ShellNavItem) {
     </nav>
 </template>
 
-<!-- The shell raises phone toasts above the dock; the dock's clearance also pads the scroller (AppShell). -->
+<!-- The shell raises phone toasts above the dock; the dock's clearance also pads each page's scroller (ShellLayer). -->
 <style>
 :root {
     --dock-h: 3.75rem;

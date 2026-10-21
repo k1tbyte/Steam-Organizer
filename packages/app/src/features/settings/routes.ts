@@ -8,7 +8,7 @@ export const settingsRoutes: RouteRecordRaw[] = [
     {
         path: 'settings',
         component: () => import('./components/SettingsMobileIndex.vue'),
-        meta: { nav: 'settings' },
+        meta: { nav: 'settings', resident: true },
     },
     {
         path: 'settings/:section',

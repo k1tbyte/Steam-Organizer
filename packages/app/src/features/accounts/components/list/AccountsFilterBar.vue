@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { FpButton, FpIcon, FpTooltip, useDesktopLayout } from '@so/ui'
 import { useScroll } from '@vueuse/core'
-import { ref, watchEffect } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
 
 import { useScrollRoot } from '#core'
 
@@ -17,14 +16,8 @@ const { t } = useI18n()
 const desktop = useDesktopLayout()
 
 // Transparent over the page top, as in the mockup; the rail's surface once cards scroll under it.
-// A leaving page keeps its look: the shared scroller already belongs to the next one.
-const route = useRoute()
-const ownPath = route.path
 const { arrivedState } = useScroll(useScrollRoot())
-const scrolled = ref(false)
-watchEffect(() => {
-    if (route.path === ownPath) scrolled.value = !arrivedState.top
-})
+const scrolled = computed(() => !arrivedState.top)
 </script>
 
 <template>

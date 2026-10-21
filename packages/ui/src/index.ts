@@ -98,6 +98,7 @@ export { default as FpTooltip } from './components/overlays/Tooltip.vue'
 export { useCenterActive } from './composables/useCenterActive'
 export { useDesktopLayout } from './composables/useDesktopLayout'
 export { useHold } from './composables/useHold'
+export { provideOverlayGate } from './composables/useOverlayGate'
 export {
     FREE,
     type ResizeStop,

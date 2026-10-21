@@ -15,5 +15,7 @@ declare module 'vue-router' {
         tabBar?: boolean
         /** A detail page its list item morphs into on desktop; the `:id` param names the item. */
         hero?: boolean
+        /** A section root the shell keeps mounted once visited, hidden while another page is current. */
+        resident?: boolean
     }
 }

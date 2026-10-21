@@ -9,6 +9,7 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from 'reka-ui'
+import { useOverlayGate } from '../../composables/useOverlayGate'
 
 const props = withDefaults(
     defineProps<{
@@ -22,6 +23,7 @@ const props = withDefaults(
 )
 
 const open = defineModel<boolean>('open', { default: false })
+useOverlayGate(open)
 
 // A non-dismissible sheet refuses every user close (swipe, outside press, Escape).
 function onOpenChange(value: boolean, details?: { cancel(): void }) {

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { useDesktopLayout } from '@so/ui'
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 
-import { useTopbarOutlets } from '#core'
+import { usePageActive, useTopbarOutlets } from '#core'
 
 defineProps<{ title: string; count?: string }>()
 
@@ -13,10 +12,8 @@ const desktop = useDesktopLayout()
 const backTarget = computed(() =>
     desktop.value ? targets.title.value : targets.back.value,
 )
-// A page leaving through the route transition still renders: only the current page fills the topbar.
-const route = useRoute()
-const ownPath = route.path
-const owns = computed(() => route.path === ownPath)
+// Pages kept behind the current one or leaving still render: only the current page fills the topbar.
+const owns = usePageActive()
 </script>
 
 <!-- Renders nothing in place: each part lands in the shell's topbar once the shell has mounted it. -->

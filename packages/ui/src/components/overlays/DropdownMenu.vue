@@ -13,6 +13,7 @@ import {
     DropdownMenuTrigger,
 } from 'reka-ui'
 import { computed } from 'vue'
+import { useOverlayGate } from '../../composables/useOverlayGate'
 import { ARROW_PADDING, FLOAT_GAP, type Placement, splitPlacement } from '../../placement'
 import FpScrollArea from '../display/layout/ScrollArea.vue'
 import { keyItems } from './dropdownKeys'
@@ -50,6 +51,7 @@ const props = withDefaults(
 const anchor = computed(() => splitPlacement(props.placement))
 
 const open = defineModel<boolean>('open', { default: false })
+useOverlayGate(open)
 
 const groups = computed<DropdownGroup[]>(() => {
     const first = props.items[0]

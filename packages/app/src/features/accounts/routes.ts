@@ -4,6 +4,6 @@ export const accountsRoutes: RouteRecordRaw[] = [
     {
         path: '',
         component: () => import('./components/list/AccountsPage.vue'),
-        meta: { nav: 'accounts' },
+        meta: { nav: 'accounts', resident: true },
     },
 ]

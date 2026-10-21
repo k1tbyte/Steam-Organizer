@@ -8,6 +8,7 @@ import {
     DialogTitle,
 } from 'reka-ui'
 import { computed, useTemplateRef } from 'vue'
+import { useOverlayGate } from '../../../composables/useOverlayGate'
 import { useMotionLevel } from '../../../motion'
 import ModalClose from './ModalClose.vue'
 import { useModalStack } from './modal-stack'
@@ -30,6 +31,7 @@ const props = withDefaults(
 )
 
 const open = defineModel<boolean>('open', { default: false })
+useOverlayGate(open)
 
 // Back cards adopt the top card's size; deeper cards hide.
 const LAYER_PEEK_PX = 16

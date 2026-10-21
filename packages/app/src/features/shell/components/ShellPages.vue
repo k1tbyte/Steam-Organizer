@@ -1,19 +1,22 @@
 <script setup lang="ts">
-import { useRouteMotion } from '../composables/useRouteMotion'
+import { useTemplateRef } from 'vue'
 
-const motion = useRouteMotion()
+import { useShellLayers } from '../composables/useShellLayers'
+import ShellLayer from './ShellLayer.vue'
+
+const scroller = defineModel<HTMLElement | null>('scroller')
+const stage = useTemplateRef('stage')
+const { layers, stateOf, kind, style } = useShellLayers(stage)
 </script>
 
 <template>
-    <div class="stage" :data-page-motion="motion.kind.value" :style="motion.style.value">
-        <RouterView v-slot="{ Component, route }">
-            <!-- Without a motion the pages swap at once: no frame with both in the flow. -->
-            <Transition name="page" :css="motion.animated.value" v-bind="motion.hooks">
-                <div :key="route.path">
-                    <component :is="Component" />
-                </div>
-            </Transition>
-        </RouterView>
+    <div ref="stage" class="stage" :data-page-motion="kind" :style="style">
+        <ShellLayer
+            v-for="layer in layers"
+            :key="layer.key"
+            :route="layer.route"
+            :state="stateOf(layer.key)"
+            @scroller="scroller = $event" />
     </div>
 </template>
 
@@ -21,51 +24,62 @@ const motion = useRouteMotion()
 <style scoped>
 .stage {
     position: relative;
+    height: 100%;
     overflow: clip;
 }
-/* A short entering page would clip the move: the stage spans the viewport while pages switch. */
-.stage[data-page-motion] {
-    min-height: var(--page-h);
-}
-.stage > .page-leave-active {
-    position: absolute;
-    inset-inline: 0;
+/* Kept with its layout and offsets, but no style, layout or paint work while hidden. */
+.stage > [data-layer='hidden'] {
+    content-visibility: hidden;
 }
 
-.stage:is([data-page-motion^='slide'], [data-page-motion='drill']) > :is(.page-enter-active, .page-leave-active) {
-    transition: translate var(--dur-slow) var(--ease-move);
+.stage:is([data-page-motion^='slide'], [data-page-motion='drill']) > [data-layer='enter'] {
+    animation: page-move-in var(--dur-slow) var(--ease-move);
 }
-.stage[data-page-motion='slide-y'] > .page-enter-from {
-    translate: 0 calc(var(--route-dir) * var(--page-h));
+.stage:is([data-page-motion^='slide'], [data-page-motion='drill']) > [data-layer='leave'] {
+    animation: page-move-out var(--dur-slow) var(--ease-move) forwards;
 }
-.stage[data-page-motion='slide-y'] > .page-leave-to {
-    translate: 0 calc(var(--route-dir) * var(--page-h) * -1);
+.stage[data-page-motion^='shift'] > [data-layer='enter'] {
+    animation: page-shift-in var(--dur-base) var(--ease-out);
 }
-.stage:is([data-page-motion='slide-x'], [data-page-motion='drill']) > .page-enter-from {
-    translate: calc(var(--route-dir) * 100%) 0;
-}
-.stage:is([data-page-motion='slide-x'], [data-page-motion='drill']) > .page-leave-to {
-    translate: calc(var(--route-dir) * -100%) 0;
+.stage[data-page-motion^='shift'] > [data-layer='leave'] {
+    animation: page-fade-out var(--dur-fast) var(--ease-in) forwards;
 }
 
-.stage[data-page-motion^='shift'] > .page-enter-active {
-    transition:
-        translate var(--dur-base) var(--ease-out),
-        opacity var(--dur-base) var(--ease-out);
+.stage[data-page-motion='slide-y'] {
+    --page-from: 0 calc(var(--route-dir) * 100%);
+    --page-to: 0 calc(var(--route-dir) * -100%);
 }
-.stage[data-page-motion^='shift'] > .page-leave-active {
-    transition: opacity var(--dur-fast) var(--ease-in);
+.stage:is([data-page-motion='slide-x'], [data-page-motion='drill']) {
+    --page-from: calc(var(--route-dir) * 100%) 0;
+    --page-to: calc(var(--route-dir) * -100%) 0;
 }
-.stage[data-page-motion='shift-y'] > .page-enter-from {
-    translate: 0 calc(var(--route-dir) * var(--shift-travel));
-    opacity: 0;
+.stage[data-page-motion='shift-y'] {
+    --page-from: 0 calc(var(--route-dir) * var(--shift-travel));
 }
-.stage[data-page-motion='shift-x'] > .page-enter-from {
-    translate: calc(var(--route-dir) * var(--shift-travel)) 0;
-    opacity: 0;
+.stage[data-page-motion='shift-x'] {
+    --page-from: calc(var(--route-dir) * var(--shift-travel)) 0;
 }
-.stage[data-page-motion^='shift'] > .page-leave-to {
-    opacity: 0;
+
+@keyframes page-move-in {
+    from {
+        translate: var(--page-from);
+    }
+}
+@keyframes page-move-out {
+    to {
+        translate: var(--page-to);
+    }
+}
+@keyframes page-shift-in {
+    from {
+        translate: var(--page-from);
+        opacity: 0;
+    }
+}
+@keyframes page-fade-out {
+    to {
+        opacity: 0;
+    }
 }
 </style>
 

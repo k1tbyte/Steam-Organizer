@@ -4,6 +4,6 @@ export const backupsRoutes: RouteRecordRaw[] = [
     {
         path: 'backups',
         component: () => import('./components/BackupsPage.vue'),
-        meta: { nav: 'backups' },
+        meta: { nav: 'backups', resident: true },
     },
 ]

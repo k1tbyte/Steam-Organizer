@@ -1,25 +1,20 @@
 import { motionLevel, useDesktopLayout } from '@so/ui'
-import { computed, nextTick, onScopeDispose, ref } from 'vue'
+import { nextTick, onScopeDispose, shallowRef } from 'vue'
 import { type RouteLocationNormalized, useRouter } from 'vue-router'
 
-import { setRouteHero, useScrollRoot } from '#core'
+import { setRouteHero } from '#core'
 
 import { pickRouteMotion, type RouteMotion } from '../services/routeMotion'
 import { useShellNav } from './useShellNav'
 
-/** The page transition: which motion the next route change plays, and the hooks that keep the
- *  leaving page where it was while both pages share the one scroller. A hero change is the
- *  exception: it swaps the pages inside a View Transition instead. */
+/** Which motion the next route change plays; the shell's layers clear it once they settle. A hero
+ *  change is the exception: it swaps the pages inside a View Transition instead. */
 export function useRouteMotion() {
     const router = useRouter()
     const desktop = useDesktopLayout()
-    const root = useScrollRoot()
     const { main, settingsItem } = useShellNav()
 
-    const motion = ref<RouteMotion | null>(null)
-    const pageHeight = ref(0)
-    // Pages of the latest navigation still animating: a page from an earlier one never clears its motion.
-    const animating = new Set<Element>()
+    const motion = shallowRef<RouteMotion | null>(null)
 
     function pick(to: RouteLocationNormalized, from: RouteLocationNormalized) {
         const level = motionLevel()
@@ -44,7 +39,7 @@ export function useRouteMotion() {
     }
 
     // The navigation waits at `beforeResolve` until the browser has captured the old page, then
-    // commits; `afterEach` lets the new page render and the scroll settle before the second capture.
+    // commits; `afterEach` lets the new page render before the second capture.
     let swapped: (() => void) | null = null
     // A skipped transition still finishes: only the latest one may clear the shared hero state.
     let latestHero = 0
@@ -84,47 +79,14 @@ export function useRouteMotion() {
             done?.()
             return
         }
-        animating.clear()
-        pageHeight.value = root.value?.clientHeight ?? 0
         const next = pick(to, from)
         motion.value = next?.kind === 'hero' ? null : next
         if (!done) return
-        // Frames are frozen until `done`: the shell restores the scroll on the tick, but a virtual list
-        // only follows a scroll event, which a frozen document never fires.
+        // Frames are frozen until `done`: a first visit mounts on the tick, its virtual rows on the next.
         await nextTick()
-        await nextTick()
-        root.value?.dispatchEvent(new Event('scroll'))
         await nextTick()
         done()
     })
-
-    function start(el: Element) {
-        animating.add(el)
-    }
-    function settle(el: Element) {
-        if (animating.delete(el) && animating.size === 0) motion.value = null
-    }
-
-    // The leaving page leaves the flow: its top follows the scroller, so it stays where the user saw it.
-    const unpins = new Map<Element, () => void>()
-    function pin(el: Element) {
-        start(el)
-        const scroller = root.value
-        if (!scroller) return
-        const page = el as HTMLElement
-        const seen = scroller.scrollTop
-        const follow = () => {
-            page.style.top = `${scroller.scrollTop - seen}px`
-        }
-        follow()
-        scroller.addEventListener('scroll', follow, { passive: true })
-        unpins.set(el, () => scroller.removeEventListener('scroll', follow))
-    }
-    function release(el: Element) {
-        unpins.get(el)?.()
-        unpins.delete(el)
-        settle(el)
-    }
 
     onScopeDispose(() => {
         disposed = true
@@ -132,27 +94,7 @@ export function useRouteMotion() {
         swapped?.()
         stopResolve()
         stopAfter()
-        for (const unpin of unpins.values()) unpin()
     })
 
-    return {
-        kind: computed(() => motion.value?.kind),
-        animated: computed(() => motion.value !== null),
-        style: computed(() =>
-            motion.value
-                ? {
-                      '--route-dir': motion.value.dir,
-                      '--page-h': `${pageHeight.value}px`,
-                  }
-                : undefined,
-        ),
-        hooks: {
-            onBeforeEnter: start,
-            onAfterEnter: settle,
-            onEnterCancelled: settle,
-            onBeforeLeave: pin,
-            onAfterLeave: release,
-            onLeaveCancelled: release,
-        },
-    }
+    return motion
 }

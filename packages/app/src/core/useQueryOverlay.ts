@@ -8,6 +8,8 @@ import {
 } from 'vue'
 import { type RouteLocationRaw, useRoute, useRouter } from 'vue-router'
 
+import { usePageActive } from './page'
+
 interface QueryOverlayOptions<V extends string> {
     /** Accepted values: an unknown or bare one reads as the first, never a dead URL. */
     values?: readonly V[]
@@ -26,8 +28,10 @@ export function useQueryOverlay<const V extends string = string>(
 ) {
     const route = useRoute()
     const router = useRouter()
+    // A page kept behind the current one still sees the live URL: it neither opens nor writes it.
+    const active = usePageActive()
 
-    const isOpen = computed(() => key in route.query)
+    const isOpen = computed(() => active.value && key in route.query)
 
     function read(): V {
         const raw = route.query[key]
