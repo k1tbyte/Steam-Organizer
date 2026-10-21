@@ -1,0 +1,61 @@
+<script setup lang="ts">
+import { FpIcon } from '@so/ui'
+import { toRef, useTemplateRef } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import { useAccountRows } from '../../composables/useAccountRows'
+import type { Account } from '../../model'
+import AccountCard from '../card/AccountCard.vue'
+
+const props = defineProps<{ pinned: Account[]; rest: Account[] }>()
+const emit = defineEmits<{
+    togglePin: [id: string]
+    editTags: [id: string]
+    delete: [id: string]
+}>()
+
+const { t } = useI18n()
+const list = useTemplateRef('list')
+const grid = useAccountRows(
+    { pinned: toRef(props, 'pinned'), rest: toRef(props, 'rest') },
+    list,
+)
+</script>
+
+<!-- Only the rows near the viewport mount; each sits at its offset in the shell's scroller. -->
+<template>
+    <div class="px-u-6 pb-u-6 max-lg:px-4 max-lg:pb-4">
+        <div ref="list" class="relative" :style="{ height: `${grid.totalSize.value}px` }">
+            <div
+                v-for="item in grid.items.value"
+                :key="item.key"
+                class="absolute inset-x-0 top-0"
+                :class="item.row.kind === 'heading' && item.row.spaced && 'pt-u-2'"
+                :style="{
+                    height: `${item.size}px`,
+                    transform: `translateY(${item.start - grid.margin.value}px)`,
+                }">
+                <h2
+                    v-if="item.row.kind === 'heading'"
+                    class="flex h-4 items-center gap-1.5 px-0.5 font-medium text-12.5 text-fg-3">
+                    <template v-if="item.row.key === 'pinned'">
+                        <FpIcon name="icon-[lucide--pin]" class="text-13" />
+                        {{ t('Pinned') }}
+                    </template>
+                    <template v-else>{{ t('All accounts') }}</template>
+                </h2>
+                <div v-else class="grid items-start" :style="grid.rowStyle.value">
+                    <AccountCard
+                        v-for="account in item.row.accounts"
+                        :key="account.id"
+                        :account="account"
+                        :flags="grid.flags.value"
+                        :touch="grid.touch.value"
+                        @toggle-pin="emit('togglePin', account.id)"
+                        @edit-tags="emit('editTags', account.id)"
+                        @delete="emit('delete', account.id)" />
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
