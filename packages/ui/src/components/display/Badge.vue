@@ -8,6 +8,8 @@ const props = withDefaults(
         label?: string | number
         icon?: string
         color?: SemanticColor
+        /** A hairline ring instead of a fill, for a quiet tag that is not a status. */
+        outline?: boolean
     }>(),
     { color: 'neutral' },
 )
@@ -26,8 +28,8 @@ const COLORS: Record<SemanticColor, string> = {
 
 <template>
     <span
-        class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-1.75 py-px font-semibold text-11"
-        :class="[COLORS[color], bumping && 'animate-bump']"
+        class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-1.75 py-px text-11"
+        :class="[outline ? 'font-medium text-fg-2 ring-1 ring-inset ring-stroke-2' : ['font-semibold', COLORS[color]], bumping && 'animate-bump']"
         @animationend="settle">
         <FpIcon v-if="icon" :name="icon" aria-hidden="true" />
         <slot>{{ label }}</slot>

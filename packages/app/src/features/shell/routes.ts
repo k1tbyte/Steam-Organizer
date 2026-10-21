@@ -14,10 +14,4 @@ export const shellPlaceholderRoutes: RouteRecordRaw[] = [
         props: { screen: 'accounts' },
         meta: { nav: 'accounts' },
     },
-    {
-        path: 'backups',
-        component: () => import('./components/ShellPlaceholder.vue'),
-        props: { screen: 'backups' },
-        meta: { nav: 'backups' },
-    },
 ]

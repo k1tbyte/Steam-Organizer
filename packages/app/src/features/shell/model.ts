@@ -1,11 +1,3 @@
-export type SyncState = 'synced' | 'syncing' | 'error' | 'offline'
-
-export interface SyncSnapshot {
-    state: SyncState
-    /** Relative time of the last good sync, as the status line shows it. */
-    ago: string
-}
-
 export interface ShellNavItem {
     key: string
     label: string

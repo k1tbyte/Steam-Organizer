@@ -38,7 +38,8 @@ const ROLES: Record<StatusColor, string> = {
 
 <template>
     <div
-        class="alert flex w-full items-start gap-2.5 rounded-md px-3.5 py-3"
+        class="alert flex w-full gap-2.5 rounded-md px-3.5 py-3"
+        :class="$slots.trailing ? 'items-center' : 'items-start'"
         :data-color="color"
         :role="ROLES[color]">
         <FpIcon :name="glyph" class="alert-icon mt-px shrink-0 text-15" />
@@ -53,6 +54,9 @@ const ROLES: Record<StatusColor, string> = {
             <div v-if="$slots.actions" class="mt-2.5 flex gap-2">
                 <slot name="actions" />
             </div>
+        </div>
+        <div v-if="$slots.trailing" class="shrink-0">
+            <slot name="trailing" />
         </div>
         <button
             v-if="closable"
