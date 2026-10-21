@@ -70,7 +70,7 @@ Mockup vars map to kit tokens one to one; this table is the whole translation (`
 | hairline row, label + hint + control | `FpFormRow`, `FpListRow` inside `FpCard flush` |
 | a pressable row or card | a plain `<button>` or `RouterLink` without own fill and padding |
 
-- Controls come from the kit, sized by `size`: buttons sm 32, md 34, lg 36, xl 40, 2xl 52px; fields sm 34, md 40, lg 48px. Match the frame's height with the size, never a class.
+- Controls come from the kit, sized by `size`: buttons xs 28, sm 32, md 34, lg 36, xl 40, 2xl 52px; fields sm 34, md 40, lg 48px. Match the frame's height with the size, never a class.
 - A kit primitive's own colors beat an unlayered scoped rule only with an important utility (`text-accent!`).
 - A plain `<button>` is fine as a pressable surface (a row, a card); one with its own fill and padding fails `raw-control`.
 - No token or primitive fits: add it to `packages/ui` (token in `theme.css`), never a literal.

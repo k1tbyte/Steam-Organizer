@@ -9,12 +9,6 @@ export const shellRoute: RouteRecordRaw = {
 // Screens whose feature has not landed yet; each feature replaces its entry.
 export const shellPlaceholderRoutes: RouteRecordRaw[] = [
     {
-        path: '',
-        component: () => import('./components/ShellPlaceholder.vue'),
-        props: { screen: 'accounts' },
-        meta: { nav: 'accounts' },
-    },
-    {
         path: 'backups',
         component: () => import('./components/ShellPlaceholder.vue'),
         props: { screen: 'backups' },

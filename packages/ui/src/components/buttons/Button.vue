@@ -8,7 +8,7 @@ defineOptions({ inheritAttrs: false })
 
 type Variant = 'solid' | 'soft' | 'outline' | 'ghost' | 'link' | 'scrim'
 type Color = Extract<SemanticColor, 'accent' | 'neutral' | 'danger'>
-type Size = 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 
 const props = withDefaults(
     defineProps<{
@@ -48,9 +48,10 @@ function preventInactive(event: MouseEvent) {
     event.stopImmediatePropagation()
 }
 
-// Heights are the mockup's: 32 compact, 34 toolbar, 36 dialog, 40 form row, 52 mobile primary.
+// Heights are the mockup's: 28 chips and popover headers, 32 compact, 34 toolbar, 36 dialog, 40 form row, 52 mobile primary.
 // Text buttons match field heights on touch.
 const SIZES: Record<Size, string> = {
+    xs: 'h-7 px-2.5 text-12.5 touch-control-sm',
     sm: 'h-8 px-3 text-13 touch-control-sm',
     md: 'h-8.5 px-3 text-13 touch-control-md',
     lg: 'h-9 px-4 text-13.5 touch-control-md',
@@ -60,7 +61,8 @@ const SIZES: Record<Size, string> = {
 
 const radius = computed(() => {
     if (props.round) return 'rounded-full'
-    return props.square && props.size === 'sm' ? 'rounded-sm' : 'rounded'
+    const tight = props.size === 'xs' || (props.square && props.size === 'sm')
+    return tight ? 'rounded-sm' : 'rounded'
 })
 </script>
 

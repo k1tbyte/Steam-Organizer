@@ -1,5 +1,6 @@
 // Icon-only controls are fixed squares; the font size is the glyph size. Shared by FpButton and FpSelect.
 export const SQUARE_SIZES = {
+    xs: 'size-7 text-14',
     sm: 'size-7.5 text-15',
     md: 'size-8.5 text-17',
     lg: 'size-10 text-19',
