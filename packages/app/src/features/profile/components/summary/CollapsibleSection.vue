@@ -11,7 +11,7 @@ const { open, toggle } = useProfileSection(() => props.section)
 
 <template>
     <FpCard flush>
-        <!-- The title button stretches over the row; the actions sit above it. -->
+        <!-- The title button stretches over the row; only buttons rise above it, so text and chevron toggle too. -->
         <div class="relative flex h-12.5 items-center gap-2.5 pr-3 pl-4 max-lg:h-13 max-lg:pr-3.5">
             <FpIcon :name="icon" class="text-16 text-fg-3" />
             <button
@@ -23,10 +23,12 @@ const { open, toggle } = useProfileSection(() => props.section)
                 <slot name="meta" />
             </button>
             <span class="flex-1" />
-            <div class="relative z-1"><slot name="actions" /></div>
+            <div class="pointer-events-none relative z-1 [&_button]:pointer-events-auto">
+                <slot name="actions" />
+            </div>
             <FpIcon
                 name="icon-[lucide--chevron-down]"
-                class="text-16 text-fg-3 transition-transform duration-fast"
+                class="pointer-events-none text-16 text-fg-3 transition-transform duration-fast"
                 :class="!open && '-rotate-90'" />
         </div>
         <FpCollapsible :open="open">

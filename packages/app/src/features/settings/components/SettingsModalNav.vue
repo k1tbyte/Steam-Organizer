@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpEyebrow, FpNavMenu, FpScrollArea } from '@so/ui'
+import { FpNavMenu, FpScrollArea } from '@so/ui'
 import logoUrl from '@so/ui/logo.svg'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -13,18 +13,17 @@ defineEmits<{ select: [section: SectionKey] }>()
 const { t } = useI18n()
 const about = useAboutApp()
 
-const menus = computed(() =>
-    props.groups.map((group) => ({
-        key: group.key,
-        title: group.title,
-        items: group.sections.map((section) => ({
+const items = computed(() =>
+    props.groups.flatMap((group) =>
+        group.sections.map((section) => ({
             value: section.key,
             label: section.title,
             icon: section.icon,
             disabled: section.soon,
             badge: section.soon ? t('Soon') : undefined,
+            group: group.title,
         })),
-    })),
+    ),
 )
 </script>
 
@@ -35,14 +34,11 @@ const menus = computed(() =>
             <span class="font-semibold text-15 tracking-title text-fg-1">{{ t('Settings') }}</span>
         </div>
         <FpScrollArea class="min-h-0 flex-1">
-            <div v-for="menu in menus" :key="menu.key">
-                <FpEyebrow class="px-2.5 pt-3.5 pb-1">{{ menu.title }}</FpEyebrow>
-                <FpNavMenu
-                    :items="menu.items"
-                    :model-value="current"
-                    :aria-label="menu.title"
-                    @update:model-value="$emit('select', $event as SectionKey)" />
-            </div>
+            <FpNavMenu
+                :items="items"
+                :model-value="current"
+                :aria-label="t('Settings')"
+                @update:model-value="$emit('select', $event as SectionKey)" />
         </FpScrollArea>
         <div v-if="about" class="flex items-center gap-2 px-2.5 py-2 font-mono text-12 text-fg-3">
             {{ t('v{version}', { version: about.version }) }}

@@ -5,6 +5,6 @@ defineProps<{ to?: string; disabled?: boolean }>()
 </script>
 
 <template>
-    <RouterLink v-if="to && !disabled" :to="to"><slot /></RouterLink>
+    <RouterLink v-if="to && !disabled" :to="to" draggable="false"><slot /></RouterLink>
     <button v-else type="button" :disabled="disabled"><slot /></button>
 </template>

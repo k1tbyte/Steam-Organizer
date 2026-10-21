@@ -59,7 +59,6 @@ const lockDialog = reactive(useLockDialog())
         :nickname="account.nickname"
         :has-lock="details.lock !== null"
         :refreshable="!gate.hidesProfile"
-        :editable="!gate.locked"
         @lock="lockDialog.show" />
 
     <div class="flex flex-col gap-3 px-4 pb-5 lg:gap-u-4 lg:px-u-6 lg:pt-u-5 lg:pb-u-6">

@@ -21,4 +21,4 @@ Mockup: `Profile.dc.html` (Desktop, Mobile, Locked account, Mobile · Locked, Lo
 
 `Sample accounts` derives a profile from any account; a1, a12 and a8 carry the mockup's own. Every other variant edits whichever account is open.
 
-Unwired intents (buttons emit them, nothing listens yet): Refresh, edit account, delete account, change or remove the account password, confirming Lock account (the dialog only closes), add / edit / remove a linked service, edit tags, Import maFile, remove authenticator. Games and Friends are empty states until Steam data arrives.
+Unwired intents (buttons emit them, nothing listens yet): Refresh, edit credentials, delete account, change or remove the account password, confirming Lock account (the dialog only closes), add / edit / remove a linked service, edit tags, Import maFile, remove authenticator. Games and Friends are empty states until Steam data arrives.

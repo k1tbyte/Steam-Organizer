@@ -2,16 +2,11 @@ import type { DropdownItem } from '@so/ui'
 import { computed, type MaybeRefOrGetter, toValue } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-export type ProfileIntent =
-    | 'edit'
-    | 'change-password'
-    | 'remove-password'
-    | 'delete'
+export type ProfileIntent = 'change-password' | 'remove-password' | 'delete'
 
-/** The topbar's more menu: lock or change the account password, edit, delete. */
+/** The topbar's more menu: lock or change the account password, delete. Credentials, note and tags edit in place. */
 export function useProfileMenu(options: {
     hasLock: MaybeRefOrGetter<boolean>
-    editable: MaybeRefOrGetter<boolean>
     lock: () => void
     intent: (kind: ProfileIntent) => void
 }) {
@@ -19,32 +14,26 @@ export function useProfileMenu(options: {
 
     const items = computed<DropdownItem[][]>(() => {
         const { intent } = options
-        const account: DropdownItem[] = []
-        if (toValue(options.editable))
-            account.push({
-                label: t('Edit account'),
-                icon: 'icon-[lucide--pencil]',
-                onSelect: () => intent('edit'),
-            })
-        if (toValue(options.hasLock))
-            account.push(
-                {
-                    label: t('Change account password'),
-                    icon: 'icon-[lucide--key-round]',
-                    onSelect: () => intent('change-password'),
-                },
-                {
-                    label: t('Remove account password'),
-                    icon: 'icon-[lucide--lock-open]',
-                    onSelect: () => intent('remove-password'),
-                },
-            )
-        else
-            account.push({
-                label: t('Lock account'),
-                icon: 'icon-[lucide--lock-keyhole]',
-                onSelect: options.lock,
-            })
+        const account: DropdownItem[] = toValue(options.hasLock)
+            ? [
+                  {
+                      label: t('Change account password'),
+                      icon: 'icon-[lucide--key-round]',
+                      onSelect: () => intent('change-password'),
+                  },
+                  {
+                      label: t('Remove account password'),
+                      icon: 'icon-[lucide--lock-open]',
+                      onSelect: () => intent('remove-password'),
+                  },
+              ]
+            : [
+                  {
+                      label: t('Lock account'),
+                      icon: 'icon-[lucide--lock-keyhole]',
+                      onSelect: options.lock,
+                  },
+              ]
         return [
             account,
             [

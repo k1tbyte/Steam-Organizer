@@ -15,10 +15,11 @@ function title(item: ShellNavItem) {
 }
 
 // The main entries share the gliding highlight; Settings sits at the bottom and keeps its own fill.
+// Only an inactive entry fades: the one the highlight flies to drops its hover at once.
 function look(item: ShellNavItem, ownFill = false) {
     if (item.soon) return 'cursor-default text-fg-faint'
     if (item.key === activeKey.value) return ownFill ? 'bg-accent-soft text-accent-ink' : 'text-accent-ink'
-    return 'cursor-pointer text-fg-3 hover:bg-hover hover:text-fg-1'
+    return 'cursor-pointer text-fg-3 transition-colors duration-fast hover:bg-hover hover:text-fg-1'
 }
 </script>
 
@@ -34,7 +35,7 @@ function look(item: ShellNavItem, ownFill = false) {
                     :disabled="item.soon"
                     :aria-label="item.label"
                     :aria-current="item.key === activeKey ? 'page' : undefined"
-                    class="relative grid size-10 place-items-center rounded text-19 transition-colors duration-fast"
+                    class="relative grid size-10 place-items-center rounded text-19"
                     :class="look(item)">
                     <FpIcon :name="item.icon" />
                 </ShellNavLink>
@@ -51,7 +52,7 @@ function look(item: ShellNavItem, ownFill = false) {
         <FpTooltip :text="settingsItem.label" label placement="right">
             <ShellNavLink
                 :aria-pressed="settingsItem.key === activeKey"
-                class="grid size-10 place-items-center rounded text-18 transition-colors duration-fast"
+                class="grid size-10 place-items-center rounded text-18"
                 :class="look(settingsItem, true)"
                 @click="openSettings()">
                 <FpIcon :name="settingsItem.icon" />

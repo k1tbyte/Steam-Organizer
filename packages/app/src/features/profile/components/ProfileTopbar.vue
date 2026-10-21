@@ -12,7 +12,6 @@ const props = defineProps<{
     nickname: string
     hasLock: boolean
     refreshable: boolean
-    editable: boolean
 }>()
 const emit = defineEmits<{ refresh: []; lock: []; intent: [kind: ProfileIntent] }>()
 
@@ -20,7 +19,6 @@ const { t } = useI18n()
 const desktop = useDesktopLayout()
 const menu = useProfileMenu({
     hasLock: () => props.hasLock,
-    editable: () => props.editable,
     lock: () => emit('lock'),
     intent: (kind) => emit('intent', kind),
 })

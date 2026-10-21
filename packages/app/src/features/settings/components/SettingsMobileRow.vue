@@ -9,6 +9,7 @@ defineProps<{ title: string; icon: string; value: string; to?: string }>()
     <component
         :is="to ? RouterLink : 'div'"
         v-bind="to ? { to } : {}"
+        draggable="false"
         class="flex min-h-13 items-center gap-3 border-stroke-1 border-t pr-3 text-fg-1"
         :class="!to && 'opacity-50'">
         <FpIconTile :name="icon" size="xs" />
