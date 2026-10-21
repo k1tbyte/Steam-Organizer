@@ -348,25 +348,12 @@
     }
 }
 
-/* Reduced motion: every state change lands at once. Zero specificity lets loaders opt
-   back into a gentle loop with `motion-reduce:animate-pulse!`. Keep both blocks identical. */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-delay: 0s !important;
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-        transition-delay: 0s !important;
-        transition-duration: 0.001ms !important;
-        scroll-behavior: auto !important;
-    }
-}
-
-:where([data-reduce-motion="true"]),
-:where([data-reduce-motion="true"]) *,
-:where([data-reduce-motion="true"]) *::before,
-:where([data-reduce-motion="true"]) *::after {
+/* Motion off: every state change lands at once. Loaders opt back into a gentle loop with
+   `motion-off:animate-pulse!`, whose variant outweighs this selector. */
+:root[data-motion="off"],
+:root[data-motion="off"] *,
+:root[data-motion="off"] *::before,
+:root[data-motion="off"] *::after {
     animation-delay: 0s !important;
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;

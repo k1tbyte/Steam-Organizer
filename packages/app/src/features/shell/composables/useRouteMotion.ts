@@ -1,4 +1,4 @@
-import { prefersReducedMotion, useDesktopLayout } from '@so/ui'
+import { motionLevel, useDesktopLayout } from '@so/ui'
 import { computed, nextTick, onScopeDispose, ref } from 'vue'
 import { type RouteLocationNormalized, useRouter } from 'vue-router'
 
@@ -26,7 +26,7 @@ export function useRouteMotion() {
         if (
             from.matched.length === 0 ||
             to.path === from.path ||
-            prefersReducedMotion()
+            motionLevel() === 'off'
         )
             return null
         return pickRouteMotion(

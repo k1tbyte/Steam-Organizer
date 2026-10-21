@@ -6,7 +6,7 @@ import {
     type WatchSource,
     watch,
 } from 'vue'
-import { prefersReducedMotion } from '../motion'
+import { motionLevel } from '../motion'
 
 /** Scrolls a horizontal strip so its active item sits centered; the browser clamps at both ends.
  *  One layout read per selection, resize or item change, never per frame. `overflows` says whether the items
@@ -57,9 +57,13 @@ export function useCenterActive(
     // An item added to a full strip grows its content, not its box.
     watch(items, measure, { flush: 'post' })
     watch(overflows, (now) => now && center('instant'), { flush: 'post' })
-    watch(active, () => center(prefersReducedMotion() ? 'instant' : 'smooth'), {
-        flush: 'post',
-    })
+    watch(
+        active,
+        () => center(motionLevel() === 'off' ? 'instant' : 'smooth'),
+        {
+            flush: 'post',
+        },
+    )
 
     return { overflows: readonly(overflows) }
 }

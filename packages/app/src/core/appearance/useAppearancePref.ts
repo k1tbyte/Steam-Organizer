@@ -1,5 +1,5 @@
 import { type RevealOrigin, revealThemeChange } from '@so/ui/theme-reveal'
-import { computed, type Ref, readonly, ref } from 'vue'
+import { type Ref, readonly, ref } from 'vue'
 
 import { removeStored, writeStored } from '../storage'
 import {
@@ -38,15 +38,13 @@ function pauseThemeTransitions() {
 export function restoreAppearance(
     root: HTMLElement = document.documentElement,
 ) {
-    for (const name of PREF_NAMES) applyPref(root, name, stateOf(name).value)
-    // `system` has no stored answer: it follows the OS while it is the pref.
-    matchMedia('(prefers-color-scheme: light)').addEventListener(
-        'change',
-        () => {
-            if (stateOf('mode').value === 'system')
-                applyPref(root, 'mode', 'system')
-        },
-    )
+    for (const name of PREF_NAMES) {
+        const reapply = () => applyPref(root, name, stateOf(name).value)
+        reapply()
+        // `system` and `auto` have no stored answer: they follow the device live.
+        for (const query of prefSpec(name).follows ?? [])
+            matchMedia(query).addEventListener('change', reapply)
+    }
     if (stateOf('background').value === 'image') void restoreBackground()
 }
 
@@ -69,13 +67,4 @@ export function useAppearancePref<K extends PrefName>(name: K) {
     }
 
     return { state: readonly(state) as Readonly<Ref<PrefValue<K>>>, set }
-}
-
-/** The in-app reduce-motion switch as a boolean. */
-export function useReducedMotionPref() {
-    const { state, set } = useAppearancePref('reduceMotion')
-    return {
-        reduced: computed(() => state.value === 'true'),
-        setReduced: (on: boolean) => set(on ? 'true' : 'false'),
-    }
 }

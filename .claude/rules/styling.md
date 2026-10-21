@@ -48,7 +48,7 @@ A screen is done once it holds at 360px wide with touch emulation.
 - Easing: `ease-out` default, `ease-in` exits leaving the screen, `ease-spring` overshoot on transforms only (never opacity or progress), `ease-in-out` loops, `ease-move` a page travelling.
 - Templates use `duration-*`, `delay-*`, `ease-*` utilities; scripts read `durationToken()` / `easingToken()` from `@so/ui`.
 - Shared feedback: `animate-pop` (something arrives), `animate-bump` + `useBump()` (a value changed, never on mount), `animate-settle` (content lands), `animate-shake` via `FpShake` (a wrong password or PIN).
-- Reduced motion: `motion-safe:` / `motion-reduce:`, `prefersReducedMotion()`; never read `prefers-reduced-motion` yourself. It swaps the animation and keeps the state change visible.
+- Motion level (`gamify`, `simple`, `off`): `motion-off:`, `motion-simple:`, `motion-on:` (not off), `motionLevel()`; never read `prefers-reduced-motion` or `data-motion` yourself. `simple` turns `--ease-spring` into `--ease-out`, so springs lose their overshoot without a branch; `off` lands every change at once and keeps it visible.
 - Animate opacity on the glass element itself, never an ancestor: ancestor opacity, filter or mask kills descendant backdrop blur (transforms are safe). The route shift under Subtle and Glass is the one exception: glass goes flat for its fade.
 - Reka popper content (popovers, menus, selects) ignores scoped state selectors: style it in a global block with `fp-` classes. Scoped styles work for Dialog content (Modal, Drawer).
 - Animate `translate`, `scale` and `opacity`. Never tween `height`, `width`, `top` or `margin` on a tall subtree; inside an `FpModal` it also re-measures the panel (`ui-modal.md`).

@@ -93,14 +93,12 @@ const view = useAppearanceSection()
                 :aria-label="t('Density')"
                 @update:model-value="view.setDensity" />
         </FpFormRow>
-        <FpFormRow
-            plain
-            :label="t('Reduce motion')"
-            :description="t('Fewer animations and no theme reveal')">
-            <FpSwitch
-                :model-value="view.motionReduced.value"
-                :aria-label="t('Reduce motion')"
-                @update:model-value="view.setMotionReduced" />
+        <FpFormRow plain :label="t('Motion')" :description="t('Auto: Simple on touch devices or with reduced motion in the OS')">
+            <FpToggleGroup
+                :model-value="view.motion.value"
+                :items="view.motionItems.value"
+                :aria-label="t('Motion')"
+                @update:model-value="view.setMotion" />
         </FpFormRow>
         <FpFormRow plain :label="t('Language')">
             <FpToggleGroup

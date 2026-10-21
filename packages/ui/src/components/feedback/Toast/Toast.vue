@@ -86,7 +86,7 @@ onMounted(() => {
             <span
                 v-if="toast.countdown"
                 :key="toast.countdown.until"
-                class="fp-toast-bar absolute inset-x-0 bottom-0 h-0.5 origin-left motion-reduce:hidden"
+                class="fp-toast-bar absolute inset-x-0 bottom-0 h-0.5 origin-left motion-off:hidden"
                 :class="tone.bar"
                 :style="{ animationDuration: `${barMs}ms` }" />
         </div>

@@ -8,7 +8,6 @@ import {
     reportError,
     useAppearancePref,
     useBackgroundImage,
-    useReducedMotionPref,
 } from '#core'
 
 export function useAppearanceSection() {
@@ -20,7 +19,7 @@ export function useAppearanceSection() {
     const background = useAppearancePref('background')
     const radius = useAppearancePref('radius')
     const density = useAppearancePref('density')
-    const motion = useReducedMotionPref()
+    const motion = useAppearancePref('motion')
     const language = useAppearancePref('language')
     const image = useBackgroundImage()
 
@@ -55,6 +54,12 @@ export function useAppearanceSection() {
         item('compact', t('Compact')),
         item('comfortable', t('Comfortable')),
         item('spacious', t('Spacious')),
+    ])
+    const motionItems = computed(() => [
+        item('off', t('Off')),
+        item('simple', t('Simple')),
+        item('gamify', t('Gamify')),
+        item('auto', t('Auto')),
     ])
     const languageItems = Object.entries(LANGUAGE_NAMES).map(([value, label]) =>
         item(value as PrefValue<'language'>, label),
@@ -123,8 +128,9 @@ export function useAppearanceSection() {
         density: density.state,
         densityItems,
         setDensity: density.set,
-        motionReduced: motion.reduced,
-        setMotionReduced: motion.setReduced,
+        motion: motion.state,
+        motionItems,
+        setMotion: motion.set,
         language: language.state,
         languageItems,
         setLanguage: language.set,

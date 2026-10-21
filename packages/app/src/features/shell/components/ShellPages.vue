@@ -5,7 +5,7 @@ const motion = useRouteMotion()
 </script>
 
 <template>
-    <div class="stage" :data-motion="motion.kind.value" :style="motion.style.value">
+    <div class="stage" :data-page-motion="motion.kind.value" :style="motion.style.value">
         <RouterView v-slot="{ Component, route }">
             <!-- Without a motion the pages swap at once: no frame with both in the flow. -->
             <Transition name="page" :css="motion.animated.value" v-bind="motion.hooks">
@@ -24,7 +24,7 @@ const motion = useRouteMotion()
     overflow: clip;
 }
 /* A short entering page would clip the move: the stage spans the viewport while pages switch. */
-.stage[data-motion] {
+.stage[data-page-motion] {
     min-height: var(--page-h);
 }
 .stage > .page-leave-active {
@@ -32,39 +32,39 @@ const motion = useRouteMotion()
     inset-inline: 0;
 }
 
-.stage:is([data-motion^='slide'], [data-motion='drill']) > :is(.page-enter-active, .page-leave-active) {
+.stage:is([data-page-motion^='slide'], [data-page-motion='drill']) > :is(.page-enter-active, .page-leave-active) {
     transition: translate var(--dur-slow) var(--ease-move);
 }
-.stage[data-motion='slide-y'] > .page-enter-from {
+.stage[data-page-motion='slide-y'] > .page-enter-from {
     translate: 0 calc(var(--route-dir) * var(--page-h));
 }
-.stage[data-motion='slide-y'] > .page-leave-to {
+.stage[data-page-motion='slide-y'] > .page-leave-to {
     translate: 0 calc(var(--route-dir) * var(--page-h) * -1);
 }
-.stage:is([data-motion='slide-x'], [data-motion='drill']) > .page-enter-from {
+.stage:is([data-page-motion='slide-x'], [data-page-motion='drill']) > .page-enter-from {
     translate: calc(var(--route-dir) * 100%) 0;
 }
-.stage:is([data-motion='slide-x'], [data-motion='drill']) > .page-leave-to {
+.stage:is([data-page-motion='slide-x'], [data-page-motion='drill']) > .page-leave-to {
     translate: calc(var(--route-dir) * -100%) 0;
 }
 
-.stage[data-motion^='shift'] > .page-enter-active {
+.stage[data-page-motion^='shift'] > .page-enter-active {
     transition:
         translate var(--dur-base) var(--ease-out),
         opacity var(--dur-base) var(--ease-out);
 }
-.stage[data-motion^='shift'] > .page-leave-active {
+.stage[data-page-motion^='shift'] > .page-leave-active {
     transition: opacity var(--dur-fast) var(--ease-in);
 }
-.stage[data-motion='shift-y'] > .page-enter-from {
+.stage[data-page-motion='shift-y'] > .page-enter-from {
     translate: 0 calc(var(--route-dir) * 1.5rem);
     opacity: 0;
 }
-.stage[data-motion='shift-x'] > .page-enter-from {
+.stage[data-page-motion='shift-x'] > .page-enter-from {
     translate: calc(var(--route-dir) * 1.5rem) 0;
     opacity: 0;
 }
-.stage[data-motion^='shift'] > .page-leave-to {
+.stage[data-page-motion^='shift'] > .page-leave-to {
     opacity: 0;
 }
 </style>

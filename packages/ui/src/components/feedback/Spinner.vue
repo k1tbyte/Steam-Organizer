@@ -12,7 +12,7 @@ const SIZES: Record<Size, string> = {
 
 <template>
     <svg
-        class="animate-spin motion-reduce:animate-pulse!"
+        class="animate-spin motion-off:animate-pulse!"
         :class="SIZES[size]"
         viewBox="0 0 24 24"
         fill="none"

@@ -6,8 +6,8 @@ import {
     DENSITY_STORAGE_KEY,
     LANGUAGE_STORAGE_KEY,
     MODE_STORAGE_KEY,
+    MOTION_STORAGE_KEY,
     RADIUS_STORAGE_KEY,
-    REDUCE_MOTION_STORAGE_KEY,
     readStored,
     SURFACE_STORAGE_KEY,
     TINT_STORAGE_KEY,
@@ -25,6 +25,29 @@ interface PrefSpec {
     fallback: string
     /** Written even at the fallback, for targets with no absent state. */
     always?: boolean
+    /** The value written for one that defers to the device (`system`, `auto`). */
+    resolve?: (value: string) => string
+    /** Media queries the resolved value follows live. */
+    follows?: readonly string[]
+}
+
+const LIGHT_QUERY = '(prefers-color-scheme: light)'
+// Where motion costs more than it gives: an OS reduce request or a touch device.
+const CALM_QUERIES = ['(prefers-reduced-motion: reduce)', '(pointer: coarse)']
+
+const matches = (query: string) =>
+    typeof matchMedia !== 'undefined' && matchMedia(query).matches
+
+/** `system` follows the OS; every other value is already a mode. */
+export function resolveMode(value: string): string {
+    if (value !== 'system') return value
+    return matches(LIGHT_QUERY) ? 'light' : 'dark'
+}
+
+/** `auto` is Simple on a touch device or under an OS reduce request, Gamify elsewhere. */
+export function resolveMotion(value: string): string {
+    if (value !== 'auto') return value
+    return CALM_QUERIES.some(matches) ? 'simple' : 'gamify'
 }
 
 /** Single source for appearance state: storage key, <html> target, allowed values, default. */
@@ -35,6 +58,8 @@ export const APPEARANCE_PREFS = {
         values: ['dark', 'light', 'system'],
         fallback: 'dark',
         always: true,
+        resolve: resolveMode,
+        follows: [LIGHT_QUERY],
     },
     accent: {
         storageKey: ACCENT_STORAGE_KEY,
@@ -72,11 +97,14 @@ export const APPEARANCE_PREFS = {
         values: ['compact', 'comfortable', 'spacious'],
         fallback: 'comfortable',
     },
-    reduceMotion: {
-        storageKey: REDUCE_MOTION_STORAGE_KEY,
-        target: 'data-reduce-motion',
-        values: ['false', 'true'],
-        fallback: 'false',
+    motion: {
+        storageKey: MOTION_STORAGE_KEY,
+        target: 'data-motion',
+        values: ['off', 'simple', 'gamify', 'auto'],
+        fallback: 'auto',
+        always: true,
+        resolve: resolveMotion,
+        follows: CALM_QUERIES,
     },
     language: {
         storageKey: LANGUAGE_STORAGE_KEY,
@@ -135,19 +163,10 @@ export function isPrefDefault(name: PrefName, value: string): boolean {
     return value === fallback && always !== true
 }
 
-/** `system` follows the OS; every other value is already a mode. */
-export function resolveMode(value: string): string {
-    if (value !== 'system') return value
-    const light =
-        typeof matchMedia !== 'undefined' &&
-        matchMedia('(prefers-color-scheme: light)').matches
-    return light ? 'light' : 'dark'
-}
-
 /** Writes one pref onto <html>; a default value removes its target so CSS falls back. */
 export function applyPref(root: AppearanceRoot, name: PrefName, value: string) {
-    const { target, unit } = prefSpec(name)
-    const written = name === 'mode' ? resolveMode(value) : value
+    const { target, unit, resolve } = prefSpec(name)
+    const written = resolve ? resolve(value) : value
     const bare = isPrefDefault(name, value)
     if (target.startsWith('--')) {
         if (bare) root.style.removeProperty(target)

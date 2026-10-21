@@ -30,23 +30,14 @@
     transition-delay: --value(--dur-*);
 }
 
-/* Reduced motion is the OS setting or the in-app toggle (`data-reduce-motion` on <html>). */
-@custom-variant motion-reduce {
-    @media (prefers-reduced-motion: reduce) {
-        @slot;
-    }
+/* Motion level (`data-motion` on <html>): `gamify` (the default) plays everything, `simple` keeps
+   cheap fades and shifts without overshoot, `off` lands every change at once. The host resolves the OS. */
+@custom-variant motion-off (:root[data-motion="off"] &);
+@custom-variant motion-simple (:root[data-motion="simple"] &);
+@custom-variant motion-on (:root:not([data-motion="off"]) &);
 
-    :where([data-reduce-motion="true"]) & {
-        @slot;
-    }
-}
-
-@custom-variant motion-safe {
-    @media (prefers-reduced-motion: no-preference) {
-        :where(:root:not([data-reduce-motion="true"])) & {
-            @slot;
-        }
-    }
+:root[data-motion="simple"] {
+    --ease-spring: var(--ease-out);
 }
 
 @theme {

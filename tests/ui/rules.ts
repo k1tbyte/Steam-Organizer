@@ -44,8 +44,8 @@ const TOKEN_SOURCES = new Set([
     `${UI}/base.css`,
     `${UI}/accents.ts`,
 ])
-// The only places that read the reduced-motion signals directly.
-const REDUCED_MOTION_SOURCES = new Set([
+// The only places that read the motion level or the OS motion setting directly.
+const MOTION_LEVEL_SOURCES = new Set([
     `${UI}/theme.css`,
     `${UI}/motion.css`,
     `${UI}/base.css`,
@@ -368,14 +368,14 @@ export const RULES: Rule[] = [
         ]),
     },
     {
-        id: 'reduced-motion-source',
-        why: 'Use the motion-reduce:/motion-safe: variants or prefersReducedMotion(); both honor the OS and the in-app setting.',
+        id: 'motion-level-source',
+        why: 'Read the motion level through the kit: the motion-off:/motion-simple:/motion-on: variants or motionLevel().',
         scan: pattern(
             UI_SOURCES,
-            [re(/prefers-reduced-motion|reduceMotion|data-reduce-motion/g)],
+            [re(/prefers-reduced-motion|data-motion\b|dataset\.motion\b/g)],
             {
                 exempt: (file) =>
-                    REDUCED_MOTION_SOURCES.has(file) ||
+                    MOTION_LEVEL_SOURCES.has(file) ||
                     file.startsWith(APPEARANCE),
             },
         ),

@@ -1,7 +1,7 @@
 // Reveals a theme snapshot from `origin`; unsupported/reduced-motion paths apply instantly.
 import { nextTick } from 'vue'
 
-import { durationToken, easingToken, prefersReducedMotion } from './motion'
+import { durationToken, easingToken, motionLevel } from './motion'
 
 export type RevealOrigin =
     | MouseEvent
@@ -24,7 +24,7 @@ export async function revealThemeChange(
     const typed =
         typeof ViewTransition !== 'undefined' &&
         'types' in ViewTransition.prototype
-    if (!typed || prefersReducedMotion()) {
+    if (!typed || motionLevel() === 'off') {
         apply()
         return
     }

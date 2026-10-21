@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
 import {
     type AppearanceRoot,
@@ -6,6 +6,7 @@ import {
     isPrefDefault,
     parsePref,
     resolveMode,
+    resolveMotion,
 } from './appearance'
 
 function fakeRoot() {
@@ -80,5 +81,29 @@ describe('applyPref', () => {
         applyPref(root, 'mode', 'system')
         expect(attributes.get('data-mode')).toBe(resolveMode('system'))
         expect(attributes.get('data-mode')).not.toBe('system')
+    })
+
+    test('auto motion writes a resolved level; an explicit one wins over the device', () => {
+        const { root, attributes } = fakeRoot()
+        applyPref(root, 'motion', 'auto')
+        expect(['gamify', 'simple']).toContain(attributes.get('data-motion'))
+        applyPref(root, 'motion', 'off')
+        expect(attributes.get('data-motion')).toBe('off')
+    })
+})
+
+describe('resolveMotion', () => {
+    test('auto is Simple on a touch device or under OS reduced motion', () => {
+        const query = (matched: string) => (q: string) => ({
+            matches: q === matched,
+        })
+        vi.stubGlobal('matchMedia', query('(pointer: coarse)'))
+        expect(resolveMotion('auto')).toBe('simple')
+        vi.stubGlobal('matchMedia', query('(prefers-reduced-motion: reduce)'))
+        expect(resolveMotion('auto')).toBe('simple')
+        vi.stubGlobal('matchMedia', query('none'))
+        expect(resolveMotion('auto')).toBe('gamify')
+        expect(resolveMotion('simple')).toBe('simple')
+        vi.unstubAllGlobals()
     })
 })

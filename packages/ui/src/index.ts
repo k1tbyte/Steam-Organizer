@@ -108,8 +108,8 @@ export { openFilePicker } from './filePicker'
 export {
     durationToken,
     easingToken,
-    prefersReducedMotion,
-    usePrefersReducedMotion,
+    type MotionLevel,
+    motionLevel,
 } from './motion'
 export {
     type Align,

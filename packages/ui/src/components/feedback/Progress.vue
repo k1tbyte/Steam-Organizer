@@ -49,7 +49,7 @@ const percent = computed(() => {
             :class="SIZES[size]">
             <ProgressIndicator
                 class="h-full w-full rounded-full bg-accent transition-transform duration-base ease-out"
-                :class="percent === null && 'indeterminate motion-reduce:animate-pulse!'"
+                :class="percent === null && 'indeterminate motion-off:animate-pulse!'"
                 :style="percent !== null ? { transform: `translateX(-${100 - percent}%)` } : undefined" />
         </ProgressRoot>
     </div>
