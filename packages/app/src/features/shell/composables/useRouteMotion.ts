@@ -2,7 +2,7 @@ import { motionLevel, useDesktopLayout } from '@so/ui'
 import { computed, nextTick, onScopeDispose, ref } from 'vue'
 import { type RouteLocationNormalized, useRouter } from 'vue-router'
 
-import { setRouteHero, useAppearancePref, useScrollRoot } from '#core'
+import { setRouteHero, useScrollRoot } from '#core'
 
 import { pickRouteMotion, type RouteMotion } from '../services/routeMotion'
 import { useShellNav } from './useShellNav'
@@ -13,7 +13,6 @@ import { useShellNav } from './useShellNav'
 export function useRouteMotion() {
     const router = useRouter()
     const desktop = useDesktopLayout()
-    const surface = useAppearancePref('surface')
     const root = useScrollRoot()
     const { main, settingsItem } = useShellNav()
 
@@ -23,10 +22,11 @@ export function useRouteMotion() {
     const animating = new Set<Element>()
 
     function pick(to: RouteLocationNormalized, from: RouteLocationNormalized) {
+        const level = motionLevel()
         if (
             from.matched.length === 0 ||
             to.path === from.path ||
-            motionLevel() === 'off'
+            level === 'off'
         )
             return null
         return pickRouteMotion(
@@ -37,7 +37,7 @@ export function useRouteMotion() {
                     (item) => item.key,
                 ),
                 desktop: desktop.value,
-                flat: surface.state.value === 'flat',
+                level,
                 morph: 'startViewTransition' in document,
             },
         )

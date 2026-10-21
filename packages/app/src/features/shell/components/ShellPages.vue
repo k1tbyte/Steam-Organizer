@@ -17,7 +17,7 @@ const motion = useRouteMotion()
     </div>
 </template>
 
-<!-- Pages move, never fade, on Flat; a fading page drops its glass blur for the fade (ancestor opacity). -->
+<!-- Gamify pages move, never fade; a Simple page drops its glass blur for its fade (ancestor opacity). -->
 <style scoped>
 .stage {
     position: relative;
