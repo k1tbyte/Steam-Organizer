@@ -1,14 +1,15 @@
 import { prefersReducedMotion, useDesktopLayout } from '@so/ui'
-import { computed, onScopeDispose, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, nextTick, onScopeDispose, ref } from 'vue'
+import { type RouteLocationNormalized, useRouter } from 'vue-router'
 
-import { useAppearancePref, useScrollRoot } from '#core'
+import { setRouteHero, useAppearancePref, useScrollRoot } from '#core'
 
 import { pickRouteMotion, type RouteMotion } from '../services/routeMotion'
 import { useShellNav } from './useShellNav'
 
 /** The page transition: which motion the next route change plays, and the hooks that keep the
- *  leaving page where it was while both pages share the one scroller. */
+ *  leaving page where it was while both pages share the one scroller. A hero change is the
+ *  exception: it swaps the pages inside a View Transition instead. */
 export function useRouteMotion() {
     const router = useRouter()
     const desktop = useDesktopLayout()
@@ -21,26 +22,80 @@ export function useRouteMotion() {
     // Pages of the latest navigation still animating: a page from an earlier one never clears its motion.
     const animating = new Set<Element>()
 
+    function pick(to: RouteLocationNormalized, from: RouteLocationNormalized) {
+        if (
+            from.matched.length === 0 ||
+            to.path === from.path ||
+            prefersReducedMotion()
+        )
+            return null
+        return pickRouteMotion(
+            { path: to.path, nav: to.meta.nav, hero: to.meta.hero },
+            { path: from.path, nav: from.meta.nav, hero: from.meta.hero },
+            {
+                order: [...main.value, settingsItem.value].map(
+                    (item) => item.key,
+                ),
+                desktop: desktop.value,
+                flat: surface.state.value === 'flat',
+                morph: 'startViewTransition' in document,
+            },
+        )
+    }
+
+    // The navigation waits at `beforeResolve` until the browser has captured the old page, then
+    // commits; `afterEach` lets the new page render and the scroll settle before the second capture.
+    let swapped: (() => void) | null = null
+    // A skipped transition still finishes: only the latest one may clear the shared hero state.
+    let latestHero = 0
+    let disposed = false
+    const stopResolve = router.beforeResolve((to, from) => {
+        const next = pick(to, from)
+        if (next?.kind !== 'hero') return
+        const id = ++latestHero
+        const page = to.meta.hero ? to : from
+        setRouteHero(String(page.params.id))
+        const html = document.documentElement
+        html.dataset.routeMotion = next.dir === 1 ? 'hero-open' : 'hero-close'
+        return new Promise<void>((captured) => {
+            const transition = document.startViewTransition(
+                () =>
+                    new Promise<void>((done) => {
+                        if (disposed) done()
+                        else swapped = done
+                        captured()
+                    }),
+            )
+            void transition.finished.finally(() => {
+                captured()
+                if (id !== latestHero) return
+                delete html.dataset.routeMotion
+                setRouteHero(null)
+            })
+        })
+    })
+
     // Runs after the route commits and before the pages render. A failed navigation or a query-only one
     // (an overlay) swaps no page, so it leaves a running transition alone.
-    const stopAfter = router.afterEach((to, from, failure) => {
-        if (failure || to.path === from.path) return
+    const stopAfter = router.afterEach(async (to, from, failure) => {
+        const done = swapped
+        swapped = null
+        if (failure || to.path === from.path) {
+            done?.()
+            return
+        }
         animating.clear()
         pageHeight.value = root.value?.clientHeight ?? 0
-        motion.value =
-            from.matched.length === 0 || prefersReducedMotion()
-                ? null
-                : pickRouteMotion(
-                      { path: to.path, nav: to.meta.nav },
-                      { path: from.path, nav: from.meta.nav },
-                      {
-                          order: [...main.value, settingsItem.value].map(
-                              (item) => item.key,
-                          ),
-                          desktop: desktop.value,
-                          flat: surface.state.value === 'flat',
-                      },
-                  )
+        const next = pick(to, from)
+        motion.value = next?.kind === 'hero' ? null : next
+        if (!done) return
+        // Frames are frozen until `done`: the shell restores the scroll on the tick, but a virtual list
+        // only follows a scroll event, which a frozen document never fires.
+        await nextTick()
+        await nextTick()
+        root.value?.dispatchEvent(new Event('scroll'))
+        await nextTick()
+        done()
     })
 
     function start(el: Element) {
@@ -72,6 +127,10 @@ export function useRouteMotion() {
     }
 
     onScopeDispose(() => {
+        disposed = true
+        // A detached `afterEach` would never release a frozen document.
+        swapped?.()
+        stopResolve()
         stopAfter()
         for (const unpin of unpins.values()) unpin()
     })

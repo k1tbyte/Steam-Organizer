@@ -2,11 +2,12 @@
 
 The vault's account list: search, ban filters, sort, pinned and all groups as a virtual grid of cards, the Card fields panel, and the Add account overlay.
 
-- `index.ts` exports `accountsRoutes`, the model types, `useVaultAccounts` (the vault's accounts with session pins, the one source other screens read) and the card parts other screens reuse: `AccountCard`, `LevelAvatar` (level ring), `AgeChip`, `BanLetters`.
-- `model.ts` holds `Account`, the one shape the list, the card and (wave 3) the profile read.
+- `index.ts` exports `accountsRoutes`, the model types, `useVaultAccounts` (the vault's accounts with session pins, the one source other screens read) and the card parts other screens reuse: `AccountCard`, `LevelAvatar` (level ring, sizes up to the profile's `xl`), `AgeChip`, `AccountTagChip`, `BanLetters`, and `BAN_KINDS`.
+- `model.ts` holds `Account`, the one shape the list, the card and the profile read.
 - The list is virtual by rows (`useAccountRows`, TanStack Virtual against `useScrollRoot()`): columns follow the measured width (`auto-fill`, 340px minimum), row heights come from `services/cardLayout.ts`, which mirrors the card's CSS and also feeds the "Card height" readout. A card is never measured.
 - Search field, ban filters (any, require, exclude), sort and the Card fields flags persist through `core/storage` (`stores/accountsView.ts`, `stores/cardFields.ts`). Pins last the session.
-- Add account is `?add-account` (`useQueryOverlay`): a modal on desktop, a sheet on phones. `services/steamId.ts` detects the eight identifier formats.
+- Add account is `?add-account` (`useQueryOverlay`): a modal on desktop, a sheet on phones. `detectSteamId` (`core/steamId.ts`, shared with the profile's ID formats) recognizes the eight identifier formats.
+- The card's title links to `/accounts/:id` (`features/profile`). The card whose id is `useRouteHero()` carries `data-vt-hero`, the shared element of the card to profile morph (`features/shell`).
 - Steam Guard code, countdown and hold-to-reveal come from `features/steam-guard`.
 
 ## Mocks
@@ -21,4 +22,4 @@ Mockup: `Accounts.dc.html` (Desktop, Mobile, Mobile · Card fields), `AccountCar
 
 `No results` opens on a search no account matches; the query stays in the persisted view until Reset filters.
 
-Unwired intents (buttons emit them, nothing listens yet): reorder mode, refresh all, import / export, delete account, edit tags, open profile (`/accounts/:id` has no route until wave 3), saving on Add (it only closes the overlay), maFile parsing (the name is shown, no `shared_secret` is read), a loading state for the list.
+Unwired intents (buttons emit them, nothing listens yet): reorder mode, refresh all, import / export, delete account, edit tags, saving on Add (it only closes the overlay), maFile parsing (the name is shown, no `shared_secret` is read), a loading state for the list.

@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useCopyFeedback } from '#core'
+import { useCopyFeedback, useRouteHero } from '#core'
 
 import type { Account, CardFlags } from '../model'
 import { cardHeightCss, cardRows, hasFooter } from '../services/cardLayout'
@@ -17,6 +17,7 @@ export function useAccountCard(props: {
 }) {
     const { t } = useI18n()
     const { copied, copy } = useCopyFeedback()
+    const hero = useRouteHero()
 
     const steam = computed(() => !props.account.anonymous)
     // An anonymous account's ID is its login, which a locked account keeps secret.
@@ -36,6 +37,8 @@ export function useAccountCard(props: {
 
     return {
         copied,
+        /** The card a hero transition morphs into the profile, and back. */
+        isHero: computed(() => hero.value === props.account.id),
         idText,
         shownTags,
         hiddenTags,

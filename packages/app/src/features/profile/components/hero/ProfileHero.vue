@@ -1,0 +1,100 @@
+<script setup lang="ts">
+import { FpButton, FpCard, FpIcon, FpTooltip } from '@so/ui'
+import { useI18n } from 'vue-i18n'
+
+import { type Account, AccountTagChip, AgeChip, LevelAvatar } from '#features/accounts'
+
+import type { AccountGateState } from '../../composables/useAccountGate'
+import type { BansState } from '../../composables/useBans'
+import type { ProfileHeaderState } from '../../composables/useProfileHeader'
+import type { SteamIdFieldState } from '../../composables/useSteamIdField'
+import ProfileChip from '../ProfileChip.vue'
+import GuardBar from './GuardBar.vue'
+import GuardMissing from './GuardMissing.vue'
+import ProfileMeta from './ProfileMeta.vue'
+import SteamIdField from './SteamIdField.vue'
+import SteamLinks from './SteamLinks.vue'
+
+defineProps<{
+    account: Account
+    header: ProfileHeaderState
+    bans: BansState
+    idField: SteamIdFieldState
+    gate: AccountGateState
+}>()
+const emit = defineEmits<{ togglePin: []; editTags: []; importMaFile: [] }>()
+
+const { t } = useI18n()
+</script>
+
+<template>
+    <FpCard flush data-vt-hero class="shrink-0">
+        <div class="flex items-center gap-u-5 px-u-5 pt-u-5 pb-u-6">
+            <LevelAvatar
+                size="xl"
+                :name="account.nickname"
+                :hue="account.hue"
+                :level="account.level"
+                :anonymous="account.anonymous"
+                :ring="!gate.hidesProfile" />
+            <div class="flex min-w-0 flex-1 flex-col gap-2.5">
+                <div class="flex min-w-0 items-center gap-2.5">
+                    <h2 class="min-w-0 truncate font-title text-26 text-fg-1 tracking-title">
+                        {{ account.nickname }}
+                    </h2>
+                    <FpTooltip v-if="gate.chip" :text="t('Account has its own password')">
+                        <ProfileChip tone="accent" :icon="gate.chip.icon">{{ gate.chip.label }}</ProfileChip>
+                    </FpTooltip>
+                    <FpTooltip v-if="!gate.hidesProfile && !account.anonymous" :text="t('Profile visibility')">
+                        <ProfileChip :icon="header.visibility.icon">{{ header.visibility.label }}</ProfileChip>
+                    </FpTooltip>
+                    <FpTooltip v-if="!gate.hidesProfile" :text="account.pinned ? t('Unpin') : t('Pin')">
+                        <FpButton
+                            square
+                            size="xs"
+                            :variant="account.pinned ? 'soft' : 'ghost'"
+                            :color="account.pinned ? 'accent' : 'neutral'"
+                            :class="!account.pinned && 'text-fg-faint! hover:text-fg-1!'"
+                            :aria-label="account.pinned ? t('Unpin') : t('Pin')"
+                            @click="emit('togglePin')">
+                            <FpIcon name="icon-[lucide--pin]" />
+                        </FpButton>
+                    </FpTooltip>
+                </div>
+                <template v-if="!gate.hidesProfile">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <AgeChip v-if="!account.anonymous" size="md" :years="account.years" :since="account.since" />
+                        <span v-if="!account.anonymous" class="mr-1.5 text-12.5 text-fg-3">
+                            {{ t('since {since}', { since: account.since }) }}
+                        </span>
+                        <AccountTagChip v-for="tag in account.tags" :key="tag.label" :tag="tag" />
+                        <FpTooltip :text="t('Edit tags')">
+                            <button
+                                type="button"
+                                :aria-label="t('Edit tags')"
+                                class="grid size-5.5 cursor-pointer place-items-center rounded-full text-13 text-fg-3 transition-colors duration-fast hover:bg-hover hover:text-fg-1"
+                                @click="emit('editTags')">
+                                <FpIcon name="icon-[lucide--plus]" />
+                            </button>
+                        </FpTooltip>
+                    </div>
+                    <SteamLinks v-if="header.links.length > 0" :links="header.links" :touch="false" />
+                </template>
+            </div>
+            <div v-if="!gate.hidesProfile && !account.anonymous" class="flex w-75 shrink-0 flex-col gap-2">
+                <SteamIdField :field="idField" :touch="false" />
+                <GuardMissing v-if="!account.guard" :touch="false" @import-ma-file="emit('importMaFile')" />
+                <GuardBar v-else-if="!gate.locked" :seed="account.id" :touch="false" />
+            </div>
+        </div>
+        <div
+            v-if="!gate.hidesProfile"
+            class="flex items-center gap-u-8 border-stroke-1 border-t px-u-5 py-u-3">
+            <ProfileMeta :meta="header.meta" :touch="false" />
+            <span class="flex-1" />
+            <ProfileChip v-if="!account.anonymous" size="md" :tone="bans.banned ? 'danger' : 'success'" :icon="bans.icon">
+                {{ bans.summary }}
+            </ProfileChip>
+        </div>
+    </FpCard>
+</template>

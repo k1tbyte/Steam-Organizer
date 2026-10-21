@@ -20,6 +20,10 @@ export const BG_DIM_STORAGE_KEY = 'so:bg-dim'
 export const ACCOUNTS_CARD_FIELDS_STORAGE_KEY = 'so:accounts:fields'
 export const ACCOUNTS_VIEW_STORAGE_KEY = 'so:accounts:view'
 
+// Account profile (features/profile): the Steam ID format and the collapsed sections, shared by every profile.
+export const PROFILE_ID_FORMAT_STORAGE_KEY = 'so:profile:id-format'
+export const PROFILE_SECTIONS_STORAGE_KEY = 'so:profile:sections'
+
 export function readStored(key: string): string | null {
     try {
         return localStorage.getItem(key)

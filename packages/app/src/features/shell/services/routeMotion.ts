@@ -4,6 +4,7 @@ export type RouteMotionKind =
     | 'shift-y'
     | 'shift-x'
     | 'drill'
+    | 'hero'
 
 /** `dir` 1 moves forward: down the rail, right along the tab bar, deeper into a section. */
 export interface RouteMotion {
@@ -14,6 +15,7 @@ export interface RouteMotion {
 export interface RoutePlace {
     path: string
     nav?: string
+    hero?: boolean
 }
 
 export interface RouteMotionContext {
@@ -22,19 +24,24 @@ export interface RouteMotionContext {
     desktop: boolean
     /** Flat surfaces slide whole pages; Subtle and Glass shift them a little and fade. */
     flat: boolean
+    /** The browser can run the shared-element transition a hero page needs. */
+    morph: boolean
 }
 
 const depth = (path: string) => path.split('/').filter(Boolean).length
 
-/** A deeper or shallower page of one section drills; another section slides or shifts along the nav axis. */
+/** A deeper or shallower page of one section drills (a hero page morphs on desktop); another section slides or shifts along the nav axis. */
 export function pickRouteMotion(
     to: RoutePlace,
     from: RoutePlace,
-    { order, desktop, flat }: RouteMotionContext,
+    { order, desktop, flat, morph }: RouteMotionContext,
 ): RouteMotion | null {
     if (to.nav !== undefined && to.nav === from.nav) {
         const delta = depth(to.path) - depth(from.path)
-        return delta === 0 ? null : { kind: 'drill', dir: delta > 0 ? 1 : -1 }
+        if (delta === 0) return null
+        const dir = delta > 0 ? 1 : -1
+        if (!desktop || !(to.hero || from.hero)) return { kind: 'drill', dir }
+        return morph ? { kind: 'hero', dir } : null
     }
     const dir =
         order.indexOf(to.nav ?? '') >= order.indexOf(from.nav ?? '') ? 1 : -1

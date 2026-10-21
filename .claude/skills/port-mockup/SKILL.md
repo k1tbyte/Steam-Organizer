@@ -14,7 +14,7 @@ A `.dc.html` file is a canvas of frames, each marked `data-screen-label` ("Profi
 - Screenshot the frame and the live page at the frame's size (dev server `pnpm dev`, port 3000):
   ```bash
   node .claude/skills/port-mockup/shot.mjs mock Profile.dc.html "Profile · Desktop" artifacts/shots/profile-mock.png
-  node .claude/skills/port-mockup/shot.mjs page http://localhost:3000/accounts/mock-a1 artifacts/shots/profile-page.png --width=1280 --height=860
+  node .claude/skills/port-mockup/shot.mjs page http://localhost:3000/accounts/a1 artifacts/shots/profile-page.png --width=1280 --height=860
   ```
   Mock props go in as flags (`--mode=light --surface=glass --density=compact`). Read the PNGs; compare again after building.
 - Interactive states (open popover, hover, dialog step) that a frame shows statically are what the built UI must reach by interaction, not a fixed render.

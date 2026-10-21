@@ -2,11 +2,10 @@ import { useTimer } from '@so/ui/useTimer'
 import { computed, type Ref, ref, type UnwrapNestedRefs, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useMock } from '#core'
+import { detectSteamId, type SteamIdFormat, useMock } from '#core'
 
 import { lookupMock } from '../mocks'
 import { validateNewAccount } from '../services/newAccount'
-import { detectSteamId, type SteamIdFormat } from '../services/steamId'
 import { useBanLabels } from './useBanLabels'
 import { useVaultAccounts } from './useVaultAccounts'
 

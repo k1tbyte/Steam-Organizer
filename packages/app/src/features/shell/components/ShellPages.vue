@@ -33,7 +33,7 @@ const motion = useRouteMotion()
 }
 
 .stage:is([data-motion^='slide'], [data-motion='drill']) > :is(.page-enter-active, .page-leave-active) {
-    transition: translate var(--dur-move) var(--ease-move);
+    transition: translate var(--dur-slow) var(--ease-move);
 }
 .stage[data-motion='slide-y'] > .page-enter-from {
     translate: 0 calc(var(--route-dir) * var(--page-h));
@@ -66,5 +66,59 @@ const motion = useRouteMotion()
 }
 .stage[data-motion^='shift'] > .page-leave-to {
     opacity: 0;
+}
+</style>
+
+<!-- The hero morph (View Transitions): the list card and the detail page's top surface share one name, only while it runs. A named element is a backdrop root, so at rest it would cut its glass off from the stage. -->
+<style>
+html[data-route-motion^='hero'] [data-vt-hero] {
+    view-transition-name: account-hero;
+}
+html[data-route-motion^='hero']::view-transition-old(root),
+html[data-route-motion^='hero']::view-transition-new(root) {
+    mix-blend-mode: normal;
+}
+html[data-route-motion^='hero']::view-transition-old(root) {
+    animation: none;
+}
+html[data-route-motion^='hero']::view-transition-new(root) {
+    animation: hero-in var(--dur-base) var(--ease-out) var(--dur-fast) backwards;
+}
+html[data-route-motion^='hero']::view-transition-group(account-hero) {
+    overflow: clip;
+    border-radius: var(--radius-lg);
+    background: var(--surf-pop);
+    animation-duration: var(--dur-slow);
+    animation-timing-function: var(--ease-move);
+}
+html[data-route-motion='hero-close']::view-transition-group(account-hero) {
+    animation-duration: var(--dur-base);
+}
+/* Content is revealed as the box grows, never stretched. */
+html[data-route-motion^='hero']::view-transition-old(account-hero),
+html[data-route-motion^='hero']::view-transition-new(account-hero) {
+    block-size: 100%;
+    object-fit: none;
+    object-position: left top;
+    mix-blend-mode: normal;
+}
+html[data-route-motion^='hero']::view-transition-old(account-hero) {
+    animation: hero-out var(--dur-press) var(--ease-in) both;
+}
+html[data-route-motion^='hero']::view-transition-new(account-hero) {
+    animation: hero-in var(--dur-fast) var(--ease-out) var(--dur-fast) backwards;
+}
+html[data-route-motion='hero-close']::view-transition-new(account-hero) {
+    animation-delay: 0s;
+}
+@keyframes hero-in {
+    from {
+        opacity: 0;
+    }
+}
+@keyframes hero-out {
+    to {
+        opacity: 0;
+    }
 }
 </style>
