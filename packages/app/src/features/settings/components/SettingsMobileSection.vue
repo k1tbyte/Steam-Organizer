@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { FpIcon } from '@so/ui'
+import { FpButton, FpIcon } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { RouterLink } from 'vue-router'
 
 import PageTopbar from '#components/PageTopbar.vue'
 
@@ -19,12 +20,15 @@ const title = computed(() => find(props.section)?.title ?? '')
 <template>
     <PageTopbar :title="title">
         <template #back>
-            <RouterLink
+            <FpButton
+                :as="RouterLink"
                 to="/settings"
-                class="ml-1 flex h-11 w-fit items-center gap-0.5 pr-2.5 pl-1 text-14.5 text-accent-ink">
-                <FpIcon name="icon-[lucide--chevron-left]" class="text-22" />
-                {{ t('Settings') }}
-            </RouterLink>
+                square
+                round
+                variant="soft"
+                :aria-label="t('Back to Settings')">
+                <FpIcon name="icon-[lucide--chevron-left]" />
+            </FpButton>
         </template>
     </PageTopbar>
     <div class="px-4 pb-5">

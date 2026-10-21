@@ -12,7 +12,7 @@ const props = withDefaults(
         items: (ToggleOption<T> | T)[]
         modelValue?: Model
         multiple?: M
-    size?: FieldSize
+        size?: FieldSize
         /** Fill the container, splitting the width evenly between the items. */
         block?: boolean
         disabled?: boolean
@@ -34,12 +34,13 @@ const normalized = computed<ToggleOption<T>[]>(() => props.items.map(toOption))
 const isMultiple = computed(() => props.multiple !== undefined && props.multiple !== false)
 
 const SIZES: Record<FieldSize, string> = {
-    sm: 'h-6 px-2.5 text-12',
-    md: 'h-7 px-3 text-12.5',
-    lg: 'h-8 px-3 text-13',
+    sm: 'min-h-6 px-2.5 text-12',
+    md: 'min-h-7 px-3 text-12.5',
+    lg: 'min-h-8 px-3 text-13',
 }
 
-// The track takes the control height, so a segmented row lines up with buttons and fields.
+// The track takes the control height, so a segmented row lines up with buttons and fields;
+// segments set a min height only, so the stretch fills a track grown for touch.
 const TRACK: Record<FieldSize, string> = {
     sm: 'touch-control-sm',
     md: 'touch-control-md',

@@ -40,8 +40,8 @@ useShellScroll(() => desktopScroll.value?.viewport ?? phoneScroll.value)
         </div>
     </div>
     <div v-else class="safe-pt flex h-dvh flex-col">
-        <div :ref="bind.back" class="shrink-0 empty:hidden" />
         <header class="flex shrink-0 items-center gap-1 pt-1.5 pr-3 pb-3 pl-4">
+            <div :ref="bind.back" class="-ml-1 mr-1.5 shrink-0 empty:hidden" />
             <div class="flex min-w-0 flex-1 flex-col gap-0.5">
                 <div :ref="bind.title" class="flex items-baseline gap-2" />
                 <div :ref="bind.status" class="empty:hidden" />
