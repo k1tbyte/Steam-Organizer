@@ -1,14 +1,21 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
 import { useTopbarOutlets } from '#core'
 
 defineProps<{ title: string; count?: string }>()
 
 const { targets } = useTopbarOutlets()
+// A page leaving through the route transition still renders: only the current page fills the topbar.
+const route = useRoute()
+const ownPath = route.path
+const owns = computed(() => route.path === ownPath)
 </script>
 
 <!-- Renders nothing in place: each part lands in the shell's topbar once the shell has mounted it. -->
 <template>
-    <Teleport v-if="targets.title.value" :to="targets.title.value">
+    <Teleport v-if="owns && targets.title.value" :to="targets.title.value">
         <h1
             class="font-bold text-26 text-fg-1 lg:font-semibold lg:text-15 lg:tracking-title">
             {{ title }}
@@ -18,22 +25,22 @@ const { targets } = useTopbarOutlets()
         </span>
     </Teleport>
     <Teleport
-        v-if="$slots.back && targets.back.value"
+        v-if="owns && $slots.back && targets.back.value"
         :to="targets.back.value">
         <slot name="back" />
     </Teleport>
     <Teleport
-        v-if="$slots.status && targets.status.value"
+        v-if="owns && $slots.status && targets.status.value"
         :to="targets.status.value">
         <slot name="status" />
     </Teleport>
     <Teleport
-        v-if="$slots.center && targets.center.value"
+        v-if="owns && $slots.center && targets.center.value"
         :to="targets.center.value">
         <slot name="center" />
     </Teleport>
     <Teleport
-        v-if="$slots.actions && targets.actions.value"
+        v-if="owns && $slots.actions && targets.actions.value"
         :to="targets.actions.value">
         <slot name="actions" />
     </Teleport>

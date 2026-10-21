@@ -44,13 +44,14 @@ A screen is done once it holds at 360px wide with touch emulation.
 
 ## Motion
 
-- Pick the token by role: `press` instant acknowledgement, `fast` exits, hover and small changes, `base` routine enters, `slow` layout and overlays, `reveal` authored focal moments, `cycle` one loader loop, `stagger` list delay. Exits run shorter than their entrance.
-- Easing: `ease-out` default, `ease-in` exits leaving the screen, `ease-spring` overshoot on transforms only (never opacity or progress), `ease-in-out` loops.
+- Pick the token by role: `press` instant acknowledgement, `fast` exits, hover and small changes, `base` routine enters, `slow` layout and overlays, `move` a whole page travelling (route slides), `reveal` authored focal moments, `cycle` one loader loop, `stagger` list delay. Exits run shorter than their entrance.
+- Easing: `ease-out` default, `ease-in` exits leaving the screen, `ease-spring` overshoot on transforms only (never opacity or progress), `ease-in-out` loops, `ease-move` a page travelling.
 - Templates use `duration-*`, `delay-*`, `ease-*` utilities; scripts read `durationToken()` / `easingToken()` from `@so/ui`.
 - Shared feedback: `animate-pop` (something arrives), `animate-bump` + `useBump()` (a value changed, never on mount), `animate-settle` (content lands).
 - Reduced motion: `motion-safe:` / `motion-reduce:`, `prefersReducedMotion()`; never read `prefers-reduced-motion` yourself. It swaps the animation and keeps the state change visible.
-- Animate opacity on the glass element itself, never an ancestor: ancestor opacity, filter or mask kills descendant backdrop blur (transforms are safe).
+- Animate opacity on the glass element itself, never an ancestor: ancestor opacity, filter or mask kills descendant backdrop blur (transforms are safe). The route shift under Subtle and Glass is the one exception: glass goes flat for its fade.
 - Reka popper content (popovers, menus, selects) ignores scoped state selectors: style it in a global block with `fp-` classes. Scoped styles work for Dialog content (Modal, Drawer).
 - Animate `translate`, `scale` and `opacity`. Never tween `height`, `width`, `top` or `margin` on a tall subtree; inside an `FpModal` it also re-measures the panel (`ui-modal.md`).
 - In-place drill-down and tab switches are `FpViewStack`'s job; tall pages and switchers inside an `FpModal` (settings sections) pass `:morph="false"`.
-- Route changes fade, never slide: a moving page re-blurs all its glass every frame.
+- Route changes are the shell's (`ShellPages`, `services/routeMotion.ts`): Flat slides the page along the nav axis, Subtle and Glass shift it and fade, a deeper page of one section drills in. A route needs `meta.nav` to take part.
+- A page that measures its place in the scroller reads layout offsets (`offsetTop`), never `getBoundingClientRect`: it may mount mid-slide.

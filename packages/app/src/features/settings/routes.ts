@@ -8,12 +8,13 @@ export const settingsRoutes: RouteRecordRaw[] = [
     {
         path: 'settings',
         component: () => import('./components/SettingsMobileIndex.vue'),
+        meta: { nav: 'settings' },
     },
     {
         path: 'settings/:section',
         component: () => import('./components/SettingsMobileSection.vue'),
         props: true,
-        meta: { tabBar: false },
+        meta: { nav: 'settings', tabBar: false },
         beforeEnter: (to) =>
             OPENABLE_KEYS.includes(to.params.section as SectionKey) ||
             '/settings',

@@ -7,6 +7,7 @@ import { SettingsHost } from '#features/settings'
 
 import { useShellNav } from '../composables/useShellNav'
 import { useShellScroll } from '../composables/useShellScroll'
+import ShellPages from './ShellPages.vue'
 import ShellRail from './ShellRail.vue'
 import ShellTabBar from './ShellTabBar.vue'
 
@@ -34,7 +35,7 @@ useShellScroll(() => desktopScroll.value?.viewport ?? phoneScroll.value)
                 </div>
             </header>
             <FpScrollArea ref="desktopScroll" as="main" class="min-h-0 flex-1">
-                <RouterView />
+                <ShellPages />
             </FpScrollArea>
         </div>
     </div>
@@ -48,8 +49,8 @@ useShellScroll(() => desktopScroll.value?.viewport ?? phoneScroll.value)
             <div :ref="bind.actions" class="flex items-center gap-1" />
         </header>
         <div :ref="bind.center" class="shrink-0 px-4 pb-2.5 empty:hidden" />
-        <main ref="phoneScroll" class="min-h-0 flex-1 overflow-y-auto">
-            <RouterView />
+        <main ref="phoneScroll" class="relative min-h-0 flex-1 overflow-y-auto">
+            <ShellPages />
         </main>
         <ShellTabBar v-if="showTabBar" />
     </div>

@@ -12,6 +12,17 @@ import { useCardMetrics } from './useCardMetrics'
 
 const OVERSCAN_ROWS = 3
 
+// Layout offsets ignore transforms: the list may mount inside a page that is still sliding in.
+function offsetWithin(el: HTMLElement, scroller: HTMLElement): number {
+    let top = 0
+    let node: HTMLElement | null = el
+    while (node && node !== scroller) {
+        top += node.offsetTop
+        node = node.offsetParent as HTMLElement | null
+    }
+    return top
+}
+
 /** The list as virtual rows of cards against the shell's scroll container. The column count follows the list's width and row heights come from the card layout, so no row is ever measured. */
 export function useAccountRows(
     source: { pinned: Ref<Account[]>; rest: Ref<Account[]> },
@@ -41,10 +52,7 @@ export function useAccountRows(
             const el = list.value
             const scroller = root.value
             if (!el || !scroller) return
-            margin.value =
-                el.getBoundingClientRect().top -
-                scroller.getBoundingClientRect().top +
-                scroller.scrollTop
+            margin.value = offsetWithin(el, scroller)
         },
         { flush: 'post' },
     )
