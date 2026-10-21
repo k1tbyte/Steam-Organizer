@@ -73,6 +73,8 @@ const motion = useRouteMotion()
 <style>
 html[data-route-motion^='hero'] [data-vt-hero] {
     view-transition-name: account-hero;
+    /* The group paints the surface once; the snapshots carry only content. */
+    background: transparent;
 }
 html[data-route-motion^='hero']::view-transition-old(root),
 html[data-route-motion^='hero']::view-transition-new(root) {
@@ -87,7 +89,9 @@ html[data-route-motion^='hero']::view-transition-new(root) {
 html[data-route-motion^='hero']::view-transition-group(account-hero) {
     overflow: clip;
     border-radius: var(--radius-lg);
-    background: var(--surf-pop);
+    /* The card's own surface: --surf-pop is opaque and tinted under Subtle and Glass. */
+    background: var(--surf-bg);
+    backdrop-filter: var(--surf-filter);
     animation-duration: var(--dur-slow);
     animation-timing-function: var(--ease-move);
 }
