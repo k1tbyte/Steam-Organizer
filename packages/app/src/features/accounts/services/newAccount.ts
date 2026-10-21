@@ -1,4 +1,4 @@
-import { detectSteamId } from './steamId'
+import { detectSteamId } from '../../../core/steamId'
 
 export const MIN_PASSWORD_LENGTH = 6
 

@@ -1,0 +1,1 @@
+export { profileRoutes } from './routes'

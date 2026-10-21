@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import type { AccountTag } from '../../model'
+import AccountTagChip from './AccountTagChip.vue'
 
 const props = defineProps<{
     shown: AccountTag[]
@@ -20,13 +21,7 @@ const hiddenNames = computed(() => props.hidden.map((tag) => tag.label).join(', 
     <div
         class="flex shrink-0 items-center gap-1 overflow-hidden"
         :class="touch ? 'h-7' : 'h-5.5'">
-        <span
-            v-for="tag in shown"
-            :key="tag.label"
-            class="inline-flex h-5.5 shrink-0 items-center gap-1.25 rounded-full bg-surface-hi pr-2 pl-1.75 font-medium text-12 text-fg-2">
-            <span class="dot size-1.5 rounded-full" :style="{ '--hue': tag.hue }" />
-            {{ tag.label }}
-        </span>
+        <AccountTagChip v-for="tag in shown" :key="tag.label" :tag="tag" />
         <FpTooltip v-if="hidden.length > 0" :text="hiddenNames">
             <span
                 class="inline-flex h-5.5 shrink-0 items-center rounded-full bg-surface-hi px-1.75 font-medium font-mono text-11.5 text-fg-2">
@@ -52,13 +47,3 @@ const hiddenNames = computed(() => props.hidden.map((tag) => tag.label).join(', 
         </button>
     </div>
 </template>
-
-<style scoped>
-.dot {
-    --dot-l: 0.72;
-    background: oklch(var(--dot-l) 0.14 var(--hue));
-}
-:global([data-mode='light']) .dot {
-    --dot-l: 0.6;
-}
-</style>

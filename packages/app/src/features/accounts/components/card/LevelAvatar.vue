@@ -13,19 +13,44 @@ const props = withDefaults(
         anonymous?: boolean
         /** The level-colored ring and number badge around the avatar. */
         ring?: boolean
-        size?: 'sm' | 'md'
+        /** `lg` and `xl` are the profile's phone and desktop identity. */
+        size?: 'sm' | 'md' | 'lg' | 'xl'
     }>(),
     { size: 'md' },
 )
 
+// Per size: the box, the avatar's inset and type, and the level badge.
+const SIZES = {
+    sm: { box: 'size-9.5', inset: 'inset-0.75', text: 'text-12', badge: '' },
+    md: {
+        box: 'size-13.5',
+        inset: 'inset-1',
+        text: 'text-15',
+        badge: 'bottom-[-7px] h-4 min-w-4 px-1.25 text-10 ring-2 ring-surface',
+    },
+    lg: {
+        box: 'size-18',
+        inset: 'inset-1.25',
+        text: 'text-20',
+        badge: 'bottom-[-8px] h-4.5 min-w-4.5 px-1.5 text-10 ring-3 ring-canvas',
+    },
+    xl: {
+        box: 'size-22',
+        inset: 'inset-1.5',
+        text: 'text-26',
+        badge: 'bottom-[-9px] h-5 min-w-5 px-1.75 text-12 ring-3 ring-canvas',
+    },
+} as const
+
 const { t } = useI18n()
 const showRing = computed(() => props.ring && !props.anonymous)
+const sizing = computed(() => SIZES[props.size])
 </script>
 
 <template>
     <span
         class="lvl relative shrink-0"
-        :class="size === 'sm' ? 'size-9.5' : 'size-13.5'"
+        :class="sizing.box"
         :data-size="size"
         :data-ring="showRing || undefined"
         :data-anonymous="anonymous || undefined"
@@ -34,16 +59,14 @@ const showRing = computed(() => props.ring && !props.anonymous)
         <span v-if="showRing" class="ring absolute inset-0" />
         <span
             class="avatar absolute grid place-items-center font-semibold text-on-media"
-            :class="[
-                showRing ? (size === 'sm' ? 'inset-0.75' : 'inset-1') : 'inset-0',
-                size === 'sm' ? 'text-12' : 'text-15',
-            ]">
+            :class="[showRing ? sizing.inset : 'inset-0', sizing.text]">
             <FpIcon v-if="anonymous" name="icon-[lucide--venetian-mask]" class="text-20" />
             <template v-else>{{ initialsOf(name) }}</template>
         </span>
-        <FpTooltip v-if="showRing && size === 'md'" :text="t('Steam level')">
+        <FpTooltip v-if="showRing && size !== 'sm'" :text="t('Steam level')">
             <span
-                class="badge absolute bottom-[-7px] left-1/2 grid h-4 min-w-4 -translate-x-1/2 place-items-center rounded-full px-1.25 font-mono font-semibold text-10 ring-2 ring-surface">
+                class="badge absolute left-1/2 grid -translate-x-1/2 place-items-center rounded-full font-mono font-semibold"
+                :class="sizing.badge">
                 {{ level }}
             </span>
         </FpTooltip>
@@ -72,6 +95,16 @@ const showRing = computed(() => props.ring && !props.anonymous)
     --r-ring: 0.45;
     --r-avatar: 0.45;
     --r-avatar-inset: 0.32;
+}
+.lvl[data-size='lg'] {
+    --ring-w: 2.5px;
+    --r-ring: 0.75;
+    --r-avatar-inset: 0.5;
+}
+.lvl[data-size='xl'] {
+    --ring-w: 2.5px;
+    --r-ring: 0.85;
+    --r-avatar-inset: 0.6;
 }
 /* Level 0-9 is plain gray; the 80s are a dark red with white digits. */
 .lvl[data-tier='0'] {

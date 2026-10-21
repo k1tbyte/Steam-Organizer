@@ -2,6 +2,7 @@
 import { TabsContent, TabsIndicator, TabsList, TabsRoot, TabsTrigger } from 'reka-ui'
 import { type ComponentPublicInstance, computed, useTemplateRef } from 'vue'
 import { useCenterActive } from '../../../composables/useCenterActive'
+import FpIcon from '../media/Icon.vue'
 
 export interface TabsItem {
     label: string
@@ -9,14 +10,19 @@ export interface TabsItem {
     slot?: string
     content?: string
     disabled?: boolean
+    /** A leading icon and a trailing mono count (a total); both are optional. */
+    icon?: string
+    count?: number | string
 }
 
 const props = withDefaults(
     defineProps<{
         items: TabsItem[]
         content?: boolean
+        /** `pills` is the phone strip: round chips, no underline. */
+        variant?: 'underline' | 'pills'
     }>(),
-    { content: true },
+    { content: true, variant: 'underline' },
 )
 
 const active = defineModel<string | number>()
@@ -31,6 +37,18 @@ const defaultValue = computed(() => {
     return first ? tabValue(first, 0) : undefined
 })
 
+const TRIGGERS = {
+    underline: {
+        trigger:
+            'px-3 text-13.5 text-fg-3 data-[state=active]:font-semibold data-[state=active]:text-fg-1',
+        count: 'text-12 text-fg-faint',
+    },
+    pills: {
+        trigger: 'gap-1.5 rounded-full px-3.5 text-13 text-fg-2 ring-1 ring-stroke-1 ring-inset data-[state=active]:bg-accent-soft data-[state=active]:font-semibold data-[state=active]:text-accent-ink data-[state=active]:ring-transparent',
+        count: 'text-12 text-fg-3',
+    },
+}
+
 const list = useTemplateRef<ComponentPublicInstance>('list')
 const { overflows } = useCenterActive(
     () => list.value?.$el,
@@ -44,16 +62,29 @@ const { overflows } = useCenterActive(
     <TabsRoot v-model="active" :default-value="defaultValue" class="flex w-full flex-col gap-3">
         <TabsList
             ref="list"
-            class="relative flex h-10.5 w-full max-w-full items-stretch gap-0.5 border-stroke-1 border-b"
-            :class="overflows && 'overflow-x-auto'">
-            <TabsIndicator class="indicator absolute" />
+            class="relative flex w-full max-w-full items-stretch"
+            :class="[
+                variant === 'pills' ? 'h-9 gap-1.5' : 'h-10.5 gap-0.5 border-stroke-1 border-b',
+                overflows && 'overflow-x-auto',
+            ]">
+            <TabsIndicator v-if="variant === 'underline'" class="indicator absolute" />
             <TabsTrigger
                 v-for="(item, index) in items"
                 :key="tabValue(item, index)"
                 :value="tabValue(item, index)"
                 :disabled="item.disabled"
-                class="relative z-1 inline-flex shrink-0 items-center gap-1.75 px-3 font-medium text-13.5 text-fg-3 transition-colors duration-fast hover:not-disabled:text-fg-1 data-[state=active]:font-semibold data-[state=active]:text-fg-1 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
-                <slot name="trigger" :item="item" :index="index">{{ item.label }}</slot>
+                class="relative z-1 inline-flex shrink-0 items-center gap-1.75 font-medium transition-colors duration-fast hover:not-disabled:text-fg-1 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                :class="TRIGGERS[variant].trigger">
+                <slot name="trigger" :item="item" :index="index">
+                    <FpIcon
+                        v-if="item.icon"
+                        :name="item.icon"
+                        class="text-15 in-data-[state=active]:text-accent-ink" />
+                    {{ item.label }}
+                    <span v-if="item.count !== undefined" class="font-mono" :class="TRIGGERS[variant].count">
+                        {{ item.count }}
+                    </span>
+                </slot>
             </TabsTrigger>
         </TabsList>
 

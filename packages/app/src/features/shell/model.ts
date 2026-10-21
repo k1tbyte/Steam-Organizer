@@ -13,5 +13,7 @@ declare module 'vue-router' {
         nav?: string
         /** Hides the mobile tab bar for a drill-down screen. */
         tabBar?: boolean
+        /** A detail page its list item morphs into on desktop; the `:id` param names the item. */
+        hero?: boolean
     }
 }

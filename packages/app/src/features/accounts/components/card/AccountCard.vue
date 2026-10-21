@@ -33,6 +33,7 @@ const card = useAccountCard(props)
     <FpCard
         flush
         class="card relative min-w-0 p-u-3.5 transition-colors duration-fast hover:border-stroke-2 hover:bg-surface-hover"
+        :data-vt-hero="card.isHero.value || undefined"
         :style="{ height: card.height.value }">
         <FpTooltip :text="account.pinned ? t('Unpin') : t('Pin')" label>
             <FpButton

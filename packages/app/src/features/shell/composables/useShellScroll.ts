@@ -34,14 +34,14 @@ export function useShellScroll(
         const restore = popped
         popped = false
         if (failure || to.path === from.path) return
-        // The next page renders on the tick; its height settles a frame later.
-        void nextTick(() =>
-            requestAnimationFrame(() =>
-                root.value?.scrollTo({
-                    top: restore ? (offsets.get(to.path) ?? 0) : 0,
-                }),
-            ),
-        )
+        const top = restore ? (offsets.get(to.path) ?? 0) : 0
+        const apply = () => root.value?.scrollTo({ top })
+        // The next page renders on the tick; its height settles a frame later. A view transition
+        // freezes frames while it swaps the pages, so the first pass cannot wait for one.
+        void nextTick(() => {
+            apply()
+            requestAnimationFrame(apply)
+        })
     })
 
     onScopeDispose(() => {
