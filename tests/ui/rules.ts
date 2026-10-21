@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 
 import {
     type ElementNode,
+    ElementTypes,
     NodeTypes,
     parse,
     type TemplateChildNode,
@@ -217,6 +218,47 @@ function classText(el: ElementNode): string {
         .join(' ')
 }
 
+/** The top-level text of `defineProps<{ ... }>`: nested object types and other fields drop out. */
+function propsKeys(src: string): string {
+    const call = src.indexOf('defineProps<')
+    const start = call < 0 ? -1 : src.indexOf('{', call)
+    if (start < 0) return ''
+    let depth = 0
+    let keys = ''
+    for (const char of src.slice(start)) {
+        if (char === '{') depth++
+        else if (char === '}' && --depth === 0) break
+        else if (depth === 1) keys += char
+    }
+    return keys
+}
+
+/** Components declaring a `title` prop; on any other a `title` falls through to an element as a native tooltip. */
+function titlePropComponents(): Set<string> {
+    return new Set(
+        sources([APP, UI], ['vue'])
+            .filter((file) =>
+                /(?:^|[;,\n])\s*title\??:/.test(propsKeys(read(file))),
+            )
+            .map(
+                (file) =>
+                    (file.startsWith(UI) ? 'Fp' : '') +
+                    posix.basename(file, '.vue'),
+            ),
+    )
+}
+
+/** An attribute set plainly or bound (`title`, `:title`). */
+function hasAttr(el: ElementNode, name: string): boolean {
+    return el.props.some((p) =>
+        p.type === NodeTypes.ATTRIBUTE
+            ? p.name === name
+            : p.name === 'bind' &&
+              p.arg?.type === NodeTypes.SIMPLE_EXPRESSION &&
+              p.arg.content === name,
+    )
+}
+
 /** Hidden until hover, with no way to reveal it on touch. */
 function hoverOnlyReveal(el: ElementNode): string | null {
     const classes = classText(el)
@@ -259,6 +301,24 @@ export const RULES: Rule[] = [
                     : null
             }),
         ),
+    },
+    {
+        id: 'native-tooltip',
+        why: 'Wrap the trigger in FpTooltip (`label` also names an icon-only control) instead of a native title.',
+        scan: () => {
+            const titled = titlePropComponents()
+            return template(
+                [APP, UI, ...SHELLS],
+                element((el) =>
+                    hasAttr(el, 'title') &&
+                    (el.tagType === ElementTypes.ELEMENT ||
+                        (el.tagType === ElementTypes.COMPONENT &&
+                            !titled.has(el.tag)))
+                        ? `<${el.tag} title>`
+                        : null,
+                ),
+            )()
+        },
     },
     {
         id: 'raw-text',

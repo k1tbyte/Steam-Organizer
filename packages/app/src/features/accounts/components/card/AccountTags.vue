@@ -33,15 +33,15 @@ const hiddenNames = computed(() => props.hidden.map((tag) => tag.label).join(', 
                 +{{ hidden.length }}
             </span>
         </FpTooltip>
-        <button
-            v-if="shown.length > 0"
-            type="button"
-            :title="t('Edit tags')"
-            class="grid shrink-0 cursor-pointer place-items-center rounded-full text-13 text-fg-3 transition-colors duration-fast hover:bg-hover hover:text-fg-1"
-            :class="touch ? 'size-7' : 'size-5.5'"
-            @click="emit('edit')">
-            <FpIcon name="icon-[lucide--plus]" />
-        </button>
+        <FpTooltip v-if="shown.length > 0" :text="t('Edit tags')" label>
+            <button
+                type="button"
+                class="grid shrink-0 cursor-pointer place-items-center rounded-full text-13 text-fg-3 transition-colors duration-fast hover:bg-hover hover:text-fg-1"
+                :class="touch ? 'size-7' : 'size-5.5'"
+                @click="emit('edit')">
+                <FpIcon name="icon-[lucide--plus]" />
+            </button>
+        </FpTooltip>
         <button
             v-else
             type="button"

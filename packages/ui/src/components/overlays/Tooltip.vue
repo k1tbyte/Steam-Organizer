@@ -4,11 +4,16 @@ import { computed } from 'vue'
 import { ARROW_PADDING, FLOAT_GAP, type Placement, splitPlacement } from '../../placement'
 import Kbd from '../display/Kbd.vue'
 
+// The trigger takes the attrs, so a tooltip can sit inside another as-child trigger (a menu, a popover).
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(
     defineProps<{
         text?: string
         /** Shortcut chip after the text. */
         kbd?: string
+        /** The text also names the trigger: an icon-only control loses its name with `title`. */
+        label?: boolean
         placement?: Placement
         sideOffset?: number
         delayDuration?: number
@@ -23,7 +28,7 @@ const anchor = computed(() => splitPlacement(props.placement))
 <!-- Portaled popper motion uses the global fp-float styles. -->
 <template>
     <TooltipRoot :delay-duration="delayDuration" :disabled="disabled || (!text && !$slots.content)">
-        <TooltipTrigger as-child>
+        <TooltipTrigger as-child v-bind="$attrs" :aria-label="label ? text : undefined">
             <slot />
         </TooltipTrigger>
         <TooltipPortal>

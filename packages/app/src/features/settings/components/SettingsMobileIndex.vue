@@ -33,8 +33,7 @@ const about = useAboutApp()
                     round
                     size="xl"
                     variant="soft"
-                    :aria-label="t('Lock vault')"
-                    :title="t('Lock vault')">
+                    :aria-label="t('Lock vault')">
                     <FpIcon name="icon-[lucide--lock]" />
                 </FpButton>
             </div>

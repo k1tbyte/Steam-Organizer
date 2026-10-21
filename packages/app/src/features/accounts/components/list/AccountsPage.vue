@@ -49,7 +49,7 @@ const addOverlay = useAddAccountOverlay()
                 <FpIcon name="icon-[lucide--plus]" />
                 {{ t('Add') }}
             </FpButton>
-            <FpButton v-else square round size="xl" color="accent" :title="t('Add account')" @click="addOverlay.show()">
+            <FpButton v-else square round size="xl" color="accent" :aria-label="t('Add account')" @click="addOverlay.show()">
                 <FpIcon name="icon-[lucide--plus]" />
             </FpButton>
         </template>

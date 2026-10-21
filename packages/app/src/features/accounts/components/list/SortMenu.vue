@@ -16,7 +16,7 @@ const { sortItems, sortLabel, descending } = useAccountsFilters()
             <span class="font-medium text-fg-1">{{ sortLabel }}</span>
             <FpIcon :name="descending ? 'icon-[lucide--arrow-down]' : 'icon-[lucide--arrow-up]'" />
         </FpButton>
-        <FpButton v-else round size="xs" variant="soft" class="shrink-0 text-fg-1!" :title="t('Sort')">
+        <FpButton v-else round size="xs" variant="soft" class="shrink-0 text-fg-1!">
             <FpIcon
                 :name="
                     descending

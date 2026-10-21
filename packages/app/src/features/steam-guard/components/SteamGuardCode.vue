@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpCountdownRing, FpIcon } from '@so/ui'
+import { FpCountdownRing, FpIcon, FpTooltip } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { useGuardCode } from '../composables/useGuardCode'
@@ -24,28 +24,30 @@ const { holding, handlers, copied, shown, remaining, copyCode } = useGuardCode(
     <div
         class="inline-flex min-w-0 shrink items-center overflow-hidden rounded bg-surface-hi"
         :class="size === 'md' ? 'h-9' : 'h-7'">
-        <button
-            type="button"
-            v-bind="handlers"
-            :title="t('Hold to show the code')"
-            class="flex h-full cursor-pointer touch-none items-center gap-1.75 pr-2.5 pl-2 text-fg-1 transition-colors duration-fast select-none"
-            :class="holding && 'bg-accent-soft'">
-            <FpIcon
-                :name="holding ? 'icon-[lucide--eye]' : 'icon-[lucide--shield-check]'"
-                class="text-14 text-accent-ink" />
-            <span class="w-14 text-left font-mono font-semibold text-13 tracking-[0.12em]">
-                {{ shown }}
-            </span>
-            <FpCountdownRing :value="remaining" :size="14" />
-        </button>
+        <FpTooltip :text="t('Hold to show the code')">
+            <button
+                type="button"
+                v-bind="handlers"
+                class="flex h-full cursor-pointer touch-none items-center gap-1.75 pr-2.5 pl-2 text-fg-1 transition-colors duration-fast select-none"
+                :class="holding && 'bg-accent-soft'">
+                <FpIcon
+                    :name="holding ? 'icon-[lucide--eye]' : 'icon-[lucide--shield-check]'"
+                    class="text-14 text-accent-ink" />
+                <span class="w-14 text-left font-mono font-semibold text-13 tracking-[0.12em]">
+                    {{ shown }}
+                </span>
+                <FpCountdownRing :value="remaining" :size="14" />
+            </button>
+        </FpTooltip>
         <span class="h-4 w-px shrink-0 bg-stroke-2" />
-        <button
-            type="button"
-            :title="t('Copy code')"
-            class="grid h-full shrink-0 cursor-pointer place-items-center text-13 text-fg-3 transition-colors duration-fast hover:text-fg-1"
-            :class="size === 'md' ? 'w-10' : 'w-7.5'"
-            @click="copyCode">
-            <FpIcon :name="copied ? 'icon-[lucide--check]' : 'icon-[lucide--copy]'" />
-        </button>
+        <FpTooltip :text="t('Copy code')" label>
+            <button
+                type="button"
+                class="grid h-full shrink-0 cursor-pointer place-items-center text-13 text-fg-3 transition-colors duration-fast hover:text-fg-1"
+                :class="size === 'md' ? 'w-10' : 'w-7.5'"
+                @click="copyCode">
+                <FpIcon :name="copied ? 'icon-[lucide--check]' : 'icon-[lucide--copy]'" />
+            </button>
+        </FpTooltip>
     </div>
 </template>

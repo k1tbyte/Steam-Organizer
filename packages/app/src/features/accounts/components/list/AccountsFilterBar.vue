@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpIcon } from '@so/ui'
+import { FpButton, FpIcon, FpTooltip } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import BanFilterChips from './BanFilterChips.vue'
@@ -21,32 +21,35 @@ const { t } = useI18n()
         <SortMenu />
         <span class="flex-1" />
         <CardFieldsPanel />
-        <FpButton
-            square
-            size="sm"
-            variant="ghost"
-            class="text-fg-3!"
-            :title="t('Reorder mode')"
-            @click="$emit('reorder')">
-            <FpIcon name="icon-[lucide--grip-vertical]" />
-        </FpButton>
-        <FpButton
-            square
-            size="sm"
-            variant="ghost"
-            class="text-fg-3!"
-            :title="t('Refresh all')"
-            @click="$emit('refreshAll')">
-            <FpIcon name="icon-[lucide--refresh-cw]" />
-        </FpButton>
-        <FpButton
-            square
-            size="sm"
-            variant="ghost"
-            class="text-fg-3!"
-            :title="t('Import / export')"
-            @click="$emit('importExport')">
-            <FpIcon name="icon-[lucide--ellipsis]" />
-        </FpButton>
+        <FpTooltip :text="t('Reorder mode')" label>
+            <FpButton
+                square
+                size="sm"
+                variant="ghost"
+                class="text-fg-3!"
+                @click="$emit('reorder')">
+                <FpIcon name="icon-[lucide--grip-vertical]" />
+            </FpButton>
+        </FpTooltip>
+        <FpTooltip :text="t('Refresh all')" label>
+            <FpButton
+                square
+                size="sm"
+                variant="ghost"
+                class="text-fg-3!"
+                @click="$emit('refreshAll')">
+                <FpIcon name="icon-[lucide--refresh-cw]" />
+            </FpButton>
+        </FpTooltip>
+        <FpTooltip :text="t('Import / export')" label>
+            <FpButton
+                square
+                size="sm"
+                variant="ghost"
+                class="text-fg-3!"
+                @click="$emit('importExport')">
+                <FpIcon name="icon-[lucide--ellipsis]" />
+            </FpButton>
+        </FpTooltip>
     </div>
 </template>

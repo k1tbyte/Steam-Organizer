@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpDropZone, FpIcon, useDesktopLayout } from '@so/ui'
+import { FpButton, FpDropZone, FpIcon, FpTooltip, useDesktopLayout } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{ fileName: string | null }>()
@@ -16,9 +16,11 @@ const desktop = useDesktopLayout()
             <span class="truncate font-medium font-mono text-12.5 text-fg-1">{{ fileName }}</span>
             <span class="text-12 text-fg-3">{{ t('shared_secret found · codes will appear on the card') }}</span>
         </span>
-        <FpButton square size="md" variant="ghost" class="text-fg-3!" :title="t('Remove')" @click="$emit('remove')">
-            <FpIcon name="icon-[lucide--x]" />
-        </FpButton>
+        <FpTooltip :text="t('Remove')" label>
+            <FpButton square size="md" variant="ghost" class="text-fg-3!" @click="$emit('remove')">
+                <FpIcon name="icon-[lucide--x]" />
+            </FpButton>
+        </FpTooltip>
     </div>
     <FpDropZone
         v-else

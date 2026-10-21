@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type DropdownItem, FpButton, FpDropdownMenu, FpIcon } from '@so/ui'
+import { type DropdownItem, FpButton, FpDropdownMenu, FpIcon, FpTooltip } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, useRouter } from 'vue-router'
@@ -33,29 +33,31 @@ const items = computed<DropdownItem[]>(() => [
             size="md"
             variant="ghost"
             class="-mr-1.5"
-            :title="t('More: open profile, delete')">
+            :aria-label="t('More: open profile, delete')">
             <FpIcon name="icon-[lucide--ellipsis-vertical]" />
         </FpButton>
     </FpDropdownMenu>
     <div v-else class="flex shrink-0 gap-0.5">
-        <FpButton
-            :as="RouterLink"
-            :to="profilePath"
-            square
-            size="xs"
-            variant="ghost"
-            class="text-fg-3!"
-            :title="t('Open profile')">
-            <FpIcon name="icon-[lucide--external-link]" />
-        </FpButton>
-        <FpButton
-            square
-            size="xs"
-            variant="ghost"
-            class="text-fg-3! hover:bg-danger-soft! hover:text-danger!"
-            :title="t('Delete')"
-            @click="emit('delete')">
-            <FpIcon name="icon-[lucide--trash-2]" />
-        </FpButton>
+        <FpTooltip :text="t('Open profile')" label>
+            <FpButton
+                :as="RouterLink"
+                :to="profilePath"
+                square
+                size="xs"
+                variant="ghost"
+                class="text-fg-3!">
+                <FpIcon name="icon-[lucide--external-link]" />
+            </FpButton>
+        </FpTooltip>
+        <FpTooltip :text="t('Delete')" label>
+            <FpButton
+                square
+                size="xs"
+                variant="ghost"
+                class="text-fg-3! hover:bg-danger-soft! hover:text-danger!"
+                @click="emit('delete')">
+                <FpIcon name="icon-[lucide--trash-2]" />
+            </FpButton>
+        </FpTooltip>
     </div>
 </template>
