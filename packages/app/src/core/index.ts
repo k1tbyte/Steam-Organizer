@@ -1,5 +1,6 @@
 export * from './appearance'
 export * from './mock/mocks'
+export * from './passwordStrength'
 export * from './platform'
 export * from './reportError'
 export * from './scrollRoot'

@@ -3,6 +3,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
 import { useSettingsEntry } from '#features/settings'
+import { useVaultSession } from '#features/vault'
 
 import type { ShellNavItem } from '../model'
 
@@ -47,10 +48,6 @@ export function useShellNav() {
         if (item.key === settingsItem.value.key) settings.open()
     }
 
-    function lock() {
-        // The vault feature wires locking; the rail only states the intent.
-    }
-
     return {
         main,
         settingsItem,
@@ -58,6 +55,6 @@ export function useShellNav() {
         showTabBar,
         openSettings: settings.open,
         press,
-        lock,
+        lock: useVaultSession().lock,
     }
 }

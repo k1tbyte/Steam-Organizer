@@ -1,13 +1,8 @@
 import { computed, type Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-
+import { MIN_MASTER_LENGTH, passwordStrength, type StrengthLevel } from '#core'
 import { useMasterPassword } from '../../composables/sources/useMasterPassword'
 import { canChangePassword, repeatState } from '../../services/passwordChange'
-import {
-    MIN_PASSWORD_LENGTH,
-    type PasswordStrength,
-    passwordStrength,
-} from '../../services/passwordStrength'
 
 const STRENGTH_TONES = [
     'neutral',
@@ -15,7 +10,7 @@ const STRENGTH_TONES = [
     'warning',
     'success',
     'success',
-] as const satisfies Record<PasswordStrength, string>
+] as const satisfies Record<StrengthLevel, string>
 
 export function useChangePassword(open: Ref<boolean>) {
     const { t } = useI18n()
@@ -42,7 +37,7 @@ export function useChangePassword(open: Ref<boolean>) {
     const strength = computed(() => passwordStrength(next.value))
     const strengthTone = computed(() => STRENGTH_TONES[strength.value])
     const lengthHint = computed(() =>
-        t('At least {count} characters', { count: MIN_PASSWORD_LENGTH }),
+        t('At least {count} characters', { count: MIN_MASTER_LENGTH }),
     )
     const strengthLabel = computed(
         () =>

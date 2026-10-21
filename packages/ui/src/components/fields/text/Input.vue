@@ -19,6 +19,8 @@ const props = withDefaults(
         warning?: boolean
         /** Success ring for a value that checks out (a repeated password); an invalid field still wins. */
         valid?: boolean
+        /** A password input without the eye button: its own control sits in `trailing`. */
+        noReveal?: boolean
         autocomplete?: string
     }>(),
     { type: 'text', size: 'md', autocomplete: 'off' },
@@ -86,7 +88,7 @@ defineExpose({
             <slot name="trailing" />
         </span>
         <button
-            v-if="type === 'password'"
+            v-if="type === 'password' && !noReveal"
             type="button"
             class="flex shrink-0 cursor-pointer items-center text-15 text-fg-3 transition-colors duration-fast hover:text-fg-1"
             :disabled

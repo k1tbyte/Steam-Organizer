@@ -3,11 +3,13 @@ import NotFound from '#components/NotFound.vue'
 import { backupsRoutes } from '#features/backups'
 import { settingsRoutes } from '#features/settings'
 import { shellPlaceholderRoutes, shellRoute } from '#features/shell'
+import { installVaultGuard, vaultRoutes } from '#features/vault'
 
 export function createAppRouter(history: RouterHistory) {
-    return createRouter({
+    const router = createRouter({
         history,
         routes: [
+            ...vaultRoutes,
             {
                 ...shellRoute,
                 children: [
@@ -19,4 +21,6 @@ export function createAppRouter(history: RouterHistory) {
             { path: '/:path(.*)*', component: NotFound },
         ],
     })
+    installVaultGuard(router)
+    return router
 }

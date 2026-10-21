@@ -7,4 +7,4 @@ The unlocked app's frame. Desktop: 64px rail (Accounts, Backups, Bots soon, Lock
 - `SyncStatus` is the Drive sync indicator pages place in the `status` slot; the backups feature owns it and the shell re-exports it.
 - Settings opens through `useSettingsEntry()` from `#features/settings`: a window on desktop, the `/settings` screen on phones.
 
-Unwired intents: the rail's Lock button (the vault feature's lock), Bots (planned, disabled).
+The rail's Lock button calls `useVaultSession().lock` from `#features/vault`. Unwired intents: Bots (planned, disabled).

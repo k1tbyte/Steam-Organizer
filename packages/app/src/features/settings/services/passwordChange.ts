@@ -1,4 +1,4 @@
-import { MIN_PASSWORD_LENGTH } from './passwordStrength'
+import { MIN_MASTER_LENGTH } from '../../../core/passwordStrength'
 
 export type RepeatState = 'empty' | 'match' | 'mismatch'
 
@@ -20,7 +20,7 @@ export function canChangePassword({
 }: PasswordChangeInput): boolean {
     return (
         current.length > 0 &&
-        next.length >= MIN_PASSWORD_LENGTH &&
+        next.length >= MIN_MASTER_LENGTH &&
         repeatState(next, repeat) === 'match'
     )
 }

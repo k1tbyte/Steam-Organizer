@@ -7,7 +7,7 @@ Desktop: a 960x660 window over the app (`?settings=<section>`, `useQueryOverlay`
 - Security, Sync & backup, Fields, Vault and Steam are built on mocks. What the user edits (lock timeout, switches, sync interval, field secrecy, API key, site grants) lives in `stores/settingsStore.ts`, so the sections and the phone index read the same values; each part moves to its owner when wired. Data other features own is read through `composables/sources/` (one composable per source, the only readers of `mocks.ts`).
 - Security is the one section with separate phone markup (`SecurityMobile`, the mockup's grouped cards); the others reflow through `FpFormRow` (`inline` keeps a switch beside its label on phones).
 - Two dialogs bound to an action in flight, so local state and not URL overlays: `dialogs/password/` (Change master password, opened from Security) and `dialogs/reset/` (Reset vault in three steps and a 1.6 s hold, opened from Vault). Each restarts its flow when it opens.
-- `services/` holds the framework-free rules with tests: `passwordStrength` (move to the vault feature's copy if it builds the same one), `passwordChange`, `vaultReset`, `fieldSecrecy`.
+- `services/` holds the framework-free rules with tests: `passwordChange` (strength comes from `core/passwordStrength.ts`, shared with onboarding), `vaultReset`, `fieldSecrecy`.
 - The shell and features that link into a section call `useSettingsEntry()` (`open(section?)`); the facade exports `SettingsHost`, `useSettingsEntry`, `settingsRoutes` and `SectionKey`.
 
 ## Mocks
