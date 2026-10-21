@@ -219,14 +219,27 @@
     --surf-pop: color-mix(in oklch, white 80%, transparent);
 }
 
-/* Floats and dialogs: the mockup shadows stay dark in light mode too. */
+/* Floats and dialogs: the mockup shadows stay dark in light mode too.
+   Without an arrow (Subtle, Glass) a float casts a stronger shadow. */
 :root {
     --elev-1:
         inset 0 0 0 1px var(--stroke-2),
         0 16px 40px -12px color-mix(in oklch, black 45%, transparent);
     --elev-2:
         inset 0 0 0 1px var(--stroke-2),
-        0 24px 64px -16px color-mix(in oklch, black 60%, transparent);
+        0 32px 80px -16px color-mix(in oklch, black 60%, transparent);
+    --elev-tip:
+        inset 0 0 0 1px var(--stroke-2),
+        0 8px 24px -6px color-mix(in oklch, black 45%, transparent);
+    --elev-float:
+        inset 0 0 0 1px var(--stroke-2),
+        0 12px 32px -8px color-mix(in oklch, black 45%, transparent);
+}
+
+:root[data-surface] {
+    --elev-float:
+        inset 0 0 0 1px var(--stroke-2),
+        0 18px 44px -8px color-mix(in oklch, black 60%, transparent);
 }
 
 /* The app stage: five backgrounds behind every surface (painted by `.bg-stage`).

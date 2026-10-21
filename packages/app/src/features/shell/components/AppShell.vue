@@ -49,7 +49,10 @@ useShellScroll(() => desktopScroll.value?.viewport ?? phoneScroll.value)
             <div :ref="bind.actions" class="flex items-center gap-1" />
         </header>
         <div :ref="bind.center" class="shrink-0 px-4 pb-2.5 empty:hidden" />
-        <main ref="phoneScroll" class="relative min-h-0 flex-1 overflow-y-auto">
+        <main
+            ref="phoneScroll"
+            class="relative min-h-0 flex-1 overflow-y-auto"
+            :class="showTabBar && 'pb-(--dock-clear)'">
             <ShellPages />
         </main>
         <ShellTabBar v-if="showTabBar" />

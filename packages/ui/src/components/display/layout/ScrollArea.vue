@@ -20,7 +20,7 @@ defineExpose({ viewport: computed(() => root.value?.viewport) })
 <template>
     <ScrollAreaRoot
         ref="root"
-        class="flex flex-col overflow-hidden"
+        class="flex flex-col overflow-hidden rounded-[inherit]"
         :type="type"
         :scroll-hide-delay="400">
         <ScrollAreaViewport class="relative min-h-0 w-full flex-auto transform-gpu overscroll-contain">

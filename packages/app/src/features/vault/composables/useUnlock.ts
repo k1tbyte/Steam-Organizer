@@ -59,6 +59,8 @@ export function useUnlock() {
     const password = ref('')
     const passwordError = ref('')
     const wrongPasswords = ref(0)
+    // Never resets: the fields shake on every change.
+    const failedAttempts = ref(0)
     const passwordPaused = ref(false)
     const waitingForHello = ref(false)
     const opening = ref(false)
@@ -128,6 +130,7 @@ export function useUnlock() {
         const ok = await session.verify({ method: 'pin', pin: pin.value })
         if (ok) return succeed()
         wrongPins.value++
+        failedAttempts.value++
         pin.value = ''
         const left = pinTriesLeft(wrongPins.value)
         if (left === 0) {
@@ -169,6 +172,7 @@ export function useUnlock() {
         })
         if (ok) return succeed()
         wrongPasswords.value++
+        failedAttempts.value++
         if (wrongPasswords.value >= PASSWORD_TRIES_BEFORE_PAUSE) {
             passwordPaused.value = true
             passwordError.value = t('Too many attempts. Try again in 30 s.')
@@ -234,6 +238,7 @@ export function useUnlock() {
         pinLocked,
         pin,
         pinError,
+        failedAttempts,
         onPinInput,
         pressDigit,
         pressDelete,

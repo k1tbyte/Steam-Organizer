@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+    DropdownMenuArrow,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuGroup,
@@ -12,8 +13,7 @@ import {
     DropdownMenuTrigger,
 } from 'reka-ui'
 import { computed } from 'vue'
-import { type Placement, splitPlacement } from '../../placement'
-import Kbd from '../display/Kbd.vue'
+import { ARROW_PADDING, FLOAT_GAP, type Placement, splitPlacement } from '../../placement'
 import FpScrollArea from '../display/layout/ScrollArea.vue'
 import { keyItems } from './dropdownKeys'
 
@@ -44,7 +44,7 @@ const props = withDefaults(
         alignOffset?: number
         disabled?: boolean
     }>(),
-    { placement: 'bottom-start', sideOffset: 6, alignOffset: 0 },
+    { placement: 'bottom-start', sideOffset: FLOAT_GAP, alignOffset: 0 },
 )
 
 const anchor = computed(() => splitPlacement(props.placement))
@@ -76,6 +76,7 @@ const groups = computed<DropdownGroup[]>(() => {
                 :side-offset="sideOffset"
                 :align-offset="alignOffset"
                 :collision-padding="8"
+                :arrow-padding="ARROW_PADDING"
                 class="fp-float fp-menu surface-pop layer-float min-w-44 rounded-md">
                 <FpScrollArea class="min-h-0">
                     <div class="p-1.5">
@@ -112,12 +113,13 @@ const groups = computed<DropdownGroup[]>(() => {
                                         <span class="text-12 text-fg-3">{{ item.description }}</span>
                                     </span>
                                     <span v-else class="min-w-0 flex-1 truncate">{{ item.label }}</span>
-                                    <Kbd v-if="item.kbd" :value="item.kbd" class="shrink-0" />
+                                    <span v-if="item.kbd" class="shrink-0 font-medium font-mono text-11 text-fg-3">{{ item.kbd }}</span>
                                 </component>
                             </component>
                         </template>
                     </div>
                 </FpScrollArea>
+                <DropdownMenuArrow as-child><span class="fp-arrow" /></DropdownMenuArrow>
             </DropdownMenuContent>
         </DropdownMenuPortal>
     </DropdownMenuRoot>

@@ -26,6 +26,8 @@ export function useRestore() {
 
     const password = ref('')
     const wrong = ref(false)
+    // Never resets: the field shakes on every wrong password.
+    const failedAttempts = ref(0)
     watch(password, () => {
         wrong.value = false
     })
@@ -33,7 +35,8 @@ export function useRestore() {
     function restore() {
         wrong.value = password.value !== DEMO_PASSWORD
         // The restored vault opens straight away.
-        if (!wrong.value) session.open()
+        if (wrong.value) failedAttempts.value++
+        else session.open()
     }
 
     function switchAccount() {
@@ -51,6 +54,7 @@ export function useRestore() {
         restoreLabel,
         password,
         wrong,
+        failedAttempts,
         restore,
         switchAccount,
         showOtherBackups,

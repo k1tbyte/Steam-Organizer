@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { FpAlert, FpButton, FpFormField, FpIcon, FpInput, useDesktopLayout } from '@so/ui'
+import { FpAlert, FpButton, FpFormField, FpIcon, FpInput, FpShake, useDesktopLayout } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import FieldNote from '../FieldNote.vue'
 
-defineProps<{ message: string; pinLocked: boolean; canUsePin: boolean }>()
+defineProps<{ message: string; attempts: number; pinLocked: boolean; canUsePin: boolean }>()
 defineEmits<{ submit: []; usePin: []; reset: [] }>()
 
 const password = defineModel<string>({ required: true })
@@ -17,23 +17,25 @@ const desktop = useDesktopLayout()
         <FpAlert v-if="pinLocked" color="warning">
             {{ t('Too many wrong PINs. Unlock with the master password once.') }}
         </FpAlert>
-        <FpFormField :error="message !== ''">
-            <FpInput
-                v-model="password"
-                type="password"
-                no-reveal
-                size="lg"
-                :aria-label="t('Master password')"
-                :placeholder="t('Master password')"
-                @keydown.enter="$emit('submit')">
-                <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
-                <template #trailing>
-                    <FpButton color="accent" size="xl" @click="$emit('submit')">
-                        {{ t('Unlock') }}
-                    </FpButton>
-                </template>
-            </FpInput>
-        </FpFormField>
+        <FpShake :trigger="attempts">
+            <FpFormField :error="message !== ''">
+                <FpInput
+                    v-model="password"
+                    type="password"
+                    no-reveal
+                    size="lg"
+                    :aria-label="t('Master password')"
+                    :placeholder="t('Master password')"
+                    @keydown.enter="$emit('submit')">
+                    <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
+                    <template #trailing>
+                        <FpButton color="accent" size="xl" @click="$emit('submit')">
+                            {{ t('Unlock') }}
+                        </FpButton>
+                    </template>
+                </FpInput>
+            </FpFormField>
+        </FpShake>
         <FieldNote v-if="message">{{ message }}</FieldNote>
         <div class="flex items-center justify-center gap-1.5 pt-1.5 text-13 text-fg-3">
             {{ t('Forgot it?') }}
@@ -47,18 +49,20 @@ const desktop = useDesktopLayout()
         <FpAlert v-if="pinLocked" color="warning">
             {{ t('Too many wrong PINs. Use the master password once.') }}
         </FpAlert>
-        <FpFormField :error="message !== ''">
-            <FpInput
-                v-model="password"
-                type="password"
-                no-reveal
-                size="lg"
-                :aria-label="t('Master password')"
-                :placeholder="t('Master password')"
-                @keydown.enter="$emit('submit')">
-                <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
-            </FpInput>
-        </FpFormField>
+        <FpShake :trigger="attempts">
+            <FpFormField :error="message !== ''">
+                <FpInput
+                    v-model="password"
+                    type="password"
+                    no-reveal
+                    size="lg"
+                    :aria-label="t('Master password')"
+                    :placeholder="t('Master password')"
+                    @keydown.enter="$emit('submit')">
+                    <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
+                </FpInput>
+            </FpFormField>
+        </FpShake>
         <span v-if="message" class="text-12.5 text-danger leading-snug">{{ message }}</span>
         <FpButton block color="accent" size="2xl" @click="$emit('submit')">{{ t('Unlock') }}</FpButton>
         <FpButton v-if="canUsePin" variant="ghost" color="accent" size="xl" @click="$emit('usePin')">

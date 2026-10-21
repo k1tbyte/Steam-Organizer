@@ -19,6 +19,8 @@ export function useChangePassword(open: Ref<boolean>) {
     const next = ref('')
     const repeat = ref('')
     const currentError = ref('')
+    // Never resets: the field shakes on every wrong password.
+    const failedAttempts = ref(0)
     const done = ref(false)
 
     // The flow restarts when it opens, so the success state survives the exit animation.
@@ -68,7 +70,10 @@ export function useChangePassword(open: Ref<boolean>) {
     function submit() {
         if (!canSubmit.value) return
         if (masterPassword.verify(current.value)) done.value = true
-        else currentError.value = t('Wrong master password')
+        else {
+            currentError.value = t('Wrong master password')
+            failedAttempts.value++
+        }
     }
 
     return {
@@ -76,6 +81,7 @@ export function useChangePassword(open: Ref<boolean>) {
         next,
         repeat,
         currentError,
+        failedAttempts,
         done,
         lengthHint,
         strength,

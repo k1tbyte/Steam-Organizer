@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka-ui'
+import { PopoverArrow, PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka-ui'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useDesktopLayout } from '../../composables/useDesktopLayout'
-import { type Placement, splitPlacement } from '../../placement'
+import { ARROW_PADDING, FLOAT_GAP, type Placement, splitPlacement } from '../../placement'
 import FpScrollArea from '../display/layout/ScrollArea.vue'
 import FpDrawer from './Drawer.vue'
 
@@ -21,9 +21,9 @@ const props = withDefaults(
     }>(),
     {
         placement: 'bottom',
-        sideOffset: 8,
+        sideOffset: FLOAT_GAP,
         alignOffset: 0,
-        width: '18rem',
+        width: '16rem',
         padded: true,
     },
 )
@@ -76,14 +76,16 @@ function close() {
                 :side-offset="sideOffset"
                 :align-offset="alignOffset"
                 :collision-padding="8"
+                :arrow-padding="ARROW_PADDING"
                 :aria-label="label"
-                class="fp-float surface-pop layer-float flex flex-col overflow-hidden rounded-lg"
+                class="fp-float surface-pop layer-float flex flex-col rounded-md"
                 :style="{ width, maxHeight }">
                 <FpScrollArea class="min-h-0">
-                    <div :class="{ 'p-2.5': padded }">
+                    <div :class="{ 'p-3.5': padded }">
                         <slot name="content" :close="close" />
                     </div>
                 </FpScrollArea>
+                <PopoverArrow as-child><span class="fp-arrow" /></PopoverArrow>
             </PopoverContent>
         </PopoverPortal>
     </PopoverRoot>

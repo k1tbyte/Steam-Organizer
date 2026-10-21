@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { TooltipContent, TooltipPortal, TooltipRoot, TooltipTrigger } from 'reka-ui'
+import { TooltipArrow, TooltipContent, TooltipPortal, TooltipRoot, TooltipTrigger } from 'reka-ui'
 import { computed } from 'vue'
-import { type Placement, splitPlacement } from '../../placement'
+import { ARROW_PADDING, FLOAT_GAP, type Placement, splitPlacement } from '../../placement'
+import Kbd from '../display/Kbd.vue'
 
 const props = withDefaults(
     defineProps<{
         text?: string
+        /** Shortcut chip after the text. */
+        kbd?: string
         placement?: Placement
         sideOffset?: number
         delayDuration?: number
         disabled?: boolean
     }>(),
-    { placement: 'top', sideOffset: 8 },
+    { placement: 'top', sideOffset: FLOAT_GAP },
 )
 
 const anchor = computed(() => splitPlacement(props.placement))
@@ -29,8 +32,12 @@ const anchor = computed(() => splitPlacement(props.placement))
                 :align="anchor.align"
                 :side-offset="sideOffset"
                 :collision-padding="8"
-                class="fp-float fp-tip surface-pop layer-float rounded-sm px-2.5 py-1 text-12 text-fg-1">
+                :arrow-padding="ARROW_PADDING"
+                class="fp-float fp-tip surface-pop layer-float rounded-sm py-1.5 pl-2.5 text-12.5 text-fg-1"
+                :class="kbd ? 'flex items-center gap-2 pr-1.75' : 'pr-2.5'">
                 <slot name="content">{{ text }}</slot>
+                <Kbd v-if="kbd" :value="kbd" class="shrink-0" />
+                <TooltipArrow as-child><span class="fp-arrow" /></TooltipArrow>
             </TooltipContent>
         </TooltipPortal>
     </TooltipRoot>

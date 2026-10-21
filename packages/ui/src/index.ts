@@ -46,6 +46,7 @@ export {
 export { default as FpEmpty } from './components/feedback/Empty.vue'
 export { default as FpProgress } from './components/feedback/Progress.vue'
 export { default as FpSegmentedMeter } from './components/feedback/SegmentedMeter.vue'
+export { default as FpShake } from './components/feedback/Shake.vue'
 export { default as FpSkeleton } from './components/feedback/Skeleton.vue'
 export { default as FpSpinner } from './components/feedback/Spinner.vue'
 export {

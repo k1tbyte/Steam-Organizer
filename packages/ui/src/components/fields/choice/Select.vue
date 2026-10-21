@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="T extends string | number">
 import {
+    SelectArrow,
     SelectContent,
     SelectItem,
     SelectItemIndicator,
@@ -13,6 +14,7 @@ import {
     SelectViewport,
 } from 'reka-ui'
 import { computed, useAttrs } from 'vue'
+import { ARROW_PADDING, FLOAT_GAP } from '../../../placement'
 import { SQUARE_SIZES } from '../../buttons/sizes'
 import FpIcon from '../../display/media/Icon.vue'
 import { useFormField } from '../FormField/form-field'
@@ -83,8 +85,9 @@ const label = computed(() => {
             <SelectContent
                 position="popper"
                 side="bottom"
-                :side-offset="6"
+                :side-offset="FLOAT_GAP"
                 :collision-padding="8"
+                :arrow-padding="ARROW_PADDING"
                 class="fp-float fp-menu surface-pop layer-float min-w-(--reka-select-trigger-width) rounded-md">
                 <SelectScrollUpButton class="flex shrink-0 justify-center py-1 text-fg-3">
                     <FpIcon name="icon-[lucide--chevron-up]" class="text-13" />
@@ -109,6 +112,7 @@ const label = computed(() => {
                 <SelectScrollDownButton class="flex shrink-0 justify-center py-1 text-fg-3">
                     <FpIcon name="icon-[lucide--chevron-down]" class="text-13" />
                 </SelectScrollDownButton>
+                <SelectArrow as-child><span class="fp-arrow" /></SelectArrow>
             </SelectContent>
         </SelectPortal>
     </SelectRoot>
