@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpFormField, FpPinInput, useDesktopLayout } from '@so/ui'
+import { FpButton, FpFormField, FpPinInput, FpShake, useDesktopLayout } from '@so/ui'
 import { onMounted, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -10,6 +10,7 @@ import PinKeypad from './PinKeypad.vue'
 const props = defineProps<{
     pin: string
     message: string
+    attempts: number
     hasBio: boolean
     waiting: boolean
 }>()
@@ -37,15 +38,17 @@ watch(
 
 <template>
     <div v-if="desktop" class="flex flex-col gap-2.5">
-        <FpFormField :error="message !== ''">
-            <FpPinInput
-                ref="cells"
-                masked
-                size="lg"
-                :length="PIN_LENGTH"
-                :model-value="pin"
-                @update:model-value="$emit('input', $event)" />
-        </FpFormField>
+        <FpShake :trigger="attempts">
+            <FpFormField :error="message !== ''">
+                <FpPinInput
+                    ref="cells"
+                    masked
+                    size="lg"
+                    :length="PIN_LENGTH"
+                    :model-value="pin"
+                    @update:model-value="$emit('input', $event)" />
+            </FpFormField>
+        </FpShake>
         <FieldNote v-if="message">{{ message }}</FieldNote>
         <div class="flex items-center justify-center gap-1.5 text-12.5 text-fg-3">
             {{ t('6-digit PIN for this device') }}
@@ -58,7 +61,7 @@ watch(
     <div v-else class="flex min-h-0 flex-1 flex-col">
         <div class="flex min-h-0 flex-1 flex-col items-center justify-center gap-3.5 px-5">
             <span class="font-title text-20 text-fg-1">{{ t('Enter PIN') }}</span>
-            <div class="flex gap-3.5 py-1">
+            <FpShake :trigger="attempts" class="flex gap-3.5 py-1">
                 <span
                     v-for="index in PIN_LENGTH"
                     :key="index"
@@ -67,7 +70,7 @@ watch(
                         message ? 'ring-danger' : 'ring-stroke-2',
                         index <= pin.length && 'bg-fg-1',
                     ]" />
-            </div>
+            </FpShake>
             <span class="min-h-5 max-w-75 text-center text-12.5 text-danger leading-snug">{{ message }}</span>
         </div>
         <PinKeypad

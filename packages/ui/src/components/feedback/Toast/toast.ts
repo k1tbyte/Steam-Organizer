@@ -10,8 +10,11 @@ export interface ToastOptions {
     title: string
     description?: string
     color?: StatusColor
+    /** Milliseconds before it closes; 0 stays until dismissed. Danger toasts stay by default. */
     duration?: number
-    actions?: ToastAction[]
+    action?: ToastAction
+    /** Draws a bar that drains until `until` (epoch ms), on its own clock: hover does not pause it. */
+    countdown?: { until: number }
 }
 
 export interface ToastItem extends ToastOptions {
@@ -23,13 +26,11 @@ export interface ToastItem extends ToastOptions {
 
 export interface ToastStack {
     y: number
-    scale: number
-    opacity: number
     height?: number
     z: number
 }
 
-const MAX_TOASTS = 5
+const MAX_TOASTS = 3
 
 // Toast state is client-only, so one module ref is safe across callers.
 const toasts = ref<ToastItem[]>([])
@@ -37,9 +38,16 @@ let nextId = 1
 
 function add(options: ToastOptions): number {
     const id = nextId++
+    const sticky = options.color === 'danger' && options.duration === undefined
     toasts.value = [
         ...toasts.value,
-        { id, open: true, mounted: false, ...options },
+        {
+            id,
+            open: true,
+            mounted: false,
+            ...options,
+            ...(sticky && { duration: 0 }),
+        },
     ]
     // Evict through remove so overflow still plays its exit animation.
     const open = toasts.value.filter((item) => item.open)
@@ -75,5 +83,8 @@ function clear() {
 }
 
 export function useToast() {
-    return { toasts, add, update, remove, forget, markMounted, clear }
+    return { toasts, add, update, remove, clear }
 }
+
+// Internal: the toaster renders `toasts` and reports their lifecycle; callers use `useToast`.
+export { forget, markMounted, toasts }

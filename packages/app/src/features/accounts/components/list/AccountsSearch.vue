@@ -35,7 +35,7 @@ onKeyStroke('k', (event) => {
                     <FpIcon name="icon-[lucide--chevron-down]" />
                 </FpButton>
             </FpDropdownMenu>
-            <FpKbd v-if="desktop" value="⌘K" class="ml-2" />
+            <FpKbd v-if="desktop" value="⌘K" size="md" class="ml-2" />
         </template>
     </FpInput>
 </template>

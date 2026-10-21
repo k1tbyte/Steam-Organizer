@@ -1,10 +1,11 @@
 <script setup lang="ts">
-defineProps<{ value?: string }>()
+withDefaults(defineProps<{ value?: string; size?: 'sm' | 'md' }>(), { size: 'sm' })
 </script>
 
 <template>
     <kbd
-        class="key inline-flex h-5 min-w-5 items-center justify-center rounded-xs px-1.5 font-medium font-mono text-11 text-fg-3">
+        class="key inline-flex min-w-3.5 items-center justify-center rounded-xs font-medium font-mono text-11 text-fg-3"
+        :class="size === 'sm' ? 'h-3.5 px-1.25' : 'h-4 px-1.5'">
         <slot>{{ value }}</slot>
     </kbd>
 </template>

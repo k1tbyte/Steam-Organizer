@@ -34,6 +34,7 @@ const {
     pinLocked,
     pin,
     pinError,
+    failedAttempts,
     onPinInput,
     pressDigit,
     pressDelete,
@@ -99,6 +100,7 @@ const {
                     v-else-if="view === 'pin'"
                     :pin
                     :message="pinError"
+                    :attempts="failedAttempts"
                     :has-bio="hasBio"
                     :waiting="waitingForHello"
                     @input="onPinInput"
@@ -110,6 +112,7 @@ const {
                     v-else-if="view === 'pw'"
                     v-model="password"
                     :message="passwordError"
+                    :attempts="failedAttempts"
                     :pin-locked="pinLocked"
                     :can-use-pin="canUsePin"
                     @submit="submitPassword"

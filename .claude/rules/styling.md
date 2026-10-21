@@ -20,7 +20,7 @@ Tokens live in `packages/ui/src/theme.css`, shared surface classes in `packages/
 | type | `text-10` .. `text-28`, named by desktop px (`text-12.5`, `text-13.5`); `font-title`, `tracking-title` | `text-[13px]`, `font-size: 13px`, `text-sm` |
 | density | `p-u-4`, `px-u-6`, `gap-u-3.5`: paddings and gaps the density knob scales (unit 3, 4, 5px) | `p-4` where the mockup writes `calc(var(--u) * 4)` |
 | scroll container | `FpScrollArea` on desktop (an overlay bar, no gutter in the layout); phones keep native `overflow-y-auto` | a bare `overflow-y-auto` on a desktop panel, `scrollbar-width` / `::-webkit-scrollbar` styling |
-| global stacking | `layer-chrome` (rail, topbar, tab bar), `layer-overlay` (modals), `layer-float` (popovers, menus, tooltips), `layer-toast` | `z-50`, `z-index: 100` (local stacking below 30 is fine) |
+| global stacking | `layer-chrome` (rail, topbar), `layer-dock` (phone tab bar), `layer-overlay` (modals), `layer-float` (popovers, menus, tooltips), `layer-toast` | `z-50`, `z-index: 100` (local stacking below 30 is fine) |
 | safe area | `safe-p`, `safe-px`, `safe-pt`, ... on the fixed container | `env(safe-area-inset-*)` by hand |
 | touch | `touch-target` on compact and icon controls, `touch-row` on rows, `touch-control-sm` / `md` / `lg` (kit controls carry it); targets at least 24px | shrinking a hit area to fit the layout |
 | hover reveal | `pointer-fine:opacity-0 group-hover:opacity-100` | `opacity-0 hover:opacity-100`, which hides it from touch |
@@ -44,10 +44,10 @@ A screen is done once it holds at 360px wide with touch emulation.
 
 ## Motion
 
-- Pick the token by role: `press` instant acknowledgement, `fast` exits, hover and small changes, `base` routine enters, `slow` layout and overlays, `move` a whole page travelling (route slides), `reveal` authored focal moments, `cycle` one loader loop, `stagger` list delay. Exits run shorter than their entrance.
+- Pick the token by role: `press` instant acknowledgement, `fast` exits, hover and small changes, `base` routine enters, `slow` layout, overlays and a whole page travelling (route slides, the nav highlight, the dock), `reveal` authored focal moments, `cycle` one loader loop, `stagger` list delay. Exits run shorter than their entrance.
 - Easing: `ease-out` default, `ease-in` exits leaving the screen, `ease-spring` overshoot on transforms only (never opacity or progress), `ease-in-out` loops, `ease-move` a page travelling.
 - Templates use `duration-*`, `delay-*`, `ease-*` utilities; scripts read `durationToken()` / `easingToken()` from `@so/ui`.
-- Shared feedback: `animate-pop` (something arrives), `animate-bump` + `useBump()` (a value changed, never on mount), `animate-settle` (content lands).
+- Shared feedback: `animate-pop` (something arrives), `animate-bump` + `useBump()` (a value changed, never on mount), `animate-settle` (content lands), `animate-shake` via `FpShake` (a wrong password or PIN).
 - Reduced motion: `motion-safe:` / `motion-reduce:`, `prefersReducedMotion()`; never read `prefers-reduced-motion` yourself. It swaps the animation and keeps the state change visible.
 - Animate opacity on the glass element itself, never an ancestor: ancestor opacity, filter or mask kills descendant backdrop blur (transforms are safe). The route shift under Subtle and Glass is the one exception: glass goes flat for its fade.
 - Reka popper content (popovers, menus, selects) ignores scoped state selectors: style it in a global block with `fp-` classes. Scoped styles work for Dialog content (Modal, Drawer).
@@ -55,3 +55,4 @@ A screen is done once it holds at 360px wide with touch emulation.
 - In-place drill-down and tab switches are `FpViewStack`'s job; tall pages and switchers inside an `FpModal` (settings sections) pass `:morph="false"`.
 - Route changes are the shell's (`ShellPages`, `services/routeMotion.ts`): Flat slides the page along the nav axis, Subtle and Glass shift it and fade, a deeper page of one section drills in. A route needs `meta.nav` to take part.
 - A page that measures its place in the scroller reads layout offsets (`offsetTop`), never `getBoundingClientRect`: it may mount mid-slide.
+- The rail and the phone dock each move one highlight with `translate`, `duration-slow ease-move`, from an index var (no layout reads); the dock hides with `translate` on scroll down (`useDock`).

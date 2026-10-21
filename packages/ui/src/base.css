@@ -238,10 +238,12 @@
             0 0 0 3px var(--danger-soft);
     }
 
-    /* Portaled popper content cannot match scoped selectors. */
+    /* Portaled popper content cannot match scoped selectors. Relative: the arrow's containing block. */
     .fp-float {
+        position: relative;
         max-width: var(--reka-popper-available-width);
         transform-origin: var(--reka-popper-transform-origin);
+        box-shadow: var(--elev-float);
     }
 
     .fp-float[data-side="top"] {
@@ -282,16 +284,12 @@
         }
     }
 
-    /* Menus fit the space Reka measured. The inner scroller scrolls, never the
-       surface itself. */
+    /* Menus fit the space Reka measured. The inner scroller scrolls and clips, never the
+       surface itself: the arrow straddles its edge. */
     .fp-menu {
         display: flex;
         flex-direction: column;
         max-height: var(--reka-popper-available-height);
-        overflow: hidden;
-        box-shadow:
-            inset 0 0 0 1px var(--stroke-2),
-            0 16px 40px -12px color-mix(in oklch, black 50%, transparent);
     }
 
     /* A flex column, so bounded children still shrink to fit. */
@@ -306,6 +304,29 @@
     /* Short text tips: a readable measure that never outgrows the viewport. */
     .fp-tip {
         max-width: min(20rem, var(--reka-popper-available-width));
+        box-shadow: var(--elev-tip);
+    }
+
+    /* Reka's arrow parts wrap this 0x0 point, so the arrow adds nothing to the gap and no
+       Surface knob moves the float. Flat draws the square, rotated about the point per side. */
+    .fp-arrow {
+        width: 0;
+        height: 0;
+    }
+
+    :root:not([data-surface]) .fp-arrow::before {
+        content: "";
+        position: absolute;
+        left: -5.5px;
+        top: -5px;
+        box-sizing: border-box;
+        width: 11px;
+        height: 11px;
+        rotate: 45deg;
+        background: var(--surf-pop);
+        border-right: 1px solid var(--stroke-2);
+        border-bottom: 1px solid var(--stroke-2);
+        border-bottom-right-radius: 2px;
     }
 
     /* The app background (`--stage`, theme.css). The root never filters or blends it: that would

@@ -33,7 +33,7 @@ const motion = useRouteMotion()
 }
 
 .stage:is([data-motion^='slide'], [data-motion='drill']) > :is(.page-enter-active, .page-leave-active) {
-    transition: translate var(--dur-move) var(--ease-move);
+    transition: translate var(--dur-slow) var(--ease-move);
 }
 .stage[data-motion='slide-y'] > .page-enter-from {
     translate: 0 calc(var(--route-dir) * var(--page-h));

@@ -13,6 +13,11 @@ export type Placement =
     | 'right-start'
     | 'right-end'
 
+/** Anchor to float on every surface: the Flat arrow's tip is drawn inside it. */
+export const FLOAT_GAP = 10
+/** Keeps a float's arrow clear of its rounded corners: the corner radius plus half the arrow. */
+export const ARROW_PADDING = 22
+
 export function splitPlacement(placement: Placement): {
     side: Side
     align: Align

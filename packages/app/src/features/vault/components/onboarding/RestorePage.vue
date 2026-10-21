@@ -9,6 +9,7 @@ import {
     FpIcon,
     FpIconTile,
     FpInput,
+    FpShake,
 } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
@@ -26,6 +27,7 @@ const {
     restoreLabel,
     password,
     wrong,
+    failedAttempts,
     restore,
     switchAccount,
     showOtherBackups,
@@ -72,15 +74,17 @@ const {
 
             <div class="flex flex-col gap-2">
                 <FpFormField :label="t('Backup password')" :error="wrong">
-                    <FpInput
-                        v-model="password"
-                        type="password"
-                        no-reveal
-                        :size="fieldSize"
-                        :placeholder="t('Password used when the backup was made')"
-                        @keydown.enter="restore">
-                        <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
-                    </FpInput>
+                    <FpShake :trigger="failedAttempts">
+                        <FpInput
+                            v-model="password"
+                            type="password"
+                            no-reveal
+                            :size="fieldSize"
+                            :placeholder="t('Password used when the backup was made')"
+                            @keydown.enter="restore">
+                            <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
+                        </FpInput>
+                    </FpShake>
                 </FpFormField>
                 <FieldNote v-if="wrong">{{ t('Wrong password for this backup. Try “demo”.') }}</FieldNote>
             </div>

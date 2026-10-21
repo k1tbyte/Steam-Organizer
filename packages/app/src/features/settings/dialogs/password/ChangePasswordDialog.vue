@@ -8,6 +8,7 @@ import {
     FpInput,
     FpModal,
     FpSegmentedMeter,
+    FpShake,
 } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
@@ -26,13 +27,15 @@ const view = useChangePassword(open)
             class="flex flex-col gap-4"
             @submit.prevent="view.submit">
             <FpFormField :label="t('Current password')" :error="view.currentError.value">
-                <FpInput
-                    v-model="view.current.value"
-                    type="password"
-                    autocomplete="current-password"
-                    :placeholder="t('Master password')">
-                    <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
-                </FpInput>
+                <FpShake :trigger="view.failedAttempts.value">
+                    <FpInput
+                        v-model="view.current.value"
+                        type="password"
+                        autocomplete="current-password"
+                        :placeholder="t('Master password')">
+                        <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
+                    </FpInput>
+                </FpShake>
             </FpFormField>
             <div class="flex flex-col gap-2.5">
                 <FpFormField :label="t('New password')">

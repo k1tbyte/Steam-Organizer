@@ -44,6 +44,15 @@ export function useShellNav() {
     )
     const showTabBar = computed(() => route.meta.tabBar !== false)
 
+    // The rail and the tab bar each glide one highlight to the active entry's slot.
+    const tabs = computed(() => [...main.value, settingsItem.value])
+    const tabIndex = computed(() =>
+        tabs.value.findIndex((item) => item.key === activeKey.value),
+    )
+    const railIndex = computed(() =>
+        main.value.findIndex((item) => item.key === activeKey.value),
+    )
+
     function press(item: ShellNavItem) {
         if (item.key === settingsItem.value.key) settings.open()
     }
@@ -52,6 +61,9 @@ export function useShellNav() {
         main,
         settingsItem,
         activeKey,
+        tabs,
+        tabIndex,
+        railIndex,
         showTabBar,
         openSettings: settings.open,
         press,
