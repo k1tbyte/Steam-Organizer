@@ -34,9 +34,10 @@ function pauseThemeTransitions() {
     })
 }
 
-/** Applies every stored pref to <html> before the app mounts, so the first paint is themed. */
-export function restoreAppearance() {
-    const root = document.documentElement
+/** Applies every stored pref to <html> (or the shadow host of an injected UI) before mount, so the first paint is themed. */
+export function restoreAppearance(
+    root: HTMLElement = document.documentElement,
+) {
     for (const name of PREF_NAMES) applyPref(root, name, stateOf(name).value)
     // `system` has no stored answer: it follows the OS while it is the pref.
     matchMedia('(prefers-color-scheme: light)').addEventListener(

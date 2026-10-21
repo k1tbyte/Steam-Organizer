@@ -485,6 +485,22 @@
     backdrop-filter: var(--pop-filter);
 }
 
+/* Root of a fixed-size panel (extension popup, injected picker): the page's own html/body defaults,
+   desktop type scale unless touch, and px spacing so a host page's root font size cannot resize it. */
+@utility panel-base {
+    --spacing: 4px;
+    font-family: var(--font-sans);
+    font-size: var(--font-base);
+    line-height: normal;
+    letter-spacing: var(--track-body);
+    color: var(--text-2);
+    -webkit-font-smoothing: antialiased;
+
+    @media (pointer: fine) {
+        --font-base: 15px;
+    }
+}
+
 /* Density spacing: `p-u-4` is 4 density units (16px at comfortable); halves work (`p-u-3.5`). */
 @utility p-u-* {
     padding: calc(var(--density-unit) * --value(number));

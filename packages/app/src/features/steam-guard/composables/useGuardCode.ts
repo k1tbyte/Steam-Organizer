@@ -20,6 +20,8 @@ export function useGuardCode(seed: MaybeRefOrGetter<string>) {
     const phase = computed(() => guardPhase(clock.value))
     const codeAt = (nowMs: number) =>
         demoGuardCode(toValue(seed), guardPhase(nowMs).period)
+    // The 1s clock can lag a rollover, so a copy or a fill reads the real time.
+    const currentCode = () => codeAt(Date.now())
 
     return {
         holding,
@@ -30,7 +32,7 @@ export function useGuardCode(seed: MaybeRefOrGetter<string>) {
             holding.value ? codeAt(clock.value) : MASKED_CODE,
         ),
         remaining: computed(() => phase.value.remaining / GUARD_PERIOD_S),
-        // The 1s clock can lag a rollover, so a copy reads the real time.
-        copyCode: () => copy(codeAt(Date.now())),
+        currentCode,
+        copyCode: () => copy(currentCode()),
     }
 }
