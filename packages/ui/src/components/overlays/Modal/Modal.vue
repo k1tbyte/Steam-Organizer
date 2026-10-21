@@ -8,6 +8,7 @@ import {
     DialogTitle,
 } from 'reka-ui'
 import { computed, useTemplateRef } from 'vue'
+import { useMotionLevel } from '../../../motion'
 import ModalClose from './ModalClose.vue'
 import { useModalStack } from './modal-stack'
 import { useModalMeasure } from './use-modal-measure'
@@ -48,6 +49,7 @@ const {
     topHeight,
 } = useModalStack(open)
 
+const level = useMotionLevel()
 const wrapper = useTemplateRef('wrapper')
 const panel = useTemplateRef('panel')
 const content = useTemplateRef('content')
@@ -69,6 +71,12 @@ const layerStyle = computed(() => {
             height: `${ownHeight.value}px`,
             '--fp-modal-opacity': '1',
         }
+    }
+    // Simple stacks no cards: the lower panel fades out at its own size, never reflowing to the top card.
+    if (level.value === 'simple') {
+        const style: Record<string, string> = { '--fp-modal-opacity': '0' }
+        if (ownHeight.value > 0) style.height = `${ownHeight.value}px`
+        return style
     }
     const scale = LAYER_SCALE ** above.value
     const style: Record<string, string> = {

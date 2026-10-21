@@ -35,5 +35,12 @@ export function useSettingsSections() {
         return sections.value.find((section) => section.key === key)
     }
 
-    return { groups, find }
+    /** Place in nav order, so a section switch moves the way the nav reads. */
+    function position(key: string): number {
+        return groups.value
+            .flatMap((group) => group.sections)
+            .findIndex((section) => section.key === key)
+    }
+
+    return { groups, find, position }
 }

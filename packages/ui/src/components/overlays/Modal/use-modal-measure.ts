@@ -14,10 +14,14 @@ export function useModalMeasure(options: ModalMeasureOptions) {
 
     const ownWidth = ref(0)
     const ownHeight = ref(0)
+    const clipping = ref(false)
+    let savedScrollTop = 0
+    let cancelSettle: (() => void) | null = null
 
     function remeasure() {
         const el = panel.value
-        if (!el || above.value > 0) return
+        // A card growing back owns its height: the `auto` probe would cancel the tween.
+        if (!el || above.value > 0 || cancelSettle !== null) return
         // Release the forced back-card height before measuring natural content.
         const frozenH = el.style.height
         el.style.height = 'auto'
@@ -41,12 +45,10 @@ export function useModalMeasure(options: ModalMeasureOptions) {
     onScopeDispose(() => {
         resizeObserver?.disconnect()
         mutationObserver?.disconnect()
+        cancelSettle?.()
     })
 
-    const clipping = ref(false)
-    let savedScrollTop = 0
-    let cancelSettle: (() => void) | null = null
-    watch(above, (layers, prevLayers) => {
+    watch(above, async (layers, prevLayers) => {
         cancelSettle?.()
         if (layers > 0) {
             clipping.value = true
@@ -54,23 +56,26 @@ export function useModalMeasure(options: ModalMeasureOptions) {
             return
         }
         if (prevLayers === 0) return
-        const el = panel.value
-        if (!el) {
-            clipping.value = false
-            return
-        }
-        const settle = (event: TransitionEvent) => {
-            if (event.target !== el || event.propertyName !== 'height') return
-            cancelSettle?.()
-            clipping.value = false
-            if (savedScrollTop > 0)
-                wrapper.value?.scrollTo({ top: savedScrollTop })
-        }
+        let live = true
         cancelSettle = () => {
-            el.removeEventListener('transitionend', settle)
+            live = false
             cancelSettle = null
         }
-        el.addEventListener('transitionend', settle)
+        // Settles when the card's height tween ends or is cut, or at once without one (Simple keeps its size).
+        await nextTick()
+        const tween = panel.value
+            ?.getAnimations()
+            .find(
+                (animation) =>
+                    animation instanceof CSSTransition &&
+                    animation.transitionProperty === 'height',
+            )
+        await tween?.finished.catch(() => undefined)
+        if (!live) return
+        cancelSettle = null
+        clipping.value = false
+        remeasure()
+        if (savedScrollTop > 0) wrapper.value?.scrollTo({ top: savedScrollTop })
     })
 
     watch(
@@ -78,6 +83,7 @@ export function useModalMeasure(options: ModalMeasureOptions) {
         async (isOpen) => {
             resizeObserver?.disconnect()
             mutationObserver?.disconnect()
+            cancelSettle?.()
             if (!isOpen) return
             clipping.value = false
             await nextTick()

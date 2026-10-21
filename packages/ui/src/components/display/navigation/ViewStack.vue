@@ -63,7 +63,7 @@ function release() {
     <!-- Avoid clipping focus rings and poppers once the swap finishes. -->
     <div
         ref="box"
-        class="relative flex min-h-0 flex-auto flex-col transition-[height] duration-base ease-out"
+        class="relative flex min-h-0 flex-auto flex-col transition-[height] duration-base ease-out [--fp-view-travel:100%] motion-simple:[--fp-view-travel:var(--shift-travel)]"
         :class="[
             swapping && 'overflow-clip',
             axis === 'y' && 'fp-view-y',
@@ -104,22 +104,23 @@ function release() {
 .fp-view-morph > .fp-view-back-enter-active {
     flex-shrink: 0;
 }
+/* Gamify carries the whole page; Simple only hints the direction (--shift-travel). */
 .fp-view-fwd-enter-from,
 .fp-view-back-leave-to {
     opacity: 0;
-    translate: 100% 0;
+    translate: var(--fp-view-travel) 0;
 }
 .fp-view-fwd-leave-to,
 .fp-view-back-enter-from {
     opacity: 0;
-    translate: -100% 0;
+    translate: calc(var(--fp-view-travel) * -1) 0;
 }
 .fp-view-y > .fp-view-fwd-enter-from,
 .fp-view-y > .fp-view-back-leave-to {
-    translate: 0 100%;
+    translate: 0 var(--fp-view-travel);
 }
 .fp-view-y > .fp-view-fwd-leave-to,
 .fp-view-y > .fp-view-back-enter-from {
-    translate: 0 -100%;
+    translate: 0 calc(var(--fp-view-travel) * -1);
 }
 </style>

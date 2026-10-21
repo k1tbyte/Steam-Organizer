@@ -57,11 +57,11 @@ const motion = useRouteMotion()
     transition: opacity var(--dur-fast) var(--ease-in);
 }
 .stage[data-page-motion='shift-y'] > .page-enter-from {
-    translate: 0 calc(var(--route-dir) * 1.5rem);
+    translate: 0 calc(var(--route-dir) * var(--shift-travel));
     opacity: 0;
 }
 .stage[data-page-motion='shift-x'] > .page-enter-from {
-    translate: calc(var(--route-dir) * 1.5rem) 0;
+    translate: calc(var(--route-dir) * var(--shift-travel)) 0;
     opacity: 0;
 }
 .stage[data-page-motion^='shift'] > .page-leave-to {

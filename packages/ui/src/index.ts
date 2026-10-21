@@ -110,6 +110,7 @@ export {
     easingToken,
     type MotionLevel,
     motionLevel,
+    useMotionLevel,
 } from './motion'
 export {
     type Align,

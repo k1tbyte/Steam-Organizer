@@ -40,6 +40,11 @@
     --ease-spring: var(--ease-out);
 }
 
+/* A Simple move's travel: a hint of direction without carrying the page. */
+:root {
+    --shift-travel: 1.5rem;
+}
+
 @theme {
     --animate-overlay-in: fade-in var(--dur-base) var(--ease-out);
     --animate-overlay-out: fade-out var(--dur-fast) var(--ease-out);
