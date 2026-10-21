@@ -1,4 +1,4 @@
-// Reveals a theme snapshot from `origin`; unsupported/reduced-motion paths apply instantly.
+// A theme change: a circular reveal from `origin` (Gamify), a crossfade (Simple), instant otherwise.
 import { nextTick } from 'vue'
 
 import { durationToken, easingToken, motionLevel } from './motion'
@@ -24,7 +24,8 @@ export async function revealThemeChange(
     const typed =
         typeof ViewTransition !== 'undefined' &&
         'types' in ViewTransition.prototype
-    if (!typed || motionLevel() === 'off') {
+    const level = motionLevel()
+    if (!typed || level === 'off') {
         apply()
         return
     }
@@ -45,6 +46,18 @@ export async function revealThemeChange(
         return
     }
 
+    const pseudoElement = '::view-transition-new(root)'
+    if (level === 'simple') {
+        document.documentElement.animate(
+            { opacity: [0, 1] },
+            {
+                duration: durationToken('--dur-base'),
+                easing: easingToken('--ease-out'),
+                pseudoElement,
+            },
+        )
+        return
+    }
     const radius = Math.hypot(
         Math.max(x, window.innerWidth - x),
         Math.max(y, window.innerHeight - y),
@@ -59,7 +72,7 @@ export async function revealThemeChange(
         {
             duration: durationToken('--dur-reveal'),
             easing: easingToken('--ease-in-out'),
-            pseudoElement: '::view-transition-new(root)',
+            pseudoElement,
         },
     )
 }

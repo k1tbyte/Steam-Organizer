@@ -6,6 +6,8 @@ import {
     AccordionRoot,
     AccordionTrigger,
 } from 'reka-ui'
+import { computed } from 'vue'
+import { useMotionLevel } from '../../../motion'
 
 export interface AccordionItem {
     label: string
@@ -14,7 +16,7 @@ export interface AccordionItem {
     disabled?: boolean
 }
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         items: AccordionItem[]
         multiple?: boolean
@@ -26,6 +28,10 @@ withDefaults(
 )
 
 const model = defineModel<string | string[]>()
+
+// Simple snaps the height: its tween lays the subtree out every frame.
+const level = useMotionLevel()
+const sliding = computed(() => props.morph && level.value !== 'simple')
 </script>
 
 <template>
@@ -59,7 +65,7 @@ const model = defineModel<string | string[]>()
                     </svg>
                 </AccordionTrigger>
             </AccordionHeader>
-            <AccordionContent class="body overflow-hidden" :class="morph && 'slide'">
+            <AccordionContent class="body overflow-hidden" :class="sliding && 'slide'">
                 <div class="settle pb-3 text-fg-3 text-13">
                     <slot name="content" :item="item" :index="index">{{ item.content }}</slot>
                 </div>

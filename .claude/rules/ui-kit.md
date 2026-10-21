@@ -30,7 +30,7 @@ Vapor-compatible primitives. `vue.md` and `styling.md` apply; this adds what onl
 - Hold gestures are one composable: `useHold` (hold-to-reveal without a duration, hold-to-confirm with one). `FpHoldButton` fills as the progress and drains on release; `FpCountdownRing` (pie or ring, `tick` glides between updates), `FpSegmentedMeter` and `FpPinInput masked` cover the other Steam Guard and vault looks the mockups share. `FpSlider size="xs"` is the plain range look (hairline track, round grip).
 - Kit primitives own their native controls and take copy as props with English defaults; the kit has no i18n.
 - Glass never nests: `base.css` drops the backdrop filter of a `.surface` / `.surface-pop` inside another, so an inner card is tint only (it cannot see the stage through the outer filter). Opt back in with an explicit `backdrop-blur-*` utility only for a surface that really overlaps media.
-- `morph` (`FpViewStack`, `FpCollapsible`, `FpAccordion`) tweens height and defaults on; off for tall content and inside `FpModal` (`styling.md`, `ui-modal.md`).
+- `morph` (`FpViewStack`, `FpCollapsible`, `FpAccordion`) tweens height and defaults on; off for tall content and inside `FpModal` (`styling.md`, `ui-modal.md`). On Simple `FpCollapsible` and `FpAccordion` snap the height anyway: the tween lays the subtree out every frame.
 - The app root never creates a stacking context or a `backdrop-filter`: either breaks glass sampling over `.bg-stage`.
-- `data-theme-swap` disables transitions for the frame a mode or accent token changes; `theme-reveal.ts` owns the circular reveal.
+- `data-theme-swap` disables transitions for the frame a mode or accent token changes; `theme-reveal.ts` owns the theme change: a circular reveal on Gamify, a crossfade on Simple.
 - Every exported component is used by the app or listed in `index.ts` for a planned screen; delete what neither needs (copy it back from framepod when a screen does).

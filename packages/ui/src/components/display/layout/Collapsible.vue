@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { CollapsibleContent, CollapsibleRoot, CollapsibleTrigger } from 'reka-ui'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useMotionLevel } from '../../../motion'
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         disabled?: boolean
         /** Off snaps the height, for a measured parent (`FpModal`) or tall content. */
@@ -12,6 +13,10 @@ withDefaults(
 )
 
 const open = defineModel<boolean>('open', { default: false })
+
+// Simple snaps the height: its tween lays the subtree out every frame.
+const level = useMotionLevel()
+const sliding = computed(() => props.morph && level.value !== 'simple')
 
 // Clip during height animation without cutting focus rings at rest.
 const clipped = ref(!open.value)
@@ -38,7 +43,7 @@ function onAnimation(event: AnimationEvent, done: boolean) {
         </CollapsibleTrigger>
         <CollapsibleContent
             class="body"
-            :class="[morph && 'slide', morph && clipped && 'overflow-hidden']"
+            :class="[sliding && 'slide', sliding && clipped && 'overflow-hidden']"
             @animationstart="onAnimation($event, false)"
             @animationend="onAnimation($event, true)">
             <slot />
