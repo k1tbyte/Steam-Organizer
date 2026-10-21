@@ -4,8 +4,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import PageTopbar from '#components/PageTopbar.vue'
-
-import SyncStatus from './SyncStatus.vue'
+import { SyncStatus } from '#features/backups'
 
 const props = defineProps<{ screen: 'accounts' | 'backups' }>()
 const { t } = useI18n()

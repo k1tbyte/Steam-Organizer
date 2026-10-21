@@ -4,7 +4,7 @@ Desktop: a 960x660 window over the app (`?settings=<section>`, `useQueryOverlay`
 
 - `registry.ts` lists the sections in nav order; `useSettingsSections` adds their copy. A section is `sections/<name>/<Name>Section.vue`, registered in `sections/index.ts`. Security, Sync & backup, Fields, Vault and Steam show `SectionPending` until their feature fills the folder; Bots is listed as Soon.
 - Appearance is complete and real: `sections/appearance/` drives the nine knobs of `core/appearance` (`.claude/rules/appearance.md`). The background picture stays in `localStorage` for now and moves to IndexedDB later; only `core/appearance/background.ts` changes.
-- Only the shell calls `useSettingsEntry()`; the facade exports `SettingsHost`, `useSettingsEntry` and `settingsRoutes`.
+- The shell and features that link into a section call `useSettingsEntry()` (`open(section?)`); the facade exports `SettingsHost`, `useSettingsEntry`, `settingsRoutes` and `SectionKey`.
 
 ## Mocks
 

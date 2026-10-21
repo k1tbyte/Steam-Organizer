@@ -2,7 +2,7 @@
 import type { SemanticColor } from '../../../color'
 import FpIcon from './Icon.vue'
 
-export type IconTileSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+export type IconTileSize = 'xs' | 'sm' | 'base' | 'md' | 'lg' | 'xl' | '2xl'
 
 withDefaults(
     defineProps<{
@@ -18,6 +18,7 @@ withDefaults(
 const SIZES: Record<IconTileSize, string> = {
     xs: 'size-7 text-14',
     sm: 'size-8 text-16',
+    base: 'size-9 text-16',
     md: 'size-11 text-20',
     lg: 'size-12 text-22',
     xl: 'size-16 text-28',
@@ -37,7 +38,7 @@ const COLORS: Record<SemanticColor, string> = {
 <template>
     <span
         class="flex shrink-0 items-center justify-center"
-        :class="[SIZES[size], COLORS[color], round ? 'rounded-full' : ['xs', 'sm'].includes(size) ? 'rounded' : 'rounded-md']">
+        :class="[SIZES[size], COLORS[color], round ? 'rounded-full' : ['xs', 'sm', 'base'].includes(size) ? 'rounded' : 'rounded-md']">
         <slot>
             <FpIcon v-if="name" :name="name" />
         </slot>

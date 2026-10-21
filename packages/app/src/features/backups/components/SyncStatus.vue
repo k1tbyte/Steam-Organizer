@@ -2,6 +2,11 @@
 import { useSyncStatus } from '../composables/useSyncStatus'
 import type { SyncState } from '../model'
 
+defineProps<{
+    /** The age beside the state on desktop too; the topbar elsewhere shows the state alone. */
+    detailed?: boolean
+}>()
+
 const status = useSyncStatus()
 
 const DOTS: Record<SyncState, string> = {
@@ -12,7 +17,7 @@ const DOTS: Record<SyncState, string> = {
 }
 </script>
 
-<!-- The phone header has room for the age; the desktop topbar shows the state alone. -->
+<!-- The phone header has room for the age. -->
 <template>
     <span
         v-if="status"
@@ -20,7 +25,7 @@ const DOTS: Record<SyncState, string> = {
         <span class="size-1.5 rounded-full lg:size-1.75" :class="DOTS[status.state]" />
         <span class="flex gap-1">
             <span>{{ status.label }}</span>
-            <span v-if="status.age" class="lg:hidden">{{ status.age }}</span>
+            <span v-if="status.age" :class="!detailed && 'lg:hidden'">{{ status.age }}</span>
         </span>
     </span>
 </template>

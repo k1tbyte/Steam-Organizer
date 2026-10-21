@@ -6,7 +6,7 @@ import { useMock } from '#core'
 import { syncMock } from '../mocks'
 import type { SyncState } from '../model'
 
-/** Drive sync state for the topbar, as the indicator shows it; waits on the backups feature's sync service. */
+/** Drive sync state as the status line shows it; waits on the sync service. */
 export function useSyncStatus() {
     const { t } = useI18n()
     const snapshot = useMock(() => undefined, syncMock)
