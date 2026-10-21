@@ -51,7 +51,7 @@ function look(item: ShellNavItem) {
             :aria-pressed="settingsItem.key === activeKey"
             class="grid size-10 place-items-center rounded text-18 transition-colors duration-fast"
             :class="look(settingsItem)"
-            @click="openSettings">
+            @click="openSettings()">
             <FpIcon :name="settingsItem.icon" />
         </ShellNavLink>
     </aside>
