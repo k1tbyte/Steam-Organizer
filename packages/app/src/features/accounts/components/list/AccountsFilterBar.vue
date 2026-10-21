@@ -13,8 +13,7 @@ const { t } = useI18n()
 
 <!-- Desktop only: phones keep the same controls in a scrolling strip under the search. -->
 <template>
-    <div
-        class="backdrop-surface sticky top-0 z-10 flex items-center gap-1.5 bg-canvas/95 px-u-6 py-u-3.5">
+    <div class="flex items-center gap-1.5 px-u-6 py-u-3.5">
         <span class="mr-1 text-12.5 text-fg-3">{{ t('Bans') }}</span>
         <BanFilterChips />
         <span class="mx-1.5 h-4.5 w-px bg-stroke-1" />

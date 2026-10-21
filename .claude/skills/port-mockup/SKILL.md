@@ -23,7 +23,7 @@ A `.dc.html` file is a canvas of frames, each marked `data-screen-label` ("Profi
 
 - Map every block to its domain owner (`features/*/index.ts` first). A block for a domain with no slice yet gets one via the `new-feature` skill shape, even if mock only.
 - Cross-feature blocks reach a screen through its facade or a slot the page fills; dependencies stay one-way (`pnpm arch`).
-- A screen's topbar parts go through `PageTopbar` (`#components/PageTopbar.vue`): `title` and `count` props, slots `status` (`SyncStatus` from `#features/shell`), `center` (the search), `actions`, `back`. The rail and tab bar entry comes from the route's `meta: { nav: 'accounts' }`; a drill-down screen sets `meta.tabBar: false`.
+- A screen's topbar parts go through `PageTopbar` (`#components/PageTopbar.vue`): `title` and `count` props, slots `status` (`SyncStatus` from `#features/shell`), `center` (the search), `actions`, `back`, `strip` (a desktop toolbar row under the header, like the Accounts filters: transparent, content clips at its edge). The rail and tab bar entry comes from the route's `meta: { nav: 'accounts' }`; a drill-down screen sets `meta.tabBar: false`.
 - A look repeated across features with no domain (hold-to-confirm, countdown ring) is a kit primitive in `packages/ui` (`FpHoldButton`, `FpCountdownRing`, `FpSegmentedMeter`, `useHold` exist); a Steam-specific one (level ring avatar, ban letters) lives in its owning feature and is exported from its facade.
 
 ## 3. Mock view-models

@@ -17,6 +17,8 @@ const backTarget = computed(() =>
 const route = useRoute()
 const ownPath = route.path
 const owns = computed(() => route.path === ownPath)
+// `strip` is a desktop row under the header, outside the scroller: content clips at its edge.
+const PARTS = ['status', 'center', 'actions', 'strip'] as const
 </script>
 
 <!-- Renders nothing in place: each part lands in the shell's topbar once the shell has mounted it. -->
@@ -34,19 +36,9 @@ const owns = computed(() => route.path === ownPath)
             {{ count }}
         </span>
     </Teleport>
-    <Teleport
-        v-if="owns && $slots.status && targets.status.value"
-        :to="targets.status.value">
-        <slot name="status" />
-    </Teleport>
-    <Teleport
-        v-if="owns && $slots.center && targets.center.value"
-        :to="targets.center.value">
-        <slot name="center" />
-    </Teleport>
-    <Teleport
-        v-if="owns && $slots.actions && targets.actions.value"
-        :to="targets.actions.value">
-        <slot name="actions" />
-    </Teleport>
+    <template v-for="part in PARTS" :key="part">
+        <Teleport v-if="owns && $slots[part] && targets[part].value" :to="targets[part].value">
+            <slot :name="part" />
+        </Teleport>
+    </template>
 </template>

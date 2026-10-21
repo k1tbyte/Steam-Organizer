@@ -6,6 +6,7 @@ export const TOPBAR_SLOTS = [
     'status',
     'center',
     'actions',
+    'strip',
 ] as const
 export type TopbarSlot = (typeof TOPBAR_SLOTS)[number]
 

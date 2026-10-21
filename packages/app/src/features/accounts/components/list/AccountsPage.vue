@@ -53,9 +53,9 @@ const addOverlay = useAddAccountOverlay()
                 <FpIcon name="icon-[lucide--plus]" />
             </FpButton>
         </template>
+        <template #strip><AccountsFilterBar /></template>
     </PageTopbar>
 
-    <AccountsFilterBar v-if="desktop" />
     <FpAsyncView :status="list.status.value">
         <AccountsGrid :pinned="list.pinned.value" :rest="list.rest.value" @toggle-pin="list.togglePin" />
         <template #empty>

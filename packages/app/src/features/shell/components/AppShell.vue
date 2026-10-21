@@ -34,6 +34,7 @@ useShellScroll(() => desktopScroll.value?.viewport ?? phoneScroll.value)
                     <div :ref="bind.actions" class="flex items-center gap-2.5" />
                 </div>
             </header>
+            <div :ref="bind.strip" class="shrink-0" />
             <FpScrollArea ref="desktopScroll" as="main" class="min-h-0 flex-1">
                 <ShellPages />
             </FpScrollArea>

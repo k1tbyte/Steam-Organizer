@@ -42,7 +42,7 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | client state that survives a reload | `readStored` / `writeStored` with a key constant in `core/storage.ts`; `localStorage` fails lint |
 | failure | `reportError(error, scope, context?)`, the only `console.error` (`noConsole` fails lint) |
 | debounce, interval | `useTimer` from `@so/ui/useTimer` |
-| a screen's title, count, status, search and actions in the shell topbar | `PageTopbar` with its `status`, `center`, `actions`, `back` slots; the route sets `meta.nav` |
+| a screen's title, count, status, search and actions in the shell topbar | `PageTopbar` with its `status`, `center`, `actions`, `back` slots, and `strip` for a desktop toolbar row under the header (outside the scroller, so it needs no fill); the route sets `meta.nav` |
 | the page's scroll element (a virtual list, scroll to top) | `useScrollRoot()` from `#core`; the shell restores its offset on Back/Forward |
 | desktop or phone layout in script | `useDesktopLayout()` from `@so/ui`; prefer `lg:` CSS when markup alone differs |
 
