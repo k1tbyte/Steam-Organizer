@@ -258,6 +258,10 @@ export const accountsMock = defineMock<AccountsSample>(
     'accounts.list',
     'Accounts',
     {
+        // Default while the virtual list is tuned; keeps the mockup's twelve and their ids.
+        '2000 accounts': {
+            accounts: [...TWELVE, ...generate(2000 - TWELVE.length)],
+        },
         Twelve: { accounts: TWELVE },
         Empty: { accounts: [] },
         'No results': { accounts: TWELVE, query: 'zzz' },
@@ -267,7 +271,6 @@ export const accountsMock = defineMock<AccountsSample>(
             ),
         },
         'Anonymous only': { accounts: ANONYMOUS },
-        '2000 accounts': { accounts: generate(2000) },
     },
 )
 

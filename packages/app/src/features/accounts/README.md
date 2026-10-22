@@ -16,7 +16,7 @@ Mockup: `Accounts.dc.html` (Desktop, Mobile, Mobile · Card fields), `AccountCar
 
 | Mock (variants) | UI built | Source | Wire in |
 |---|---|---|---|
-| `accounts.list` (Twelve, Empty, No results, One locked, Anonymous only, 2000 accounts) | grid, groups, card, search, filters, sort, empty states, duplicate check in Add | the vault | `useVaultAccounts` |
+| `accounts.list` (2000 accounts: the twelve plus generated ones; Twelve, Empty, No results, One locked, Anonymous only) | grid, groups, card, search, filters, sort, empty states, duplicate check in Add | the vault | `useVaultAccounts` |
 | `accounts.refresh` (Eight left, Idle) | refresh pill (desktop), ring (phone) | bulk Steam refresh | `useAccountsList` |
 | `accounts.lookup` (Nova Strike, VAC banned) | Add account profile result after a 900ms simulated lookup | Steam Web API | `useAddAccountForm` |
 

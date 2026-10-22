@@ -2,7 +2,7 @@
 
 Design-first scaffolding: a screen is built from its mockup with every block fed by a view-model, and a view-model without a real source reads a mock. Wiring a block swaps one composable body.
 
-- `defineMock(key, label, variants)` in a feature's `mocks.ts`: named samples (`'Twelve accounts'`, `'Empty'`), the first is the mockup's own data.
+- `defineMock(key, label, variants)` in a feature's `mocks.ts`: named samples (`'Twelve accounts'`, `'Empty'`), the first is the default pick, usually the mockup's own data.
 - `useMock(real, mock)` in the feature's view-model: `real` returns `undefined` while there is no source; a wired read maps "nothing" to `null`.
 - Modes, picked in `MockPanel` (bottom-right, dev builds only) with a variant per mock. The panel lists only mocks read by mounted view-models.
 
