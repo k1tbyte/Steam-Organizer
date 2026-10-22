@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { FpButton, FpIcon, FpTooltip, useDesktopLayout } from '@so/ui'
-import { useScroll } from '@vueuse/core'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useScrollRoot } from '#core'
+import { useScrollTop } from '#core'
 
 import BanFilterChips from './BanFilterChips.vue'
 import CardFieldsPanel from './CardFieldsPanel.vue'
@@ -16,8 +15,8 @@ const { t } = useI18n()
 const desktop = useDesktopLayout()
 
 // Transparent at the page top, as in the mockup; the rail's surface once the list scrolls.
-const { arrivedState } = useScroll(useScrollRoot())
-const scrolled = computed(() => !arrivedState.top)
+const top = useScrollTop()
+const scrolled = computed(() => top.value > 0)
 </script>
 
 <template>

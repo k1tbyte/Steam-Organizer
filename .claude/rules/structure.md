@@ -44,6 +44,7 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | debounce, interval | `useTimer` from `@so/ui/useTimer` |
 | a screen's title, count, status, search and actions in the shell topbar | `PageTopbar` with its `status`, `center`, `actions`, `back` slots; the route sets `meta.nav`. The parts stay mounted while their page is hidden, so a global listener in one checks `usePageActive()` |
 | the page's scroll element (a virtual list, scroll to top) | `useScrollRoot()` from `#core`: each page has its own; a section root (`meta.resident`) keeps its offset while hidden, any other page starts at the top |
+| the page's scroll offset (a header that changes once scrolled, the dock) | `useScrollTop()` from `#core`: the layer reads `scrollTop` once per scroll, before the page's own handlers re-render it; never a scroll listener of your own |
 | whether the page is current (a resident page stays mounted behind another) | `usePageActive()` from `#core`: a ticker pauses on it; `useQueryOverlay`, `PageTopbar` and the kit overlays already follow it |
 | a strip pinned above the page's scroll (filters) | the route's `header` named view (`components: { default, header }`): `ShellLayer` renders it outside the scroller, so it moves with its page and nothing scrolls under it |
 | desktop or phone layout in script | `useDesktopLayout()` from `@so/ui`; prefer `lg:` CSS when markup alone differs |

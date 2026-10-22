@@ -11,6 +11,8 @@ import {
 export interface PageContext {
     /** Pages scroll inside the shell, each in its own container, not the window. */
     scroller: Readonly<ShallowRef<HTMLElement | null>>
+    /** The scroller's offset, read once per scroll for every reader, before the page re-renders. */
+    top: Readonly<Ref<number>>
     /** False while the page stays mounted behind the current one, or is leaving. */
     active: Readonly<Ref<boolean>>
 }
@@ -18,6 +20,7 @@ export interface PageContext {
 const pageKey: InjectionKey<PageContext> = Symbol('page')
 const outside: PageContext = {
     scroller: shallowRef(null),
+    top: shallowRef(0),
     active: shallowRef(true),
 }
 
@@ -32,6 +35,10 @@ function page(): PageContext {
 
 export function useScrollRoot(): Readonly<ShallowRef<HTMLElement | null>> {
     return page().scroller
+}
+
+export function useScrollTop(): Readonly<Ref<number>> {
+    return page().top
 }
 
 export function usePageActive(): Readonly<Ref<boolean>> {

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useDesktopLayout } from '@so/ui'
-import { shallowRef } from 'vue'
+import { computed, shallowRef } from 'vue'
 
-import { providePage, useTopbarOutlets } from '#core'
+import { type PageContext, providePage, useTopbarOutlets } from '#core'
 import { SettingsHost } from '#features/settings'
 
 import { useShellNav } from '../composables/useShellNav'
@@ -15,8 +15,12 @@ const { showTabBar } = useShellNav()
 const { bind } = useTopbarOutlets()
 
 // The shell's own readers (the dock) follow the current page's scroller.
-const scroller = shallowRef<HTMLElement | null>(null)
-providePage({ scroller, active: shallowRef(true) })
+const page = shallowRef<Pick<PageContext, 'scroller' | 'top'> | null>(null)
+providePage({
+    scroller: computed(() => page.value?.scroller.value ?? null),
+    top: computed(() => page.value?.top.value ?? 0),
+    active: shallowRef(true),
+})
 </script>
 
 <template>
@@ -33,7 +37,7 @@ providePage({ scroller, active: shallowRef(true) })
                 </div>
             </header>
             <main class="min-h-0 flex-1">
-                <ShellPages v-model:scroller="scroller" />
+                <ShellPages v-model:page="page" />
             </main>
         </div>
     </div>
@@ -48,7 +52,7 @@ providePage({ scroller, active: shallowRef(true) })
         </header>
         <div :ref="bind.center" class="shrink-0 px-4 pb-2.5 empty:hidden" />
         <main class="min-h-0 flex-1">
-            <ShellPages v-model:scroller="scroller" />
+            <ShellPages v-model:page="page" />
         </main>
         <ShellTabBar v-if="showTabBar" />
     </div>

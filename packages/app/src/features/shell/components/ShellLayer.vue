@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { FpScrollArea, provideOverlayGate, useDesktopLayout } from '@so/ui'
-import { computed, useTemplateRef, watchEffect } from 'vue'
+import { computed, shallowRef, useTemplateRef, watch, watchEffect } from 'vue'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 
-import { providePage } from '#core'
+import { type PageContext, providePage } from '#core'
 
 import type { LayerState } from '../composables/useShellLayers'
 
@@ -11,7 +11,7 @@ const props = defineProps<{
     route: RouteLocationNormalizedLoaded
     state: LayerState
 }>()
-const emit = defineEmits<{ scroller: [el: HTMLElement | null] }>()
+const emit = defineEmits<{ page: [page: Pick<PageContext, 'scroller' | 'top'>] }>()
 
 const desktop = useDesktopLayout()
 const area = useTemplateRef('area')
@@ -24,11 +24,26 @@ const active = computed(
 )
 const padsDock = computed(() => props.route.meta.tabBar !== false)
 
-providePage({ scroller, active })
-provideOverlayGate(active)
-watchEffect(() => {
-    if (active.value) emit('scroller', scroller.value)
+// Capture: runs before the page's own scroll handlers re-render it, so the read forces no layout.
+const top = shallowRef(0)
+watchEffect((onCleanup) => {
+    const el = scroller.value
+    top.value = 0
+    if (!el) return
+    const read = () => (top.value = el.scrollTop)
+    el.addEventListener('scroll', read, { passive: true, capture: true })
+    onCleanup(() => el.removeEventListener('scroll', read, true))
 })
+
+providePage({ scroller, top, active })
+provideOverlayGate(active)
+watch(
+    active,
+    (on) => {
+        if (on) emit('page', { scroller, top })
+    },
+    { immediate: true },
+)
 </script>
 
 <!-- One page in its own scroller: a resident section root keeps it, offset and all, while hidden.

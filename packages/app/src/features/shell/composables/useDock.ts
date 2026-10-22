@@ -1,21 +1,21 @@
-import { nextTick, onScopeDispose, ref, watchEffect } from 'vue'
+import { nextTick, onScopeDispose, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useScrollRoot } from '#core'
+import { useScrollTop } from '#core'
 
 import { createDockScroll } from '../services/dockScroll'
 
 /** Phone dock visibility: hides on scroll down and returns on scroll up, near the top and on navigation. */
 export function useDock() {
     const router = useRouter()
-    const root = useScrollRoot()
+    const top = useScrollTop()
     const dock = createDockScroll()
     const hidden = ref(false)
-    // The shell restores a position a frame after a route renders: that jump is not the user scrolling.
+    // A switch jumps to the next page's own offset a frame after the route renders: not the user scrolling.
     let settling = false
 
     function reveal() {
-        dock.reset(root.value?.scrollTop ?? 0)
+        dock.reset(top.value)
         hidden.value = false
     }
 
@@ -32,16 +32,8 @@ export function useDock() {
         )
     }
 
-    function onScroll() {
-        if (root.value && !settling)
-            hidden.value = dock.scroll(root.value.scrollTop)
-    }
-
-    watchEffect((onCleanup) => {
-        const el = root.value
-        if (!el) return
-        el.addEventListener('scroll', onScroll, { passive: true })
-        onCleanup(() => el.removeEventListener('scroll', onScroll))
+    watch(top, (y) => {
+        if (!settling) hidden.value = dock.scroll(y)
     })
 
     settle()

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue'
 
+import type { PageContext } from '#core'
+
 import { useShellLayers } from '../composables/useShellLayers'
 import ShellLayer from './ShellLayer.vue'
 
-const scroller = defineModel<HTMLElement | null>('scroller')
+const page = defineModel<Pick<PageContext, 'scroller' | 'top'> | null>('page')
 const stage = useTemplateRef('stage')
 const { layers, stateOf, kind, style } = useShellLayers(stage)
 </script>
@@ -16,7 +18,7 @@ const { layers, stateOf, kind, style } = useShellLayers(stage)
             :key="layer.key"
             :route="layer.route"
             :state="stateOf(layer.key)"
-            @scroller="scroller = $event" />
+            @page="page = $event" />
     </div>
 </template>
 
