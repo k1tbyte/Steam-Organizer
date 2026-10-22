@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpDropdownMenu, FpIcon, FpInput, FpKbd, FpTooltip, useDesktopLayout } from '@so/ui'
+import { FpButton, FpDropdownMenu, FpIcon, FpInput, FpKbd, tip, useDesktopLayout } from '@so/ui'
 import { onKeyStroke } from '@vueuse/core'
 import { useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -33,13 +33,11 @@ onKeyStroke('k', (event) => {
         </template>
         <template #trailing>
             <FpDropdownMenu :items="fieldItems" placement="bottom-end">
-                <FpTooltip :text="t('Search in')">
-                    <FpButton size="xs" variant="soft" class="-mr-1.5">
-                        <template v-if="desktop">{{ t('in') }}</template>
-                        <span class="font-medium text-fg-1">{{ searchField }}</span>
-                        <FpIcon name="icon-[lucide--chevron-down]" />
-                    </FpButton>
-                </FpTooltip>
+                <FpButton v-bind="tip(t('Search in'))" size="xs" variant="soft" class="-mr-1.5">
+                    <template v-if="desktop">{{ t('in') }}</template>
+                    <span class="font-medium text-fg-1">{{ searchField }}</span>
+                    <FpIcon name="icon-[lucide--chevron-down]" />
+                </FpButton>
             </FpDropdownMenu>
             <FpKbd v-if="desktop" value="⌘K" size="md" class="ml-2" />
         </template>

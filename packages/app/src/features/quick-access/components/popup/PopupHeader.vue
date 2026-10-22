@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpDot, FpIcon, FpTooltip } from '@so/ui'
+import { FpButton, FpDot, FpIcon, tip } from '@so/ui'
 import logoUrl from '@so/ui/logo.svg'
 import { useI18n } from 'vue-i18n'
 
@@ -14,16 +14,12 @@ const { t } = useI18n()
         <img :src="logoUrl" alt="" class="size-5" />
         <span class="font-semibold text-13.5 tracking-title text-fg-1">{{ t('Steam Organizer') }}</span>
         <span class="flex-1" />
-        <FpTooltip v-if="unlocked" :text="t('Synced')"><FpDot class="mr-1.5" /></FpTooltip>
-        <FpTooltip :text="t('Open full app')">
-            <FpButton square size="sm" variant="ghost" class="text-fg-3!" :aria-label="t('Open full app')" @click="$emit('openApp')">
-                <FpIcon name="icon-[lucide--app-window]" />
-            </FpButton>
-        </FpTooltip>
-        <FpTooltip v-if="unlocked" :text="t('Lock vault')">
-            <FpButton square size="sm" variant="ghost" class="text-fg-3!" :aria-label="t('Lock vault')" @click="$emit('lock')">
-                <FpIcon name="icon-[lucide--lock]" />
-            </FpButton>
-        </FpTooltip>
+        <FpDot v-if="unlocked" v-bind="tip(t('Synced'))" class="mr-1.5" />
+        <FpButton v-bind="tip(t('Open full app'))" square size="sm" variant="ghost" class="text-fg-3!" :aria-label="t('Open full app')" @click="$emit('openApp')">
+            <FpIcon name="icon-[lucide--app-window]" />
+        </FpButton>
+        <FpButton v-if="unlocked" v-bind="tip(t('Lock vault'))" square size="sm" variant="ghost" class="text-fg-3!" :aria-label="t('Lock vault')" @click="$emit('lock')">
+            <FpIcon name="icon-[lucide--lock]" />
+        </FpButton>
     </header>
 </template>

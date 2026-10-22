@@ -7,7 +7,7 @@ import {
     FpIcon,
     FpIconTile,
     FpPopover,
-    FpTooltip,
+    tip,
     useDesktopLayout,
 } from '@so/ui'
 import { ref } from 'vue'
@@ -30,23 +30,22 @@ const open = ref(false)
         width="min(92vw, 22.5rem)"
         max-height="min(34rem, 80dvh)"
         :label="t('Notifications')">
-        <FpTooltip :text="t('Notifications')" :disabled="open">
-            <FpButton
-                square
-                variant="ghost"
-                :size="desktop ? 'md' : 'xl'"
-                :round="!desktop"
-                :class="open && 'bg-hover-hi!'"
-                :aria-label="
-                    unread > 0
-                        ? t('Notifications, {count} unread', { count: unread })
-                        : t('Notifications')
-                ">
-                <FpChip :show="unread > 0" :text="badge" color="danger">
-                    <FpIcon name="icon-[lucide--bell]" />
-                </FpChip>
-            </FpButton>
-        </FpTooltip>
+        <FpButton
+            v-bind="tip(t('Notifications'), { disabled: open })"
+            square
+            variant="ghost"
+            :size="desktop ? 'md' : 'xl'"
+            :round="!desktop"
+            :class="open && 'bg-hover-hi!'"
+            :aria-label="
+                unread > 0
+                    ? t('Notifications, {count} unread', { count: unread })
+                    : t('Notifications')
+            ">
+            <FpChip :show="unread > 0" :text="badge" color="danger">
+                <FpIcon name="icon-[lucide--bell]" />
+            </FpChip>
+        </FpButton>
 
         <template #content>
             <div class="flex items-center gap-2 pt-3.5 pr-3.5 pb-2 pl-4">

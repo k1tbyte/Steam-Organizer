@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { ACCENT_PRESETS, FpTooltip } from '@so/ui'
+import { ACCENT_PRESETS, tip } from '@so/ui'
 
 const model = defineModel<string>({ required: true })
 </script>
 
 <template>
     <fieldset class="m-0 flex gap-3 border-0 p-0 pr-1">
-        <FpTooltip v-for="(color, name) in ACCENT_PRESETS" :key="name" :text="color">
-            <button
-                type="button"
-                :aria-label="name"
-                :aria-pressed="model === color"
-                class="swatch size-6 cursor-pointer rounded-full"
-                :data-selected="model === color || undefined"
-                :style="{ background: color }"
-                @click="model = color" />
-        </FpTooltip>
+        <button
+            v-for="(color, name) in ACCENT_PRESETS"
+            :key="name"
+            v-bind="tip(color)"
+            type="button"
+            :aria-label="name"
+            :aria-pressed="model === color"
+            class="swatch size-6 cursor-pointer rounded-full"
+            :data-selected="model === color || undefined"
+            :style="{ background: color }"
+            @click="model = color" />
     </fieldset>
 </template>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpCard, FpIcon, FpTooltip } from '@so/ui'
+import { FpButton, FpCard, FpIcon, tip } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { type Account, AccountTagChip, AgeChip, LevelAvatar } from '#features/accounts'
@@ -42,24 +42,20 @@ const { t } = useI18n()
                     <h2 class="min-w-0 truncate font-title text-26 text-fg-1 tracking-title">
                         {{ account.nickname }}
                     </h2>
-                    <FpTooltip v-if="gate.chip" :text="t('Account has its own password')">
-                        <ProfileChip tone="accent" :icon="gate.chip.icon">{{ gate.chip.label }}</ProfileChip>
-                    </FpTooltip>
-                    <FpTooltip v-if="!gate.hidesProfile && !account.anonymous" :text="t('Profile visibility')">
-                        <ProfileChip :icon="header.visibility.icon">{{ header.visibility.label }}</ProfileChip>
-                    </FpTooltip>
-                    <FpTooltip v-if="!gate.hidesProfile" :text="account.pinned ? t('Unpin') : t('Pin')">
-                        <FpButton
-                            square
-                            size="xs"
-                            :variant="account.pinned ? 'soft' : 'ghost'"
-                            :color="account.pinned ? 'accent' : 'neutral'"
-                            :class="!account.pinned && 'text-fg-faint! hover:text-fg-1!'"
-                            :aria-label="account.pinned ? t('Unpin') : t('Pin')"
-                            @click="emit('togglePin')">
-                            <FpIcon name="icon-[lucide--pin]" />
-                        </FpButton>
-                    </FpTooltip>
+                    <ProfileChip v-if="gate.chip" v-bind="tip(t('Account has its own password'))" tone="accent" :icon="gate.chip.icon">{{ gate.chip.label }}</ProfileChip>
+                    <ProfileChip v-if="!gate.hidesProfile && !account.anonymous" v-bind="tip(t('Profile visibility'))" :icon="header.visibility.icon">{{ header.visibility.label }}</ProfileChip>
+                    <FpButton
+                        v-if="!gate.hidesProfile"
+                        v-bind="tip(account.pinned ? t('Unpin') : t('Pin'))"
+                        square
+                        size="xs"
+                        :variant="account.pinned ? 'soft' : 'ghost'"
+                        :color="account.pinned ? 'accent' : 'neutral'"
+                        :class="!account.pinned && 'text-fg-faint! hover:text-fg-1!'"
+                        :aria-label="account.pinned ? t('Unpin') : t('Pin')"
+                        @click="emit('togglePin')">
+                        <FpIcon name="icon-[lucide--pin]" />
+                    </FpButton>
                 </div>
                 <template v-if="!gate.hidesProfile">
                     <div class="flex flex-wrap items-center gap-1.5">
@@ -68,15 +64,14 @@ const { t } = useI18n()
                             {{ t('since {since}', { since: account.since }) }}
                         </span>
                         <AccountTagChip v-for="tag in account.tags" :key="tag.label" :tag="tag" />
-                        <FpTooltip :text="t('Edit tags')">
-                            <button
-                                type="button"
-                                :aria-label="t('Edit tags')"
-                                class="grid size-5.5 cursor-pointer place-items-center rounded-full text-13 text-fg-3 transition-colors duration-fast hover:bg-hover hover:text-fg-1"
-                                @click="emit('editTags')">
-                                <FpIcon name="icon-[lucide--plus]" />
-                            </button>
-                        </FpTooltip>
+                        <button
+                            v-bind="tip(t('Edit tags'))"
+                            type="button"
+                            :aria-label="t('Edit tags')"
+                            class="grid size-5.5 cursor-pointer place-items-center rounded-full text-13 text-fg-3 transition-colors duration-fast hover:bg-hover hover:text-fg-1"
+                            @click="emit('editTags')">
+                            <FpIcon name="icon-[lucide--plus]" />
+                        </button>
                     </div>
                     <SteamLinks v-if="header.links.length > 0" :links="header.links" :touch="false" />
                 </template>

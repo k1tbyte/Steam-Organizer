@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpIcon, FpTooltip } from '@so/ui'
+import { FpButton, FpIcon, tip } from '@so/ui'
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -29,18 +29,14 @@ const creds = reactive(useCredentials(() => props.services))
             <span class="font-mono font-normal text-12 text-fg-3">{{ creds.count }}</span>
         </template>
         <template #actions>
-            <FpTooltip v-if="gate.canRelock && !touch" :text="t('Lock this account again')">
-                <FpButton size="xs" variant="ghost" @click="gate.relock">
-                    <FpIcon name="icon-[lucide--lock-keyhole]" />
-                    {{ t('Lock now') }}
-                </FpButton>
-            </FpTooltip>
-            <FpTooltip v-else-if="!gate.chip && !touch" :text="t('Protect with its own password')">
-                <FpButton size="xs" variant="ghost" @click="emit('lock')">
-                    <FpIcon name="icon-[lucide--lock-keyhole]" />
-                    {{ t('Lock') }}
-                </FpButton>
-            </FpTooltip>
+            <FpButton v-if="gate.canRelock && !touch" v-bind="tip(t('Lock this account again'))" size="xs" variant="ghost" @click="gate.relock">
+                <FpIcon name="icon-[lucide--lock-keyhole]" />
+                {{ t('Lock now') }}
+            </FpButton>
+            <FpButton v-else-if="!gate.chip && !touch" v-bind="tip(t('Protect with its own password'))" size="xs" variant="ghost" @click="emit('lock')">
+                <FpIcon name="icon-[lucide--lock-keyhole]" />
+                {{ t('Lock') }}
+            </FpButton>
         </template>
 
         <AccountLockGate v-if="gate.locked" :gate="gate" :touch="touch" />
@@ -58,22 +54,19 @@ const creds = reactive(useCredentials(() => props.services))
                     <FpIcon :name="service.icon" />
                     {{ service.label }}
                 </FpButton>
-                <FpTooltip
+                <FpButton
                     v-if="!gate.canRelock"
-                    :text="t('Add linked service (up to {max})', { max: MAX_SERVICES })"
-                    :disabled="touch">
-                    <FpButton
-                        square
-                        round
-                        variant="outline"
-                        class="shrink-0"
-                        :size="touch ? 'sm' : 'xs'"
-                        :disabled="creds.count >= MAX_SERVICES"
-                        :aria-label="t('Add linked service (up to {max})', { max: MAX_SERVICES })"
-                        @click="emit('addService')">
-                        <FpIcon name="icon-[lucide--plus]" />
-                    </FpButton>
-                </FpTooltip>
+                    v-bind="tip(t('Add linked service (up to {max})', { max: MAX_SERVICES }), { disabled: touch })"
+                    square
+                    round
+                    variant="outline"
+                    class="shrink-0"
+                    :size="touch ? 'sm' : 'xs'"
+                    :disabled="creds.count >= MAX_SERVICES"
+                    :aria-label="t('Add linked service (up to {max})', { max: MAX_SERVICES })"
+                    @click="emit('addService')">
+                    <FpIcon name="icon-[lucide--plus]" />
+                </FpButton>
             </div>
             <div class="flex flex-col gap-1.5 max-lg:gap-3">
                 <CredentialRow

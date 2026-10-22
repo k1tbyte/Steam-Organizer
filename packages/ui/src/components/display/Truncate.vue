@@ -2,7 +2,7 @@
 import { nextTick, useTemplateRef, watch } from 'vue'
 
 import { useClipped } from '../../composables/useClipped'
-import FpTooltip from '../overlays/Tooltip.vue'
+import { tip } from '../overlays/tip'
 
 defineOptions({ inheritAttrs: false })
 
@@ -24,9 +24,7 @@ watch(
 </script>
 
 <template>
-    <FpTooltip :text="text" :disabled="!clipped">
-        <component :is="as" ref="el" v-bind="$attrs" class="truncate">
-            <slot>{{ text }}</slot>
-        </component>
-    </FpTooltip>
+    <component :is="as" ref="el" v-bind="{ ...$attrs, ...tip(text, { disabled: !clipped }) }" class="truncate">
+        <slot>{{ text }}</slot>
+    </component>
 </template>

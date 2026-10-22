@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpIcon, FpTooltip, useDesktopLayout } from '@so/ui'
+import { FpButton, FpIcon, tip, useDesktopLayout } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -30,36 +30,33 @@ const scrolled = computed(() => top.value > 0)
             <SortMenu />
             <span class="flex-1" />
             <CardFieldsPanel />
-            <FpTooltip :text="t('Reorder mode')" label>
-                <FpButton
-                    square
-                    size="sm"
-                    variant="ghost"
-                    class="text-fg-3!"
-                    @click="$emit('reorder')">
-                    <FpIcon name="icon-[lucide--grip-vertical]" />
-                </FpButton>
-            </FpTooltip>
-            <FpTooltip :text="t('Refresh all')" label>
-                <FpButton
-                    square
-                    size="sm"
-                    variant="ghost"
-                    class="text-fg-3!"
-                    @click="$emit('refreshAll')">
-                    <FpIcon name="icon-[lucide--refresh-cw]" />
-                </FpButton>
-            </FpTooltip>
-            <FpTooltip :text="t('Import / export')" label>
-                <FpButton
-                    square
-                    size="sm"
-                    variant="ghost"
-                    class="text-fg-3!"
-                    @click="$emit('importExport')">
-                    <FpIcon name="icon-[lucide--ellipsis]" />
-                </FpButton>
-            </FpTooltip>
+            <FpButton
+                v-bind="tip(t('Reorder mode'), { label: true })"
+                square
+                size="sm"
+                variant="ghost"
+                class="text-fg-3!"
+                @click="$emit('reorder')">
+                <FpIcon name="icon-[lucide--grip-vertical]" />
+            </FpButton>
+            <FpButton
+                v-bind="tip(t('Refresh all'), { label: true })"
+                square
+                size="sm"
+                variant="ghost"
+                class="text-fg-3!"
+                @click="$emit('refreshAll')">
+                <FpIcon name="icon-[lucide--refresh-cw]" />
+            </FpButton>
+            <FpButton
+                v-bind="tip(t('Import / export'), { label: true })"
+                square
+                size="sm"
+                variant="ghost"
+                class="text-fg-3!"
+                @click="$emit('importExport')">
+                <FpIcon name="icon-[lucide--ellipsis]" />
+            </FpButton>
         </div>
         <div v-else class="flex items-center gap-1.5 overflow-x-auto overflow-y-hidden px-4 py-2.5">
             <SortMenu />

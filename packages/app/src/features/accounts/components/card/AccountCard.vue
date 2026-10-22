@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { FpButton, FpCard, FpIcon, FpTooltip } from '@so/ui'
+import { FpButton, FpCard, FpIcon, tip } from '@so/ui'
+import { type ComponentPublicInstance, computed, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 
@@ -26,28 +27,32 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const card = useAccountCard(props)
+const root = useTemplateRef<ComponentPublicInstance>('root')
+const card = useAccountCard(
+    props,
+    computed(() => root.value?.$el as HTMLElement | undefined),
+)
 </script>
 
 <template>
     <FpCard
+        ref="root"
         flush
         class="card relative min-w-0 p-u-3.5 transition-colors duration-fast hover:border-stroke-2 hover:bg-surface-hover"
         :data-vt-hero="card.isHero.value || undefined"
         :style="{ height: card.height.value }">
-        <FpTooltip :text="account.pinned ? t('Unpin') : t('Pin')" label>
-            <FpButton
-                square
-                :size="touch ? 'md' : 'xs'"
-                :variant="account.pinned ? 'soft' : 'ghost'"
-                :color="account.pinned ? 'accent' : 'neutral'"
-                :class="!account.pinned && 'text-fg-faint! hover:text-fg-1!'"
-                class="absolute z-10"
-                :style="{ top: card.pinInset.value, right: card.pinInset.value }"
-                @click="emit('togglePin')">
-                <FpIcon name="icon-[lucide--pin]" />
-            </FpButton>
-        </FpTooltip>
+        <FpButton
+            v-bind="tip(account.pinned ? t('Unpin') : t('Pin'), { label: true })"
+            square
+            :size="touch ? 'md' : 'xs'"
+            :variant="account.pinned ? 'soft' : 'ghost'"
+            :color="account.pinned ? 'accent' : 'neutral'"
+            :class="!account.pinned && 'text-fg-faint! hover:text-fg-1!'"
+            class="absolute z-10"
+            :style="{ top: card.pinInset.value, right: card.pinInset.value }"
+            @click="emit('togglePin')">
+            <FpIcon name="icon-[lucide--pin]" />
+        </FpButton>
 
         <div class="flex h-13.5 shrink-0 items-center gap-u-3.5">
             <LevelAvatar
@@ -63,23 +68,21 @@ const card = useAccountCard(props)
                         class="truncate font-semibold text-15 text-fg-1 tracking-title">
                         {{ account.nickname }}
                     </RouterLink>
-                    <FpTooltip v-if="account.locked" :text="t('Locked')" label>
-                        <FpIcon name="icon-[lucide--lock]" class="shrink-0 text-13 text-fg-3" />
-                    </FpTooltip>
+                    <FpIcon v-if="account.locked" v-bind="tip(t('Locked'), { label: true })" name="icon-[lucide--lock]" class="shrink-0 text-13 text-fg-3" />
                 </span>
                 <div class="flex h-4.5 min-w-0 items-center gap-2 whitespace-nowrap">
                     <AgeChip v-if="card.showAge.value" :years="account.years" :since="account.since" />
-                    <FpTooltip v-if="card.showId.value" :text="t('Copy account ID')">
-                        <button
-                            type="button"
-                            class="inline-flex min-w-0 cursor-pointer items-center gap-1.25 font-mono text-12 text-fg-3 transition-colors duration-fast hover:text-fg-1"
-                            @click="card.copyId">
-                            <span class="truncate">{{ card.idText.value }}</span>
-                            <FpIcon
-                                :name="card.copied.value ? 'icon-[lucide--check]' : 'icon-[lucide--copy]'"
-                                class="shrink-0 text-12" />
-                        </button>
-                    </FpTooltip>
+                    <button
+                        v-if="card.showId.value"
+                        v-bind="tip(t('Copy account ID'))"
+                        type="button"
+                        class="inline-flex min-w-0 cursor-pointer items-center gap-1.25 font-mono text-12 text-fg-3 transition-colors duration-fast hover:text-fg-1"
+                        @click="card.copyId">
+                        <span class="truncate">{{ card.idText.value }}</span>
+                        <FpIcon
+                            :name="card.copied.value ? 'icon-[lucide--check]' : 'icon-[lucide--copy]'"
+                            class="shrink-0 text-12" />
+                    </button>
                     <span class="flex-1" />
                     <BanLetters v-if="card.showBans.value" :bans="account.bans" />
                 </div>
@@ -104,12 +107,10 @@ const card = useAccountCard(props)
                 <FpIcon name="icon-[lucide--lock]" class="text-13" />
                 {{ t('Locked') }}
             </span>
-            <FpTooltip v-else-if="card.showNoGuard.value" :text="t('No Steam Guard authenticator')">
-                <span class="inline-flex shrink-0 items-center gap-1.5 text-12 text-fg-faint">
-                    <FpIcon name="icon-[lucide--shield-off]" class="text-13" />
-                    {{ t('No 2FA') }}
-                </span>
-            </FpTooltip>
+            <span v-else-if="card.showNoGuard.value" v-bind="tip(t('No Steam Guard authenticator'))" class="inline-flex shrink-0 items-center gap-1.5 text-12 text-fg-faint">
+                <FpIcon name="icon-[lucide--shield-off]" class="text-13" />
+                {{ t('No 2FA') }}
+            </span>
             <span class="min-w-0 flex-1 truncate text-12.5 text-fg-3">{{ card.note.value }}</span>
             <AccountCardActions
                 v-if="flags.actions"

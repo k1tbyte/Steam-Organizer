@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpIcon, FpTooltip } from '@so/ui'
+import { FpIcon, tip } from '@so/ui'
 import logoUrl from '@so/ui/logo.svg'
 import { useI18n } from 'vue-i18n'
 
@@ -29,35 +29,34 @@ function look(item: ShellNavItem, ownFill = false) {
         <img :src="logoUrl" alt="" class="mb-3.5 size-7" />
         <div class="relative flex flex-col gap-1.5">
             <span v-if="railIndex >= 0" class="rail-glider absolute top-0 left-0 size-10 rounded bg-accent-soft" :style="{ '--i': railIndex }" aria-hidden="true" />
-            <FpTooltip v-for="item in main" :key="item.key" :text="title(item)" placement="right">
-                <ShellNavLink
-                    :to="item.to"
-                    :disabled="item.soon"
-                    :aria-label="item.label"
-                    :aria-current="item.key === activeKey ? 'page' : undefined"
-                    class="relative grid size-10 place-items-center rounded text-19"
-                    :class="look(item)">
-                    <FpIcon :name="item.icon" />
-                </ShellNavLink>
-            </FpTooltip>
+            <ShellNavLink
+                v-for="item in main"
+                :key="item.key"
+                v-bind="tip(title(item), { placement: 'right' })"
+                :to="item.to"
+                :disabled="item.soon"
+                :aria-label="item.label"
+                :aria-current="item.key === activeKey ? 'page' : undefined"
+                class="relative grid size-10 place-items-center rounded text-19"
+                :class="look(item)">
+                <FpIcon :name="item.icon" />
+            </ShellNavLink>
         </div>
         <span class="flex-1" />
-        <FpTooltip :text="t('Lock vault')" label placement="right">
-            <ShellNavLink
-                class="grid size-10 cursor-pointer place-items-center rounded text-18 text-fg-3 transition-colors duration-fast hover:bg-hover hover:text-fg-1"
-                @click="lock">
-                <FpIcon name="icon-[lucide--lock]" />
-            </ShellNavLink>
-        </FpTooltip>
-        <FpTooltip :text="settingsItem.label" label placement="right">
-            <ShellNavLink
-                :aria-pressed="settingsItem.key === activeKey"
-                class="grid size-10 place-items-center rounded text-18"
-                :class="look(settingsItem, true)"
-                @click="openSettings()">
-                <FpIcon :name="settingsItem.icon" />
-            </ShellNavLink>
-        </FpTooltip>
+        <ShellNavLink
+            v-bind="tip(t('Lock vault'), { label: true, placement: 'right' })"
+            class="grid size-10 cursor-pointer place-items-center rounded text-18 text-fg-3 transition-colors duration-fast hover:bg-hover hover:text-fg-1"
+            @click="lock">
+            <FpIcon name="icon-[lucide--lock]" />
+        </ShellNavLink>
+        <ShellNavLink
+            v-bind="tip(settingsItem.label, { label: true, placement: 'right' })"
+            :aria-pressed="settingsItem.key === activeKey"
+            class="grid size-10 place-items-center rounded text-18"
+            :class="look(settingsItem, true)"
+            @click="openSettings()">
+            <FpIcon :name="settingsItem.icon" />
+        </ShellNavLink>
     </aside>
 </template>
 

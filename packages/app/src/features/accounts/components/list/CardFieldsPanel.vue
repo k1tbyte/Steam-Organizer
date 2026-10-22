@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpIcon, FpPopover, FpScrollArea, FpTooltip, useDesktopLayout } from '@so/ui'
+import { FpButton, FpIcon, FpPopover, FpScrollArea, tip, useDesktopLayout } from '@so/ui'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -21,15 +21,15 @@ const open = ref(false)
         width="min(92vw, 21.25rem)"
         max-height="41rem"
         :label="t('Card fields')">
-        <FpTooltip v-if="desktop" :text="t('Choose what cards show')" :disabled="open">
-            <FpButton
-                size="xs"
-                variant="ghost"
-                :class="open ? 'bg-hover-hi! text-fg-1!' : 'text-fg-2!'">
-                <FpIcon name="icon-[lucide--panels-top-left]" />
-                {{ t('Card fields') }}
-            </FpButton>
-        </FpTooltip>
+        <FpButton
+            v-if="desktop"
+            v-bind="tip(t('Choose what cards show'), { disabled: open })"
+            size="xs"
+            variant="ghost"
+            :class="open ? 'bg-hover-hi! text-fg-1!' : 'text-fg-2!'">
+            <FpIcon name="icon-[lucide--panels-top-left]" />
+            {{ t('Card fields') }}
+        </FpButton>
         <FpButton v-else round size="xs" variant="outline" class="shrink-0" :aria-label="t('Card fields')">
             <FpIcon name="icon-[lucide--panels-top-left]" />
             {{ t('Card') }}

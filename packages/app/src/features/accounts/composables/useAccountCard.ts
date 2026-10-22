@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, type Ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useCopyFeedback, useRouteHero } from '#core'
@@ -10,13 +10,26 @@ const SECRET_MASK = '••••••'
 const MAX_SHOWN_TAGS = 3
 
 /** What one card shows for its account and flags, and its copy feedback. */
-export function useAccountCard(props: {
-    account: Account
-    flags: CardFlags
-    touch: boolean
-}) {
+export function useAccountCard(
+    props: {
+        account: Account
+        flags: CardFlags
+        touch: boolean
+    },
+    root: Readonly<Ref<HTMLElement | null | undefined>>,
+) {
     const { t } = useI18n()
-    const { copied, copy } = useCopyFeedback()
+    const { copied, copy, reset } = useCopyFeedback()
+    // A recycled list card shows another account: its copy mark and focus belonged to the last one.
+    watch(
+        () => props.account.id,
+        () => {
+            reset()
+            const focused = document.activeElement
+            if (focused instanceof HTMLElement && root.value?.contains(focused))
+                focused.blur()
+        },
+    )
     const hero = useRouteHero()
 
     const steam = computed(() => !props.account.anonymous)

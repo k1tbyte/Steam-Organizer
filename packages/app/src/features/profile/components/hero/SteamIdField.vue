@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpIcon, FpPopover, FpTooltip } from '@so/ui'
+import { FpIcon, FpPopover, tip } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import type { SteamIdFieldState } from '../../composables/useSteamIdField'
@@ -43,15 +43,14 @@ const { t } = useI18n()
         </FpPopover>
         <span class="h-4 w-px shrink-0 bg-stroke-2" />
         <span class="min-w-0 flex-1 truncate px-2.5 font-medium font-mono text-13 text-fg-1">{{ field.value }}</span>
-        <FpTooltip :text="t('Copy')" :disabled="touch">
-            <button
-                type="button"
-                :aria-label="t('Copy')"
-                class="grid h-full w-9 shrink-0 cursor-pointer place-items-center text-14 transition-colors duration-fast max-lg:w-11.5"
-                :class="field.copied ? 'text-success' : 'text-fg-3 hover:text-fg-1'"
-                @click="field.copy">
-                <FpIcon :name="field.copied ? 'icon-[lucide--check]' : 'icon-[lucide--copy]'" />
-            </button>
-        </FpTooltip>
+        <button
+            v-bind="tip(t('Copy'), { disabled: touch })"
+            type="button"
+            :aria-label="t('Copy')"
+            class="grid h-full w-9 shrink-0 cursor-pointer place-items-center text-14 transition-colors duration-fast max-lg:w-11.5"
+            :class="field.copied ? 'text-success' : 'text-fg-3 hover:text-fg-1'"
+            @click="field.copy">
+            <FpIcon :name="field.copied ? 'icon-[lucide--check]' : 'icon-[lucide--copy]'" />
+        </button>
     </div>
 </template>

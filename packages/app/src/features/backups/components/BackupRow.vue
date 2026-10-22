@@ -6,7 +6,7 @@ import {
     FpIconTile,
     FpListRow,
     FpProgress,
-    FpTooltip,
+    tip,
 } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
@@ -34,12 +34,12 @@ const { t } = useI18n()
         </template>
         <template #badge>
             <FpBadge v-if="row.latest" color="accent" :label="t('Latest')" />
-            <FpTooltip v-if="row.olderPassword" :text="t('Made before the master password changed')">
-                <FpBadge
-                    outline
-                    icon="icon-[lucide--key-round]"
-                    :label="t('Older password')" />
-            </FpTooltip>
+            <FpBadge
+                v-if="row.olderPassword"
+                v-bind="tip(t('Made before the master password changed'))"
+                outline
+                icon="icon-[lucide--key-round]"
+                :label="t('Older password')" />
         </template>
         <template #meta>
             <span class="text-12.5 text-fg-3 tabular-nums">{{ row.meta }}</span>
@@ -69,23 +69,20 @@ const { t } = useI18n()
                     @click="emit('remove')" />
             </div>
             <div v-else class="flex items-center gap-0.5">
-                <FpTooltip :text="t('Restore this backup')">
-                    <FpButton variant="ghost" size="sm" @click="emit('restore')">
-                        <FpIcon name="icon-[lucide--rotate-ccw]" aria-hidden="true" />
-                        {{ t('Restore') }}
-                    </FpButton>
-                </FpTooltip>
-                <FpTooltip :text="t('Delete')" label>
-                    <FpButton
-                        square
-                        variant="ghost"
-                        color="danger"
-                        size="sm"
-                        class="text-fg-3! hover:text-danger!"
-                        @click="emit('askDelete')">
-                        <FpIcon name="icon-[lucide--trash-2]" />
-                    </FpButton>
-                </FpTooltip>
+                <FpButton v-bind="tip(t('Restore this backup'))" variant="ghost" size="sm" @click="emit('restore')">
+                    <FpIcon name="icon-[lucide--rotate-ccw]" aria-hidden="true" />
+                    {{ t('Restore') }}
+                </FpButton>
+                <FpButton
+                    v-bind="tip(t('Delete'), { label: true })"
+                    square
+                    variant="ghost"
+                    color="danger"
+                    size="sm"
+                    class="text-fg-3! hover:text-danger!"
+                    @click="emit('askDelete')">
+                    <FpIcon name="icon-[lucide--trash-2]" />
+                </FpButton>
             </div>
         </template>
     </FpListRow>

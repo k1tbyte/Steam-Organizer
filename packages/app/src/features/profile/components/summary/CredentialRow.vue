@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpIcon, FpTooltip } from '@so/ui'
+import { FpButton, FpIcon, tip } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { useCopyFeedback } from '#core'
@@ -22,27 +22,24 @@ const { copied, copy } = useCopyFeedback()
                 :class="!field.shown && 'tracking-[0.08em]'">
                 {{ field.display }}
             </span>
-            <FpTooltip v-if="field.secret" :text="field.shown ? t('Hide') : t('Show')" :disabled="touch">
-                <FpButton
-                    square
-                    variant="ghost"
-                    :size="touch ? 'md' : 'xs'"
-                    :aria-label="field.shown ? t('Hide') : t('Show')"
-                    @click="emit('toggleReveal')">
-                    <FpIcon :name="field.shown ? 'icon-[lucide--eye-off]' : 'icon-[lucide--eye]'" />
-                </FpButton>
-            </FpTooltip>
-            <FpTooltip :text="t('Copy')" :disabled="touch">
-                <FpButton
-                    square
-                    variant="ghost"
-                    :size="touch ? 'md' : 'xs'"
-                    :class="copied && 'text-success!'"
-                    :aria-label="t('Copy')"
-                    @click="copy(props.field.value)">
-                    <FpIcon :name="copied ? 'icon-[lucide--check]' : 'icon-[lucide--copy]'" />
-                </FpButton>
-            </FpTooltip>
+            <FpButton
+                v-if="field.secret"
+                v-bind="tip(field.shown ? t('Hide') : t('Show'), { label: true, disabled: touch })"
+                square
+                variant="ghost"
+                :size="touch ? 'md' : 'xs'"
+                @click="emit('toggleReveal')">
+                <FpIcon :name="field.shown ? 'icon-[lucide--eye-off]' : 'icon-[lucide--eye]'" />
+            </FpButton>
+            <FpButton
+                v-bind="tip(t('Copy'), { label: true, disabled: touch })"
+                square
+                variant="ghost"
+                :size="touch ? 'md' : 'xs'"
+                :class="copied && 'text-success!'"
+                @click="copy(props.field.value)">
+                <FpIcon :name="copied ? 'icon-[lucide--check]' : 'icon-[lucide--copy]'" />
+            </FpButton>
         </div>
     </div>
 </template>

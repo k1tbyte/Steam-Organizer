@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type DropdownItem, FpButton, FpDropdownMenu, FpIcon, FpTooltip } from '@so/ui'
+import { type DropdownItem, FpButton, FpDropdownMenu, FpIcon, tip } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, useRouter } from 'vue-router'
@@ -38,26 +38,24 @@ const items = computed<DropdownItem[]>(() => [
         </FpButton>
     </FpDropdownMenu>
     <div v-else class="flex shrink-0 gap-0.5">
-        <FpTooltip :text="t('Open profile')" label>
-            <FpButton
-                :as="RouterLink"
-                :to="profilePath"
-                square
-                size="xs"
-                variant="ghost"
-                class="text-fg-3!">
-                <FpIcon name="icon-[lucide--external-link]" />
-            </FpButton>
-        </FpTooltip>
-        <FpTooltip :text="t('Delete')" label>
-            <FpButton
-                square
-                size="xs"
-                variant="ghost"
-                class="text-fg-3! hover:bg-danger-soft! hover:text-danger!"
-                @click="emit('delete')">
-                <FpIcon name="icon-[lucide--trash-2]" />
-            </FpButton>
-        </FpTooltip>
+        <FpButton
+            v-bind="tip(t('Open profile'), { label: true })"
+            :as="RouterLink"
+            :to="profilePath"
+            square
+            size="xs"
+            variant="ghost"
+            class="text-fg-3!">
+            <FpIcon name="icon-[lucide--external-link]" />
+        </FpButton>
+        <FpButton
+            v-bind="tip(t('Delete'), { label: true })"
+            square
+            size="xs"
+            variant="ghost"
+            class="text-fg-3! hover:bg-danger-soft! hover:text-danger!"
+            @click="emit('delete')">
+            <FpIcon name="icon-[lucide--trash-2]" />
+        </FpButton>
     </div>
 </template>

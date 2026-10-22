@@ -304,7 +304,7 @@ export const RULES: Rule[] = [
     },
     {
         id: 'native-tooltip',
-        why: 'Wrap the trigger in FpTooltip (`label` also names an icon-only control) instead of a native title.',
+        why: 'Bind `tip(text)` from @so/ui on the trigger (`{ label: true }` also names an icon-only control) instead of a native title.',
         scan: () => {
             const titled = titlePropComponents()
             return template(

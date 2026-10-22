@@ -1,5 +1,5 @@
 import { useHold } from '@so/ui'
-import { computed, type MaybeRefOrGetter, toValue } from 'vue'
+import { computed, type MaybeRefOrGetter, toValue, watch } from 'vue'
 
 import { useCopyFeedback } from '#core'
 
@@ -14,8 +14,16 @@ import { useGuardClock } from './useGuardClock'
 /** One account's Steam Guard control: masked until held, a countdown to the next code, copy. */
 export function useGuardCode(seed: MaybeRefOrGetter<string>) {
     const clock = useGuardClock()
-    const { holding, handlers } = useHold()
-    const { copied, copy } = useCopyFeedback()
+    const { holding, handlers, stop } = useHold()
+    const { copied, copy, reset } = useCopyFeedback()
+    // A recycled list card hands this control to another account mid-hold.
+    watch(
+        () => toValue(seed),
+        () => {
+            stop()
+            reset()
+        },
+    )
 
     const phase = computed(() => guardPhase(clock.value))
     const codeAt = (nowMs: number) =>

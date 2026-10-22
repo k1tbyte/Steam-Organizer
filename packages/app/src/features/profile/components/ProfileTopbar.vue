@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpDropdownMenu, FpIcon, FpTooltip, useDesktopLayout } from '@so/ui'
+import { FpButton, FpDropdownMenu, FpIcon, tip, useDesktopLayout } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 
@@ -42,12 +42,10 @@ const menu = useProfileMenu({
         </template>
         <template v-if="desktop" #status><SyncStatus /></template>
         <template #actions>
-            <FpTooltip v-if="refreshable && desktop" :text="t('Refresh from Steam')">
-                <FpButton variant="soft" @click="emit('refresh')">
-                    <FpIcon name="icon-[lucide--refresh-cw]" />
-                    {{ t('Refresh') }}
-                </FpButton>
-            </FpTooltip>
+            <FpButton v-if="refreshable && desktop" v-bind="tip(t('Refresh from Steam'))" variant="soft" @click="emit('refresh')">
+                <FpIcon name="icon-[lucide--refresh-cw]" />
+                {{ t('Refresh') }}
+            </FpButton>
             <FpButton
                 v-else-if="refreshable"
                 square
@@ -59,11 +57,9 @@ const menu = useProfileMenu({
                 <FpIcon name="icon-[lucide--refresh-cw]" />
             </FpButton>
             <FpDropdownMenu :items="menu.items.value" placement="bottom-end">
-                <FpTooltip :text="t('More')" label>
-                    <FpButton square :round="!desktop" variant="ghost" :size="desktop ? 'md' : 'xl'">
-                        <FpIcon name="icon-[lucide--ellipsis]" />
-                    </FpButton>
-                </FpTooltip>
+                <FpButton v-bind="tip(t('More'), { label: true })" square :round="!desktop" variant="ghost" :size="desktop ? 'md' : 'xl'">
+                    <FpIcon name="icon-[lucide--ellipsis]" />
+                </FpButton>
             </FpDropdownMenu>
         </template>
     </PageTopbar>

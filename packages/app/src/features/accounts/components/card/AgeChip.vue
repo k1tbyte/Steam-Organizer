@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpIcon, FpTooltip } from '@so/ui'
+import { FpIcon, tip } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -26,22 +26,20 @@ const tierName = computed(
 </script>
 
 <template>
-    <FpTooltip
-        :text="
+    <span
+        v-bind="tip(
             t('{years} years on Steam · since {since} · {tier}', {
                 years,
                 since,
                 tier: tierName,
             })
-        ">
-        <span
-            class="age inline-flex shrink-0 items-center gap-1 font-mono font-semibold"
-            :class="size === 'md' ? 'h-5.5 px-1.75 text-12 max-lg:h-6 max-lg:px-2' : 'h-4.5 px-1.5 text-11.5'"
-            :data-tier="tier">
-            <FpIcon name="icon-[lucide--hourglass]" :class="size === 'md' ? 'text-12' : 'text-11'" />
-            {{ t('{years}y', { years }) }}
-        </span>
-    </FpTooltip>
+        )"
+        class="age inline-flex shrink-0 items-center gap-1 font-mono font-semibold"
+        :class="size === 'md' ? 'h-5.5 px-1.75 text-12 max-lg:h-6 max-lg:px-2' : 'h-4.5 px-1.5 text-11.5'"
+        :data-tier="tier">
+        <FpIcon name="icon-[lucide--hourglass]" :class="size === 'md' ? 'text-12' : 'text-11'" />
+        {{ t('{years}y', { years }) }}
+    </span>
 </template>
 
 <style scoped>

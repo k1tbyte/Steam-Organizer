@@ -60,5 +60,5 @@ export function useHold({ duration, onComplete, disabled }: HoldOptions = {}) {
         },
     }
 
-    return { holding, handlers }
+    return { holding, handlers, stop }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpIcon, FpTooltip } from '@so/ui'
+import { FpIcon, tip } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -22,21 +22,21 @@ const hiddenNames = computed(() => props.hidden.map((tag) => tag.label).join(', 
         class="flex shrink-0 items-center gap-1 overflow-hidden"
         :class="touch ? 'h-7' : 'h-5.5'">
         <AccountTagChip v-for="tag in shown" :key="tag.label" :tag="tag" />
-        <FpTooltip v-if="hidden.length > 0" :text="hiddenNames">
-            <span
-                class="inline-flex h-5.5 shrink-0 items-center rounded-full bg-surface-hi px-1.75 font-medium font-mono text-11.5 text-fg-2">
-                +{{ hidden.length }}
-            </span>
-        </FpTooltip>
-        <FpTooltip v-if="shown.length > 0" :text="t('Edit tags')" label>
-            <button
-                type="button"
-                class="grid shrink-0 cursor-pointer place-items-center rounded-full text-13 text-fg-3 transition-colors duration-fast hover:bg-hover hover:text-fg-1"
-                :class="touch ? 'size-7' : 'size-5.5'"
-                @click="emit('edit')">
-                <FpIcon name="icon-[lucide--plus]" />
-            </button>
-        </FpTooltip>
+        <span
+            v-if="hidden.length > 0"
+            v-bind="tip(hiddenNames)"
+            class="inline-flex h-5.5 shrink-0 items-center rounded-full bg-surface-hi px-1.75 font-medium font-mono text-11.5 text-fg-2">
+            +{{ hidden.length }}
+        </span>
+        <button
+            v-if="shown.length > 0"
+            v-bind="tip(t('Edit tags'), { label: true })"
+            type="button"
+            class="grid shrink-0 cursor-pointer place-items-center rounded-full text-13 text-fg-3 transition-colors duration-fast hover:bg-hover hover:text-fg-1"
+            :class="touch ? 'size-7' : 'size-5.5'"
+            @click="emit('edit')">
+            <FpIcon name="icon-[lucide--plus]" />
+        </button>
         <button
             v-else
             type="button"

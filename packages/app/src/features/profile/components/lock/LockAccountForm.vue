@@ -8,7 +8,7 @@ import {
     FpIcon,
     FpInput,
     FpSwitch,
-    FpTooltip,
+    tip,
 } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -59,16 +59,15 @@ const noRecovery = computed(() =>
                 :aria-label="t('Account password')">
                 <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
                 <template #trailing>
-                    <FpTooltip :text="dialog.showPasswords ? t('Hide') : t('Show')">
-                        <FpButton
-                            square
-                            size="xs"
-                            variant="ghost"
-                            :aria-label="dialog.showPasswords ? t('Hide') : t('Show')"
-                            @click="dialog.showPasswords = !dialog.showPasswords">
-                            <FpIcon :name="dialog.showPasswords ? 'icon-[lucide--eye-off]' : 'icon-[lucide--eye]'" />
-                        </FpButton>
-                    </FpTooltip>
+                    <FpButton
+                        v-bind="tip(dialog.showPasswords ? t('Hide') : t('Show'))"
+                        square
+                        size="xs"
+                        variant="ghost"
+                        :aria-label="dialog.showPasswords ? t('Hide') : t('Show')"
+                        @click="dialog.showPasswords = !dialog.showPasswords">
+                        <FpIcon :name="dialog.showPasswords ? 'icon-[lucide--eye-off]' : 'icon-[lucide--eye]'" />
+                    </FpButton>
                 </template>
             </FpInput>
             <FpFormField :error="dialog.mismatch">

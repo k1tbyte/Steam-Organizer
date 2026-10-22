@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpFormField, FpIcon, FpInput, FpTooltip } from '@so/ui'
+import { FpButton, FpFormField, FpIcon, FpInput, tip } from '@so/ui'
 import { onMounted, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -22,11 +22,9 @@ onMounted(() => input.value?.focus())
             <span class="min-w-0 flex-1 truncate font-semibold text-13 text-fg-1">
                 {{ t('{name} is locked', { name }) }}
             </span>
-            <FpTooltip :text="t('Cancel')">
-                <FpButton square size="xs" variant="ghost" :aria-label="t('Cancel')" @click="$emit('cancel')">
-                    <FpIcon name="icon-[lucide--x]" />
-                </FpButton>
-            </FpTooltip>
+            <FpButton v-bind="tip(t('Cancel'))" square size="xs" variant="ghost" :aria-label="t('Cancel')" @click="$emit('cancel')">
+                <FpIcon name="icon-[lucide--x]" />
+            </FpButton>
         </div>
         <FpFormField :error="message">
             <FpInput

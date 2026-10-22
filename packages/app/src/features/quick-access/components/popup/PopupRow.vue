@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpIcon, FpTooltip } from '@so/ui'
+import { FpButton, FpIcon, tip } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import type { Account } from '#features/accounts'
@@ -41,21 +41,15 @@ const { t } = useI18n()
             :locked="concealed"
             @unlock="$emit('unlock')" />
         <div v-if="selected" class="flex shrink-0 gap-px">
-            <FpTooltip :text="t('Copy login')">
-                <FpButton square size="xs" variant="ghost" :aria-label="t('Copy login')" @click.stop="$emit('copyLogin')">
-                    <FpIcon :name="copiedLogin ? 'icon-[lucide--check]' : 'icon-[lucide--user-round]'" />
-                </FpButton>
-            </FpTooltip>
-            <FpTooltip :text="t('Copy password')">
-                <FpButton square size="xs" variant="ghost" :aria-label="t('Copy password')" @click.stop="$emit('copyPassword')">
-                    <FpIcon :name="copiedPassword ? 'icon-[lucide--check]' : 'icon-[lucide--key-round]'" />
-                </FpButton>
-            </FpTooltip>
-            <FpTooltip :text="t('Open in app')">
-                <FpButton square size="xs" variant="ghost" :aria-label="t('Open in app')" @click.stop="$emit('openApp')">
-                    <FpIcon name="icon-[lucide--arrow-up-right]" />
-                </FpButton>
-            </FpTooltip>
+            <FpButton v-bind="tip(t('Copy login'), { label: true })" square size="xs" variant="ghost" @click.stop="$emit('copyLogin')">
+                <FpIcon :name="copiedLogin ? 'icon-[lucide--check]' : 'icon-[lucide--user-round]'" />
+            </FpButton>
+            <FpButton v-bind="tip(t('Copy password'), { label: true })" square size="xs" variant="ghost" @click.stop="$emit('copyPassword')">
+                <FpIcon :name="copiedPassword ? 'icon-[lucide--check]' : 'icon-[lucide--key-round]'" />
+            </FpButton>
+            <FpButton v-bind="tip(t('Open in app'), { label: true })" square size="xs" variant="ghost" @click.stop="$emit('openApp')">
+                <FpIcon name="icon-[lucide--arrow-up-right]" />
+            </FpButton>
         </div>
     </PickerRow>
 </template>

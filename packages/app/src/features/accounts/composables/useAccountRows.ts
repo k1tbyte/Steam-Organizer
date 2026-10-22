@@ -7,6 +7,7 @@ import { useScrollRoot } from '#core'
 
 import type { Account } from '../model'
 import { buildRows, columnsFor, rowHeight } from '../services/listRows'
+import { assignSlots } from '../services/listSlots'
 import { useCardFieldsStore } from '../stores/cardFields'
 import { useCardMetrics } from './useCardMetrics'
 
@@ -92,6 +93,29 @@ export function useAccountRows(
     // Sizes are estimates the virtualizer caches: a new card height must drop them.
     watch([rows, sizes], () => virtualizer.value.measure())
 
+    // Each render carries the last assignment forward; only the keys depend on it.
+    let slots = new Map<string, number>()
+    const items = computed(() => {
+        const visible = virtualizer.value.getVirtualItems()
+        slots = assignSlots(
+            slots,
+            visible.map((item) => String(item.key)),
+        )
+        return visible.flatMap((item) => {
+            const row = rows.value[item.index]
+            return row
+                ? [
+                      {
+                          slot: slots.get(String(item.key)) ?? 0,
+                          start: item.start,
+                          size: item.size,
+                          row,
+                      },
+                  ]
+                : []
+        })
+    })
+
     return {
         flags,
         touch: metrics.touch,
@@ -101,20 +125,6 @@ export function useAccountRows(
         })),
         margin,
         totalSize: computed(() => virtualizer.value.getTotalSize()),
-        items: computed(() =>
-            virtualizer.value.getVirtualItems().flatMap((item) => {
-                const row = rows.value[item.index]
-                return row
-                    ? [
-                          {
-                              key: String(item.key),
-                              start: item.start,
-                              size: item.size,
-                              row,
-                          },
-                      ]
-                    : []
-            }),
-        ),
+        items,
     }
 }

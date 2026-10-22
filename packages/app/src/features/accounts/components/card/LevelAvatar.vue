@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpIcon, FpTooltip } from '@so/ui'
+import { FpIcon, tip } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -63,13 +63,13 @@ const sizing = computed(() => SIZES[props.size])
             <FpIcon v-if="anonymous" name="icon-[lucide--venetian-mask]" class="text-20" />
             <template v-else>{{ initialsOf(name) }}</template>
         </span>
-        <FpTooltip v-if="showRing && size !== 'sm'" :text="t('Steam level')">
-            <span
-                class="badge absolute left-1/2 grid -translate-x-1/2 place-items-center rounded-full font-mono font-semibold"
-                :class="sizing.badge">
-                {{ level }}
-            </span>
-        </FpTooltip>
+        <span
+            v-if="showRing && size !== 'sm'"
+            v-bind="tip(t('Steam level'))"
+            class="badge absolute left-1/2 grid -translate-x-1/2 place-items-center rounded-full font-mono font-semibold"
+            :class="sizing.badge">
+            {{ level }}
+        </span>
     </span>
 </template>
 
