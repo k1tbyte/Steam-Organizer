@@ -95,6 +95,7 @@ export { default as FpModalActions } from './components/overlays/Modal/ModalActi
 export { default as FpModalClose } from './components/overlays/Modal/ModalClose.vue'
 export { default as FpPopover } from './components/overlays/Popover.vue'
 export { default as FpTooltip } from './components/overlays/Tooltip.vue'
+export { default as FpTooltipHost } from './components/overlays/TooltipHost.vue'
 export { useCenterActive } from './composables/useCenterActive'
 export { useDesktopLayout } from './composables/useDesktopLayout'
 export { useHold } from './composables/useHold'

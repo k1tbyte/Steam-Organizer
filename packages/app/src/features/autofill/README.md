@@ -6,7 +6,7 @@ The UI the extension injects into Steam login pages: a button in the login field
 - `services/placement.ts` puts the floats: below the login field or above the Guard boxes, flipping when the side is too short, kept inside the viewport. Pure, node-tested.
 - `useHostPage` is the only DOM glue: it scans the page (debounced MutationObserver), and fills fields by setting the value and dispatching `input` and `change`, which React inputs accept from the isolated world.
 - The picker is `quick-access`'s `PickerList` in a compact skin; Enter or a click fills the login and password, then the Guard prompt follows with the code of the account just filled.
-- The shadow root is closed, so the page cannot click the controls or read them; outside-click detection goes through the host (`getRootNode().host`). Controls here take an `aria-label` and no `FpTooltip`: a tooltip portals to the page body, outside the shadow root and its styles.
+- The shadow root is closed, so the page cannot click the controls or read them; outside-click detection goes through the host (`getRootNode().host`). Controls here take an `aria-label` and no `FpTooltip`: the injected UI mounts no `FpTooltipHost`, whose bubble would portal to the page body, outside the shadow root and its styles.
 - A website never takes a password: a locked vault, no vault or a locked account shows a notice with a button that opens the extension (`Platform.openApp`), where the password is typed.
 
 ## Mocks

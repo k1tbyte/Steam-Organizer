@@ -1,4 +1,11 @@
-import { type InjectionKey, inject, provide, type Ref, watch } from 'vue'
+import {
+    type InjectionKey,
+    inject,
+    onScopeDispose,
+    provide,
+    type Ref,
+    watch,
+} from 'vue'
 
 const gateKey: InjectionKey<Readonly<Ref<boolean>>> = Symbol('fp-overlay-gate')
 
@@ -6,13 +13,23 @@ const gateKey: InjectionKey<Readonly<Ref<boolean>>> = Symbol('fp-overlay-gate')
  *  opened: they portal out of it, so hiding the subtree alone leaves them on screen. */
 export function provideOverlayGate(shown: Readonly<Ref<boolean>>) {
     provide(gateKey, shown)
+    watch(shown, (on) => {
+        if (!on) for (const close of hideListeners) close()
+    })
+}
+
+const hideListeners = new Set<() => void>()
+
+/** The tooltip host sits above every gate: any subtree hiding closes its one tooltip, pending ones too. */
+export function onAnyGateHide(close: () => void) {
+    hideListeners.add(close)
+    onScopeDispose(() => hideListeners.delete(close))
 }
 
 export function useOverlayGate(open: Ref<boolean>) {
     const shown = inject(gateKey, null)
-    // Also catches an open that lands after the hide (a tooltip's delay timer).
     if (shown)
-        watch([shown, open], ([on, isOpen]) => {
-            if (!on && isOpen) open.value = false
+        watch(shown, (on) => {
+            if (!on) open.value = false
         })
 }
