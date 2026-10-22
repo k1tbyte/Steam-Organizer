@@ -47,8 +47,11 @@ export function useAccountRows(
 
     const gap = computed(() => metrics.gapUnits.value * metrics.unit.value)
     const columns = computed(() => columnsFor(width.value, gap.value))
+    // No rows before the width is known: a one-column first pass would mount cards only to drop them.
     const rows = computed(() =>
-        buildRows(source.pinned.value, source.rest.value, columns.value),
+        width.value > 0
+            ? buildRows(source.pinned.value, source.rest.value, columns.value)
+            : [],
     )
     const sizes = computed(() => ({
         unit: metrics.unit.value,
@@ -56,7 +59,7 @@ export function useAccountRows(
         cardPx: metrics.cardPx.value,
     }))
 
-    // Where the list starts inside the scroller: the filter strip sits above it.
+    // Where the list starts inside the scroller.
     const margin = ref(0)
     watch(
         [list, root, width],
