@@ -2,7 +2,7 @@
 
 The extension's toolbar popup: an account palette on the vault, and the account picker the autofill UI reuses. `mountPopup` (`@so/app/popup`) mounts `QuickAccessApp` with no router; the shell gives it a `Platform` whose `openApp` opens the full app and closes the popup.
 
-- `index.ts` exports `QuickAccessApp`, the picker parts (`PickerList`, `PickerRow`, `LISTBOX_ID`) and the view-model pieces autofill shares: `useAccountPicker`, `useAccountPassword`, `useFillFeedback`.
+- `index.ts` exports `QuickAccessApp`, the picker parts (`PickerList`, `PickerRow`, `LISTBOX_ID`) and the view-model pieces autofill shares: `useAccountPicker`, `useFillFeedback`. The Steam password comes from `useAccountPassword` (`#features/accounts`).
 - The vault session picks the screen (`usePopupFrame`): accounts, locked (master password, same verifier as the unlock screen) or setup (no vault, opens the app).
 - Accounts come from `useVaultAccounts`: pinned first, search on nickname and login (`services/picker.ts`; a locked account's login is not searched). `PickerList` is a windowed `role=listbox` in `FpScrollArea`; the selection moves by keyboard only, so a row hover never scrolls the list.
 - Keys, from the search field: arrows move (wrapping), Enter fills, Escape clears the search, Ctrl/Cmd+C copies the selected password while no text is selected.
@@ -17,7 +17,7 @@ Mockup: `Extension.dc.html` (Popup, Popup · Locked).
 | Mock (variants) | UI built | Source | Wire in |
 |---|---|---|---|
 | `quick-access.tab` (Steam sign-in, Steam Guard prompt, Another site) | the fill banner and whether Enter fills | the active tab, from the content script | `useQuickAccess` |
-| `DEMO_STEAM_PASSWORD` (no variants) | Copy password and the password a fill types | the decrypted account | `useAccountPassword` |
+| `DEMO_STEAM_PASSWORD` (`accounts`) | Copy password and the password a fill types | the decrypted account | `useAccountPassword` |
 | `DEMO_ACCOUNT_PASSWORD` (`demo`) | the locked-account prompt | the account's own key | `useAccountGate` |
 
 The accounts, the vault session and the master password come from the `accounts.list` (One locked, Empty) and `vault.session` (Locked, New vault) mocks. "No results" is reached by typing.

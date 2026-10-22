@@ -2,12 +2,11 @@ import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useCopyFeedback, useMock, usePlatform } from '#core'
-import type { Account } from '#features/accounts'
+import { type Account, useAccountPassword } from '#features/accounts'
 
 import { tabMock } from '../mocks'
 import { isPaletteKeyIgnored } from '../services/picker'
 import { useAccountGate } from './useAccountGate'
-import { useAccountPassword } from './useAccountPassword'
 import { useAccountPicker } from './useAccountPicker'
 import { useFillFeedback } from './useFillFeedback'
 

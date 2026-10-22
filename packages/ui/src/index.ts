@@ -83,16 +83,21 @@ export { default as FpSlider } from './components/fields/Slider.vue'
 export { default as FpInput } from './components/fields/text/Input.vue'
 export { default as FpPinInput } from './components/fields/text/PinInput.vue'
 export { default as FpTextarea } from './components/fields/text/Textarea.vue'
-export { default as FpDrawer } from './components/overlays/Drawer.vue'
 export {
-    type DropdownGroup,
-    type DropdownItem,
-    default as FpDropdownMenu,
-} from './components/overlays/DropdownMenu.vue'
+    default as FpContextMenu,
+    openContextMenuFrom,
+} from './components/overlays/ContextMenu.vue'
+export { default as FpDrawer } from './components/overlays/Drawer.vue'
+export { default as FpDropdownMenu } from './components/overlays/DropdownMenu.vue'
 export { default as FpConfirmModal } from './components/overlays/Modal/ConfirmModal.vue'
 export { default as FpModal } from './components/overlays/Modal/Modal.vue'
 export { default as FpModalActions } from './components/overlays/Modal/ModalActions.vue'
 export { default as FpModalClose } from './components/overlays/Modal/ModalClose.vue'
+export type {
+    MenuEntries,
+    MenuGroup,
+    MenuItem,
+} from './components/overlays/menu'
 export { default as FpPopover } from './components/overlays/Popover.vue'
 export { default as FpTooltipHost } from './components/overlays/TooltipHost.vue'
 export { type TipOptions, tip } from './components/overlays/tip'

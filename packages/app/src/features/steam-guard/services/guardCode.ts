@@ -28,3 +28,8 @@ export function guardPhase(nowMs: number) {
         remaining: GUARD_PERIOD_S - Math.floor(seconds % GUARD_PERIOD_S),
     }
 }
+
+// Defaults to the real time: a ticking clock can lag a rollover, so a copy or a fill never reads one.
+export function guardCodeAt(seed: string, nowMs = Date.now()): string {
+    return demoGuardCode(seed, guardPhase(nowMs).period)
+}

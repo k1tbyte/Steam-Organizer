@@ -1,4 +1,4 @@
-import type { DropdownItem } from '@so/ui'
+import type { MenuItem } from '@so/ui'
 import { computed, type MaybeRefOrGetter, toValue } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -12,9 +12,9 @@ export function useProfileMenu(options: {
 }) {
     const { t } = useI18n()
 
-    const items = computed<DropdownItem[][]>(() => {
+    const items = computed<MenuItem[][]>(() => {
         const { intent } = options
-        const account: DropdownItem[] = toValue(options.hasLock)
+        const account: MenuItem[] = toValue(options.hasLock)
             ? [
                   {
                       label: t('Change account password'),

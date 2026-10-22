@@ -97,4 +97,16 @@ describe('useHold', () => {
         vi.advanceTimersByTime(1000)
         expect(onComplete).not.toHaveBeenCalled()
     })
+
+    it('blocks the context menu only while a hold runs', () => {
+        const { handlers } = setup({})
+        const menu = () => {
+            const event = { preventDefault: vi.fn() }
+            handlers.onContextmenu(event as unknown as Event)
+            return event.preventDefault
+        }
+        expect(menu()).not.toHaveBeenCalled()
+        handlers.onPointerdown(press)
+        expect(menu()).toHaveBeenCalledOnce()
+    })
 })

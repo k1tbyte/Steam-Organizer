@@ -2,6 +2,9 @@ import { defineMock } from '#core'
 
 import type { Account, BanKind, RefreshProgress, SteamLookup } from './model'
 
+/** What Copy password puts on the clipboard and a fill types: no vault is decrypted yet. */
+export const DEMO_STEAM_PASSWORD = '********'
+
 export interface AccountsSample {
     accounts: Account[]
     /** Seeds the search box when the sample is picked, so a sample can open on "no results". */

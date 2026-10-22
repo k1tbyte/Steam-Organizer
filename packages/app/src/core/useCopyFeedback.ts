@@ -5,6 +5,17 @@ import { reportError } from './reportError'
 
 const FEEDBACK_MS = 1200
 
+/** Writes to the clipboard; a refusal is reported, not thrown. */
+export async function copyText(text: string): Promise<boolean> {
+    try {
+        await navigator.clipboard.writeText(text)
+        return true
+    } catch (error) {
+        reportError(error, 'clipboard')
+        return false
+    }
+}
+
 /** Copies text and holds `copied` briefly, for a value that swaps to "Copied" in place. */
 export function useCopyFeedback() {
     const copied = shallowRef(false)
@@ -14,13 +25,7 @@ export function useCopyFeedback() {
 
     async function copy(text: string) {
         const own = ++generation
-        try {
-            await navigator.clipboard.writeText(text)
-        } catch (error) {
-            reportError(error, 'clipboard')
-            return
-        }
-        if (own !== generation) return
+        if (!(await copyText(text)) || own !== generation) return
         copied.value = true
         timer.arm(FEEDBACK_MS, () => {
             copied.value = false

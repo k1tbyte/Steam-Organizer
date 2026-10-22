@@ -61,8 +61,10 @@ export function useHold({
         onPointerleave: stop,
         onPointercancel: stop,
         onBlur: stop,
-        // A touch hold would otherwise open the browser's context menu.
-        onContextmenu: (event: Event) => event.preventDefault(),
+        // A long press would open the platform's context menu mid-hold; a right-click starts no hold and stays the page's.
+        onContextmenu: (event: Event) => {
+            if (holding.value || timer !== undefined) event.preventDefault()
+        },
         onKeydown: (event: KeyboardEvent) => {
             if (!isPress(event)) return
             event.preventDefault()

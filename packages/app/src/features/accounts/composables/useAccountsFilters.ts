@@ -1,4 +1,4 @@
-import type { DropdownGroup, DropdownItem } from '@so/ui'
+import type { MenuGroup } from '@so/ui'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -8,6 +8,7 @@ import {
     type BanFilterMode,
     SEARCH_FIELDS,
     SORT_KEYS,
+    type SortKey,
 } from '../model'
 import { useAccountsViewStore } from '../stores/accountsView'
 import { useBanLabels } from './useBanLabels'
@@ -21,6 +22,14 @@ const MODE_LOOKS = {
     require: { icon: 'icon-[lucide--plus]', variant: 'soft', color: 'accent' },
     exclude: { icon: 'icon-[lucide--minus]', variant: 'soft', color: 'danger' },
 } as const satisfies Record<BanFilterMode, object>
+
+const SORT_ICONS: Record<SortKey, string> = {
+    vault: 'icon-[lucide--list-ordered]',
+    created: 'icon-[lucide--calendar]',
+    added: 'icon-[lucide--plus]',
+    updated: 'icon-[lucide--clock]',
+    level: 'icon-[lucide--trophy]',
+}
 
 /** Search, ban chips and sort as the topbar and the filter strip show them. */
 export function useAccountsFilters() {
@@ -47,38 +56,56 @@ export function useAccountsFilters() {
         level: t('Level'),
     }))
 
-    const fieldItems = computed<DropdownItem[]>(() =>
-        SEARCH_FIELDS.map((field) => ({
-            label: fieldLabels.value[field],
-            checked: view.value.field === field,
-            onSelect: () => store.setField(field),
-        })),
-    )
-
-    const sortItems = computed<DropdownGroup[]>(() => [
+    const fieldItems = computed<MenuGroup[]>(() => [
         {
-            label: t('Sort by'),
-            items: SORT_KEYS.map((key) => ({
-                label: sortLabels.value[key],
-                checked: view.value.sort === key,
-                onSelect: () => store.setSort(key),
+            choice: 'list',
+            value: view.value.field,
+            items: SEARCH_FIELDS.map((field) => ({
+                key: field,
+                label: fieldLabels.value[field],
+                onSelect: () => store.setField(field),
             })),
         },
-        {
-            label: t('Order'),
+    ])
+
+    // The vault's own order has no direction.
+    const directed = computed(() => view.value.sort !== 'vault')
+    const directionGroup = computed<MenuGroup>(() => {
+        const [desc, asc] =
+            view.value.sort === 'level'
+                ? [t('Highest'), t('Lowest')]
+                : [t('Newest'), t('Oldest')]
+        return {
+            choice: 'segmented',
+            value: view.value.direction,
             items: [
                 {
-                    label: t('Descending'),
-                    checked: view.value.direction === 'desc',
+                    key: 'desc',
+                    label: desc,
+                    icon: 'icon-[lucide--arrow-down]',
                     onSelect: () => store.setDirection('desc'),
                 },
                 {
-                    label: t('Ascending'),
-                    checked: view.value.direction === 'asc',
+                    key: 'asc',
+                    label: asc,
+                    icon: 'icon-[lucide--arrow-up]',
                     onSelect: () => store.setDirection('asc'),
                 },
             ],
+        }
+    })
+    const sortItems = computed<MenuGroup[]>(() => [
+        {
+            choice: 'list',
+            value: view.value.sort,
+            items: SORT_KEYS.map((key) => ({
+                key,
+                label: sortLabels.value[key],
+                icon: SORT_ICONS[key],
+                onSelect: () => store.setSort(key),
+            })),
         },
+        ...(directed.value ? [directionGroup.value] : []),
     ])
 
     return {
@@ -88,7 +115,10 @@ export function useAccountsFilters() {
         fieldItems,
         sortLabel: computed(() => sortLabels.value[view.value.sort]),
         sortItems,
-        descending: computed(() => view.value.direction === 'desc'),
+        /** Undefined for the vault's order, which has no direction. */
+        descending: computed(() =>
+            directed.value ? view.value.direction === 'desc' : undefined,
+        ),
         resetFilters: store.resetFilters,
         cycleBan: store.cycleBan,
         chips: computed(() =>

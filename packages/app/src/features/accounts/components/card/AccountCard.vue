@@ -41,6 +41,7 @@ const card = useAccountCard(
         ref="root"
         flush
         class="card relative min-w-0 p-u-3.5 transition-colors duration-fast hover:border-stroke-2 hover:bg-surface-hover"
+        :data-account-id="account.id"
         :data-vt-hero="card.isHero.value || undefined"
         :style="{ height: card.height.value }">
         <FpButton

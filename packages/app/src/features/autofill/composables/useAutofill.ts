@@ -1,8 +1,12 @@
 import { useWindowSize } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 
-import { type Account, useVaultAccounts } from '#features/accounts'
-import { useAccountPassword, useFillFeedback } from '#features/quick-access'
+import {
+    type Account,
+    useAccountPassword,
+    useVaultAccounts,
+} from '#features/accounts'
+import { useFillFeedback } from '#features/quick-access'
 
 import { floatStyle, placeFloat, placeInField } from '../services/placement'
 import { useAnchorBox } from './useAnchorBox'

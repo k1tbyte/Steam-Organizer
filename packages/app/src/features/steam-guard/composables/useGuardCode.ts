@@ -4,8 +4,8 @@ import { computed, type MaybeRefOrGetter, toValue, watch } from 'vue'
 import { useCopyFeedback } from '#core'
 
 import {
-    demoGuardCode,
     GUARD_PERIOD_S,
+    guardCodeAt,
     guardPhase,
     MASKED_CODE,
 } from '../services/guardCode'
@@ -26,10 +26,7 @@ export function useGuardCode(seed: MaybeRefOrGetter<string>) {
     )
 
     const phase = computed(() => guardPhase(clock.value))
-    const codeAt = (nowMs: number) =>
-        demoGuardCode(toValue(seed), guardPhase(nowMs).period)
-    // The 1s clock can lag a rollover, so a copy or a fill reads the real time.
-    const currentCode = () => codeAt(Date.now())
+    const currentCode = () => guardCodeAt(toValue(seed))
 
     return {
         holding,
@@ -37,7 +34,9 @@ export function useGuardCode(seed: MaybeRefOrGetter<string>) {
         copied,
         // Computed only while held: masked cards never hash.
         shown: computed(() =>
-            holding.value ? codeAt(clock.value) : MASKED_CODE,
+            holding.value
+                ? guardCodeAt(toValue(seed), clock.value)
+                : MASKED_CODE,
         ),
         remaining: computed(() => phase.value.remaining / GUARD_PERIOD_S),
         currentCode,

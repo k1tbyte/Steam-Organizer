@@ -238,6 +238,8 @@
     --elev-float:
         inset 0 0 0 1px var(--stroke-2),
         0 12px 32px -8px color-mix(in oklch, black 45%, transparent);
+    /* The raised segment of a track (a menu's segmented choice). */
+    --elev-thumb: 0 1px 2px color-mix(in oklch, black 20%, transparent);
 }
 
 :root[data-surface] {
@@ -470,6 +472,7 @@
 
     --shadow-1: var(--elev-1);
     --shadow-2: var(--elev-2);
+    --shadow-thumb: var(--elev-thumb);
 }
 
 /* `lg:` starts the desktop layout. Static: useDesktopLayout reads it. */

@@ -2,9 +2,8 @@ import { defineMock } from '#core'
 
 import type { TabContext } from './model'
 
-/** What the demo accepts for a locked account, and what Copy password puts on the clipboard: no vault is decrypted yet. */
+/** What the demo accepts for a locked account: no vault is decrypted yet. */
 export const DEMO_ACCOUNT_PASSWORD = 'demo'
-export const DEMO_STEAM_PASSWORD = '********'
 
 export const tabMock = defineMock<TabContext>(
     'quick-access.tab',
