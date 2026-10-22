@@ -31,16 +31,18 @@ watchEffect(() => {
 })
 </script>
 
-<!-- One page in its own scroller: a resident section root keeps it, offset and all, while hidden. -->
+<!-- One page in its own scroller: a resident section root keeps it, offset and all, while hidden.
+     The route's `header` view sits above it: nothing scrolls under it, so its blur stays cheap. -->
 <template>
-    <div class="absolute inset-0" :data-layer="state" :inert="!active">
-        <FpScrollArea v-if="desktop" ref="area" class="h-full">
+    <div class="absolute inset-0 flex flex-col" :data-layer="state" :inert="!active">
+        <RouterView name="header" :route="route" />
+        <FpScrollArea v-if="desktop" ref="area" class="min-h-0 flex-1">
             <RouterView :route="route" />
         </FpScrollArea>
         <div
             v-else
             ref="native"
-            class="h-full overflow-y-auto"
+            class="min-h-0 flex-1 overflow-y-auto"
             :class="padsDock && 'pb-(--dock-clear)'">
             <RouterView :route="route" />
         </div>

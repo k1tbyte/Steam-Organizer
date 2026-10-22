@@ -15,7 +15,7 @@ Tokens live in `packages/ui/src/theme.css`, shared surface classes in `packages/
 | hover, press, highlight | `bg-hover`, `bg-hover-hi` | `bg-surface-hi` for hover (its white alpha vanishes on light surfaces; fine for static faces) |
 | accent, status | `bg-accent`, `bg-accent-hover`, `text-accent-ink`, `bg-accent-soft`, `text-accent-fg`, `*-success`, `*-warning`, `*-danger`, `*-info` (+ `-soft`, `-fg`) | picking text for a colored fill by eye |
 | panels | `.surface`, `.surface-pop` (floating: modal, menu, popover), `.surface-float` (a `.surface-pop` with its own radius, for floats no kit primitive owns), `.surface-opaque`, `.field`, `.fp-float`, `.fp-menu`, `FpEyebrow` (the only uppercase) | a new panel recipe |
-| blur | `backdrop-surface`, `backdrop-pop` (follow the Surface knob, none under flat) | `backdrop-blur-*` on a panel |
+| blur | `backdrop-surface`, `backdrop-pop` (follow the Surface knob, none under flat); a card repeated in a long list (`AccountCard`) drops it for `--surf-veil` | `backdrop-blur-*` on a panel |
 | radius | bare `rounded`; `rounded-full` only where the shape is the affordance (the kit keeps its own scale steps) | `rounded-lg`, `rounded-[10px]` outside `packages/ui` |
 | type | `text-10` .. `text-28`, named by desktop px (`text-12.5`, `text-13.5`); `font-title`, `tracking-title` | `text-[13px]`, `font-size: 13px`, `text-sm` |
 | density | `p-u-4`, `px-u-6`, `gap-u-3.5`: paddings and gaps the density knob scales (unit 3, 4, 5px) | `p-4` where the mockup writes `calc(var(--u) * 4)` |

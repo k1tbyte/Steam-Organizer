@@ -123,5 +123,9 @@ const card = useAccountCard(props)
 <style scoped>
 .card {
     gap: calc(var(--density-unit) * 3 + 4px);
+    /* No blur: in a long list it is a backdrop pass per card every scroll frame. */
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-image: linear-gradient(var(--surf-veil), var(--surf-veil));
 }
 </style>

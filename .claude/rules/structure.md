@@ -45,6 +45,7 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | a screen's title, count, status, search and actions in the shell topbar | `PageTopbar` with its `status`, `center`, `actions`, `back` slots; the route sets `meta.nav` |
 | the page's scroll element (a virtual list, scroll to top) | `useScrollRoot()` from `#core`: each page has its own; a section root (`meta.resident`) keeps its offset while hidden, any other page starts at the top |
 | whether the page is current (a resident page stays mounted behind another) | `usePageActive()` from `#core`: a ticker pauses on it; `useQueryOverlay`, `PageTopbar` and the kit overlays already follow it |
+| a strip pinned above the page's scroll (filters) | the route's `header` named view (`components: { default, header }`): `ShellLayer` renders it outside the scroller, so it moves with its page and nothing scrolls under it |
 | desktop or phone layout in script | `useDesktopLayout()` from `@so/ui`; prefer `lg:` CSS when markup alone differs |
 
 ## Routes and overlays

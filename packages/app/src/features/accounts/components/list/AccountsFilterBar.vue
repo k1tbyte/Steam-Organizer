@@ -15,14 +15,14 @@ defineEmits<{ reorder: []; refreshAll: []; importExport: [] }>()
 const { t } = useI18n()
 const desktop = useDesktopLayout()
 
-// Transparent over the page top, as in the mockup; the rail's surface once cards scroll under it.
+// Transparent at the page top, as in the mockup; the rail's surface once the list scrolls.
 const { arrivedState } = useScroll(useScrollRoot())
 const scrolled = computed(() => !arrivedState.top)
 </script>
 
 <template>
     <div
-        class="sticky top-0 z-10 border-b transition-colors duration-fast"
+        class="shrink-0 border-b transition-colors duration-fast"
         :class="scrolled ? 'border-stroke-1 bg-canvas-elev backdrop-surface' : 'border-transparent'">
         <div v-if="desktop" class="flex items-center gap-1.5 px-u-6 py-u-3.5">
             <span class="mr-1 text-12.5 text-fg-3">{{ t('Bans') }}</span>
@@ -62,7 +62,6 @@ const scrolled = computed(() => !arrivedState.top)
                 </FpButton>
             </FpTooltip>
         </div>
-        <!-- Scrolls sideways only: a vertical swipe passes to the page. -->
         <div v-else class="flex items-center gap-1.5 overflow-x-auto overflow-y-hidden px-4 py-2.5">
             <SortMenu />
             <span class="mx-0.5 h-5 w-px shrink-0 bg-stroke-1" />
@@ -72,3 +71,4 @@ const scrolled = computed(() => !arrivedState.top)
         </div>
     </div>
 </template>
+

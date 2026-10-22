@@ -105,6 +105,8 @@
     --surf-pop: var(--surf-bg);
     --surf-filter: none;
     --pop-filter: none;
+    /* Lays a blur-free list card over its tint: the stage shows through about as much as under a blur. */
+    --surf-veil: transparent;
 
     --accent-hover: color-mix(in oklch, var(--accent), white 10%);
     --accent-ink: var(--accent);
@@ -181,6 +183,7 @@
     --bg-elev: color-mix(in oklch, white 2%, transparent);
     --surf-pop: transparent;
     --surf-filter: blur(6px);
+    --surf-veil: color-mix(in oklch, var(--bg-base) 35%, transparent);
     --pop-filter: blur(24px);
 }
 
@@ -209,6 +212,7 @@
         transparent
     );
     --surf-filter: blur(28px) saturate(160%);
+    --surf-veil: color-mix(in oklch, var(--bg-base) 35%, transparent);
     --pop-filter: blur(28px) saturate(160%);
 }
 

@@ -11,7 +11,6 @@ import { useAccountsList } from '../../composables/useAccountsList'
 import { useAddAccountOverlay } from '../../composables/useAddAccountOverlay'
 import AddAccountOverlay from '../add/AddAccountOverlay.vue'
 import AccountsEmpty from './AccountsEmpty.vue'
-import AccountsFilterBar from './AccountsFilterBar.vue'
 import AccountsGrid from './AccountsGrid.vue'
 import AccountsSearch from './AccountsSearch.vue'
 import RefreshActivity from './RefreshActivity.vue'
@@ -43,7 +42,6 @@ const addOverlay = useAddAccountOverlay()
         </template>
     </PageTopbar>
 
-    <AccountsFilterBar />
     <FpAsyncView :status="list.status.value">
         <AccountsGrid :pinned="list.pinned.value" :rest="list.rest.value" @toggle-pin="list.togglePin" />
         <template #empty>
