@@ -6,11 +6,14 @@ import { useI18n } from 'vue-i18n'
 
 import { usePageActive } from '#core'
 
+import { useReorderMode } from '../../composables/reorder/useReorderMode'
 import { useAccountsFilters } from '../../composables/useAccountsFilters'
 
 const { t } = useI18n()
 const desktop = useDesktopLayout()
 const { query, setQuery, searchField, fieldItems } = useAccountsFilters()
+// Reordering shows the whole vault, so a query would only look applied.
+const reorder = useReorderMode()
 
 const input = useTemplateRef('input')
 // Stays mounted while Accounts is hidden: the shortcut belongs to the current page only.
@@ -26,6 +29,7 @@ onKeyStroke('k', (event) => {
     <FpInput
         ref="input"
         :model-value="query"
+        :disabled="reorder.open.value"
         :placeholder="desktop ? t('Search accounts…') : t('Search…')"
         @update:model-value="setQuery(String($event))">
         <template #leading>

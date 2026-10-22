@@ -10,6 +10,7 @@ import { useAccountsFilters } from '../../composables/useAccountsFilters'
 import { useAccountsList } from '../../composables/useAccountsList'
 import { useAddAccountOverlay } from '../../composables/useAddAccountOverlay'
 import AddAccountOverlay from '../add/AddAccountOverlay.vue'
+import AccountsReorderGrid from '../reorder/AccountsReorderGrid.vue'
 import AccountsEmpty from './AccountsEmpty.vue'
 import AccountsGrid from './AccountsGrid.vue'
 import AccountsSearch from './AccountsSearch.vue'
@@ -43,7 +44,8 @@ const addOverlay = useAddAccountOverlay()
     </PageTopbar>
 
     <FpAsyncView :status="list.status.value">
-        <AccountsGrid :pinned="list.pinned.value" :rest="list.rest.value" @toggle-pin="list.togglePin" />
+        <AccountsReorderGrid v-if="list.reordering.value" />
+        <AccountsGrid v-else :pinned="list.pinned.value" :rest="list.rest.value" @toggle-pin="list.togglePin" />
         <template #empty>
             <AccountsEmpty :vault-empty="list.vaultEmpty.value" @add="addOverlay.show()" @reset="resetFilters" />
         </template>

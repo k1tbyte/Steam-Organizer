@@ -119,6 +119,15 @@ export function useAccountRows(
     return {
         flags,
         touch: metrics.touch,
+        rows,
+        sizes,
+        /** The CSS grid's tracks: `columns` cells of `cellWidth` with `gap` between. */
+        cell: computed(() => ({
+            columns: columns.value,
+            gap: gap.value,
+            cellWidth:
+                (width.value - gap.value * (columns.value - 1)) / columns.value,
+        })),
         rowStyle: computed(() => ({
             gridTemplateColumns: `repeat(${columns.value}, minmax(0, 1fr))`,
             columnGap: `calc(var(--density-unit) * ${metrics.gapUnits.value})`,

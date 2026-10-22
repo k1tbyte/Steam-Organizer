@@ -7,6 +7,7 @@ import { useMock } from '#core'
 import { refreshMock } from '../mocks'
 import { filterAccounts, sortAccounts } from '../services/filters'
 import { useAccountsViewStore } from '../stores/accountsView'
+import { useReorderMode } from './reorder/useReorderMode'
 import { useVaultAccounts } from './useVaultAccounts'
 
 /** The accounts screen's data: the vault's accounts as the view filters and sorts them, pinned apart from the rest. */
@@ -15,9 +16,12 @@ export function useAccountsList() {
     const store = useAccountsViewStore()
     const { view } = storeToRefs(store)
     const { accounts, presetQuery, togglePin } = useVaultAccounts()
+    const reorder = useReorderMode()
     // The bulk refresh in flight has no source yet.
     const refresh = useMock(() => undefined, refreshMock)
+    // Reordering moves accounts in the vault order, so it shows all of them in it; the view waits.
     const visible = computed(() => {
+        if (reorder.open.value) return accounts.value
         const { sort, direction } = view.value
         return sortAccounts(
             filterAccounts(accounts.value, view.value),
@@ -52,5 +56,6 @@ export function useAccountsList() {
             visible.value.length === 0 ? 'empty' : 'ready',
         ),
         togglePin,
+        reordering: computed(() => reorder.open.value),
     }
 }

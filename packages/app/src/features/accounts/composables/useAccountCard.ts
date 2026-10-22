@@ -4,7 +4,12 @@ import { useI18n } from 'vue-i18n'
 import { useCopyFeedback, useRouteHero } from '#core'
 
 import type { Account, CardFlags } from '../model'
-import { cardHeightCss, cardRows, hasFooter } from '../services/cardLayout'
+import {
+    cardHeightCss,
+    cardRows,
+    cornerInsetCss,
+    hasFooter,
+} from '../services/cardLayout'
 
 const SECRET_MASK = '••••••'
 const MAX_SHOWN_TAGS = 3
@@ -56,9 +61,7 @@ export function useAccountCard(
         shownTags,
         hiddenTags,
         height: computed(() => cardHeightCss(props.flags, props.touch)),
-        pinInset: computed(
-            () => `calc(var(--density-unit) * ${props.touch ? 1.5 : 2.5})`,
-        ),
+        pinInset: computed(() => cornerInsetCss(props.touch)),
         rows: computed(() => cardRows(props.touch)),
         showLevel: computed(() => props.flags.level && steam.value),
         showAge: computed(() => props.flags.age && steam.value),

@@ -19,6 +19,8 @@ const props = defineProps<{
     flags: CardFlags
     /** The phone card: taller footer and tag row, bigger targets. */
     touch: boolean
+    /** Reorder mode puts its handle there instead. */
+    hidePin?: boolean
 }>()
 const emit = defineEmits<{
     togglePin: []
@@ -42,6 +44,7 @@ const card = useAccountCard(
         :data-vt-hero="card.isHero.value || undefined"
         :style="{ height: card.height.value }">
         <FpButton
+            v-if="!hidePin"
             v-bind="tip(account.pinned ? t('Unpin') : t('Pin'), { label: true })"
             square
             :size="touch ? 'md' : 'xs'"

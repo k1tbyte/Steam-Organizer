@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { FpIcon } from '@so/ui'
 import { toRef, useTemplateRef } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { useAccountRows } from '../../composables/useAccountRows'
 import type { Account } from '../../model'
 import AccountCard from '../card/AccountCard.vue'
+import AccountsGroupHeading from './AccountsGroupHeading.vue'
 
 const props = defineProps<{ pinned: Account[]; rest: Account[] }>()
 const emit = defineEmits<{
@@ -14,7 +13,6 @@ const emit = defineEmits<{
     delete: [id: string]
 }>()
 
-const { t } = useI18n()
 const list = useTemplateRef('list')
 const grid = useAccountRows(
     { pinned: toRef(props, 'pinned'), rest: toRef(props, 'rest') },
@@ -36,15 +34,7 @@ const grid = useAccountRows(
                     height: `${item.size}px`,
                     transform: `translateY(${item.start - grid.margin.value}px)`,
                 }">
-                <h2
-                    v-if="item.row.kind === 'heading'"
-                    class="flex h-4 items-center gap-1.5 px-0.5 font-medium text-12.5 text-fg-3">
-                    <template v-if="item.row.key === 'pinned'">
-                        <FpIcon name="icon-[lucide--pin]" class="text-13" />
-                        {{ t('Pinned') }}
-                    </template>
-                    <template v-else>{{ t('All accounts') }}</template>
-                </h2>
+                <AccountsGroupHeading v-if="item.row.kind === 'heading'" :group="item.row.key" />
                 <div v-else class="grid items-start" :style="grid.rowStyle.value">
                     <AccountCard
                         v-for="(account, column) in item.row.accounts"

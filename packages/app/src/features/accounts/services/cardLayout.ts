@@ -52,3 +52,8 @@ export function cardHeightCss(flags: CardFlags, touch: boolean): string {
     const { px, units } = cardMetrics(flags, touch)
     return `calc(${px}px + var(--density-unit) * ${units})`
 }
+
+/** The top-right corner control's inset: the pin, and the reorder handle over it. */
+export function cornerInsetCss(touch: boolean): string {
+    return `calc(var(--density-unit) * ${touch ? 1.5 : 2.5})`
+}

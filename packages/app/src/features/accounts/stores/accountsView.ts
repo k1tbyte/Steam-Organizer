@@ -13,7 +13,7 @@ import type {
 import { nextBanMode } from '../services/filters'
 import { DEFAULT_VIEW, parseView } from '../services/storedState'
 
-/** The list's search, ban filters and sort (shared by the topbar search and the filter strip, remembered across reloads) and the session's pin changes. */
+/** The list's search, ban filters and sort (shared by the topbar search and the filter strip, remembered across reloads) and the session's pin and order changes. */
 export const useAccountsViewStore = defineStore('accounts-view', () => {
     const state = ref<AccountsView>(
         parseView(readStored(ACCOUNTS_VIEW_STORAGE_KEY)),
@@ -23,14 +23,20 @@ export const useAccountsViewStore = defineStore('accounts-view', () => {
     const save = () =>
         writeStored(ACCOUNTS_VIEW_STORAGE_KEY, JSON.stringify(state.value))
 
-    // Not persisted: pin changes last the session until the vault stores them.
+    // Not persisted: pin and order changes last the session until the vault stores them.
     const pins = ref<Record<string, boolean>>({})
+    const order = ref<string[] | null>(null)
 
     return {
         view: computed(() => state.value),
         pins: computed(() => pins.value),
+        order: computed(() => order.value),
         setPinned(id: string, pinned: boolean) {
             pins.value[id] = pinned
+        },
+        /** The vault order as account ids. */
+        setOrder(ids: string[]) {
+            order.value = ids
         },
         setQuery(query: string) {
             state.value.query = query
