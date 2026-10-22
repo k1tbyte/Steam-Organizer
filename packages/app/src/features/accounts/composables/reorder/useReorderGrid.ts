@@ -57,7 +57,13 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
     const members = (group: Group) =>
         group === 'pinned' ? pinned.value : rest.value
     const rank = computed(
-        () => new Map(vault.accounts.value.map((a, index) => [a.id, index])),
+        () =>
+            new Map(
+                [...pinned.value, ...rest.value].map((a, index) => [
+                    a.id,
+                    index,
+                ]),
+            ),
     )
 
     const move = shallowRef<Move | null>(null)
@@ -84,10 +90,14 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
         },
     })
 
+    // The accounts changed under the move (a sync, a mock switch): its indices point at others now.
+    const holds = (current: Move | null, group: Group): current is Move =>
+        current?.group === group &&
+        members(group)[current.from]?.id === current.id
     const preview = (group: Group) =>
         computed(() => {
             const current = move.value
-            return current?.group === group
+            return holds(current, group)
                 ? moveItem(members(group), current.from, current.to)
                 : members(group)
         })
@@ -120,19 +130,27 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
         landing.cancel()
         const current = move.value
         move.value = null
-        const accounts = current ? members(current.group) : []
-        const account = current && accounts[current.from]
-        if (!current || !account || current.from === current.to) return
+        if (
+            !current ||
+            !holds(current, current.group) ||
+            current.from === current.to
+        )
+            return
+        const accounts = members(current.group)
         vault.reorderGroup(
             moveItem(accounts, current.from, current.to).map((a) => a.id),
         )
         announcement.value = t('{name}, position {position} of {count}', {
-            name: account.nickname,
+            name: accounts[current.from]?.nickname,
             position: current.to + 1,
             count: accounts.length,
         })
     }
-    onScopeDispose(flush)
+    // Leaving the mode mid-drag drops nothing; a move already dropped or keyed still commits.
+    onScopeDispose(() => {
+        drag.cancel()
+        flush()
+    })
 
     function settle() {
         const current = move.value
