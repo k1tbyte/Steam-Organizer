@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, onScopeDispose, shallowReactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
@@ -7,24 +7,45 @@ import { useVaultSession } from '#features/vault'
 
 import type { ShellNavItem } from '../model'
 
+// The page each section was left on, while the shell lives.
+const left = shallowReactive(new Map<string, string>())
+
+/** Records where each section is left; the shell calls it once, and a lock, which unmounts the shell, clears it. */
+export function useSectionMemory() {
+    const route = useRoute()
+    // The path alone: every query key is an overlay (settings, a dialog, reorder), which a section must not reopen.
+    watch(
+        () => route.path,
+        (path) => {
+            if (route.meta.nav) left.set(route.meta.nav, path)
+        },
+        { immediate: true },
+    )
+    onScopeDispose(() => left.clear())
+}
+
 /** Rail and tab bar entries; pages mark theirs with `meta.nav`. */
 export function useShellNav() {
     const { t } = useI18n()
     const route = useRoute()
     const settings = useSettingsEntry()
 
+    // An entry reopens its section where it was left; pressed inside its section, it goes to the section's root.
+    const entry = (key: string, root: string) =>
+        route.meta.nav === key ? root : (left.get(key) ?? root)
+
     const main = computed<ShellNavItem[]>(() => [
         {
             key: 'accounts',
             label: t('Accounts'),
             icon: 'icon-[lucide--users]',
-            to: '/',
+            to: entry('accounts', '/'),
         },
         {
             key: 'backups',
             label: t('Backups'),
             icon: 'icon-[lucide--cloud]',
-            to: '/backups',
+            to: entry('backups', '/backups'),
         },
         {
             key: 'bots',
