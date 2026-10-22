@@ -66,7 +66,7 @@ const sizing = computed(() => SIZES[props.size])
         <span
             v-if="showRing && size !== 'sm'"
             v-bind="tip(t('Steam level'))"
-            class="badge absolute left-1/2 grid -translate-x-1/2 place-items-center rounded-full font-mono font-semibold"
+            class="badge absolute inset-x-0 mx-auto grid w-fit place-items-center rounded-full font-mono font-semibold"
             :class="sizing.badge">
             {{ level }}
         </span>

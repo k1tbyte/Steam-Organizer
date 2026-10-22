@@ -30,6 +30,7 @@ Tokens live in `packages/ui/src/theme.css`, shared surface classes in `packages/
 - The theme has no `white` or `black` utilities. Literal palette values belong in `theme.css` only (and fixed brand marks: Steam, Google, service logos; the Steam mark is `icon-[simple-icons--steam]`).
 - Icons: Lucide, plus brand marks from Simple Icons. Icons are 1em: size the control, not each icon.
 - A scoped `<style>` reads the custom properties behind the utilities (`var(--surf-bg)`, `var(--text-3)`, `var(--accent)`); colors are derived with `color-mix` or relative `oklch`, never written twice.
+- In a list item, center an absolute bit with `inset-x-0 mx-auto w-fit`, not `left-1/2 -translate-x-1/2`: that translate made each card's level badge a compositor layer, and the ring and pin over it followed (78 layers, 4ms of layerizing a frame on a fast scroll).
 - Line height is the font's own (`normal`), as in the mockups; set `leading-*` only on running text.
 
 ## Phones
