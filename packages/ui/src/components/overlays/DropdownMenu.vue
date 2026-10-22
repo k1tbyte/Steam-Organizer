@@ -11,8 +11,10 @@ import {
     DropdownMenuRoot,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
+    Slot,
 } from 'reka-ui'
-import { computed } from 'vue'
+import { computed, useId } from 'vue'
+import { useOpenedOnce } from '../../composables/useOpenedOnce'
 import { useOverlayGate } from '../../composables/useOverlayGate'
 import { ARROW_PADDING, FLOAT_GAP, type Placement, splitPlacement } from '../../placement'
 import FpScrollArea from '../display/layout/ScrollArea.vue'
@@ -52,6 +54,9 @@ const anchor = computed(() => splitPlacement(props.placement))
 
 const open = defineModel<boolean>('open', { default: false })
 useOverlayGate(open)
+const opened = useOpenedOnce(open)
+// Reka names the menu as its content mounts: after the trigger renders, on the first open.
+const menuId = useId()
 
 const groups = computed<DropdownGroup[]>(() => {
     const first = props.items[0]
@@ -69,10 +74,11 @@ const groups = computed<DropdownGroup[]>(() => {
 <template>
     <DropdownMenuRoot v-model:open="open">
         <DropdownMenuTrigger as-child :disabled="disabled">
-            <slot />
+            <Slot :aria-controls="open ? menuId : undefined"><slot /></Slot>
         </DropdownMenuTrigger>
-        <DropdownMenuPortal>
+        <DropdownMenuPortal v-if="opened">
             <DropdownMenuContent
+                :id="menuId"
                 :side="anchor.side"
                 :align="anchor.align"
                 :side-offset="sideOffset"

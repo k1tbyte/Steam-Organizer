@@ -7,6 +7,7 @@ import {
     PopoverRoot,
 } from 'reka-ui'
 import { computed, ref, useId, watch } from 'vue'
+import { useOpenedOnce } from '../../composables/useOpenedOnce'
 import { useTimer } from '../../composables/useTimer'
 import { type Placement, splitPlacement } from '../../placement'
 import { provideFormField, useFormField } from './FormField/form-field'
@@ -42,6 +43,7 @@ const visible = computed(() => {
     if (props.persistent) return true
     return !settled.value
 })
+const opened = useOpenedOnce(visible)
 
 const timer = useTimer()
 function armTimer() {
@@ -97,7 +99,7 @@ function keepFocus(event: Event) {
             @focusout="onFocusOut">
             <slot />
         </PopoverAnchor>
-        <PopoverPortal>
+        <PopoverPortal v-if="opened">
             <PopoverContent
                 :side="anchor.side"
                 :align="anchor.align"

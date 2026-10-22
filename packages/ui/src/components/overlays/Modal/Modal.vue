@@ -8,6 +8,7 @@ import {
     DialogTitle,
 } from 'reka-ui'
 import { computed, useTemplateRef } from 'vue'
+import { useOpenedOnce } from '../../../composables/useOpenedOnce'
 import { useOverlayGate } from '../../../composables/useOverlayGate'
 import { useMotionLevel } from '../../../motion'
 import ModalClose from './ModalClose.vue'
@@ -32,6 +33,7 @@ const props = withDefaults(
 
 const open = defineModel<boolean>('open', { default: false })
 useOverlayGate(open)
+const opened = useOpenedOnce(open)
 
 // Back cards adopt the top card's size; deeper cards hide.
 const LAYER_PEEK_PX = 16
@@ -158,7 +160,7 @@ function onWrapperPointerUp(event: PointerEvent) {
 
 <template>
     <DialogRoot v-model:open="open" :modal="modal">
-        <DialogPortal>
+        <DialogPortal v-if="opened">
             <DialogOverlay
                 class="group/overlay fixed inset-0 data-[state=closed]:animate-presence-hold"
                 :style="{ zIndex: `calc(var(--layer-overlay) + ${layer})` }">

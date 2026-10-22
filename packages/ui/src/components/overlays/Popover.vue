@@ -2,6 +2,7 @@
 import { PopoverArrow, PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka-ui'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useDesktopLayout } from '../../composables/useDesktopLayout'
+import { useOpenedOnce } from '../../composables/useOpenedOnce'
 import { useOverlayGate } from '../../composables/useOverlayGate'
 import { ARROW_PADDING, FLOAT_GAP, type Placement, splitPlacement } from '../../placement'
 import FpScrollArea from '../display/layout/ScrollArea.vue'
@@ -39,6 +40,7 @@ const maxHeight = computed(() =>
 
 const open = defineModel<boolean>('open', { default: false })
 useOverlayGate(open)
+const opened = useOpenedOnce(open)
 
 // Hydration renders the popover (the server has no layout); a later change waits
 // for close, so crossing `lg` never remounts a live panel.
@@ -71,7 +73,7 @@ function close() {
         <PopoverTrigger as-child>
             <slot />
         </PopoverTrigger>
-        <PopoverPortal>
+        <PopoverPortal v-if="opened">
             <PopoverContent
                 :side="anchor.side"
                 :align="anchor.align"

@@ -9,6 +9,7 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from 'reka-ui'
+import { useOpenedOnce } from '../../composables/useOpenedOnce'
 import { useOverlayGate } from '../../composables/useOverlayGate'
 
 const props = withDefaults(
@@ -24,6 +25,7 @@ const props = withDefaults(
 
 const open = defineModel<boolean>('open', { default: false })
 useOverlayGate(open)
+const opened = useOpenedOnce(open)
 
 // A non-dismissible sheet refuses every user close (swipe, outside press, Escape).
 function onOpenChange(value: boolean, details?: { cancel(): void }) {
@@ -37,7 +39,7 @@ function onOpenChange(value: boolean, details?: { cancel(): void }) {
         <DrawerTrigger v-if="$slots.trigger" as-child>
             <slot name="trigger" />
         </DrawerTrigger>
-        <DrawerPortal>
+        <DrawerPortal v-if="opened">
             <DrawerOverlay class="overlay bg-scrim fixed inset-0 layer-overlay" />
             <DrawerContent
                 class="drawer surface-pop fixed inset-x-0 bottom-0 layer-overlay flex max-h-[92dvh] flex-col rounded-t-2xl safe-px safe-pb"
