@@ -40,6 +40,18 @@
     --ease-spring: var(--ease-out);
 }
 
+/* Off zeroes what transitions read; a `transition-duration` on every element gave each one transition
+   data and doubled every style recalc. `--dur-cycle` stays for the loaders' Off pulse. */
+:root[data-motion="off"] {
+    --dur-press: 0.001ms;
+    --dur-fast: 0.001ms;
+    --dur-base: 0.001ms;
+    --dur-slow: 0.001ms;
+    --dur-reveal: 0.001ms;
+    --dur-stagger: 0s;
+    --default-transition-duration: 0.001ms;
+}
+
 /* A Simple move's travel: a hint of direction without carrying the page. */
 :root {
     --shift-travel: 1.5rem;

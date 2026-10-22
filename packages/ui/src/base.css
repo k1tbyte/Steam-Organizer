@@ -356,8 +356,8 @@
     }
 }
 
-/* Motion off: every state change lands at once. Loaders opt back into a gentle loop with
-   `motion-off:animate-pulse!`, whose variant outweighs this selector. */
+/* Motion off: every animation lands at once (transitions read zeroed tokens, motion.css). Loaders opt
+   back into a gentle loop with `motion-off:animate-pulse!`, whose variant outweighs this selector. */
 :root[data-motion="off"],
 :root[data-motion="off"] *,
 :root[data-motion="off"] *::before,
@@ -365,8 +365,6 @@
     animation-delay: 0s !important;
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-delay: 0s !important;
-    transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
 }
 
