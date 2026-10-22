@@ -3,8 +3,6 @@
 /* Required: Tailwind cannot scan this package without it. */
 @source "./components";
 
-@plugin "@iconify/tailwind4";
-
 /* Registered so scripts read the safe area as resolved pixels. */
 @property --safe-top {
     syntax: "<length>";

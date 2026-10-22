@@ -1,3 +1,4 @@
+import { fpIcons } from '@so/ui/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'wxt'
 
@@ -16,6 +17,7 @@ export default defineConfig({
     vite: () => ({
         plugins: [
             tailwindcss(),
+            fpIcons({ sources: ['../../packages/app/src'] }),
             {
                 // WXT rewrites :root to :host, but a shadow host is featureless: `:host[attr]` never matches, `:host([attr])` does.
                 name: 'shadow-host-selectors',

@@ -20,6 +20,7 @@
         "vue-router": "^5.4.0"
     },
     "devDependencies": {
+        "@so/ui": "workspace:*",
         "@tailwindcss/vite": "^4.3.3",
         "@wxt-dev/module-vue": "^1.0.3",
         "tailwindcss": "^4.3.3",

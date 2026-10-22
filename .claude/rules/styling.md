@@ -24,11 +24,11 @@ Tokens live in `packages/ui/src/theme.css`, shared surface classes in `packages/
 | safe area | `safe-p`, `safe-px`, `safe-pt`, ... on the fixed container | `env(safe-area-inset-*)` by hand |
 | touch | `touch-target` on compact and icon controls, `touch-row` on rows, `touch-control-sm` / `md` / `lg` (kit controls carry it); targets at least 24px | shrinking a hit area to fit the layout |
 | hover reveal | `pointer-fine:opacity-0 group-hover:opacity-100` | `opacity-0 hover:opacity-100`, which hides it from touch |
-| icons | `<FpIcon name="icon-[lucide--copy]" />`, the full class written literally | concatenated icon names, `@iconify/vue`, inlined SVG |
+| icons | `<FpIcon name="icon-[lucide--copy]" />`, the full name written literally (a build scan collects it) | concatenated icon names, `@iconify/vue`, a hand-written `<svg>`, an icon name as a class |
 
 - No token fits: stop and propose one in `theme.css`. Never fall back to a literal or an opacity guess; an opacity modifier on a token is for tints, not text levels.
 - The theme has no `white` or `black` utilities. Literal palette values belong in `theme.css` only (and fixed brand marks: Steam, Google, service logos; the Steam mark is `icon-[simple-icons--steam]`).
-- Icons: Lucide, plus brand marks from Simple Icons. Icons are 1em: size the control, not each icon.
+- Icons: Lucide, plus brand marks from Simple Icons. Icons are 1em: size the control, not each icon. `FpIcon` draws an inline `<svg>` (a CSS mask icon cost a paint effect and an image per glyph: 45% of a fast list scroll's paint).
 - A scoped `<style>` reads the custom properties behind the utilities (`var(--surf-bg)`, `var(--text-3)`, `var(--accent)`); colors are derived with `color-mix` or relative `oklch`, never written twice.
 - In a list item, center an absolute bit with `inset-x-0 mx-auto w-fit`, not `left-1/2 -translate-x-1/2`: that translate made each card's level badge a compositor layer, and the ring and pin over it followed (78 layers, 4ms of layerizing a frame on a fast scroll).
 - Line height is the font's own (`normal`), as in the mockups; set `leading-*` only on running text.

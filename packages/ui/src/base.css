@@ -106,6 +106,14 @@
 }
 
 @layer components {
+    /* FpIcon: Preflight makes an svg a centered block; a glyph is a 1em box on the text baseline. */
+    .fp-icon {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        vertical-align: baseline;
+    }
+
     /* Cards and panels on the stage: a real 1px edge, no shadow. */
     .surface {
         background: var(--surf-bg);

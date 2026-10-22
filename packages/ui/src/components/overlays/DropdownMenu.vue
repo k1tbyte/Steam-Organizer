@@ -18,6 +18,7 @@ import { useOpenedOnce } from '../../composables/useOpenedOnce'
 import { useOverlayGate } from '../../composables/useOverlayGate'
 import { ARROW_PADDING, FLOAT_GAP, type Placement, splitPlacement } from '../../placement'
 import FpScrollArea from '../display/layout/ScrollArea.vue'
+import FpIcon from '../display/media/Icon.vue'
 import { keyItems } from './dropdownKeys'
 
 export interface DropdownItem {
@@ -109,13 +110,13 @@ const groups = computed<DropdownGroup[]>(() => {
                                     ]"
                                     @select="item.onSelect?.()">
                                     <span v-if="item.checked !== undefined" class="flex w-4 shrink-0 text-accent-ink">
-                                        <DropdownMenuItemIndicator class="icon-[lucide--check]" aria-hidden="true" />
+                                        <DropdownMenuItemIndicator as-child><FpIcon name="icon-[lucide--check]" /></DropdownMenuItemIndicator>
                                     </span>
-                                    <span
+                                    <FpIcon
                                         v-else-if="item.icon"
+                                        :name="item.icon"
                                         class="shrink-0"
-                                        :class="[item.icon, item.description && 'mt-0.5 text-fg-3']"
-                                        aria-hidden="true" />
+                                        :class="item.description && 'mt-0.5 text-fg-3'" />
                                     <span v-if="item.description" class="flex min-w-0 flex-1 flex-col">
                                         <span class="truncate text-fg-1">{{ item.label }}</span>
                                         <span class="text-12 text-fg-3">{{ item.description }}</span>

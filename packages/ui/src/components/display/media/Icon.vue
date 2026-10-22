@@ -1,9 +1,9 @@
 <script setup lang="ts">
-defineProps<{
-    name: string
-}>()
+import { icons } from './icons'
+
+defineProps<{ name: string }>()
 </script>
 
 <template>
-    <span :class="name" aria-hidden="true" />
+    <svg class="fp-icon" :viewBox="icons[name]?.viewBox" aria-hidden="true" v-html="icons[name]?.body" />
 </template>
