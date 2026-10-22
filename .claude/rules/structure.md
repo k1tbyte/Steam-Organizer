@@ -39,7 +39,7 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | modal, drawer, a section or id inside one | `useQueryOverlay` (Routes below) |
 | loading, empty, error states | `FpAsyncView` fed by one `status` |
 | sample data for a block without a source | `defineMock` + `useMock` (`core/mock/README.md`) |
-| client state that survives a reload | `readStored` / `writeStored` with a key constant in `core/storage.ts`; `localStorage` fails lint |
+| client state that survives a reload | `readStored` / `writeStored` with a key constant in `core/storage.ts`; `localStorage` fails lint. A store writes in its actions, never from a `watch`: Vue ties a watcher to the component whose setup first used the store and keeps that page alive |
 | failure | `reportError(error, scope, context?)`, the only `console.error` (`noConsole` fails lint) |
 | debounce, interval | `useTimer` from `@so/ui/useTimer` |
 | a screen's title, count, status, search and actions in the shell topbar | `PageTopbar` with its `status`, `center`, `actions`, `back` slots; the route sets `meta.nav`. The parts stay mounted while their page is hidden, so a global listener in one checks `usePageActive()` |

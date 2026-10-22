@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 
 import {
     ACCOUNTS_CARD_FIELDS_STORAGE_KEY,
@@ -16,23 +16,22 @@ export const useCardFieldsStore = defineStore('accounts-card-fields', () => {
         parseCardFlags(readStored(ACCOUNTS_CARD_FIELDS_STORAGE_KEY)),
     )
 
-    watch(
-        state,
-        (flags) =>
-            writeStored(
-                ACCOUNTS_CARD_FIELDS_STORAGE_KEY,
-                JSON.stringify(flags),
-            ),
-        { deep: true },
-    )
+    // Saved by each action: a watcher made in the first caller's setup would keep that page alive.
+    const save = () =>
+        writeStored(
+            ACCOUNTS_CARD_FIELDS_STORAGE_KEY,
+            JSON.stringify(state.value),
+        )
 
     return {
         flags: computed(() => state.value),
         toggle(key: keyof CardFlags) {
             state.value[key] = !state.value[key]
+            save()
         },
         reset() {
             state.value = { ...DEFAULT_CARD_FLAGS }
+            save()
         },
     }
 })

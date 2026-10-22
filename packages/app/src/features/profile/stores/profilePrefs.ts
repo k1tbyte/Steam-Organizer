@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 
 import {
     PROFILE_ID_FORMAT_STORAGE_KEY,
@@ -21,24 +21,21 @@ export const useProfilePrefsStore = defineStore('profile-prefs', () => {
         parseCollapsedSections(readStored(PROFILE_SECTIONS_STORAGE_KEY)),
     )
 
-    watch(idFormat, (format) =>
-        writeStored(PROFILE_ID_FORMAT_STORAGE_KEY, format),
-    )
-    watch(
-        collapsed,
-        (sections) =>
-            writeStored(PROFILE_SECTIONS_STORAGE_KEY, JSON.stringify(sections)),
-        { deep: true },
-    )
+    // Saved by its action: a watcher made in the first caller's setup would keep that page alive.
 
     return {
         idFormat: computed(() => idFormat.value),
         collapsed: computed(() => collapsed.value),
         setIdFormat(format: SteamIdDisplayFormat) {
             idFormat.value = format
+            writeStored(PROFILE_ID_FORMAT_STORAGE_KEY, format)
         },
         toggleSection(section: ProfileSection) {
             collapsed.value[section] = !collapsed.value[section]
+            writeStored(
+                PROFILE_SECTIONS_STORAGE_KEY,
+                JSON.stringify(collapsed.value),
+            )
         },
     }
 })
