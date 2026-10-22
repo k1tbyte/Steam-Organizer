@@ -41,7 +41,8 @@ const props = withDefaults(
 
 const emit = defineEmits<{ 'update:modelValue': [value: T] }>()
 
-// Reka does not register closed or server-rendered menu items.
+// The trigger draws the selected option from `items`: reka learns it only after mounting the closed list
+// into a fragment, and has no icon.
 const normalizedItems = computed(() => props.items.map(toOption))
 const selectedOption = computed(() => normalizedItems.value.find((option) => option.value === props.modelValue))
 const leadingIcon = computed(() => props.icon ?? selectedOption.value?.icon)
