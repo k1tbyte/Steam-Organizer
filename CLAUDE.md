@@ -18,6 +18,7 @@ Steam account manager: encrypted vault, Steam profiles, Steam Guard codes, Drive
 - `pnpm typecheck` - vue-tsc in every package
 - `pnpm test` - Vitest, including the UI contract (`tests/ui/rules.ts`; `baseline.json` counts only go down)
 - `pnpm arch` - dependency boundaries (`tests/arch/dependency-cruiser.cjs`)
+- `pnpm perf:build` - production build with mocks forced on, into `artifacts/perf/dist`; measure it with the `web-guidelines` skill scripts (`serve-dist.mjs`, `scroll-trace.mjs`)
 
 ## Rules
 
@@ -31,6 +32,8 @@ Steam account manager: encrypted vault, Steam profiles, Steam Guard codes, Drive
 | `ui-kit.md`, `ui-modal.md` | `packages/ui` internals: color derivation, components, modal stack |
 | `appearance.md` | the nine appearance knobs, `core/appearance`, background image (`core/appearance/**`, the Appearance section) |
 | `testing.md` | unit test placement and mocking |
+
+The rules hold this app's constraints; the `web-guidelines` skill holds the general web lessons behind them (rendering and mount cost, virtual lists, drag and drop, motion, overlays, measuring). Read its topic before building a list, a gesture, an animation or an overlay.
 
 ## Design-first workflow
 
