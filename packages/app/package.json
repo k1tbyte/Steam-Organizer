@@ -2,8 +2,13 @@
     "name": "@so/app",
     "private": true,
     "type": "module",
+    "sideEffects": [
+        "**/*.css"
+    ],
     "exports": {
         ".": "./src/index.ts",
+        "./popup": "./src/popup.ts",
+        "./autofill": "./src/autofill.ts",
         "./styles.css": "./src/styles.css"
     },
     "imports": {

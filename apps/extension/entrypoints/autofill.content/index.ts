@@ -1,6 +1,6 @@
 import '@so/app/styles.css'
 
-import { mountAutofill } from '@so/app'
+import { mountAutofill } from '@so/app/autofill'
 
 import { contentPlatform } from '../../utils/platform'
 

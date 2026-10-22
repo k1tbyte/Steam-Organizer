@@ -1,6 +1,6 @@
 # quick-access
 
-The extension's toolbar popup: an account palette on the vault, and the account picker the autofill UI reuses. `mountPopup` mounts `QuickAccessApp` with no router; the shell gives it a `Platform` whose `openApp` opens the full app and closes the popup.
+The extension's toolbar popup: an account palette on the vault, and the account picker the autofill UI reuses. `mountPopup` (`@so/app/popup`) mounts `QuickAccessApp` with no router; the shell gives it a `Platform` whose `openApp` opens the full app and closes the popup.
 
 - `index.ts` exports `QuickAccessApp`, the picker parts (`PickerList`, `PickerRow`, `LISTBOX_ID`) and the view-model pieces autofill shares: `useAccountPicker`, `useAccountPassword`, `useFillFeedback`.
 - The vault session picks the screen (`usePopupFrame`): accounts, locked (master password, same verifier as the unlock screen) or setup (no vault, opens the app).

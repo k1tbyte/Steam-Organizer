@@ -2,6 +2,9 @@
     "name": "@so/ui",
     "private": true,
     "type": "module",
+    "sideEffects": [
+        "**/*.css"
+    ],
     "exports": {
         ".": "./src/index.ts",
         "./accents": "./src/accents.ts",

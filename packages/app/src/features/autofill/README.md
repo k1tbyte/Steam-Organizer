@@ -1,6 +1,6 @@
 # autofill
 
-The UI the extension injects into Steam login pages: a button in the login field that opens the account picker, and a prompt above the Steam Guard boxes. `mountAutofill` mounts `AutofillApp` in a content script's shadow root, which carries the appearance attributes (`host`).
+The UI the extension injects into Steam login pages: a button in the login field that opens the account picker, and a prompt above the Steam Guard boxes. `mountAutofill` (`@so/app/autofill`) mounts `AutofillApp` in a content script's shadow root, which carries the appearance attributes (`host`).
 
 - `services/classify.ts` decides what a page asks for from extracted field attributes: a login (the first visible password field and the text field before it) or a Guard code (a run of four or more single-character boxes, or one field hinted as a one-time code). Guard wins over a visible login form. Pure, node-tested.
 - `services/placement.ts` puts the floats: below the login field or above the Guard boxes, flipping when the side is too short, kept inside the viewport. Pure, node-tested.

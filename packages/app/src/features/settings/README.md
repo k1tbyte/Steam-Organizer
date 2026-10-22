@@ -8,7 +8,7 @@ Desktop: a 960x660 window over the app (`?settings=<section>`, `useQueryOverlay`
 - Security is the one section with separate phone markup (`SecurityMobile`, the mockup's grouped cards); the others reflow through `FpFormRow` (`inline` keeps a switch beside its label on phones).
 - Two dialogs bound to an action in flight, so local state and not URL overlays: `dialogs/password/` (Change master password, opened from Security) and `dialogs/reset/` (Reset vault in three steps and a 1.6 s hold, opened from Vault). Each restarts its flow when it opens.
 - `services/` holds the framework-free rules with tests: `passwordChange` (strength comes from `core/passwordStrength.ts`, shared with onboarding), `vaultReset`, `fieldSecrecy`.
-- The shell and features that link into a section call `useSettingsEntry()` (`open(section?)`); the facade exports `SettingsHost`, `useSettingsEntry`, `settingsRoutes` and `SectionKey`.
+- The shell and features that link into a section call `useSettingsEntry()` (`open(section?)`); the facade exports `SettingsHost`, `useSettingsEntry`, `settingsRoutes` and `SectionKey`. `SettingsHost` loads the window, sections included, as its own chunk on the first desktop open.
 
 ## Mocks
 

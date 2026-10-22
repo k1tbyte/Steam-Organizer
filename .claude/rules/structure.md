@@ -5,7 +5,7 @@ paths:
 
 # App structure
 
-`packages/app` is the one Vue app; shells (`apps/web`, `apps/extension`) only call `mountApp` (the extension also `mountPopup` and `mountAutofill`) with their `Platform` and, for the app, router history. The app never imports a shell, and branches on `usePlatform()` (`kind`, `fetch === null` on web), never on build flags.
+`packages/app` is the one Vue app; shells (`apps/web`, `apps/extension`) only call `mountApp` (the extension also `mountPopup` and `mountAutofill`, each its own entry, `@so/app/popup` and `@so/app/autofill`, so the popup never loads the app) with their `Platform` and, for the app, router history. The app never imports a shell, and branches on `usePlatform()` (`kind`, `fetch === null` on web), never on build flags.
 
 ## Feature slices
 
@@ -28,6 +28,7 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 ## Imports
 
 - Subpath imports from `package.json#imports`: `#core`, `#features/<name>`, `#components/<File>.vue`. Inside a feature or `core/`, relative paths.
+- `@so/app` and `@so/ui` declare `sideEffects` for CSS only, so an import from a facade or the kit keeps just what is used: a module never relies on running at import.
 - `core/` (`core/index.ts`) is shared infra and never imports features or components. Code moves there when a second feature needs it. A `services/` file imports a Vue-free core module by path.
 - App-root `components/` holds app-wide components with no feature owner (`MockPanel`, `PageTopbar`, `NotFound`).
 - Dependencies point one way, no cycles (`pnpm arch`).

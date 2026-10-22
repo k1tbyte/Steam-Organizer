@@ -99,6 +99,7 @@ export { default as FpTooltipHost } from './components/overlays/TooltipHost.vue'
 export { useCenterActive } from './composables/useCenterActive'
 export { useDesktopLayout } from './composables/useDesktopLayout'
 export { useHold } from './composables/useHold'
+export { useOpenedOnce } from './composables/useOpenedOnce'
 export { provideOverlayGate } from './composables/useOverlayGate'
 export {
     FREE,
