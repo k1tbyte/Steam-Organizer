@@ -4,6 +4,8 @@ import { onKeyStroke } from '@vueuse/core'
 import { useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { usePageActive } from '#core'
+
 import { useAccountsFilters } from '../../composables/useAccountsFilters'
 
 const { t } = useI18n()
@@ -11,8 +13,10 @@ const desktop = useDesktopLayout()
 const { query, setQuery, searchField, fieldItems } = useAccountsFilters()
 
 const input = useTemplateRef('input')
+// Stays mounted while Accounts is hidden: the shortcut belongs to the current page only.
+const active = usePageActive()
 onKeyStroke('k', (event) => {
-    if (!event.metaKey && !event.ctrlKey) return
+    if (!active.value || (!event.metaKey && !event.ctrlKey)) return
     event.preventDefault()
     input.value?.focus()
 })

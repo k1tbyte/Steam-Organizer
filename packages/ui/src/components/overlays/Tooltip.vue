@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { TooltipArrow, TooltipContent, TooltipPortal, TooltipRoot, TooltipTrigger } from 'reka-ui'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { useOverlayGate } from '../../composables/useOverlayGate'
 import { ARROW_PADDING, FLOAT_GAP, type Placement, splitPlacement } from '../../placement'
 import Kbd from '../display/Kbd.vue'
 
@@ -23,11 +24,13 @@ const props = withDefaults(
 )
 
 const anchor = computed(() => splitPlacement(props.placement))
+const open = ref(false)
+useOverlayGate(open)
 </script>
 
 <!-- Portaled popper motion uses the global fp-float styles. -->
 <template>
-    <TooltipRoot :delay-duration="delayDuration" :disabled="disabled || (!text && !$slots.content)">
+    <TooltipRoot v-model:open="open" :delay-duration="delayDuration" :disabled="disabled || (!text && !$slots.content)">
         <TooltipTrigger as-child v-bind="$attrs" :aria-label="label ? text : undefined">
             <slot />
         </TooltipTrigger>

@@ -42,7 +42,7 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | client state that survives a reload | `readStored` / `writeStored` with a key constant in `core/storage.ts`; `localStorage` fails lint |
 | failure | `reportError(error, scope, context?)`, the only `console.error` (`noConsole` fails lint) |
 | debounce, interval | `useTimer` from `@so/ui/useTimer` |
-| a screen's title, count, status, search and actions in the shell topbar | `PageTopbar` with its `status`, `center`, `actions`, `back` slots; the route sets `meta.nav` |
+| a screen's title, count, status, search and actions in the shell topbar | `PageTopbar` with its `status`, `center`, `actions`, `back` slots; the route sets `meta.nav`. The parts stay mounted while their page is hidden, so a global listener in one checks `usePageActive()` |
 | the page's scroll element (a virtual list, scroll to top) | `useScrollRoot()` from `#core`: each page has its own; a section root (`meta.resident`) keeps its offset while hidden, any other page starts at the top |
 | whether the page is current (a resident page stays mounted behind another) | `usePageActive()` from `#core`: a ticker pauses on it; `useQueryOverlay`, `PageTopbar` and the kit overlays already follow it |
 | a strip pinned above the page's scroll (filters) | the route's `header` named view (`components: { default, header }`): `ShellLayer` renders it outside the scroller, so it moves with its page and nothing scrolls under it |

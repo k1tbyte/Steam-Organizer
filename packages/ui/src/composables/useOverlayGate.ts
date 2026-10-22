@@ -10,8 +10,9 @@ export function provideOverlayGate(shown: Readonly<Ref<boolean>>) {
 
 export function useOverlayGate(open: Ref<boolean>) {
     const shown = inject(gateKey, null)
+    // Also catches an open that lands after the hide (a tooltip's delay timer).
     if (shown)
-        watch(shown, (on) => {
-            if (!on) open.value = false
+        watch([shown, open], ([on, isOpen]) => {
+            if (!on && isOpen) open.value = false
         })
 }

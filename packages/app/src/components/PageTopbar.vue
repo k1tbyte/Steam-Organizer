@@ -16,34 +16,31 @@ const backTarget = computed(() =>
 const owns = usePageActive()
 </script>
 
-<!-- Renders nothing in place: each part lands in the shell's topbar once the shell has mounted it. -->
+<!-- Each part sits in the shell's topbar while the page is current, and waits mounted in the hidden
+     holder otherwise: a switch moves it instead of mounting it again. -->
 <template>
-    <Teleport v-if="owns && $slots.back && backTarget" :to="backTarget">
-        <slot name="back" />
-    </Teleport>
-    <Teleport v-if="owns && targets.title.value" :to="targets.title.value">
-        <h1
-            v-if="title"
-            class="font-bold text-26 text-fg-1 lg:font-semibold lg:text-15 lg:tracking-title">
-            {{ title }}
-        </h1>
-        <span v-if="count" class="font-mono text-13 text-fg-3">
-            {{ count }}
-        </span>
-    </Teleport>
-    <Teleport
-        v-if="owns && $slots.status && targets.status.value"
-        :to="targets.status.value">
-        <slot name="status" />
-    </Teleport>
-    <Teleport
-        v-if="owns && $slots.center && targets.center.value"
-        :to="targets.center.value">
-        <slot name="center" />
-    </Teleport>
-    <Teleport
-        v-if="owns && $slots.actions && targets.actions.value"
-        :to="targets.actions.value">
-        <slot name="actions" />
-    </Teleport>
+    <div hidden>
+        <Teleport v-if="$slots.back" :to="backTarget" :disabled="!owns || !backTarget">
+            <slot name="back" />
+        </Teleport>
+        <Teleport :to="targets.title.value" :disabled="!owns || !targets.title.value">
+            <h1
+                v-if="title"
+                class="font-bold text-26 text-fg-1 lg:font-semibold lg:text-15 lg:tracking-title">
+                {{ title }}
+            </h1>
+            <span v-if="count" class="font-mono text-13 text-fg-3">
+                {{ count }}
+            </span>
+        </Teleport>
+        <Teleport v-if="$slots.status" :to="targets.status.value" :disabled="!owns || !targets.status.value">
+            <slot name="status" />
+        </Teleport>
+        <Teleport v-if="$slots.center" :to="targets.center.value" :disabled="!owns || !targets.center.value">
+            <slot name="center" />
+        </Teleport>
+        <Teleport v-if="$slots.actions" :to="targets.actions.value" :disabled="!owns || !targets.actions.value">
+            <slot name="actions" />
+        </Teleport>
+    </div>
 </template>
