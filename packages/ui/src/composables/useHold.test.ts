@@ -74,6 +74,21 @@ describe('useHold', () => {
         expect(onComplete).not.toHaveBeenCalled()
     })
 
+    it('starts a panning touch late, so a swipe never shows it', () => {
+        const touch = { button: 0, pointerType: 'touch' } as PointerEvent
+        const { holding, handlers } = setup({ pans: true })
+        handlers.onPointerdown(touch)
+        expect(holding.value).toBe(false)
+        handlers.onPointercancel()
+        vi.advanceTimersByTime(1000)
+        expect(holding.value).toBe(false)
+        handlers.onPointerdown(touch)
+        vi.advanceTimersByTime(100)
+        expect(holding.value).toBe(true)
+        handlers.onPointerdown(press)
+        expect(holding.value).toBe(true)
+    })
+
     it('stops when its scope ends', () => {
         const onComplete = vi.fn()
         const { handlers, scope } = setup({ duration: 1000, onComplete })

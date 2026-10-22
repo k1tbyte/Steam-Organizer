@@ -15,6 +15,8 @@ const TRIGGER_INSET_PX = 7
 /** Upper bounds of the floats, for choosing a side and keeping them on screen. */
 const PICKER_SIZE = { width: 340, height: 290 }
 const GUARD_SIZE = { width: 348, height: 48 }
+// The mockup's clearance between the Guard prompt and the code boxes.
+const GUARD_GAP_PX = 38
 
 /** The injected UI as a whole: what the page asks for, where the controls sit, and what a fill does. */
 export function useAutofill() {
@@ -98,6 +100,7 @@ export function useAutofill() {
                 placeFloat(anchor.value, GUARD_SIZE, viewportSize.value, {
                     align: 'center',
                     prefer: 'above',
+                    gap: GUARD_GAP_PX,
                 }),
             ),
         ),

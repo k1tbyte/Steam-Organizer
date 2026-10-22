@@ -14,7 +14,7 @@ import { useGuardClock } from './useGuardClock'
 /** One account's Steam Guard control: masked until held, a countdown to the next code, copy. */
 export function useGuardCode(seed: MaybeRefOrGetter<string>) {
     const clock = useGuardClock()
-    const { holding, handlers, stop } = useHold()
+    const { holding, handlers, stop } = useHold({ pans: true })
     const { copied, copy, reset } = useCopyFeedback()
     // A recycled list card hands this control to another account mid-hold.
     watch(

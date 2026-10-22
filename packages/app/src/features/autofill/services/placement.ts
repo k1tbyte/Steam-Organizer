@@ -19,9 +19,10 @@ export interface FloatPlacement {
 interface FloatOptions {
     align: 'end' | 'center'
     prefer: 'below' | 'above'
+    /** Pixels between the anchor and the float. */
+    gap?: number
 }
 
-const GAP = 6
 const MARGIN = 8
 
 /** Puts a float of at most `size` next to `anchor`, flipping to the other side when its own side is too short. */
@@ -29,9 +30,9 @@ export function placeFloat(
     anchor: Box,
     size: Size,
     viewport: Size,
-    { align, prefer }: FloatOptions,
+    { align, prefer, gap = 6 }: FloatOptions,
 ): FloatPlacement {
-    const needed = size.height + GAP
+    const needed = size.height + gap
     const fitsBelow = viewport.height - (anchor.top + anchor.height) >= needed
     const fitsAbove = anchor.top >= needed
     const below =
@@ -47,8 +48,8 @@ export function placeFloat(
     )
 
     return below
-        ? { left, top: anchor.top + anchor.height + GAP, bottom: null }
-        : { left, top: null, bottom: viewport.height - anchor.top + GAP }
+        ? { left, top: anchor.top + anchor.height + gap, bottom: null }
+        : { left, top: null, bottom: viewport.height - anchor.top + gap }
 }
 
 /** The corner spot inside a field for a square control of `size`, vertically centered. */

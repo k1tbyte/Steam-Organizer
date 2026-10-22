@@ -27,7 +27,7 @@ const { holding, handlers, copied, shown, remaining, copyCode } = useGuardCode(
         <button
             v-bind="{ ...handlers, ...tip(t('Hold to show the code')) }"
             type="button"
-            class="flex h-full cursor-pointer touch-none items-center gap-1.75 pr-2.5 pl-2 text-fg-1 transition-colors duration-fast select-none"
+            class="flex h-full cursor-pointer touch-pan-y items-center gap-1.75 pr-2.5 pl-2 text-fg-1 transition-colors duration-fast select-none"
             :class="holding && 'bg-accent-soft'">
             <FpIcon
                 :name="holding ? 'icon-[lucide--eye]' : 'icon-[lucide--shield-check]'"

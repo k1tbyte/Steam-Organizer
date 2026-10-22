@@ -42,6 +42,16 @@ describe('placeFloat', () => {
         ).toEqual({ left: 90, top: null, bottom: 306 })
     })
 
+    it('keeps its own gap from the anchor, on either side', () => {
+        const options = { align: 'center', prefer: 'above', gap: 38 } as const
+        expect(
+            placeFloat({ ...field, top: 400 }, size, viewport, options).bottom,
+        ).toBe(338)
+        expect(
+            placeFloat({ ...field, top: 300 }, size, viewport, options).top,
+        ).toBe(382)
+    })
+
     it('falls back below when a preferred-above float has no room above', () => {
         const high = { ...field, top: 20 }
         expect(
