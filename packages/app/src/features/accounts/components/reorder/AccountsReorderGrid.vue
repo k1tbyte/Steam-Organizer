@@ -12,9 +12,10 @@ const list = useTemplateRef('list')
 const grid = useReorderGrid(list)
 </script>
 
-<!-- Cards key by account at their slot's offset, so a move slides them instead of handing nodes over (AccountsGrid recycles).
-     A card is inert with a grip where its pin was: a mouse drags it from anywhere, touch from the grip, keys move the focused card.
-     No text selection: Safari starts one despite the prevented press. -->
+<!-- Cards key by slot at their place's offset: one that stays on screen keeps its node and slides when the order moves,
+     one that comes in takes the node of one that left.
+     A cover over each card takes its presses, a grip sits where its pin was: a mouse drags a card from anywhere, touch from the grip,
+     keys move the focused card. No text selection: Safari starts one despite the prevented press. -->
 <template>
     <div class="px-u-6 pb-u-6 select-none max-lg:px-4 max-lg:pb-4">
         <div ref="list" class="relative" :style="{ height: `${grid.totalSize.value}px` }">
@@ -28,17 +29,20 @@ const grid = useReorderGrid(list)
             <!-- biome-ignore lint/a11y/useSemanticElements: a <button> may not hold the card's links -->
             <div
                 v-for="cell in grid.cells.value"
-                :key="cell.account.id"
+                :key="cell.slot"
+                :data-id="cell.account.id"
                 role="button"
                 tabindex="0"
                 :aria-label="t('Move {name}', { name: cell.account.nickname })"
                 class="cell absolute top-0 left-0"
-                :class="cell.state"
+                :class="[cell.state, cell.entered && 'entered']"
                 :style="{ width: grid.cardWidth.value, translate: `${cell.x}px ${cell.y}px` }"
                 @pointerdown="grid.press($event, cell, false)"
-                @keydown="grid.nudge($event, cell.account.id)">
+                @keydown="grid.nudge($event, cell.account.id)"
+                @focusin="grid.focusIn"
+                @focusout="grid.focusOut">
                 <AccountCard
-                    inert
+                    :inert="grid.keyboard.value"
                     hide-pin
                     :account="cell.account"
                     :flags="grid.flags.value"
@@ -62,6 +66,19 @@ const grid = useReorderGrid(list)
 .cell {
     cursor: grab;
     transition: translate var(--dur-base) var(--ease-out);
+}
+
+/* A node handed to another account jumps to its place, landing or not. */
+.cell.entered {
+    transition: none;
+}
+
+/* Takes the card's presses: `inert` or `pointer-events: none` on the cards cost Chrome a compositor layer per card part. */
+.cell::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
 }
 
 /* The ring follows the card's radius, not the cell's square box. */

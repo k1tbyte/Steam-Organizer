@@ -15,6 +15,7 @@ import { useScrollRoot, useScrollTop } from '#core'
 
 import type { Account } from '../../model'
 import { cornerInsetCss } from '../../services/cardLayout'
+import { assignSlots } from '../../services/listSlots'
 import { dropIndex, groupGeometry, moveItem } from '../../services/reorder'
 import { useAccountRows } from '../useAccountRows'
 import { useVaultAccounts } from '../useVaultAccounts'
@@ -29,6 +30,10 @@ export interface ReorderCell {
     x: number
     y: number
     state: 'rest' | 'lifted' | 'landing'
+    /** The render key: a node that held another account takes this one. */
+    slot: number
+    /** Not on screen last render: its node, if reused, must jump to its place, not slide. */
+    entered: boolean
 }
 /** A move the grid shows before the vault holds it: a drag or arrow presses, then the landing. */
 interface Move {
@@ -40,7 +45,7 @@ interface Move {
 
 const clamp = (value: number, max: number) => Math.min(max, Math.max(0, value))
 
-/** The vault order as cards keyed by account: a dragged card follows the pointer while the rest make room at its slot; arrows on a card's handle move it too.
+/** The vault order as cards that keep their node while on screen: a dragged card follows the pointer while the rest make room at its slot; arrows on a focused card move it too.
  *  Cells keep the vault order in the DOM (tab order; a node Vue moves loses its transition and focus), so a move commits only once it has landed. */
 export function useReorderGrid(list: Ref<HTMLElement | null>) {
     const { t } = useI18n()
@@ -118,16 +123,9 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
         const accounts = current ? members(current.group) : []
         const account = current && accounts[current.from]
         if (!current || !account || current.from === current.to) return
-        const focused = document.activeElement
         vault.reorderGroup(
             moveItem(accounts, current.from, current.to).map((a) => a.id),
         )
-        if (focused instanceof HTMLElement && list.value?.contains(focused))
-            nextTick(
-                () =>
-                    focused.isConnected &&
-                    focused.focus({ preventScroll: true }),
-            )
         announcement.value = t('{name}, position {position} of {count}', {
             name: account.nickname,
             position: current.to + 1,
@@ -159,11 +157,13 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
         if (pending !== null) dwell.arm(DWELL_MS, settle)
     })
 
+    // Cells take the nodes of cells that left, like AccountsGrid's rows; each render carries the last assignment forward.
+    let slots = new Map<string, number>()
     const view = computed(() => {
         const { columns, cellWidth, gap } = grid.cell.value
         const landingId = move.value?.id
         const lifted = drag.dragging.value
-        const cells: ReorderCell[] = []
+        const cells: Omit<ReorderCell, 'slot' | 'entered'>[] = []
         const headings: { group: Group; y: number; spaced: boolean }[] = []
         for (const item of grid.items.value) {
             const y = item.start - grid.margin.value
@@ -201,7 +201,19 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
                 (rank.value.get(a.account.id) ?? 0) -
                 (rank.value.get(b.account.id) ?? 0),
         )
-        return { cells, headings }
+        const previous = slots
+        slots = assignSlots(
+            previous,
+            cells.map((cell) => cell.account.id),
+        )
+        return {
+            cells: cells.map((cell) => ({
+                ...cell,
+                slot: slots.get(cell.account.id) ?? 0,
+                entered: !previous.has(cell.account.id),
+            })),
+            headings,
+        }
     })
 
     // Keeps a card moved by keys on screen: its slot is arithmetic, the node may still be sliding.
@@ -238,6 +250,38 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
         reveal(current.group, to)
     }
 
+    // Cards go inert, out of Tab, only while the keyboard is in the grid: inert content costs Chrome a compositor layer per card part.
+    const keyboard = shallowRef(false)
+    function focusIn(event: FocusEvent) {
+        const cell = event.currentTarget as HTMLElement
+        const target = event.target as HTMLElement
+        keyboard.value = target.matches(':focus-visible')
+        // Shift+Tab from below lands on a card's own control: the cell is the card's one stop.
+        if (keyboard.value && target !== cell) cell.focus()
+    }
+    function focusOut(event: FocusEvent) {
+        if (!list.value?.contains(event.relatedTarget as Node | null))
+            keyboard.value = false
+    }
+    // Vue moves nodes on a commit or a long scroll, which drops their focus: the focused account gets it back while on screen.
+    // One that left is blurred first: its node is about to show another account.
+    watch(view, ({ cells }) => {
+        const active = document.activeElement
+        if (!(active instanceof HTMLElement) || !list.value?.contains(active))
+            return
+        const id = active.closest<HTMLElement>('[data-id]')?.dataset.id
+        if (!id || !cells.some((cell) => cell.account.id === id))
+            return active.blur()
+        nextTick(() => {
+            if (!list.value?.contains(document.activeElement))
+                list.value
+                    ?.querySelector<HTMLElement>(
+                        `[data-id="${CSS.escape(id)}"]`,
+                    )
+                    ?.focus({ preventScroll: true })
+        })
+    })
+
     // Capture, so ReorderBar's Esc, which leaves the mode, sees it handled.
     useEventListener(
         window,
@@ -264,5 +308,8 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
             drag.press(event, cell.account.id, cell, handle)
         },
         nudge,
+        keyboard,
+        focusIn,
+        focusOut,
     }
 }

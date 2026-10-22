@@ -1,5 +1,5 @@
-/** Keeps every row still in range in its slot and gives rows that came in the slots of rows that left:
- *  a slot is the render key, so scrolling patches a row's nodes with new accounts instead of remounting them. */
+/** Keeps every key still in range in its slot and gives keys that came in the slots of keys that left:
+ *  a slot is the render key, so scrolling patches nodes with new accounts instead of remounting them (rows, reorder cells). */
 export function assignSlots(
     previous: ReadonlyMap<string, number>,
     keys: readonly string[],
