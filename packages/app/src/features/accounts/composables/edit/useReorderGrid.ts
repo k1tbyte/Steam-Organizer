@@ -149,7 +149,7 @@ export function useReorderGrid(
             count: previews[group].value.length,
         })
 
-    /** `together`: a picked card brings the rest of the selection. */
+    /** `together`: a picked card brings the picks of its group. */
     function begin(id: string, together: boolean): Move | null {
         const picked = selection.ids.value
         const withPicked = together && picked.has(id)
@@ -166,9 +166,12 @@ export function useReorderGrid(
                     ids.push(account.id)
                 }
             const lead = ids.indexOf(id)
+            if (lead < 0) continue
+            // A stack of the whole group, or all of it but one card, moves nothing the held card alone couldn't.
+            if (from.length > 1 && from.length >= source.length - 1)
+                return begin(id, false)
             const home = (from[lead] ?? 0) - lead
-            if (lead >= 0)
-                return { id, group, source, ids, from, home, to: home }
+            return { id, group, source, ids, from, home, to: home }
         }
         return null
     }
@@ -206,9 +209,14 @@ export function useReorderGrid(
     onScopeDispose(() => {
         drag.cancel()
         flush()
-        selection.clear()
+        selection.show([])
     })
-    watch(() => members(selection.group.value), selection.retain)
+    watch(
+        [pinned, rest],
+        ([shownPinned, shownRest]) =>
+            selection.show([...shownPinned, ...shownRest]),
+        { immediate: true },
+    )
 
     function settle() {
         const current = move.value
@@ -345,7 +353,9 @@ export function useReorderGrid(
         }[event.key]
         if (step === undefined || drag.held.value) return
         event.preventDefault()
-        if (move.value?.id !== id || move.value.ids.length > 1) flush()
+        const own = move.value
+        if (own?.id !== id || own.ids.length > 1 || !holds(own, own.group))
+            flush()
         const current = move.value ?? begin(id, false)
         if (!current) return
         const to = clamp(
@@ -421,12 +431,10 @@ export function useReorderGrid(
         pick(event: MouseEvent | KeyboardEvent, account: Account) {
             if (drag.held.value || (event instanceof MouseEvent && dragged))
                 return
-            const group = account.pinned ? 'pinned' : 'all'
             // A range follows the order on screen, which a landing move may not have committed yet.
             selection.toggle(
                 account.id,
-                group,
-                previews[group].value,
+                [...previews.pinned.value, ...previews.all.value],
                 event.shiftKey,
             )
         },

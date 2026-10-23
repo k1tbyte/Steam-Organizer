@@ -30,6 +30,9 @@ export function useVaultAccounts() {
             const current = accounts.value.find((a) => a.id === id)?.pinned
             store.setPinned(id, !current)
         },
+        setPinned(ids: Iterable<string>, pinned: boolean) {
+            for (const id of ids) store.setPinned(id, pinned)
+        },
         /** One group (the pinned or the rest) in this order, in the places it holds in the vault. */
         reorderGroup(ids: string[]) {
             store.setOrder(

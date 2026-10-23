@@ -1,39 +1,20 @@
 import { computed, shallowRef } from 'vue'
 
 import type { Account } from '../../model'
-import type { Group } from '../../services/reorder'
 
 // Module state: the bar (the route's header view) and the grid (its page) share it.
-const picked = shallowRef<{ group: Group; ids: ReadonlySet<string> }>({
-    group: 'all',
-    ids: new Set(),
-})
+const picked = shallowRef<ReadonlySet<string>>(new Set())
+const shown = shallowRef<readonly string[]>([])
 let anchor: string | null = null
 
-/** The cards picked to move together, all from one group: a click toggles one, Shift+click picks the range from the last one clicked. */
+/** The picked cards, from both groups: a click toggles one, Shift+click picks the range from the last one clicked, Select all every shown one. */
 export function useEditSelection() {
     return {
-        group: computed(() => picked.value.group),
-        ids: computed(() => picked.value.ids),
-        count: computed(() => picked.value.ids.size),
-        /** Drops picks that left the group (a filter, a sync, a mock switch); `order` is the group now. */
-        retain(order: readonly Account[]) {
-            const present = new Set(order.map((a) => a.id))
-            const kept = [...picked.value.ids].filter((id) => present.has(id))
-            if (anchor && !present.has(anchor)) anchor = null
-            if (kept.length < picked.value.ids.size)
-                picked.value = { group: picked.value.group, ids: new Set(kept) }
-        },
-        /** `order` is `group`, the one `id` is in; a pick in another group starts over. */
-        toggle(
-            id: string,
-            group: Group,
-            order: readonly Account[],
-            range: boolean,
-        ) {
-            const next = new Set(
-                picked.value.group === group ? picked.value.ids : [],
-            )
+        ids: computed(() => picked.value),
+        count: computed(() => picked.value.size),
+        /** `order` is the cards as the screen shows them. */
+        toggle(id: string, order: readonly Account[], range: boolean) {
+            const next = new Set(picked.value)
             const ids = order.map((a) => a.id)
             const from = range && anchor ? ids.indexOf(anchor) : -1
             const to = ids.indexOf(id)
@@ -45,11 +26,22 @@ export function useEditSelection() {
                     next.add(pick)
             else if (!next.delete(id)) next.add(id)
             anchor = id
-            picked.value = { group, ids: next }
+            picked.value = next
+        },
+        selectAll() {
+            picked.value = new Set(shown.value)
         },
         clear() {
             anchor = null
-            picked.value = { group: picked.value.group, ids: new Set() }
+            picked.value = new Set()
+        },
+        /** The cards the grid shows (a filter, a sync, a mock switch change them): picks they lost drop. */
+        show(accounts: readonly Account[]) {
+            shown.value = accounts.map((a) => a.id)
+            const present = new Set(shown.value)
+            if (anchor && !present.has(anchor)) anchor = null
+            const kept = [...picked.value].filter((id) => present.has(id))
+            if (kept.length < picked.value.size) picked.value = new Set(kept)
         },
     }
 }
