@@ -19,15 +19,12 @@ export function useAccountsList() {
     const reorder = useReorderMode()
     // The bulk refresh in flight has no source yet.
     const refresh = useMock(() => undefined, refreshMock)
-    // Reordering moves accounts in the vault order, so it shows all of them in it; the view waits.
+    // Reordering moves accounts in the vault order: the search and filters apply, the sort waits.
     const visible = computed(() => {
-        if (reorder.open.value) return accounts.value
+        const shown = filterAccounts(accounts.value, view.value)
+        if (reorder.open.value) return shown
         const { sort, direction } = view.value
-        return sortAccounts(
-            filterAccounts(accounts.value, view.value),
-            sort,
-            direction,
-        )
+        return sortAccounts(shown, sort, direction)
     })
 
     watch(

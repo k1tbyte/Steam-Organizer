@@ -1,15 +1,22 @@
 <script setup lang="ts">
 import { FpChip, FpIcon } from '@so/ui'
-import { useTemplateRef } from 'vue'
+import { toRef, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useReorderGrid } from '../../composables/reorder/useReorderGrid'
+import type { Account } from '../../model'
 import AccountCard from '../card/AccountCard.vue'
 import AccountsGroupHeading from '../list/AccountsGroupHeading.vue'
 
+/** The groups in the vault order, as the search and filters leave them. */
+const props = defineProps<{ pinned: Account[]; rest: Account[] }>()
+
 const { t } = useI18n()
 const list = useTemplateRef('list')
-const grid = useReorderGrid(list)
+const grid = useReorderGrid(
+    { pinned: toRef(props, 'pinned'), rest: toRef(props, 'rest') },
+    list,
+)
 </script>
 
 <!-- Cards key by slot at their place's offset: one that stays on screen keeps its node and slides when the order moves,
@@ -23,8 +30,8 @@ const grid = useReorderGrid(list)
                 v-for="heading in grid.headings.value"
                 :key="heading.group"
                 :group="heading.group"
-                class="absolute inset-x-0 top-0"
-                :class="heading.spaced && 'mt-u-2'"
+                class="absolute inset-x-0 top-0 box-content"
+                :class="heading.spaced && 'pt-u-2'"
                 :style="{ translate: `0 ${heading.y}px` }" />
             <!-- biome-ignore lint/a11y/useSemanticElements: a <button> may not hold the card's links -->
             <div

@@ -50,6 +50,8 @@ interface Move {
     /** The card the pointer or the keys hold. */
     id: string
     group: Group
+    /** The group as the move found it: its indices point into this list only. */
+    source: Account[]
     /** The cards that move, in group order, and their indices. */
     ids: string[]
     from: number[]
@@ -61,16 +63,18 @@ interface Move {
 
 const clamp = (value: number, max: number) => Math.min(max, Math.max(0, value))
 
-/** The vault order as cards that keep their node while on screen: a dragged card follows the pointer while the rest make room at its slot; arrows on a focused card move it too.
+/** The groups in the vault order as cards that keep their node while on screen: a dragged card follows the pointer while the rest make room at its slot; arrows on a focused card move it too.
+ *  A filtered group moves its shown cards among their own places; the hidden ones stay put.
  *  Cells keep the vault order in the DOM (tab order; a node Vue moves loses its transition and focus), so a move commits only once it has landed. */
-export function useReorderGrid(list: Ref<HTMLElement | null>) {
+export function useReorderGrid(
+    { pinned, rest }: { pinned: Ref<Account[]>; rest: Ref<Account[]> },
+    list: Ref<HTMLElement | null>,
+) {
     const { t } = useI18n()
     const vault = useVaultAccounts()
     const selection = useReorderSelection()
     const scroller = useScrollRoot()
     const scrollTop = useScrollTop()
-    const pinned = computed(() => vault.accounts.value.filter((a) => a.pinned))
-    const rest = computed(() => vault.accounts.value.filter((a) => !a.pinned))
     const members = (group: Group) =>
         group === 'pinned' ? pinned.value : rest.value
     const rank = computed(
@@ -114,12 +118,9 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
         },
     })
 
-    // The accounts changed under the move (a sync, a mock switch): its indices point at others now.
+    // A filter, a sync or a mock switch changed the group under the move: it drops, its indices point at others now.
     const holds = (current: Move | null, group: Group): current is Move =>
-        current?.group === group &&
-        current.from.every(
-            (index, k) => members(group)[index]?.id === current.ids[k],
-        )
+        current?.group === group && current.source === members(group)
     const preview = (group: Group) =>
         computed(() => {
             const current = move.value
@@ -153,9 +154,10 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
         const picked = selection.ids.value
         const withPicked = together && picked.has(id)
         for (const group of ['pinned', 'all'] as const) {
+            const source = members(group)
             const from: number[] = []
             const ids: string[] = []
-            for (const [index, account] of members(group).entries())
+            for (const [index, account] of source.entries())
                 if (
                     account.id === id ||
                     (withPicked && picked.has(account.id))
@@ -165,7 +167,8 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
                 }
             const lead = ids.indexOf(id)
             const home = (from[lead] ?? 0) - lead
-            if (lead >= 0) return { id, group, ids, from, home, to: home }
+            if (lead >= 0)
+                return { id, group, source, ids, from, home, to: home }
         }
         return null
     }

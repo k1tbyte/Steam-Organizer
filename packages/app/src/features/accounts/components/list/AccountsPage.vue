@@ -44,7 +44,7 @@ const addOverlay = useAddAccountOverlay()
     </PageTopbar>
 
     <FpAsyncView :status="list.status.value">
-        <AccountsReorderGrid v-if="list.reordering.value" />
+        <AccountsReorderGrid v-if="list.reordering.value" :pinned="list.pinned.value" :rest="list.rest.value" />
         <AccountsGrid v-else :pinned="list.pinned.value" :rest="list.rest.value" @toggle-pin="list.togglePin" />
         <template #empty>
             <AccountsEmpty :vault-empty="list.vaultEmpty.value" @add="addOverlay.show()" @reset="resetFilters" />

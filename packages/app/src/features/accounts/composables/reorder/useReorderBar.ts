@@ -27,10 +27,8 @@ export function useReorderBar() {
     })
     const hint = computed(() =>
         desktop.value
-            ? t(
-                  'Drag cards to reorder them, click to pick several, or move one with the arrow keys',
-              )
-            : t('Tap cards to pick several, drag by the handle'),
+            ? t('Drag to reorder, click to select')
+            : t('Tap to select, drag by the handle'),
     )
     return {
         picking: computed(() => selection.count.value > 0),

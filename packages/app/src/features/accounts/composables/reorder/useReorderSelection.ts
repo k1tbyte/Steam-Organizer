@@ -16,7 +16,7 @@ export function useReorderSelection() {
         group: computed(() => picked.value.group),
         ids: computed(() => picked.value.ids),
         count: computed(() => picked.value.ids.size),
-        /** Drops picks that left the group (a sync, a mock switch); `order` is the group now. */
+        /** Drops picks that left the group (a filter, a sync, a mock switch); `order` is the group now. */
         retain(order: readonly Account[]) {
             const present = new Set(order.map((a) => a.id))
             const kept = [...picked.value.ids].filter((id) => present.has(id))
