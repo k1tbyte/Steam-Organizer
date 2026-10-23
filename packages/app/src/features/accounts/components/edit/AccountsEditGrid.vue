@@ -3,7 +3,7 @@ import { FpChip, FpIcon } from '@so/ui'
 import { toRef, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useReorderGrid } from '../../composables/reorder/useReorderGrid'
+import { useReorderGrid } from '../../composables/edit/useReorderGrid'
 import type { Account } from '../../model'
 import AccountCard from '../card/AccountCard.vue'
 import AccountsGroupHeading from '../list/AccountsGroupHeading.vue'

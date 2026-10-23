@@ -5,18 +5,18 @@ import { useI18n } from 'vue-i18n'
 
 import { usePageActive } from '#core'
 
-import { useReorderMode } from './useReorderMode'
-import { useReorderSelection } from './useReorderSelection'
+import { useEditMode } from './useEditMode'
+import { useEditSelection } from './useEditSelection'
 
 // Esc there belongs to the overlay.
 const OVERLAY = '[role="dialog"], [role="menu"], [role="listbox"]'
 
-/** The reorder bar's hint or selection count, and Esc clearing the selection, then leaving the mode. Mounted with the mode even when the grid is not (an empty vault); a drag in the grid takes Esc first. */
-export function useReorderBar() {
+/** The edit bar's hint or selection count, and Esc clearing the selection, then leaving the mode. Mounted with the mode even when the grid is not (an empty vault); a drag in the grid takes Esc first. */
+export function useEditBar() {
     const { t } = useI18n()
     const desktop = useDesktopLayout()
-    const mode = useReorderMode()
-    const selection = useReorderSelection()
+    const mode = useEditMode()
+    const selection = useEditSelection()
     const active = usePageActive()
     onKeyStroke('Escape', (event) => {
         const inOverlay =

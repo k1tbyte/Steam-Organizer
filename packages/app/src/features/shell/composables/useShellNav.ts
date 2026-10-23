@@ -13,7 +13,7 @@ const left = shallowReactive(new Map<string, string>())
 /** Records where each section is left; the shell calls it once, and a lock, which unmounts the shell, clears it. */
 export function useSectionMemory() {
     const route = useRoute()
-    // The path alone: every query key is an overlay (settings, a dialog, reorder), which a section must not reopen.
+    // The path alone: every query key is an overlay (settings, a dialog, edit mode), which a section must not reopen.
     watch(
         () => route.path,
         (path) => {

@@ -7,7 +7,7 @@ import { useMock } from '#core'
 import { refreshMock } from '../mocks'
 import { filterAccounts, sortAccounts } from '../services/filters'
 import { useAccountsViewStore } from '../stores/accountsView'
-import { useReorderMode } from './reorder/useReorderMode'
+import { useEditMode } from './edit/useEditMode'
 import { useVaultAccounts } from './useVaultAccounts'
 
 /** The accounts screen's data: the vault's accounts as the view filters and sorts them, pinned apart from the rest. */
@@ -16,13 +16,13 @@ export function useAccountsList() {
     const store = useAccountsViewStore()
     const { view } = storeToRefs(store)
     const { accounts, presetQuery, togglePin } = useVaultAccounts()
-    const reorder = useReorderMode()
+    const edit = useEditMode()
     // The bulk refresh in flight has no source yet.
     const refresh = useMock(() => undefined, refreshMock)
-    // Reordering moves accounts in the vault order: the search and filters apply, the sort waits.
+    // Edit mode moves accounts in the vault order: the search and filters apply, the sort waits.
     const visible = computed(() => {
         const shown = filterAccounts(accounts.value, view.value)
-        if (reorder.open.value) return shown
+        if (edit.open.value) return shown
         const { sort, direction } = view.value
         return sortAccounts(shown, sort, direction)
     })
@@ -53,6 +53,6 @@ export function useAccountsList() {
             visible.value.length === 0 ? 'empty' : 'ready',
         ),
         togglePin,
-        reordering: computed(() => reorder.open.value),
+        editing: computed(() => edit.open.value),
     }
 }

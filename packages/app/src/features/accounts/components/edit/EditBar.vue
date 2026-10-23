@@ -2,11 +2,11 @@
 import { FpButton, FpIcon } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import { useReorderBar } from '../../composables/reorder/useReorderBar'
+import { useEditBar } from '../../composables/edit/useEditBar'
 import BanFilterChips from '../list/BanFilterChips.vue'
 
 const { t } = useI18n()
-const bar = useReorderBar()
+const bar = useEditBar()
 </script>
 
 <!-- The filter strip with the sort and the tools swapped for the mode's status. On phones the chips scroll, the buttons stay.

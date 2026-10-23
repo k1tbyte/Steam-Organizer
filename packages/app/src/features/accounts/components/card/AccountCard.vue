@@ -19,7 +19,7 @@ const props = defineProps<{
     flags: CardFlags
     /** The phone card: taller footer and tag row, bigger targets. */
     touch: boolean
-    /** Reorder mode puts its handle there instead. */
+    /** Edit mode puts its reorder handle there instead. */
     hidePin?: boolean
 }>()
 const emit = defineEmits<{

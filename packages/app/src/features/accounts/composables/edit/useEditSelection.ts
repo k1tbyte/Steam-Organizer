@@ -11,7 +11,7 @@ const picked = shallowRef<{ group: Group; ids: ReadonlySet<string> }>({
 let anchor: string | null = null
 
 /** The cards picked to move together, all from one group: a click toggles one, Shift+click picks the range from the last one clicked. */
-export function useReorderSelection() {
+export function useEditSelection() {
     return {
         group: computed(() => picked.value.group),
         ids: computed(() => picked.value.ids),

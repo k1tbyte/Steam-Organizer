@@ -24,8 +24,8 @@ import {
 } from '../../services/reorder'
 import { useAccountRows } from '../useAccountRows'
 import { useVaultAccounts } from '../useVaultAccounts'
+import { useEditSelection } from './useEditSelection'
 import { useReorderDrag } from './useReorderDrag'
-import { useReorderSelection } from './useReorderSelection'
 
 // Neighbours make room once the pointer rests over a slot this long, so a card passing over them leaves them still.
 const DWELL_MS = 150
@@ -72,7 +72,7 @@ export function useReorderGrid(
 ) {
     const { t } = useI18n()
     const vault = useVaultAccounts()
-    const selection = useReorderSelection()
+    const selection = useEditSelection()
     const scroller = useScrollRoot()
     const scrollTop = useScrollTop()
     const members = (group: Group) =>
@@ -390,7 +390,7 @@ export function useReorderGrid(
         })
     })
 
-    // Capture, so ReorderBar's Esc, which leaves the mode, sees it handled.
+    // Capture, so EditBar's Esc, which leaves the mode, sees it handled.
     useEventListener(
         window,
         'keydown',

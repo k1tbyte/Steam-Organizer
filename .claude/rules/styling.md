@@ -31,7 +31,7 @@ Tokens live in `packages/ui/src/theme.css`, shared surface classes in `packages/
 - Icons: Lucide, plus brand marks from Simple Icons. Icons are 1em: size the control, not each icon. `FpIcon` draws an inline `<svg>` (a CSS mask icon cost a paint effect and an image per glyph: 45% of a fast list scroll's paint).
 - A scoped `<style>` reads the custom properties behind the utilities (`var(--surf-bg)`, `var(--text-3)`, `var(--accent)`); colors are derived with `color-mix` or relative `oklch`, never written twice.
 - In a list item, center an absolute bit with `inset-x-0 mx-auto w-fit`, not `left-1/2 -translate-x-1/2`: that translate made each card's level badge a compositor layer, and the ring and pin over it followed (78 layers, 4ms of layerizing a frame on a fast scroll).
-- Never `inert` or `pointer-events: none` on items of a long list: Chrome lifts each hit-test-transparent part into its own layer (97 layers in reorder mode). Cover the item with an element that takes the presses instead.
+- Never `inert` or `pointer-events: none` on items of a long list: Chrome lifts each hit-test-transparent part into its own layer (97 layers in edit mode). Cover the item with an element that takes the presses instead.
 - Line height is the font's own (`normal`), as in the mockups; set `leading-*` only on running text.
 
 ## Phones
