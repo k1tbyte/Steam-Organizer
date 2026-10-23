@@ -4,7 +4,7 @@ import type { Account } from '../../model'
 
 // Module state: the bar (the route's header view) and the grid (its page) share it.
 const picked = shallowRef<ReadonlySet<string>>(new Set())
-const shown = shallowRef<readonly string[]>([])
+const shown = shallowRef<ReadonlySet<string>>(new Set())
 let anchor: string | null = null
 
 /** The picked cards, from both groups: a click toggles one, Shift+click picks the range from the last one clicked, Select all every shown one. */
@@ -28,6 +28,10 @@ export function useEditSelection() {
             anchor = id
             picked.value = next
         },
+        /** Only shown cards stay: a sweep may restore picks a filter hid meanwhile. */
+        set(ids: Iterable<string>) {
+            picked.value = new Set([...ids].filter((id) => shown.value.has(id)))
+        },
         selectAll() {
             picked.value = new Set(shown.value)
         },
@@ -37,8 +41,8 @@ export function useEditSelection() {
         },
         /** The cards the grid shows (a filter, a sync, a mock switch change them): picks they lost drop. */
         show(accounts: readonly Account[]) {
-            shown.value = accounts.map((a) => a.id)
-            const present = new Set(shown.value)
+            const present = new Set(accounts.map((a) => a.id))
+            shown.value = present
             if (anchor && !present.has(anchor)) anchor = null
             const kept = [...picked.value].filter((id) => present.has(id))
             if (kept.length < picked.value.size) picked.value = new Set(kept)

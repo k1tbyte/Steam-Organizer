@@ -1,6 +1,5 @@
 import { durationToken } from '@so/ui'
 import { useTimer } from '@so/ui/useTimer'
-import { useEventListener } from '@vueuse/core'
 import {
     computed,
     nextTick,
@@ -25,7 +24,8 @@ import {
 import { useAccountRows } from '../useAccountRows'
 import { useVaultAccounts } from '../useVaultAccounts'
 import { useEditSelection } from './useEditSelection'
-import { useReorderDrag } from './useReorderDrag'
+import { useListDrag } from './useListDrag'
+import { useMarquee } from './useMarquee'
 
 // Neighbours make room once the pointer rests over a slot this long, so a card passing over them leaves them still.
 const DWELL_MS = 150
@@ -95,7 +95,7 @@ export function useReorderGrid(
     // A click that ends a drag picks nothing.
     let dragged = false
 
-    const drag = useReorderDrag(list, {
+    const drag = useListDrag(list, {
         start(id) {
             dragged = true
             flush()
@@ -400,17 +400,17 @@ export function useReorderGrid(
         })
     })
 
-    // Capture, so EditBar's Esc, which leaves the mode, sees it handled.
-    useEventListener(
-        window,
-        'keydown',
-        (event: KeyboardEvent) => {
-            if (event.key !== 'Escape' || !drag.dragging.value) return
-            event.preventDefault()
-            drag.cancel()
+    const marquee = useMarquee(list, {
+        geometry,
+        shown: (group) => previews[group].value,
+        bounds: () => {
+            const { columns, cellWidth, gap } = grid.cell.value
+            return {
+                width: columns * (cellWidth + gap) - gap,
+                height: grid.totalSize.value,
+            }
         },
-        { capture: true },
-    )
+    })
 
     return {
         flags: grid.flags,
@@ -438,6 +438,7 @@ export function useReorderGrid(
                 event.shiftKey,
             )
         },
+        marquee,
         nudge,
         keyboard,
         focusIn,

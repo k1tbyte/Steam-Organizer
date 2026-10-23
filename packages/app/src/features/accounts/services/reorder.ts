@@ -87,3 +87,46 @@ export function dropIndex(
         Math.floor((point.x + gap / 2) / (cellWidth + gap))
     return index < count ? index : null
 }
+
+/** The group indices of the cards `rect` (list coordinates) touches; the gaps between them touch none. */
+export function cardsIn(
+    rect: { left: number; top: number; right: number; bottom: number },
+    geometry: GroupGeometry,
+): number[] {
+    const { top, rowHeight, columns, cellWidth, gap, count } = geometry
+    // Slots `origin + i * step`, each `size` long, that overlap [from, to].
+    const span = (
+        from: number,
+        to: number,
+        origin: number,
+        step: number,
+        size: number,
+        slots: number,
+    ): [number, number] => [
+        Math.max(0, Math.ceil((from - origin - size) / step)),
+        Math.min(slots - 1, Math.floor((to - origin) / step)),
+    ]
+    const [firstRow, lastRow] = span(
+        rect.top,
+        rect.bottom,
+        top,
+        rowHeight,
+        rowHeight - gap,
+        Math.ceil(count / columns),
+    )
+    const [firstColumn, lastColumn] = span(
+        rect.left,
+        rect.right,
+        0,
+        cellWidth + gap,
+        cellWidth,
+        columns,
+    )
+    const touched: number[] = []
+    for (let row = firstRow; row <= lastRow; row++)
+        for (let column = firstColumn; column <= lastColumn; column++) {
+            const index = row * columns + column
+            if (index < count) touched.push(index)
+        }
+    return touched
+}

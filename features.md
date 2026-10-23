@@ -49,7 +49,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Sort: none, created, added, last update, level; ascending / descending.
 - Search, filter and sort state is remembered.
 - Pin / unpin (unpin returns to previous position).
-- Edit mode: drag and drop within pinned / unpinned group; search and ban filters apply, the sort waits; pick several (click, Shift+click, select all), drag them as one stack, act on them in batch (pin, unpin, tags, refresh, export, delete).
+- Edit mode: drag and drop within pinned / unpinned group; search and ban filters apply, the sort waits; pick several (click, Shift+click, select all, a rectangle on desktop), drag them as one stack, act on them in batch (pin, unpin, tags, refresh, export, delete).
 - Bulk refresh of accounts older than 1h: progress, stop, summary (done / already fresh / failed) `[no web]`.
 - Toolbar: add account, import, export, refresh.
 

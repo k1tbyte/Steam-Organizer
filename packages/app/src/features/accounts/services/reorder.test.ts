@@ -4,6 +4,7 @@ import type { Account } from '../model'
 import { buildRows } from './listRows'
 import {
     applyOrder,
+    cardsIn,
     dropIndex,
     groupGeometry,
     moveItems,
@@ -99,5 +100,36 @@ describe('dropIndex', () => {
         expect(dropIndex({ x: 10, y: all.top + 112 * 2 + 10 }, all)).toBe(6)
         expect(dropIndex({ x: 420, y: all.top + 112 * 2 + 10 }, all)).toBeNull()
         expect(dropIndex({ x: 10, y: all.top + 112 * 5 }, all)).toBeNull()
+    })
+})
+
+describe('cardsIn', () => {
+    const sizes = { unit: 4, gapUnits: 3, cardPx: 100 }
+    const rows = buildRows(some('p', 2), some('r', 7), 3)
+    // Cells 200px wide with a 12px gap; card rows 112px high, cards 100px.
+    const all = groupGeometry(rows, 'all', sizes, {
+        columns: 3,
+        cellWidth: 200,
+        count: 7,
+    })
+    const box = (left: number, top: number, right: number, bottom: number) => ({
+        left,
+        top: all.top + top,
+        right,
+        bottom: all.top + bottom,
+    })
+
+    it('takes every card the rectangle overlaps', () => {
+        expect(cardsIn(box(190, 90, 220, 120), all)).toEqual([0, 1, 3, 4])
+        expect(cardsIn(box(0, 0, 1000, 1000), all)).toEqual([
+            0, 1, 2, 3, 4, 5, 6,
+        ])
+    })
+
+    it('takes none from a gap, above the group or past its last card', () => {
+        expect(cardsIn(box(202, 10, 210, 50), all)).toEqual([])
+        expect(cardsIn(box(0, 102, 600, 110), all)).toEqual([])
+        expect(cardsIn(box(0, -60, 600, -10), all)).toEqual([])
+        expect(cardsIn(box(220, 230, 600, 300), all)).toEqual([])
     })
 })

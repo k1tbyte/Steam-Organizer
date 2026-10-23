@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpDropdownMenu, FpIcon, tip } from '@so/ui'
+import { FpBadge, FpButton, FpDropdownMenu, FpIcon, tip } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { useEditBar } from '../../composables/edit/useEditBar'
@@ -32,7 +32,11 @@ const bar = useEditBar({
             <FpIcon name="icon-[lucide--grip-vertical]" class="shrink-0 text-fg-3" />
             <span class="whitespace-nowrap text-12.5 text-fg-2 lg:min-w-0 lg:truncate">{{ bar.label.value }}</span>
         </div>
-        <FpButton v-if="bar.picking.value" size="sm" variant="ghost" @click="bar.clear()">{{ t('Clear') }}</FpButton>
+        <!-- Phones scroll the status out of view: the count rides on Clear. -->
+        <FpButton v-if="bar.picking.value" size="sm" variant="ghost" @click="bar.clear()">
+            {{ t('Clear') }}
+            <FpBadge color="accent" :label="bar.count.value" class="lg:hidden" />
+        </FpButton>
         <FpDropdownMenu :items="bar.menu.value" placement="bottom-end">
             <FpButton
                 v-bind="tip(t('Selection actions'), { label: true })"

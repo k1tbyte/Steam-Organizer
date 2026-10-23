@@ -114,6 +114,7 @@ export function useEditBar(intents: BatchIntents) {
     })
 
     return {
+        count: selection.count,
         picking: computed(() => selection.count.value > 0),
         label: computed(() =>
             selection.count.value

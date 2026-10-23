@@ -22,7 +22,8 @@ const grid = useReorderGrid(
 <!-- Cards key by slot at their place's offset: one that stays on screen keeps its node and slides when the order moves,
      one that comes in takes the node of one that left.
      A cover over each card takes its presses, a grip sits where its pin was: a mouse drags a card from anywhere, touch from the grip,
-     keys move the focused card. No text selection: Safari starts one despite the prevented press. -->
+     keys move the focused card, a mouse press on the page's empty space sweeps a selection rectangle.
+     No text selection: Safari starts one despite the prevented press. -->
 <template>
     <div class="px-u-6 pb-u-6 select-none max-lg:px-4 max-lg:pb-4">
         <div ref="list" class="relative" :style="{ height: `${grid.totalSize.value}px` }">
@@ -80,6 +81,7 @@ const grid = useReorderGrid(
                         class="absolute -top-2 -left-2 z-20 animate-pop" />
                 </template>
             </div>
+            <div v-if="grid.marquee.value" class="marquee" :style="grid.marquee.value" />
         </div>
         <span class="sr-only" aria-live="polite">{{ grid.announcement.value }}</span>
     </div>
@@ -144,6 +146,18 @@ const grid = useReorderGrid(
         translate var(--dur-slow) var(--ease-spring),
         scale var(--dur-slow) var(--ease-out),
         opacity var(--dur-base) var(--ease-out);
+}
+
+/* Above the cards and no hit target: the pointer belongs to the sweep. */
+.marquee {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-xs);
+    background-color: color-mix(in oklch, var(--accent) 12%, transparent);
+    pointer-events: none;
 }
 
 /* The stack's cards behind the lifted one: they peek out from under it, so several read as one. */

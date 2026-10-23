@@ -12,7 +12,7 @@ const STEP_PX = 16
 interface Grip {
     id: string
     pointerId: number
-    /** Where the pointer holds the card, from its corner. */
+    /** Where the pointer holds the card, from its corner; zero on the list itself. */
     grab: { x: number; y: number }
     /** The list's and the scroller's client boxes and the scroll range, read once at the press. */
     list: { left: number; top: number }
@@ -22,9 +22,9 @@ interface Grip {
     from: { x: number; y: number }
 }
 
-/** One pointer dragging a card: the pointer and the card's corner in list coordinates, auto-scroll near the scroller's edges.
- *  Layout is read at the press only; then both follow the pointer and the scroll offset. */
-export function useReorderDrag(
+/** One pointer dragging over the list, a card or a rectangle from its empty space: the pointer and the card's corner in list coordinates,
+ *  auto-scroll near the scroller's edges, Esc cancelling. Layout is read at the press only; then both follow the pointer and the scroll offset. */
+export function useListDrag(
     list: Readonly<Ref<HTMLElement | null>>,
     hooks: { start: (id: string) => void; end: (dropped: boolean) => void },
 ) {
@@ -55,10 +55,11 @@ export function useReorderDrag(
     // The wheel takes over from auto-scroll until the pointer moves again.
     let steering = false
 
-    // Hooks run in the event that starts or ends the drag, so the caller sees every pointer position in between.
+    // Hooks run in the event that starts or ends the drag, so the caller sees every pointer position in between;
+    // start runs before anything sees the drag moving (a sync watcher would act on the state start sets up).
     function lift(held: Grip) {
-        moving.value = true
         hooks.start(held.id)
+        moving.value = true
     }
     function end(dropped: boolean) {
         if (!grip.value) return
@@ -67,11 +68,11 @@ export function useReorderDrag(
         moving.value = false
     }
 
-    /** `slot` is the card's corner in list coordinates; touch and pen drag from the handle only, so a swipe on the card scrolls. */
+    /** `slot` is the card's corner in list coordinates, null for the list itself; touch and pen drag from the handle only, so a swipe scrolls. */
     function press(
         event: PointerEvent,
         id: string,
-        slot: { x: number; y: number },
+        slot: { x: number; y: number } | null,
         handle: boolean,
     ) {
         const touch = event.pointerType !== 'mouse'
@@ -89,10 +90,12 @@ export function useReorderDrag(
         grip.value = {
             id,
             pointerId: event.pointerId,
-            grab: {
-                x: event.clientX - box.left - slot.x,
-                y: event.clientY - box.top - slot.y,
-            },
+            grab: slot
+                ? {
+                      x: event.clientX - box.left - slot.x,
+                      y: event.clientY - box.top - slot.y,
+                  }
+                : { x: 0, y: 0 },
             list: { left: box.left, top: box.top },
             edges: { top: edges.top, bottom: edges.bottom },
             scroll: top.value,
@@ -140,6 +143,17 @@ export function useReorderDrag(
         },
         { passive: true },
     )
+    // Capture, so the edit bar's Esc, which clears the selection or leaves the mode, sees it handled.
+    useEventListener(
+        window,
+        'keydown',
+        (event: KeyboardEvent) => {
+            if (event.key !== 'Escape' || !moving.value) return
+            event.preventDefault()
+            end(false)
+        },
+        { capture: true },
+    )
 
     // Scrolls while the pointer rests near an edge, faster the deeper it is.
     let frame = 0
@@ -178,6 +192,16 @@ export function useReorderDrag(
         held: computed(() => grip.value !== null),
         /** The pointer in list coordinates. */
         point,
+        /** Where the press landed, in list coordinates. */
+        origin: computed(() => {
+            const held = grip.value
+            return held
+                ? {
+                      x: held.from.x - held.list.left,
+                      y: held.from.y - held.list.top,
+                  }
+                : null
+        }),
         /** The dragged card's top-left corner in list coordinates. */
         corner: computed(() => {
             const at = point.value
