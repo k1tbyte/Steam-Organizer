@@ -1,14 +1,17 @@
 import type { Account } from '../model'
 import { type ListRow, rowHeight } from './listRows'
 
-/** `items` with the one at `from` moved to `to`. */
-export function moveItem<T>(
+export type Group = 'pinned' | 'all'
+
+/** `items` with those at `from` taken out and put back together, in their order, at `to` of the result. */
+export function moveItems<T>(
     items: readonly T[],
-    from: number,
+    from: readonly number[],
     to: number,
 ): T[] {
-    const next = [...items]
-    next.splice(to, 0, ...next.splice(from, 1))
+    const picked = new Set(from)
+    const next = items.filter((_, index) => !picked.has(index))
+    next.splice(to, 0, ...items.filter((_, index) => picked.has(index)))
     return next
 }
 
@@ -47,7 +50,7 @@ export interface GroupGeometry {
 /** Where a group's cards sit: its rows are contiguous and of one height, so a point maps to an index by arithmetic. */
 export function groupGeometry(
     rows: readonly ListRow[],
-    group: 'pinned' | 'all',
+    group: Group,
     sizes: { unit: number; gapUnits: number; cardPx: number },
     grid: { columns: number; cellWidth: number; count: number },
 ): GroupGeometry {

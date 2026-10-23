@@ -11,7 +11,8 @@ const bar = useReorderBar()
 <template>
     <div class="flex items-center gap-u-3 px-u-6 py-u-3.5 max-lg:px-4 max-lg:py-2.5">
         <FpIcon name="icon-[lucide--grip-vertical]" class="shrink-0 text-fg-3" />
-        <span class="min-w-0 flex-1 text-12.5 text-fg-2">{{ bar.hint.value }}</span>
+        <span class="min-w-0 flex-1 text-12.5 text-fg-2">{{ bar.label.value }}</span>
+        <FpButton v-if="bar.picking.value" size="sm" variant="ghost" @click="bar.clear()">{{ t('Clear') }}</FpButton>
         <FpButton size="sm" color="accent" @click="bar.close()">{{ t('Done') }}</FpButton>
     </div>
 </template>

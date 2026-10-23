@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpIcon } from '@so/ui'
+import { FpChip, FpIcon } from '@so/ui'
 import { useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -34,10 +34,13 @@ const grid = useReorderGrid(list)
                 role="button"
                 tabindex="0"
                 :aria-label="t('Move {name}', { name: cell.account.nickname })"
+                :aria-pressed="cell.picked"
                 class="cell absolute top-0 left-0"
-                :class="[cell.state, cell.entered && 'entered']"
+                :class="[cell.state, cell.entered && 'entered', cell.picked && 'picked']"
                 :style="{ width: grid.cardWidth.value, translate: `${cell.x}px ${cell.y}px` }"
                 @pointerdown="grid.press($event, cell, false)"
+                @click="grid.pick($event, cell.account)"
+                @keydown.space.prevent="grid.pick($event, cell.account)"
                 @keydown="grid.nudge($event, cell.account.id)"
                 @focusin="grid.focusIn"
                 @focusout="grid.focusOut">
@@ -56,6 +59,19 @@ const grid = useReorderGrid(list)
                     @pointerdown="grid.press($event, cell, true)">
                     <FpIcon name="icon-[lucide--grip-vertical]" />
                 </span>
+                <template v-if="cell.stack">
+                    <span
+                        v-for="layer in cell.stack.plates"
+                        :key="layer"
+                        aria-hidden="true"
+                        class="plate surface surface-opaque"
+                        :class="`plate-${layer}`" />
+                    <FpChip
+                        standalone
+                        size="lg"
+                        :text="cell.stack.count"
+                        class="absolute -top-2 -left-2 z-20 animate-pop" />
+                </template>
             </div>
         </div>
         <span class="sr-only" aria-live="polite">{{ grid.announcement.value }}</span>
@@ -79,6 +95,14 @@ const grid = useReorderGrid(list)
     position: absolute;
     inset: 0;
     z-index: 1;
+    border-radius: var(--radius-lg);
+    transition:
+        background-color var(--dur-fast) var(--ease-out),
+        box-shadow var(--dur-fast) var(--ease-out);
+}
+.picked::after {
+    background-color: color-mix(in oklch, var(--accent) 10%, transparent);
+    box-shadow: inset 0 0 0 2px var(--accent);
 }
 
 /* The ring follows the card's radius, not the cell's square box. */
@@ -98,10 +122,45 @@ const grid = useReorderGrid(list)
     transition: scale var(--dur-fast) var(--ease-out);
 }
 
+/* Picked cards on screen fly into the lifted stack and fade under it; landing, they fan out of it. */
+.gathering {
+    z-index: 1;
+    opacity: 0;
+    transition:
+        translate var(--dur-base) var(--ease-out),
+        opacity var(--dur-base) var(--ease-in);
+}
+
 .landing {
     z-index: 1;
     transition:
         translate var(--dur-slow) var(--ease-spring),
-        scale var(--dur-slow) var(--ease-out);
+        scale var(--dur-slow) var(--ease-out),
+        opacity var(--dur-base) var(--ease-out);
+}
+
+/* The stack's cards behind the lifted one: they peek out from under it, so several read as one. */
+.plate {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: var(--radius-lg);
+    transition:
+        translate var(--dur-base) var(--ease-spring),
+        rotate var(--dur-base) var(--ease-spring);
+}
+.plate-1 {
+    translate: 6px 5px;
+    rotate: 2deg;
+}
+.plate-2 {
+    translate: -5px 9px;
+    rotate: -2.5deg;
+}
+@starting-style {
+    .plate {
+        translate: 0 0;
+        rotate: 0deg;
+    }
 }
 </style>

@@ -49,7 +49,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Sort: none, created, added, last update, level; ascending / descending.
 - Search, filter and sort state is remembered.
 - Pin / unpin (unpin returns to previous position).
-- Reorder mode: drag and drop within pinned / unpinned group.
+- Reorder mode: drag and drop within pinned / unpinned group; pick several (click, Shift+click) and drag them as one stack.
 - Bulk refresh of accounts older than 1h: progress, stop, summary (done / already fresh / failed) `[no web]`.
 - Toolbar: add account, import, export, refresh.
 

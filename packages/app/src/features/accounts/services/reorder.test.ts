@@ -6,7 +6,7 @@ import {
     applyOrder,
     dropIndex,
     groupGeometry,
-    moveItem,
+    moveItems,
     withGroupOrder,
 } from './reorder'
 
@@ -14,21 +14,38 @@ const account = (id: string) => ({ id }) as Account
 const some = (prefix: string, n: number) =>
     Array.from({ length: n }, (_, i) => account(`${prefix}${i}`))
 
-describe('moveItem', () => {
-    it('moves forward and back', () => {
-        expect(moveItem(['a', 'b', 'c', 'd'], 0, 2)).toEqual([
+describe('moveItems', () => {
+    it('moves one forward and back', () => {
+        expect(moveItems(['a', 'b', 'c', 'd'], [0], 2)).toEqual([
             'b',
             'c',
             'a',
             'd',
         ])
-        expect(moveItem(['a', 'b', 'c', 'd'], 3, 1)).toEqual([
+        expect(moveItems(['a', 'b', 'c', 'd'], [3], 1)).toEqual([
             'a',
             'd',
             'b',
             'c',
         ])
-        expect(moveItem(['a', 'b'], 1, 1)).toEqual(['a', 'b'])
+        expect(moveItems(['a', 'b'], [1], 1)).toEqual(['a', 'b'])
+    })
+
+    it('gathers scattered items at `to` in their order', () => {
+        expect(moveItems(['a', 'b', 'c', 'd', 'e'], [4, 1], 0)).toEqual([
+            'b',
+            'e',
+            'a',
+            'c',
+            'd',
+        ])
+        expect(moveItems(['a', 'b', 'c', 'd', 'e'], [0, 2], 3)).toEqual([
+            'b',
+            'd',
+            'e',
+            'a',
+            'c',
+        ])
     })
 })
 

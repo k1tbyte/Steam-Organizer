@@ -16,20 +16,30 @@ import { useScrollRoot, useScrollTop } from '#core'
 import type { Account } from '../../model'
 import { cornerInsetCss } from '../../services/cardLayout'
 import { assignSlots } from '../../services/listSlots'
-import { dropIndex, groupGeometry, moveItem } from '../../services/reorder'
+import {
+    dropIndex,
+    type Group,
+    groupGeometry,
+    moveItems,
+} from '../../services/reorder'
 import { useAccountRows } from '../useAccountRows'
 import { useVaultAccounts } from '../useVaultAccounts'
 import { useReorderDrag } from './useReorderDrag'
+import { useReorderSelection } from './useReorderSelection'
 
 // Neighbours make room once the pointer rests over a slot this long, so a card passing over them leaves them still.
 const DWELL_MS = 150
+// Cards drawn behind a lifted stack: more would read as a pile, not one card.
+const STACK_PLATES = 2
 
-type Group = 'pinned' | 'all'
 export interface ReorderCell {
     account: Account
     x: number
     y: number
-    state: 'rest' | 'lifted' | 'landing'
+    state: 'rest' | 'lifted' | 'gathering' | 'landing'
+    picked: boolean
+    /** A lifted card carrying others: their count and the plates drawn behind it. */
+    stack?: { count: number; plates: number }
     /** The render key: a node that held another account takes this one. */
     slot: number
     /** Not on screen last render: its node, if reused, must jump to its place, not slide. */
@@ -37,10 +47,16 @@ export interface ReorderCell {
 }
 /** A move the grid shows before the vault holds it: a drag or arrow presses, then the landing. */
 interface Move {
+    /** The card the pointer or the keys hold. */
     id: string
     group: Group
-    from: number
-    to: number
+    /** The cards that move, in group order, and their indices. */
+    ids: string[]
+    from: number[]
+    /** The held card's slot while its stack takes one slot for all. */
+    home: number
+    /** Where the moved cards start; null puts every card back. */
+    to: number | null
 }
 
 const clamp = (value: number, max: number) => Math.min(max, Math.max(0, value))
@@ -50,6 +66,7 @@ const clamp = (value: number, max: number) => Math.min(max, Math.max(0, value))
 export function useReorderGrid(list: Ref<HTMLElement | null>) {
     const { t } = useI18n()
     const vault = useVaultAccounts()
+    const selection = useReorderSelection()
     const scroller = useScrollRoot()
     const scrollTop = useScrollTop()
     const pinned = computed(() => vault.accounts.value.filter((a) => a.pinned))
@@ -71,20 +88,27 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
     const landing = useTimer()
     const dwell = useTimer()
     let pending: number | null = null
+    // A click that ends a drag picks nothing.
+    let dragged = false
 
     const drag = useReorderDrag(list, {
         start(id) {
+            dragged = true
             flush()
-            move.value = begin(id)
+            move.value = begin(id, true)
         },
         end(dropped) {
             dwell.cancel()
             pending = null
             const current = move.value
             if (!current) return
+            const point = drag.point.value
             move.value = {
                 ...current,
-                to: dropped ? target(current) : current.from,
+                to:
+                    dropped && point
+                        ? dropIndex(point, geometry(current.group))
+                        : null,
             }
             landing.arm(durationToken('--dur-slow'), flush)
         },
@@ -93,28 +117,55 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
     // The accounts changed under the move (a sync, a mock switch): its indices point at others now.
     const holds = (current: Move | null, group: Group): current is Move =>
         current?.group === group &&
-        members(group)[current.from]?.id === current.id
+        current.from.every(
+            (index, k) => members(group)[index]?.id === current.ids[k],
+        )
     const preview = (group: Group) =>
         computed(() => {
             const current = move.value
-            return holds(current, group)
-                ? moveItem(members(group), current.from, current.to)
-                : members(group)
+            if (!holds(current, group) || current.to === null)
+                return members(group)
+            if (current.id !== drag.dragging.value)
+                return moveItems(members(group), current.from, current.to)
+            // While held, the others wait in its stack, which takes one slot.
+            const others = new Set(
+                current.ids.filter((id) => id !== current.id),
+            )
+            return moveItems(
+                members(group).filter((a) => !others.has(a.id)),
+                [current.home],
+                current.to,
+            )
         })
+    const previews = { pinned: preview('pinned'), all: preview('all') }
     const grid = useAccountRows(
-        { pinned: preview('pinned'), rest: preview('all') },
+        { pinned: previews.pinned, rest: previews.all },
         list,
     )
     const geometry = (group: Group) =>
         groupGeometry(grid.rows.value, group, grid.sizes.value, {
             ...grid.cell.value,
-            count: members(group).length,
+            count: previews[group].value.length,
         })
 
-    function begin(id: string): Move | null {
+    /** `together`: a picked card brings the rest of the selection. */
+    function begin(id: string, together: boolean): Move | null {
+        const picked = selection.ids.value
+        const withPicked = together && picked.has(id)
         for (const group of ['pinned', 'all'] as const) {
-            const from = members(group).findIndex((a) => a.id === id)
-            if (from >= 0) return { id, group, from, to: from }
+            const from: number[] = []
+            const ids: string[] = []
+            for (const [index, account] of members(group).entries())
+                if (
+                    account.id === id ||
+                    (withPicked && picked.has(account.id))
+                ) {
+                    from.push(index)
+                    ids.push(account.id)
+                }
+            const lead = ids.indexOf(id)
+            const home = (from[lead] ?? 0) - lead
+            if (lead >= 0) return { id, group, ids, from, home, to: home }
         }
         return null
     }
@@ -122,7 +173,7 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
     function target(current: Move): number {
         const point = drag.point.value
         return (
-            (point && dropIndex(point, geometry(current.group))) ?? current.from
+            (point && dropIndex(point, geometry(current.group))) ?? current.home
         )
     }
 
@@ -130,27 +181,31 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
         landing.cancel()
         const current = move.value
         move.value = null
-        if (
-            !current ||
-            !holds(current, current.group) ||
-            current.from === current.to
-        )
+        if (!current || current.to === null || !holds(current, current.group))
             return
         const accounts = members(current.group)
-        vault.reorderGroup(
-            moveItem(accounts, current.from, current.to).map((a) => a.id),
-        )
-        announcement.value = t('{name}, position {position} of {count}', {
-            name: accounts[current.from]?.nickname,
-            position: current.to + 1,
-            count: accounts.length,
-        })
+        const next = moveItems(accounts, current.from, current.to)
+        if (next.every((account, index) => account === accounts[index])) return
+        vault.reorderGroup(next.map((a) => a.id))
+        const at = { position: current.to + 1, count: accounts.length }
+        announcement.value =
+            current.ids.length > 1
+                ? t('{moved} accounts, position {position} of {count}', {
+                      moved: current.ids.length,
+                      ...at,
+                  })
+                : t('{name}, position {position} of {count}', {
+                      name: next[current.to]?.nickname,
+                      ...at,
+                  })
     }
     // Leaving the mode mid-drag drops nothing; a move already dropped or keyed still commits.
     onScopeDispose(() => {
         drag.cancel()
         flush()
+        selection.clear()
     })
+    watch(() => members(selection.group.value), selection.retain)
 
     function settle() {
         const current = move.value
@@ -179,7 +234,9 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
     let slots = new Map<string, number>()
     const view = computed(() => {
         const { columns, cellWidth, gap } = grid.cell.value
-        const landingId = move.value?.id
+        const current = move.value
+        const moving = new Set(current?.ids)
+        const picked = selection.ids.value
         const lifted = drag.dragging.value
         const cells: Omit<ReorderCell, 'slot' | 'entered'>[] = []
         const headings: { group: Group; y: number; spaced: boolean }[] = []
@@ -195,25 +252,52 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
             }
             for (const [column, account] of item.row.accounts.entries()) {
                 if (account.id === lifted) continue
-                const state = account.id === landingId ? 'landing' : 'rest'
-                cells.push({ account, x: column * (cellWidth + gap), y, state })
+                cells.push({
+                    account,
+                    x: column * (cellWidth + gap),
+                    y,
+                    state: moving.has(account.id) ? 'landing' : 'rest',
+                    picked: picked.has(account.id),
+                })
             }
         }
-        // Kept inside the list: past its edges the card would grow the scroll area it drags in.
         const corner = drag.corner.value
         const account = lifted
             ? vault.accounts.value.find((a) => a.id === lifted)
             : undefined
-        if (account && corner)
-            cells.push({
-                account,
+        if (account && corner) {
+            // Kept inside the list: past its edges the card would grow the scroll area it drags in.
+            const at = {
                 x: clamp(corner.x, (columns - 1) * (cellWidth + gap)),
                 y: clamp(
                     corner.y,
                     grid.totalSize.value - grid.sizes.value.cardPx,
                 ),
+            }
+            const count = moving.size
+            cells.push({
+                account,
+                ...at,
                 state: 'lifted',
+                picked: picked.has(account.id),
+                stack:
+                    count > 1
+                        ? { count, plates: Math.min(count - 1, STACK_PLATES) }
+                        : undefined,
             })
+            // Picked cards on screen fly into the stack; the rest of it is only counted.
+            if (current && holds(current, current.group))
+                for (const index of current.from) {
+                    const other = members(current.group)[index]
+                    if (other && other.id !== lifted && slots.has(other.id))
+                        cells.push({
+                            account: other,
+                            ...at,
+                            state: 'gathering',
+                            picked: true,
+                        })
+                }
+        }
         cells.sort(
             (a, b) =>
                 (rank.value.get(a.account.id) ?? 0) -
@@ -247,7 +331,7 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
             el.scrollTop = to - el.clientHeight
     }
 
-    /** Arrows move the card by one, or by a row, within its group; presses add up until it lands. */
+    /** Arrows move the card by one, or by a row, within its group; presses add up until it lands. A selection stays put. */
     function nudge(event: KeyboardEvent, id: string) {
         const { columns } = grid.cell.value
         const step = {
@@ -258,10 +342,13 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
         }[event.key]
         if (step === undefined || drag.held.value) return
         event.preventDefault()
-        if (move.value?.id !== id) flush()
-        const current = move.value ?? begin(id)
+        if (move.value?.id !== id || move.value.ids.length > 1) flush()
+        const current = move.value ?? begin(id, false)
         if (!current) return
-        const to = clamp(current.to + step, members(current.group).length - 1)
+        const to = clamp(
+            (current.to ?? current.home) + step,
+            members(current.group).length - 1,
+        )
         if (to === current.to) return
         move.value = { ...current, to }
         landing.arm(durationToken('--dur-slow'), flush)
@@ -323,7 +410,22 @@ export function useReorderGrid(list: Ref<HTMLElement | null>) {
         announcement,
         /** A press on a card or (`handle`) its handle. */
         press(event: PointerEvent, cell: ReorderCell, handle: boolean) {
+            // The grip's press bubbles to the card's: the second must not reset a drag the first lifted.
+            if (!drag.held.value) dragged = false
             drag.press(event, cell.account.id, cell, handle)
+        },
+        /** A click or Space toggles the card; with Shift, picks the range from the last one. */
+        pick(event: MouseEvent | KeyboardEvent, account: Account) {
+            if (drag.held.value || (event instanceof MouseEvent && dragged))
+                return
+            const group = account.pinned ? 'pinned' : 'all'
+            // A range follows the order on screen, which a landing move may not have committed yet.
+            selection.toggle(
+                account.id,
+                group,
+                previews[group].value,
+                event.shiftKey,
+            )
         },
         nudge,
         keyboard,
