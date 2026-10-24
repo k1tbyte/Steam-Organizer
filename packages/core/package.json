@@ -1,0 +1,16 @@
+{
+    "name": "@so/core",
+    "private": true,
+    "type": "module",
+    "sideEffects": false,
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "fake-indexeddb": "^6.2.6",
+        "typescript": "~6.0.3"
+    }
+}

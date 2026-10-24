@@ -73,6 +73,14 @@ module.exports = {
             to: { path: `^${APP}/(features|components)/` },
         },
         {
+            name: 'core-package-framework-free',
+            comment:
+                'packages/core is plain TS under every shell: no framework, kit, app or shell',
+            severity: 'error',
+            from: { path: '^packages/core/' },
+            to: { path: [...FRAMEWORK_MODULES, '^(packages/app|apps)/'] },
+        },
+        {
             name: 'ui-package-app-independent',
             comment:
                 'packages/ui is the kit: it never depends on the app or a shell',

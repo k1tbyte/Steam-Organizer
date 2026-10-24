@@ -16,7 +16,7 @@
         "test": "vitest run",
         "test:watch": "vitest",
         "perf:build": "pnpm --filter @so/web exec vite build --config ../../tests/perf/vite.config.mjs",
-        "arch": "depcruise --config tests/arch/dependency-cruiser.cjs packages/app/src packages/ui/src apps/web/src apps/extension/entrypoints"
+        "arch": "depcruise --config tests/arch/dependency-cruiser.cjs packages/core/src packages/app/src packages/ui/src apps/web/src apps/extension/entrypoints"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.5.15",

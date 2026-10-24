@@ -20,6 +20,7 @@ export default defineConfig({
             '**/pnpm-lock.yaml',
         ],
         projects: [
+            project('core', 'packages/core/src/**/*.test.ts'),
             project('app', 'packages/app/src/**/*.test.ts'),
             project('ui', 'packages/ui/src/**/*.test.ts'),
             project('ui-contract', 'tests/ui/*.test.ts'),

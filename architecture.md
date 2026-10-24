@@ -115,29 +115,35 @@ Firefox Android extension covers Android. iOS only via Obsidian plugin (later), 
 - Steam Web API key is stored inside the vault.
 
 ### Vault locations
-User picks where each vault lives; several vaults, switch on unlock screen. Every client keeps a working copy in IndexedDB, the location is the source of truth.
+User picks where each vault lives; several vaults, switch on unlock screen. Every client keeps a working copy in IndexedDB, the home is the source of truth.
 
-| Location | Container | Sync |
+| Home | Container | Own sync |
 |---|---|---|
 | This device | standalone file, kept in IndexedDB | none |
-| Google Drive | standalone file | Drive; history = backups |
 | Folder | Markdown notes, Obsidian Bases compatible | user's own (Obsidian Sync, git, Syncthing) |
 
-- **Standalone file**: header (version, KDF params, vault slots) + body sealed with vault key = JSONL of records. Nothing readable without unlock: no record count, ids or timestamps.
+Google Drive is a layer over either home, not a home of its own:
+
+| Drive | This device | Folder |
+|---|---|---|
+| Backups (sealed standalone snapshots, history) | ✓ | ✓ |
+| Sync (Drive holds the shared copy) | ✓ ("Google Drive" in onboarding) | - the folder's own sync owns it; a second channel would bring deleted records back |
+
+- **Standalone file** (`VaultFile` in `@so/core`, format v1): `format`, `version`, vault `id`, `slots.password` (its KDF params + the wrapped vault key) + `body` sealed with the vault key = JSONL of records. Nothing readable without unlock: no record count, ids or timestamps. A reader stops at a version or record it does not know rather than drop it at the next write.
 - **Folder**: `vault.md` header note + one note per record. Frontmatter (app-owned) = `public` fields + sealed `data` / `secret`; note body is user-owned and never touched. Note file name = nickname only if nickname is `public`, else record id.
 - Folder writes: Chrome/Edge via File System Access API (web, extension page), Obsidian plugin, desktop. Not in Firefox (no API).
 - `core` owns the model; each location is only a serializer + IO adapter.
 
 ### Keys (envelope encryption)
-Data is encrypted with a random 256-bit **vault key**. Unlock slots wrap (encrypt) that key:
+The **vault key** is a random 256-bit secret, held after unlock as a non-extractable HKDF root: records are sealed with an AES-GCM key derived from it (`records`), locked-account keys derive from it too. Unlock slots wrap (encrypt) the secret; an unlock unwraps it straight into the root, so it never sits in script memory:
 
 | Slot | Wrapping key from | Stored |
 |---|---|---|
-| Master password | PBKDF2-HMAC-SHA256, 600k iterations, random salt | in vault file (synced) |
+| Master password | PBKDF2-HMAC-SHA256, 600k iterations, random salt → HKDF root → `slot:password` key (`recovery` later) | in vault file (synced) |
 | PIN | PBKDF2 over PIN | this device only |
 | Biometrics | WebAuthn PRF of a passkey (Windows Hello, Touch ID, Android) | this device only |
 
-- Changing master password only rewraps the vault key and recovery slots of locked accounts (old KEK is at hand while the old password is typed), data is not re-encrypted.
+- Changing master password only rewraps the vault key and recovery slots of locked accounts (old KEK is at hand while the old password is typed), data is not re-encrypted. Rewrapping and enrolling a PIN are the only steps that hold the raw secret, behind the master password.
 - PIN is low entropy → its slot never leaves the device (offline brute force).
 - PRF in 2026: Windows Hello (Win 11 Feb 2026 update, Chrome/Edge 147+, Firefox 148+), macOS (Chrome 132+, Firefox 139+), Android passkeys. Extension pages: Chrome 122+, Firefox 150+.
 
@@ -147,7 +153,7 @@ Data is encrypted with a random 256-bit **vault key**. Unlock slots wrap (encryp
 - Option "master password on browser restart": PIN slot kept in `storage.session` only.
 
 ### Records
-Account = `{ ...public, ...data, ...secret }`. Each record also has a random `id` (UUID, not SteamID) and `updatedAt`.
+Account = `{ ...public, ...data, ...secret }`. Each record also has a random `id` (UUID, not SteamID) and `updatedAt`. A deleted record stays as a tombstone (`{ id, updatedAt, deleted: true }`), so a sync tells a deletion from a record another copy never had.
 
 | Part | Sealed with | Opened | Default fields |
 |---|---|---|---|

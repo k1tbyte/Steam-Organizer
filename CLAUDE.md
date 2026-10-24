@@ -4,6 +4,7 @@ Steam account manager: encrypted vault, Steam profiles, Steam Guard codes, Drive
 
 | Path | Holds |
 |---|---|
+| `packages/core` | `@so/core`: plain TS under every shell (no Vue, no kit, no app): vault crypto, file format, IndexedDB working copy (`pnpm arch` guards it) |
 | `packages/ui` | `@so/ui`: the Fp* kit (Vue + Reka UI + Tailwind v4), tokens and theme engine |
 | `packages/app` | `@so/app`: features, core infra, router, i18n; `mountApp(el, { platform, history })` |
 | `apps/web` | PWA shell |
