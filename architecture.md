@@ -63,7 +63,7 @@ interface Platform {
 | extension | global `fetch` (host_permissions) | `identity.launchWebAuthFlow` |
 | desktop | `@tauri-apps/plugin-http` | system browser + loopback redirect (PKCE) |
 
-- Storage: IndexedDB in every shell (extension pages, WebView2/WKWebView). Extension requests `unlimitedStorage`.
+- Storage: IndexedDB in the web and extension shells (extension requests `unlimitedStorage`). Desktop keeps a device vault as a real file (below), not in the WebView's IndexedDB: a profile folder the user never sees, wiped with the WebView profile. The vault store is a small interface in `core` (`list`, `get`, `put`, `remove`, today's `vaultStore`): IndexedDB lives in `core`, the Tauri file adapter in the desktop shell, handed over through `Platform`. Caches may stay in the WebView's IndexedDB.
 - Drive via plain REST + token. No `gapi` - MV3 forbids remotely hosted code.
 
 ---
@@ -119,17 +119,22 @@ User picks where each vault lives; several vaults, switch on unlock screen. Ever
 
 | Home | Container | Own sync |
 |---|---|---|
-| This device | standalone file, kept in IndexedDB | none |
+| This device | standalone file, kept in IndexedDB; on desktop a file in the app data folder | none |
+| File (planned) | standalone file at a path the user picks: File System Access API on Chrome/Edge, any path on desktop | user's own (Dropbox, OneDrive, Syncthing) |
 | Folder | Markdown notes, Obsidian Bases compatible | user's own (Obsidian Sync, git, Syncthing) |
 
-Google Drive is a layer over either home, not a home of its own:
+- A file on disk is written atomically (a temp file renamed over it) and keeps the previous version beside it (`.bak`).
+- Desktop keeps device secrets (the lock-policy device key, the PIN slot) in the OS keychain (Windows Credential Manager / DPAPI, macOS Keychain), not in the WebView.
+
+Google Drive is a layer over any home, not a home of its own:
 
 | Drive | This device | Folder |
 |---|---|---|
 | Backups (sealed standalone snapshots, history) | ✓ | ✓ |
 | Sync (Drive holds the shared copy) | ✓ ("Google Drive" in onboarding) | - the folder's own sync owns it; a second channel would bring deleted records back |
 
-- **Standalone file** (`VaultFile` in `@so/core`, format v1): `format`, `version`, vault `id`, `slots.password` (its KDF params + the wrapped vault key) + `body` sealed with the vault key = JSONL of records. Nothing readable without unlock: no record count, ids or timestamps. A reader stops at a version or record it does not know rather than drop it at the next write.
+- **Standalone file** (`VaultFile` in `@so/core`, format v1): `format`, `version`, vault `id`, `slots.password` (its KDF params + the wrapped vault key) + `body` sealed with the vault key = JSONL of records. Nothing readable without unlock: no record count, ids or timestamps. A reader stops at a version or record it does not know rather than drop it at the next write. Inside, the body is JSONL; outside, one header, so nothing shows a line per record.
+- **Binary container** (to do, a format version bump, before the first release): magic bytes, the JSON header, then the raw sealed body, no base64 (a third smaller). Files on disk (`.sovault`), Drive and exports use it; IndexedDB keeps bytes, not strings.
 - **Folder**: `vault.md` header note + one note per record. Frontmatter (app-owned) = `public` fields + sealed `data` / `secret`; note body is user-owned and never touched. Note file name = nickname only if nickname is `public`, else record id.
 - Folder writes: Chrome/Edge via File System Access API (web, extension page), Obsidian plugin, desktop. Not in Firefox (no API).
 - `core` owns the model; each location is only a serializer + IO adapter.
