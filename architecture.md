@@ -153,15 +153,43 @@ The **vault key** is a random 256-bit secret, held after unlock as a non-extract
 - Option "master password on browser restart": PIN slot kept in `storage.session` only.
 
 ### Records
-Account = `{ ...public, ...data, ...secret }`. Each record also has a random `id` (UUID, not SteamID) and `updatedAt`. A deleted record stays as a tombstone (`{ id, updatedAt, deleted: true }`), so a sync tells a deletion from a record another copy never had.
+A record is `{ id, updatedAt, data, secret? }`: a random `id` (UUID, not SteamID), two sealed parts. A deleted record stays as a tombstone (`{ id, updatedAt, deleted: true }`), so a sync tells a deletion from a record another copy never had.
 
-| Part | Sealed with | Opened | Default fields |
+| Part | Sealed with | Opened | Holds |
 |---|---|---|---|
 | `public` | - (plaintext) | - | folder vault only: fields the user picks for Obsidian |
-| `data` | vault key | at unlock: list, search, sort | nickname, avatar, SteamID, stats, bans, login, note |
-| `secret` | vault key, or account key (locked account) | on demand, reference dropped after use | password, phone, email, linked credentials, authenticator |
+| `data` | vault key | at unlock: list, search, sort | the record kind and everything shown or searched |
+| `secret` | vault key, or account key (locked account) | on demand, reference dropped after use | credentials, authenticator, movable fields set secret |
 
-- User moves fields between `data` and `secret` (vault default + per account). Password, linked credentials and authenticator are always `secret` and never `public`.
+Record kinds (`data.kind`, a number): `SETTINGS` (one per vault), `ACCOUNT`, `TAG`, `PRESET`. Facts are stored, not what is shown: age comes from `registeredAt`, anonymous from `steamId === null`, the avatar tint from `id`.
+
+```ts
+interface AccountData {
+  kind: ACCOUNT
+  alias?: string                // the user's name; required when anonymous. Shown as alias, then the Steam nickname small and grey
+  steamId: string | null        // SteamID64; null = anonymous, credentials only
+  tags: string[]                // TAG record ids
+  pinned: boolean
+  order: string                 // fractional index: a move rewrites only the moved record, syncs merge reorders
+  addedAt: number
+  guard: boolean                // has an authenticator (kept in secret)
+  steam: SteamSnapshot | null   // the last refresh: nickname, avatar, level, registeredAt, visibility, vanity, bans, stats
+  login?: string; note?: string; phone?: string; email?: string   // movable fields set searchable
+}
+interface AccountSecret {
+  password: string
+  login?: string; note?: string; phone?: string; email?: string   // movable fields set secret
+  services: { kind; name?; fields: { kind; value }[] }[]          // linked credentials, up to 7
+  authenticator?: { sharedSecret; identitySecret; revocationCode; maFile }
+}
+TagData      { kind: TAG; label; hue }               // one record per tag: renames touch one record, syncs merge tags one by one
+SettingsData { kind: SETTINGS; fieldDefaults: Record<'login' | 'note' | 'phone' | 'email', 'searchable' | 'secret'> }
+SettingsSecret { steamApiKey? }
+PresetData   { kind: PRESET; name; appearance knobs; image? }   // synced appearance presets
+```
+
+- Movable fields: `login`, `note`, `phone`, `email`, one vault-wide placement (`fieldDefaults`, per-account placement skipped for now). Changing it moves (never copies) the field between parts in every account, after an explicit confirm in Settings. Nickname and alias always stay in `data`; password, linked credentials and authenticator always `secret`, never `public`.
+- Appearance stays device-local and themes the lock screen. Presets sync through the vault; a device applies one only when the user picks it, or follows one it was set to auto-apply.
 - Search and sort see only `public` + `data`.
 - Sealing: AES-256-GCM, random IV, AAD = record id + part name (blobs can't be swapped between records). WebCrypto only, no compression - sealed parts don't compress.
 - Same record format in every container; standalone additionally seals the whole body.
@@ -197,7 +225,10 @@ The old backend aggregated these calls and cached prices server-side for all use
 | Prices | `store.steampowered.com/api/appdetails?filters=price_overview&appids=...` |
 
 - Store API limit ~200 req / 5 min per IP → batch appids + request queue.
-- Games and prices cached in IndexedDB with TTL.
+- Caches live in IndexedDB beside the vault, never in its records (unlock stays fast), in two levels matched by id:
+  - per account: `games` (`appId`, playtime, last played) and `friends` (`steamId`, since);
+  - shared: `apps[appId]` (name, image, price per currency, `fetchedAt`) and `profiles[steamId]` (friends outside the vault). Refreshing one account updates them for all.
+  - TTL per entry; the user can sync them as a separate file next to the vault, sealed with the vault key (libraries and friends are personal). `steam.stats` in the record is computed from them at refresh, so the read-only web shows it without caches.
 - Batch refresh of many accounts streams results into UI as they arrive.
 
 ---
