@@ -86,14 +86,25 @@ function toAccount(
     }
 }
 
+// Every reader maps the same contents: once per change, which brings a new map.
+const mapped = new WeakMap<ReadonlyMap<string, unknown>, readonly Account[]>()
+
 /** The vault's accounts as the list shows them, in the vault order. */
-export function accountsIn(data: ReadonlyMap<string, unknown>): Account[] {
+export function accountsIn(
+    data: ReadonlyMap<string, unknown>,
+): readonly Account[] {
+    const cached = mapped.get(data)
+    if (cached) return cached
     const tags = new Map<string, AccountTag>()
     for (const [id, value] of data) {
         const tag = readTag(value)
         if (tag) tags.set(id, { label: tag.label, hue: tag.hue })
     }
-    return storedAccounts(data).map((account) => toAccount(account, tags))
+    const accounts = storedAccounts(data).map((account) =>
+        toAccount(account, tags),
+    )
+    mapped.set(data, accounts)
+    return accounts
 }
 
 /** New order keys for the moved accounts: between their neighbours in the whole vault order, so hidden ones keep their places. */

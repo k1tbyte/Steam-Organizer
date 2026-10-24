@@ -65,3 +65,32 @@ it('saves a change accepted before a lock', async () => {
     const reloaded = await reopened()
     expect(reloaded.accounts.value[0]?.pinned).toBe(true)
 })
+
+it('edits the alias and note, and deletes to a tombstone', async () => {
+    const session = useVaultSession()
+    await session.create('Main', PASSWORD)
+    const vault = useVaultAccounts()
+    for (const login of ['one', 'two'])
+        await vault.add({ login, password: 'hunter22', steamId: null })
+    const [one, two] = vault.accounts.value.map((account) => account.id) as [
+        string,
+        string,
+    ]
+    await vault.edit(one, { alias: 'Main', note: 'trade bot' })
+    expect(vault.accounts.value[0]).toMatchObject({
+        nickname: 'Main',
+        note: 'trade bot',
+    })
+    await vault.edit(one, { alias: undefined })
+    expect(vault.accounts.value[0]?.nickname).toBe('one')
+
+    await vault.remove([two])
+    expect(ids(vault)).toEqual(['one'])
+    expect(session.contents?.records.find((r) => r.id === two)).toMatchObject({
+        deleted: true,
+    })
+
+    const reloaded = await reopened()
+    expect(ids(reloaded)).toEqual(['one'])
+    expect(reloaded.accounts.value[0]?.note).toBe('trade bot')
+})

@@ -101,10 +101,20 @@ export const useVaultSession = defineStore('vault-session', () => {
         return loading
     }
 
+    const drafts = new Set<() => void>()
+
     function lock() {
+        // Drafts queue their writes while the key is still here; the queue lands them after.
+        for (const flush of drafts) flush()
         opened.value = null
         unlocked.value = false
         override.value = 'locked'
+    }
+
+    /** Runs `flush` at every lock, before the key drops; returns the unsubscribe. */
+    function onBeforeLock(flush: () => void) {
+        drafts.add(flush)
+        return () => drafts.delete(flush)
     }
 
     /** A vault was created, restored or unlocked. */
@@ -240,6 +250,7 @@ export const useVaultSession = defineStore('vault-session', () => {
         contents: computed(() => opened.value?.contents ?? null),
         load,
         lock,
+        onBeforeLock,
         open,
         unlock,
         verify,

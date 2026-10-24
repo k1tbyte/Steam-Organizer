@@ -61,6 +61,18 @@ it('changes the master password of the open vault', async () => {
     )
 })
 
+it('lets drafts flush before the key drops', async () => {
+    const session = await reload()
+    await session.create('Main', PASSWORD)
+    let open: unknown = null
+    session.onBeforeLock(() => {
+        open = session.contents
+    })
+    session.lock()
+    expect(open).not.toBeNull()
+    expect(session.contents).toBeNull()
+})
+
 it('keeps the key dropped when the vault locks during a password change', async () => {
     const session = await reload()
     await session.create('Main', PASSWORD)

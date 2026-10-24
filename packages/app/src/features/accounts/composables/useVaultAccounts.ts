@@ -60,8 +60,9 @@ export function useVaultAccounts() {
         patches: (
             accounts: StoredAccount[],
         ) => ReadonlyMap<string, Partial<AccountData>>,
-    ) {
-        if (!onVault.value) return
+    ): Promise<void> {
+        // A sample keeps only the view store's pins and order.
+        if (!onVault.value) return Promise.resolve()
         const write = session.transact(async (contents, key) => {
             const now = Date.now()
             const accounts = storedAccounts(contents.data)
@@ -78,6 +79,7 @@ export function useVaultAccounts() {
             )
         })
         view.settle(write).catch((error) => reportError(error, 'accounts'))
+        return write
     }
 
     function setPinned(ids: Iterable<string>, pinned: boolean) {
@@ -163,5 +165,24 @@ export function useVaultAccounts() {
             })
         },
         add,
+        /** The user's own fields of one account; an alias left out shows the Steam nickname. */
+        edit(id: string, patch: Partial<Pick<AccountData, 'alias' | 'note'>>) {
+            return rewrite(() => new Map([[id, patch]]))
+        },
+        /** Leaves a tombstone, so a sync tells the deletion from an account another copy never had. */
+        remove(ids: Iterable<string>): Promise<void> {
+            if (!onVault.value) return Promise.resolve()
+            const picked = new Set(ids)
+            return session.transact(async (contents) => {
+                const updatedAt = Date.now()
+                return storedAccounts(contents.data)
+                    .filter(({ id }) => picked.has(id))
+                    .map(({ id }) => ({
+                        id,
+                        updatedAt,
+                        deleted: true as const,
+                    }))
+            })
+        },
     }
 }

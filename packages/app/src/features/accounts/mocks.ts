@@ -6,7 +6,7 @@ import type { Account, BanKind, RefreshProgress, SteamLookup } from './model'
 export const DEMO_STEAM_PASSWORD = '********'
 
 export interface AccountsSample {
-    accounts: Account[]
+    accounts: readonly Account[]
     /** Seeds the search box when the sample is picked, so a sample can open on "no results". */
     query?: string
 }

@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 
 import { NOTE_MAX_LENGTH } from '../model'
 
-/** Notes edited this session, per account id; saving to the vault is an intent that has no listener yet. */
+/** Notes typed this session, per account id: the field shows them at once, the vault gets them after a pause. */
 export const useProfileNotesStore = defineStore('profile-notes', () => {
     const edited = ref<Record<string, string>>({})
 
