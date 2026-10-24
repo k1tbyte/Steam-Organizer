@@ -55,7 +55,7 @@ export function useVaultStep() {
             recommended: false,
             unavailable:
                 canWriteFolders.value === false
-                    ? t('Not available in Firefox')
+                    ? t('Not available in this browser')
                     : undefined,
         },
     ])

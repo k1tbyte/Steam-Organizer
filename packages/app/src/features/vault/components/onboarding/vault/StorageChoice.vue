@@ -30,7 +30,7 @@ const { t } = useI18n()
                 <span
                     v-if="option.unavailable"
                     class="mt-0.5 flex items-center gap-1.5 font-medium text-12.5 text-fg-2">
-                    <FpIcon name="icon-[simple-icons--firefoxbrowser]" class="text-13" aria-hidden="true" />
+                    <FpIcon name="icon-[lucide--circle-alert]" class="text-13" aria-hidden="true" />
                     {{ option.unavailable }}
                 </span>
             </span>

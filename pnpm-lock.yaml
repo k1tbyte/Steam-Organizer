@@ -264,6 +264,9 @@ importers:
 
   packages/app:
     dependencies:
+      '@so/core':
+        specifier: workspace:*
+        version: link:../core
       '@so/ui':
         specifier: workspace:*
         version: link:../ui
@@ -286,6 +289,9 @@ importers:
         specifier: ^5.4.0
         version: 5.4.0(@vue/compiler-sfc@3.5.44)(pinia@4.1.0(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.44(typescript@6.0.3)))(rolldown@1.2.14)(rollup@4.64.10)(vite@8.3.4(jiti@2.7.0)(terser@5.51.2))(vue@3.5.44(typescript@6.0.3))
     devDependencies:
+      fake-indexeddb:
+        specifier: ^6.2.6
+        version: 6.2.6
       typescript:
         specifier: ~6.0.3
         version: 6.0.3

@@ -8,6 +8,7 @@ const VIEW = { unlocked: 'accounts', locked: 'locked', new: 'setup' } as const
 /** The popup's chrome: which screen the vault session allows, and the header's actions. */
 export function usePopupFrame() {
     const session = useVaultSession()
+    void session.load()
     const platform = usePlatform()
 
     return {

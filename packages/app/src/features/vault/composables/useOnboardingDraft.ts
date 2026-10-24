@@ -8,6 +8,8 @@ export interface OnboardingDraft {
     location: VaultLocation
     signedInToGoogle: boolean
     folderChosen: boolean
+    /** The master password, held until the last step creates the vault. */
+    password: string
 }
 
 const DRAFT: InjectionKey<OnboardingDraft> = Symbol('onboarding-draft')
@@ -18,6 +20,7 @@ export function provideOnboardingDraft(): OnboardingDraft {
         location: 'drive',
         signedInToGoogle: false,
         folderChosen: false,
+        password: '',
     })
     provide(DRAFT, draft)
     return draft

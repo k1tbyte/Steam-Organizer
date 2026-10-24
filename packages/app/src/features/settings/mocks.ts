@@ -108,6 +108,3 @@ export const steamMock = defineMock<SteamAccess>(
         },
     },
 )
-
-/** Stands in for the vault check of the current master password. */
-export const DEMO_MASTER_PASSWORD = 'demo'

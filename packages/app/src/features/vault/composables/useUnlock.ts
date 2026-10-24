@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { useMock } from '#core'
 
 import { vaultsMock } from '../mocks'
-import { LOCATION_ICON, type UnlockMethod } from '../model'
+import { type Credential, LOCATION_ICON, type UnlockMethod } from '../model'
 import { isPinLocked, PIN_LENGTH, pinTriesLeft } from '../services/pinAttempts'
 import { useVaultSession } from '../stores/useVaultSession'
 
@@ -27,7 +27,18 @@ export function useUnlock() {
     const { t } = useI18n()
     const session = useVaultSession()
     const desktop = useDesktopLayout()
-    const vaults = useMock(() => undefined, vaultsMock)
+    // Vaults on this device open with the master password only until PIN and Hello slots exist.
+    const vaults = useMock(
+        () =>
+            session.vaults.map((item) => ({
+                id: item.id,
+                name: item.name,
+                location: item.home,
+                meta: item.home === 'device' ? t('This device') : t('Folder'),
+                methods: ['pw' as const],
+            })),
+        vaultsMock,
+    )
     const timer = useTimer()
     const pauseTimer = useTimer()
 
@@ -125,10 +136,20 @@ export function useUnlock() {
         timer.arm(OPENING_MS, session.open)
     }
 
+    // An answer for a vault picked away meanwhile is dropped, with the key it unwrapped.
+    async function attempt(credential: Credential) {
+        const forVault = vault.value?.id
+        const result = await session.unlock(credential, forVault)
+        if (vault.value?.id === forVault) return result
+        if (result === 'opened') session.lock()
+        return null
+    }
+
     async function submitPin() {
         if (pin.value.length < PIN_LENGTH) return
-        const ok = await session.verify({ method: 'pin', pin: pin.value })
-        if (ok) return succeed()
+        const result = await attempt({ method: 'pin', pin: pin.value })
+        if (result === null) return
+        if (result === 'opened') return succeed()
         wrongPins.value++
         failedAttempts.value++
         pin.value = ''
@@ -166,11 +187,18 @@ export function useUnlock() {
 
     async function submitPassword() {
         if (password.value === '' || passwordPaused.value) return
-        const ok = await session.verify({
+        const result = await attempt({
             method: 'pw',
             password: password.value,
         })
-        if (ok) return succeed()
+        if (result === null) return
+        if (result === 'opened') return succeed()
+        if (result === 'unreadable') {
+            passwordError.value = t(
+                "Can't open this vault: the file is damaged or newer",
+            )
+            return
+        }
         wrongPasswords.value++
         failedAttempts.value++
         if (wrongPasswords.value >= PASSWORD_TRIES_BEFORE_PAUSE) {
@@ -194,11 +222,9 @@ export function useUnlock() {
     async function startHello() {
         if (waitingForHello.value) return
         waitingForHello.value = true
-        const forVault = vault.value?.id
-        const ok = await session.verify({ method: 'bio' })
+        const result = await attempt({ method: 'bio' })
         waitingForHello.value = false
-        // Hello approved the vault it was started for, not one picked meanwhile.
-        if (ok && vault.value?.id === forVault) succeed()
+        if (result === 'opened') succeed()
     }
 
     function switchToPassword() {

@@ -87,6 +87,7 @@ const view = useChangePassword(open)
                     form="change-master-password"
                     color="accent"
                     :disabled="!view.canSubmit.value"
+                    :loading="view.saving.value"
                     :label="t('Change password')" />
             </template>
         </template>

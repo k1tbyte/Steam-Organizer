@@ -21,8 +21,7 @@ Mockup: `Settings.dc.html` (Settings · Desktop, Settings · Mobile, Settings ·
 | `settings.google` (Alex Kim, Long identity) | Sync identity card, "Synced N min ago" line on the sync card and the phone index | backups feature's Drive sign-in and sync | `sources/useDriveSync` |
 | `settings.backups` (Seven backups, One backup, None) | Backup history line, "also delete N backups" in reset | backups feature's backup list | `sources/useBackupsInfo` |
 | `settings.steam` (Firefox key set, Chromium all allowed, No key) | API key, "Works" mark, site Allowed / Allow, Firefox note | vault's stored key and a Steam key check; browser site permissions and the browser kind (`Platform` has none yet) | `sources/useSteamAccess` |
-| `DEMO_MASTER_PASSWORD` (`demo`) | Change master password: current password check | vault key unwrap | `sources/useMasterPassword` |
 
 Local state until the owners exist, all in `stores/settingsStore.ts`: lock timeout, master password after restart, PIN and biometrics flags, Google connected flag, Auto sync, interval, Auto backup, Sync now (1.2 s), field secrecy defaults, API key edits, allowed sites. They start at the mockup's values and are not persisted.
 
-Unwired intents: "Update to ..." in the nav footer, Lock vault on the phone vault card, PIN Change (setup flow), Rename, Export, Import, and the done step of Reset vault ("Import a file", "Create new vault" only close the dialog). The reset's final hold and the password change finish locally without touching a vault.
+Unwired intents: "Update to ..." in the nav footer, Lock vault on the phone vault card, PIN Change (setup flow), Rename, Export, Import, and the done step of Reset vault ("Import a file", "Create new vault" only close the dialog). The reset's final hold finishes locally without touching a vault. Change master password rewraps the open vault through `useVaultSession().changePassword`; with no real vault open it takes the demo `demo`.

@@ -1,7 +1,12 @@
 import { computed, type Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { MIN_MASTER_LENGTH, passwordStrength, type StrengthLevel } from '#core'
-import { useMasterPassword } from '../../composables/sources/useMasterPassword'
+import {
+    MIN_MASTER_LENGTH,
+    passwordStrength,
+    reportError,
+    type StrengthLevel,
+} from '#core'
+import { useVaultSession } from '#features/vault'
 import { canChangePassword, repeatState } from '../../services/passwordChange'
 
 const STRENGTH_TONES = [
@@ -14,7 +19,7 @@ const STRENGTH_TONES = [
 
 export function useChangePassword(open: Ref<boolean>) {
     const { t } = useI18n()
-    const masterPassword = useMasterPassword()
+    const session = useVaultSession()
     const current = ref('')
     const next = ref('')
     const repeat = ref('')
@@ -22,6 +27,7 @@ export function useChangePassword(open: Ref<boolean>) {
     // Never resets: the field shakes on every wrong password.
     const failedAttempts = ref(0)
     const done = ref(false)
+    const saving = ref(false)
 
     // The flow restarts when it opens, so the success state survives the exit animation.
     watch(open, (isOpen) => {
@@ -67,12 +73,21 @@ export function useChangePassword(open: Ref<boolean>) {
         }),
     )
 
-    function submit() {
-        if (!canSubmit.value) return
-        if (masterPassword.verify(current.value)) done.value = true
-        else {
-            currentError.value = t('Wrong master password')
-            failedAttempts.value++
+    async function submit() {
+        if (!canSubmit.value || saving.value) return
+        saving.value = true
+        try {
+            if (await session.changePassword(current.value, next.value))
+                done.value = true
+            else {
+                currentError.value = t('Wrong master password')
+                failedAttempts.value++
+            }
+        } catch (error) {
+            reportError(error, 'settings-password')
+            currentError.value = t("Couldn't save the new password")
+        } finally {
+            saving.value = false
         }
     }
 
@@ -90,6 +105,7 @@ export function useChangePassword(open: Ref<boolean>) {
         repeatMatches,
         repeatError,
         canSubmit,
+        saving,
         submit,
     }
 }

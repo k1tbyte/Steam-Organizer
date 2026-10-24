@@ -4,11 +4,14 @@ import { useRouter } from 'vue-router'
 
 import { MIN_MASTER_LENGTH, passwordStrength } from '#core'
 
+import { useOnboardingDraft } from './useOnboardingDraft'
+
 const TONES = ['neutral', 'danger', 'warning', 'success', 'success'] as const
 
 export function useMasterPassword() {
     const { t } = useI18n()
     const router = useRouter()
+    const draft = useOnboardingDraft()
 
     const password = ref('')
     const repeat = ref('')
@@ -40,8 +43,9 @@ export function useMasterPassword() {
     )
 
     function create() {
-        // The vault itself is created when storage is wired; the demo moves on.
-        if (canCreate.value) void router.push('/welcome/steam')
+        if (!canCreate.value) return
+        draft.password = password.value
+        void router.push('/welcome/steam')
     }
 
     return {

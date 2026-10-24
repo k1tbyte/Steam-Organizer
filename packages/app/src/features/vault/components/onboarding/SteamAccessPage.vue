@@ -8,7 +8,7 @@ import OnboardingStep from './OnboardingStep.vue'
 
 const { t } = useI18n()
 const { buttonSize } = useOnboardingFrame()
-const { granted, apiKey, grant, finish } = useSteamAccess()
+const { granted, apiKey, creating, grant, finish } = useSteamAccess()
 </script>
 
 <template>
@@ -74,8 +74,8 @@ const { granted, apiKey, grant, finish } = useSteamAccess()
 
         <template #cta>
             <div class="flex gap-2">
-                <FpButton variant="ghost" :size="buttonSize" @click="finish">{{ t('Skip for now') }}</FpButton>
-                <FpButton color="accent" class="flex-1" :size="buttonSize" @click="finish">
+                <FpButton variant="ghost" :size="buttonSize" :disabled="creating" @click="finish">{{ t('Skip for now') }}</FpButton>
+                <FpButton color="accent" class="flex-1" :size="buttonSize" :loading="creating" @click="finish">
                     {{ t('Open accounts') }}
                 </FpButton>
             </div>

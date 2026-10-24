@@ -20,6 +20,9 @@ export interface VaultSummary {
     methods: UnlockMethod[]
 }
 
+/** `unreadable`: a damaged file or a newer format, which no credential opens. */
+export type UnlockResult = 'opened' | 'wrong' | 'unreadable'
+
 export type Credential =
     | { method: 'bio' }
     | { method: 'pin'; pin: string }

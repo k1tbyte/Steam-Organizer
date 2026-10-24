@@ -59,7 +59,11 @@ export function installVaultGuard(router: Router) {
     const targetFor = (route: RouteLocationNormalizedGeneric) =>
         redirectFor(useVaultSession().state, route.meta.vaultAccess)
 
-    router.beforeEach((to) => targetFor(to) ?? true)
+    // The first navigation waits for the vaults on this device.
+    router.beforeEach(async (to) => {
+        await useVaultSession().load()
+        return targetFor(to) ?? true
+    })
 
     // Pinia is installed by the time the first navigation settles.
     void router.isReady().then(() => {
