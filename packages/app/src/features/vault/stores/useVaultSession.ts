@@ -1,11 +1,14 @@
 import {
     createVault,
     changePassword as rewrapPassword,
+    type SealedRecord,
     type StoredVault,
     unlockVault,
+    type VaultFile,
     type VaultKey,
     vaultStore,
     WrongPasswordError,
+    writeRecords,
 } from '@so/core'
 import { defineStore } from 'pinia'
 import { computed, ref, shallowRef, watch } from 'vue'
@@ -14,6 +17,18 @@ import { reportError, useMock } from '#core'
 
 import { DEMO_PASSWORD, DEMO_PIN, sessionMock } from '../mocks'
 import type { Credential, SessionState, UnlockResult } from '../model'
+import {
+    EMPTY_CONTENTS,
+    openContents,
+    type VaultContents,
+    withChanges,
+} from '../services/vaultContents'
+
+interface OpenVault {
+    vault: StoredVault
+    key: VaultKey
+    contents: VaultContents
+}
 
 // Stands in for the Windows Hello prompt.
 const HELLO_DELAY_MS = 1300
@@ -48,9 +63,14 @@ export const useVaultSession = defineStore('vault-session', () => {
     const vaults = shallowRef<StoredVault[] | null>(null)
     let loading: Promise<void> | null = null
     // Unwrapped by unlock, kept through the opening animation until `open()`.
-    const opened = shallowRef<{ vault: StoredVault; key: VaultKey } | null>(
-        null,
-    )
+    const opened = shallowRef<OpenVault | null>(null)
+    // One writer at a time: each change reads the latest file inside the queue, so none restores an older one.
+    let queue: Promise<unknown> = Promise.resolve()
+    function serial<T>(task: () => Promise<T>): Promise<T> {
+        const run = queue.then(task)
+        queue = run.catch(() => {})
+        return run
+    }
     const unlocked = ref(false)
 
     const real = computed<SessionState | undefined>(() => {
@@ -106,8 +126,18 @@ export const useVaultSession = defineStore('vault-session', () => {
         if (credential.method !== 'pw') return 'wrong'
         const key = await opens(vault, credential.password)
         if (typeof key === 'string') return key
-        opened.value = { vault, key }
-        return 'opened'
+        // In the queue, from the latest file: a write that lands meanwhile is never undone.
+        return serial(async () => {
+            const latest = storedVault(vault.id) ?? vault
+            try {
+                const contents = await openContents(key, latest.file)
+                opened.value = { vault: latest, key, contents }
+                return 'opened'
+            } catch (error) {
+                reportError(error, 'vault-session', { vault: vault.id })
+                return 'unreadable'
+            }
+        })
     }
 
     /** Checks the open vault's master password without touching the session. */
@@ -116,6 +146,10 @@ export const useVaultSession = defineStore('vault-session', () => {
         if (!vault || credential.method !== 'pw') return demoVerify(credential)
         return typeof (await opens(vault, credential.password)) !== 'string'
     }
+
+    // Inside the queue the list holds each vault's latest file: every save lands there, lock or not.
+    const storedVault = (id: string) =>
+        vaults.value?.find((item) => item.id === id)
 
     function remember(vault: StoredVault) {
         vaults.value = [
@@ -130,35 +164,80 @@ export const useVaultSession = defineStore('vault-session', () => {
         const vault: StoredVault = { id: file.id, name, home: 'device', file }
         await vaultStore.put(vault)
         // One synchronous step: the guard never sees the stored vault as locked.
-        opened.value = { vault, key }
+        opened.value = { vault, key, contents: EMPTY_CONTENTS }
         open()
         remember(vault)
     }
 
-    async function changePassword(
-        current: string,
-        next: string,
-    ): Promise<boolean> {
+    async function save(
+        stored: StoredVault,
+        file: VaultFile,
+        contents?: VaultContents,
+    ) {
+        const vault = { ...stored, file }
+        await vaultStore.put(vault)
+        // A lock meanwhile keeps the key dropped; the list still takes the new file, or the old one would open again.
         const active = opened.value
-        if (!active) return demoVerify({ method: 'pw', password: current })
-        try {
-            const file = await rewrapPassword(active.vault.file, current, next)
-            const vault = { ...active.vault, file }
-            await vaultStore.put(vault)
-            // A lock meanwhile keeps the key dropped; the list still takes the new file, or the old password would open it.
-            if (opened.value === active)
-                opened.value = { vault, key: active.key }
-            remember(vault)
-            return true
-        } catch (error) {
-            if (error instanceof WrongPasswordError) return false
-            throw error
-        }
+        if (active?.vault.id === vault.id)
+            opened.value = {
+                vault,
+                key: active.key,
+                contents: contents ?? active.contents,
+            }
+        remember(vault)
+    }
+
+    /** Writes the records `change` returns to the vault open now; it runs in the queue on the latest records, so changes to one record never overwrite each other. */
+    function transact(
+        change: (
+            contents: VaultContents,
+            key: VaultKey,
+        ) => Promise<readonly SealedRecord[]>,
+    ): Promise<void> {
+        const target = opened.value
+        if (!target) return Promise.resolve()
+        const { key } = target
+        return serial(async () => {
+            const vault = storedVault(target.vault.id)
+            if (!vault) return
+            // A lock meanwhile still lets an accepted change land, on records read again from the file.
+            const current =
+                opened.value?.vault === vault
+                    ? opened.value.contents
+                    : await openContents(key, vault.file)
+            const changed = await change(current, key)
+            if (changed.length === 0) return
+            const contents = await withChanges(key, current, changed)
+            const file = await writeRecords(key, vault.file, contents.records)
+            await save(vault, file, contents)
+        })
+    }
+
+    function changePassword(current: string, next: string): Promise<boolean> {
+        const id = opened.value?.vault.id
+        if (id === undefined)
+            return demoVerify({ method: 'pw', password: current })
+        return serial(async () => {
+            const vault = storedVault(id)
+            if (!vault) return false
+            try {
+                await save(
+                    vault,
+                    await rewrapPassword(vault.file, current, next),
+                )
+                return true
+            } catch (error) {
+                if (error instanceof WrongPasswordError) return false
+                throw error
+            }
+        })
     }
 
     return {
         state,
         vaults: computed(() => vaults.value ?? []),
+        /** The open vault's records; null while none is open (mock mode, the demo restore). */
+        contents: computed(() => opened.value?.contents ?? null),
         load,
         lock,
         open,
@@ -166,5 +245,6 @@ export const useVaultSession = defineStore('vault-session', () => {
         verify,
         create,
         changePassword,
+        transact,
     }
 })

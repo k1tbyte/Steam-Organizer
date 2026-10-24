@@ -25,7 +25,7 @@ const form = reactive(useAddAccountForm(overlay.open))
         </template>
         <template #footer>
             <FpButton variant="ghost" :label="t('Cancel')" @click="overlay.open.value = false" />
-            <FpButton type="submit" form="add-account" color="accent" :disabled="!form.canAdd">
+            <FpButton type="submit" form="add-account" color="accent" :loading="form.saving" :disabled="!form.canAdd">
                 {{ t('Add account') }}
                 <span class="rounded bg-accent-fg/15 px-1 font-medium font-mono text-11">↵</span>
             </FpButton>
@@ -47,6 +47,7 @@ const form = reactive(useAddAccountForm(overlay.open))
                 color="accent"
                 size="lg"
                 class="justify-self-end font-semibold!"
+                :loading="form.saving"
                 :disabled="!form.canAdd"
                 :label="t('Add')" />
         </div>

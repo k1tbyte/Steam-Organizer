@@ -124,6 +124,7 @@ User picks where each vault lives; several vaults, switch on unlock screen. Ever
 | Folder | Markdown notes, Obsidian Bases compatible | user's own (Obsidian Sync, git, Syncthing) |
 
 - A file on disk is written atomically (a temp file renamed over it) and keeps the previous version beside it (`.bak`).
+- One writer per vault across tabs and the popup (to do): each write holds a Web Lock (`navigator.locks`) on the vault id, rereads the stored file inside it and reopens when it changed; a `BroadcastChannel` tells the other contexts to reload. Today each context writes from its own copy, so two open tabs can undo each other's writes.
 - Desktop keeps device secrets (the lock-policy device key, the PIN slot) in the OS keychain (Windows Credential Manager / DPAPI, macOS Keychain), not in the WebView.
 
 Google Drive is a layer over any home, not a home of its own:
@@ -217,6 +218,7 @@ Own password on a single account, asked even in an unlocked vault. Any length (P
 2. Clients check Drive on focus, manual sync or interval.
 3. Merge by record: newer `updatedAt` wins per account, deletions kept as tombstones. Concurrent edits of different accounts never conflict. Inside one account, after opening both copies, the user fields come from the newer `editedAt` and `steam` from the newer `refreshedAt`: a bulk refresh on one device never overwrites a note edited on another.
 4. Tombstones are purged with the sync (to do): older than N days once every copy synced past them; a copy offline longer than that can bring a deleted record back.
+5. Order keys stay unique (to do): two devices adding at the end take the same key, and no key fits between equal neighbours, so a move there fails. The merge rekeys a tied run.
 
 ---
 

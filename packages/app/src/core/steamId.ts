@@ -42,6 +42,35 @@ export function toSteamId64(accountId: string): string {
     return (INDIVIDUAL_BASE + BigInt(accountId)).toString()
 }
 
+export function toAccountId(steamId64: string): string {
+    return (BigInt(steamId64) - INDIVIDUAL_BASE).toString()
+}
+
+/** The account ID in what the user typed; null for a vanity name or a friend code, which need Steam. */
+export function parseAccountId(raw: string): string | null {
+    const value = raw.trim()
+    switch (detectSteamId(value)) {
+        case 'account-id':
+            return value
+        case 'steamid64':
+            return toAccountId(value)
+        case 'steam2': {
+            const [, low = '', high = ''] = value.split(':')
+            return (BigInt(high) * 2n + BigInt(low)).toString()
+        }
+        case 'steam3':
+            return value.slice(5, -1)
+        case 'steam3-hex':
+            return BigInt(`0x${value.slice(-8)}`).toString()
+        case 'profile-url': {
+            const id = /\/profiles\/(\d{17})/i.exec(value)?.[1]
+            return id ? toAccountId(id) : null
+        }
+        default:
+            return null
+    }
+}
+
 export interface SteamIdLookups {
     /** Both come from Steam, not from the account ID: the friend code is a hash, a vanity URL is chosen. */
     friendCode: string | null

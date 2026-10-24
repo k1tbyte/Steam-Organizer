@@ -1,4 +1,4 @@
-import { detectSteamId } from '../../../core/steamId'
+import { detectSteamId, parseAccountId } from '../../../core/steamId'
 
 export const MIN_PASSWORD_LENGTH = 6
 
@@ -10,6 +10,7 @@ export interface NewAccountInput {
 
 export interface ExistingAccounts {
     logins: string[]
+    /** Account IDs. */
     steamIds: string[]
 }
 
@@ -25,18 +26,17 @@ export function validateNewAccount(
     existing: ExistingAccounts,
 ): { errors: NewAccountErrors; canAdd: boolean } {
     const name = login.trim().toLowerCase()
-    const id = steamId.trim()
+    const accountId = parseAccountId(steamId)
     const errors: NewAccountErrors = {
         login: name !== '' && existing.logins.includes(name) ? 'taken' : null,
         password:
             password !== '' && password.length < MIN_PASSWORD_LENGTH
                 ? 'short'
                 : null,
-        // The mockup compares the typed text with stored IDs as is, not across formats.
         steamId:
-            detectSteamId(id) === 'unknown'
+            detectSteamId(steamId) === 'unknown'
                 ? 'unrecognized'
-                : id !== '' && existing.steamIds.includes(id)
+                : accountId !== null && existing.steamIds.includes(accountId)
                   ? 'taken'
                   : null,
     }

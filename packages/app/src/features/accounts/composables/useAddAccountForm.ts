@@ -1,13 +1,22 @@
+import { useToast } from '@so/ui'
 import { useTimer } from '@so/ui/useTimer'
 import { computed, type Ref, ref, type UnwrapNestedRefs, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { detectSteamId, type SteamIdFormat, useMock } from '#core'
+import {
+    detectSteamId,
+    parseAccountId,
+    reportError,
+    type SteamIdFormat,
+    toSteamId64,
+    useCloseOnSuccess,
+    useMock,
+} from '#core'
 
 import { lookupMock } from '../mocks'
 import { validateNewAccount } from '../services/newAccount'
 import { useBanLabels } from './useBanLabels'
-import { useVaultAccounts } from './useVaultAccounts'
+import { type AddResult, useVaultAccounts } from './useVaultAccounts'
 
 const LOOKUP_MS = 900
 
@@ -15,7 +24,9 @@ const LOOKUP_MS = 900
 export function useAddAccountForm(open: Ref<boolean>) {
     const { t } = useI18n()
     const timer = useTimer()
-    const { accounts } = useVaultAccounts()
+    const { accounts, add } = useVaultAccounts()
+    const toast = useToast()
+    const closeOnSuccess = useCloseOnSuccess(open)
     // The Steam profile has no source yet.
     const lookup = useMock(() => undefined, lookupMock)
     const banLabels = useBanLabels()
@@ -26,6 +37,12 @@ export function useAddAccountForm(open: Ref<boolean>) {
     const maFileName = ref<string | null>(null)
     const lookingUp = ref(false)
     const looked = ref(false)
+    const saving = ref(false)
+    // What the vault refused on Add: a login only its tag matches, or one saved meanwhile.
+    const refused = ref<Exclude<AddResult, 'added'> | null>(null)
+    watch([login, steamId], () => {
+        refused.value = null
+    })
 
     const existing = computed(() => {
         return {
@@ -86,7 +103,12 @@ export function useAddAccountForm(open: Ref<boolean>) {
         looked.value = false
     })
 
-    const steamIdError = computed(() => checks.value.errors.steamId)
+    const steamIdError = computed(() =>
+        refused.value === 'steam-taken' ? 'taken' : checks.value.errors.steamId,
+    )
+    const canAdd = computed(
+        () => checks.value.canAdd && refused.value === null && !saving.value,
+    )
 
     return {
         login,
@@ -97,7 +119,9 @@ export function useAddAccountForm(open: Ref<boolean>) {
             format.value ? formatLabels.value[format.value] : null,
         ),
         loginError: computed(() =>
-            checks.value.errors.login ? t('Already in your vault') : undefined,
+            checks.value.errors.login || refused.value === 'login-taken'
+                ? t('Already in your vault')
+                : undefined,
         ),
         passwordError: computed(() =>
             checks.value.errors.password
@@ -141,16 +165,39 @@ export function useAddAccountForm(open: Ref<boolean>) {
                               .join(', '),
             }
         }),
-        canAdd: computed(() => checks.value.canAdd),
+        canAdd,
+        saving,
         attachMaFile: (files: File[]) => {
             maFileName.value = files[0]?.name ?? null
         },
         removeMaFile: () => {
             maFileName.value = null
         },
-        // Saving waits on the vault: Add only closes the overlay for now.
         submit: () => {
-            if (checks.value.canAdd) open.value = false
+            if (!canAdd.value) return
+            const accountId = parseAccountId(steamId.value)
+            const account = {
+                login: login.value,
+                password: password.value,
+                steamId: accountId && toSteamId64(accountId),
+            }
+            saving.value = true
+            return closeOnSuccess(async () => {
+                try {
+                    const result = await add(account)
+                    if (result !== 'added') refused.value = result
+                    return result === 'added'
+                } catch (error) {
+                    reportError(error, 'add-account')
+                    toast.add({
+                        color: 'danger',
+                        title: t("Couldn't save the account"),
+                    })
+                    return false
+                } finally {
+                    saving.value = false
+                }
+            })
         },
     }
 }

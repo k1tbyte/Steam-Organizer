@@ -20,6 +20,7 @@ import {
     type Group,
     groupGeometry,
     moveItems,
+    placementIn,
 } from '../../services/reorder'
 import { useAccountRows } from '../useAccountRows'
 import { useVaultAccounts } from '../useVaultAccounts'
@@ -190,10 +191,13 @@ export function useReorderGrid(
         if (!current || current.to === null || !holds(current, current.group))
             return
         const accounts = members(current.group)
-        const next = moveItems(accounts, current.from, current.to)
+        const count = current.from.length
+        // A stack dropped on the last cards lands where it fits.
+        const to = Math.min(current.to, accounts.length - count)
+        const next = moveItems(accounts, current.from, to)
         if (next.every((account, index) => account === accounts[index])) return
-        vault.reorderGroup(next.map((a) => a.id))
-        const at = { position: current.to + 1, count: accounts.length }
+        vault.move(placementIn(next, to, count))
+        const at = { position: to + 1, count: accounts.length }
         announcement.value =
             current.ids.length > 1
                 ? t('{moved} accounts, position {position} of {count}', {
@@ -201,7 +205,7 @@ export function useReorderGrid(
                       ...at,
                   })
                 : t('{name}, position {position} of {count}', {
-                      name: next[current.to]?.nickname,
+                      name: next[to]?.nickname,
                       ...at,
                   })
     }

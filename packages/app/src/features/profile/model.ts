@@ -1,15 +1,10 @@
+import type { CredentialKind } from '@so/core'
+
 import type { BanKind } from '#features/accounts'
 
-export type Visibility = 'public' | 'friends' | 'private'
+export { CREDENTIAL_KINDS, type CredentialKind } from '@so/core'
 
-export const CREDENTIAL_KINDS = [
-    'login',
-    'email',
-    'password',
-    'secret-word',
-    'phone',
-] as const
-export type CredentialKind = (typeof CREDENTIAL_KINDS)[number]
+export type Visibility = 'public' | 'friends' | 'private'
 
 /** Shown masked until revealed. */
 export const SECRET_KINDS: readonly CredentialKind[] = [

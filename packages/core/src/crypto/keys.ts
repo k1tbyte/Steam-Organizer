@@ -8,10 +8,12 @@ const SALT_BYTES = 16
 const SLOT = 'slot:password'
 const text = new TextEncoder()
 
-/** The unlocked vault; neither key is extractable. The root stays for keys derived later (locked accounts). */
+/** The unlocked vault; no key is extractable. The root stays for keys derived later (locked accounts). */
 export interface VaultKey {
     readonly root: CryptoKey
     readonly records: CryptoKey
+    /** HMAC for `loginTag`. */
+    readonly logins: CryptoKey
 }
 
 /** The vault secret, wrapped by a key derived from the master password. */
@@ -20,7 +22,15 @@ export interface PasswordSlot {
     key: Sealed
 }
 
-function derive(root: CryptoKey, info: string, usages: KeyUsage[]) {
+function derive(
+    root: CryptoKey,
+    info: string,
+    usages: KeyUsage[],
+    algorithm: AesKeyGenParams | HmacImportParams = {
+        name: 'AES-GCM',
+        length: 256,
+    },
+) {
     return crypto.subtle.deriveKey(
         {
             name: 'HKDF',
@@ -29,7 +39,7 @@ function derive(root: CryptoKey, info: string, usages: KeyUsage[]) {
             info: text.encode(info),
         },
         root,
-        { name: 'AES-GCM', length: 256 },
+        algorithm,
         false,
         usages,
     )
@@ -68,7 +78,18 @@ async function vaultKey(root: CryptoKey): Promise<VaultKey> {
     return {
         root,
         records: await derive(root, 'records', ['encrypt', 'decrypt']),
+        logins: await derive(root, 'login-tag', ['sign'], {
+            name: 'HMAC',
+            hash: 'SHA-256',
+        }),
     }
+}
+
+/** The login's tag: 16 bytes of its HMAC, case and outer spaces ignored as Steam ignores them. */
+export async function loginTag(key: VaultKey, login: string): Promise<string> {
+    const normalized = text.encode(login.trim().toLowerCase())
+    const mac = await crypto.subtle.sign('HMAC', key.logins, normalized)
+    return new Uint8Array(mac, 0, TAG_BYTES).toBase64()
 }
 
 async function passwordSlot(

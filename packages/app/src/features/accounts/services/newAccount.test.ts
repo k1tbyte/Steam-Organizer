@@ -45,7 +45,7 @@ describe('validateNewAccount', () => {
                 .errors.steamId,
         ).toBe('unrecognized')
         const taken = validateNewAccount(
-            { ...valid, steamId: '1084529371' },
+            { ...valid, steamId: '76561199044795099' },
             existing,
         )
         expect(taken.errors.steamId).toBe('taken')

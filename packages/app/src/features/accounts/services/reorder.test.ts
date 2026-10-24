@@ -8,7 +8,8 @@ import {
     dropIndex,
     groupGeometry,
     moveItems,
-    withGroupOrder,
+    placeBetween,
+    placementIn,
 } from './reorder'
 
 const account = (id: string) => ({ id }) as Account
@@ -50,12 +51,46 @@ describe('moveItems', () => {
     })
 })
 
-describe('withGroupOrder', () => {
-    it('permutes the group in its own places and leaves the other group', () => {
-        // p* pinned, r* the rest, interleaved in the vault.
-        expect(
-            withGroupOrder(['p0', 'r0', 'p1', 'r1', 'p2'], ['p2', 'p0', 'p1']),
-        ).toEqual(['p2', 'r0', 'p0', 'r1', 'p1'])
+describe('placement', () => {
+    it('names the moved block and the neighbours it landed between', () => {
+        const next = moveItems(some('a', 5), [0, 3], 1)
+        expect(placementIn(next, 1, 2)).toEqual({
+            ids: ['a0', 'a3'],
+            after: 'a1',
+            before: 'a2',
+        })
+        expect(placementIn(next, 0, 1)).toMatchObject({ after: null })
+    })
+
+    it('puts the moved ids beside their neighbour and leaves the rest, hidden ones included', () => {
+        // h* hidden by a filter: they keep their places.
+        const order = ['a0', 'h0', 'a1', 'h1', 'a2']
+        const place = (
+            ids: string[],
+            after: string | null,
+            before: string | null,
+        ) => placeBetween(order, { ids, after, before })
+        expect(place(['a2'], null, 'a0')).toEqual([
+            'a2',
+            'a0',
+            'h0',
+            'a1',
+            'h1',
+        ])
+        expect(place(['a0'], 'a1', 'a2')).toEqual([
+            'h0',
+            'a1',
+            'a0',
+            'h1',
+            'a2',
+        ])
+        expect(place(['a0', 'a1'], 'a2', null)).toEqual([
+            'h0',
+            'h1',
+            'a2',
+            'a0',
+            'a1',
+        ])
     })
 })
 

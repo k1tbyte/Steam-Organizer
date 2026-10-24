@@ -15,14 +15,37 @@ export function moveItems<T>(
     return next
 }
 
-/** The vault order with `group`'s members in `group`'s order, in the places they held: pinned and the rest interleave in the vault, and the other group stays put. */
-export function withGroupOrder(
+/** A move as the vault stores it: the moved ids, in order, between two neighbours (null past either end of the group). */
+export interface Placement {
+    ids: string[]
+    after: string | null
+    before: string | null
+}
+
+/** The moved block of `next` (`count` items at `to`) and the neighbours it landed between. */
+export function placementIn(
+    next: readonly Account[],
+    to: number,
+    count: number,
+): Placement {
+    return {
+        ids: next.slice(to, to + count).map((account) => account.id),
+        after: next[to - 1]?.id ?? null,
+        before: next[to + count]?.id ?? null,
+    }
+}
+
+/** `order` with the moved ids right after `after` (or before `before`); everything else keeps its place. */
+export function placeBetween(
     order: readonly string[],
-    group: readonly string[],
+    { ids, after, before }: Placement,
 ): string[] {
-    const members = new Set(group)
-    let next = 0
-    return order.map((id) => (members.has(id) ? (group[next++] ?? id) : id))
+    const moved = new Set(ids)
+    const next = order.filter((id) => !moved.has(id))
+    const anchor = after ?? before
+    const at = anchor === null ? next.length : next.indexOf(anchor)
+    next.splice(after === null ? at : at + 1, 0, ...ids)
+    return next
 }
 
 /** `accounts` in `order`; an id the order lacks keeps its place after the ordered ones. */

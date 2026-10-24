@@ -129,6 +129,21 @@ export async function sealRecord<Data, Secret>(
     return { id, updatedAt, data, secret: await seal(record.secret, 'secret') }
 }
 
+/** Reseals the data part only: a pin, a move or an alias edit never opens the secret. */
+export async function updateData<Data>(
+    key: VaultKey,
+    record: LiveRecord,
+    data: Data,
+    updatedAt: number,
+): Promise<LiveRecord> {
+    const sealed = await sealText(
+        key.records,
+        JSON.stringify(data),
+        partAad(record.id, 'data'),
+    )
+    return { ...record, updatedAt, data: sealed }
+}
+
 export async function openData<Data>(
     key: VaultKey,
     record: LiveRecord,

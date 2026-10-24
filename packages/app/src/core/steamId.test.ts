@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 
 import {
     detectSteamId,
+    parseAccountId,
     STEAM_ID_DISPLAY_FORMATS,
     steamIdValues,
+    toAccountId,
     toSteamId64,
 } from './steamId'
 
@@ -47,6 +49,27 @@ describe('detectSteamId', () => {
 
     it('trims before matching', () => {
         expect(detectSteamId('  76561198012345678  ')).toBe('steamid64')
+    })
+})
+
+describe('parseAccountId', () => {
+    it.each([
+        '1084529371',
+        '76561199044795099',
+        'STEAM_1:1:542264685',
+        '[U:1:1084529371]',
+        '0x110000140a49adb',
+        'https://steamcommunity.com/profiles/76561199044795099/',
+        'steamcommunity.com/PROFILES/76561199044795099',
+    ])('reads the account ID from %s', (raw) => {
+        expect(parseAccountId(raw)).toBe('1084529371')
+    })
+
+    it('needs Steam for a vanity name, a friend code or a custom URL', () => {
+        expect(parseAccountId('nova_strike')).toBeNull()
+        expect(parseAccountId('AKGU4-XF2P')).toBeNull()
+        expect(parseAccountId('steamcommunity.com/id/nova')).toBeNull()
+        expect(toAccountId(toSteamId64('1084529371'))).toBe('1084529371')
     })
 })
 

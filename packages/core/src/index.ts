@@ -1,4 +1,24 @@
-export type { PasswordSlot, VaultKey } from './crypto/keys'
+export {
+    type AccountData,
+    type AccountSecret,
+    CREDENTIAL_KINDS,
+    type CredentialKind,
+    type CredentialService,
+    FIELD_DEFAULTS,
+    type FieldPlacement,
+    MOVABLE_FIELDS,
+    type Movable,
+    type MovableField,
+    orderKeys,
+    RECORD,
+    readAccount,
+    readTag,
+    type SteamBans,
+    type SteamSnapshot,
+    type SteamStats,
+    type TagData,
+} from './account/records'
+export { loginTag, type PasswordSlot, type VaultKey } from './crypto/keys'
 export type { Sealed } from './crypto/seal'
 export { UnsupportedVaultError, WrongPasswordError } from './errors'
 export {
@@ -18,6 +38,7 @@ export {
     sealRecord,
     type Tombstone,
     unlockVault,
+    updateData,
     VAULT_FORMAT,
     type VaultFile,
     writeRecords,
