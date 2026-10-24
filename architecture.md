@@ -128,10 +128,10 @@ User picks where each vault lives; several vaults, switch on unlock screen. Ever
 
 Google Drive is a layer over any home, not a home of its own:
 
-| Drive | This device | Folder |
+| Drive | This device | File, Folder |
 |---|---|---|
 | Backups (sealed standalone snapshots, history) | ✓ | ✓ |
-| Sync (Drive holds the shared copy) | ✓ ("Google Drive" in onboarding) | - the folder's own sync owns it; a second channel would bring deleted records back |
+| Sync (Drive holds the shared copy) | ✓ ("Google Drive" in onboarding) | - their own sync owns it; a second channel would bring deleted records back |
 
 - **Standalone file** (`VaultFile` in `@so/core`, format v1): `format`, `version`, vault `id`, `slots.password` (its KDF params + the wrapped vault key) + `body` sealed with the vault key = JSONL of records. Nothing readable without unlock: no record count, ids or timestamps. A reader stops at a version or record it does not know rather than drop it at the next write. Inside, the body is JSONL; outside, one header, so nothing shows a line per record.
 - **Binary container** (to do, a format version bump, before the first release): magic bytes, the JSON header, then the raw sealed body, no base64 (a third smaller). Files on disk (`.sovault`), Drive and exports use it; IndexedDB keeps bytes, not strings.
