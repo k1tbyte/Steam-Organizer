@@ -3,7 +3,7 @@
 ## 1. Principles
 
 - **No backend.** Steam is called only from CORS-free environments: browser extension (`host_permissions`) and desktop (Tauri native HTTP).
-- **Web PWA is a read-only viewer**: Drive backups, credentials after unlock, field editing. No Steam API.
+- **Web PWA is a read-only viewer**: Drive backups, credentials after unlock, field editing. No Steam API, so it adds anonymous accounts only: a Steam ID is always saved with the data its lookup returned.
 - **Full rewrite** React → Vue 3. Old vault/backup format is not supported.
 - One Vue app, thin shells per platform. Shells never leak into each other's bundles.
 - Feature list: [features.md](features.md).
