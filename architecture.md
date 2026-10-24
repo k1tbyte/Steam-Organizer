@@ -173,6 +173,9 @@ interface AccountData {
   order: string                 // fractional index: a move rewrites only the moved record, syncs merge reorders
   addedAt: number
   guard: boolean                // has an authenticator (kept in secret)
+  loginTag: string              // HMAC-SHA-256 of the trimmed lowercase login, 16 bytes, key derived from the vault root:
+                                // the duplicate check on Add without opening any secret, locked accounts included
+  editedAt: number              // last user edit; a refresh only moves steam.refreshedAt
   steam: SteamSnapshot | null   // the last refresh: nickname, avatar, level, registeredAt, visibility, vanity, bans, stats
   login?: string; note?: string; phone?: string; email?: string   // movable fields set searchable
 }
@@ -191,6 +194,7 @@ PresetData   { kind: PRESET; name; appearance knobs; image? }   // synced appear
 - Movable fields: `login`, `note`, `phone`, `email`, one vault-wide placement (`fieldDefaults`, per-account placement skipped for now). Changing it moves (never copies) the field between parts in every account, after an explicit confirm in Settings. Nickname and alias always stay in `data`; password, linked credentials and authenticator always `secret`, never `public`.
 - Appearance stays device-local and themes the lock screen. Presets sync through the vault; a device applies one only when the user picks it, or follows one it was set to auto-apply.
 - Search and sort see only `public` + `data`.
+- Payloads evolve by a tolerant reader: a missing field reads as its default, so adding one keeps the format version; renaming or removing one bumps it, with a migration at unlock.
 - Sealing: AES-256-GCM, random IV, AAD = record id + part name (blobs can't be swapped between records). WebCrypto only, no compression - sealed parts don't compress.
 - Same record format in every container; standalone additionally seals the whole body.
 
@@ -201,11 +205,12 @@ Own password on a single account, asked even in an unlocked vault. Any length (P
   - recovery (on by default, per-account switch; off = slot deleted, on again = account unlocked + master password): HKDF(master password KEK, "recovery"). KEK is dropped after vault unlock (only vault key stays in memory), so this slot needs the master password typed again - PIN / biometrics can't open it.
 - Changing account password only rewraps the account key.
 - Re-locks on leaving the account and on vault lock.
+- Scope "everything except nickname and avatar": `data` keeps only `kind`, `alias`, the Steam nickname and avatar, `order`, `pinned`, `addedAt`, `loginTag`; the rest moves into `secret` under the account key, the same move as a movable field. The list shows it as a placeholder with the lock mark.
 
 ### Sync
 1. Local change → encrypt → push to Drive with timestamp.
 2. Clients check Drive on focus, manual sync or interval.
-3. Merge by record: newer `updatedAt` wins per account, deletions kept as tombstones. Concurrent edits of different accounts never conflict.
+3. Merge by record: newer `updatedAt` wins per account, deletions kept as tombstones. Concurrent edits of different accounts never conflict. Inside one account, after opening both copies, the user fields come from the newer `editedAt` and `steam` from the newer `refreshedAt`: a bulk refresh on one device never overwrites a note edited on another.
 
 ---
 
