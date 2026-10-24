@@ -211,6 +211,7 @@ Own password on a single account, asked even in an unlocked vault. Any length (P
 1. Local change → encrypt → push to Drive with timestamp.
 2. Clients check Drive on focus, manual sync or interval.
 3. Merge by record: newer `updatedAt` wins per account, deletions kept as tombstones. Concurrent edits of different accounts never conflict. Inside one account, after opening both copies, the user fields come from the newer `editedAt` and `steam` from the newer `refreshedAt`: a bulk refresh on one device never overwrites a note edited on another.
+4. Tombstones are purged with the sync (to do): older than N days once every copy synced past them; a copy offline longer than that can bring a deleted record back.
 
 ---
 
@@ -271,7 +272,8 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 ### Phase 1: Core
 - [ ] `packages/core`: models, vault crypto (format v1), storage
 - [ ] Steam client: endpoints from 7, batching, caching
-- [ ] Drive sync over REST
+- [ ] Drive sync over REST, per-half account merge, tombstone purge
+- [ ] Steam ID conversions in core, CS2 friend code via MD5 (port `shared/lib/md5.js` from the legacy app)
 - [ ] Tests: crypto, Steam parsers, sync
 
 ### Phase 2: Vue App + Web Shell
