@@ -1,6 +1,7 @@
 import {
     type AccountData,
     type AccountSecret,
+    type Authenticator,
     type LiveRecord,
     loginTag,
     orderKeys,
@@ -30,6 +31,7 @@ export interface NewAccount {
     steamId: string | null
     /** The user's name for it; an anonymous account needs one. */
     alias?: string
+    authenticator?: Authenticator
 }
 
 export type AddResult = 'added' | 'login-taken' | 'steam-taken'
@@ -123,13 +125,16 @@ export function useVaultAccounts() {
                 order,
                 addedAt: now,
                 editedAt: now,
-                guard: false,
+                guard: account.authenticator !== undefined,
                 loginTag: tag,
                 steam: null,
             }
             const secret: AccountSecret = {
                 password: account.password,
                 services: [],
+                ...(account.authenticator && {
+                    authenticator: account.authenticator,
+                }),
             }
             const id = crypto.randomUUID()
             return [await sealRecord(key, { id, updatedAt: now, data, secret })]

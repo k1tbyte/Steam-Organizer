@@ -4,9 +4,9 @@ import type { Account } from '#features/accounts'
 import type { AccountGateState } from '../../composables/useAccountGate'
 import type { BansState } from '../../composables/useBans'
 import type { ProfileData } from '../../model'
+import CredentialsSection from '../credentials/CredentialsSection.vue'
 import BansSection from './BansSection.vue'
 import CommunitySection from './CommunitySection.vue'
-import CredentialsSection from './CredentialsSection.vue'
 import NoteSection from './NoteSection.vue'
 
 defineProps<{
@@ -16,7 +16,7 @@ defineProps<{
     bans: BansState
     touch: boolean
 }>()
-const emit = defineEmits<{ lock: []; addService: []; edit: []; removeService: [] }>()
+const emit = defineEmits<{ lock: [] }>()
 </script>
 
 <template>
@@ -24,13 +24,11 @@ const emit = defineEmits<{ lock: []; addService: []; edit: []; removeService: []
     <div class="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-start lg:gap-u-4">
         <div class="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-u-4">
             <CredentialsSection
+                :account-id="account.id"
                 :credentials="details.credentials"
                 :gate="gate"
                 :touch="touch"
-                @lock="emit('lock')"
-                @add-service="emit('addService')"
-                @edit="emit('edit')"
-                @remove-service="emit('removeService')" />
+                @lock="emit('lock')" />
             <NoteSection class="max-lg:order-last" :account="account" />
         </div>
         <div v-if="!account.anonymous" class="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-u-4">

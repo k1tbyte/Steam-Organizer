@@ -13,6 +13,7 @@ import {
     useMock,
     usePlatform,
 } from '#core'
+import { useMaFile } from '#features/steam-guard'
 
 import { lookupMock } from '../../mocks'
 import { validateNewAccount } from '../../services/newAccount'
@@ -40,7 +41,7 @@ export function useAddAccountForm(open: Ref<boolean>) {
     const alias = ref('')
     // The name is flagged only once Add was tried without it.
     const tried = ref(false)
-    const maFileName = ref<string | null>(null)
+    const maFile = useMaFile(() => login.value)
     const lookingUp = ref(false)
     const looked = ref(false)
     const saving = ref(false)
@@ -107,7 +108,7 @@ export function useAddAccountForm(open: Ref<boolean>) {
         steamId.value = ''
         alias.value = ''
         tried.value = false
-        maFileName.value = null
+        maFile.clear()
         lookingUp.value = false
         looked.value = false
     })
@@ -121,6 +122,8 @@ export function useAddAccountForm(open: Ref<boolean>) {
             checks.value.canAdd &&
             !nameMissing.value &&
             refused.value === null &&
+            !maFile.picked.value?.problem &&
+            !maFile.reading.value &&
             !saving.value,
     )
 
@@ -130,7 +133,7 @@ export function useAddAccountForm(open: Ref<boolean>) {
         steamId,
         alias,
         linksSteam,
-        maFileName,
+        maFile: maFile.picked,
         aliasHint: computed(() =>
             linksSteam ? t('Required without a Steam profile') : undefined,
         ),
@@ -192,12 +195,16 @@ export function useAddAccountForm(open: Ref<boolean>) {
         }),
         canAdd,
         saving,
-        attachMaFile: (files: File[]) => {
-            maFileName.value = files[0]?.name ?? null
+        /** Empty Login and Steam ID fields take the file's; a file for another login gives nothing, and web shows no Steam ID field. */
+        async attachMaFile(files: File[]) {
+            const file = await maFile.attach(files[0])
+            if (!file) return
+            if (!login.value.trim()) login.value = file.accountName
+            if (maFile.picked.value?.problem !== null) return
+            if (linksSteam && !steamId.value.trim() && file.steamId)
+                steamId.value = file.steamId
         },
-        removeMaFile: () => {
-            maFileName.value = null
-        },
+        removeMaFile: maFile.clear,
         submit: () => {
             tried.value = true
             if (!canAdd.value) return
@@ -207,6 +214,10 @@ export function useAddAccountForm(open: Ref<boolean>) {
                 password: password.value,
                 steamId: accountId && toSteamId64(accountId),
                 alias: alias.value,
+                authenticator:
+                    maFile.picked.value?.problem === null
+                        ? maFile.picked.value.file.authenticator
+                        : undefined,
             }
             saving.value = true
             return closeOnSuccess(async () => {

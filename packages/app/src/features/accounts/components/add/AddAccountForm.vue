@@ -60,7 +60,7 @@ const desktop = useDesktopLayout()
             </FpInput>
         </FpFormField>
         <FpFormField :label="t('Steam Guard')" :hint="t('Optional')">
-            <MaFileField :file-name="form.maFileName" @attach="form.attachMaFile" @remove="form.removeMaFile" />
+            <MaFileField :pick="form.maFile" :login="form.login" @attach="form.attachMaFile" @remove="form.removeMaFile" />
         </FpFormField>
     </form>
 </template>

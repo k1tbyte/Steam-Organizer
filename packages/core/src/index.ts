@@ -1,10 +1,12 @@
 export {
     type AccountData,
     type AccountSecret,
+    type Authenticator,
     CREDENTIAL_KINDS,
     type CredentialKind,
     FIELD_DEFAULTS,
     type FieldPlacement,
+    MIN_PASSWORD_LENGTH,
     MOVABLE_FIELDS,
     type Movable,
     type MovableField,

@@ -1,7 +1,7 @@
 import { type MenuItem, openFilePicker, useToast } from '@so/ui'
 import { computed, ref, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-
+import { reportError } from '#core'
 import {
     findService,
     type LinkedService,
@@ -29,6 +29,23 @@ export function useServicesSection() {
         return holder !== undefined && holder.id !== editing.value
     })
 
+    /** The row closes at once; a write that fails or loses its name meanwhile says so. */
+    async function attempt(write: Promise<unknown>) {
+        try {
+            if ((await write) === false)
+                toast.add({
+                    color: 'warning',
+                    title: t('Another service has this name'),
+                })
+        } catch (error) {
+            reportError(error, 'services')
+            toast.add({
+                color: 'danger',
+                title: t("Couldn't save the service"),
+            })
+        }
+    }
+
     function start(id: Exclude<Editing, null>) {
         editing.value = id
         draft.value =
@@ -43,8 +60,11 @@ export function useServicesSection() {
         if (id === null || taken.value) return
         editing.value = null
         if (name.value === '') return
-        if (id === 'new') void vault.create(name.value)
-        else void vault.update(id, { name: name.value })
+        void attempt(
+            id === 'new'
+                ? vault.create(name.value)
+                : vault.update(id, { name: name.value }),
+        )
     }
 
     function upload(id: string) {
@@ -52,7 +72,7 @@ export function useServicesSection() {
             accept: '.svg,image/svg+xml',
             onPick: async ([file]) => {
                 const svg = file && readSvg(await file.text())
-                if (svg) void vault.update(id, { icon: svg })
+                if (svg) void attempt(vault.update(id, { icon: svg }))
                 else
                     toast.add({
                         color: 'danger',
@@ -77,7 +97,9 @@ export function useServicesSection() {
                       label: t('Remove icon'),
                       icon: 'icon-[lucide--image-off]',
                       onSelect: () =>
-                          void vault.update(service.id, { icon: null }),
+                          void attempt(
+                              vault.update(service.id, { icon: null }),
+                          ),
                   },
               ]
             : []),

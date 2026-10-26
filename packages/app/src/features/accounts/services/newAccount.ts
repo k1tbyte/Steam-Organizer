@@ -1,6 +1,6 @@
-import { detectSteamId, parseAccountId } from '../../../core/steamId'
+import { MIN_PASSWORD_LENGTH } from '@so/core'
 
-export const MIN_PASSWORD_LENGTH = 6
+import { detectSteamId, parseAccountId } from '../../../core/steamId'
 
 export interface NewAccountInput {
     login: string

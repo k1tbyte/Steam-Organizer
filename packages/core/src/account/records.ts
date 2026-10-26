@@ -87,15 +87,21 @@ export interface ServiceCredentials {
     fields: { kind: CredentialKind; value: string }[]
 }
 
+/** The shortest password an account or a linked service takes. */
+export const MIN_PASSWORD_LENGTH = 6
+
 export interface AccountSecret extends Movable {
     password: string
     services: ServiceCredentials[]
-    authenticator?: {
-        sharedSecret: string
-        identitySecret: string
-        revocationCode: string
-        maFile: Record<string, unknown>
-    }
+    authenticator?: Authenticator
+}
+
+/** Steam Guard from an imported maFile; the whole file is kept for an export. */
+export interface Authenticator {
+    sharedSecret: string
+    identitySecret: string
+    revocationCode: string
+    maFile: Record<string, unknown>
 }
 
 export interface TagData {

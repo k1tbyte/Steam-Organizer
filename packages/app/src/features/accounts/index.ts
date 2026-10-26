@@ -11,6 +11,7 @@ export { useTagColors } from './composables/tags/useTagColors'
 export { useVaultTags } from './composables/tags/useVaultTags'
 export { useAccountPassword } from './composables/useAccountPassword'
 export { useAccountSecret } from './composables/useAccountSecret'
+export { useEditSecret } from './composables/useEditSecret'
 export { useRemoveAccounts } from './composables/useRemoveAccounts'
 export { useVaultAccounts } from './composables/useVaultAccounts'
 export type {

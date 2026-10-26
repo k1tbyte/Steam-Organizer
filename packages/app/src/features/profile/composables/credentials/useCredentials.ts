@@ -2,18 +2,24 @@ import {
     computed,
     type MaybeRefOrGetter,
     ref,
+    shallowRef,
     toValue,
     type UnwrapNestedRefs,
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { type LinkedService, useVaultServices } from '#features/linked-services'
+import {
+    type LinkedService,
+    MAX_ACCOUNT_SERVICES,
+    useVaultServices,
+} from '#features/linked-services'
 
 import {
     type AccountCredentials,
-    type CredentialKind,
+    CREDENTIAL_LABELS,
     SECRET_KINDS,
 } from '../../model'
+import { useSecretWrite } from './useSecretWrite'
 
 // The account itself, first among its services; never in the registry.
 const STEAM: LinkedService = {
@@ -26,12 +32,14 @@ const STEAM: LinkedService = {
 
 const SECRET_MASK = '••••••••••••'
 
-/** The Credentials card: which service is picked, and which secrets are shown. Both survive a switch between services. */
+/** The Credentials card: which service is picked, which secrets are shown (both survive a switch), and its editors. */
 export function useCredentials(
+    accountId: () => string,
     credentials: MaybeRefOrGetter<AccountCredentials>,
 ) {
     const { t } = useI18n()
     const registry = useVaultServices()
+    const { write } = useSecretWrite(accountId)
     const services = computed(() => {
         const { steam, linked } = toValue(credentials)
         return [
@@ -44,13 +52,6 @@ export function useCredentials(
         ]
     })
 
-    const labels = computed<Record<CredentialKind, string>>(() => ({
-        login: t('Login'),
-        email: t('Email'),
-        password: t('Password'),
-        'secret-word': t('Secret word'),
-        phone: t('Phone'),
-    }))
     const picked = ref<string | null>(null)
     const revealed = ref(new Set<string>())
 
@@ -59,6 +60,9 @@ export function useCredentials(
         return list.find((service) => service.key === picked.value) ?? list[0]
     })
     const isSteam = computed(() => selected.value?.key === STEAM.id)
+    const passwordOpen = ref(false)
+    const editorOpen = ref(false)
+    const editing = shallowRef<string | null>(null)
 
     return {
         services: computed(() =>
@@ -79,7 +83,7 @@ export function useCredentials(
                 const shown = !secret || revealed.value.has(id)
                 return {
                     id,
-                    label: labels.value[kind],
+                    label: t(CREDENTIAL_LABELS[kind]),
                     value,
                     display: shown ? value : SECRET_MASK,
                     secret,
@@ -98,6 +102,40 @@ export function useCredentials(
                 : t('Linked service'),
         ),
         removable: computed(() => !isSteam.value),
+        selectedName: computed(() => selected.value?.service.name ?? ''),
+        full: computed(
+            () => toValue(credentials).linked.length >= MAX_ACCOUNT_SERVICES,
+        ),
+        passwordOpen,
+        editorOpen,
+        editing,
+        add() {
+            editing.value = null
+            editorOpen.value = true
+        },
+        /** Steam's own entry edits its password; a linked service opens its editor. */
+        edit() {
+            if (isSteam.value) passwordOpen.value = true
+            else {
+                editing.value = selected.value?.key ?? null
+                editorOpen.value = true
+            }
+        },
+        removeSelected() {
+            const key = selected.value?.key
+            if (!key || isSteam.value) return
+            void write(
+                (secret) => ({
+                    secret: {
+                        ...secret,
+                        services: secret.services.filter(
+                            (entry) => entry.service !== key,
+                        ),
+                    },
+                }),
+                t("Couldn't remove the service"),
+            )
+        },
     }
 }
 export type CredentialsState = UnwrapNestedRefs<

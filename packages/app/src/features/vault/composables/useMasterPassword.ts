@@ -2,11 +2,14 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-import { MIN_MASTER_LENGTH, passwordStrength } from '#core'
+import {
+    MIN_MASTER_LENGTH,
+    passwordStrength,
+    STRENGTH_LABELS,
+    STRENGTH_TONES,
+} from '#core'
 
 import { useOnboardingDraft } from './useOnboardingDraft'
-
-const TONES = ['neutral', 'danger', 'warning', 'success', 'success'] as const
 
 export function useMasterPassword() {
     const { t } = useI18n()
@@ -19,14 +22,11 @@ export function useMasterPassword() {
 
     const strength = computed(() => {
         const level = passwordStrength(password.value)
-        const labels = [
-            t('At least 8 characters'),
-            t('Weak'),
-            t('Okay'),
-            t('Strong'),
-            t('Very strong'),
-        ]
-        return { level, tone: TONES[level], label: labels[level] }
+        return {
+            level,
+            tone: STRENGTH_TONES[level],
+            label: t(STRENGTH_LABELS[level]),
+        }
     })
 
     const repeating = computed(() => repeat.value !== '')

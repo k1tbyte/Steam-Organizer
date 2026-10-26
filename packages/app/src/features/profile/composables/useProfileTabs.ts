@@ -30,23 +30,23 @@ export function useProfileTabs(
                 icon: icon('icon-[lucide--layout-grid]'),
             },
         ]
-        if (toValue(account).anonymous) return tabs
-        tabs.push(
-            {
-                value: 'games',
-                slot: 'games',
-                label: t('Games'),
-                icon: icon('icon-[lucide--gamepad-2]'),
-                count: stats.games,
-            },
-            {
-                value: 'friends',
-                slot: 'friends',
-                label: t('Friends'),
-                icon: icon('icon-[lucide--users]'),
-                count: stats.friends,
-            },
-        )
+        if (!toValue(account).anonymous)
+            tabs.push(
+                {
+                    value: 'games',
+                    slot: 'games',
+                    label: t('Games'),
+                    icon: icon('icon-[lucide--gamepad-2]'),
+                    count: stats.games,
+                },
+                {
+                    value: 'friends',
+                    slot: 'friends',
+                    label: t('Friends'),
+                    icon: icon('icon-[lucide--users]'),
+                    count: stats.friends,
+                },
+            )
         if (toValue(account).guard && !toValue(options.guardHidden))
             tabs.push({
                 value: 'guard',

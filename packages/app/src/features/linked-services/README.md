@@ -3,6 +3,7 @@
 The registry of services an account keeps logins for: a built-in gaming set (`BUILT_IN_SERVICES`, fixed ids stored in account secrets) and the user's own as SERVICE vault records (name, optional SVG icon). A service's name and icon live only here; an account's secret holds `{ service, fields }`, one entry per service.
 
 - `useVaultServices()`: built-in plus own services, `of(id)` (an unknown or deleted id reads as Other with a globe), and the one writer of SERVICE records: `create` (returns the id already holding the name, built-in names included, ignoring case), `update` (name, `icon: null` drops it), `remove` (tombstone, resolving to an undo; accounts keep their credentials).
+- `ServicePicker`: a field with a search over the registry, minus the services the account already has (`taken`); a name no service holds adds one (`useServicePicker`).
 - `ServiceIcon`: a built-in's iconify glyph, or an uploaded SVG as a CSS mask painted with the text color, so it follows the theme and nothing in it runs. `readSvg` takes up to 16 KB of `<svg>` markup.
 
 ## Mocks

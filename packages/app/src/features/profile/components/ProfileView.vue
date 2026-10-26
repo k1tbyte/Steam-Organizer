@@ -4,6 +4,7 @@ import { reactive, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { type Account, AccountTagPicker, RemoveAccountsDialog, useRemoveAccounts } from '#features/accounts'
+import { useAuthenticator } from '../composables/guard/useAuthenticator'
 import { useAliasEditor } from '../composables/hero/useAliasEditor'
 import { useProfileHeader } from '../composables/hero/useProfileHeader'
 import { useSteamIdField } from '../composables/hero/useSteamIdField'
@@ -13,6 +14,7 @@ import { useLockDialog } from '../composables/useLockDialog'
 import type { ProfileIntent } from '../composables/useProfileMenu'
 import { useProfileTabs } from '../composables/useProfileTabs'
 import type { ProfileData } from '../model'
+import RemoveAuthenticatorDialog from './guard/RemoveAuthenticatorDialog.vue'
 import SteamGuardTab from './guard/SteamGuardTab.vue'
 import ProfileHero from './hero/ProfileHero.vue'
 import ProfileHeroPhone from './hero/ProfileHeroPhone.vue'
@@ -53,6 +55,7 @@ const tabs = reactive(
     ),
 )
 const lockDialog = reactive(useLockDialog())
+const authenticator = reactive(useAuthenticator(() => props.account))
 const removal = reactive(useRemoveAccounts())
 // Changing and removing the account password have no listener yet.
 function onIntent(kind: ProfileIntent) {
@@ -89,8 +92,10 @@ const alias = reactive(
             :id-field="idField"
             :gate="gate"
             :alias="alias"
+            :guard-failed="authenticator.failed"
             @toggle-pin="emit('togglePin')"
-            @edit-tags="editTags" />
+            @edit-tags="editTags"
+            @import-ma-file="authenticator.pick" />
         <ProfileHeroPhone
             v-else
             :account="account"
@@ -99,7 +104,9 @@ const alias = reactive(
             :id-field="idField"
             :gate="gate"
             :alias="alias"
-            @edit-tags="editTags" />
+            :guard-failed="authenticator.failed"
+            @edit-tags="editTags"
+            @import-ma-file="authenticator.pick" />
 
         <FpCard v-if="gate.hidesProfile">
             <AccountLockGate standalone :gate="gate" :touch="!desktop" />
@@ -130,7 +137,10 @@ const alias = reactive(
                 </FpEmpty>
             </template>
             <template #guard>
-                <SteamGuardTab :seed="account.id" :revocation-code="details.revocationCode" />
+                <SteamGuardTab
+                    :seed="account.id"
+                    :revocation-code="details.revocationCode"
+                    @remove-authenticator="authenticator.removeOpen = true" />
             </template>
         </FpTabs>
 
@@ -147,5 +157,6 @@ const alias = reactive(
 
     <LockAccountDialog :account="account" :dialog="lockDialog" />
     <RemoveAccountsDialog :removal="removal" />
+    <RemoveAuthenticatorDialog :authenticator="authenticator" :revocation-code="details.revocationCode" />
     <AccountTagPicker v-model:open="tagsOpen" :anchor="tagsAnchor" :account="account" />
 </template>

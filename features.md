@@ -43,7 +43,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Card: avatar, nickname (an alias, with the Steam nickname small and grey beside it), level, account age, copyable account ID, ban indicators or "no bans", Steam Guard code copy (if authenticator), open profile, delete.
 - Delete: the card's trash removes at once, the menus and the batch ask first; a toast offers Undo for 8 s `[new]`.
 - Card hints: added / updated / registration dates, note preview, ban details.
-- Anonymous accounts (no Steam ID): credentials only.
+- Anonymous accounts (no Steam ID): credentials and Steam Guard only.
 - Search in a chosen field: nickname, login, note + any field the user moved out of secrets (phone, email) `[new]`.
 - Locked accounts show a lock mark; their secrets are not searchable `[new]`.
 - Ban filters: VAC, game, community, economy - each require / exclude / ignore.
@@ -64,7 +64,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Validation, duplicate check (ID, login).
 - With identifier: Add waits for the Steam lookup, which resolves every format to the SteamID64 and saves it with the profile data; an ID Steam does not find blocks Add. An account has a Steam ID with its data, or neither (anonymous) `[no web]`.
 - Web adds anonymous accounts only: no Steam lookup there, the identifier field points to the extension or desktop `[new]`.
-- Optional: import Steam Guard authenticator (maFile) `[new]`.
+- Optional: import Steam Guard authenticator (maFile) `[new]`: checked against Login, fills an empty Login (and Steam ID outside web).
 
 ---
 
@@ -92,8 +92,9 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Friend list: avatar, nickname, friend since, open profile; friend count.
 
 ### Steam Guard `[new]`
+- Import a maFile from the profile header; a file without `shared_secret` (an encrypted SDA one) or for another login is refused and says why.
 - Current code with 30s countdown, copy.
-- Authenticator details: revocation code (reveal), remove authenticator.
+- Authenticator details: revocation code (reveal), remove authenticator (shows the revocation code, asks to confirm it is saved).
 
 ### Locked account `[new]`
 - Set / change / remove own password on an account (any length).
@@ -102,7 +103,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Unlock to view secrets; re-locks on leaving the account and on vault lock.
 
 ### Anonymous account
-- Credentials and note only.
+- Credentials, note and Steam Guard only.
 
 ---
 

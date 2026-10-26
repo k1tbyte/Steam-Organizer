@@ -3,6 +3,7 @@ import { FpButton, FpCard, FpIcon, tip } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { type Account, AccountTagChip, AgeChip, LevelAvatar } from '#features/accounts'
+import type { MaFilePick } from '#features/steam-guard'
 
 import type { AliasEditorState } from '../../composables/hero/useAliasEditor'
 import type { ProfileHeaderState } from '../../composables/hero/useProfileHeader'
@@ -24,6 +25,8 @@ defineProps<{
     idField: SteamIdFieldState
     gate: AccountGateState
     alias: AliasEditorState
+    /** A maFile that failed to import, shown in place of the Import row. */
+    guardFailed: MaFilePick | null
 }>()
 const emit = defineEmits<{ togglePin: []; editTags: [anchor: HTMLElement]; importMaFile: [] }>()
 
@@ -77,9 +80,15 @@ const editTags = (event: MouseEvent) => emit('editTags', event.currentTarget as 
                     <SteamLinks v-if="header.links.length > 0" :links="header.links" :touch="false" />
                 </template>
             </div>
-            <div v-if="!gate.hidesProfile && !account.anonymous" class="flex w-75 shrink-0 flex-col gap-2">
-                <SteamIdField :field="idField" :touch="false" />
-                <GuardMissing v-if="!account.guard" :touch="false" @import-ma-file="emit('importMaFile')" />
+            <!-- Steam Guard needs no Steam profile: an anonymous account keeps it. -->
+            <div v-if="!gate.hidesProfile" class="flex w-75 shrink-0 flex-col gap-2">
+                <SteamIdField v-if="!account.anonymous" :field="idField" :touch="false" />
+                <GuardMissing
+                    v-if="!account.guard"
+                    :touch="false"
+                    :failed="guardFailed"
+                    :login="account.login"
+                    @import-ma-file="emit('importMaFile')" />
                 <GuardBar v-else-if="!gate.locked" :seed="account.id" :touch="false" />
             </div>
         </div>

@@ -1,4 +1,5 @@
 export { default as ServiceIcon } from './components/ServiceIcon.vue'
+export { default as ServicePicker } from './components/ServicePicker.vue'
 export { useVaultServices } from './composables/useVaultServices'
 export {
     type LinkedService,

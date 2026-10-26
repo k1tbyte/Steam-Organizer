@@ -3,6 +3,7 @@ import { FpIcon } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { type Account, AccountTagChip, AgeChip, LevelAvatar } from '#features/accounts'
+import type { MaFilePick } from '#features/steam-guard'
 
 import type { AliasEditorState } from '../../composables/hero/useAliasEditor'
 import type { ProfileHeaderState } from '../../composables/hero/useProfileHeader'
@@ -24,6 +25,8 @@ defineProps<{
     idField: SteamIdFieldState
     gate: AccountGateState
     alias: AliasEditorState
+    /** A maFile that failed to import, shown in place of the Import row. */
+    guardFailed: MaFilePick | null
 }>()
 const emit = defineEmits<{ editTags: [anchor: HTMLElement]; importMaFile: [] }>()
 
@@ -70,12 +73,15 @@ const editTags = (event: MouseEvent) => emit('editTags', event.currentTarget as 
                     <FpIcon name="icon-[lucide--plus]" />
                 </button>
             </div>
-            <template v-if="!account.anonymous">
-                <SteamIdField :field="idField" touch />
-                <GuardMissing v-if="!account.guard" touch @import-ma-file="emit('importMaFile')" />
-                <GuardBar v-else-if="!gate.locked" :seed="account.id" touch />
-                <SteamLinks :links="header.links" touch />
-            </template>
+            <SteamIdField v-if="!account.anonymous" :field="idField" touch />
+            <GuardMissing
+                    v-if="!account.guard"
+                    touch
+                    :failed="guardFailed"
+                    :login="account.login"
+                    @import-ma-file="emit('importMaFile')" />
+            <GuardBar v-else-if="!gate.locked" :seed="account.id" touch />
+            <SteamLinks v-if="!account.anonymous" :links="header.links" touch />
             <ProfileMeta :meta="header.meta" touch />
         </template>
     </div>

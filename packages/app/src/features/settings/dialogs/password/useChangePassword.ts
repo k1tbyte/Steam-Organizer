@@ -4,18 +4,11 @@ import {
     MIN_MASTER_LENGTH,
     passwordStrength,
     reportError,
-    type StrengthLevel,
+    STRENGTH_LABELS,
+    STRENGTH_TONES,
 } from '#core'
 import { useVaultSession } from '#features/vault'
 import { canChangePassword, repeatState } from '../../services/passwordChange'
-
-const STRENGTH_TONES = [
-    'neutral',
-    'danger',
-    'warning',
-    'success',
-    'success',
-] as const satisfies Record<StrengthLevel, string>
 
 export function useChangePassword(open: Ref<boolean>) {
     const { t } = useI18n()
@@ -47,16 +40,7 @@ export function useChangePassword(open: Ref<boolean>) {
     const lengthHint = computed(() =>
         t('At least {count} characters', { count: MIN_MASTER_LENGTH }),
     )
-    const strengthLabel = computed(
-        () =>
-            [
-                lengthHint.value,
-                t('Weak'),
-                t('Okay'),
-                t('Strong'),
-                t('Very strong'),
-            ][strength.value],
-    )
+    const strengthLabel = computed(() => t(STRENGTH_LABELS[strength.value]))
     const repeatMatches = computed(
         () => repeatState(next.value, repeat.value) === 'match',
     )

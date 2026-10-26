@@ -12,6 +12,15 @@ export const SECRET_KINDS: readonly CredentialKind[] = [
     'secret-word',
 ]
 
+/** Source-English names for `t()`. */
+export const CREDENTIAL_LABELS: Record<CredentialKind, string> = {
+    login: 'Login',
+    email: 'Email',
+    password: 'Password',
+    'secret-word': 'Secret word',
+    phone: 'Phone',
+}
+
 export interface CredentialField {
     kind: CredentialKind
     value: string
