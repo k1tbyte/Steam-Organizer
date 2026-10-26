@@ -13,14 +13,15 @@ const props = withDefaults(
         anonymous?: boolean
         /** The level-colored ring and number badge around the avatar. */
         ring?: boolean
-        /** `lg` and `xl` are the profile's phone and desktop identity. */
-        size?: 'sm' | 'md' | 'lg' | 'xl'
+        /** `lg` and `xl` are the profile's phone and desktop identity; `xs` a row in a list of names. */
+        size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
     }>(),
     { size: 'md' },
 )
 
 // Per size: the box, the avatar's inset and type, and the level badge.
 const SIZES = {
+    xs: { box: 'size-6', inset: 'inset-0.5', text: 'text-10', badge: '' },
     sm: { box: 'size-9.5', inset: 'inset-0.75', text: 'text-12', badge: '' },
     md: {
         box: 'size-13.5',
@@ -60,11 +61,11 @@ const sizing = computed(() => SIZES[props.size])
         <span
             class="avatar absolute grid place-items-center font-semibold text-on-media"
             :class="[showRing ? sizing.inset : 'inset-0', sizing.text]">
-            <FpIcon v-if="anonymous" name="icon-[lucide--venetian-mask]" class="text-20" />
+            <FpIcon v-if="anonymous" name="icon-[lucide--venetian-mask]" :class="size === 'xs' ? 'text-14' : 'text-20'" />
             <template v-else>{{ initialsOf(name) }}</template>
         </span>
         <span
-            v-if="showRing && size !== 'sm'"
+            v-if="showRing && sizing.badge"
             v-bind="tip(t('Steam level'))"
             class="badge absolute inset-x-0 mx-auto grid w-fit place-items-center rounded-full font-mono font-semibold"
             :class="sizing.badge">
@@ -89,6 +90,9 @@ const sizing = computed(() => SIZES[props.size])
     --lvl-l: 0.62;
     --av-l: 0.63;
     --av-anon-l: 0.72;
+}
+.lvl[data-size='xs'] {
+    --r-avatar: 0.3;
 }
 .lvl[data-size='sm'] {
     --ring-w: 1.5px;

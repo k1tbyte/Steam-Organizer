@@ -3,7 +3,9 @@ export { default as AccountTagChip } from './components/card/AccountTagChip.vue'
 export { default as AgeChip } from './components/card/AgeChip.vue'
 export { default as BanLetters } from './components/card/BanLetters.vue'
 export { default as LevelAvatar } from './components/card/LevelAvatar.vue'
+export { default as RemoveAccountsDialog } from './components/remove/RemoveAccountsDialog.vue'
 export { useAccountPassword } from './composables/useAccountPassword'
+export { useRemoveAccounts } from './composables/useRemoveAccounts'
 export { useVaultAccounts } from './composables/useVaultAccounts'
 export type {
     Account,
@@ -13,3 +15,4 @@ export type {
 } from './model'
 export { BAN_KINDS } from './model'
 export { accountsRoutes } from './routes'
+export { steamNameOf } from './services/accountName'

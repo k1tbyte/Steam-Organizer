@@ -59,6 +59,8 @@ function toAccount(
     return {
         id,
         nickname: data.alias ?? steam?.nickname ?? data.login ?? '',
+        alias: data.alias ?? null,
+        steamNickname: steam?.nickname ?? null,
         login: data.login ?? '',
         anonymous: data.steamId === null,
         steamId: data.steamId && toAccountId(data.steamId),

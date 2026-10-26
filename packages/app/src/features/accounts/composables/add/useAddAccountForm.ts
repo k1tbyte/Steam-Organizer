@@ -11,16 +11,18 @@ import {
     toSteamId64,
     useCloseOnSuccess,
     useMock,
+    usePlatform,
 } from '#core'
 
-import { lookupMock } from '../mocks'
-import { validateNewAccount } from '../services/newAccount'
-import { useBanLabels } from './useBanLabels'
-import { type AddResult, useVaultAccounts } from './useVaultAccounts'
+import { lookupMock } from '../../mocks'
+import { validateNewAccount } from '../../services/newAccount'
+import { useBanLabels } from '../useBanLabels'
+import { type AddResult, useVaultAccounts } from '../useVaultAccounts'
 
 const LOOKUP_MS = 900
 
-/** The Add account flow: fields, Steam identifier detection, a simulated profile lookup, the maFile and the checks before Add. */
+/** The Add account flow: fields, Steam identifier detection, a simulated profile lookup, the maFile and the checks before Add.
+ *  Web cannot reach Steam: it adds anonymous accounts, which need a name. */
 export function useAddAccountForm(open: Ref<boolean>) {
     const { t } = useI18n()
     const timer = useTimer()
@@ -30,10 +32,14 @@ export function useAddAccountForm(open: Ref<boolean>) {
     // The Steam profile has no source yet.
     const lookup = useMock(() => undefined, lookupMock)
     const banLabels = useBanLabels()
+    const linksSteam = usePlatform().kind !== 'web'
 
     const login = ref('')
     const password = ref('')
     const steamId = ref('')
+    const alias = ref('')
+    // The name is flagged only once Add was tried without it.
+    const tried = ref(false)
     const maFileName = ref<string | null>(null)
     const lookingUp = ref(false)
     const looked = ref(false)
@@ -58,6 +64,7 @@ export function useAddAccountForm(open: Ref<boolean>) {
                 login: login.value,
                 password: password.value,
                 steamId: steamId.value,
+                alias: alias.value,
             },
             existing.value,
         ),
@@ -98,6 +105,8 @@ export function useAddAccountForm(open: Ref<boolean>) {
         login.value = ''
         password.value = ''
         steamId.value = ''
+        alias.value = ''
+        tried.value = false
         maFileName.value = null
         lookingUp.value = false
         looked.value = false
@@ -106,15 +115,31 @@ export function useAddAccountForm(open: Ref<boolean>) {
     const steamIdError = computed(() =>
         refused.value === 'steam-taken' ? 'taken' : checks.value.errors.steamId,
     )
+    const nameMissing = computed(() => tried.value && checks.value.needsName)
     const canAdd = computed(
-        () => checks.value.canAdd && refused.value === null && !saving.value,
+        () =>
+            checks.value.canAdd &&
+            !nameMissing.value &&
+            refused.value === null &&
+            !saving.value,
     )
 
     return {
         login,
         password,
         steamId,
+        alias,
+        linksSteam,
         maFileName,
+        aliasHint: computed(() =>
+            linksSteam ? t('Required without a Steam profile') : undefined,
+        ),
+        aliasError: computed(() => {
+            if (!nameMissing.value) return undefined
+            return linksSteam
+                ? t('Add a name or a Steam profile')
+                : t('Add a name')
+        }),
         formatLabel: computed(() =>
             format.value ? formatLabels.value[format.value] : null,
         ),
@@ -174,12 +199,14 @@ export function useAddAccountForm(open: Ref<boolean>) {
             maFileName.value = null
         },
         submit: () => {
+            tried.value = true
             if (!canAdd.value) return
             const accountId = parseAccountId(steamId.value)
             const account = {
                 login: login.value,
                 password: password.value,
                 steamId: accountId && toSteamId64(accountId),
+                alias: alias.value,
             }
             saving.value = true
             return closeOnSuccess(async () => {

@@ -1,6 +1,7 @@
 import {
     type AccountData,
     type AccountSecret,
+    type LiveRecord,
     loginTag,
     orderKeys,
     RECORD,
@@ -28,6 +29,8 @@ export interface NewAccount {
     password: string
     /** SteamID64; null when none was typed or the typed one needs Steam to resolve. */
     steamId: string | null
+    /** The user's name for it; an anonymous account needs one. */
+    alias?: string
 }
 
 export type AddResult = 'added' | 'login-taken' | 'steam-taken'
@@ -119,8 +122,10 @@ export function useVaultAccounts() {
                 null,
                 1,
             ) as [string]
+            const alias = account.alias?.trim()
             const data: AccountData = {
                 kind: RECORD.ACCOUNT,
+                ...(alias && { alias }),
                 login: account.login.trim(),
                 steamId: account.steamId,
                 tags: [],
@@ -140,6 +145,57 @@ export function useVaultAccounts() {
             return [await sealRecord(key, { id, updatedAt: now, data, secret })]
         })
         return result
+    }
+
+    /** Leaves tombstones, so a sync tells the deletion from an account another copy never had; resolves to the undo. */
+    async function remove(ids: Iterable<string>): Promise<() => Promise<void>> {
+        if (!onVault.value) return async () => {}
+        const picked = new Set(ids)
+        const taken: { record: LiveRecord; data: AccountData }[] = []
+        await session.transact(async (contents) => {
+            const updatedAt = Date.now()
+            const records = new Map(contents.records.map((r) => [r.id, r]))
+            const removed = storedAccounts(contents.data).filter(({ id }) =>
+                picked.has(id),
+            )
+            for (const { id, data } of removed)
+                taken.push({ record: records.get(id) as LiveRecord, data })
+            return removed.map(({ id }) => ({
+                id,
+                updatedAt,
+                deleted: true as const,
+            }))
+        })
+        // The same sealed record, newer than its tombstone; a login or Steam ID added again meanwhile keeps its place.
+        return () =>
+            session.transact(async (contents, key) => {
+                const updatedAt = Date.now()
+                const live = storedAccounts(contents.data)
+                const logins = new Set(live.map(({ data }) => data.loginTag))
+                const steamIds = new Set(live.map(({ data }) => data.steamId))
+                const back = taken.filter(
+                    ({ data }) =>
+                        !logins.has(data.loginTag) &&
+                        (data.steamId === null || !steamIds.has(data.steamId)),
+                )
+                // An add meanwhile may hold a restored order key (an emptied vault starts from the same one): that account goes last.
+                const orders = new Set(live.map(({ data }) => data.order))
+                let last =
+                    [...live, ...back]
+                        .map(({ data }) => data.order)
+                        .sort()
+                        .at(-1) ?? null
+                return Promise.all(
+                    back.map(({ record, data }) => {
+                        if (!orders.has(data.order))
+                            return { ...record, updatedAt }
+                        const [order] = orderKeys(last, null, 1) as [string]
+                        last = order
+                        const moved = { ...data, order, editedAt: updatedAt }
+                        return updateData(key, record, moved, updatedAt)
+                    }),
+                )
+            })
     }
 
     return {
@@ -169,20 +225,6 @@ export function useVaultAccounts() {
         edit(id: string, patch: Partial<Pick<AccountData, 'alias' | 'note'>>) {
             return rewrite(() => new Map([[id, patch]]))
         },
-        /** Leaves a tombstone, so a sync tells the deletion from an account another copy never had. */
-        remove(ids: Iterable<string>): Promise<void> {
-            if (!onVault.value) return Promise.resolve()
-            const picked = new Set(ids)
-            return session.transact(async (contents) => {
-                const updatedAt = Date.now()
-                return storedAccounts(contents.data)
-                    .filter(({ id }) => picked.has(id))
-                    .map(({ id }) => ({
-                        id,
-                        updatedAt,
-                        deleted: true as const,
-                    }))
-            })
-        },
+        remove,
     }
 }

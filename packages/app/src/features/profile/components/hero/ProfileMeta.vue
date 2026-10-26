@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProfileHeaderState } from '../../composables/useProfileHeader'
+import type { ProfileHeaderState } from '../../composables/hero/useProfileHeader'
 
 defineProps<{ meta: ProfileHeaderState['meta']; touch: boolean }>()
 </script>

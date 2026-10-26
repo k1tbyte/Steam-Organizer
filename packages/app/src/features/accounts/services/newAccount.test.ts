@@ -3,13 +3,19 @@ import { describe, expect, it } from 'vitest'
 import { validateNewAccount } from './newAccount'
 
 const existing = { logins: ['kyzzdef'], steamIds: ['1084529371'] }
-const valid = { login: 'nova_strike', password: 'hunter22!', steamId: '' }
+const valid = {
+    login: 'nova_strike',
+    password: 'hunter22!',
+    steamId: '',
+    alias: 'Nova',
+}
 
 describe('validateNewAccount', () => {
     it('accepts a login and a password of six characters', () => {
         expect(validateNewAccount(valid, existing)).toEqual({
             errors: { login: null, password: null, steamId: null },
             canAdd: true,
+            needsName: false,
         })
         expect(
             validateNewAccount({ ...valid, password: '123456' }, existing)
@@ -19,7 +25,7 @@ describe('validateNewAccount', () => {
 
     it('needs a login and a password before adding, without flagging empty fields', () => {
         const empty = validateNewAccount(
-            { login: '', password: '', steamId: '' },
+            { login: '', password: '', steamId: '', alias: '' },
             existing,
         )
         expect(empty.errors).toEqual({
@@ -32,7 +38,7 @@ describe('validateNewAccount', () => {
 
     it('flags a short password and a login already in the vault, ignoring case', () => {
         const { errors, canAdd } = validateNewAccount(
-            { login: ' KyzzDef ', password: '12345', steamId: '' },
+            { login: ' KyzzDef ', password: '12345', steamId: '', alias: '' },
             existing,
         )
         expect(errors).toMatchObject({ login: 'taken', password: 'short' })
@@ -59,5 +65,20 @@ describe('validateNewAccount', () => {
                 existing,
             ).canAdd,
         ).toBe(true)
+    })
+
+    it('needs a name only without a Steam ID', () => {
+        const unnamed = { ...valid, alias: ' ' }
+        expect(validateNewAccount(unnamed, existing).needsName).toBe(true)
+        expect(
+            validateNewAccount({ ...unnamed, steamId: 'somevanity' }, existing)
+                .needsName,
+        ).toBe(true)
+        expect(
+            validateNewAccount(
+                { ...unnamed, steamId: '76561198012345678' },
+                existing,
+            ).needsName,
+        ).toBe(false)
     })
 })

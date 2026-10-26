@@ -14,6 +14,7 @@ export interface AccountsSample {
 interface Raw {
     id: string
     name: string
+    alias?: string
     tags?: string[]
     level?: number
     years?: number
@@ -71,6 +72,7 @@ const RAW: Raw[] = [
     {
         id: 'a3',
         name: 'nightjar',
+        alias: 'Main · Faceit',
         level: 8,
         years: 11,
         since: 'Mar 2015',
@@ -176,7 +178,9 @@ const HOUR = 3_600_000
 function toAccount(raw: Raw, index: number): Account {
     return {
         id: raw.id,
-        nickname: raw.name,
+        nickname: raw.alias ?? raw.name,
+        alias: raw.alias ?? null,
+        steamNickname: raw.anon ? null : raw.name,
         login: raw.name.toLowerCase(),
         anonymous: raw.anon === true,
         steamId: raw.anon ? null : (raw.sid ?? null),
@@ -206,6 +210,7 @@ const ANONYMOUS = Array.from({ length: 6 }, (_, i) =>
         {
             id: `anon${i}`,
             name: `smurf_eu_0${i + 1}`,
+            alias: `EU smurf ${i + 1}`,
             anon: true,
             pinned: i === 0,
             note: i % 2 === 0 ? 'Credentials only' : '',

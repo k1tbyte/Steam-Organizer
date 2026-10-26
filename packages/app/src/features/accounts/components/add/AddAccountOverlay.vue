@@ -3,8 +3,8 @@ import { FpButton, FpDrawer, FpModal, useDesktopLayout } from '@so/ui'
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useAddAccountForm } from '../../composables/useAddAccountForm'
-import { useAddAccountOverlay } from '../../composables/useAddAccountOverlay'
+import { useAddAccountForm } from '../../composables/add/useAddAccountForm'
+import { useAddAccountOverlay } from '../../composables/add/useAddAccountOverlay'
 import AddAccountForm from './AddAccountForm.vue'
 
 const { t } = useI18n()
@@ -20,7 +20,7 @@ const form = reactive(useAddAccountForm(overlay.open))
         :title="t('Add account')"
         width="min(92vw, 32.5rem)">
         <AddAccountForm :form="form" @submit="form.submit" />
-        <template #footer-start>
+        <template v-if="form.linksSteam" #footer-start>
             <span class="text-12 text-fg-3">{{ t('Steam data is fetched before saving') }}</span>
         </template>
         <template #footer>

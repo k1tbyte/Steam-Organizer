@@ -1,23 +1,26 @@
 <script setup lang="ts">
 import { FpBadge, FpButton, FpDropdownMenu, FpIcon, tip } from '@so/ui'
+import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useEditBar } from '../../composables/edit/useEditBar'
+import { useRemoveAccounts } from '../../composables/useRemoveAccounts'
 import BanFilterChips from '../list/BanFilterChips.vue'
+import RemoveAccountsDialog from '../remove/RemoveAccountsDialog.vue'
 
 const emit = defineEmits<{
     editTags: [ids: string[]]
     refresh: [ids: string[]]
     export: [ids: string[]]
-    delete: [ids: string[]]
 }>()
 
 const { t } = useI18n()
+const removal = reactive(useRemoveAccounts())
 const bar = useEditBar({
     editTags: (ids) => emit('editTags', ids),
     refresh: (ids) => emit('refresh', ids),
     export: (ids) => emit('export', ids),
-    delete: (ids) => emit('delete', ids),
+    delete: removal.ask,
 })
 </script>
 
@@ -48,5 +51,6 @@ const bar = useEditBar({
             </FpButton>
         </FpDropdownMenu>
         <FpButton size="sm" color="accent" @click="bar.close()">{{ t('Done') }}</FpButton>
+        <RemoveAccountsDialog :removal="removal" />
     </div>
 </template>

@@ -49,10 +49,7 @@ export { default as FpSegmentedMeter } from './components/feedback/SegmentedMete
 export { default as FpShake } from './components/feedback/Shake.vue'
 export { default as FpSkeleton } from './components/feedback/Skeleton.vue'
 export { default as FpSpinner } from './components/feedback/Spinner.vue'
-export {
-    default as FpToaster,
-    type ToasterPosition,
-} from './components/feedback/Toast/Toaster.vue'
+export { default as FpToaster } from './components/feedback/Toast/Toaster.vue'
 export {
     type ToastAction,
     type ToastOptions,

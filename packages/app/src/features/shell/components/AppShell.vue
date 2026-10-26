@@ -5,6 +5,7 @@ import { computed, shallowRef } from 'vue'
 import { type PageContext, providePage, useTopbarOutlets } from '#core'
 import { SettingsHost } from '#features/settings'
 
+import { useLockClearsToasts } from '../composables/useLockClearsToasts'
 import { useSectionMemory, useShellNav } from '../composables/useShellNav'
 import ShellPages from './ShellPages.vue'
 import ShellRail from './ShellRail.vue'
@@ -12,6 +13,7 @@ import ShellTabBar from './ShellTabBar.vue'
 
 const desktop = useDesktopLayout()
 useSectionMemory()
+useLockClearsToasts()
 const { showTabBar } = useShellNav()
 const { bind } = useTopbarOutlets()
 

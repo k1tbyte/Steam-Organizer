@@ -12,7 +12,10 @@ const props = defineProps<{ pinned: Account[]; rest: Account[] }>()
 const emit = defineEmits<{
     togglePin: [id: string]
     editTags: [id: string]
+    /** The menu's Delete, which asks first. */
     delete: [id: string]
+    /** The card's trash, which leaves Undo instead. */
+    deleteNow: [id: string]
 }>()
 
 const list = useTemplateRef('list')
@@ -57,7 +60,7 @@ const menu = useAccountMenu({
                             :touch="grid.touch.value"
                             @toggle-pin="emit('togglePin', account.id)"
                             @edit-tags="emit('editTags', account.id)"
-                            @delete="emit('delete', account.id)" />
+                            @delete="emit('deleteNow', account.id)" />
                     </div>
                 </div>
             </div>

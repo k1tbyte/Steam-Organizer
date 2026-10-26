@@ -13,6 +13,8 @@ function account(overrides: Partial<Account>): Account {
     return {
         id: 'a',
         nickname: 'alpha',
+        alias: null,
+        steamNickname: null,
         login: 'alpha_login',
         anonymous: false,
         steamId: '1',

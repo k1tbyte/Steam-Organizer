@@ -40,7 +40,8 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 
 - Card grid, virtualized (thousands of accounts).
 - States: loading, empty ("add account"), no results.
-- Card: avatar, nickname, level, account age, copyable account ID, ban indicators or "no bans", Steam Guard code copy (if authenticator), open profile, delete (confirm).
+- Card: avatar, nickname (an alias, with the Steam nickname small and grey beside it), level, account age, copyable account ID, ban indicators or "no bans", Steam Guard code copy (if authenticator), open profile, delete.
+- Delete: the card's trash removes at once, the menus and the batch ask first; a toast offers Undo for 8 s `[new]`.
 - Card hints: added / updated / registration dates, note preview, ban details.
 - Anonymous accounts (no Steam ID): credentials only.
 - Search in a chosen field: nickname, login, note + any field the user moved out of secrets (phone, email) `[new]`.
@@ -57,6 +58,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 
 ## 4. Add Account
 
+- Name (alias): required without a Steam profile `[new]`.
 - Login, password, optional Steam identifier in any format: account ID, SteamID64, Steam2, Steam3, CS2 friend code, hex, profile URL, vanity name.
 - Validation, duplicate check (ID, login).
 - With identifier: Add waits for the Steam lookup, which resolves every format to the SteamID64 and saves it with the profile data; an ID Steam does not find blocks Add. An account has a Steam ID with its data, or neither (anonymous) `[no web]`.

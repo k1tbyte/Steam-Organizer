@@ -10,7 +10,11 @@ export interface AccountTag {
 /** A vault account as the list and the card show it; wave 3's profile reads the same shape. */
 export interface Account {
     id: string
+    /** The alias, else the Steam nickname, else the login. */
     nickname: string
+    alias: string | null
+    /** Null for an anonymous account. */
+    steamNickname: string | null
     /** The Steam login: a secret, so a locked account's is neither shown nor searched. */
     login: string
     /** No Steam profile: credentials only, so level, age, bans and the Steam ID do not apply. */

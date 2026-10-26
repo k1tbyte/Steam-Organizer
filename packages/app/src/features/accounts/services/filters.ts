@@ -32,7 +32,12 @@ function matchesQuery(account: Account, query: string, field: SearchField) {
     if (needle === '') return true
     // A locked account keeps its secrets out of search; only the nickname stays public.
     if (account.locked && field !== 'nickname') return false
-    return account[field].toLowerCase().includes(needle)
+    // The Steam nickname still finds an account renamed by an alias.
+    const values =
+        field === 'nickname'
+            ? [account.nickname, account.steamNickname ?? '']
+            : [account[field]]
+    return values.some((value) => value.toLowerCase().includes(needle))
 }
 
 function matchesBans(account: Account, bans: BanFilters) {

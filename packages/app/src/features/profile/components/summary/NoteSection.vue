@@ -11,13 +11,23 @@ import CollapsibleSection from './CollapsibleSection.vue'
 const props = defineProps<{ account: Account }>()
 
 const { t } = useI18n()
-const { note, count } = useProfileNote(() => props.account)
+const { note, count, status, faded, save, retry } = useProfileNote(() => props.account)
 </script>
 
 <template>
     <CollapsibleSection section="note" :title="t('Note')" icon="icon-[lucide--sticky-note]">
         <template #actions>
-            <span class="font-mono text-12 text-fg-3">{{ count }}</span>
+            <span class="flex items-center gap-3 text-12">
+                <span v-if="status === 'failed'" class="text-danger">
+                    {{ t('Not saved') }} ·
+                    <button type="button" class="cursor-pointer font-medium hover:underline" @click="retry">{{ t('Retry') }}</button>
+                </span>
+                <span v-else-if="status === 'saving'" class="text-fg-3">{{ t('Saving…') }}</span>
+                <span v-else-if="status === 'saved'" class="text-fg-3 transition-opacity duration-slow" :class="faded && 'opacity-0'">
+                    {{ t('Saved') }}
+                </span>
+                <span class="font-mono text-fg-3">{{ count }}</span>
+            </span>
         </template>
         <div class="px-3 pb-3 lg:px-4 lg:pb-4">
             <FpTextarea
@@ -26,7 +36,8 @@ const { note, count } = useProfileNote(() => props.account)
                 :maxlength="NOTE_MAX_LENGTH"
                 :placeholder="t('Add a note…')"
                 :aria-label="t('Note')"
-                size="md" />
+                size="md"
+                @blur="save" />
         </div>
     </CollapsibleSection>
 </template>

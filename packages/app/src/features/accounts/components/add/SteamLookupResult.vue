@@ -2,7 +2,7 @@
 import { FpIcon, FpSkeleton } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import type { AddAccountFormState } from '../../composables/useAddAccountForm'
+import type { AddAccountFormState } from '../../composables/add/useAddAccountForm'
 import LevelAvatar from '../card/LevelAvatar.vue'
 
 defineProps<{

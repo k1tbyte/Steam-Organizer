@@ -3,14 +3,15 @@ import { FpButton, FpCard, FpEmpty, FpIcon, FpTabs, useDesktopLayout } from '@so
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { Account } from '#features/accounts'
-
+import { type Account, RemoveAccountsDialog, useRemoveAccounts } from '#features/accounts'
+import { useAliasEditor } from '../composables/hero/useAliasEditor'
+import { useProfileHeader } from '../composables/hero/useProfileHeader'
+import { useSteamIdField } from '../composables/hero/useSteamIdField'
 import { useAccountGate } from '../composables/useAccountGate'
 import { useBans } from '../composables/useBans'
 import { useLockDialog } from '../composables/useLockDialog'
-import { useProfileHeader } from '../composables/useProfileHeader'
+import type { ProfileIntent } from '../composables/useProfileMenu'
 import { useProfileTabs } from '../composables/useProfileTabs'
-import { useSteamIdField } from '../composables/useSteamIdField'
 import type { ProfileData } from '../model'
 import SteamGuardTab from './guard/SteamGuardTab.vue'
 import ProfileHero from './hero/ProfileHero.vue'
@@ -52,6 +53,17 @@ const tabs = reactive(
     ),
 )
 const lockDialog = reactive(useLockDialog())
+const removal = reactive(useRemoveAccounts())
+// Changing and removing the account password have no listener yet.
+function onIntent(kind: ProfileIntent) {
+    if (kind === 'delete') removal.ask([props.account.id])
+}
+const alias = reactive(
+    useAliasEditor(
+        () => props.account,
+        () => !gate.locked,
+    ),
+)
 </script>
 
 <template>
@@ -59,7 +71,8 @@ const lockDialog = reactive(useLockDialog())
         :nickname="account.nickname"
         :has-lock="details.lock !== null"
         :refreshable="!gate.hidesProfile"
-        @lock="lockDialog.show" />
+        @lock="lockDialog.show"
+        @intent="onIntent" />
 
     <div class="flex flex-col gap-3 px-4 pb-5 lg:gap-u-4 lg:px-u-6 lg:pt-u-5 lg:pb-u-6">
         <ProfileHero
@@ -69,6 +82,7 @@ const lockDialog = reactive(useLockDialog())
             :bans="bans"
             :id-field="idField"
             :gate="gate"
+            :alias="alias"
             @toggle-pin="emit('togglePin')" />
         <ProfileHeroPhone
             v-else
@@ -76,7 +90,8 @@ const lockDialog = reactive(useLockDialog())
             :header="header"
             :bans="bans"
             :id-field="idField"
-            :gate="gate" />
+            :gate="gate"
+            :alias="alias" />
 
         <FpCard v-if="gate.hidesProfile">
             <AccountLockGate standalone :gate="gate" :touch="!desktop" />
@@ -123,4 +138,5 @@ const lockDialog = reactive(useLockDialog())
     </div>
 
     <LockAccountDialog :account="account" :dialog="lockDialog" />
+    <RemoveAccountsDialog :removal="removal" />
 </template>

@@ -14,7 +14,7 @@ import {
     useCopyFeedback,
 } from '#core'
 
-import { useProfilePrefsStore } from '../stores/profilePrefs'
+import { useProfilePrefsStore } from '../../stores/profilePrefs'
 
 /** The Steam ID in the format every profile shares and remembers, with a menu of all seven and copy. */
 export function useSteamIdField(

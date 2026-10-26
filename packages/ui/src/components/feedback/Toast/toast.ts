@@ -3,31 +3,26 @@ import type { StatusColor } from '../../../color'
 
 export interface ToastAction {
     label: string
+    /** Runs, then the toast closes. */
     onClick: () => void
 }
 
 export interface ToastOptions {
     title: string
-    description?: string
+    /** A function gets the whole seconds left and follows them as they tick ("Undo for 5 s"). */
+    description?: string | ((secondsLeft: number) => string)
     color?: StatusColor
+    /** Replaces the color's glyph; a neutral toast has none of its own. */
+    icon?: string
     /** Milliseconds before it closes; 0 stays until dismissed. Danger toasts stay by default. */
     duration?: number
     action?: ToastAction
-    /** Draws a bar that drains until `until` (epoch ms), on its own clock: hover does not pause it. */
-    countdown?: { until: number }
+    /** A bar drains over `duration`; hovering the toast pauses both. */
+    progress?: boolean
 }
 
 export interface ToastItem extends ToastOptions {
     id: number
-    open: boolean
-    /** Content rendered, so closing plays an exit that ends in `forget`. */
-    mounted: boolean
-}
-
-export interface ToastStack {
-    y: number
-    height?: number
-    z: number
 }
 
 const MAX_TOASTS = 3
@@ -36,55 +31,25 @@ const MAX_TOASTS = 3
 const toasts = ref<ToastItem[]>([])
 let nextId = 1
 
+/** Past three, the oldest leaves. */
 function add(options: ToastOptions): number {
     const id = nextId++
     const sticky = options.color === 'danger' && options.duration === undefined
     toasts.value = [
         ...toasts.value,
-        {
-            id,
-            open: true,
-            mounted: false,
-            ...options,
-            ...(sticky && { duration: 0 }),
-        },
-    ]
-    // Evict through remove so overflow still plays its exit animation.
-    const open = toasts.value.filter((item) => item.open)
-    for (const item of open.slice(0, -MAX_TOASTS)) remove(item.id)
+        { id, ...options, ...(sticky && { duration: 0 }) },
+    ].slice(-MAX_TOASTS)
     return id
 }
 
-function update(id: number, patch: Partial<ToastOptions>) {
-    const toast = toasts.value.find((item) => item.id === id)
-    if (toast) Object.assign(toast, patch)
-}
-
-/** Starts the exit; the toast calls `forget` once its exit animation ends. */
 function remove(id: number) {
-    const toast = toasts.value.find((item) => item.id === id)
-    if (!toast) return
-    // Never rendered (evicted or closed in the same tick): no exit will play.
-    if (!toast.mounted) return forget(id)
-    toast.open = false
-}
-
-function markMounted(id: number) {
-    const toast = toasts.value.find((item) => item.id === id)
-    if (toast) toast.mounted = true
-}
-
-function forget(id: number) {
-    toasts.value = toasts.value.filter((item) => item.id !== id)
+    toasts.value = toasts.value.filter((toast) => toast.id !== id)
 }
 
 function clear() {
-    for (const toast of toasts.value) remove(toast.id)
+    toasts.value = []
 }
 
 export function useToast() {
-    return { toasts, add, update, remove, clear }
+    return { toasts, add, remove, clear }
 }
-
-// Internal: the toaster renders `toasts` and reports their lifecycle; callers use `useToast`.
-export { forget, markMounted, toasts }

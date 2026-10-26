@@ -4,8 +4,8 @@ One account's page at `/accounts/:id` (`meta: { nav: 'accounts', hero: true }`; 
 
 - `index.ts` exports `profileRoutes`; `router.ts` nests it under the shell.
 - `useProfile` reads the account from `useVaultAccounts()` and its Steam-side data from the mock. `ProfileView` builds the page-owned view-models; sections call their own (`useCredentials`, `useCommunity`, `useProfileNote`).
-- Desktop and phone mount different heroes (`ProfileHero`, `ProfileHeroPhone`), never both. The desktop hero carries `data-vt-hero`: the shared element of the card to profile morph, run by the shell (`features/shell`, `meta.hero`).
-- The Steam ID shows in the format every profile shares (`steamIdValues` in `core/steamId.ts`); the format and the folded sections persist through `core/storage` (`stores/profilePrefs.ts`). The note (200 characters) shows as typed (`stores/profileNotes.ts`) and reaches the vault after a 600ms pause or when the page goes (`useProfileNote`).
+- Desktop and phone mount different heroes (`ProfileHero`, `ProfileHeroPhone`, view-models in `composables/hero/`), never both. Both show the name through `AliasTitle`: the pencil or F2 renames in place (`useAliasEditor`: Enter or leaving the field saves, Esc cancels, an empty name brings the Steam nickname back; an anonymous account keeps its name), the Steam nickname sits under an alias, "Add alias" under a Steam nickname. The desktop hero carries `data-vt-hero`: the shared element of the card to profile morph, run by the shell (`features/shell`, `meta.hero`).
+- The Steam ID shows in the format every profile shares (`steamIdValues` in `core/steamId.ts`); the format and the folded sections persist through `core/storage` (`stores/profilePrefs.ts`). The note (200 characters) shows as typed (`stores/profileNotes.ts`) and reaches the vault after an 800ms pause, on leaving the field, when the page goes or before the vault locks (`useProfileNote`); the header says Saving…, then Saved for 2 s, or Not saved with Retry.
 - A locked account asks its own password even with the vault open (`useAccountGate`): credentials only, or everything but the nickname and avatar. "Forgot password?" takes the master password when recovery is on and says so when it is off. The unlocked state lives in the page, so leaving the account or locking the vault locks it again. The demo password and master password are both `demo`.
 - Steam links open the real Steam and SteamDB pages for the SteamID64 (`services/steamLinks.ts`).
 - Steam Guard comes from `features/steam-guard`: the header control, and the tab's code (hold to show, copy while hidden), revocation code and remove-authenticator intent.
@@ -13,7 +13,7 @@ One account's page at `/accounts/:id` (`meta: { nav: 'accounts', hero: true }`; 
 
 ## Mocks
 
-Mockup: `Profile.dc.html` (Desktop, Mobile, Locked account, Mobile · Locked, Lock account · Dialog), `Motion.dc.html` (Card to profile).
+Mockup: `Profile.dc.html` (Desktop, Mobile, Locked account, Mobile · Locked, Lock account · Dialog), `Motion.dc.html` (Card to profile), `Primitives 3b.dc.html` (3b-1: alias in the hero; the note's save states are in its header text).
 
 | Mock (variants) | UI built | Source | Wire in |
 |---|---|---|---|
@@ -21,4 +21,6 @@ Mockup: `Profile.dc.html` (Desktop, Mobile, Locked account, Mobile · Locked, Lo
 
 `Sample accounts` derives a profile from any account; a1, a12 and a8 carry the mockup's own. Every other variant edits whichever account is open.
 
-Unwired intents (buttons emit them, nothing listens yet): Refresh, edit credentials, delete account, change or remove the account password, confirming Lock account (the dialog only closes), add / edit / remove a linked service, edit tags, Import maFile, remove authenticator. Games and Friends are empty states until Steam data arrives.
+Delete account asks first (`RemoveAccountsDialog` from `features/accounts`); the page then goes back to the list.
+
+Unwired intents (buttons emit them, nothing listens yet): Refresh, edit credentials, change or remove the account password, confirming Lock account (the dialog only closes), add / edit / remove a linked service, edit tags, Import maFile, remove authenticator. Games and Friends are empty states until Steam data arrives.

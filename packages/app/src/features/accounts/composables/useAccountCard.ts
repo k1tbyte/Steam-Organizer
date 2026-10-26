@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useCopyFeedback, useRouteHero } from '#core'
 
 import type { Account, CardFlags } from '../model'
+import { steamNameOf } from '../services/accountName'
 import {
     cardHeightCss,
     cardRows,
@@ -58,6 +59,7 @@ export function useAccountCard(
         /** The card a hero transition morphs into the profile, and back. */
         isHero: computed(() => hero.value === props.account.id),
         idText,
+        steamName: computed(() => steamNameOf(props.account)),
         shownTags,
         hiddenTags,
         height: computed(() => cardHeightCss(props.flags, props.touch)),

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { FpBadge, FpFormField, FpIcon, FpInput, useDesktopLayout } from '@so/ui'
+import { FpAlert, FpBadge, FpFormField, FpIcon, FpInput, useDesktopLayout } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import type { AddAccountFormState } from '../../composables/useAddAccountForm'
+import type { AddAccountFormState } from '../../composables/add/useAddAccountForm'
 import MaFileField from './MaFileField.vue'
 import SteamLookupResult from './SteamLookupResult.vue'
 
@@ -13,7 +13,7 @@ const { t } = useI18n()
 const desktop = useDesktopLayout()
 </script>
 
-<!-- Footer buttons outside the form submit it through `form="add-account"`. -->
+<!-- Footer buttons outside the form submit it through `form="add-account"`. Web leads with the name: it has no Steam profile. -->
 <template>
     <form id="add-account" class="flex flex-col gap-4.5 lg:gap-4" @submit.prevent="$emit('submit')">
         <FpFormField :label="t('Login')" :error="form.loginError">
@@ -30,7 +30,7 @@ const desktop = useDesktopLayout()
                 <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
             </FpInput>
         </FpFormField>
-        <div class="flex flex-col gap-1.5">
+        <div v-if="form.linksSteam" class="flex flex-col gap-1.5">
             <FpFormField :label="t('Steam profile')" :hint="t('Optional')" :error="form.steamIdMessage">
                 <FpInput
                     v-model="form.steamId"
@@ -45,6 +45,20 @@ const desktop = useDesktopLayout()
             </FpFormField>
             <SteamLookupResult :loading="form.showLookingUp" :profile="form.profile" />
         </div>
+        <FpAlert
+            v-else
+            icon="icon-[simple-icons--steam]"
+            :title="t('Steam profile is added in the extension or desktop app')"
+            :description="t('The web version can\'t reach Steam, so accounts added here have no Steam profile.')" />
+        <FpFormField
+            :label="t('Name')"
+            :hint="form.aliasHint"
+            :error="form.aliasError"
+            :class="!form.linksSteam && 'order-first'">
+            <FpInput v-model="form.alias" :size="desktop ? 'md' : 'lg'" :placeholder="t('How this account shows in the list')">
+                <template #leading><FpIcon name="icon-[lucide--tag]" /></template>
+            </FpInput>
+        </FpFormField>
         <FpFormField :label="t('Steam Guard')" :hint="t('Optional')">
             <MaFileField :file-name="form.maFileName" @attach="form.attachMaFile" @remove="form.removeMaFile" />
         </FpFormField>

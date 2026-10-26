@@ -12,7 +12,7 @@ import { useEditSelection } from './useEditSelection'
 // Esc there belongs to the overlay.
 const OVERLAY = '[role="dialog"], [role="menu"], [role="listbox"]'
 
-/** What the bar hands upstream for the picked accounts; nothing listens yet. */
+/** What the bar does with the picked accounts; only delete has a listener yet. */
 export interface BatchIntents {
     editTags: (ids: string[]) => void
     refresh: (ids: string[]) => void

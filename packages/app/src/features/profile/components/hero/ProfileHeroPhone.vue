@@ -4,11 +4,13 @@ import { useI18n } from 'vue-i18n'
 
 import { type Account, AccountTagChip, AgeChip, LevelAvatar } from '#features/accounts'
 
+import type { AliasEditorState } from '../../composables/hero/useAliasEditor'
+import type { ProfileHeaderState } from '../../composables/hero/useProfileHeader'
+import type { SteamIdFieldState } from '../../composables/hero/useSteamIdField'
 import type { AccountGateState } from '../../composables/useAccountGate'
 import type { BansState } from '../../composables/useBans'
-import type { ProfileHeaderState } from '../../composables/useProfileHeader'
-import type { SteamIdFieldState } from '../../composables/useSteamIdField'
 import ProfileChip from '../ProfileChip.vue'
+import AliasTitle from './AliasTitle.vue'
 import GuardBar from './GuardBar.vue'
 import GuardMissing from './GuardMissing.vue'
 import ProfileMeta from './ProfileMeta.vue'
@@ -21,6 +23,7 @@ defineProps<{
     bans: BansState
     idField: SteamIdFieldState
     gate: AccountGateState
+    alias: AliasEditorState
 }>()
 const emit = defineEmits<{ editTags: []; importMaFile: [] }>()
 
@@ -38,7 +41,7 @@ const { t } = useI18n()
                 :anonymous="account.anonymous"
                 :ring="!gate.hidesProfile" />
             <div class="flex min-w-0 flex-1 flex-col gap-2">
-                <h1 class="truncate font-title text-20 text-fg-1 tracking-title">{{ account.nickname }}</h1>
+                <AliasTitle :account="account" :editor="alias" touch />
                 <div class="flex flex-wrap items-center gap-1.5">
                     <ProfileChip v-if="gate.chip" size="lg" tone="accent" :icon="gate.chip.icon">
                         {{ gate.chip.label }}

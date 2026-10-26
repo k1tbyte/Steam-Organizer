@@ -4,11 +4,13 @@ import { useI18n } from 'vue-i18n'
 
 import { type Account, AccountTagChip, AgeChip, LevelAvatar } from '#features/accounts'
 
+import type { AliasEditorState } from '../../composables/hero/useAliasEditor'
+import type { ProfileHeaderState } from '../../composables/hero/useProfileHeader'
+import type { SteamIdFieldState } from '../../composables/hero/useSteamIdField'
 import type { AccountGateState } from '../../composables/useAccountGate'
 import type { BansState } from '../../composables/useBans'
-import type { ProfileHeaderState } from '../../composables/useProfileHeader'
-import type { SteamIdFieldState } from '../../composables/useSteamIdField'
 import ProfileChip from '../ProfileChip.vue'
+import AliasTitle from './AliasTitle.vue'
 import GuardBar from './GuardBar.vue'
 import GuardMissing from './GuardMissing.vue'
 import ProfileMeta from './ProfileMeta.vue'
@@ -21,6 +23,7 @@ defineProps<{
     bans: BansState
     idField: SteamIdFieldState
     gate: AccountGateState
+    alias: AliasEditorState
 }>()
 const emit = defineEmits<{ togglePin: []; editTags: []; importMaFile: [] }>()
 
@@ -38,10 +41,7 @@ const { t } = useI18n()
                 :anonymous="account.anonymous"
                 :ring="!gate.hidesProfile" />
             <div class="flex min-w-0 flex-1 flex-col gap-2.5">
-                <div class="flex min-w-0 items-center gap-2.5">
-                    <h2 class="min-w-0 truncate font-title text-26 text-fg-1 tracking-title">
-                        {{ account.nickname }}
-                    </h2>
+                <AliasTitle :account="account" :editor="alias" :touch="false">
                     <ProfileChip v-if="gate.chip" v-bind="tip(t('Account has its own password'))" tone="accent" :icon="gate.chip.icon">{{ gate.chip.label }}</ProfileChip>
                     <ProfileChip v-if="!gate.hidesProfile && !account.anonymous" v-bind="tip(t('Profile visibility'))" :icon="header.visibility.icon">{{ header.visibility.label }}</ProfileChip>
                     <FpButton
@@ -56,7 +56,7 @@ const { t } = useI18n()
                         @click="emit('togglePin')">
                         <FpIcon name="icon-[lucide--pin]" />
                     </FpButton>
-                </div>
+                </AliasTitle>
                 <template v-if="!gate.hidesProfile">
                     <div class="flex flex-wrap items-center gap-1.5">
                         <AgeChip v-if="!account.anonymous" size="md" :years="account.years" :since="account.since" />

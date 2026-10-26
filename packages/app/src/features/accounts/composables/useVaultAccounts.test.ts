@@ -94,3 +94,46 @@ it('edits the alias and note, and deletes to a tombstone', async () => {
     expect(ids(reloaded)).toEqual(['one'])
     expect(reloaded.accounts.value[0]?.note).toBe('trade bot')
 })
+
+it('undoes a deletion with the same record, unless the login came back meanwhile', async () => {
+    const session = useVaultSession()
+    await session.create('Main', PASSWORD)
+    const vault = useVaultAccounts()
+    for (const login of ['one', 'two'])
+        await vault.add({ login, password: 'hunter22', steamId: null })
+    const [one, two] = vault.accounts.value.map((account) => account.id)
+
+    const undoOne = await vault.remove([one as string])
+    const undoTwo = await vault.remove([two as string])
+    await vault.add({ login: 'two', password: 'hunter22', steamId: null })
+    await undoOne()
+    await undoTwo()
+
+    // The new `two` took the key `one` had in the emptied vault, so `one` comes back after it.
+    const reloaded = await reopened()
+    expect(ids(reloaded)).toEqual(['two', 'one'])
+    expect(reloaded.accounts.value.map((account) => account.id)).toContain(one)
+    expect(reloaded.accounts.value.map((account) => account.id)).not.toContain(
+        two,
+    )
+})
+
+it('undoes a deletion beside other anonymous accounts, unless its Steam ID came back meanwhile', async () => {
+    const session = useVaultSession()
+    await session.create('Main', PASSWORD)
+    const vault = useVaultAccounts()
+    const STEAM = '76561199044795099'
+    await vault.add({ login: 'anon', password: 'hunter22', steamId: null })
+    await vault.add({ login: 'old', password: 'hunter22', steamId: STEAM })
+    await vault.add({ login: 'spare', password: 'hunter22', steamId: null })
+    const byLogin = (login: string) =>
+        vault.accounts.value.find((account) => account.login === login)
+            ?.id as string
+
+    const undo = await vault.remove([byLogin('anon'), byLogin('old')])
+    await vault.add({ login: 'new', password: 'hunter22', steamId: STEAM })
+    await undo()
+
+    const reloaded = await reopened()
+    expect(ids(reloaded).sort()).toEqual(['anon', 'new', 'spare'])
+})

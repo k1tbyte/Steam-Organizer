@@ -6,6 +6,7 @@ export interface NewAccountInput {
     login: string
     password: string
     steamId: string
+    alias: string
 }
 
 export interface ExistingAccounts {
@@ -20,11 +21,12 @@ export interface NewAccountErrors {
     steamId: 'unrecognized' | 'taken' | null
 }
 
-/** Field errors only show once the field has something in it; `canAdd` also needs the required ones filled. */
+/** Field errors only show once the field has something in it; `canAdd` also needs the required ones filled.
+ *  `needsName`: no alias and no Steam ID the text gives (a vanity name waits on the lookup); flagged only after a try. */
 export function validateNewAccount(
-    { login, password, steamId }: NewAccountInput,
+    { login, password, steamId, alias }: NewAccountInput,
     existing: ExistingAccounts,
-): { errors: NewAccountErrors; canAdd: boolean } {
+): { errors: NewAccountErrors; canAdd: boolean; needsName: boolean } {
     const name = login.trim().toLowerCase()
     const accountId = parseAccountId(steamId)
     const errors: NewAccountErrors = {
@@ -44,5 +46,6 @@ export function validateNewAccount(
         name !== '' &&
         password.length >= MIN_PASSWORD_LENGTH &&
         Object.values(errors).every((error) => error === null)
-    return { errors, canAdd }
+    const needsName = alias.trim() === '' && accountId === null
+    return { errors, canAdd, needsName }
 }

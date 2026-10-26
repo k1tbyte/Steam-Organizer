@@ -13,9 +13,8 @@ const { t } = useI18n()
 
 <template>
     <div class="bg-stage" aria-hidden="true" />
-    <FpToaster :dismiss-label="t('Dismiss')">
-        <RouterView />
-        <MockPanel v-if="MockPanel" />
-    </FpToaster>
+    <RouterView />
+    <MockPanel v-if="MockPanel" />
+    <FpToaster :label="t('Notifications')" :dismiss-label="t('Dismiss')" />
     <FpTooltipHost />
 </template>

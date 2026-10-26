@@ -13,6 +13,8 @@ function account(patch: Partial<Account>): Account {
     return {
         id: 'x',
         nickname: 'x',
+        alias: null,
+        steamNickname: null,
         login: 'x',
         anonymous: false,
         steamId: '1',
@@ -80,6 +82,19 @@ describe('filterAccounts', () => {
             ),
         ).toEqual(['b'])
         expect(ids(filterAccounts(all, view({ query: 'login_b' })))).toEqual([])
+    })
+
+    it('finds an account by its alias and by the Steam nickname behind it', () => {
+        const renamed = account({
+            id: 'r',
+            nickname: 'Main · Faceit',
+            alias: 'Main · Faceit',
+            steamNickname: 'nightjar',
+        })
+        for (const query of ['faceit', 'NIGHT'])
+            expect(ids(filterAccounts([renamed], view({ query })))).toEqual([
+                'r',
+            ])
     })
 
     it('keeps a locked account out of login and note search', () => {

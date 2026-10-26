@@ -2,7 +2,7 @@
 import { FpIcon, FpPopover, tip } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import type { SteamIdFieldState } from '../../composables/useSteamIdField'
+import type { SteamIdFieldState } from '../../composables/hero/useSteamIdField'
 
 defineProps<{ field: SteamIdFieldState; touch: boolean }>()
 

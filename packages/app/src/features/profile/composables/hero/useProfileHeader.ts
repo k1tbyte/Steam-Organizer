@@ -8,13 +8,13 @@ import { useI18n } from 'vue-i18n'
 
 import type { Account } from '#features/accounts'
 
-import type { ProfileData, Visibility } from '../model'
-import { stampParts } from '../services/stamps'
+import type { ProfileData, Visibility } from '../../model'
+import { stampParts } from '../../services/stamps'
 import {
     STEAM_LINK_KEYS,
     type SteamLinkKey,
     steamLinkUrl,
-} from '../services/steamLinks'
+} from '../../services/steamLinks'
 
 const VISIBILITY_ICONS: Record<Visibility, string> = {
     public: 'icon-[lucide--globe]',

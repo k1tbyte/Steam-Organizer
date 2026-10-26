@@ -66,13 +66,17 @@ const card = useAccountCard(
                 :anonymous="account.anonymous"
                 :ring="card.showLevel.value" />
             <div class="flex min-w-0 flex-1 flex-col gap-1.5">
-                <span class="flex min-w-0 items-center gap-1.5" :class="touch ? 'pr-9' : 'pr-7'">
+                <span class="flex min-w-0 items-baseline gap-1.5" :class="touch ? 'pr-9' : 'pr-7'">
                     <RouterLink
                         :to="card.profilePath.value"
-                        class="truncate font-semibold text-15 text-fg-1 tracking-title">
+                        class="min-w-0 truncate font-semibold text-15 text-fg-1 tracking-title">
                         {{ account.nickname }}
                     </RouterLink>
-                    <FpIcon v-if="account.locked" v-bind="tip(t('Locked'), { label: true })" name="icon-[lucide--lock]" class="shrink-0 text-13 text-fg-3" />
+                    <!-- Gives way first when the row runs short. -->
+                    <span v-if="card.steamName.value" class="min-w-0 shrink-[4] truncate text-12.5 text-fg-3">
+                        {{ card.steamName.value }}
+                    </span>
+                    <FpIcon v-if="account.locked" v-bind="tip(t('Locked'), { label: true })" name="icon-[lucide--lock]" class="shrink-0 self-center text-13 text-fg-3" />
                 </span>
                 <div class="flex h-4.5 min-w-0 items-center gap-2 whitespace-nowrap">
                     <AgeChip v-if="card.showAge.value" :years="account.years" :since="account.since" />
