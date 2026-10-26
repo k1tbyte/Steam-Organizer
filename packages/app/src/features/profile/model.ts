@@ -1,4 +1,4 @@
-import type { CredentialKind } from '@so/core'
+import type { CredentialKind, ServiceCredentials } from '@so/core'
 
 import type { BanKind } from '#features/accounts'
 
@@ -17,26 +17,11 @@ export interface CredentialField {
     value: string
 }
 
-/** A set of credentials for one service: Steam itself, its email, a linked launcher. */
-export interface CredentialService {
-    key: string
-    /** The user's name for it, else its type's. */
-    label: string
-    icon: string
-    /** The type a named service belongs to, for the hint under its fields. */
-    type?: string
-    fields: CredentialField[]
+/** What the vault keeps to sign in: Steam's own fields, and each linked service's (its name and icon live in the registry). */
+export interface AccountCredentials {
+    steam: CredentialField[]
+    linked: ServiceCredentials[]
 }
-
-export const STEAM_SERVICE = {
-    key: 'steam',
-    label: 'Steam',
-    icon: 'icon-[simple-icons--steam]',
-} as const
-
-/** Linked service types; a kind the app does not know reads as `other`. */
-export const SERVICE_KINDS = ['email', 'faceit', 'discord', 'other'] as const
-export type ServiceKind = (typeof SERVICE_KINDS)[number]
 
 export type LockScope = 'credentials' | 'everything'
 
@@ -72,7 +57,7 @@ export interface ProfileData {
     banDetails: Partial<Record<BanKind, string>>
     lastBan: string | null
     lock: AccountLock | null
-    services: CredentialService[]
+    credentials: AccountCredentials
     /** The authenticator's revocation code; null without an authenticator. */
     revocationCode: string | null
 }

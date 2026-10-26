@@ -4,6 +4,7 @@ export type SectionKey =
     | 'sync'
     | 'fields'
     | 'tags'
+    | 'services'
     | 'vault'
     | 'steam'
     | 'bots'

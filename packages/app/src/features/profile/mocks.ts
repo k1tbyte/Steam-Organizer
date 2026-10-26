@@ -1,13 +1,8 @@
+import type { ServiceCredentials } from '@so/core'
 import { defineMock } from '#core'
 import type { Account } from '#features/accounts'
 
-import {
-    type CredentialField,
-    type CredentialKind,
-    type CredentialService,
-    type ProfileData,
-    STEAM_SERVICE,
-} from './model'
+import type { CredentialField, CredentialKind, ProfileData } from './model'
 
 /** One variant edits what the open account shows: its profile data, and the account fields the sections depend on. */
 export interface ProfileSample {
@@ -22,9 +17,10 @@ function fields(...pairs: [CredentialKind, string][]): CredentialField[] {
     return pairs.map(([kind, value]) => ({ kind, value }))
 }
 
-function steam(...pairs: [CredentialKind, string][]): CredentialService {
-    return { ...STEAM_SERVICE, fields: fields(...pairs) }
-}
+const linked = (
+    service: string,
+    ...pairs: [CredentialKind, string][]
+): ServiceCredentials => ({ service, fields: fields(...pairs) })
 
 const stats = (
     years: number,
@@ -49,42 +45,31 @@ const SAMPLE_PROFILES: Record<string, ProfileData> = {
         lastBan: null,
         lock: null,
         revocationCode: 'R38214',
-        services: [
-            steam(
+        credentials: {
+            steam: fields(
                 ['login', 'kyzzdef_1'],
                 ['password', 'Tr4de-ready!2020'],
                 ['phone', '+7 912 455-12-34'],
             ),
-            {
-                key: 'email',
-                label: 'Steam email',
-                icon: 'icon-[lucide--mail]',
-                fields: fields(
+            linked: [
+                linked(
+                    'email',
                     ['email', 'kyzz.def@proton.me'],
                     ['password', 'mailbox-Orbit-77'],
                 ),
-            },
-            {
-                key: 'ubi',
-                label: 'Main',
-                type: 'Ubisoft',
-                icon: 'icon-[simple-icons--ubisoft]',
-                fields: fields(
+                linked(
+                    'ubisoft',
                     ['email', 'kyzz.def@proton.me'],
                     ['password', 'R6-siege-2021'],
                 ),
-            },
-            {
-                key: 'rock',
-                label: 'Rockstar',
-                icon: 'icon-[simple-icons--rockstargames]',
-                fields: fields(
+                linked(
+                    'rockstar',
                     ['login', 'kyzz_rsg'],
                     ['password', 'LosSantos#88'],
                     ['secret-word', 'tangerine'],
                 ),
-            },
-        ],
+            ],
+        },
     },
     a12: {
         visibility: 'friends',
@@ -99,22 +84,20 @@ const SAMPLE_PROFILES: Record<string, ProfileData> = {
         lastBan: '222 days ago',
         lock: { scope: 'credentials', recovery: true },
         revocationCode: null,
-        services: [
-            steam(
+        credentials: {
+            steam: fields(
                 ['login', 'dorado_trades'],
                 ['password', 'gold-Coast_19'],
                 ['phone', '+7 903 118-40-07'],
             ),
-            {
-                key: 'email',
-                label: 'Steam email',
-                icon: 'icon-[lucide--mail]',
-                fields: fields(
+            linked: [
+                linked(
+                    'email',
                     ['email', 'dorado.tr@gmail.com'],
                     ['password', 'inbox!Dorado'],
                 ),
-            },
-        ],
+            ],
+        },
     },
     a8: {
         visibility: 'public',
@@ -126,9 +109,13 @@ const SAMPLE_PROFILES: Record<string, ProfileData> = {
         lastBan: null,
         lock: { scope: 'everything', recovery: false },
         revocationCode: 'R70926',
-        services: [
-            steam(['login', 'starwave_farm'], ['password', 'Cards4ever-34']),
-        ],
+        credentials: {
+            steam: fields(
+                ['login', 'starwave_farm'],
+                ['password', 'Cards4ever-34'],
+            ),
+            linked: [],
+        },
     },
 }
 
@@ -179,8 +166,8 @@ function derive(account: Account): ProfileData {
             account.bans.length > 0 ? `${100 + (seed % 400)} days ago` : null,
         lock: account.locked ? { scope: 'credentials', recovery: true } : null,
         revocationCode: account.guard ? `R${10000 + (seed % 90000)}` : null,
-        services: [
-            steam(
+        credentials: {
+            steam: fields(
                 ['login', account.login],
                 ['password', `${account.login}-Pw!${seed % 100}`],
                 ...(seed % 2 === 0
@@ -192,7 +179,8 @@ function derive(account: Account): ProfileData {
                       ]
                     : []),
             ),
-        ],
+            linked: [],
+        },
     }
 }
 
@@ -221,7 +209,7 @@ export const profileMock = defineMock<ProfileSample>(
         'No linked services': {
             details: (base) => ({
                 ...base,
-                services: base.services.slice(0, 1),
+                credentials: { ...base.credentials, linked: [] },
             }),
         },
         'Active bans': {

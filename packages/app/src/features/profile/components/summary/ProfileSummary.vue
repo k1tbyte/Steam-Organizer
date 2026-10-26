@@ -24,7 +24,7 @@ const emit = defineEmits<{ lock: []; addService: []; edit: []; removeService: []
     <div class="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-start lg:gap-u-4">
         <div class="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-u-4">
             <CredentialsSection
-                :services="details.services"
+                :credentials="details.credentials"
                 :gate="gate"
                 :touch="touch"
                 @lock="emit('lock')"

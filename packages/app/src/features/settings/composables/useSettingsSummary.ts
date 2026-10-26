@@ -3,6 +3,7 @@ import { useI18n } from 'vue-i18n'
 
 import { useAppearancePref } from '#core'
 import { useVaultTags } from '#features/accounts'
+import { useVaultServices } from '#features/linked-services'
 
 import type { SectionKey } from '../model'
 import { FIELD_KEYS, secretCount } from '../services/fieldSecrecy'
@@ -22,6 +23,7 @@ export function useSettingsSummary() {
     const drive = useDriveSync()
     const steam = useSteamAccess()
     const { tags } = useVaultTags()
+    const { own: services } = useVaultServices()
 
     const modeLabels = computed(() => ({
         dark: t('Dark'),
@@ -43,6 +45,8 @@ export function useSettingsSummary() {
                 })
             case 'tags':
                 return String(tags.value.length)
+            case 'services':
+                return String(services.value.length)
             case 'vault':
                 return vault.value?.name ?? ''
             case 'steam':

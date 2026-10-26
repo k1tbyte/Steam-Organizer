@@ -3,9 +3,9 @@ import { FpButton, FpCard, FpConfirmModal, FpIcon, FpPopover, tip } from '@so/ui
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { TagSwatches } from '#features/accounts'
+import { MAX_TAG_LENGTH, TagSwatches } from '#features/accounts'
 
-import TagNameField from './TagNameField.vue'
+import NameField from '../../components/NameField.vue'
 import { useTagsSection } from './useTagsSection'
 
 const { t } = useI18n()
@@ -26,8 +26,10 @@ const view = reactive(useTagsSection())
                 <span class="grid size-5 shrink-0 place-items-center">
                     <span class="tag-dot size-2.5 rounded-full" :style="{ '--hue': view.newHue }" />
                 </span>
-                <TagNameField
+                <NameField
                     v-model="view.draft"
+                    :maxlength="MAX_TAG_LENGTH"
+                    :label="t('Tag name')"
                     :message="view.error"
                     @save="view.save"
                     @cancel="view.cancel"
@@ -56,9 +58,11 @@ const view = reactive(useTagsSection())
                             " />
                     </template>
                 </FpPopover>
-                <TagNameField
+                <NameField
                     v-if="row.editing"
                     v-model="view.draft"
+                    :maxlength="MAX_TAG_LENGTH"
+                    :label="t('Tag name')"
                     :message="view.error"
                     @save="view.save"
                     @cancel="view.cancel"

@@ -2,9 +2,11 @@
 import { FpButton, FpIcon, tip } from '@so/ui'
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
+
+import { ServiceIcon } from '#features/linked-services'
 import { useCredentials } from '../../composables/credentials/useCredentials'
 import type { AccountGateState } from '../../composables/useAccountGate'
-import type { CredentialService } from '../../model'
+import type { AccountCredentials } from '../../model'
 import AccountLockGate from '../lock/AccountLockGate.vue'
 import CollapsibleSection from './CollapsibleSection.vue'
 import CredentialRow from './CredentialRow.vue'
@@ -12,14 +14,14 @@ import CredentialRow from './CredentialRow.vue'
 const MAX_SERVICES = 7
 
 const props = defineProps<{
-    services: CredentialService[]
+    credentials: AccountCredentials
     gate: AccountGateState
     touch: boolean
 }>()
 const emit = defineEmits<{ lock: []; addService: []; edit: []; removeService: [] }>()
 
 const { t } = useI18n()
-const creds = reactive(useCredentials(() => props.services))
+const creds = reactive(useCredentials(() => props.credentials))
 </script>
 
 <template>
@@ -50,8 +52,8 @@ const creds = reactive(useCredentials(() => props.services))
                     :variant="service.selected ? 'soft' : 'outline'"
                     :color="service.selected ? 'accent' : 'neutral'"
                     @click="creds.select(service.key)">
-                    <FpIcon :name="service.icon" />
-                    {{ service.label }}
+                    <ServiceIcon :service="service.service" />
+                    {{ service.service.name }}
                 </FpButton>
                 <FpButton
                     v-if="!gate.canRelock"

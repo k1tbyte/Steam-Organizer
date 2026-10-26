@@ -167,7 +167,7 @@ A record is `{ id, updatedAt, data, secret? }`: a random `id` (UUID, not SteamID
 | `data` | vault key | at unlock: list, search, sort | the record kind and everything shown or searched |
 | `secret` | vault key, or account key (locked account) | on demand, reference dropped after use | credentials, authenticator, movable fields set secret |
 
-Record kinds (`data.kind`, a number): `SETTINGS` (one per vault), `ACCOUNT`, `TAG`, `PRESET`. Facts are stored, not what is shown: age comes from `registeredAt`, anonymous from `steamId === null`, the avatar tint from `id`.
+Record kinds (`data.kind`, a number): `SETTINGS` (one per vault), `ACCOUNT`, `TAG`, `PRESET`, `SERVICE`. Facts are stored, not what is shown: age comes from `registeredAt`, anonymous from `steamId === null`, the avatar tint from `id`.
 
 ```ts
 interface AccountData {
@@ -188,10 +188,11 @@ interface AccountData {
 interface AccountSecret {
   password: string
   login?: string; note?: string; phone?: string; email?: string   // movable fields set secret
-  services: { kind; name?; fields: { kind; value }[] }[]          // linked credentials, up to 7
+  services: { service; fields: { kind; value }[] }[]              // linked credentials, up to 7, one per service
   authenticator?: { sharedSecret; identitySecret; revocationCode; maFile }
 }
 TagData      { kind: TAG; label; hue }               // one record per tag: renames touch one record, syncs merge tags one by one
+ServiceData  { kind: SERVICE; name; icon? }          // a linked service beyond the built-in set; icon = SVG markup drawn as a mask
 SettingsData { kind: SETTINGS; fieldDefaults: Record<'login' | 'note' | 'phone' | 'email', 'searchable' | 'secret'> }
 SettingsSecret { steamApiKey? }
 PresetData   { kind: PRESET; name; appearance knobs; image? }   // synced appearance presets

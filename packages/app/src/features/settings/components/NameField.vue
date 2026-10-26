@@ -3,9 +3,8 @@ import { FpFormField, FpInput, FpKbd } from '@so/ui'
 import { onMounted, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { MAX_TAG_LENGTH } from '#features/accounts'
-
-defineProps<{ message: string | undefined }>()
+/** A registry row's name in place: Enter saves, Esc cancels, leaving the field saves what can be saved. */
+defineProps<{ message: string | undefined; maxlength: number; label: string }>()
 const emit = defineEmits<{ save: []; cancel: []; leave: [] }>()
 const name = defineModel<string>({ required: true })
 
@@ -20,8 +19,8 @@ onMounted(() => input.value?.focus())
             ref="input"
             v-model="name"
             size="sm"
-            :maxlength="MAX_TAG_LENGTH"
-            :aria-label="t('Tag name')"
+            :maxlength
+            :aria-label="label"
             @submit="emit('save')"
             @keydown.esc.prevent.stop="emit('cancel')"
             @blur="emit('leave')">

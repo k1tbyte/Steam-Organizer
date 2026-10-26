@@ -1,7 +1,13 @@
 import { generateNKeysBetween } from 'fractional-indexing'
 
 /** `data.kind` of a record: what it holds is known only once opened. */
-export const RECORD = { SETTINGS: 1, ACCOUNT: 2, TAG: 3, PRESET: 4 } as const
+export const RECORD = {
+    SETTINGS: 1,
+    ACCOUNT: 2,
+    TAG: 3,
+    PRESET: 4,
+    SERVICE: 5,
+} as const
 
 export const CREDENTIAL_KINDS = [
     'login',
@@ -74,15 +80,16 @@ export interface AccountData extends Movable {
     steam: SteamSnapshot | null
 }
 
-export interface CredentialService {
-    kind: string
-    name?: string
+/** An account's credentials for one linked service, at most one entry per service. */
+export interface ServiceCredentials {
+    /** A built-in service's id, or a SERVICE record's. */
+    service: string
     fields: { kind: CredentialKind; value: string }[]
 }
 
 export interface AccountSecret extends Movable {
     password: string
-    services: CredentialService[]
+    services: ServiceCredentials[]
     authenticator?: {
         sharedSecret: string
         identitySecret: string
@@ -95,6 +102,14 @@ export interface TagData {
     kind: typeof RECORD.TAG
     label: string
     hue: number
+}
+
+/** A linked service the user added beyond the built-in ones. */
+export interface ServiceData {
+    kind: typeof RECORD.SERVICE
+    name: string
+    /** SVG markup, drawn as a one-color mask. */
+    icon?: string
 }
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
@@ -120,6 +135,11 @@ export function readAccount(value: unknown): AccountData | null {
 export function readTag(value: unknown): TagData | null {
     if (!isObject(value) || value.kind !== RECORD.TAG) return null
     return { label: '', hue: 0, ...value } as TagData
+}
+
+export function readService(value: unknown): ServiceData | null {
+    if (!isObject(value) || value.kind !== RECORD.SERVICE) return null
+    return { name: '', ...value } as ServiceData
 }
 
 /** `count` order keys between two neighbours (null past either end), ascending. */

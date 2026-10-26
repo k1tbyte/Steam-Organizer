@@ -30,7 +30,7 @@ export function useProfile() {
         if (!vault.held.value) return shown
         return {
             ...shown,
-            services: vault.services.value,
+            credentials: vault.credentials.value,
             revocationCode: vault.revocationCode.value,
         }
     })

@@ -10,6 +10,7 @@
         "./accents": "./src/accents.ts",
         "./theme-reveal": "./src/theme-reveal.ts",
         "./useTimer": "./src/composables/useTimer.ts",
+        "./useToast": "./src/components/feedback/Toast/toast.ts",
         "./styles.css": "./src/styles.css",
         "./theme.css": "./src/theme.css",
         "./logo.svg": "./src/assets/logo.svg",

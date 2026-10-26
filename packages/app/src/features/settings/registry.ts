@@ -49,6 +49,14 @@ export const SECTION_DEFS: readonly SectionDef[] = [
         description: 'Changes apply to every account with the tag.',
     },
     {
+        key: 'services',
+        group: 'vault',
+        icon: 'icon-[lucide--link]',
+        title: 'Linked services',
+        description:
+            'Services an account keeps logins for. Add the ones the built-in list lacks.',
+    },
+    {
         key: 'vault',
         group: 'vault',
         icon: 'icon-[lucide--vault]',
