@@ -19,7 +19,7 @@ describe('readMaFile', () => {
     })
 
     it('takes the SteamID from the session only, whole', () => {
-        const nested = `{"shared_secret":"s","extra":{"SteamID":76561198000000001},"Session":{"SteamID":76561198012345679}}`
+        const nested = `{"shared_secret":"s","extra":{"SteamID":76561198012345678},"Session":{"SteamID":76561198012345679}}`
         expect(readMaFile(nested)?.steamId).toBe('76561198012345679')
         expect(
             readMaFile(
@@ -31,6 +31,11 @@ describe('readMaFile', () => {
                 `{"shared_secret":"s","Session":{"SteamID":"76561198012345679"}}`,
             )?.steamId,
         ).toBe('76561198012345679')
+        expect(
+            readMaFile(
+                `{"shared_secret":"s","Session":{"SteamID":765611980123456790}}`,
+            )?.steamId,
+        ).toBeNull()
         expect(readMaFile(`{"shared_secret":"s"}`)?.steamId).toBeNull()
     })
 

@@ -30,7 +30,8 @@ export function useMaFile(login: () => string) {
             if (!picked) return null
             const pick = ++picks
             reading.value = true
-            const file = readMaFile(await picked.text())
+            // A file gone unreadable since the pick reads as broken.
+            const file = await picked.text().then(readMaFile, () => null)
             if (pick !== picks) return null
             reading.value = false
             read.value = { name: picked.name, file }

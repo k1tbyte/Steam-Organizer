@@ -9,24 +9,12 @@ export interface MaFile {
 
 const text = (value: unknown) => (typeof value === 'string' ? value : '')
 
-function sessionSteamId(raw: string, session: unknown): string | null {
-    const value =
-        typeof session === 'object' && session !== null
-            ? (session as Record<string, unknown>).SteamID
-            : undefined
-    if (typeof value === 'string') return /^\d{17}$/.test(value) ? value : null
-    if (typeof value !== 'number') return null
-    // A SteamID64 is past 2^53: JSON.parse rounds it, so the exact digits are the token in the text that rounds the same.
-    for (const [, digits] of raw.matchAll(/"SteamID"\s*:\s*(\d+)/g))
-        if (digits?.length === 17 && Number(digits) === value) return digits
-    return null
-}
-
 /** An SDA maFile; null when it is not JSON or has no shared_secret (an encrypted SDA file is neither). */
 export function readMaFile(raw: string): MaFile | null {
     let file: unknown
     try {
-        file = JSON.parse(raw)
+        // A SteamID64 is past 2^53, so a number would round: every SteamID is read as its digits.
+        file = JSON.parse(raw.replace(/("SteamID"\s*:\s*)(\d+)/g, '$1"$2"'))
     } catch {
         return null
     }
@@ -34,9 +22,14 @@ export function readMaFile(raw: string): MaFile | null {
     const fields = file as Record<string, unknown>
     const sharedSecret = text(fields.shared_secret)
     if (!sharedSecret) return null
+    const session = fields.Session
+    const steamId =
+        typeof session === 'object' && session !== null
+            ? text((session as Record<string, unknown>).SteamID)
+            : ''
     return {
         accountName: text(fields.account_name),
-        steamId: sessionSteamId(raw, fields.Session),
+        steamId: /^\d{17}$/.test(steamId) ? steamId : null,
         authenticator: {
             sharedSecret,
             identitySecret: text(fields.identity_secret),
