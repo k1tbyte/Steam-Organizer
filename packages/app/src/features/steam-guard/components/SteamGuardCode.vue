@@ -6,7 +6,7 @@ import { useGuardCode } from '../composables/useGuardCode'
 
 const props = withDefaults(
     defineProps<{
-        /** Account id: the demo code is derived from it. */
+        /** The account id. */
         seed: string
         /** `md` is the phone card's footer height. */
         size?: 'sm' | 'md'

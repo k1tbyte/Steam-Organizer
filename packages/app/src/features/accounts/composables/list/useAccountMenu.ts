@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 import { copyText, usePageActive } from '#core'
-import { guardCodeAt } from '#features/steam-guard'
+import { useGuardCodes } from '#features/steam-guard'
 
 import type { Account } from '../../model'
 import { useAccountPassword } from '../useAccountPassword'
@@ -23,13 +23,14 @@ export function useAccountMenu(intents: AccountIntents) {
     const router = useRouter()
     const toast = useToast()
     const passwordOf = useAccountPassword()
+    const codeOf = useGuardCodes()
     const active = usePageActive()
 
     const open = shallowRef(false)
     const target = useCardTarget(open)
     let opener: Element | null = null
 
-    async function copy(text: string, done: string) {
+    async function copy(text: string | Promise<string>, done: string) {
         if (await copyText(text)) toast.add({ title: done, color: 'success' })
     }
     // Acts on the account as the vault holds it now.
@@ -77,7 +78,7 @@ export function useAccountMenu(intents: AccountIntents) {
                                   onSelect: act(
                                       ({ id }) =>
                                           void copy(
-                                              guardCodeAt(id),
+                                              codeOf(id),
                                               t('Steam Guard code copied'),
                                           ),
                                   ),

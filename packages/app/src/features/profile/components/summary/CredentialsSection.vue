@@ -2,9 +2,8 @@
 import { FpButton, FpIcon, tip } from '@so/ui'
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
-
+import { useCredentials } from '../../composables/credentials/useCredentials'
 import type { AccountGateState } from '../../composables/useAccountGate'
-import { useCredentials } from '../../composables/useCredentials'
 import type { CredentialService } from '../../model'
 import AccountLockGate from '../lock/AccountLockGate.vue'
 import CollapsibleSection from './CollapsibleSection.vue'

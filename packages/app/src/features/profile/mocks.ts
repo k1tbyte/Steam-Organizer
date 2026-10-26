@@ -1,11 +1,12 @@
 import { defineMock } from '#core'
 import type { Account } from '#features/accounts'
 
-import type {
-    CredentialField,
-    CredentialKind,
-    CredentialService,
-    ProfileData,
+import {
+    type CredentialField,
+    type CredentialKind,
+    type CredentialService,
+    type ProfileData,
+    STEAM_SERVICE,
 } from './model'
 
 /** One variant edits what the open account shows: its profile data, and the account fields the sections depend on. */
@@ -17,19 +18,12 @@ export interface ProfileSample {
 /** Stands in for an account's own password; the vault would check a key derived from it. */
 export const DEMO_ACCOUNT_PASSWORD = 'demo'
 
-const STEAM_ICON = 'icon-[simple-icons--steam]'
-
 function fields(...pairs: [CredentialKind, string][]): CredentialField[] {
     return pairs.map(([kind, value]) => ({ kind, value }))
 }
 
 function steam(...pairs: [CredentialKind, string][]): CredentialService {
-    return {
-        key: 'steam',
-        label: 'Steam',
-        icon: STEAM_ICON,
-        fields: fields(...pairs),
-    }
+    return { ...STEAM_SERVICE, fields: fields(...pairs) }
 }
 
 const stats = (
@@ -72,8 +66,8 @@ const SAMPLE_PROFILES: Record<string, ProfileData> = {
             },
             {
                 key: 'ubi',
-                label: 'Ubisoft',
-                name: 'Main',
+                label: 'Main',
+                type: 'Ubisoft',
                 icon: 'icon-[simple-icons--ubisoft]',
                 fields: fields(
                     ['email', 'kyzz.def@proton.me'],

@@ -1,5 +1,6 @@
 import {
     createVault,
+    openSecret,
     changePassword as rewrapPassword,
     type SealedRecord,
     type StoredVault,
@@ -223,6 +224,14 @@ export const useVaultSession = defineStore('vault-session', () => {
         })
     }
 
+    /** Opens one record's secret part; undefined while no vault is open or it holds no such record. */
+    async function secretOf<Secret>(id: string): Promise<Secret | undefined> {
+        const target = opened.value
+        const record = target?.contents.records.find((found) => found.id === id)
+        if (!target || !record || 'deleted' in record) return undefined
+        return openSecret<Secret>(target.key, record)
+    }
+
     function changePassword(current: string, next: string): Promise<boolean> {
         const id = opened.value?.vault.id
         if (id === undefined)
@@ -257,5 +266,6 @@ export const useVaultSession = defineStore('vault-session', () => {
         create,
         changePassword,
         transact,
+        secretOf,
     }
 })

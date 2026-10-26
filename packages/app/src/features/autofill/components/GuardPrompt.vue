@@ -21,6 +21,7 @@ const { remaining, currentCode } = useGuardCode(
     () => props.account?.id ?? '',
 )
 const seconds = computed(() => Math.round(remaining.value * GUARD_PERIOD_S))
+const fill = async () => emit('fill', await currentCode())
 </script>
 
 <template>
@@ -39,7 +40,7 @@ const seconds = computed(() => Math.round(remaining.value * GUARD_PERIOD_S))
             <span class="h-4.5 w-px bg-stroke-2" />
             <FpCountdownRing :value="remaining" :size="14" />
             <span class="font-mono text-12 text-fg-3">{{ t('{seconds}s', { seconds }) }}</span>
-            <FpButton color="accent" size="sm" @click="emit('fill', currentCode())">
+            <FpButton color="accent" size="sm" @click="fill">
                 <FpIcon v-if="filled" name="icon-[lucide--check]" />
                 {{ filled ? t('Filled') : t('Fill code') }}
             </FpButton>

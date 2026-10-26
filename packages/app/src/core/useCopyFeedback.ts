@@ -5,10 +5,21 @@ import { reportError } from './reportError'
 
 const FEEDBACK_MS = 1200
 
-/** Writes to the clipboard; a refusal is reported, not thrown. */
-export async function copyText(text: string): Promise<boolean> {
+/** Writes to the clipboard; a refusal is reported, not thrown. A promised text (a secret still opening) goes in
+ *  as a pending item: Safari takes it only within the press, which an await before the write would outlast. */
+export async function copyText(
+    text: string | Promise<string>,
+): Promise<boolean> {
     try {
-        await navigator.clipboard.writeText(text)
+        if (typeof text === 'string') await navigator.clipboard.writeText(text)
+        else {
+            const blob = text.then(
+                (value) => new Blob([value], { type: 'text/plain' }),
+            )
+            await navigator.clipboard.write([
+                new ClipboardItem({ 'text/plain': blob }),
+            ])
+        }
         return true
     } catch (error) {
         reportError(error, 'clipboard')
@@ -23,7 +34,7 @@ export function useCopyFeedback() {
     // A copy still awaiting the clipboard when `reset` runs must not mark what the caller shows now.
     let generation = 0
 
-    async function copy(text: string) {
+    async function copy(text: string | Promise<string>) {
         const own = ++generation
         if (!(await copyText(text)) || own !== generation) return
         copied.value = true

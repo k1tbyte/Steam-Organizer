@@ -6,6 +6,7 @@ import { useMock } from '#core'
 import { useVaultAccounts } from '#features/accounts'
 
 import { profileMock, profileOf } from '../mocks'
+import { useVaultCredentials } from './credentials/useVaultCredentials'
 
 /** The open profile's account and its Steam-side data; an id the vault does not hold goes back to the list. */
 export function useProfile() {
@@ -15,6 +16,7 @@ export function useProfile() {
     const { accounts, togglePin } = useVaultAccounts()
     // Steam data and the account's lock have no source yet.
     const sample = useMock(() => undefined, profileMock)
+    const vault = useVaultCredentials(id)
 
     const account = computed(() => {
         const found = accounts.value.find((a) => a.id === id)
@@ -24,7 +26,13 @@ export function useProfile() {
         const sampled = sample.value
         if (!account.value || !sampled) return undefined
         const base = profileOf(account.value)
-        return sampled.details?.(base) ?? base
+        const shown = sampled.details?.(base) ?? base
+        if (!vault.held.value) return shown
+        return {
+            ...shown,
+            services: vault.services.value,
+            revocationCode: vault.revocationCode.value,
+        }
     })
 
     watch(

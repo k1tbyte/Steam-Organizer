@@ -20,6 +20,32 @@ export function demoGuardCode(seed: string, period: number): string {
     return code
 }
 
+/** Steam's TOTP: HMAC-SHA1 of the period under the maFile's base64 `shared_secret`. */
+export async function steamGuardCode(
+    sharedSecret: string,
+    period: number,
+): Promise<string> {
+    const key = await crypto.subtle.importKey(
+        'raw',
+        Uint8Array.from(atob(sharedSecret), (char) => char.charCodeAt(0)),
+        { name: 'HMAC', hash: 'SHA-1' },
+        false,
+        ['sign'],
+    )
+    const counter = new DataView(new ArrayBuffer(8))
+    counter.setBigUint64(0, BigInt(period))
+    const mac = new DataView(
+        await crypto.subtle.sign('HMAC', key, counter.buffer),
+    )
+    let full = mac.getUint32(mac.getUint8(19) & 0x0f) & 0x7fffffff
+    let code = ''
+    for (let i = 0; i < CODE_LENGTH; i++) {
+        code += ALPHABET[full % ALPHABET.length]
+        full = Math.floor(full / ALPHABET.length)
+    }
+    return code
+}
+
 /** Which 30s window `nowMs` falls in, and the whole seconds left in it. */
 export function guardPhase(nowMs: number) {
     const seconds = nowMs / 1000
@@ -27,9 +53,4 @@ export function guardPhase(nowMs: number) {
         period: Math.floor(seconds / GUARD_PERIOD_S),
         remaining: GUARD_PERIOD_S - Math.floor(seconds % GUARD_PERIOD_S),
     }
-}
-
-// Defaults to the real time: a ticking clock can lag a rollover, so a copy or a fill never reads one.
-export function guardCodeAt(seed: string, nowMs = Date.now()): string {
-    return demoGuardCode(seed, guardPhase(nowMs).period)
 }

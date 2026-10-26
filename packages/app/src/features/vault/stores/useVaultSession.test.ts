@@ -1,5 +1,6 @@
 import 'fake-indexeddb/auto'
 
+import { sealRecord } from '@so/core'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, expect, it } from 'vitest'
 
@@ -90,4 +91,19 @@ it('keeps the key dropped when the vault locks during a password change', async 
     expect(await session.unlock({ method: 'pw', password: 'new one' })).toBe(
         'opened',
     )
+})
+
+it('opens one record secret on demand', async () => {
+    const session = await reload()
+    await session.create('Main', PASSWORD)
+    await session.transact(async (_contents, key) => [
+        await sealRecord(key, {
+            id: 'r1',
+            updatedAt: 1,
+            data: {},
+            secret: { password: 'pw' },
+        }),
+    ])
+    expect(await session.secretOf('r1')).toEqual({ password: 'pw' })
+    expect(await session.secretOf('missing')).toBeUndefined()
 })

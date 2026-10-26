@@ -122,10 +122,10 @@ export function useAutofill() {
         dismissGuard: () => {
             guardDismissed.value = true
         },
-        fillAccount(account: Account) {
-            host.fillLogin(account.login, passwordOf(account))
+        async fillAccount(account: Account) {
             lastFilledId.value = account.id
             pickerOpen.value = false
+            host.fillLogin(account.login, await passwordOf(account))
         },
         fillCode(code: string) {
             host.fillCode(code)

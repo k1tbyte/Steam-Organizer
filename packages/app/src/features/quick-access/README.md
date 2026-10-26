@@ -17,7 +17,6 @@ Mockup: `Extension.dc.html` (Popup, Popup · Locked).
 | Mock (variants) | UI built | Source | Wire in |
 |---|---|---|---|
 | `quick-access.tab` (Steam sign-in, Steam Guard prompt, Another site) | the fill banner and whether Enter fills | the active tab, from the content script | `useQuickAccess` |
-| `DEMO_STEAM_PASSWORD` (`accounts`) | Copy password and the password a fill types | the decrypted account | `useAccountPassword` |
 | `DEMO_ACCOUNT_PASSWORD` (`demo`) | the locked-account prompt | the account's own key | `useAccountGate` |
 
 The accounts, the vault session and the master password come from the `accounts.list` (One locked, Empty) and `vault.session` (Locked, New vault) mocks. "No results" is reached by typing.

@@ -11,7 +11,7 @@ import {
     type CredentialKind,
     type CredentialService,
     SECRET_KINDS,
-} from '../model'
+} from '../../model'
 
 const SECRET_MASK = '••••••••••••'
 
@@ -72,9 +72,9 @@ export function useCredentials(
         },
         hint: computed(() => {
             if (isSteam.value) return t('Used to fill Steam login pages')
-            const name = selected.value?.name
-            return name
-                ? t('Linked service · {name}', { name })
+            const type = selected.value?.type
+            return type
+                ? t('Linked service · {type}', { type })
                 : t('Linked service')
         }),
         removable: computed(() => !isSteam.value),

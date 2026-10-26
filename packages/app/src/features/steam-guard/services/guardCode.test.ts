@@ -3,9 +3,18 @@ import { describe, expect, it } from 'vitest'
 import {
     demoGuardCode,
     GUARD_PERIOD_S,
-    guardCodeAt,
     guardPhase,
+    steamGuardCode,
 } from './guardCode'
+
+describe('steamGuardCode', () => {
+    it('matches Steam TOTP for a known secret', async () => {
+        const secret = 'cnOgv/KdpLoP6Nbh0GMkXkPXALQ='
+        expect(await steamGuardCode(secret, 50_000_000)).toBe('Q9JC4')
+        expect(await steamGuardCode(secret, 50_000_001)).toBe('64W6R')
+        expect(await steamGuardCode(secret, 0)).toBe('W3J46')
+    })
+})
 
 describe('demoGuardCode', () => {
     it('is stable within a period and five characters from the Steam alphabet', () => {
@@ -26,13 +35,5 @@ describe('guardPhase', () => {
         expect(guardPhase(start)).toEqual({ period: 5, remaining: 30 })
         expect(guardPhase(start + 29_999)).toEqual({ period: 5, remaining: 1 })
         expect(guardPhase(start + 30_000)).toEqual({ period: 6, remaining: 30 })
-    })
-})
-
-describe('guardCodeAt', () => {
-    it('is the code of the window the time falls in', () => {
-        const period = 5
-        const mid = (period * GUARD_PERIOD_S + 12) * 1000
-        expect(guardCodeAt('a1', mid)).toBe(demoGuardCode('a1', period))
     })
 })

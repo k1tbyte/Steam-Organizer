@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 
 import { useCopyFeedback } from '#core'
 
-import type { CredentialsState } from '../../composables/useCredentials'
+import type { CredentialsState } from '../../composables/credentials/useCredentials'
 
 const props = defineProps<{ field: CredentialsState['fields'][number]; touch: boolean }>()
 const emit = defineEmits<{ toggleReveal: [] }>()

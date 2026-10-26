@@ -20,12 +20,23 @@ export interface CredentialField {
 /** A set of credentials for one service: Steam itself, its email, a linked launcher. */
 export interface CredentialService {
     key: string
+    /** The user's name for it, else its type's. */
     label: string
     icon: string
-    /** The user's own name for it, up to 20 characters. */
-    name?: string
+    /** The type a named service belongs to, for the hint under its fields. */
+    type?: string
     fields: CredentialField[]
 }
+
+export const STEAM_SERVICE = {
+    key: 'steam',
+    label: 'Steam',
+    icon: 'icon-[simple-icons--steam]',
+} as const
+
+/** Linked service types; a kind the app does not know reads as `other`. */
+export const SERVICE_KINDS = ['email', 'faceit', 'discord', 'other'] as const
+export type ServiceKind = (typeof SERVICE_KINDS)[number]
 
 export type LockScope = 'credentials' | 'everything'
 
