@@ -35,6 +35,11 @@ export interface Account {
     /** Has a Steam Guard authenticator in the vault. */
     guard: boolean
     note: string
+    /** The vault keeps notes secret: `note` is empty here and opens only in the profile. */
+    noteSecret?: boolean
+    /** Present only while the vault keeps them searchable. */
+    phone?: string
+    email?: string
     /** Credentials sit behind the account's own password. */
     locked: boolean
     /** Epoch ms: when it entered the vault and when Steam data was last refreshed. */
@@ -58,7 +63,13 @@ export const BAN_MODES = ['any', 'require', 'exclude'] as const
 export type BanFilterMode = (typeof BAN_MODES)[number]
 export type BanFilters = Record<BanKind, BanFilterMode>
 
-export const SEARCH_FIELDS = ['nickname', 'login', 'note'] as const
+export const SEARCH_FIELDS = [
+    'nickname',
+    'login',
+    'note',
+    'phone',
+    'email',
+] as const
 export type SearchField = (typeof SEARCH_FIELDS)[number]
 
 export const SORT_KEYS = [

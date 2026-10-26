@@ -2,7 +2,11 @@ import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useCopyFeedback, useMock, usePlatform } from '#core'
-import { type Account, useAccountPassword } from '#features/accounts'
+import {
+    type Account,
+    useAccountLogin,
+    useAccountPassword,
+} from '#features/accounts'
 
 import { tabMock } from '../mocks'
 import { isPaletteKeyIgnored } from '../services/picker'
@@ -32,6 +36,7 @@ export function useQuickAccess() {
     const picker = useAccountPicker()
     const gate = useAccountGate()
     const passwordOf = useAccountPassword()
+    const loginOf = useAccountLogin()
     const { filled, markFilled } = useFillFeedback()
     const loginCopy = useCopyFeedback()
     const passwordCopy = useCopyFeedback()
@@ -75,7 +80,7 @@ export function useQuickAccess() {
     function copyLogin(account: Account) {
         gate.guard(account, () => {
             copiedFrom.value = account.id
-            void loginCopy.copy(account.login)
+            void loginCopy.copy(loginOf(account))
         })
     }
 

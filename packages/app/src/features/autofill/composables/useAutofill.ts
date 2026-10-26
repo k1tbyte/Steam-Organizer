@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 
 import {
     type Account,
+    useAccountLogin,
     useAccountPassword,
     useVaultAccounts,
 } from '#features/accounts'
@@ -27,6 +28,7 @@ export function useAutofill() {
     const host = useHostPage()
     const { accounts } = useVaultAccounts()
     const passwordOf = useAccountPassword()
+    const loginOf = useAccountLogin()
     const { filled, markFilled } = useFillFeedback()
     const viewport = useWindowSize()
 
@@ -125,7 +127,7 @@ export function useAutofill() {
         async fillAccount(account: Account) {
             lastFilledId.value = account.id
             pickerOpen.value = false
-            host.fillLogin(account.login, await passwordOf(account))
+            host.fillLogin(await loginOf(account), await passwordOf(account))
         },
         fillCode(code: string) {
             host.fillCode(code)

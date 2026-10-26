@@ -6,7 +6,8 @@ import type { AccountCredentials } from '../../model'
 
 const STEAM_FIELDS = ['login', 'password', 'email', 'phone'] as const
 
-/** What the vault keeps for the account: its credentials and the revocation code. Empty while the secret opens; `held` is false for a sample. */
+/** What the vault keeps for the account: its credentials, the revocation code and the movable fields it keeps secret.
+ *  Empty while the secret opens; `held` is false for a sample. */
 export function useVaultCredentials(id: string) {
     const { held, secret } = useAccountSecret(id)
     return {
@@ -22,5 +23,7 @@ export function useVaultCredentials(id: string) {
         revocationCode: computed(
             () => secret.value?.authenticator?.revocationCode ?? null,
         ),
+        login: computed(() => secret.value?.login ?? ''),
+        note: computed(() => secret.value?.note ?? ''),
     }
 }

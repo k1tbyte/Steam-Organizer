@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useAppearancePref } from '#core'
-import { useVaultTags } from '#features/accounts'
+import { useFieldPlacement, useVaultTags } from '#features/accounts'
 import { useVaultServices } from '#features/linked-services'
 
 import type { SectionKey } from '../model'
@@ -18,6 +18,7 @@ export function useSettingsSummary() {
     const { t } = useI18n()
     const mode = useAppearancePref('mode')
     const store = useSettingsStore()
+    const { placement } = useFieldPlacement()
     const lock = useLockAfterOptions()
     const vault = useVaultInfo()
     const drive = useDriveSync()
@@ -41,7 +42,7 @@ export function useSettingsSummary() {
                 return store.sync.connected ? t('On') : t('Off')
             case 'fields':
                 return t('{count} secret', {
-                    count: secretCount(FIELD_KEYS, store.fieldModes),
+                    count: secretCount(FIELD_KEYS, placement.value),
                 })
             case 'tags':
                 return String(tags.value.length)

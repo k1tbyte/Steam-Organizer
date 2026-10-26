@@ -18,8 +18,9 @@ const props = defineProps<{
 defineEmits<{ hover: []; choose: [] }>()
 
 const height = computed(() => `${props.compact ? ROW_PX.compact : ROW_PX.regular}px`)
+// An empty login is one the vault keeps secret.
 const login = computed(() =>
-    props.concealed ? SECRET_MASK : props.account.login,
+    props.concealed || !props.account.login ? SECRET_MASK : props.account.login,
 )
 </script>
 

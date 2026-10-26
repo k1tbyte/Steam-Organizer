@@ -45,7 +45,7 @@ describe('parseView', () => {
     it('replaces a value outside its set with the default', () => {
         const parsed = parseView(
             JSON.stringify({
-                field: 'phone',
+                field: 'password',
                 sort: 'size',
                 bans: { vac: 'maybe' },
                 query: 5,

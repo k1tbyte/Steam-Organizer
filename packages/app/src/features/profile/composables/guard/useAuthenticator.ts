@@ -29,9 +29,9 @@ export function useAuthenticator(account: () => Account) {
         const { authenticator } = picked.file
         maFile.clear()
         const done = await write(
-            (secret) => ({
+            (secret, data) => ({
                 secret: { ...secret, authenticator },
-                data: { guard: true },
+                data: { ...data, guard: true },
             }),
             t("Couldn't add the authenticator"),
         )
@@ -60,9 +60,9 @@ export function useAuthenticator(account: () => Account) {
         remove: () =>
             closeOnSuccess(() =>
                 write(
-                    ({ authenticator: _, ...secret }) => ({
+                    ({ authenticator: _, ...secret }, data) => ({
                         secret,
-                        data: { guard: false },
+                        data: { ...data, guard: false },
                     }),
                     t("Couldn't remove the authenticator"),
                 ),

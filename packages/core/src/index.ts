@@ -22,6 +22,13 @@ export {
     type SteamStats,
     type TagData,
 } from './account/records'
+export {
+    type FieldDefaults,
+    placeFields,
+    readSettings,
+    SETTINGS_ID,
+    type SettingsData,
+} from './account/settings'
 export { loginTag, type PasswordSlot, type VaultKey } from './crypto/keys'
 export type { Sealed } from './crypto/seal'
 export { UnsupportedVaultError, WrongPasswordError } from './errors'

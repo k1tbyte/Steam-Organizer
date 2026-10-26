@@ -6,11 +6,12 @@ import { useI18n } from 'vue-i18n'
 import {
     BAN_KINDS,
     type BanFilterMode,
-    SEARCH_FIELDS,
     SORT_KEYS,
     type SortKey,
 } from '../../model'
+import { searchableFields, searchFieldIn } from '../../services/filters'
 import { useAccountsViewStore } from '../../stores/accountsView'
+import { useFieldPlacement } from '../fields/useFieldPlacement'
 import { useBanLabels } from '../useBanLabels'
 
 const MODE_LOOKS = {
@@ -37,11 +38,17 @@ export function useAccountsFilters() {
     const store = useAccountsViewStore()
     const banLabels = useBanLabels()
     const { view } = storeToRefs(store)
+    const { placement } = useFieldPlacement()
+    const field = computed(() =>
+        searchFieldIn(view.value.field, placement.value),
+    )
 
     const fieldLabels = computed(() => ({
         nickname: t('Nickname'),
         login: t('Login'),
         note: t('Note'),
+        phone: t('Phone'),
+        email: t('Email'),
     }))
     const modeLabels = computed<Record<BanFilterMode, string>>(() => ({
         any: t('any'),
@@ -59,8 +66,8 @@ export function useAccountsFilters() {
     const fieldItems = computed<MenuGroup[]>(() => [
         {
             choice: 'list',
-            value: view.value.field,
-            items: SEARCH_FIELDS.map((field) => ({
+            value: field.value,
+            items: searchableFields(placement.value).map((field) => ({
                 key: field,
                 label: fieldLabels.value[field],
                 onSelect: () => store.setField(field),
@@ -111,7 +118,7 @@ export function useAccountsFilters() {
     return {
         query: computed(() => view.value.query),
         setQuery: store.setQuery,
-        searchField: computed(() => fieldLabels.value[view.value.field]),
+        searchField: computed(() => fieldLabels.value[field.value]),
         fieldItems,
         sortLabel: computed(() => sortLabels.value[view.value.sort]),
         sortItems,

@@ -7,11 +7,13 @@ import { useMock } from '#core'
 import { refreshMock } from '../../mocks'
 import {
     filterAccounts,
+    searchFieldIn,
     sortAccounts,
     withLiveTags,
 } from '../../services/filters'
 import { useAccountsViewStore } from '../../stores/accountsView'
 import { useEditMode } from '../edit/useEditMode'
+import { useFieldPlacement } from '../fields/useFieldPlacement'
 import { useVaultTags } from '../tags/useVaultTags'
 import { useVaultAccounts } from '../useVaultAccounts'
 
@@ -22,15 +24,16 @@ export function useAccountsList() {
     const { view } = storeToRefs(store)
     const { accounts, presetQuery, togglePin } = useVaultAccounts()
     const { tags } = useVaultTags()
+    const { placement } = useFieldPlacement()
     const edit = useEditMode()
     // The bulk refresh in flight has no source yet.
     const refresh = useMock(() => undefined, refreshMock)
     // Edit mode moves accounts in the vault order: the search and filters apply, the sort waits.
     const visible = computed(() => {
-        const shown = filterAccounts(
-            accounts.value,
-            withLiveTags(view.value, tags.value),
-        )
+        const shown = filterAccounts(accounts.value, {
+            ...withLiveTags(view.value, tags.value),
+            field: searchFieldIn(view.value.field, placement.value),
+        })
         if (edit.open.value) return shown
         const { sort, direction } = view.value
         return sortAccounts(shown, sort, direction)

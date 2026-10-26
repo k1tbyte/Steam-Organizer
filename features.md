@@ -199,5 +199,5 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - ASF connection `[later]`.
 - Tags `[new]`: rename, recolor, create, delete (an unused tag at once, a used one asks first; Undo either way).
 - Linked services `[new]`: add, rename, upload or remove an SVG icon (one color, follows the theme), delete with Undo; the built-in set listed read-only.
-- Fields `[new]`: which fields are secret by default (searchable or not); folder vault - which fields are visible in Obsidian notes.
+- Fields `[new]`: login, note, phone and email searchable or secret in every account; Apply moves them with progress (an interrupted move finishes later); nickname stays searchable, credentials secret; folder vault - which fields are visible in Obsidian notes.
 - Danger zone: reset vault.

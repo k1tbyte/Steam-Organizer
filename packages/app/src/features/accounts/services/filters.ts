@@ -1,3 +1,5 @@
+import type { FieldDefaults } from '@so/core'
+
 import {
     type Account,
     type AccountsView,
@@ -5,6 +7,7 @@ import {
     BAN_KINDS,
     type BanFilterMode,
     type BanFilters,
+    SEARCH_FIELDS,
     type SearchField,
     type SortDirection,
     type SortKey,
@@ -38,7 +41,7 @@ function matchesQuery(account: Account, query: string, field: SearchField) {
     const values =
         field === 'nickname'
             ? [account.nickname, account.steamNickname ?? '']
-            : [account[field]]
+            : [account[field] ?? '']
     return values.some((value) => value.toLowerCase().includes(needle))
 }
 
@@ -75,7 +78,17 @@ export function withLiveTags(
     return { ...view, tags: view.tags.filter((id) => live.has(id)) }
 }
 
-/** Pass the view through `withLiveTags` first. */
+/** The fields search reads: the nickname, and the movable ones the vault keeps searchable. */
+export const searchableFields = (placement: FieldDefaults) =>
+    SEARCH_FIELDS.filter(
+        (field) => field === 'nickname' || placement[field] === 'searchable',
+    )
+
+/** The picked field, or the nickname once the vault keeps the picked one secret. */
+export const searchFieldIn = (field: SearchField, placement: FieldDefaults) =>
+    searchableFields(placement).includes(field) ? field : 'nickname'
+
+/** Pass the view through `withLiveTags` and `searchFieldIn` first. */
 export function filterAccounts(
     accounts: readonly Account[],
     { query, field, bans, tags, tagMatch }: AccountsView,

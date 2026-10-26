@@ -22,9 +22,9 @@ it('rewrites the secret and the data part the change names', async () => {
     })
     const id = [...(session.contents?.data.keys() ?? [])][0] as string
 
-    await useEditSecret()(id, (secret) => ({
+    await useEditSecret()(id, (secret, data) => ({
         secret: { ...secret, password: 'new-pass' },
-        data: { guard: true },
+        data: { ...data, guard: true },
     }))
 
     expect((await session.secretOf<AccountSecret>(id))?.password).toBe(

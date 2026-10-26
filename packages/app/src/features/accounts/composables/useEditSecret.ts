@@ -2,20 +2,24 @@ import {
     type AccountData,
     type AccountSecret,
     openSecret,
+    placeFields,
     readAccount,
+    readSettings,
+    SETTINGS_ID,
     sealRecord,
 } from '@so/core'
 
 import { useVaultSession } from '#features/vault'
 
-/** Null refuses: the latest record no longer fits what the user edited. */
+/** `data` replaces the record's data when given; null refuses: the latest record no longer fits what the user edited. */
 type SecretChange = (
     secret: AccountSecret,
     data: AccountData,
-) => { secret: AccountSecret; data?: Partial<AccountData> } | null
+) => { secret: AccountSecret; data?: AccountData } | null
 
 /** Rewrites one account's secret, and its data when the change says, on the latest record in the write queue.
- *  Resolves to false when the change refused; a sample (no record has its id) takes nothing. */
+ *  Movable fields land where the vault's placement puts them. Resolves to false when the change refused;
+ *  a sample (no record has its id) takes nothing. */
 export function useEditSecret() {
     const session = useVaultSession()
     return async (id: string, change: SecretChange) => {
@@ -34,12 +38,17 @@ export function useEditSecret() {
                 return []
             }
             const updatedAt = Date.now()
+            const placed = placeFields(
+                { ...(next.data ?? data), editedAt: updatedAt },
+                next.secret,
+                readSettings(contents.data.get(SETTINGS_ID)).fieldDefaults,
+            )
             return [
                 await sealRecord(key, {
                     id,
                     updatedAt,
-                    data: { ...data, ...next.data, editedAt: updatedAt },
-                    secret: next.secret,
+                    data: placed.data,
+                    secret: placed.secret,
                 }),
             ]
         })

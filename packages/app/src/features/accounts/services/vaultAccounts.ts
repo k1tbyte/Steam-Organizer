@@ -2,7 +2,9 @@ import {
     type AccountData,
     orderKeys,
     readAccount,
+    readSettings,
     readTag,
+    SETTINGS_ID,
     type SteamBans,
 } from '@so/core'
 
@@ -53,6 +55,7 @@ function hueOf(id: string) {
 function toAccount(
     { id, data }: StoredAccount,
     tags: ReadonlyMap<string, AccountTag>,
+    noteSecret: boolean,
 ): Account {
     const { steam } = data
     const registered = steam?.registeredAt ?? null
@@ -82,6 +85,9 @@ function toAccount(
         pinned: data.pinned,
         guard: data.guard,
         note: data.note ?? '',
+        ...(noteSecret && { noteSecret }),
+        ...(data.phone && { phone: data.phone }),
+        ...(data.email && { email: data.email }),
         locked: false,
         added: data.addedAt,
         updated: steam?.refreshedAt ?? data.addedAt,
@@ -108,8 +114,10 @@ export function accountsIn(
     const cached = mapped.get(data)
     if (cached) return cached
     const tags = new Map(tagsIn(data).map((tag) => [tag.id, tag]))
+    const noteSecret =
+        readSettings(data.get(SETTINGS_ID)).fieldDefaults.note === 'secret'
     const accounts = storedAccounts(data).map((account) =>
-        toAccount(account, tags),
+        toAccount(account, tags, noteSecret),
     )
     mapped.set(data, accounts)
     return accounts

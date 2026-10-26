@@ -2,13 +2,7 @@ import { useTimer } from '@so/ui/useTimer'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-import type {
-    FieldMode,
-    FieldModes,
-    SecuritySettings,
-    SiteKey,
-    SyncSettings,
-} from '../model'
+import type { SecuritySettings, SiteKey, SyncSettings } from '../model'
 
 const SYNC_NOW_MS = 1200
 
@@ -29,13 +23,6 @@ export const useSettingsStore = defineStore('settings', () => {
     })
     const syncing = ref(false)
     const syncedJustNow = ref(false)
-    const fieldModes = ref<FieldModes>({
-        nickname: 'searchable',
-        login: 'searchable',
-        note: 'searchable',
-        phone: 'secret',
-        email: 'secret',
-    })
     const apiKey = ref<string | null>(null)
     const allowedSites = ref<SiteKey[]>([])
 
@@ -57,10 +44,6 @@ export const useSettingsStore = defineStore('settings', () => {
         })
     }
 
-    function setFieldMode(key: keyof FieldModes, mode: FieldMode) {
-        fieldModes.value = { ...fieldModes.value, [key]: mode }
-    }
-
     function setApiKey(value: string) {
         apiKey.value = value
     }
@@ -75,13 +58,11 @@ export const useSettingsStore = defineStore('settings', () => {
         sync: computed(() => sync.value),
         syncing: computed(() => syncing.value),
         syncedJustNow: computed(() => syncedJustNow.value),
-        fieldModes: computed(() => fieldModes.value),
         apiKey: computed(() => apiKey.value),
         allowedSites: computed(() => allowedSites.value),
         setSecurity,
         setSync,
         syncNow,
-        setFieldMode,
         setApiKey,
         allowSite,
     }

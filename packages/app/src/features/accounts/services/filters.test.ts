@@ -1,3 +1,4 @@
+import { FIELD_DEFAULTS } from '@so/core'
 import { describe, expect, it } from 'vitest'
 
 import type { Account, AccountsView } from '../model'
@@ -6,6 +7,7 @@ import {
     hasActiveFilters,
     NO_BAN_FILTERS,
     nextBanMode,
+    searchFieldIn,
     sortAccounts,
 } from './filters'
 
@@ -187,5 +189,18 @@ describe('sortAccounts', () => {
 
     it('keeps the vault order', () => {
         expect(ids(sortAccounts(list, 'vault', 'asc'))).toEqual(['a', 'b', 'c'])
+    })
+})
+
+describe('searchFieldIn', () => {
+    it('keeps a field the vault keeps searchable and falls back to the nickname otherwise', () => {
+        const placement = {
+            ...FIELD_DEFAULTS,
+            phone: 'searchable',
+            login: 'secret',
+        } as const
+        expect(searchFieldIn('phone', placement)).toBe('phone')
+        expect(searchFieldIn('login', placement)).toBe('nickname')
+        expect(searchFieldIn('email', placement)).toBe('nickname')
     })
 })

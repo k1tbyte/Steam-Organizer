@@ -1,4 +1,11 @@
-import { FIXED_SECRET_KEYS, type FieldKey, type FieldModes } from '../model'
+import {
+    type FieldDefaults,
+    type FieldPlacement,
+    MOVABLE_FIELDS,
+    type MovableField,
+} from '@so/core'
+
+import { FIXED_FIELDS, type FieldKey } from '../model'
 
 /** Row order in the fields section. */
 export const FIELD_KEYS: readonly FieldKey[] = [
@@ -12,19 +19,29 @@ export const FIELD_KEYS: readonly FieldKey[] = [
     'auth',
 ]
 
-const FIXED_SECRET: ReadonlySet<FieldKey> = new Set(FIXED_SECRET_KEYS)
+export const isFixed = (key: FieldKey): key is keyof typeof FIXED_FIELDS =>
+    key in FIXED_FIELDS
 
-export function isFixedSecret(key: FieldKey): boolean {
-    return FIXED_SECRET.has(key)
+export function placementOf(
+    key: FieldKey,
+    placement: FieldDefaults,
+): FieldPlacement {
+    return isFixed(key) ? FIXED_FIELDS[key] : placement[key]
 }
 
-export function isSecret(key: FieldKey, modes: FieldModes): boolean {
-    return isFixedSecret(key) || modes[key as keyof FieldModes] === 'secret'
-}
-
-export function secretCount(
+export const secretCount = (
     keys: readonly FieldKey[],
-    modes: FieldModes,
-): number {
-    return keys.filter((key) => isSecret(key, modes)).length
+    placement: FieldDefaults,
+) => keys.filter((key) => placementOf(key, placement) === 'secret').length
+
+/** The fields a new placement moves, by where they go. */
+export function placementMoves(from: FieldDefaults, to: FieldDefaults) {
+    const moved = MOVABLE_FIELDS.filter((field) => from[field] !== to[field])
+    const going = (placement: FieldPlacement): MovableField[] =>
+        moved.filter((field) => to[field] === placement)
+    return {
+        moved,
+        toSecret: going('secret'),
+        toSearchable: going('searchable'),
+    }
 }

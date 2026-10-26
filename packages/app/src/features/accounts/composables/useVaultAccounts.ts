@@ -5,7 +5,10 @@ import {
     type LiveRecord,
     loginTag,
     orderKeys,
+    placeFields,
     RECORD,
+    readSettings,
+    SETTINGS_ID,
     sealRecord,
     updateData,
 } from '@so/core'
@@ -14,6 +17,7 @@ import { computed } from 'vue'
 
 import { reportError } from '#core'
 
+import { placedRecord } from '../services/placedRecord'
 import { applyOrder, type Placement, placeBetween } from '../services/reorder'
 import {
     placedKeys,
@@ -23,6 +27,7 @@ import {
 } from '../services/vaultAccounts'
 import { useAccountsViewStore } from '../stores/accountsView'
 import { useAccountsSource } from './useAccountsSource'
+import { useEditSecret } from './useEditSecret'
 
 export interface NewAccount {
     login: string
@@ -37,10 +42,16 @@ export interface NewAccount {
 export type AddResult = 'added' | 'login-taken' | 'steam-taken'
 
 /** The vault's accounts: the one source the list, the profile and the popup read, and the one writer of their records. */
+type UserFields = Partial<Pick<AccountData, 'alias' | 'note'>>
+
+const placementIn = (data: ReadonlyMap<string, unknown>) =>
+    readSettings(data.get(SETTINGS_ID)).fieldDefaults
+
 export function useVaultAccounts() {
     const { session, sample, onVault } = useAccountsSource()
     const view = useAccountsViewStore()
     const { pins, order } = storeToRefs(view)
+    const editSecret = useEditSecret()
 
     const accounts = computed(() => {
         const withPins = (sample.value?.accounts ?? []).map((account) => {
@@ -137,9 +148,26 @@ export function useVaultAccounts() {
                 }),
             }
             const id = crypto.randomUUID()
-            return [await sealRecord(key, { id, updatedAt: now, data, secret })]
+            const placed = placeFields(data, secret, placementIn(contents.data))
+            return [
+                await sealRecord(key, {
+                    id,
+                    updatedAt: now,
+                    data: placed.data,
+                    secret: placed.secret,
+                }),
+            ]
         })
         return result
+    }
+
+    /** A note goes where the vault keeps notes; a stale copy in the other part goes too. */
+    async function editPlaced(id: string, patch: UserFields): Promise<void> {
+        if (!onVault.value) return
+        await editSecret(id, ({ note: _, ...secret }, data) => ({
+            secret,
+            data: { ...data, ...patch },
+        }))
     }
 
     /** Leaves tombstones, so a sync tells the deletion from an account another copy never had; resolves to the undo. */
@@ -181,13 +209,24 @@ export function useVaultAccounts() {
                         .sort()
                         .at(-1) ?? null
                 return Promise.all(
-                    back.map(({ record, data }) => {
-                        if (!orders.has(data.order))
-                            return { ...record, updatedAt }
-                        const [order] = orderKeys(last, null, 1) as [string]
-                        last = order
-                        const moved = { ...data, order, editedAt: updatedAt }
-                        return updateData(key, record, moved, updatedAt)
+                    back.map(async ({ record, data }) => {
+                        let next = data
+                        if (orders.has(data.order)) {
+                            const [order] = orderKeys(last, null, 1) as [string]
+                            last = order
+                            next = { ...data, order, editedAt: updatedAt }
+                        }
+                        // A placement changed meanwhile puts the fields where it says now.
+                        const placed = await placedRecord(
+                            key,
+                            contents,
+                            record,
+                            next,
+                            updatedAt,
+                        )
+                        if (placed) return placed
+                        if (next === data) return { ...record, updatedAt }
+                        return updateData(key, record, next, updatedAt)
                     }),
                 )
             })
@@ -238,8 +277,12 @@ export function useVaultAccounts() {
         },
         add,
         /** The user's own fields of one account; an alias left out shows the Steam nickname. */
-        edit(id: string, patch: Partial<Pick<AccountData, 'alias' | 'note'>>) {
-            return rewrite(() => new Map([[id, patch]]))
+        edit(id: string, patch: UserFields) {
+            if (patch.note === undefined)
+                return rewrite(() => new Map([[id, patch]]))
+            const write = editPlaced(id, patch)
+            view.settle(write).catch((error) => reportError(error, 'accounts'))
+            return write
         },
         setTags,
         remove,

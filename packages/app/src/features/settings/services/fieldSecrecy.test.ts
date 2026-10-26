@@ -1,31 +1,30 @@
+import { FIELD_DEFAULTS } from '@so/core'
 import { describe, expect, it } from 'vitest'
 
-import type { FieldKey, FieldModes } from '../model'
-import { isSecret, secretCount } from './fieldSecrecy'
+import { placementMoves, placementOf, secretCount } from './fieldSecrecy'
 
-const KEYS: FieldKey[] = ['nickname', 'login', 'password', 'auth']
-const modes: FieldModes = {
-    nickname: 'searchable',
-    login: 'secret',
-    note: 'searchable',
-    phone: 'searchable',
-    email: 'searchable',
-}
+const placement = { ...FIELD_DEFAULTS, login: 'secret' } as const
 
-describe('isSecret', () => {
-    it('follows the chosen mode for descriptive fields', () => {
-        expect(isSecret('nickname', modes)).toBe(false)
-        expect(isSecret('login', modes)).toBe(true)
-    })
-
-    it('keeps credentials secret whatever the modes say', () => {
-        expect(isSecret('password', modes)).toBe(true)
-        expect(isSecret('auth', modes)).toBe(true)
+describe('placementOf', () => {
+    it('follows the vault for movable fields and ignores it for fixed ones', () => {
+        expect(placementOf('login', placement)).toBe('secret')
+        expect(placementOf('nickname', { ...placement })).toBe('searchable')
+        expect(placementOf('password', placement)).toBe('secret')
     })
 })
 
-describe('secretCount', () => {
-    it('counts chosen and fixed secrets together', () => {
-        expect(secretCount(KEYS, modes)).toBe(3)
+it('counts placed and fixed secrets together', () => {
+    expect(
+        secretCount(['nickname', 'login', 'password', 'auth'], placement),
+    ).toBe(3)
+})
+
+it('splits the moved fields by where they go', () => {
+    expect(
+        placementMoves(FIELD_DEFAULTS, { ...placement, email: 'searchable' }),
+    ).toEqual({
+        moved: ['login', 'email'],
+        toSecret: ['login'],
+        toSearchable: ['email'],
     })
 })

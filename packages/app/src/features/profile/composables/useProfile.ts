@@ -18,9 +18,17 @@ export function useProfile() {
     const sample = useMock(() => undefined, profileMock)
     const vault = useVaultCredentials(id)
 
+    // A login or note the vault keeps secret shows here once its secret opens.
     const account = computed(() => {
         const found = accounts.value.find((a) => a.id === id)
-        return found && { ...found, ...sample.value?.account }
+        return (
+            found && {
+                ...found,
+                login: found.login || vault.login.value,
+                note: found.note || vault.note.value,
+                ...sample.value?.account,
+            }
+        )
     })
     const details = computed(() => {
         const sampled = sample.value

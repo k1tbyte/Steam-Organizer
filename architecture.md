@@ -193,12 +193,12 @@ interface AccountSecret {
 }
 TagData      { kind: TAG; label; hue }               // one record per tag: renames touch one record, syncs merge tags one by one
 ServiceData  { kind: SERVICE; name; icon? }          // a linked service beyond the built-in set; icon = SVG markup drawn as a mask
-SettingsData { kind: SETTINGS; fieldDefaults: Record<'login' | 'note' | 'phone' | 'email', 'searchable' | 'secret'> }
+SettingsData { kind: SETTINGS; fieldDefaults: Record<'login' | 'note' | 'phone' | 'email', 'searchable' | 'secret'>; moving? }   // id `settings`: copies merge, never double
 SettingsSecret { steamApiKey? }
 PresetData   { kind: PRESET; name; appearance knobs; image? }   // synced appearance presets
 ```
 
-- Movable fields: `login`, `note`, `phone`, `email`, one vault-wide placement (`fieldDefaults`, per-account placement skipped for now). Changing it moves (never copies) the field between parts in every account, after an explicit confirm in Settings. Nickname and alias always stay in `data`; password, linked credentials and authenticator always `secret`, never `public`.
+- Movable fields: `login`, `note`, `phone`, `email`, one vault-wide placement (`fieldDefaults`, per-account placement skipped for now). Changing it moves (never copies) the field between parts in every account, after an explicit confirm in Settings: the record takes the new placement with `moving` first, accounts move in batches, `moving` clears after the last, so a closed app finishes it later. Every writer places fields by the placement it reads in its transaction; readers merge both parts. Nickname and alias always stay in `data`; password, linked credentials and authenticator always `secret`, never `public`.
 - Appearance stays device-local and themes the lock screen. Presets sync through the vault; a device applies one only when the user picks it, or follows one it was set to auto-apply.
 - Search and sort see only `public` + `data`.
 - Payloads evolve by a tolerant reader: a missing field reads as its default, so adding one keeps the format version; renaming or removing one bumps it, with a migration at unlock.

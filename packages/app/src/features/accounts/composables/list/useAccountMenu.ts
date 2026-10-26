@@ -7,6 +7,7 @@ import { copyText, usePageActive } from '#core'
 import { useGuardCodes } from '#features/steam-guard'
 
 import type { Account } from '../../model'
+import { useAccountLogin } from '../useAccountLogin'
 import { useAccountPassword } from '../useAccountPassword'
 import { CARD, useCardTarget } from './useCardTarget'
 
@@ -23,6 +24,7 @@ export function useAccountMenu(intents: AccountIntents) {
     const router = useRouter()
     const toast = useToast()
     const passwordOf = useAccountPassword()
+    const loginOf = useAccountLogin()
     const codeOf = useGuardCodes()
     const active = usePageActive()
 
@@ -54,7 +56,8 @@ export function useAccountMenu(intents: AccountIntents) {
                         icon: 'icon-[lucide--at-sign]',
                         disabled: locked,
                         onSelect: act(
-                            ({ login }) => void copy(login, t('Login copied')),
+                            (account) =>
+                                void copy(loginOf(account), t('Login copied')),
                         ),
                     },
                     {

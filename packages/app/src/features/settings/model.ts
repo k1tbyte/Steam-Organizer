@@ -1,3 +1,5 @@
+import type { FieldPlacement, MovableField } from '@so/core'
+
 export type SectionKey =
     | 'appearance'
     | 'security'
@@ -55,24 +57,18 @@ export interface SyncSettings {
 }
 
 export type FieldKey =
+    | MovableField
     | 'nickname'
-    | 'login'
-    | 'note'
-    | 'phone'
-    | 'email'
     | 'password'
     | 'linked'
     | 'auth'
 
-export type FieldMode = 'searchable' | 'secret'
-
-/** Credentials are always sealed, so they have no mode to pick. */
-export const FIXED_SECRET_KEYS = ['password', 'linked', 'auth'] as const
-
-/** Default for new accounts, for the fields the user can choose. */
-export type FieldModes = Record<
-    Exclude<FieldKey, (typeof FIXED_SECRET_KEYS)[number]>,
-    FieldMode
->
+/** Fields the vault places no matter the settings: the list shows nicknames, credentials are always sealed. */
+export const FIXED_FIELDS = {
+    nickname: 'searchable',
+    password: 'secret',
+    linked: 'secret',
+    auth: 'secret',
+} as const satisfies Record<Exclude<FieldKey, MovableField>, FieldPlacement>
 
 export type SiteKey = 'store' | 'community' | 'help'
