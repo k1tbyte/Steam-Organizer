@@ -2,16 +2,17 @@
 import { FpContextMenu } from '@so/ui'
 import { toRef, useTemplateRef } from 'vue'
 
-import { useAccountMenu } from '../../composables/useAccountMenu'
-import { useAccountRows } from '../../composables/useAccountRows'
+import { useAccountMenu } from '../../composables/list/useAccountMenu'
+import { useAccountRows } from '../../composables/list/useAccountRows'
+import { useCardTagPicker } from '../../composables/list/useCardTagPicker'
 import type { Account } from '../../model'
 import AccountCard from '../card/AccountCard.vue'
+import AccountTagPicker from '../tags/AccountTagPicker.vue'
 import AccountsGroupHeading from './AccountsGroupHeading.vue'
 
 const props = defineProps<{ pinned: Account[]; rest: Account[] }>()
 const emit = defineEmits<{
     togglePin: [id: string]
-    editTags: [id: string]
     /** The menu's Delete, which asks first. */
     delete: [id: string]
     /** The card's trash, which leaves Undo instead. */
@@ -23,16 +24,17 @@ const grid = useAccountRows(
     { pinned: toRef(props, 'pinned'), rest: toRef(props, 'rest') },
     list,
 )
+const tagging = useCardTagPicker()
 const menu = useAccountMenu({
     togglePin: (id) => emit('togglePin', id),
-    editTags: (id) => emit('editTags', id),
+    editTags: tagging.show,
     delete: (id) => emit('delete', id),
 })
 </script>
 
 <!-- Only the rows near the viewport render, each at its offset in the shell's scroller. Rows key by slot and cards by
      column: a row that scrolls in takes the nodes of one that left, patched with its accounts. One context menu serves
-     every card. -->
+     every card, one tag picker every card's tags. -->
 <template>
     <div class="px-u-6 pb-u-6 max-lg:px-4 max-lg:pb-4">
         <FpContextMenu
@@ -59,11 +61,12 @@ const menu = useAccountMenu({
                             :flags="grid.flags.value"
                             :touch="grid.touch.value"
                             @toggle-pin="emit('togglePin', account.id)"
-                            @edit-tags="emit('editTags', account.id)"
+                            @edit-tags="tagging.show"
                             @delete="emit('deleteNow', account.id)" />
                     </div>
                 </div>
             </div>
         </FpContextMenu>
+        <AccountTagPicker v-model:open="tagging.open.value" :anchor="tagging.anchor.value" :account="tagging.account.value" />
     </div>
 </template>

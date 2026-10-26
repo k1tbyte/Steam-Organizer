@@ -2,8 +2,8 @@
 import { useDesktopLayout } from '@so/ui'
 import { computed, shallowRef } from 'vue'
 
-import { type PageContext, providePage, useTopbarOutlets } from '#core'
-import { SettingsHost } from '#features/settings'
+import { type PageContext, providePage, provideSettingsLink, useTopbarOutlets } from '#core'
+import { type SectionKey, SettingsHost, useSettingsEntry } from '#features/settings'
 
 import { useLockClearsToasts } from '../composables/useLockClearsToasts'
 import { useSectionMemory, useShellNav } from '../composables/useShellNav'
@@ -14,6 +14,8 @@ import ShellTabBar from './ShellTabBar.vue'
 const desktop = useDesktopLayout()
 useSectionMemory()
 useLockClearsToasts()
+const settings = useSettingsEntry()
+provideSettingsLink((section) => settings.open(section as SectionKey))
 const { showTabBar } = useShellNav()
 const { bind } = useTopbarOutlets()
 

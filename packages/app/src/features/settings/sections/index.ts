@@ -6,6 +6,7 @@ import FieldsSection from './fields/FieldsSection.vue'
 import SecuritySection from './security/SecuritySection.vue'
 import SteamSection from './steam/SteamSection.vue'
 import SyncSection from './sync/SyncSection.vue'
+import TagsSection from './tags/TagsSection.vue'
 import VaultSection from './vault/VaultSection.vue'
 
 /** A section with no entry here (Bots, planned) shows the pending body. */
@@ -14,6 +15,7 @@ export const SECTION_BODIES: Partial<Record<SectionKey, Component>> = {
     security: SecuritySection,
     sync: SyncSection,
     fields: FieldsSection,
+    tags: TagsSection,
     vault: VaultSection,
     steam: SteamSection,
 }

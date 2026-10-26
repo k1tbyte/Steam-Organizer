@@ -25,9 +25,10 @@ defineProps<{
     gate: AccountGateState
     alias: AliasEditorState
 }>()
-const emit = defineEmits<{ editTags: []; importMaFile: [] }>()
+const emit = defineEmits<{ editTags: [anchor: HTMLElement]; importMaFile: [] }>()
 
 const { t } = useI18n()
+const editTags = (event: MouseEvent) => emit('editTags', event.currentTarget as HTMLElement)
 </script>
 
 <template>
@@ -60,12 +61,12 @@ const { t } = useI18n()
         </div>
         <template v-if="!gate.hidesProfile">
             <div class="flex flex-wrap items-center gap-1.5">
-                <AccountTagChip v-for="tag in account.tags" :key="tag.label" :tag="tag" size="lg" />
+                <AccountTagChip v-for="tag in account.tags" :key="tag.id" :tag="tag" size="lg" />
                 <button
                     type="button"
                     :aria-label="t('Edit tags')"
                     class="grid size-7.5 cursor-pointer place-items-center rounded-full text-14 text-fg-3 ring-1 ring-stroke-2 ring-inset"
-                    @click="emit('editTags')">
+                    @click="editTags">
                     <FpIcon name="icon-[lucide--plus]" />
                 </button>
             </div>

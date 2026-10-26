@@ -1,12 +1,20 @@
 import { defineMock } from '#core'
 
-import type { Account, BanKind, RefreshProgress, SteamLookup } from './model'
+import type {
+    Account,
+    AccountTag,
+    BanKind,
+    RefreshProgress,
+    SteamLookup,
+} from './model'
 
 /** What Copy password puts on the clipboard and a fill types: no vault is decrypted yet. */
 export const DEMO_STEAM_PASSWORD = '********'
 
 export interface AccountsSample {
     accounts: readonly Account[]
+    /** Every tag of the vault, worn or not, by label. */
+    tags: readonly AccountTag[]
     /** Seeds the search box when the sample is picked, so a sample can open on "no results". */
     query?: string
 }
@@ -28,18 +36,24 @@ interface Raw {
     anon?: boolean
 }
 
+// On the swatches (`TAG_HUES`), so the registry rings the picked one.
 const TAG_HUE: Record<string, number> = {
     main: 265,
     trade: 150,
     cs2: 45,
-    prime: 85,
-    faceit: 20,
-    farm: 200,
-    cards: 305,
-    smurf: 330,
-    collection: 60,
-    family: 175,
+    prime: 95,
+    faceit: 25,
+    farm: 205,
+    cards: 330,
+    smurf: 25,
+    collection: 95,
+    family: 205,
+    // Worn by nobody: the registry's "Not used".
+    alts: 330,
 }
+const TAGS: AccountTag[] = Object.entries(TAG_HUE)
+    .map(([label, hue]) => ({ id: label, label, hue }))
+    .sort((a, b) => a.label.localeCompare(b.label))
 
 // The mockup's twelve, in its order.
 const RAW: Raw[] = [
@@ -189,10 +203,9 @@ function toAccount(raw: Raw, index: number): Account {
         since: raw.since ?? '',
         hue: raw.hue ?? 0,
         bans: raw.bans ?? [],
-        tags: (raw.tags ?? []).map((label) => ({
-            label,
-            hue: TAG_HUE[label] ?? 250,
-        })),
+        tags: (raw.tags ?? []).flatMap((label) =>
+            TAGS.filter((tag) => tag.label === label),
+        ),
         pinned: raw.pinned === true,
         guard: raw.guard === true,
         note: raw.note ?? '',
@@ -251,7 +264,10 @@ function generate(count: number): Account[] {
                               ] as const),
                           ]
                         : [],
-                tags: next() < 0.4 ? [pick(Object.keys(TAG_HUE))] : [],
+                tags:
+                    next() < 0.4
+                        ? [pick(['main', 'trade', 'farm', 'cs2'])]
+                        : [],
                 pinned: i < 5,
                 guard: next() < 0.4,
                 hue: Math.floor(next() * 360),
@@ -269,16 +285,18 @@ export const accountsMock = defineMock<AccountsSample>(
         // Default while the virtual list is tuned; keeps the mockup's twelve and their ids.
         '2000 accounts': {
             accounts: [...TWELVE, ...generate(2000 - TWELVE.length)],
+            tags: TAGS,
         },
-        Twelve: { accounts: TWELVE },
-        Empty: { accounts: [] },
-        'No results': { accounts: TWELVE, query: 'zzz' },
+        Twelve: { accounts: TWELVE, tags: TAGS },
+        Empty: { accounts: [], tags: [] },
+        'No results': { accounts: TWELVE, tags: TAGS, query: 'zzz' },
         'One locked': {
             accounts: TWELVE.map((a) =>
                 a.id === 'a2' ? { ...a, locked: true } : a,
             ),
+            tags: TAGS,
         },
-        'Anonymous only': { accounts: ANONYMOUS },
+        'Anonymous only': { accounts: ANONYMOUS, tags: TAGS },
     },
 )
 

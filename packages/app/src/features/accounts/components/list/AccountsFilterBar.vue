@@ -7,6 +7,7 @@ import { useScrollTop } from '#core'
 
 import { useEditMode } from '../../composables/edit/useEditMode'
 import EditBar from '../edit/EditBar.vue'
+import TagFilterMenu from '../tags/TagFilterMenu.vue'
 import BanFilterChips from './BanFilterChips.vue'
 import CardFieldsPanel from './CardFieldsPanel.vue'
 import SortMenu from './SortMenu.vue'
@@ -30,6 +31,7 @@ const scrolled = computed(() => top.value > 0)
         <div v-else-if="desktop" class="flex items-center gap-1.5 px-u-6 py-u-3.5">
             <span class="mr-1 text-12.5 text-fg-3">{{ t('Bans') }}</span>
             <BanFilterChips />
+            <TagFilterMenu />
             <span class="mx-1.5 h-4.5 w-px bg-stroke-1" />
             <SortMenu />
             <span class="flex-1" />
@@ -66,6 +68,7 @@ const scrolled = computed(() => top.value > 0)
             <SortMenu />
             <span class="mx-0.5 h-5 w-px shrink-0 bg-stroke-1" />
             <BanFilterChips />
+            <TagFilterMenu />
             <span class="mx-0.5 h-5 w-px shrink-0 bg-stroke-1" />
             <CardFieldsPanel />
             <span class="mx-0.5 h-5 w-px shrink-0 bg-stroke-1" />

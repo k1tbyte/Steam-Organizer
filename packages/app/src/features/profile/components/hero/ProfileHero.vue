@@ -25,9 +25,10 @@ defineProps<{
     gate: AccountGateState
     alias: AliasEditorState
 }>()
-const emit = defineEmits<{ togglePin: []; editTags: []; importMaFile: [] }>()
+const emit = defineEmits<{ togglePin: []; editTags: [anchor: HTMLElement]; importMaFile: [] }>()
 
 const { t } = useI18n()
+const editTags = (event: MouseEvent) => emit('editTags', event.currentTarget as HTMLElement)
 </script>
 
 <template>
@@ -63,13 +64,13 @@ const { t } = useI18n()
                         <span v-if="!account.anonymous" class="mr-1.5 text-12.5 text-fg-3">
                             {{ t('since {since}', { since: account.since }) }}
                         </span>
-                        <AccountTagChip v-for="tag in account.tags" :key="tag.label" :tag="tag" />
+                        <AccountTagChip v-for="tag in account.tags" :key="tag.id" :tag="tag" />
                         <button
                             v-bind="tip(t('Edit tags'))"
                             type="button"
                             :aria-label="t('Edit tags')"
                             class="grid size-5.5 cursor-pointer place-items-center rounded-full text-13 text-fg-3 transition-colors duration-fast hover:bg-hover hover:text-fg-1"
-                            @click="emit('editTags')">
+                            @click="editTags">
                             <FpIcon name="icon-[lucide--plus]" />
                         </button>
                     </div>

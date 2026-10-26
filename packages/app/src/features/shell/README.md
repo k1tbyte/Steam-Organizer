@@ -10,6 +10,6 @@ The unlocked app's frame. Desktop: 64px rail (Accounts, Backups, Bots soon, Lock
 - A section's rail and dock entry reopens the page the section was left on (the profile it showed, without the overlays in its query); pressed inside its section, it goes to the section's root. `useSectionMemory` records it while the shell lives, so a lock starts over. A lock also drops every toast (`useLockClearsToasts`): an Undo or a copied secret belongs to the open vault.
 - The rail and the dock each glide one highlight to the active entry (`translate` from an index var). The rail's bottom Settings button keeps its own fill: it is bottom-anchored, so gliding there would need layout reads.
 - The dock floats over the phone scrollers (`layer-dock`; each `ShellLayer` pads `--dock-clear` unless its route hides the tab bar). `useDock` follows the current page's `useScrollTop()`: it hides the dock on scroll down and shows it on scroll up, near the top and on navigation, with `services/dockScroll.ts` deciding. `ShellTabBar.vue` also sets `--dock-*` and `--toast-offset-bottom` on `:root` so phone toasts clear it.
-- Settings opens through `useSettingsEntry()` from `#features/settings`: a window on desktop, the `/settings` screen on phones.
+- Settings opens through `useSettingsEntry()` from `#features/settings`: a window on desktop, the `/settings` screen on phones. `AppShell` provides it to the pages as `useSettingsLink()`.
 
 The rail's Lock button calls `useVaultSession().lock` from `#features/vault`. Unwired intents: Bots (planned, disabled).

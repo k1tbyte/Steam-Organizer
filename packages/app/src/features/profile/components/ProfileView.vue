@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { FpButton, FpCard, FpEmpty, FpIcon, FpTabs, useDesktopLayout } from '@so/ui'
-import { reactive } from 'vue'
+import { reactive, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { type Account, RemoveAccountsDialog, useRemoveAccounts } from '#features/accounts'
+import { type Account, AccountTagPicker, RemoveAccountsDialog, useRemoveAccounts } from '#features/accounts'
 import { useAliasEditor } from '../composables/hero/useAliasEditor'
 import { useProfileHeader } from '../composables/hero/useProfileHeader'
 import { useSteamIdField } from '../composables/hero/useSteamIdField'
@@ -58,6 +58,12 @@ const removal = reactive(useRemoveAccounts())
 function onIntent(kind: ProfileIntent) {
     if (kind === 'delete') removal.ask([props.account.id])
 }
+const tagsOpen = shallowRef(false)
+const tagsAnchor = shallowRef<HTMLElement>()
+function editTags(anchor: HTMLElement) {
+    tagsAnchor.value = anchor
+    tagsOpen.value = true
+}
 const alias = reactive(
     useAliasEditor(
         () => props.account,
@@ -83,7 +89,8 @@ const alias = reactive(
             :id-field="idField"
             :gate="gate"
             :alias="alias"
-            @toggle-pin="emit('togglePin')" />
+            @toggle-pin="emit('togglePin')"
+            @edit-tags="editTags" />
         <ProfileHeroPhone
             v-else
             :account="account"
@@ -91,7 +98,8 @@ const alias = reactive(
             :bans="bans"
             :id-field="idField"
             :gate="gate"
-            :alias="alias" />
+            :alias="alias"
+            @edit-tags="editTags" />
 
         <FpCard v-if="gate.hidesProfile">
             <AccountLockGate standalone :gate="gate" :touch="!desktop" />
@@ -139,4 +147,5 @@ const alias = reactive(
 
     <LockAccountDialog :account="account" :dialog="lockDialog" />
     <RemoveAccountsDialog :removal="removal" />
+    <AccountTagPicker v-model:open="tagsOpen" :anchor="tagsAnchor" :account="account" />
 </template>

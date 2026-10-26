@@ -55,6 +55,12 @@ const [model, modifiers] = defineModel<string | number>({
 
 const field = useFormField()
 
+const emit = defineEmits<{ /** Enter outside an IME composition. */ submit: [] }>()
+// The Enter that picks an IME candidate belongs to the composition; Safari reports that one as key 229.
+function onEnter(event: KeyboardEvent) {
+    if (!event.isComposing && event.keyCode !== 229) emit('submit')
+}
+
 const input = useTemplateRef('input')
 defineExpose({
     focus: () => input.value?.focus(),
@@ -83,6 +89,7 @@ defineExpose({
             :autocomplete
             :aria-invalid="field?.invalid.value || undefined"
             :aria-describedby="field?.describedBy?.value"
+            @keydown.enter="onEnter"
             class="w-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-fg-3" />
         <span v-if="$slots.trailing" class="flex shrink-0 items-center text-15 text-fg-3">
             <slot name="trailing" />

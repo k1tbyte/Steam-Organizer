@@ -42,6 +42,13 @@ export const SECTION_DEFS: readonly SectionDef[] = [
             "Secret fields are sealed separately and opened only when needed. Search can't see them.",
     },
     {
+        key: 'tags',
+        group: 'vault',
+        icon: 'icon-[lucide--tags]',
+        title: 'Tags',
+        description: 'Changes apply to every account with the tag.',
+    },
+    {
         key: 'vault',
         group: 'vault',
         icon: 'icon-[lucide--vault]',

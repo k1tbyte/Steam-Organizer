@@ -5,11 +5,11 @@ import { computed, type Ref, ref, watch } from 'vue'
 
 import { useScrollRoot } from '#core'
 
-import type { Account } from '../model'
-import { buildRows, columnsFor, rowHeight } from '../services/listRows'
-import { assignSlots } from '../services/listSlots'
-import { useCardFieldsStore } from '../stores/cardFields'
-import { useCardMetrics } from './useCardMetrics'
+import type { Account } from '../../model'
+import { buildRows, columnsFor, rowHeight } from '../../services/listRows'
+import { assignSlots } from '../../services/listSlots'
+import { useCardFieldsStore } from '../../stores/cardFields'
+import { useCardMetrics } from '../useCardMetrics'
 
 const OVERSCAN_ROWS = 3
 

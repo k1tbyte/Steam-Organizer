@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useAppearancePref } from '#core'
+import { useVaultTags } from '#features/accounts'
 
 import type { SectionKey } from '../model'
 import { FIELD_KEYS, secretCount } from '../services/fieldSecrecy'
@@ -20,6 +21,7 @@ export function useSettingsSummary() {
     const vault = useVaultInfo()
     const drive = useDriveSync()
     const steam = useSteamAccess()
+    const { tags } = useVaultTags()
 
     const modeLabels = computed(() => ({
         dark: t('Dark'),
@@ -39,6 +41,8 @@ export function useSettingsSummary() {
                 return t('{count} secret', {
                     count: secretCount(FIELD_KEYS, store.fieldModes),
                 })
+            case 'tags':
+                return String(tags.value.length)
             case 'vault':
                 return vault.value?.name ?? ''
             case 'steam':

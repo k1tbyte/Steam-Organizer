@@ -5,7 +5,7 @@ Drive backup history, the restore dialog and the device-only vault state. Also o
 - Desktop: history card beside a side block (Google identity, vault line, Auto backup / Auto sync, "More in Settings"). Phone: compact rows with icon buttons.
 - Restore is `useQueryOverlay('restore')` with the backup id as its value, so a deep link `?restore=<id>` opens it. An unknown id closes it.
 - "Backup now" is blocked while saving, in error or offline.
-- "More in Settings" opens the Sync & backup section through `useSettingsEntry().open('sync')`.
+- "More in Settings" opens the Sync & backup section through `useSettingsLink()` from `#core` (settings imports features, so backups never imports it).
 
 ## Mocks
 

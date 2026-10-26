@@ -3,3 +3,12 @@
 
 /* Required: Tailwind cannot scan workspace packages without it. */
 @source ".";
+
+/* A tag's dot: the hue is the tag's own (`--hue`), the lightness follows the mode. */
+@utility tag-dot {
+    --tag-l: 0.72;
+    background: oklch(var(--tag-l) 0.14 var(--hue));
+    [data-mode="light"] & {
+        --tag-l: 0.6;
+    }
+}

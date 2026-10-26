@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 
 import { usePageActive } from '#core'
 
-import { useAccountsFilters } from '../../composables/useAccountsFilters'
+import { useAccountsFilters } from '../../composables/list/useAccountsFilters'
 
 const { t } = useI18n()
 const desktop = useDesktopLayout()

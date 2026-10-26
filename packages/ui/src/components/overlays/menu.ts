@@ -6,6 +6,8 @@ export interface MenuItem {
     icon?: string
     color?: 'danger'
     disabled?: boolean
+    /** Opens another overlay: runs once the menu has closed, which would otherwise hand focus back and dismiss it. */
+    opens?: boolean
     onSelect?: () => void
 }
 
@@ -15,6 +17,26 @@ export interface MenuGroup {
     choice?: 'list' | 'segmented'
     value?: string
     items: MenuItem[]
+}
+
+/** Runs a picked item. One that `opens` an overlay waits for the menu to close and hands focus back itself:
+ *  reka does it a task later, pulling focus out of the overlay. */
+export function menuSelection() {
+    let pending: (() => void) | undefined
+    return {
+        select(item: MenuItem) {
+            if (item.opens) pending = item.onSelect
+            else item.onSelect?.()
+        },
+        closed(event: Event, trigger?: HTMLElement) {
+            const run = pending
+            pending = undefined
+            if (!run) return
+            event.preventDefault()
+            trigger?.focus()
+            run()
+        },
+    }
 }
 
 /** A flat list, or groups split by separators. */

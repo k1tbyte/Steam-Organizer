@@ -9,9 +9,9 @@ import {
     SEARCH_FIELDS,
     SORT_KEYS,
     type SortKey,
-} from '../model'
-import { useAccountsViewStore } from '../stores/accountsView'
-import { useBanLabels } from './useBanLabels'
+} from '../../model'
+import { useAccountsViewStore } from '../../stores/accountsView'
+import { useBanLabels } from '../useBanLabels'
 
 const MODE_LOOKS = {
     any: {

@@ -24,7 +24,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{
     togglePin: []
-    editTags: []
+    editTags: [anchor: HTMLElement]
     delete: []
 }>()
 
@@ -102,7 +102,7 @@ const card = useAccountCard(
             :shown="card.shownTags.value"
             :hidden="card.hiddenTags.value"
             :touch="touch"
-            @edit="emit('editTags')" />
+            @edit="(anchor) => emit('editTags', anchor)" />
 
         <div
             v-if="card.showFooter.value"

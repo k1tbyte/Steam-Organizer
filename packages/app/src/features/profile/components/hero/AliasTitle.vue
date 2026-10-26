@@ -18,13 +18,6 @@ watch(
     },
     { flush: 'post' },
 )
-
-// Enter that picks an IME candidate belongs to the composition; Safari reports that one as key 229.
-function onEnter(event: KeyboardEvent) {
-    if (event.isComposing || event.keyCode === 229) return
-    event.preventDefault()
-    props.editor.save()
-}
 </script>
 
 <!-- The name, its rename field, and the Steam nickname under an alias. The slot follows the name in its row. -->
@@ -39,7 +32,7 @@ function onEnter(event: KeyboardEvent) {
                 :class="touch ? 'text-20' : 'text-26'"
                 :placeholder="account.steamNickname ?? ''"
                 :aria-label="t('Alias')"
-                @keydown.enter="onEnter"
+                @submit="editor.save"
                 @keydown.esc.prevent.stop="editor.cancel"
                 @blur="editor.save" />
         </div>

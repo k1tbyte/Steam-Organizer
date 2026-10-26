@@ -2,7 +2,7 @@
 import { FpButton, FpDropdownMenu, FpIcon, useDesktopLayout } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import { useAccountsFilters } from '../../composables/useAccountsFilters'
+import { useAccountsFilters } from '../../composables/list/useAccountsFilters'
 
 const { t } = useI18n()
 const desktop = useDesktopLayout()

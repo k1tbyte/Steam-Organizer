@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PopoverArrow, PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka-ui'
+import { PopoverAnchor, PopoverArrow, PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka-ui'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useDesktopLayout } from '../../composables/useDesktopLayout'
 import { useOpenedOnce } from '../../composables/useOpenedOnce'
@@ -20,6 +20,8 @@ const props = withDefaults(
         sheet?: boolean
         /** Names the dialog; the content brings its own visible heading. */
         label?: string
+        /** Floats at this element instead of a trigger: one popover for many targets (a list). */
+        anchor?: HTMLElement
     }>(),
     {
         placement: 'bottom',
@@ -30,7 +32,7 @@ const props = withDefaults(
     },
 )
 
-const anchor = computed(() => splitPlacement(props.placement))
+const sides = computed(() => splitPlacement(props.placement))
 // Never taller than the space Reka measured, whatever the caller asks for.
 const maxHeight = computed(() =>
     props.maxHeight
@@ -57,12 +59,36 @@ watch([desktop, open, () => props.sheet], () => {
 function close() {
     open.value = false
 }
+
+// Without a trigger, reka would close on a press of the anchor or focus landing there and return focus nowhere.
+// Closing hands focus back to what held it (the menu button that opened a picker), else the anchor; a press outside keeps its own.
+let back: HTMLElement | undefined
+let outside = false
+function keepOnAnchor(event: Event) {
+    if (event.target instanceof Node && props.anchor?.contains(event.target)) event.preventDefault()
+    else outside = true
+}
+// Reka focuses the first tabbable, the scroll area's viewport: a field marked `data-autofocus` (a picker's search) goes first.
+function focusField(event: Event) {
+    const held = document.activeElement
+    back = held instanceof HTMLElement && held !== document.body ? held : props.anchor
+    outside = false
+    const field = event.target instanceof Element && event.target.querySelector<HTMLElement>('[data-autofocus]')
+    if (!field) return
+    event.preventDefault()
+    field.focus()
+}
+function focusBack(event: Event) {
+    if (!props.anchor) return
+    event.preventDefault()
+    if (!outside && back?.isConnected) back.focus()
+}
 </script>
 
 <!-- Portaled popper motion uses the global fp-float styles. -->
 <template>
     <FpDrawer v-if="asSheet" v-model:open="open" :title="label ?? ''" bare>
-        <template #trigger>
+        <template v-if="$slots.default" #trigger>
             <slot />
         </template>
         <div :class="{ 'p-4': padded }">
@@ -70,18 +96,23 @@ function close() {
         </div>
     </FpDrawer>
     <PopoverRoot v-else v-model:open="open">
-        <PopoverTrigger as-child>
+        <PopoverAnchor v-if="anchor" :reference="anchor" as-child />
+        <PopoverTrigger v-else-if="$slots.default" as-child>
             <slot />
         </PopoverTrigger>
         <PopoverPortal v-if="opened">
             <PopoverContent
-                :side="anchor.side"
-                :align="anchor.align"
+                :side="sides.side"
+                :align="sides.align"
                 :side-offset="sideOffset"
                 :align-offset="alignOffset"
                 :collision-padding="8"
                 :arrow-padding="ARROW_PADDING"
                 :aria-label="label"
+                @pointer-down-outside="keepOnAnchor"
+                @focus-outside="keepOnAnchor"
+                @open-auto-focus="focusField"
+                @close-auto-focus="focusBack"
                 class="fp-float surface-pop layer-float flex flex-col rounded-md"
                 :style="{ width, maxHeight }">
                 <FpScrollArea class="min-h-0">

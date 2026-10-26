@@ -3,6 +3,7 @@ export type SectionKey =
     | 'security'
     | 'sync'
     | 'fields'
+    | 'tags'
     | 'vault'
     | 'steam'
     | 'bots'

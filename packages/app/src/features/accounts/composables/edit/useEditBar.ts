@@ -12,7 +12,7 @@ import { useEditSelection } from './useEditSelection'
 // Esc there belongs to the overlay.
 const OVERLAY = '[role="dialog"], [role="menu"], [role="listbox"]'
 
-/** What the bar does with the picked accounts; only delete has a listener yet. */
+/** What the bar does with the picked accounts; refresh and export have no listener yet. */
 export interface BatchIntents {
     editTags: (ids: string[]) => void
     refresh: (ids: string[]) => void
@@ -86,6 +86,7 @@ export function useEditBar(intents: BatchIntents) {
                     label: t('Edit tags'),
                     icon: 'icon-[lucide--tag]',
                     disabled,
+                    opens: true,
                     onSelect: act(intents.editTags),
                 },
                 {

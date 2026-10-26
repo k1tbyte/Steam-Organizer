@@ -88,6 +88,16 @@ function toAccount(
     }
 }
 
+/** The vault's live tags, by label. */
+export function tagsIn(data: ReadonlyMap<string, unknown>): AccountTag[] {
+    const tags: AccountTag[] = []
+    for (const [id, value] of data) {
+        const tag = readTag(value)
+        if (tag) tags.push({ id, label: tag.label, hue: tag.hue })
+    }
+    return tags.sort((a, b) => a.label.localeCompare(b.label))
+}
+
 // Every reader maps the same contents: once per change, which brings a new map.
 const mapped = new WeakMap<ReadonlyMap<string, unknown>, readonly Account[]>()
 
@@ -97,11 +107,7 @@ export function accountsIn(
 ): readonly Account[] {
     const cached = mapped.get(data)
     if (cached) return cached
-    const tags = new Map<string, AccountTag>()
-    for (const [id, value] of data) {
-        const tag = readTag(value)
-        if (tag) tags.set(id, { label: tag.label, hue: tag.hue })
-    }
+    const tags = new Map(tagsIn(data).map((tag) => [tag.id, tag]))
     const accounts = storedAccounts(data).map((account) =>
         toAccount(account, tags),
     )

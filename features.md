@@ -47,10 +47,11 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Search in a chosen field: nickname, login, note + any field the user moved out of secrets (phone, email) `[new]`.
 - Locked accounts show a lock mark; their secrets are not searchable `[new]`.
 - Ban filters: VAC, game, community, economy - each require / exclude / ignore.
+- Tags: colored labels on a card, picked or created from the card, its menu or the profile; a batch in edit mode sets each tag on all, none or as it was. Tag filter: any or all of the picked tags `[new]`.
 - Sort: none, created, added, last update, level; ascending / descending.
 - Search, filter and sort state is remembered.
 - Pin / unpin (unpin returns to previous position).
-- Edit mode: drag and drop within pinned / unpinned group; search and ban filters apply, the sort waits; pick several (click, Shift+click, select all, a rectangle on desktop), drag them as one stack, act on them in batch (pin, unpin, tags, refresh, export, delete).
+- Edit mode: drag and drop within pinned / unpinned group; search, ban and tag filters apply, the sort waits; pick several (click, Shift+click, select all, a rectangle on desktop), drag them as one stack, act on them in batch (pin, unpin, tags, refresh, export, delete).
 - Bulk refresh of accounts older than 1h: progress, stop, summary (done / already fresh / failed) `[no web]`.
 - Toolbar: add account, import, export, refresh.
 
@@ -195,5 +196,6 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Security `[new]`: lock timeout (immediately … on browser restart, never), "master password on browser restart", unlock with PIN (set / change / remove), unlock with biometrics (enable / disable).
 - Extension: Steam site access status / grant `[new]`.
 - ASF connection `[later]`.
+- Tags `[new]`: rename, recolor, create, delete (an unused tag at once, a used one asks first; Undo either way).
 - Fields `[new]`: which fields are secret by default (searchable or not); folder vault - which fields are visible in Obsidian notes.
 - Danger zone: reset vault.

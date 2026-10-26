@@ -1,12 +1,14 @@
 import {
     type Account,
     type AccountsView,
+    type AccountTag,
     BAN_KINDS,
     type BanFilterMode,
     type BanFilters,
     type SearchField,
     type SortDirection,
     type SortKey,
+    type TagMatch,
 } from '../model'
 
 const NEXT_MODE: Record<BanFilterMode, BanFilterMode> = {
@@ -48,17 +50,41 @@ function matchesBans(account: Account, bans: BanFilters) {
     })
 }
 
-export function hasActiveFilters({ query, bans }: AccountsView): boolean {
-    return query.trim() !== '' || BAN_KINDS.some((kind) => bans[kind] !== 'any')
+function matchesTags(account: Account, ids: string[], match: TagMatch) {
+    if (ids.length === 0) return true
+    const worn = new Set(account.tags.map((tag) => tag.id))
+    return match === 'all'
+        ? ids.every((id) => worn.has(id))
+        : ids.some((id) => worn.has(id))
 }
 
+export function hasActiveFilters({ query, bans, tags }: AccountsView): boolean {
+    return (
+        query.trim() !== '' ||
+        BAN_KINDS.some((kind) => bans[kind] !== 'any') ||
+        tags.length > 0
+    )
+}
+
+/** The view without deleted tags in its filter: no menu lists them, so nobody could uncheck one. */
+export function withLiveTags(
+    view: AccountsView,
+    tags: readonly AccountTag[],
+): AccountsView {
+    const live = new Set(tags.map((tag) => tag.id))
+    return { ...view, tags: view.tags.filter((id) => live.has(id)) }
+}
+
+/** Pass the view through `withLiveTags` first. */
 export function filterAccounts(
     accounts: readonly Account[],
-    { query, field, bans }: AccountsView,
+    { query, field, bans, tags, tagMatch }: AccountsView,
 ): Account[] {
     return accounts.filter(
         (account) =>
-            matchesQuery(account, query, field) && matchesBans(account, bans),
+            matchesQuery(account, query, field) &&
+            matchesBans(account, bans) &&
+            matchesTags(account, tags, tagMatch),
     )
 }
 

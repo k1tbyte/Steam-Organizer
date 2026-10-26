@@ -11,18 +11,17 @@ import {
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
-import { reportError, useMock } from '#core'
-import { useVaultSession } from '#features/vault'
+import { reportError } from '#core'
 
-import { type AccountsSample, accountsMock } from '../mocks'
 import { applyOrder, type Placement, placeBetween } from '../services/reorder'
 import {
-    accountsIn,
     placedKeys,
     type StoredAccount,
     storedAccounts,
+    tagsIn,
 } from '../services/vaultAccounts'
 import { useAccountsViewStore } from '../stores/accountsView'
+import { useAccountsSource } from './useAccountsSource'
 
 export interface NewAccount {
     login: string
@@ -35,21 +34,11 @@ export interface NewAccount {
 
 export type AddResult = 'added' | 'login-taken' | 'steam-taken'
 
-/** The vault's accounts: the one source the list, the profile and the popup read, and the one writer of pins, order and new accounts. */
+/** The vault's accounts: the one source the list, the profile and the popup read, and the one writer of their records. */
 export function useVaultAccounts() {
-    const session = useVaultSession()
+    const { session, sample, onVault } = useAccountsSource()
     const view = useAccountsViewStore()
     const { pins, order } = storeToRefs(view)
-    const real = computed<AccountsSample | undefined>(() =>
-        session.contents
-            ? { accounts: accountsIn(session.contents.data) }
-            : undefined,
-    )
-    const sample = useMock(() => real.value, accountsMock)
-    // Mock mode shows a sample over an open vault: its pins and moves stay in the view store.
-    const onVault = computed(
-        () => real.value !== undefined && sample.value === real.value,
-    )
 
     const accounts = computed(() => {
         const withPins = (sample.value?.accounts ?? []).map((account) => {
@@ -62,6 +51,7 @@ export function useVaultAccounts() {
     function rewrite(
         patches: (
             accounts: StoredAccount[],
+            data: ReadonlyMap<string, unknown>,
         ) => ReadonlyMap<string, Partial<AccountData>>,
     ): Promise<void> {
         // A sample keeps only the view store's pins and order.
@@ -70,7 +60,7 @@ export function useVaultAccounts() {
             const now = Date.now()
             const accounts = storedAccounts(contents.data)
             const byId = new Map(accounts.map(({ id, data }) => [id, data]))
-            const changes = patches(accounts)
+            const changes = patches(accounts, contents.data)
             return Promise.all(
                 contents.records.flatMap((record) => {
                     const data = byId.get(record.id)
@@ -198,6 +188,27 @@ export function useVaultAccounts() {
             })
     }
 
+    /** Puts tags on the accounts and takes others off; ids of deleted tags drop on the way. */
+    function setTags(
+        ids: Iterable<string>,
+        { add = [], remove = [] }: { add?: string[]; remove?: string[] },
+    ) {
+        const picked = new Set(ids)
+        return rewrite((stored, data) => {
+            const live = new Set(tagsIn(data).map((tag) => tag.id))
+            const keep = (id: string) => live.has(id) && !remove.includes(id)
+            return new Map(
+                stored.flatMap(({ id, data: { tags } }) => {
+                    const next = [...new Set([...tags, ...add])].filter(keep)
+                    const same =
+                        next.length === tags.length &&
+                        next.every((tag, i) => tag === tags[i])
+                    return picked.has(id) && !same ? [[id, { tags: next }]] : []
+                }),
+            )
+        })
+    }
+
     return {
         accounts,
         /** A sample may open the list on a search, so "no results" can be reviewed without typing. */
@@ -225,6 +236,7 @@ export function useVaultAccounts() {
         edit(id: string, patch: Partial<Pick<AccountData, 'alias' | 'note'>>) {
             return rewrite(() => new Map([[id, patch]]))
         },
+        setTags,
         remove,
     }
 }

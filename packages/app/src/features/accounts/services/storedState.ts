@@ -7,6 +7,7 @@ import {
     SEARCH_FIELDS,
     SORT_DIRECTIONS,
     SORT_KEYS,
+    TAG_MATCHES,
 } from '../model'
 import { NO_BAN_FILTERS } from './filters'
 
@@ -25,6 +26,8 @@ export const DEFAULT_VIEW: AccountsView = {
     query: '',
     field: 'nickname',
     bans: NO_BAN_FILTERS,
+    tags: [],
+    tagMatch: 'any',
     sort: 'updated',
     direction: 'desc',
 }
@@ -71,6 +74,10 @@ export function parseView(raw: string | null): AccountsView {
                 oneOf(BAN_MODES, bans[kind], 'any'),
             ]),
         ) as BanFilters,
+        tags: Array.isArray(stored.tags)
+            ? stored.tags.filter((id) => typeof id === 'string')
+            : [],
+        tagMatch: oneOf(TAG_MATCHES, stored.tagMatch, DEFAULT_VIEW.tagMatch),
         sort: oneOf(SORT_KEYS, stored.sort, DEFAULT_VIEW.sort),
         direction: oneOf(
             SORT_DIRECTIONS,

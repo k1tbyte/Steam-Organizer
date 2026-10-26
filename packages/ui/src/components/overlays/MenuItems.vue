@@ -9,9 +9,9 @@ import {
     DropdownMenuSeparator,
 } from 'reka-ui'
 import FpIcon from '../display/media/Icon.vue'
-import type { MenuGroup } from './menu'
+import type { MenuGroup, MenuItem } from './menu'
 
-defineProps<{ groups: MenuGroup[] }>()
+defineProps<{ groups: MenuGroup[]; select: (item: MenuItem) => void }>()
 </script>
 
 <!-- Reka's ContextMenu* item parts are the same thin Menu* wrappers as these DropdownMenu* ones, so both menus
@@ -45,7 +45,7 @@ defineProps<{ groups: MenuGroup[] }>()
                                   item.color === 'danger' ? 'text-danger' : 'text-fg-1',
                               ]
                     "
-                    @select="item.onSelect?.()">
+                    @select="select(item)">
                     <template v-if="group.choice === 'segmented'">
                         <FpIcon v-if="item.icon" :name="item.icon" class="shrink-0" />
                         <span class="truncate">{{ item.label }}</span>

@@ -1,22 +1,21 @@
 import { type MenuGroup, useToast } from '@so/ui'
-import { computed, onScopeDispose, shallowRef, watch } from 'vue'
+import { shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-import { copyText, usePageActive, useScrollTop } from '#core'
+import { copyText, usePageActive } from '#core'
 import { guardCodeAt } from '#features/steam-guard'
 
-import type { Account } from '../model'
-import { useAccountPassword } from './useAccountPassword'
-import { useVaultAccounts } from './useVaultAccounts'
+import type { Account } from '../../model'
+import { useAccountPassword } from '../useAccountPassword'
+import { CARD, useCardTarget } from './useCardTarget'
 
 export interface AccountIntents {
     togglePin: (id: string) => void
-    editTags: (id: string) => void
+    /** Gets the card node, which the tag picker hangs from. */
+    editTags: (card: HTMLElement) => void
     delete: (id: string) => void
 }
-
-const CARD = '[data-account-id]'
 
 /** The list's one context menu: which account was pressed, its actions, and where focus goes when it closes. */
 export function useAccountMenu(intents: AccountIntents) {
@@ -24,26 +23,18 @@ export function useAccountMenu(intents: AccountIntents) {
     const router = useRouter()
     const toast = useToast()
     const passwordOf = useAccountPassword()
-    const { accounts } = useVaultAccounts()
     const active = usePageActive()
 
     const open = shallowRef(false)
-    // An id, never a node: a recycled card node shows another account.
-    const targetId = shallowRef<string>()
+    const target = useCardTarget(open)
     let opener: Element | null = null
-    // Untouched until a press: the vault's list is not walked for a menu nobody opened.
-    const target = computed(() =>
-        targetId.value === undefined
-            ? undefined
-            : accounts.value.find((account) => account.id === targetId.value),
-    )
 
     async function copy(text: string, done: string) {
         if (await copyText(text)) toast.add({ title: done, color: 'success' })
     }
     // Acts on the account as the vault holds it now.
     const act = (run: (account: Account) => void) => () => {
-        if (target.value) run(target.value)
+        if (target.account.value) run(target.account.value)
     }
 
     function groupsFor({ guard, locked, pinned }: Account): MenuGroup[] {
@@ -107,7 +98,11 @@ export function useAccountMenu(intents: AccountIntents) {
                     {
                         label: t('Edit tags'),
                         icon: 'icon-[lucide--tag]',
-                        onSelect: act(({ id }) => intents.editTags(id)),
+                        opens: true,
+                        onSelect: act(() => {
+                            const card = target.card()
+                            if (card) intents.editTags(card)
+                        }),
                     },
                 ],
             },
@@ -124,40 +119,17 @@ export function useAccountMenu(intents: AccountIntents) {
         ]
     }
 
-    // An account that left the vault closes its menu, which keeps its last items while it fades out.
+    // The menu keeps its last items while it fades out.
     const items = shallowRef<MenuGroup[]>([])
-    watch(target, (account) => {
+    watch(target.account, (account) => {
         if (account) items.value = groupsFor(account)
-        else open.value = false
     })
-    // The menu stays where it opened: once the list moves, it points at nothing.
-    watch(useScrollTop(), () => {
-        open.value = false
-    })
-    // A card node handed to another account without a scroll (a resize, a filter) leaves the menu on the wrong card.
-    const pressed = shallowRef<HTMLElement>()
-    const recycled = new MutationObserver(() => {
-        if (pressed.value?.dataset.accountId !== targetId.value)
-            open.value = false
-    })
-    watch([open, pressed], ([shown, card]) => {
-        recycled.disconnect()
-        if (shown && card)
-            recycled.observe(card, { attributeFilter: ['data-account-id'] })
-    })
-    onScopeDispose(() => recycled.disconnect())
 
     return {
         open,
         items,
         accept(event: MouseEvent) {
-            const card =
-                event.target instanceof Element
-                    ? event.target.closest<HTMLElement>(CARD)
-                    : null
-            if (!card) return false
-            pressed.value = card
-            targetId.value = card.dataset.accountId
+            if (!target.target(event.target)) return false
             opener = document.activeElement
             return true
         },
@@ -167,7 +139,7 @@ export function useAccountMenu(intents: AccountIntents) {
             if (
                 !active.value ||
                 !opener?.isConnected ||
-                card?.dataset.accountId !== targetId.value
+                card?.dataset.accountId !== target.account.value?.id
             )
                 event.preventDefault()
         },

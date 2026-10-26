@@ -9,11 +9,12 @@ import type {
     SearchField,
     SortDirection,
     SortKey,
+    TagMatch,
 } from '../model'
 import { nextBanMode } from '../services/filters'
 import { DEFAULT_VIEW, parseView } from '../services/storedState'
 
-/** The list's search, ban filters and sort (shared by the topbar search and the filter strip, remembered across reloads) and the pin and order changes not yet in the vault. */
+/** The list's search, ban and tag filters and sort (shared by the topbar search and the filter strip, remembered across reloads) and the pin and order changes not yet in the vault. */
 export const useAccountsViewStore = defineStore('accounts-view', () => {
     const state = ref<AccountsView>(
         parseView(readStored(ACCOUNTS_VIEW_STORAGE_KEY)),
@@ -64,6 +65,21 @@ export const useAccountsViewStore = defineStore('accounts-view', () => {
             state.value.bans[kind] = nextBanMode(state.value.bans[kind])
             save()
         },
+        toggleTag(id: string) {
+            const { tags } = state.value
+            state.value.tags = tags.includes(id)
+                ? tags.filter((tag) => tag !== id)
+                : [...tags, id]
+            save()
+        },
+        setTagMatch(match: TagMatch) {
+            state.value.tagMatch = match
+            save()
+        },
+        clearTags() {
+            state.value.tags = []
+            save()
+        },
         setSort(sort: SortKey) {
             state.value.sort = sort
             save()
@@ -72,10 +88,11 @@ export const useAccountsViewStore = defineStore('accounts-view', () => {
             state.value.direction = direction
             save()
         },
-        /** Clears the search and every ban filter; the sort stays. */
+        /** Clears the search and every filter; the sort stays. */
         resetFilters() {
             state.value.query = ''
             state.value.bans = { ...DEFAULT_VIEW.bans }
+            state.value.tags = []
             save()
         },
     }

@@ -38,6 +38,8 @@ const view = (patch: Partial<AccountsView> = {}): AccountsView => ({
     query: '',
     field: 'nickname',
     bans: NO_BAN_FILTERS,
+    tags: [],
+    tagMatch: 'any',
     sort: 'vault',
     direction: 'desc',
     ...patch,
@@ -118,6 +120,26 @@ describe('filterAccounts', () => {
             bans: { ...NO_BAN_FILTERS, vac: 'require', game: 'require' },
         })
         expect(filterAccounts(all, clash)).toEqual([])
+    })
+
+    it('matches any or every picked tag', () => {
+        const tag = (id: string) => ({ id, label: id, hue: 0 })
+        const tagged = [
+            account({ id: 'm', tags: [tag('main')] }),
+            account({ id: 'mt', tags: [tag('main'), tag('trade')] }),
+            account({ id: 'n' }),
+        ]
+        const picked = ['main', 'trade']
+        expect(ids(filterAccounts(tagged, view({ tags: picked })))).toEqual([
+            'm',
+            'mt',
+        ])
+        expect(
+            ids(
+                filterAccounts(tagged, view({ tags: picked, tagMatch: 'all' })),
+            ),
+        ).toEqual(['mt'])
+        expect(hasActiveFilters(view({ tags: ['main'] }))).toBe(true)
     })
 })
 

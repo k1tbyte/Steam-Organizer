@@ -7,13 +7,13 @@ import {
     DropdownMenuTrigger,
     Slot,
 } from 'reka-ui'
-import { computed, useId } from 'vue'
+import { computed, useId, useTemplateRef } from 'vue'
 import { useOpenedOnce } from '../../composables/useOpenedOnce'
 import { useOverlayGate } from '../../composables/useOverlayGate'
 import { ARROW_PADDING, FLOAT_GAP, type Placement, splitPlacement } from '../../placement'
 import FpScrollArea from '../display/layout/ScrollArea.vue'
 import MenuItems from './MenuItems.vue'
-import { type MenuEntries, menuGroups } from './menu'
+import { type MenuEntries, menuGroups, menuSelection } from './menu'
 
 const props = withDefaults(
     defineProps<{
@@ -37,12 +37,14 @@ const opened = useOpenedOnce(open)
 const menuId = useId()
 
 const groups = computed(() => menuGroups(props.items))
+const selection = menuSelection()
+const trigger = useTemplateRef('trigger')
 </script>
 
 <!-- Portaled menu chrome and motion use global styles. -->
 <template>
     <DropdownMenuRoot v-model:open="open">
-        <DropdownMenuTrigger as-child :disabled="disabled">
+        <DropdownMenuTrigger ref="trigger" as-child :disabled="disabled">
             <Slot :aria-controls="open ? menuId : undefined"><slot /></Slot>
         </DropdownMenuTrigger>
         <DropdownMenuPortal v-if="opened">
@@ -55,8 +57,9 @@ const groups = computed(() => menuGroups(props.items))
                 :collision-padding="8"
                 :arrow-padding="ARROW_PADDING"
                 class="fp-float fp-menu surface-pop layer-float min-w-44 rounded-md"
-                :style="{ width }">
-                <FpScrollArea class="min-h-0"><MenuItems :groups /></FpScrollArea>
+                :style="{ width }"
+                @close-auto-focus="selection.closed($event, trigger?.$el)">
+                <FpScrollArea class="min-h-0"><MenuItems :groups :select="selection.select" /></FpScrollArea>
                 <DropdownMenuArrow as-child><span class="fp-arrow" /></DropdownMenuArrow>
             </DropdownMenuContent>
         </DropdownMenuPortal>

@@ -9,7 +9,7 @@ import type { Account } from '../model'
 import { steamNameOf } from '../services/accountName'
 import { useVaultAccounts } from './useVaultAccounts'
 
-const UNDO_MS = 8000
+export const UNDO_MS = 8000
 // The dialog names this many; the rest is a count.
 const LISTED = 4
 

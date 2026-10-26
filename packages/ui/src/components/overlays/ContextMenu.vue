@@ -18,7 +18,7 @@ import { useOverlayGate } from '../../composables/useOverlayGate'
 import { FLOAT_GAP } from '../../placement'
 import FpScrollArea from '../display/layout/ScrollArea.vue'
 import MenuItems from './MenuItems.vue'
-import { type MenuEntries, menuGroups } from './menu'
+import { type MenuEntries, menuGroups, menuSelection } from './menu'
 
 const props = defineProps<{
     items: MenuEntries
@@ -31,6 +31,11 @@ const open = defineModel<boolean>('open', { default: false })
 useOverlayGate(open)
 const opened = useOpenedOnce(open)
 const groups = computed(() => menuGroups(props.items))
+const selection = menuSelection()
+function closeAutoFocus(event: Event) {
+    selection.closed(event)
+    emit('closeAutoFocus', event)
+}
 
 // The pressed point as a zero-size box, or the button a More press came from.
 const anchor = shallowRef<HTMLElement | { getBoundingClientRect: () => DOMRect }>()
@@ -82,8 +87,8 @@ watch([open, anchor], ([shown, el], [, previous]) => {
                 :collision-padding="8"
                 class="fp-float fp-menu surface-pop layer-float min-w-44 rounded-md"
                 @interact-outside="keepForButton"
-                @close-auto-focus="emit('closeAutoFocus', $event)">
-                <FpScrollArea class="min-h-0"><MenuItems :groups /></FpScrollArea>
+                @close-auto-focus="closeAutoFocus">
+                <FpScrollArea class="min-h-0"><MenuItems :groups :select="selection.select" /></FpScrollArea>
             </ContextMenuContent>
         </ContextMenuPortal>
     </ContextMenuRoot>

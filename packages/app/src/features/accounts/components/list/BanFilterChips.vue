@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FpButton, FpIcon, tip } from '@so/ui'
 
-import { useAccountsFilters } from '../../composables/useAccountsFilters'
+import { useAccountsFilters } from '../../composables/list/useAccountsFilters'
 
 const { chips, cycleBan } = useAccountsFilters()
 </script>

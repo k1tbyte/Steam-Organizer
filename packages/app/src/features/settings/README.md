@@ -4,11 +4,12 @@ Desktop: a 960x660 window over the app (`?settings=<section>`, `useQueryOverlay`
 
 - `registry.ts` lists the sections in nav order; `useSettingsSections` adds their copy. A section is `sections/<name>/<Name>Section.vue` plus its `use<Name>Section.ts` view-model, registered in `sections/index.ts`; Bots is listed as Soon and shows `SectionPending`.
 - Appearance is complete and real: `sections/appearance/` drives the nine knobs of `core/appearance` (`.claude/rules/appearance.md`). The background picture stays in `localStorage` for now and moves to IndexedDB later; only `core/appearance/background.ts` changes.
+- Tags is real: `sections/tags/` reads and writes through `useVaultTags` from `features/accounts` (rename, recolor, New tag, delete with Undo; a used tag asks first), and shows the accounts sample's tags with no vault open.
 - Security, Sync & backup, Fields, Vault and Steam are built on mocks. What the user edits (lock timeout, switches, sync interval, field secrecy, API key, site grants) lives in `stores/settingsStore.ts`, so the sections and the phone index read the same values; each part moves to its owner when wired. Data other features own is read through `composables/sources/` (one composable per source, the only readers of `mocks.ts`).
 - Security is the one section with separate phone markup (`SecurityMobile`, the mockup's grouped cards); the others reflow through `FpFormRow` (`inline` keeps a switch beside its label on phones).
 - Two dialogs bound to an action in flight, so local state and not URL overlays: `dialogs/password/` (Change master password, opened from Security) and `dialogs/reset/` (Reset vault in three steps and a 1.6 s hold, opened from Vault). Each restarts its flow when it opens.
 - `services/` holds the framework-free rules with tests: `passwordChange` (strength comes from `core/passwordStrength.ts`, shared with onboarding), `vaultReset`, `fieldSecrecy`.
-- The shell and features that link into a section call `useSettingsEntry()` (`open(section?)`); the facade exports `SettingsHost`, `useSettingsEntry`, `settingsRoutes` and `SectionKey`. `SettingsHost` loads the window, sections included, as its own chunk on the first desktop open.
+- The shell calls `useSettingsEntry()` (`open(section?)`) and provides it as `useSettingsLink()` (`#core`), which features link into a section with: settings imports them (Tags reads accounts), never the reverse; the facade exports `SettingsHost`, `useSettingsEntry`, `settingsRoutes` and `SectionKey`. `SettingsHost` loads the window, sections included, as its own chunk on the first desktop open.
 
 ## Mocks
 

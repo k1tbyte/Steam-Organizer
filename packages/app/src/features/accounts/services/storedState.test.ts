@@ -34,6 +34,8 @@ describe('parseView', () => {
                 community: 'exclude',
                 economy: 'any',
             },
+            tags: ['t1', 't2'],
+            tagMatch: 'all',
             sort: 'level',
             direction: 'asc',
         }

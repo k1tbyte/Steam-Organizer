@@ -22,7 +22,7 @@ import {
     moveItems,
     placementIn,
 } from '../../services/reorder'
-import { useAccountRows } from '../useAccountRows'
+import { useAccountRows } from '../list/useAccountRows'
 import { useVaultAccounts } from '../useVaultAccounts'
 import { useEditSelection } from './useEditSelection'
 import { useListDrag } from './useListDrag'

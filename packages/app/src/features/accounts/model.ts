@@ -3,6 +3,8 @@ export type BanKind = (typeof BAN_KINDS)[number]
 
 /** A label with its dot color; the hue is the tag's own, not derived from the name. */
 export interface AccountTag {
+    /** The TAG record's id. */
+    id: string
     label: string
     hue: number
 }
@@ -70,11 +72,17 @@ export type SortKey = (typeof SORT_KEYS)[number]
 export const SORT_DIRECTIONS = ['asc', 'desc'] as const
 export type SortDirection = (typeof SORT_DIRECTIONS)[number]
 
-/** The list's remembered view: search, ban filters and sort. */
+export const TAG_MATCHES = ['any', 'all'] as const
+export type TagMatch = (typeof TAG_MATCHES)[number]
+
+/** The list's remembered view: search, ban and tag filters, and sort. */
 export interface AccountsView {
     query: string
     field: SearchField
     bans: BanFilters
+    /** Tag ids; `any` shows accounts with one of them, `all` with every one. */
+    tags: string[]
+    tagMatch: TagMatch
     sort: SortKey
     direction: SortDirection
 }
