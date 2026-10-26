@@ -109,7 +109,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 ## 6. Credentials
 
 - Steam: login (copy), password (reveal, copy, edit), phone (copy, edit).
-- Linked service groups (up to 7): Ubisoft, Epic Games, EA, Rockstar, Xbox, Battle.net, Wargaming, Steam email, ZeniMax, other. Optional name, up to 20 chars.
+- Linked services (up to 7, each once per account) from a registry: a built-in gaming set (Email, Discord, FACEIT, Epic Games, Battle.net, Ubisoft, EA, Rockstar Games, Riot Games, Twitch, Xbox, PlayStation) and the user's own with an optional SVG icon `[new]`. A deleted service's credentials stay, shown as Other.
 - Group fields, any combination: login, email, password, secret word, phone. Edit, copy, delete group (confirm).
 - Validation: password ≥ 6 chars, phone ≥ 8 digits, email format.
 
@@ -197,5 +197,6 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Extension: Steam site access status / grant `[new]`.
 - ASF connection `[later]`.
 - Tags `[new]`: rename, recolor, create, delete (an unused tag at once, a used one asks first; Undo either way).
+- Linked services `[new]`: add, rename, upload or remove an SVG icon (one color, follows the theme), delete with Undo; the built-in set listed read-only.
 - Fields `[new]`: which fields are secret by default (searchable or not); folder vault - which fields are visible in Obsidian notes.
 - Danger zone: reset vault.

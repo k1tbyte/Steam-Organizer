@@ -11,4 +11,4 @@ The registry of services an account keeps logins for: a built-in gaming set (`BU
 |---|---|---|---|
 | `linked-services.own` (Two added, None) | the user's own services in the profile and Settings | the vault's SERVICE records | `useVaultServices` |
 
-Settings → Linked services has its registry entry; its section body (rename, icon upload, delete with Undo) is not built yet.
+Settings → Linked services (`features/settings`) edits the user's own services.

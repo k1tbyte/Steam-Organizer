@@ -4,6 +4,7 @@ import type { SectionKey } from '../model'
 import AppearanceSection from './appearance/AppearanceSection.vue'
 import FieldsSection from './fields/FieldsSection.vue'
 import SecuritySection from './security/SecuritySection.vue'
+import ServicesSection from './services/ServicesSection.vue'
 import SteamSection from './steam/SteamSection.vue'
 import SyncSection from './sync/SyncSection.vue'
 import TagsSection from './tags/TagsSection.vue'
@@ -16,6 +17,7 @@ export const SECTION_BODIES: Partial<Record<SectionKey, Component>> = {
     sync: SyncSection,
     fields: FieldsSection,
     tags: TagsSection,
+    services: ServicesSection,
     vault: VaultSection,
     steam: SteamSection,
 }
