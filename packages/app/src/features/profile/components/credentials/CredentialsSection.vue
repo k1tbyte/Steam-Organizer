@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 import { MAX_ACCOUNT_SERVICES, ServiceIcon } from '#features/linked-services'
 import { useCredentials } from '../../composables/credentials/useCredentials'
-import type { AccountGateState } from '../../composables/useAccountGate'
+import type { AccountGateState } from '../../composables/lock/useAccountGate'
 import type { AccountCredentials } from '../../model'
 import AccountLockGate from '../lock/AccountLockGate.vue'
 import CollapsibleSection from '../summary/CollapsibleSection.vue'

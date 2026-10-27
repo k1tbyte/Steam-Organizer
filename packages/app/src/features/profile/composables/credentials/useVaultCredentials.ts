@@ -9,9 +9,10 @@ const STEAM_FIELDS = ['login', 'password', 'email', 'phone'] as const
 /** What the vault keeps for the account: its credentials, the revocation code and the movable fields it keeps secret.
  *  Empty while the secret opens; `held` is false for a sample. */
 export function useVaultCredentials(id: string) {
-    const { held, secret } = useAccountSecret(id)
+    const { held, secret, whole } = useAccountSecret(id)
     return {
         held,
+        whole,
         credentials: computed<AccountCredentials>(() => {
             const opened = secret.value
             const steam = STEAM_FIELDS.flatMap((kind) => {

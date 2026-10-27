@@ -57,13 +57,18 @@ function toAccount(
     tags: ReadonlyMap<string, AccountTag>,
     noteSecret: boolean,
 ): Account {
-    const { steam } = data
+    const { steam, lock } = data
     const registered = steam?.registeredAt ?? null
     return {
         id,
-        nickname: data.alias ?? steam?.nickname ?? data.login ?? '',
+        nickname:
+            data.alias ??
+            steam?.nickname ??
+            lock?.shown?.nickname ??
+            data.login ??
+            '',
         alias: data.alias ?? null,
-        steamNickname: steam?.nickname ?? null,
+        steamNickname: steam?.nickname ?? lock?.shown?.nickname ?? null,
         login: data.login ?? '',
         anonymous: data.steamId === null,
         steamId: data.steamId && toAccountId(data.steamId),
@@ -88,7 +93,14 @@ function toAccount(
         ...(noteSecret && { noteSecret }),
         ...(data.phone && { phone: data.phone }),
         ...(data.email && { email: data.email }),
-        locked: false,
+        ...(lock && {
+            lock: {
+                scope: lock.scope,
+                recovery: lock.slots.recovery !== undefined,
+            },
+        }),
+        // Open only while the session holds its key: `useAccountsSource` lifts it.
+        locked: lock !== undefined,
         added: data.addedAt,
         updated: steam?.refreshedAt ?? data.addedAt,
     }
@@ -113,14 +125,28 @@ export function accountsIn(
 ): readonly Account[] {
     const cached = mapped.get(data)
     if (cached) return cached
+    const accounts = storedAccounts(data).map(accountMapper(data))
+    mapped.set(data, accounts)
+    return accounts
+}
+
+function accountMapper(data: ReadonlyMap<string, unknown>) {
     const tags = new Map(tagsIn(data).map((tag) => [tag.id, tag]))
     const noteSecret =
         readSettings(data.get(SETTINGS_ID)).fieldDefaults.note === 'secret'
-    const accounts = storedAccounts(data).map((account) =>
-        toAccount(account, tags, noteSecret),
-    )
-    mapped.set(data, accounts)
-    return accounts
+    return (account: StoredAccount) => toAccount(account, tags, noteSecret)
+}
+
+/** An open account with what its `everything` lock hid joined back, as its profile shows it. */
+export function wholeAccount(
+    data: ReadonlyMap<string, unknown>,
+    id: string,
+    hidden: Partial<AccountData>,
+): Account | undefined {
+    const stored = readAccount(data.get(id))
+    if (!stored) return undefined
+    const account = accountMapper(data)({ id, data: { ...stored, ...hidden } })
+    return { ...account, locked: false }
 }
 
 /** New order keys for the moved accounts: between their neighbours in the whole vault order, so hidden ones keep their places. */

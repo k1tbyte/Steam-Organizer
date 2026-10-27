@@ -11,7 +11,7 @@ import {
     cornerInsetCss,
     hasFooter,
 } from '../services/cardLayout'
-import { useAccountLogin } from './useAccountLogin'
+import { useAccountLogin } from './secrets/useAccountLogin'
 
 const SECRET_MASK = '••••••'
 const MAX_SHOWN_TAGS = 3
@@ -73,7 +73,11 @@ export function useAccountCard(
         showAge: computed(() => props.flags.age && steam.value),
         showId: computed(() => props.flags.id),
         showBans: computed(() => props.flags.bans && steam.value),
-        showTags: computed(() => props.flags.tags),
+        // An everything lock seals the tags with the rest: nothing to show or edit.
+        showTags: computed(
+            () =>
+                props.flags.tags && props.account.lock?.scope !== 'everything',
+        ),
         showFooter: computed(() => hasFooter(props.flags)),
         showGuard: computed(
             () =>

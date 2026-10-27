@@ -6,6 +6,8 @@ const SECRET_BYTES = 32
 const TAG_BYTES = 16
 const SALT_BYTES = 16
 const SLOT = 'slot:password'
+const RECOVERY = 'slot:recovery'
+const RSA: RsaHashedImportParams = { name: 'RSA-OAEP', hash: 'SHA-256' }
 const text = new TextEncoder()
 
 /** The unlocked vault; no key is extractable. The root stays for keys derived later (locked accounts). */
@@ -14,13 +16,31 @@ export interface VaultKey {
     readonly records: CryptoKey
     /** HMAC for `loginTag`. */
     readonly logins: CryptoKey
+    /** Public: seals locked accounts' recovery slots, never opens one. */
+    readonly recovery?: CryptoKey
+}
+
+export interface Kdf {
+    name: 'PBKDF2-SHA-256'
+    iterations: number
+    salt: string
 }
 
 /** The vault secret, wrapped by a key derived from the master password. */
 export interface PasswordSlot {
-    kdf: { name: 'PBKDF2-SHA-256'; iterations: number; salt: string }
+    kdf: Kdf
     key: Sealed
 }
+
+/** A key pair for locked accounts' recovery: the private half opens only with the master password. */
+export interface RecoverySlot {
+    /** SPKI, base64. */
+    publicKey: string
+    /** PKCS#8 sealed under the master password. */
+    privateKey: Sealed
+}
+
+export type VaultSlots = { password: PasswordSlot; recovery?: RecoverySlot }
 
 function derive(
     root: CryptoKey,
@@ -48,7 +68,18 @@ function derive(
 const importRoot = (secret: Uint8Array<ArrayBuffer>) =>
     crypto.subtle.importKey('raw', secret, 'HKDF', false, ['deriveKey'])
 
-async function slotKey(password: string, kdf: PasswordSlot['kdf']) {
+/** The Steam ID's tag, for an everything lock that hides the ID: a login holds no colon, so the two never collide. */
+export const steamTag = (key: VaultKey, steamId: string) =>
+    loginTag(key, `steam:${steamId}`)
+
+export const newKdf = (): Kdf => ({
+    name: 'PBKDF2-SHA-256',
+    iterations: ITERATIONS,
+    salt: crypto.getRandomValues(new Uint8Array(SALT_BYTES)).toBase64(),
+})
+
+/** Callers zero the bits once used. */
+export async function passwordBits(password: string, kdf: Kdf) {
     const material = await crypto.subtle.importKey(
         'raw',
         text.encode(password),
@@ -56,7 +87,7 @@ async function slotKey(password: string, kdf: PasswordSlot['kdf']) {
         false,
         ['deriveBits'],
     )
-    const bits = new Uint8Array(
+    return new Uint8Array(
         await crypto.subtle.deriveBits(
             {
                 name: 'PBKDF2',
@@ -68,11 +99,22 @@ async function slotKey(password: string, kdf: PasswordSlot['kdf']) {
             256,
         ),
     )
-    // An HKDF root, so recovery slots of locked accounts derive their own key from the same password.
-    const root = await importRoot(bits)
-    bits.fill(0)
-    return derive(root, SLOT, ['encrypt', 'decrypt', 'unwrapKey'])
 }
+
+/** An HKDF root over the master password: the password and recovery slots derive their keys from it. */
+async function masterRoot(password: string, kdf: Kdf) {
+    const bits = await passwordBits(password, kdf)
+    try {
+        return await importRoot(bits)
+    } finally {
+        bits.fill(0)
+    }
+}
+
+const slotKey = (root: CryptoKey) =>
+    derive(root, SLOT, ['encrypt', 'decrypt', 'unwrapKey'])
+const recoveryKey = (root: CryptoKey) =>
+    derive(root, RECOVERY, ['encrypt', 'decrypt', 'unwrapKey'])
 
 async function vaultKey(root: CryptoKey): Promise<VaultKey> {
     return {
@@ -92,24 +134,88 @@ export async function loginTag(key: VaultKey, login: string): Promise<string> {
     return new Uint8Array(mac, 0, TAG_BYTES).toBase64()
 }
 
-async function passwordSlot(
-    secret: Uint8Array<ArrayBuffer>,
-    password: string,
-): Promise<PasswordSlot> {
-    const salt = crypto.getRandomValues(new Uint8Array(SALT_BYTES))
-    const kdf = {
-        name: 'PBKDF2-SHA-256' as const,
-        iterations: ITERATIONS,
-        salt: salt.toBase64(),
-    }
-    return {
-        kdf,
-        key: await sealBytes(await slotKey(password, kdf), secret, SLOT),
+async function newRecovery(root: CryptoKey): Promise<RecoverySlot> {
+    const pair = await crypto.subtle.generateKey(
+        {
+            ...RSA,
+            modulusLength: 3072,
+            publicExponent: new Uint8Array([1, 0, 1]),
+        },
+        true,
+        ['encrypt', 'decrypt'],
+    )
+    const [spki, pkcs8] = await Promise.all([
+        crypto.subtle.exportKey('spki', pair.publicKey),
+        crypto.subtle.exportKey('pkcs8', pair.privateKey),
+    ])
+    return sealRecovery(root, new Uint8Array(spki), new Uint8Array(pkcs8))
+}
+
+async function sealRecovery(
+    root: CryptoKey,
+    spki: Uint8Array<ArrayBuffer>,
+    pkcs8: Uint8Array<ArrayBuffer>,
+): Promise<RecoverySlot> {
+    try {
+        return {
+            publicKey: spki.toBase64(),
+            privateKey: await sealBytes(
+                await recoveryKey(root),
+                pkcs8,
+                RECOVERY,
+            ),
+        }
+    } finally {
+        pkcs8.fill(0)
     }
 }
 
+/** A fresh password slot, and a recovery slot that is new or carried over from the old master password. */
+async function masterSlots(
+    secret: Uint8Array<ArrayBuffer>,
+    password: string,
+    recovery: (root: CryptoKey) => Promise<RecoverySlot>,
+): Promise<Required<VaultSlots>> {
+    const kdf = newKdf()
+    const root = await masterRoot(password, kdf)
+    return {
+        password: {
+            kdf,
+            key: await sealBytes(await slotKey(root), secret, SLOT),
+        },
+        recovery: await recovery(root),
+    }
+}
+
+export const importRecovery = (slot: RecoverySlot) =>
+    crypto.subtle.importKey(
+        'spki',
+        Uint8Array.fromBase64(slot.publicKey),
+        RSA,
+        false,
+        ['encrypt'],
+    )
+
+/** The recovery private key, opened by the master password typed again: PIN and biometrics never reach it. */
+export async function openRecovery(slots: VaultSlots, password: string) {
+    if (!slots.recovery) throw new UnsupportedVaultError()
+    const { iv, cipher } = splitSealed(slots.recovery.privateKey)
+    const root = await masterRoot(password, slots.password.kdf)
+    return checked(
+        crypto.subtle.unwrapKey(
+            'pkcs8',
+            cipher,
+            await recoveryKey(root),
+            gcm(iv, RECOVERY),
+            RSA,
+            false,
+            ['decrypt', 'unwrapKey'],
+        ),
+    )
+}
+
 // A slot of another size is damaged: the GCM tag would fail it as a wrong password.
-function slotParts(slot: PasswordSlot) {
+export function slotParts(slot: PasswordSlot) {
     const parts = splitSealed(slot.key)
     if (parts.cipher.length !== SECRET_BYTES + TAG_BYTES)
         throw new UnsupportedVaultError()
@@ -117,7 +223,7 @@ function slotParts(slot: PasswordSlot) {
 }
 
 // On a well-formed slot only a wrong password fails the GCM tag.
-async function checked<T>(attempt: Promise<T>): Promise<T> {
+export async function checked<T>(attempt: Promise<T>): Promise<T> {
     try {
         return await attempt
     } catch (error) {
@@ -130,8 +236,12 @@ async function checked<T>(attempt: Promise<T>): Promise<T> {
 export async function createKeys(password: string) {
     const secret = crypto.getRandomValues(new Uint8Array(SECRET_BYTES))
     try {
-        const slot = await passwordSlot(secret, password)
-        return { slot, key: await vaultKey(await importRoot(secret)) }
+        const slots = await masterSlots(secret, password, newRecovery)
+        const key = await vaultKey(await importRoot(secret))
+        return {
+            slots,
+            key: { ...key, recovery: await importRecovery(slots.recovery) },
+        }
     } finally {
         secret.fill(0)
     }
@@ -147,7 +257,7 @@ export async function unlockSlot(
         crypto.subtle.unwrapKey(
             'raw',
             cipher,
-            await slotKey(password, slot.kdf),
+            await slotKey(await masterRoot(password, slot.kdf)),
             gcm(iv, SLOT),
             'HKDF',
             false,
@@ -157,25 +267,47 @@ export async function unlockSlot(
     return vaultKey(root)
 }
 
-/** The one place the secret is in script memory after creation, and only behind the old password. */
-export async function rewrapSlot(
-    slot: PasswordSlot,
+/** The one place the secrets are in script memory after creation, and only behind the old password.
+ *  The recovery pair carries over, so accounts' recovery slots stay valid; a vault without one gets it. */
+export async function rewrapSlots(
+    slots: VaultSlots,
     oldPassword: string,
     newPassword: string,
-): Promise<PasswordSlot> {
-    const { iv, cipher } = slotParts(slot)
+): Promise<Required<VaultSlots>> {
+    const { iv, cipher } = slotParts(slots.password)
+    const oldRoot = await masterRoot(oldPassword, slots.password.kdf)
     const secret = new Uint8Array(
         await checked(
             crypto.subtle.decrypt(
                 gcm(iv, SLOT),
-                await slotKey(oldPassword, slot.kdf),
+                await slotKey(oldRoot),
                 cipher,
             ),
         ),
     )
     try {
-        return await passwordSlot(secret, newPassword)
+        return await masterSlots(secret, newPassword, async (root) => {
+            if (!slots.recovery) return newRecovery(root)
+            const sealed = splitSealed(slots.recovery.privateKey)
+            const pkcs8 = new Uint8Array(
+                await crypto.subtle.decrypt(
+                    gcm(sealed.iv, RECOVERY),
+                    await recoveryKey(oldRoot),
+                    sealed.cipher,
+                ),
+            )
+            return sealRecovery(
+                root,
+                Uint8Array.fromBase64(slots.recovery.publicKey),
+                pkcs8,
+            )
+        })
     } finally {
         secret.fill(0)
     }
+}
+
+/** A recovery slot for a vault made before it existed; the master password was just typed to unlock. */
+export async function addRecovery(slots: VaultSlots, password: string) {
+    return newRecovery(await masterRoot(password, slots.password.kdf))
 }

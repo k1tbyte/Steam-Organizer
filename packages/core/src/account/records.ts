@@ -1,5 +1,7 @@
 import { generateNKeysBetween } from 'fractional-indexing'
 
+import type { AccountSlots } from '../crypto/accountKeys'
+
 /** `data.kind` of a record: what it holds is known only once opened. */
 export const RECORD = {
     SETTINGS: 1,
@@ -62,6 +64,18 @@ export interface SteamSnapshot {
     stats: SteamStats | null
 }
 
+export type LockScope = 'credentials' | 'everything'
+
+/** An account's own password: its secret is sealed with an account key these slots open. */
+export interface AccountLock {
+    scope: LockScope
+    slots: AccountSlots
+    /** The Steam nickname and avatar an `everything` lock leaves the list. */
+    shown?: { nickname: string; avatar: string }
+    /** `steamTag` of the Steam ID an `everything` lock hides: duplicates still show. */
+    steamTag?: string
+}
+
 export interface AccountData extends Movable {
     kind: typeof RECORD.ACCOUNT
     alias?: string
@@ -78,6 +92,7 @@ export interface AccountData extends Movable {
     /** `loginTag` of the login: duplicates show without opening a secret. */
     loginTag: string
     steam: SteamSnapshot | null
+    lock?: AccountLock
 }
 
 /** An account's credentials for one linked service, at most one entry per service. */
@@ -94,6 +109,8 @@ export interface AccountSecret extends Movable {
     password: string
     services: ServiceCredentials[]
     authenticator?: Authenticator
+    /** The data an `everything` lock sealed with the rest. */
+    hidden?: Partial<AccountData>
 }
 
 /** Steam Guard from an imported maFile; the whole file is kept for an export. */

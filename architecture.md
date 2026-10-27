@@ -141,15 +141,17 @@ Google Drive is a layer over any home, not a home of its own:
 - `core` owns the model; each location is only a serializer + IO adapter.
 
 ### Keys (envelope encryption)
-The **vault key** is a random 256-bit secret, held after unlock as a non-extractable HKDF root: records are sealed with an AES-GCM key derived from it (`records`), locked-account keys derive from it too. Unlock slots wrap (encrypt) the secret; an unlock unwraps it straight into the root, so it never sits in script memory:
+The **vault key** is a random 256-bit secret, held after unlock as a non-extractable HKDF root: records are sealed with an AES-GCM key derived from it (`records`), locked accounts' password slots derive from it too. Unlock slots wrap (encrypt) the secret; an unlock unwraps it straight into the root, so it never sits in script memory:
 
 | Slot | Wrapping key from | Stored |
 |---|---|---|
-| Master password | PBKDF2-HMAC-SHA256, 600k iterations, random salt → HKDF root → `slot:password` key (`recovery` later) | in vault file (synced) |
+| Master password | PBKDF2-HMAC-SHA256, 600k iterations, random salt → HKDF root → `slot:password` key | in vault file (synced) |
+| Recovery | an RSA-OAEP 3072 key pair: the public half in clear, the private half sealed by `slot:recovery` from the same master root | in vault file (synced) |
 | PIN | PBKDF2 over PIN | this device only |
 | Biometrics | WebAuthn PRF of a passkey (Windows Hello, Touch ID, Android) | this device only |
 
-- Changing master password only rewraps the vault key and recovery slots of locked accounts (old KEK is at hand while the old password is typed), data is not re-encrypted. Rewrapping and enrolling a PIN are the only steps that hold the raw secret, behind the master password.
+- Changing master password rewraps the vault key and the recovery private key (old KEK is at hand while the old password is typed); the pair stays, so locked accounts' recovery slots and data are untouched. Rewrapping and enrolling a PIN are the only steps that hold the raw secret, behind the master password.
+- The recovery pair is asymmetric on purpose: a symmetric key that only encrypts still decrypts its own AES-GCM output (the keystream), so the session holds just the public key. A vault made before the pair gets one at its next master-password unlock.
 - PIN is low entropy → its slot never leaves the device (offline brute force).
 - PRF in 2026: Windows Hello (Win 11 Feb 2026 update, Chrome/Edge 147+, Firefox 148+), macOS (Chrome 132+, Firefox 139+), Android passkeys. Extension pages: Chrome 122+, Firefox 150+.
 
@@ -207,12 +209,12 @@ PresetData   { kind: PRESET; name; appearance knobs; image? }   // synced appear
 
 ### Locked accounts
 Own password on a single account, asked even in an unlocked vault. Any length (PIN or 50 chars) - crypto is the same, entropy is the user's choice.
-- Random **account key** seals that account's `secret`. Slots wrap it, same as vault slots:
-  - account password: HKDF(vault key, PBKDF2(account password)) → needs both.
-  - recovery (on by default, per-account switch; off = slot deleted, on again = account unlocked + master password): HKDF(master password KEK, "recovery"). KEK is dropped after vault unlock (only vault key stays in memory), so this slot needs the master password typed again - PIN / biometrics can't open it.
-- Changing account password only rewraps the account key.
-- Re-locks on leaving the account and on vault lock.
-- Scope "everything except nickname and avatar": `data` keeps only `kind`, `alias`, the Steam nickname and avatar, `order`, `pinned`, `addedAt`, `loginTag`; the rest moves into `secret` under the account key, the same move as a movable field. The list shows it as a placeholder with the lock mark.
+- Random **account key** seals that account's `secret`; `data` stays under the vault key and holds the lock (`data.lock`: scope, slots, the face an everything lock shows). Slots wrap the key:
+  - account password: HKDF(vault root, salt = PBKDF2(account password)) → needs both, so a copied file gives a PIN nothing to brute force.
+  - recovery (a per-account choice when locking): RSA-OAEP of the key under the vault's recovery public key, so any open session enrolls it; opening needs the master password typed again (PIN / biometrics can't). Off = no slot; the master password can't open the account.
+- Changing account password only rewraps the account key (by the old password or the master password).
+- An open account's key is held by the vault session (`keyHolder`, taken before the key opens, so a key that opens after a relock is refused), which `secretOf` and writers use; it is dropped on leaving the account (the profile page, the list page an unlock happened on, the popup) and on vault lock.
+- Locked accounts ignore the vault's field placement: every movable field is sealed. Scope "everything except nickname and avatar": `data` keeps only `kind`, `alias`, `order`, `pinned`, `addedAt`, `loginTag` and the lock with the Steam nickname and avatar; the rest moves into `secret.hidden` under the account key (`splitAccount` / `joinAccount` in core, the one place every writer passes). The list shows it as a placeholder with the lock mark; the hidden Steam ID leaves a keyed tag (`lock.steamTag`, like `loginTag`), so Add and Undo still catch a duplicate.
 
 ### Sync
 1. Local change → encrypt → push to Drive with timestamp.

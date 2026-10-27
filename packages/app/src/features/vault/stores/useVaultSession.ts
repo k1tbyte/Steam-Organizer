@@ -7,8 +7,10 @@ import {
     unlockVault,
     type VaultFile,
     type VaultKey,
+    type VaultSlots,
     vaultStore,
     WrongPasswordError,
+    withRecovery,
     writeRecords,
 } from '@so/core'
 import { defineStore } from 'pinia'
@@ -65,6 +67,11 @@ export const useVaultSession = defineStore('vault-session', () => {
     let loading: Promise<void> | null = null
     // Unwrapped by unlock, kept through the opening animation until `open()`.
     const opened = shallowRef<OpenVault | null>(null)
+    // Keys of records sealed apart from the vault key, opened this session; reactive so a lock shows at once.
+    const recordKeys = shallowRef(new Map<string, CryptoKey>())
+    // Bumped by every lock and every drop, so a key that opens late never undoes either.
+    let keyEpoch = 0
+    const drops = new Map<string, number>()
     // One writer at a time: each change reads the latest file inside the queue, so none restores an older one.
     let queue: Promise<unknown> = Promise.resolve()
     function serial<T>(task: () => Promise<T>): Promise<T> {
@@ -108,6 +115,8 @@ export const useVaultSession = defineStore('vault-session', () => {
         // Drafts queue their writes while the key is still here; the queue lands them after.
         for (const flush of drafts) flush()
         opened.value = null
+        recordKeys.value = new Map()
+        keyEpoch++
         unlocked.value = false
         override.value = 'locked'
     }
@@ -142,7 +151,23 @@ export const useVaultSession = defineStore('vault-session', () => {
             const latest = storedVault(vault.id) ?? vault
             try {
                 const contents = await openContents(key, latest.file)
-                opened.value = { vault: latest, key, contents }
+                const upgraded = await withRecovery(
+                    latest.file,
+                    key,
+                    credential.password,
+                )
+                const current = upgraded
+                    ? { ...latest, file: upgraded.file }
+                    : latest
+                if (upgraded) {
+                    await vaultStore.put(current)
+                    remember(current)
+                }
+                opened.value = {
+                    vault: current,
+                    key: upgraded?.key ?? key,
+                    contents,
+                }
                 return 'opened'
             } catch (error) {
                 reportError(error, 'vault-session', { vault: vault.id })
@@ -224,12 +249,39 @@ export const useVaultSession = defineStore('vault-session', () => {
         })
     }
 
-    /** Opens one record's secret part; undefined while no vault is open or it holds no such record. */
+    /** Opens one record's secret part, with the record's own key when one is held; undefined while no vault is open or it holds no such record. */
     async function secretOf<Secret>(id: string): Promise<Secret | undefined> {
         const target = opened.value
         const record = target?.contents.records.find((found) => found.id === id)
         if (!target || !record || 'deleted' in record) return undefined
-        return openSecret<Secret>(target.key, record)
+        return openSecret<Secret>(target.key, record, recordKeys.value.get(id))
+    }
+
+    /** Holds a record's own key (a locked account opened) until it is dropped or the vault locks. Take the holder before
+     *  the key starts opening: it refuses a key once the record was dropped or the vault locked meanwhile. */
+    function keyHolder(id: string) {
+        const epoch = keyEpoch
+        const drop = drops.get(id) ?? 0
+        return (key: CryptoKey) => {
+            if (epoch !== keyEpoch || drop !== (drops.get(id) ?? 0)) return
+            recordKeys.value = new Map(recordKeys.value).set(id, key)
+        }
+    }
+
+    function dropKey(id: string) {
+        drops.set(id, (drops.get(id) ?? 0) + 1)
+        if (!recordKeys.value.has(id)) return
+        const next = new Map(recordKeys.value)
+        next.delete(id)
+        recordKeys.value = next
+    }
+
+    /** Runs `use` with the open vault's key and slots, outside the write queue: opening a locked account writes nothing. */
+    async function withKey<T>(
+        use: (key: VaultKey, slots: VaultSlots) => Promise<T>,
+    ): Promise<T | undefined> {
+        const target = opened.value
+        return target ? use(target.key, target.vault.file.slots) : undefined
     }
 
     function changePassword(current: string, next: string): Promise<boolean> {
@@ -267,5 +319,10 @@ export const useVaultSession = defineStore('vault-session', () => {
         changePassword,
         transact,
         secretOf,
+        withKey,
+        /** A record's held key, reactive; undefined while it is locked. */
+        keyOf: (id: string) => recordKeys.value.get(id),
+        keyHolder,
+        dropKey,
     }
 })

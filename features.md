@@ -98,9 +98,9 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 
 ### Locked account `[new]`
 - Set / change / remove own password on an account (any length).
-- Recovery via master password: on by default, switch per account. "Forgot password" with recovery off: says recovery is disabled for this account, secrets can't be restored.
+- Recovery via master password: on by default, chosen per account when locking. "Forgot it? Use master password" with recovery off: says recovery is disabled for this account, secrets can't be restored.
 - Choose what is hidden behind it: credentials only, or everything except nickname and avatar.
-- Unlock to view secrets; re-locks on leaving the account and on vault lock.
+- Unlock to view secrets, from the profile, the card menu (Unlock…) or the popup; re-locks on leaving the account (or the page it was unlocked on) and on vault lock.
 
 ### Anonymous account
 - Credentials, note and Steam Guard only.

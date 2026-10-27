@@ -6,11 +6,14 @@ import {
     loginTag,
     orderKeys,
     placeFields,
+    publicData,
     RECORD,
     readSettings,
     SETTINGS_ID,
     sealRecord,
+    steamTag,
     updateData,
+    type VaultKey,
 } from '@so/core'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
@@ -26,8 +29,8 @@ import {
     tagsIn,
 } from '../services/vaultAccounts'
 import { useAccountsViewStore } from '../stores/accountsView'
+import { useEditSecret } from './secrets/useEditSecret'
 import { useAccountsSource } from './useAccountsSource'
-import { useEditSecret } from './useEditSecret'
 
 export interface NewAccount {
     login: string
@@ -46,6 +49,17 @@ type UserFields = Partial<Pick<AccountData, 'alias' | 'note'>>
 
 const placementIn = (data: ReadonlyMap<string, unknown>) =>
     readSettings(data.get(SETTINGS_ID)).fieldDefaults
+
+// An everything lock hides the Steam ID: its tag stands in, so accounts compare by tag.
+async function steamTagOf(key: VaultKey, data: AccountData) {
+    if (data.lock?.steamTag) return data.lock.steamTag
+    return data.steamId === null ? null : steamTag(key, data.steamId)
+}
+
+const steamTagsIn = async (key: VaultKey, accounts: readonly StoredAccount[]) =>
+    new Set(
+        await Promise.all(accounts.map(({ data }) => steamTagOf(key, data))),
+    )
 
 export function useVaultAccounts() {
     const { session, sample, onVault } = useAccountsSource()
@@ -80,7 +94,7 @@ export function useVaultAccounts() {
                     const patch = changes.get(record.id)
                     if ('deleted' in record || !data || !patch) return []
                     const next = { ...data, ...patch, editedAt: now }
-                    return [updateData(key, record, next, now)]
+                    return [updateData(key, record, publicData(next), now)]
                 }),
             )
         })
@@ -113,11 +127,11 @@ export function useVaultAccounts() {
             const tag = await loginTag(key, account.login)
             if (stored.some(({ data }) => data.loginTag === tag))
                 result = 'login-taken'
-            else if (
-                account.steamId !== null &&
-                stored.some(({ data }) => data.steamId === account.steamId)
-            )
-                result = 'steam-taken'
+            else if (account.steamId !== null) {
+                const wanted = await steamTag(key, account.steamId)
+                const tags = await steamTagsIn(key, stored)
+                if (tags.has(wanted)) result = 'steam-taken'
+            }
             if (result !== 'added') return []
             const now = Date.now()
             const [order] = orderKeys(
@@ -161,13 +175,15 @@ export function useVaultAccounts() {
         return result
     }
 
-    /** A note goes where the vault keeps notes; a stale copy in the other part goes too. */
+    /** A note goes where the vault keeps notes; a stale copy in the other part goes too. Rejects on a locked account,
+     *  so the note editor keeps the draft and offers Retry. */
     async function editPlaced(id: string, patch: UserFields): Promise<void> {
         if (!onVault.value) return
-        await editSecret(id, ({ note: _, ...secret }, data) => ({
+        const saved = await editSecret(id, ({ note: _, ...secret }, data) => ({
             secret,
             data: { ...data, ...patch },
         }))
+        if (!saved) throw new Error('The account is locked')
     }
 
     /** Leaves tombstones, so a sync tells the deletion from an account another copy never had; resolves to the undo. */
@@ -195,12 +211,13 @@ export function useVaultAccounts() {
                 const updatedAt = Date.now()
                 const live = storedAccounts(contents.data)
                 const logins = new Set(live.map(({ data }) => data.loginTag))
-                const steamIds = new Set(live.map(({ data }) => data.steamId))
-                const back = taken.filter(
-                    ({ data }) =>
-                        !logins.has(data.loginTag) &&
-                        (data.steamId === null || !steamIds.has(data.steamId)),
-                )
+                const steamTags = await steamTagsIn(key, live)
+                const back: typeof taken = []
+                for (const item of taken) {
+                    const tag = await steamTagOf(key, item.data)
+                    if (logins.has(item.data.loginTag)) continue
+                    if (tag === null || !steamTags.has(tag)) back.push(item)
+                }
                 // An add meanwhile may hold a restored order key (an emptied vault starts from the same one): that account goes last.
                 const orders = new Set(live.map(({ data }) => data.order))
                 let last =
@@ -226,7 +243,12 @@ export function useVaultAccounts() {
                         )
                         if (placed) return placed
                         if (next === data) return { ...record, updatedAt }
-                        return updateData(key, record, next, updatedAt)
+                        return updateData(
+                            key,
+                            record,
+                            publicData(next),
+                            updatedAt,
+                        )
                     }),
                 )
             })
@@ -238,19 +260,46 @@ export function useVaultAccounts() {
         { add = [], remove = [] }: { add?: string[]; remove?: string[] },
     ) {
         const picked = new Set(ids)
-        return rewrite((stored, data) => {
+        const retag = (
+            tags: readonly string[],
+            data: ReadonlyMap<string, unknown>,
+        ) => {
             const live = new Set(tagsIn(data).map((tag) => tag.id))
-            const keep = (id: string) => live.has(id) && !remove.includes(id)
-            return new Map(
-                stored.flatMap(({ id, data: { tags } }) => {
-                    const next = [...new Set([...tags, ...add])].filter(keep)
-                    const same =
-                        next.length === tags.length &&
-                        next.every((tag, i) => tag === tags[i])
-                    return picked.has(id) && !same ? [[id, { tags: next }]] : []
-                }),
+            return [...new Set([...tags, ...add])].filter(
+                (id) => live.has(id) && !remove.includes(id),
             )
-        })
+        }
+        const sealed = (data: AccountData) => data.lock?.scope === 'everything'
+        // An everything lock seals the tags with the rest: they change with the secret, while the account is open.
+        const contents = session.contents
+        if (onVault.value && contents) {
+            for (const { id, data } of storedAccounts(contents.data)) {
+                if (picked.has(id) && sealed(data)) {
+                    void editSecret(id, (secret, whole) => ({
+                        secret,
+                        data: {
+                            ...whole,
+                            tags: retag(whole.tags, contents.data),
+                        },
+                    }))
+                }
+            }
+        }
+
+        return rewrite(
+            (stored, data) =>
+                new Map(
+                    stored.flatMap(({ id, data: account }) => {
+                        if (!picked.has(id) || sealed(account)) return []
+                        const { tags } = account
+                        const next = retag(tags, data)
+                        const same =
+                            next.length === tags.length &&
+                            next.every((tag, i) => tag === tags[i])
+                        return same ? [] : [[id, { tags: next }]]
+                    }),
+                ),
+        )
     }
 
     return {

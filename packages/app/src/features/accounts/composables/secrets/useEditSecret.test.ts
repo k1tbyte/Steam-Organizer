@@ -5,9 +5,8 @@ import { createPinia, setActivePinia } from 'pinia'
 import { expect, it } from 'vitest'
 
 import { useVaultSession } from '#features/vault'
-
+import { useVaultAccounts } from '../useVaultAccounts'
 import { useEditSecret } from './useEditSecret'
-import { useVaultAccounts } from './useVaultAccounts'
 
 it('rewrites the secret and the data part the change names', async () => {
     setActivePinia(createPinia())

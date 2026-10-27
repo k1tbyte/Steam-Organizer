@@ -8,9 +8,10 @@ import { useAuthenticator } from '../composables/guard/useAuthenticator'
 import { useAliasEditor } from '../composables/hero/useAliasEditor'
 import { useProfileHeader } from '../composables/hero/useProfileHeader'
 import { useSteamIdField } from '../composables/hero/useSteamIdField'
-import { useAccountGate } from '../composables/useAccountGate'
+import { useAccountGate } from '../composables/lock/useAccountGate'
+import { useAccountPasswordDialog } from '../composables/lock/useAccountPasswordDialog'
+import { useLockDialog } from '../composables/lock/useLockDialog'
 import { useBans } from '../composables/useBans'
-import { useLockDialog } from '../composables/useLockDialog'
 import type { ProfileIntent } from '../composables/useProfileMenu'
 import { useProfileTabs } from '../composables/useProfileTabs'
 import type { ProfileData } from '../model'
@@ -19,6 +20,7 @@ import SteamGuardTab from './guard/SteamGuardTab.vue'
 import ProfileHero from './hero/ProfileHero.vue'
 import ProfileHeroPhone from './hero/ProfileHeroPhone.vue'
 import AccountLockGate from './lock/AccountLockGate.vue'
+import AccountPasswordDialog from './lock/AccountPasswordDialog.vue'
 import LockAccountDialog from './lock/LockAccountDialog.vue'
 import ProfileTopbar from './ProfileTopbar.vue'
 import ProfileSummary from './summary/ProfileSummary.vue'
@@ -28,7 +30,12 @@ const emit = defineEmits<{ togglePin: [] }>()
 
 const { t } = useI18n()
 const desktop = useDesktopLayout()
-const gate = reactive(useAccountGate(() => props.details.lock))
+const gate = reactive(
+    useAccountGate(
+        () => props.account,
+        () => props.details.lock,
+    ),
+)
 const header = reactive(
     useProfileHeader(
         () => props.account,
@@ -54,12 +61,13 @@ const tabs = reactive(
         { icons: desktop, guardHidden: () => gate.locked },
     ),
 )
-const lockDialog = reactive(useLockDialog())
+const lockDialog = reactive(useLockDialog(() => props.account.id))
+const passwordDialog = reactive(useAccountPasswordDialog(() => props.account))
 const authenticator = reactive(useAuthenticator(() => props.account))
 const removal = reactive(useRemoveAccounts())
-// Changing and removing the account password have no listener yet.
 function onIntent(kind: ProfileIntent) {
     if (kind === 'delete') removal.ask([props.account.id])
+    else passwordDialog.show()
 }
 const tagsOpen = shallowRef(false)
 const tagsAnchor = shallowRef<HTMLElement>()
@@ -156,6 +164,7 @@ const alias = reactive(
     </div>
 
     <LockAccountDialog :account="account" :dialog="lockDialog" />
+    <AccountPasswordDialog :account="account" :dialog="passwordDialog" />
     <RemoveAccountsDialog :removal="removal" />
     <RemoveAuthenticatorDialog :authenticator="authenticator" :revocation-code="details.revocationCode" />
     <AccountTagPicker v-model:open="tagsOpen" :anchor="tagsAnchor" :account="account" />

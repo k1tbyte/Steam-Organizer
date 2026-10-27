@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 
 import type { Account } from '#features/accounts'
 
-import type { LockDialogState } from '../../composables/useLockDialog'
+import type { LockDialogState } from '../../composables/lock/useLockDialog'
 import LockAccountForm from './LockAccountForm.vue'
 
 defineProps<{ account: Account; dialog: LockDialogState }>()
@@ -25,7 +25,7 @@ const desktop = useDesktopLayout()
         </template>
         <template #footer>
             <FpButton variant="ghost" :label="t('Cancel')" @click="dialog.open = false" />
-            <FpButton type="submit" form="lock-account" color="accent" :disabled="!dialog.canLock">
+            <FpButton type="submit" form="lock-account" color="accent" :disabled="!dialog.canLock" :loading="dialog.saving">
                 <FpIcon name="icon-[lucide--lock-keyhole]" />
                 {{ t('Lock account') }}
             </FpButton>

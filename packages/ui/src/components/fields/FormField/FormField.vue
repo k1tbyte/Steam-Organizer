@@ -34,11 +34,14 @@ provideFormField({
 
 <template>
     <div class="flex w-full flex-col gap-1.5">
-        <div v-if="label || hint" class="flex items-baseline justify-between gap-2">
+        <div v-if="label || hint || $slots.hint" class="flex items-baseline justify-between gap-2">
             <FpLabel :id="labelId" :for="id" :required="required">
                 {{ label }}
             </FpLabel>
-            <span v-if="hint" class="text-fg-3 text-12">{{ hint }}</span>
+            <!-- A control beside the label (a link that switches the field) goes in the slot. -->
+            <slot name="hint">
+                <span v-if="hint" class="text-fg-3 text-12">{{ hint }}</span>
+            </slot>
         </div>
         <p v-if="description" :id="descriptionId" class="text-fg-3 text-12">{{ description }}</p>
         <slot />

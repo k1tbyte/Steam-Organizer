@@ -1,11 +1,14 @@
+export { joinAccount, publicData, splitAccount } from './account/lock'
 export {
     type AccountData,
+    type AccountLock,
     type AccountSecret,
     type Authenticator,
     CREDENTIAL_KINDS,
     type CredentialKind,
     FIELD_DEFAULTS,
     type FieldPlacement,
+    type LockScope,
     MIN_PASSWORD_LENGTH,
     MOVABLE_FIELDS,
     type Movable,
@@ -29,7 +32,20 @@ export {
     SETTINGS_ID,
     type SettingsData,
 } from './account/settings'
-export { loginTag, type PasswordSlot, type VaultKey } from './crypto/keys'
+export {
+    type AccountCredential,
+    type AccountSlots,
+    changeAccountPassword,
+    createAccountKey,
+    openAccountKey,
+} from './crypto/accountKeys'
+export {
+    loginTag,
+    type PasswordSlot,
+    steamTag,
+    type VaultKey,
+    type VaultSlots,
+} from './crypto/keys'
 export type { Sealed } from './crypto/seal'
 export { UnsupportedVaultError, WrongPasswordError } from './errors'
 export {
@@ -52,5 +68,6 @@ export {
     updateData,
     VAULT_FORMAT,
     type VaultFile,
+    withRecovery,
     writeRecords,
 } from './vault/vault'

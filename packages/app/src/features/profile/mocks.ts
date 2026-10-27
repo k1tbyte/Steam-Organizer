@@ -164,7 +164,9 @@ function derive(account: Account): ProfileData {
         banDetails: {},
         lastBan:
             account.bans.length > 0 ? `${100 + (seed % 400)} days ago` : null,
-        lock: account.locked ? { scope: 'credentials', recovery: true } : null,
+        lock:
+            account.lock ??
+            (account.locked ? { scope: 'credentials', recovery: true } : null),
         revocationCode: account.guard ? `R${10000 + (seed % 90000)}` : null,
         credentials: {
             steam: fields(

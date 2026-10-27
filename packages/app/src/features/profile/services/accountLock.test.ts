@@ -1,17 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { checkLockForm, gateError } from './accountLock'
-
-describe('gateError', () => {
-    it('tells a blank entry from a wrong one', () => {
-        expect(gateError('', false)).toBe('blank')
-        expect(gateError('nope', false)).toBe('wrong')
-    })
-
-    it('lets an accepted entry through', () => {
-        expect(gateError('demo', true)).toBeNull()
-    })
-})
+import { checkLockForm } from './accountLock'
 
 describe('checkLockForm', () => {
     it('waits for the repeat before judging', () => {

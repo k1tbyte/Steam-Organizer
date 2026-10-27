@@ -7,8 +7,8 @@ import { copyText, usePageActive } from '#core'
 import { useGuardCodes } from '#features/steam-guard'
 
 import type { Account } from '../../model'
-import { useAccountLogin } from '../useAccountLogin'
-import { useAccountPassword } from '../useAccountPassword'
+import { useAccountLogin } from '../secrets/useAccountLogin'
+import { useAccountPassword } from '../secrets/useAccountPassword'
 import { CARD, useCardTarget } from './useCardTarget'
 
 export interface AccountIntents {
@@ -16,6 +16,8 @@ export interface AccountIntents {
     /** Gets the card node, which the tag picker hangs from. */
     editTags: (card: HTMLElement) => void
     delete: (id: string) => void
+    /** Asks a locked account's password, which opens its secrets here. */
+    unlock: (account: Account) => void
 }
 
 /** The list's one context menu: which account was pressed, its actions, and where focus goes when it closes. */
@@ -40,7 +42,7 @@ export function useAccountMenu(intents: AccountIntents) {
         if (target.account.value) run(target.account.value)
     }
 
-    function groupsFor({ guard, locked, pinned }: Account): MenuGroup[] {
+    function groupsFor({ guard, lock, locked, pinned }: Account): MenuGroup[] {
         return [
             {
                 items: [
@@ -51,6 +53,16 @@ export function useAccountMenu(intents: AccountIntents) {
                             ({ id }) => void router.push(`/accounts/${id}`),
                         ),
                     },
+                    ...(locked
+                        ? [
+                              {
+                                  label: t('Unlock…'),
+                                  icon: 'icon-[lucide--lock-open]',
+                                  opens: true,
+                                  onSelect: act(intents.unlock),
+                              },
+                          ]
+                        : []),
                     {
                         label: t('Copy login'),
                         icon: 'icon-[lucide--at-sign]',
@@ -99,15 +111,20 @@ export function useAccountMenu(intents: AccountIntents) {
                             : 'icon-[lucide--pin]',
                         onSelect: act(({ id }) => intents.togglePin(id)),
                     },
-                    {
-                        label: t('Edit tags'),
-                        icon: 'icon-[lucide--tag]',
-                        opens: true,
-                        onSelect: act(() => {
-                            const card = target.card()
-                            if (card) intents.editTags(card)
-                        }),
-                    },
+                    // An everything lock seals the tags with the rest.
+                    ...(lock?.scope === 'everything'
+                        ? []
+                        : [
+                              {
+                                  label: t('Edit tags'),
+                                  icon: 'icon-[lucide--tag]',
+                                  opens: true,
+                                  onSelect: act(() => {
+                                      const card = target.card()
+                                      if (card) intents.editTags(card)
+                                  }),
+                              },
+                          ]),
                 ],
             },
             {

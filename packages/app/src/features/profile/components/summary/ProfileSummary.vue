@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Account } from '#features/accounts'
 
-import type { AccountGateState } from '../../composables/useAccountGate'
+import type { AccountGateState } from '../../composables/lock/useAccountGate'
 import type { BansState } from '../../composables/useBans'
 import type { ProfileData } from '../../model'
 import CredentialsSection from '../credentials/CredentialsSection.vue'
@@ -29,7 +29,8 @@ const emit = defineEmits<{ lock: [] }>()
                 :gate="gate"
                 :touch="touch"
                 @lock="emit('lock')" />
-            <NoteSection class="max-lg:order-last" :account="account" />
+            <!-- A locked account seals its note with the credentials. -->
+            <NoteSection v-if="!gate.locked" class="max-lg:order-last" :account="account" />
         </div>
         <div v-if="!account.anonymous" class="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-u-4">
             <CommunitySection :details="details" />

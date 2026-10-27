@@ -1,6 +1,6 @@
 import type { CredentialKind, ServiceCredentials } from '@so/core'
 
-import type { BanKind } from '#features/accounts'
+import type { BanKind, LockInfo } from '#features/accounts'
 
 export { CREDENTIAL_KINDS, type CredentialKind } from '@so/core'
 
@@ -32,15 +32,6 @@ export interface AccountCredentials {
     linked: ServiceCredentials[]
 }
 
-export type LockScope = 'credentials' | 'everything'
-
-/** The account's own password, asked even with the vault open. */
-export interface AccountLock {
-    scope: LockScope
-    /** The vault's master password can open it. */
-    recovery: boolean
-}
-
 export interface ProfileStats {
     years: number
     games: number
@@ -65,7 +56,7 @@ export interface ProfileData {
     /** Per active ban: since or until when ("Since 12 Mar 2026"). */
     banDetails: Partial<Record<BanKind, string>>
     lastBan: string | null
-    lock: AccountLock | null
+    lock: LockInfo | null
     credentials: AccountCredentials
     /** The authenticator's revocation code; null without an authenticator. */
     revocationCode: string | null

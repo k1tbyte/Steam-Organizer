@@ -15,7 +15,7 @@ interface Contents {
 }
 
 /** The account record resealed with its movable fields where the vault's placement (read from `contents`) puts them;
- *  null when they already are. `data` defaults to the record's own as `contents` holds it. */
+ *  null when they already are, or the account is locked. `data` defaults to the record's own as `contents` holds it. */
 export async function placedRecord(
     key: VaultKey,
     contents: Contents,
@@ -23,7 +23,8 @@ export async function placedRecord(
     data = readAccount(contents.data.get(record.id)),
     updatedAt = Date.now(),
 ): Promise<LiveRecord | null> {
-    if (!data) return null
+    // A locked account keeps every movable field sealed already, under a key this vault key cannot open.
+    if (!data || data.lock) return null
     const secret = (await openSecret<AccountSecret>(key, record)) ?? {
         password: '',
         services: [],

@@ -1,9 +1,11 @@
 import {
+    addRecovery,
     createKeys,
-    type PasswordSlot,
-    rewrapSlot,
+    importRecovery,
+    rewrapSlots,
     unlockSlot,
     type VaultKey,
+    type VaultSlots,
 } from '../crypto/keys'
 import { openText, type Sealed, sealText } from '../crypto/seal'
 import { UnsupportedVaultError } from '../errors'
@@ -15,7 +17,7 @@ export interface VaultFile {
     format: typeof VAULT_FORMAT
     version: 1
     id: string
-    slots: { password: PasswordSlot }
+    slots: VaultSlots
     /** JSONL of `SealedRecord`. */
     body: Sealed
 }
@@ -48,12 +50,12 @@ const partAad = (id: string, part: 'data' | 'secret') => `${id}\0${part}`
 export async function createVault(
     password: string,
 ): Promise<{ file: VaultFile; key: VaultKey }> {
-    const { slot, key } = await createKeys(password)
+    const { slots, key } = await createKeys(password)
     const file: VaultFile = {
         format: VAULT_FORMAT,
         version: 1,
         id: crypto.randomUUID(),
-        slots: { password: slot },
+        slots,
         body: '',
     }
     return { file: await writeRecords(key, file, []), key }
@@ -65,21 +67,35 @@ export async function unlockVault(
 ): Promise<VaultKey> {
     if (file.format !== VAULT_FORMAT || file.version !== 1)
         throw new UnsupportedVaultError()
-    return unlockSlot(file.slots.password, password)
+    const key = await unlockSlot(file.slots.password, password)
+    const { recovery } = file.slots
+    return recovery ? { ...key, recovery: await importRecovery(recovery) } : key
 }
 
-/** Rewraps the password slot; once locked accounts exist, their recovery slots too, so more than the slot may change. */
+/** A vault made before recovery slots gets one at a master-password unlock; null when it has one. */
+export async function withRecovery(
+    file: VaultFile,
+    key: VaultKey,
+    password: string,
+): Promise<{ file: VaultFile; key: VaultKey } | null> {
+    if (file.slots.recovery) return null
+    const recovery = await addRecovery(file.slots, password)
+    return {
+        file: { ...file, slots: { ...file.slots, recovery } },
+        key: { ...key, recovery: await importRecovery(recovery) },
+    }
+}
+
+/** Rewraps both slots; the recovery pair carries over, so locked accounts' recovery slots stay as they are. */
 export async function changePassword(
     file: VaultFile,
     oldPassword: string,
     newPassword: string,
 ): Promise<VaultFile> {
-    const password = await rewrapSlot(
-        file.slots.password,
-        oldPassword,
-        newPassword,
-    )
-    return { ...file, slots: { ...file.slots, password } }
+    return {
+        ...file,
+        slots: await rewrapSlots(file.slots, oldPassword, newPassword),
+    }
 }
 
 export async function readRecords(
@@ -117,16 +133,25 @@ function parseRecord(line: string): SealedRecord {
     throw new UnsupportedVaultError()
 }
 
+/** `accountKey` seals a locked account's secret; the data part stays under the vault key. */
 export async function sealRecord<Data, Secret>(
     key: VaultKey,
     record: OpenRecord<Data, Secret>,
+    accountKey = key.records,
 ): Promise<LiveRecord> {
     const { id, updatedAt } = record
-    const seal = (value: unknown, part: 'data' | 'secret') =>
-        sealText(key.records, JSON.stringify(value), partAad(id, part))
-    const data = await seal(record.data, 'data')
+    const data = await sealText(
+        key.records,
+        JSON.stringify(record.data),
+        partAad(id, 'data'),
+    )
     if (record.secret === undefined) return { id, updatedAt, data }
-    return { id, updatedAt, data, secret: await seal(record.secret, 'secret') }
+    const secret = await sealText(
+        accountKey,
+        JSON.stringify(record.secret),
+        partAad(id, 'secret'),
+    )
+    return { id, updatedAt, data, secret }
 }
 
 /** Reseals the data part only: a pin, a move or an alias edit never opens the secret. */
@@ -156,13 +181,10 @@ export async function openData<Data>(
 export async function openSecret<Secret>(
     key: VaultKey,
     record: LiveRecord,
+    accountKey = key.records,
 ): Promise<Secret | undefined> {
     if (record.secret === undefined) return undefined
     return JSON.parse(
-        await openText(
-            key.records,
-            record.secret,
-            partAad(record.id, 'secret'),
-        ),
+        await openText(accountKey, record.secret, partAad(record.id, 'secret')),
     )
 }

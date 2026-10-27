@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { LockScope } from '@so/core'
 import {
     FpAlert,
     FpButton,
@@ -12,11 +13,8 @@ import {
 } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-
 import { type Account, LevelAvatar } from '#features/accounts'
-
-import type { LockDialogState } from '../../composables/useLockDialog'
-import type { LockScope } from '../../model'
+import type { LockDialogState } from '../../composables/lock/useLockDialog'
 
 defineProps<{ account: Account; dialog: LockDialogState }>()
 

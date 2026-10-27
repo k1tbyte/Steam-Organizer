@@ -1,3 +1,5 @@
+import type { LockScope } from '@so/core'
+
 export const BAN_KINDS = ['vac', 'game', 'community', 'economy'] as const
 export type BanKind = (typeof BAN_KINDS)[number]
 
@@ -10,6 +12,13 @@ export interface AccountTag {
 }
 
 /** A vault account as the list and the card show it; wave 3's profile reads the same shape. */
+/** An account's own password, asked even with the vault open. */
+export interface LockInfo {
+    scope: LockScope
+    /** The vault's master password can open it. */
+    recovery: boolean
+}
+
 export interface Account {
     id: string
     /** The alias, else the Steam nickname, else the login. */
@@ -40,7 +49,9 @@ export interface Account {
     /** Present only while the vault keeps them searchable. */
     phone?: string
     email?: string
-    /** Credentials sit behind the account's own password. */
+    /** The account's own password, when it has one. */
+    lock?: LockInfo
+    /** Has its own password and is not open now: its secrets stay sealed. */
     locked: boolean
     /** Epoch ms: when it entered the vault and when Steam data was last refreshed. */
     added: number

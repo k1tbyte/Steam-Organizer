@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { FpContextMenu } from '@so/ui'
-import { toRef, useTemplateRef } from 'vue'
+import { reactive, toRef, useTemplateRef } from 'vue'
 
 import { useAccountMenu } from '../../composables/list/useAccountMenu'
 import { useAccountRows } from '../../composables/list/useAccountRows'
 import { useCardTagPicker } from '../../composables/list/useCardTagPicker'
+import { useUnlockDialog } from '../../composables/list/useUnlockDialog'
 import type { Account } from '../../model'
 import AccountCard from '../card/AccountCard.vue'
+import UnlockAccountDialog from '../lock/UnlockAccountDialog.vue'
 import AccountTagPicker from '../tags/AccountTagPicker.vue'
 import AccountsGroupHeading from './AccountsGroupHeading.vue'
 
@@ -25,10 +27,12 @@ const grid = useAccountRows(
     list,
 )
 const tagging = useCardTagPicker()
+const unlocking = reactive(useUnlockDialog())
 const menu = useAccountMenu({
     togglePin: (id) => emit('togglePin', id),
     editTags: tagging.show,
     delete: (id) => emit('delete', id),
+    unlock: unlocking.show,
 })
 </script>
 
@@ -68,5 +72,6 @@ const menu = useAccountMenu({
             </div>
         </FpContextMenu>
         <AccountTagPicker v-model:open="tagging.open.value" :anchor="tagging.anchor.value" :account="tagging.account.value" />
+        <UnlockAccountDialog :dialog="unlocking" />
     </div>
 </template>
