@@ -1,3 +1,4 @@
+import type { SteamIdDisplayFormat } from '@so/core'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -5,7 +6,6 @@ import {
     PROFILE_ID_FORMAT_STORAGE_KEY,
     PROFILE_SECTIONS_STORAGE_KEY,
     readStored,
-    type SteamIdDisplayFormat,
     writeStored,
 } from '#core'
 

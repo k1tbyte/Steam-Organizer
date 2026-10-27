@@ -51,7 +51,7 @@ const bans = reactive(
 const idField = reactive(
     useSteamIdField(
         () => props.account.steamId ?? '',
-        () => ({ friendCode: props.details.friendCode, vanity: props.details.vanity }),
+        () => props.details.vanity,
     ),
 )
 const tabs = reactive(

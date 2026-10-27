@@ -23,7 +23,6 @@ export const useSettingsStore = defineStore('settings', () => {
     })
     const syncing = ref(false)
     const syncedJustNow = ref(false)
-    const apiKey = ref<string | null>(null)
     const allowedSites = ref<SiteKey[]>([])
 
     const timer = useTimer()
@@ -44,10 +43,6 @@ export const useSettingsStore = defineStore('settings', () => {
         })
     }
 
-    function setApiKey(value: string) {
-        apiKey.value = value
-    }
-
     function allowSite(key: SiteKey) {
         if (!allowedSites.value.includes(key))
             allowedSites.value = [...allowedSites.value, key]
@@ -58,12 +53,10 @@ export const useSettingsStore = defineStore('settings', () => {
         sync: computed(() => sync.value),
         syncing: computed(() => syncing.value),
         syncedJustNow: computed(() => syncedJustNow.value),
-        apiKey: computed(() => apiKey.value),
         allowedSites: computed(() => allowedSites.value),
         setSecurity,
         setSync,
         syncNow,
-        setApiKey,
         allowSite,
     }
 })

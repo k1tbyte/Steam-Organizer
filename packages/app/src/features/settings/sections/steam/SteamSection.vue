@@ -2,6 +2,7 @@
 import {
     FpButton,
     FpEyebrow,
+    FpFormField,
     FpFormRow,
     FpIcon,
     FpInput,
@@ -40,21 +41,23 @@ const keyId = useId()
                     <FpIcon name="icon-[lucide--arrow-up-right]" class="text-13" />
                 </FpButton>
             </div>
-            <FpInput
-                :id="keyId"
-                type="password"
-                spellcheck="false"
-                class="font-medium font-mono tracking-wide"
-                :model-value="view.apiKey.value"
-                @update:model-value="view.setApiKey(String($event))">
-                <template #leading><FpIcon name="icon-[lucide--key-square]" /></template>
-                <template v-if="view.keyWorks.value" #trailing>
-                    <span class="flex items-center gap-1.5 px-2 font-sans text-12 text-success">
-                        <FpIcon name="icon-[lucide--circle-check]" class="text-13" />
-                        {{ t('Works') }}
-                    </span>
-                </template>
-            </FpInput>
+            <FpFormField :error="view.apiKey.error.value">
+                <FpInput
+                    :id="keyId"
+                    type="password"
+                    spellcheck="false"
+                    class="font-medium font-mono tracking-wide"
+                    :model-value="view.apiKey.value.value"
+                    @update:model-value="view.apiKey.set(String($event))">
+                    <template #leading><FpIcon name="icon-[lucide--key-square]" /></template>
+                    <template v-if="view.apiKey.works.value" #trailing>
+                        <span class="flex items-center gap-1.5 px-2 font-sans text-12 text-success">
+                            <FpIcon name="icon-[lucide--circle-check]" class="text-13" />
+                            {{ t('Works') }}
+                        </span>
+                    </template>
+                </FpInput>
+            </FpFormField>
         </div>
 
         <FpEyebrow class="ml-0! pt-2.5 pb-2">{{ t('Site access') }}</FpEyebrow>

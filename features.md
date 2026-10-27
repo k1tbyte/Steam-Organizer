@@ -62,7 +62,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Name (alias): required without a Steam profile `[new]`.
 - Login, password, optional Steam identifier in any format: account ID, SteamID64, Steam2, Steam3, CS2 friend code, hex, profile URL, vanity name.
 - Validation, duplicate check (ID, login).
-- With identifier: Add waits for the Steam lookup, which resolves every format to the SteamID64 and saves it with the profile data; an ID Steam does not find blocks Add. An account has a Steam ID with its data, or neither (anonymous) `[no web]`.
+- With identifier: Add waits for the Steam lookup, which resolves every format to the SteamID64 and saves it with the profile data; an ID Steam does not find blocks Add, and so do Steam unavailable (Retry) and a missing or rejected API key (link to Settings). An account has a Steam ID with its data, or neither (anonymous) `[no web]`.
 - Web adds anonymous accounts only: no Steam lookup there, the identifier field points to the extension or desktop `[new]`.
 - Optional: import Steam Guard authenticator (maFile) `[new]`: checked against Login, fills an empty Login (and Steam ID outside web).
 

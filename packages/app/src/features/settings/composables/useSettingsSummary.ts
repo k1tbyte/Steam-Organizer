@@ -4,12 +4,12 @@ import { useI18n } from 'vue-i18n'
 import { useAppearancePref } from '#core'
 import { useFieldPlacement, useVaultTags } from '#features/accounts'
 import { useVaultServices } from '#features/linked-services'
+import { useSteamKey } from '#features/steam'
 
 import type { SectionKey } from '../model'
 import { FIELD_KEYS, secretCount } from '../services/fieldSecrecy'
 import { useSettingsStore } from '../stores/settingsStore'
 import { useDriveSync } from './sources/useDriveSync'
-import { useSteamAccess } from './sources/useSteamAccess'
 import { useVaultInfo } from './sources/useVaultInfo'
 import { useLockAfterOptions } from './useLockAfterOptions'
 
@@ -22,7 +22,7 @@ export function useSettingsSummary() {
     const lock = useLockAfterOptions()
     const vault = useVaultInfo()
     const drive = useDriveSync()
-    const steam = useSteamAccess()
+    const steam = useSteamKey()
     const { tags } = useVaultTags()
     const { own: services } = useVaultServices()
 
@@ -51,7 +51,7 @@ export function useSettingsSummary() {
             case 'vault':
                 return vault.value?.name ?? ''
             case 'steam':
-                return steam.apiKey.value ? t('Key set') : t('Not set')
+                return steam.key.value ? t('Key set') : t('Not set')
             case 'bots':
                 return t('Soon')
         }

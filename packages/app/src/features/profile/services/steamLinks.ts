@@ -1,4 +1,4 @@
-import { toSteamId64 } from '../../../core/steamId'
+import { toSteamId64 } from '@so/core'
 
 export const STEAM_LINK_KEYS = [
     'profile',

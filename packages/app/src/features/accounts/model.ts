@@ -109,16 +109,6 @@ export interface AccountsView {
     direction: SortDirection
 }
 
-/** A Steam profile found for the identifier typed in Add account. */
-export interface SteamLookup {
-    nickname: string
-    level: number
-    years: number
-    hue: number
-    visibility: 'public' | 'friends' | 'private'
-    bans: BanKind[]
-}
-
 /** A bulk refresh in flight: accounts left and how far along it is (0 to 1). */
 export interface RefreshProgress {
     remaining: number

@@ -112,7 +112,7 @@ Firefox Android extension covers Android. iOS only via Obsidian plugin (later), 
 
 - Master password is never stored.
 - Extension: unlocked vault key is shared by app page, popup and autofill via extension storage (see lock policy). Content scripts get credentials only via background messages.
-- Steam Web API key is stored inside the vault.
+- Steam Web API key is stored inside the vault (`SettingsSecret.steamApiKey`, the settings record's secret).
 
 ### Vault locations
 User picks where each vault lives; several vaults, switch on unlock screen. Every client keeps a working copy in IndexedDB, the home is the source of truth.
@@ -240,6 +240,8 @@ The old backend aggregated these calls and cached prices server-side for all use
 | Server time (TOTP) | `POST ITwoFactorService/QueryTime/v1` |
 | Prices | `store.steampowered.com/api/appdetails?filters=price_overview&appids=...` |
 
+- Web API calls go through `steamApi(fetch, key)` in `core/steam`; a failure is a `SteamError`: `no-key` (no request made), `bad-key` (401/403), `offline` (fetch failed), `rate-limit` (429), `server` (anything else). The extension holds `api.steampowered.com` in `host_permissions`.
+- Add resolves the identifier locally (friend codes included) or by `ResolveVanityURL`, then reads summaries, bans and the level of a public profile; a failure blocks Add with Retry or a link to the key.
 - Store API limit ~200 req / 5 min per IP → batch appids + request queue.
 - Caches live in IndexedDB beside the vault, never in its records (unlock stays fast), in two levels matched by id:
   - per account: `games` (`appId`, playtime, last played) and `friends` (`steamId`, since);
@@ -283,7 +285,7 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 - [ ] `packages/core`: models, vault crypto (format v1), storage
 - [ ] Steam client: endpoints from 7, batching, caching
 - [ ] Drive sync over REST, per-half account merge, tombstone purge
-- [ ] Steam ID conversions in core, CS2 friend code via MD5 (port `shared/lib/md5.js` from the legacy app)
+- [x] Steam ID conversions in core, CS2 friend code via MD5 (`@noble/hashes`)
 - [ ] Tests: crypto, Steam parsers, sync
 
 ### Phase 2: Vue App + Web Shell

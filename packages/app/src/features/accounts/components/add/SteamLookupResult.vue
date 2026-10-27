@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpIcon, FpSkeleton } from '@so/ui'
+import { FpButton, FpIcon, FpIconTile, FpSkeleton } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import type { AddAccountFormState } from '../../composables/add/useAddAccountForm'
@@ -8,7 +8,9 @@ import LevelAvatar from '../card/LevelAvatar.vue'
 defineProps<{
     loading: boolean
     profile: AddAccountFormState['profile']
+    problem: AddAccountFormState['problem']
 }>()
+defineEmits<{ retry: []; openSettings: [] }>()
 
 const { t } = useI18n()
 </script>
@@ -22,6 +24,18 @@ const { t } = useI18n()
         </span>
         <span class="flex-1" />
         <span class="text-12.5 text-fg-3">{{ t('Looking up on Steam…') }}</span>
+    </div>
+    <div v-else-if="problem" class="flex min-h-14 items-center gap-3 rounded bg-surface-hi py-2 pr-2 pl-3">
+        <FpIconTile :name="problem.icon" color="warning" size="base" />
+        <span class="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span class="font-medium text-13 text-fg-1">{{ problem.title }}</span>
+            <span class="text-12 text-fg-3 leading-snug">{{ problem.description }}</span>
+        </span>
+        <FpButton v-if="problem.fix === 'retry'" size="sm" variant="soft" @click="$emit('retry')">
+            <FpIcon name="icon-[lucide--rotate-cw]" class="text-13" />
+            {{ t('Retry') }}
+        </FpButton>
+        <FpButton v-else size="sm" variant="soft" :label="t('Open Settings')" @click="$emit('openSettings')" />
     </div>
     <div v-else-if="profile" class="flex h-14 items-center gap-3 rounded bg-surface-hi px-3">
         <LevelAvatar size="sm" ring :name="profile.nickname" :hue="profile.hue" :level="profile.level" />

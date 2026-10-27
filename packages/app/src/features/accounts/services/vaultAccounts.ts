@@ -6,9 +6,10 @@ import {
     readTag,
     SETTINGS_ID,
     type SteamBans,
+    type SteamSnapshot,
+    toAccountId,
 } from '@so/core'
 
-import { toAccountId } from '../../../core/steamId'
 import type { Account, AccountTag, BanKind } from '../model'
 import { type Placement, placeBetween } from './reorder'
 
@@ -18,6 +19,15 @@ export interface StoredAccount {
 }
 
 const YEAR_MS = 365.25 * 24 * 60 * 60 * 1000
+
+/** Years on Steam at the refresh, to a tenth (the card shows 7.2y); 0 when the profile hides its registration. */
+export function steamYears(steam: SteamSnapshot | null): number {
+    if (steam?.registeredAt == null) return 0
+    return (
+        Math.floor(((steam.refreshedAt - steam.registeredAt) / YEAR_MS) * 10) /
+        10
+    )
+}
 
 // Fractional keys sort by code unit, never by locale.
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
@@ -36,7 +46,7 @@ export function storedAccounts(
     )
 }
 
-function bansOf(bans: SteamBans): BanKind[] {
+export function bansOf(bans: SteamBans): BanKind[] {
     const found: [BanKind, boolean][] = [
         ['vac', bans.vac > 0],
         ['game', bans.game > 0],
@@ -46,7 +56,8 @@ function bansOf(bans: SteamBans): BanKind[] {
     return found.flatMap(([kind, banned]) => (banned ? [kind] : []))
 }
 
-function hueOf(id: string) {
+/** The avatar tint until a real avatar shows, stable per id. */
+export function hueOf(id: string) {
     let hue = 0
     for (const char of id) hue = (hue * 31 + char.charCodeAt(0)) % 360
     return hue
@@ -73,10 +84,7 @@ function toAccount(
         anonymous: data.steamId === null,
         steamId: data.steamId && toAccountId(data.steamId),
         level: steam?.level ?? 0,
-        years:
-            steam && registered !== null
-                ? (steam.refreshedAt - registered) / YEAR_MS
-                : 0,
+        years: steamYears(steam),
         since:
             registered === null
                 ? ''

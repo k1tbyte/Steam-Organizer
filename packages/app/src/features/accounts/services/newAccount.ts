@@ -1,6 +1,4 @@
-import { MIN_PASSWORD_LENGTH } from '@so/core'
-
-import { detectSteamId, parseAccountId } from '../../../core/steamId'
+import { detectSteamId, MIN_PASSWORD_LENGTH, parseAccountId } from '@so/core'
 
 export interface NewAccountInput {
     login: string
@@ -22,7 +20,7 @@ export interface NewAccountErrors {
 }
 
 /** Field errors only show once the field has something in it; `canAdd` also needs the required ones filled.
- *  `needsName`: no alias and no Steam ID the text gives (a vanity name waits on the lookup); flagged only after a try. */
+ *  `needsName`: no alias and no Steam identifier, whose profile names the account; flagged only after a try. */
 export function validateNewAccount(
     { login, password, steamId, alias }: NewAccountInput,
     existing: ExistingAccounts,
@@ -46,6 +44,6 @@ export function validateNewAccount(
         name !== '' &&
         password.length >= MIN_PASSWORD_LENGTH &&
         Object.values(errors).every((error) => error === null)
-    const needsName = alias.trim() === '' && accountId === null
+    const needsName = alias.trim() === '' && detectSteamId(steamId) === null
     return { errors, canAdd, needsName }
 }

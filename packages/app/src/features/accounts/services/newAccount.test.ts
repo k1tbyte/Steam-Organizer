@@ -67,13 +67,13 @@ describe('validateNewAccount', () => {
         ).toBe(true)
     })
 
-    it('needs a name only without a Steam ID', () => {
+    it('needs a name only without a Steam identifier: its profile names the account', () => {
         const unnamed = { ...valid, alias: ' ' }
         expect(validateNewAccount(unnamed, existing).needsName).toBe(true)
         expect(
             validateNewAccount({ ...unnamed, steamId: 'somevanity' }, existing)
                 .needsName,
-        ).toBe(true)
+        ).toBe(false)
         expect(
             validateNewAccount(
                 { ...unnamed, steamId: '76561198012345678' },

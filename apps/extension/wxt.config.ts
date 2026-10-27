@@ -43,7 +43,8 @@ export default defineConfig({
     manifest: {
         name: 'Steam Organizer',
         permissions: ['storage', 'unlimitedStorage'],
-        host_permissions: STEAM_HOSTS,
+        // The Web API is fetched by the app pages only: no content script runs there.
+        host_permissions: [...STEAM_HOSTS, 'https://api.steampowered.com/*'],
         // WXT hoists the UI's @font-face into the host document, which fetches the files as the page.
         web_accessible_resources: [
             { resources: ['assets/*.woff2'], matches: STEAM_HOSTS },

@@ -29,8 +29,11 @@ export {
     type FieldDefaults,
     placeFields,
     readSettings,
+    readSettingsSecret,
     SETTINGS_ID,
     type SettingsData,
+    type SettingsSecret,
+    withSteamKey,
 } from './account/settings'
 export {
     type AccountCredential,
@@ -48,6 +51,25 @@ export {
 } from './crypto/keys'
 export type { Sealed } from './crypto/seal'
 export { UnsupportedVaultError, WrongPasswordError } from './errors'
+export {
+    isSteamKey,
+    type SteamApi,
+    SteamError,
+    type SteamErrorKind,
+    steamApi,
+} from './steam/api'
+export { checkKey, fetchProfiles, resolveSteamId } from './steam/profiles'
+export {
+    detectSteamId,
+    parseAccountId,
+    STEAM_ID_DISPLAY_FORMATS,
+    type SteamIdDisplayFormat,
+    type SteamIdFormat,
+    steamIdValues,
+    toAccountId,
+    toSteamId64,
+    vanityIn,
+} from './steam/steamId'
 export {
     type StoredVault,
     type VaultHome,

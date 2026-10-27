@@ -7,6 +7,7 @@ import {
     steamIdValues,
     toAccountId,
     toSteamId64,
+    vanityIn,
 } from './steamId'
 
 describe('detectSteamId', () => {
@@ -65,45 +66,61 @@ describe('parseAccountId', () => {
         expect(parseAccountId(raw)).toBe('1084529371')
     })
 
-    it('needs Steam for a vanity name, a friend code or a custom URL', () => {
+    it('reads a CS2 friend code, refusing one whose check bits fail', () => {
+        expect(parseAccountId('SUCVS-FADA')).toBe('22202')
+        expect(parseAccountId('a5qxe-bxtc')).toBe('1084529371')
+        expect(parseAccountId('A5QXE-BXTD')).toBeNull()
+        expect(parseAccountId('A5QXE-BXT0')).toBeNull()
+    })
+
+    it('needs Steam for a vanity name or a custom URL', () => {
         expect(parseAccountId('nova_strike')).toBeNull()
-        expect(parseAccountId('AKGU4-XF2P')).toBeNull()
         expect(parseAccountId('steamcommunity.com/id/nova')).toBeNull()
         expect(toAccountId(toSteamId64('1084529371'))).toBe('1084529371')
     })
 })
 
-describe('steamIdValues', () => {
-    const lookups = { friendCode: 'AKGU4-XF2P', vanity: 'kyzzdef' }
+describe('vanityIn', () => {
+    it.each([
+        ['nova_strike', 'nova_strike'],
+        ['john-wick', 'john-wick'],
+        ['https://steamcommunity.com/id/nova-strike/', 'nova-strike'],
+        ['https://steamcommunity.com/profiles/76561199044795099/', null],
+        ['76561199044795099', null],
+    ])('reads %s as %s', (raw, vanity) => {
+        expect(vanityIn(raw)).toBe(vanity)
+    })
+})
 
+describe('steamIdValues', () => {
     it('converts one account ID into every format', () => {
-        expect(steamIdValues('1084529371', lookups)).toEqual({
+        expect(steamIdValues('1084529371', 'kyzzdef')).toEqual({
             'account-id': '1084529371',
             steamid64: '76561199044795099',
             steam2: 'STEAM_1:1:542264685',
             steam3: '[U:1:1084529371]',
-            'friend-code': 'AKGU4-XF2P',
+            'friend-code': 'A5QXE-BXTC',
             'steam3-hex': '110000140a49adb',
             vanity: 'kyzzdef',
         })
     })
 
     it('handles an even account ID and a short one', () => {
-        const values = steamIdValues('1402219980', lookups)
+        const values = steamIdValues('1402219980', null)
         expect(values.steam2).toBe('STEAM_1:0:701109990')
-        expect(steamIdValues('1203', lookups)['steam3-hex']).toBe(
+        expect(steamIdValues('1203', null)['steam3-hex']).toBe(
             '1100001000004b3',
         )
     })
 
-    it('leaves what only Steam knows empty', () => {
-        const values = steamIdValues('1203', { friendCode: null, vanity: null })
-        expect(values['friend-code']).toBeNull()
+    it('computes the friend code, and leaves an absent vanity name empty', () => {
+        const values = steamIdValues('22202', null)
+        expect(values['friend-code']).toBe('SUCVS-FADA')
         expect(values.vanity).toBeNull()
     })
 
     it('writes each format so that it detects as itself', () => {
-        const values = steamIdValues('1084529371', lookups)
+        const values = steamIdValues('1084529371', 'kyzzdef')
         for (const format of STEAM_ID_DISPLAY_FORMATS) {
             const value = values[format] ?? ''
             expect(detectSteamId(value)).toBe(format)

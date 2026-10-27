@@ -1,3 +1,11 @@
+import type { VaultKey } from '../crypto/keys'
+import {
+    type LiveRecord,
+    openData,
+    openSecret,
+    type SealedRecord,
+    sealRecord,
+} from '../vault/vault'
 import {
     FIELD_DEFAULTS,
     type FieldPlacement,
@@ -19,8 +27,36 @@ export interface SettingsData {
     moving?: boolean
 }
 
+export interface SettingsSecret {
+    steamApiKey?: string
+}
+
 const isObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === 'object' && value !== null
+
+export function readSettingsSecret(value: unknown): SettingsSecret {
+    const { steamApiKey, ...rest } = isObject(value) ? value : {}
+    return typeof steamApiKey === 'string' ? { ...rest, steamApiKey } : rest
+}
+
+/** The settings record with this Steam Web API key in its secret ('' removes it); its data stays as stored. */
+export async function withSteamKey(
+    key: VaultKey,
+    record: SealedRecord | undefined,
+    steamApiKey: string,
+): Promise<LiveRecord> {
+    const live = record && !('deleted' in record) ? record : undefined
+    const secret = live && (await openSecret(key, live))
+    return sealRecord(key, {
+        id: SETTINGS_ID,
+        updatedAt: Date.now(),
+        data: live ? await openData(key, live) : readSettings(undefined),
+        secret: {
+            ...readSettingsSecret(secret),
+            steamApiKey: steamApiKey || undefined,
+        },
+    })
+}
 
 /** A vault without the record, or a field it does not name, reads as the defaults. */
 export function readSettings(value: unknown): SettingsData {

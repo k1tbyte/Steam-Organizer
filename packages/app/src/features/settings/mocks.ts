@@ -23,9 +23,6 @@ export interface GoogleAccount {
 }
 
 export interface SteamAccess {
-    apiKey: string
-    /** Result of checking the key against Steam. */
-    keyWorks: boolean
     grants: Record<SiteKey, boolean>
     /** Firefox asks for each site separately. */
     firefox: boolean
@@ -88,21 +85,15 @@ export const steamMock = defineMock<SteamAccess>(
     'settings.steam',
     'Steam access',
     {
-        'Firefox, key set': {
-            apiKey: 'A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6',
-            keyWorks: true,
+        Firefox: {
             grants: { store: true, community: true, help: false },
             firefox: true,
         },
         'Chromium, all allowed': {
-            apiKey: 'A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6',
-            keyWorks: true,
             grants: { store: true, community: true, help: true },
             firefox: false,
         },
-        'No key, nothing allowed': {
-            apiKey: '',
-            keyWorks: false,
+        'Nothing allowed': {
             grants: { store: false, community: false, help: false },
             firefox: true,
         },

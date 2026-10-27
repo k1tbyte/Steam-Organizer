@@ -1,12 +1,6 @@
 import { defineMock } from '#core'
 
-import type {
-    Account,
-    AccountTag,
-    BanKind,
-    RefreshProgress,
-    SteamLookup,
-} from './model'
+import type { Account, AccountTag, BanKind, RefreshProgress } from './model'
 
 /** What Copy password puts on the clipboard and a fill types: no vault is decrypted yet. */
 export const DEMO_STEAM_PASSWORD = '********'
@@ -306,28 +300,5 @@ export const refreshMock = defineMock<RefreshProgress | null>(
     {
         'Eight left': { remaining: 8, progress: 0.62 },
         Idle: null,
-    },
-)
-
-export const lookupMock = defineMock<SteamLookup>(
-    'accounts.lookup',
-    'Steam lookup result',
-    {
-        'Nova Strike': {
-            nickname: 'Nova Strike',
-            level: 21,
-            years: 7.2,
-            hue: 25,
-            visibility: 'public',
-            bans: [],
-        },
-        'VAC banned': {
-            nickname: 'Quiet Harbor',
-            level: 4,
-            years: 12.5,
-            hue: 200,
-            visibility: 'friends',
-            bans: ['vac'],
-        },
     },
 )

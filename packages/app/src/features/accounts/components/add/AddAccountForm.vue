@@ -31,7 +31,7 @@ const desktop = useDesktopLayout()
             </FpInput>
         </FpFormField>
         <div v-if="form.linksSteam" class="flex flex-col gap-1.5">
-            <FpFormField :label="t('Steam profile')" :hint="t('Optional')" :error="form.steamIdMessage">
+            <FpFormField :label="t('Steam profile')" :hint="form.steamIdHint" :error="form.steamIdMessage">
                 <FpInput
                     v-model="form.steamId"
                     class="font-mono"
@@ -43,7 +43,12 @@ const desktop = useDesktopLayout()
                     </template>
                 </FpInput>
             </FpFormField>
-            <SteamLookupResult :loading="form.showLookingUp" :profile="form.profile" />
+            <SteamLookupResult
+                :loading="form.showLookingUp"
+                :profile="form.profile"
+                :problem="form.problem"
+                @retry="form.retryLookup"
+                @open-settings="form.openSteamSettings" />
         </div>
         <FpAlert
             v-else

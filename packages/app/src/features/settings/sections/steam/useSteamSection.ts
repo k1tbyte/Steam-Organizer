@@ -3,6 +3,7 @@ import { useI18n } from 'vue-i18n'
 
 import { useSteamAccess } from '../../composables/sources/useSteamAccess'
 import type { SiteKey } from '../../model'
+import { useSteamKeyField } from './useSteamKeyField'
 
 const API_KEY_URL = 'https://steamcommunity.com/dev/apikey'
 
@@ -33,9 +34,7 @@ export function useSteamSection() {
 
     return {
         apiKeyUrl: API_KEY_URL,
-        apiKey: access.apiKey,
-        setApiKey: access.setApiKey,
-        keyWorks: access.keyWorks,
+        apiKey: useSteamKeyField(),
         sites,
         allowSite: access.allowSite,
         showFirefoxNote: access.firefox,

@@ -39,7 +39,6 @@ const SAMPLE_PROFILES: Record<string, ProfileData> = {
         visibility: 'public',
         registered: Date.UTC(2020, 3, 27),
         vanity: 'kyzzdef',
-        friendCode: 'AKGU4-XF2P',
         stats: stats(5, 140, 67, 13876, 103, 1498.87, '100+', 37),
         banDetails: {},
         lastBan: null,
@@ -75,7 +74,6 @@ const SAMPLE_PROFILES: Record<string, ProfileData> = {
         visibility: 'friends',
         registered: Date.UTC(2022, 1, 14),
         vanity: null,
-        friendCode: 'B7RQK-ZJ3M',
         stats: stats(4, 38, 21, 2410, 12, 214.4, '25+', 12),
         banDetails: {
             community: 'Since 12 Mar 2026',
@@ -103,7 +101,6 @@ const SAMPLE_PROFILES: Record<string, ProfileData> = {
         visibility: 'public',
         registered: Date.UTC(2020, 6, 9),
         vanity: 'starwave',
-        friendCode: 'QW2LD-8KXN',
         stats: stats(5, 212, 180, 4102, 9, 96.1, '100+', 3),
         banDetails: {},
         lastBan: null,
@@ -119,21 +116,9 @@ const SAMPLE_PROFILES: Record<string, ProfileData> = {
     },
 }
 
-const FRIEND_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-
 /** A stable number per account, so a derived profile looks the same on every visit. */
 function seedOf(id: string): number {
     return [...id].reduce((h, char) => (h * 31 + char.charCodeAt(0)) >>> 0, 7)
-}
-
-function friendCodeOf(seed: number): string {
-    let rest = seed
-    let code = ''
-    for (let i = 0; i < 9; i++) {
-        code += FRIEND_CODE_ALPHABET[rest % FRIEND_CODE_ALPHABET.length]
-        rest = Math.imul(rest ^ (rest >>> 7), 2654435761) >>> 0
-    }
-    return `${code.slice(0, 5)}-${code.slice(5)}`
 }
 
 /** A profile for an account the mockup gives none: plausible numbers from its level and age. */
@@ -150,7 +135,6 @@ function derive(account: Account): ProfileData {
             account.anonymous || seed % 3 === 0
                 ? null
                 : account.nickname.toLowerCase().replace(/\W+/g, ''),
-        friendCode: account.anonymous ? null : friendCodeOf(seed),
         stats: stats(
             Math.floor(account.years),
             games,

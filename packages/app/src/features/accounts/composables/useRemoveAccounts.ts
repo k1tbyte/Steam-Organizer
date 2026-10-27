@@ -1,7 +1,7 @@
+import { toSteamId64 } from '@so/core'
 import { computed, ref, shallowRef, type UnwrapNestedRefs } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { toSteamId64 } from '#core'
 import { useUndoDelete } from '#features/vault'
 
 import type { Account } from '../model'

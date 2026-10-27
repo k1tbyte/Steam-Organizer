@@ -1,39 +1,28 @@
+import { detectSteamId, type SteamIdFormat, toAccountId } from '@so/core'
 import { useToast } from '@so/ui'
-import { useTimer } from '@so/ui/useTimer'
 import { computed, type Ref, ref, type UnwrapNestedRefs, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import {
-    detectSteamId,
-    parseAccountId,
-    reportError,
-    type SteamIdFormat,
-    toSteamId64,
-    useCloseOnSuccess,
-    useMock,
-    usePlatform,
-} from '#core'
+import { reportError, useCloseOnSuccess } from '#core'
+import { useSteamApi, useSteamProblem } from '#features/steam'
 import { useMaFile } from '#features/steam-guard'
 
-import { lookupMock } from '../../mocks'
 import { validateNewAccount } from '../../services/newAccount'
+import { bansOf, hueOf, steamYears } from '../../services/vaultAccounts'
 import { useBanLabels } from '../useBanLabels'
 import { type AddResult, useVaultAccounts } from '../useVaultAccounts'
+import { useSteamLookup } from './useSteamLookup'
 
-const LOOKUP_MS = 900
-
-/** The Add account flow: fields, Steam identifier detection, a simulated profile lookup, the maFile and the checks before Add.
- *  Web cannot reach Steam: it adds anonymous accounts, which need a name. */
+/** The Add account flow: fields, the Steam profile behind the identifier, the maFile and the checks before Add.
+ *  An identifier waits for its profile; web cannot reach Steam, so it adds anonymous accounts, which need a name. */
 export function useAddAccountForm(open: Ref<boolean>) {
     const { t } = useI18n()
-    const timer = useTimer()
     const { accounts, add } = useVaultAccounts()
     const toast = useToast()
     const closeOnSuccess = useCloseOnSuccess(open)
-    // The Steam profile has no source yet.
-    const lookup = useMock(() => undefined, lookupMock)
     const banLabels = useBanLabels()
-    const linksSteam = usePlatform().kind !== 'web'
+    const linksSteam = useSteamApi().reachable
+    const { openSteamSettings } = useSteamProblem()
 
     const login = ref('')
     const password = ref('')
@@ -42,8 +31,6 @@ export function useAddAccountForm(open: Ref<boolean>) {
     // The name is flagged only once Add was tried without it.
     const tried = ref(false)
     const maFile = useMaFile(() => login.value)
-    const lookingUp = ref(false)
-    const looked = ref(false)
     const saving = ref(false)
     // What the vault refused on Add: a login only its tag matches, or one saved meanwhile.
     const refused = ref<Exclude<AddResult, 'added'> | null>(null)
@@ -86,42 +73,46 @@ export function useAddAccountForm(open: Ref<boolean>) {
         return detected && detected !== 'unknown' ? detected : null
     })
 
-    // Every edit restarts the lookup; only a recognized identifier starts one.
-    watch(steamId, () => {
-        timer.cancel()
-        lookingUp.value = false
-        looked.value = false
-        if (format.value === null) return
-        lookingUp.value = true
-        timer.arm(LOOKUP_MS, () => {
-            lookingUp.value = false
-            looked.value = true
-        })
-    })
+    // Only a recognized identifier the vault does not hold yet is looked up.
+    const lookup = useSteamLookup(() =>
+        linksSteam &&
+        format.value !== null &&
+        checks.value.errors.steamId === null
+            ? steamId.value.trim()
+            : null,
+    )
+    const found = computed(() =>
+        lookup.state.value.status === 'found' ? lookup.state.value : null,
+    )
 
     // The flow starts clean on every opening, never on close: the sheet animates out with its content.
     watch(open, (isOpen) => {
         if (!isOpen) return
-        timer.cancel()
         login.value = ''
         password.value = ''
         steamId.value = ''
         alias.value = ''
         tried.value = false
         maFile.clear()
-        lookingUp.value = false
-        looked.value = false
     })
 
-    const steamIdError = computed(() =>
-        refused.value === 'steam-taken' ? 'taken' : checks.value.errors.steamId,
-    )
+    const steamIdError = computed(() => {
+        if (refused.value === 'steam-taken') return 'taken'
+        if (checks.value.errors.steamId) return checks.value.errors.steamId
+        if (lookup.state.value.status === 'missing') return 'missing'
+        const resolved = found.value && toAccountId(found.value.steamId)
+        return resolved && existing.value.steamIds.includes(resolved)
+            ? 'taken'
+            : null
+    })
     const nameMissing = computed(() => tried.value && checks.value.needsName)
     const canAdd = computed(
         () =>
             checks.value.canAdd &&
             !nameMissing.value &&
             refused.value === null &&
+            (format.value === null ||
+                (found.value !== null && steamIdError.value === null)) &&
             !maFile.picked.value?.problem &&
             !maFile.reading.value &&
             !saving.value,
@@ -161,15 +152,33 @@ export function useAddAccountForm(open: Ref<boolean>) {
                 return t('Unrecognized format')
             if (steamIdError.value === 'taken')
                 return t('This Steam account is already in your vault')
+            if (steamIdError.value === 'missing')
+                return t('Steam has no profile with this ID')
             return undefined
         }),
-        showLookingUp: computed(
-            () => lookingUp.value && steamIdError.value === null,
+        steamIdHint: computed(() => {
+            const { status } = lookup.state.value
+            if (status === 'looking') return t('Looking up')
+            return status === 'failed' ? t('Steam unavailable') : t('Optional')
+        }),
+        showLookingUp: computed(() => lookup.state.value.status === 'looking'),
+        /** Why Steam could not answer: Add waits until a Retry or the key in Settings gets the profile. */
+        problem: computed(() =>
+            lookup.state.value.status === 'failed'
+                ? lookup.state.value.problem
+                : null,
         ),
+        retryLookup: lookup.retry,
+        openSteamSettings,
         profile: computed(() => {
-            const found = looked.value && steamIdError.value === null
-            const profile = found ? lookup.value : undefined
-            if (!profile) return undefined
+            if (!found.value || steamIdError.value !== null) return undefined
+            const { profile } = found.value
+            const bans = bansOf(profile.bans)
+            const level = t('Level {level}', { level: profile.level })
+            const age =
+                profile.registeredAt === null
+                    ? []
+                    : [t('{years}y', { years: steamYears(profile) })]
             const visibility = {
                 public: t('public'),
                 friends: t('friends only'),
@@ -177,20 +186,14 @@ export function useAddAccountForm(open: Ref<boolean>) {
             }[profile.visibility]
             return {
                 nickname: profile.nickname,
-                hue: profile.hue,
+                hue: hueOf(found.value.steamId),
                 level: profile.level,
-                clean: profile.bans.length === 0,
-                summary: t('Level {level} · {years}y · {visibility}', {
-                    level: profile.level,
-                    years: profile.years,
-                    visibility,
-                }),
+                clean: bans.length === 0,
+                summary: [level, ...age, visibility].join(' · '),
                 bans:
-                    profile.bans.length === 0
+                    bans.length === 0
                         ? t('No bans')
-                        : profile.bans
-                              .map((kind) => banLabels.value[kind])
-                              .join(', '),
+                        : bans.map((kind) => banLabels.value[kind]).join(', '),
             }
         }),
         canAdd,
@@ -208,11 +211,11 @@ export function useAddAccountForm(open: Ref<boolean>) {
         submit: () => {
             tried.value = true
             if (!canAdd.value) return
-            const accountId = parseAccountId(steamId.value)
             const account = {
                 login: login.value,
                 password: password.value,
-                steamId: accountId && toSteamId64(accountId),
+                steamId: found.value?.steamId ?? null,
+                ...(found.value && { steam: found.value.profile }),
                 alias: alias.value,
                 authenticator:
                     maFile.picked.value?.problem === null

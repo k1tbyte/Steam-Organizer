@@ -10,6 +10,7 @@ import {
     RECORD,
     readSettings,
     SETTINGS_ID,
+    type SteamSnapshot,
     sealRecord,
     steamTag,
     updateData,
@@ -35,8 +36,9 @@ import { useAccountsSource } from './useAccountsSource'
 export interface NewAccount {
     login: string
     password: string
-    /** SteamID64; null when none was typed or the typed one needs Steam to resolve. */
+    /** SteamID64; Add saves it with the profile Steam gave for it. */
     steamId: string | null
+    steam?: SteamSnapshot
     /** The user's name for it; an anonymous account needs one. */
     alias?: string
     authenticator?: Authenticator
@@ -152,7 +154,7 @@ export function useVaultAccounts() {
                 editedAt: now,
                 guard: account.authenticator !== undefined,
                 loginTag: tag,
-                steam: null,
+                steam: account.steam ?? null,
             }
             const secret: AccountSecret = {
                 password: account.password,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpCard, FpDot, FpIcon, FpIconTile, FpInput } from '@so/ui'
+import { FpButton, FpCard, FpDot, FpFormField, FpIcon, FpIconTile, FpInput } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { useOnboardingFrame } from '../../composables/useOnboardingFrame'
@@ -8,7 +8,7 @@ import OnboardingStep from './OnboardingStep.vue'
 
 const { t } = useI18n()
 const { buttonSize } = useOnboardingFrame()
-const { granted, apiKey, creating, grant, finish } = useSteamAccess()
+const { granted, apiKey, keyError, creating, grant, finish } = useSteamAccess()
 </script>
 
 <template>
@@ -63,19 +63,19 @@ const { granted, apiKey, creating, grant, finish } = useSteamAccess()
                     </span>
                 </div>
             </div>
-            <div class="pl-11">
+            <FpFormField class="pl-11" :error="keyError">
                 <FpInput
                     v-model="apiKey"
                     class="font-mono"
                     :aria-label="t('Steam Web API key')"
                     :placeholder="t('32 characters, A–F and 0–9')" />
-            </div>
+            </FpFormField>
         </FpCard>
 
         <template #cta>
             <div class="flex gap-2">
-                <FpButton variant="ghost" :size="buttonSize" :disabled="creating" @click="finish">{{ t('Skip for now') }}</FpButton>
-                <FpButton color="accent" class="flex-1" :size="buttonSize" :loading="creating" @click="finish">
+                <FpButton variant="ghost" :size="buttonSize" :disabled="creating" @click="finish(false)">{{ t('Skip for now') }}</FpButton>
+                <FpButton color="accent" class="flex-1" :size="buttonSize" :loading="creating" @click="finish(true)">
                     {{ t('Open accounts') }}
                 </FpButton>
             </div>

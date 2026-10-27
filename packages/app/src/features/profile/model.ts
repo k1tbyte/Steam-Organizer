@@ -51,7 +51,6 @@ export interface ProfileData {
     /** Epoch ms of the Steam registration. */
     registered: number
     vanity: string | null
-    friendCode: string | null
     stats: ProfileStats
     /** Per active ban: since or until when ("Since 12 Mar 2026"). */
     banDetails: Partial<Record<BanKind, string>>

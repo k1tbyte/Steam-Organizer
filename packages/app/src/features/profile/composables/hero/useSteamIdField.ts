@@ -1,4 +1,9 @@
 import {
+    STEAM_ID_DISPLAY_FORMATS,
+    type SteamIdDisplayFormat,
+    steamIdValues,
+} from '@so/core'
+import {
     computed,
     type MaybeRefOrGetter,
     toValue,
@@ -6,20 +11,14 @@ import {
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import {
-    STEAM_ID_DISPLAY_FORMATS,
-    type SteamIdDisplayFormat,
-    type SteamIdLookups,
-    steamIdValues,
-    useCopyFeedback,
-} from '#core'
+import { useCopyFeedback } from '#core'
 
 import { useProfilePrefsStore } from '../../stores/profilePrefs'
 
 /** The Steam ID in the format every profile shares and remembers, with a menu of all seven and copy. */
 export function useSteamIdField(
     accountId: MaybeRefOrGetter<string>,
-    lookups: MaybeRefOrGetter<SteamIdLookups>,
+    vanity: MaybeRefOrGetter<string | null>,
 ) {
     const { t } = useI18n()
     const prefs = useProfilePrefsStore()
@@ -35,7 +34,7 @@ export function useSteamIdField(
         vanity: t('Vanity URL'),
     }))
     const values = computed(() =>
-        steamIdValues(toValue(accountId), toValue(lookups)),
+        steamIdValues(toValue(accountId), toValue(vanity)),
     )
 
     const options = computed(() =>
