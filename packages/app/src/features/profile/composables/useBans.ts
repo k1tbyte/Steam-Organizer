@@ -10,12 +10,14 @@ import { BAN_KINDS } from '#features/accounts'
 
 import type { ProfileData } from '../model'
 
+const DAY_MS = 86_400_000
+
 /** The ban rows and the one-line summary the header, the Bans section and the phone chips share. */
 export function useBans(
     account: MaybeRefOrGetter<Account>,
     details: MaybeRefOrGetter<ProfileData>,
 ) {
-    const { t } = useI18n()
+    const { t, locale } = useI18n()
 
     const labels = computed(() => ({
         vac: t('VAC'),
@@ -52,7 +54,15 @@ export function useBans(
                 ? t('No bans')
                 : t('{count} active ban | {count} active bans', count.value),
         ),
-        lastBan: computed(() => toValue(details).lastBan),
+        /** "222 days ago". */
+        lastBan: computed(() => {
+            const at = toValue(details).lastBanAt
+            if (at === null) return null
+            const days = Math.floor((Date.now() - at) / DAY_MS)
+            return new Intl.RelativeTimeFormat(locale.value, {
+                numeric: 'auto',
+            }).format(-days, 'day')
+        }),
     }
 }
 export type BansState = UnwrapNestedRefs<ReturnType<typeof useBans>>

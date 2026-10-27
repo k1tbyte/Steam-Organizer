@@ -70,6 +70,7 @@ function toAccount(
 ): Account {
     const { steam, lock } = data
     const registered = steam?.registeredAt ?? null
+    const avatar = steam?.avatar ?? lock?.shown?.avatar
     return {
         id,
         nickname:
@@ -93,6 +94,7 @@ function toAccount(
                       year: 'numeric',
                   }),
         hue: hueOf(id),
+        ...(avatar && { avatar }),
         bans: steam ? bansOf(steam.bans) : [],
         tags: data.tags.flatMap((tag) => tags.get(tag) ?? []),
         pinned: data.pinned,
@@ -111,6 +113,7 @@ function toAccount(
         locked: lock !== undefined,
         added: data.addedAt,
         updated: steam?.refreshedAt ?? data.addedAt,
+        ...(steam && { steam }),
     }
 }
 

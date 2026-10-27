@@ -5,7 +5,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useMock } from '#core'
 import { useVaultAccounts } from '#features/accounts'
 
-import { profileMock, profileOf } from '../mocks'
+import { type ProfileSample, profileMock, profileOf } from '../mocks'
+import { vaultProfile } from '../services/vaultProfile'
 import { useVaultCredentials } from './credentials/useVaultCredentials'
 
 /** The open profile's account and its Steam-side data; an id the vault does not hold goes back to the list. */
@@ -14,9 +15,12 @@ export function useProfile() {
     // The page is keyed by its path, so the id never changes under it; a leaving page keeps its own.
     const id = String(useRoute().params.id)
     const { accounts, togglePin } = useVaultAccounts()
-    // Steam data and the account's lock have no source yet.
-    const sample = useMock(() => undefined, profileMock)
     const vault = useVaultCredentials(id)
+    // A vault account reads its own profile; a sample stands in for the rest.
+    const sample = useMock(
+        (): ProfileSample | undefined => (vault.held.value ? {} : undefined),
+        profileMock,
+    )
 
     // A login or note the vault keeps secret, or all an open `everything` lock hid, shows here once its secret opens.
     const account = computed(() => {
@@ -34,7 +38,9 @@ export function useProfile() {
     const details = computed(() => {
         const sampled = sample.value
         if (!account.value || !sampled) return undefined
-        const base = profileOf(account.value)
+        const base = vault.held.value
+            ? vaultProfile(account.value)
+            : profileOf(account.value)
         const shown = sampled.details?.(base) ?? base
         if (!vault.held.value) return shown
         return {

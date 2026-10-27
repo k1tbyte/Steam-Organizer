@@ -12,6 +12,7 @@ const props = defineProps<{
     nickname: string
     hasLock: boolean
     refreshable: boolean
+    refreshing: boolean
 }>()
 const emit = defineEmits<{ refresh: []; lock: []; intent: [kind: ProfileIntent] }>()
 
@@ -42,7 +43,7 @@ const menu = useProfileMenu({
         </template>
         <template v-if="desktop" #status><SyncStatus /></template>
         <template #actions>
-            <FpButton v-if="refreshable && desktop" v-bind="tip(t('Refresh from Steam'))" variant="soft" @click="emit('refresh')">
+            <FpButton v-if="refreshable && desktop" v-bind="tip(t('Refresh from Steam'))" variant="soft" :loading="refreshing" @click="emit('refresh')">
                 <FpIcon name="icon-[lucide--refresh-cw]" />
                 {{ t('Refresh') }}
             </FpButton>
@@ -53,8 +54,9 @@ const menu = useProfileMenu({
                 variant="ghost"
                 size="xl"
                 :aria-label="t('Refresh from Steam')"
+                :loading="refreshing"
                 @click="emit('refresh')">
-                <FpIcon name="icon-[lucide--refresh-cw]" />
+                <FpIcon v-if="!refreshing" name="icon-[lucide--refresh-cw]" />
             </FpButton>
             <FpDropdownMenu :items="menu.items.value" placement="bottom-end">
                 <FpButton v-bind="tip(t('More'), { label: true })" square :round="!desktop" variant="ghost" :size="desktop ? 'md' : 'xl'">

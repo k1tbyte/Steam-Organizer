@@ -62,6 +62,7 @@ const card = useAccountCard(
             <LevelAvatar
                 :name="account.nickname"
                 :hue="account.hue"
+                :avatar="account.avatar"
                 :level="account.level"
                 :anonymous="account.anonymous"
                 :ring="card.showLevel.value" />

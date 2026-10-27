@@ -1,4 +1,4 @@
-import type { LockScope } from '@so/core'
+import type { LockScope, SteamSnapshot } from '@so/core'
 
 export const BAN_KINDS = ['vac', 'game', 'community', 'economy'] as const
 export type BanKind = (typeof BAN_KINDS)[number]
@@ -36,8 +36,10 @@ export interface Account {
     /** Years on Steam as of the last refresh, with the registration month ("Apr 2020"). */
     years: number
     since: string
-    /** Avatar tint until a real avatar is fetched. */
+    /** Avatar tint under the picture, and in its place without one. */
     hue: number
+    /** Steam's avatar hash (`avatarUrl` from `@so/core`); an everything lock keeps it on show. */
+    avatar?: string
     bans: BanKind[]
     tags: AccountTag[]
     pinned: boolean
@@ -56,6 +58,8 @@ export interface Account {
     /** Epoch ms: when it entered the vault and when Steam data was last refreshed. */
     added: number
     updated: number
+    /** The last refresh, for the profile; absent on samples and while an everything lock hides it. */
+    steam?: SteamSnapshot
 }
 
 /** What each card shows. With density and platform they alone decide the card height. */

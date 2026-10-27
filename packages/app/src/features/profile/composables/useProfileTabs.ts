@@ -37,14 +37,14 @@ export function useProfileTabs(
                     slot: 'games',
                     label: t('Games'),
                     icon: icon('icon-[lucide--gamepad-2]'),
-                    count: stats.games,
+                    count: stats?.games,
                 },
                 {
                     value: 'friends',
                     slot: 'friends',
                     label: t('Friends'),
                     icon: icon('icon-[lucide--users]'),
-                    count: stats.friends,
+                    count: stats?.friends,
                 },
             )
         if (toValue(account).guard && !toValue(options.guardHidden))

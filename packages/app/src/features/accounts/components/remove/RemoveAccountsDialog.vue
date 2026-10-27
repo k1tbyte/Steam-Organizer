@@ -18,6 +18,7 @@ const { t } = useI18n()
                 <LevelAvatar
                     :name="row.nickname"
                     :hue="row.hue"
+                    :avatar="row.avatar"
                     :level="row.level"
                     :anonymous="row.anonymous"
                     :size="removal.single ? 'sm' : 'xs'" />

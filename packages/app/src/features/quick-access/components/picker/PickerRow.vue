@@ -42,6 +42,7 @@ const login = computed(() =>
             size="sm"
             :name="account.nickname"
             :hue="account.hue"
+            :avatar="account.avatar"
             :level="account.level"
             :anonymous="account.anonymous"
             :class="compact ? 'size-8!' : 'size-9!'" />

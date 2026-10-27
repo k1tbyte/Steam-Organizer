@@ -27,6 +27,7 @@ const { t } = useI18n()
                     size="md"
                     :name="dialog.account.nickname"
                     :hue="dialog.account.hue"
+                    :avatar="dialog.account.avatar"
                     :level="dialog.account.level"
                     :anonymous="dialog.account.anonymous" />
                 <span class="absolute -right-1.5 -bottom-1.5 grid size-6 place-items-center rounded-full bg-surface-pop text-13 text-fg-2 ring-2 ring-surface-pop">

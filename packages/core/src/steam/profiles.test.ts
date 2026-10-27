@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { SteamError, steamApi } from './api'
-import { fetchProfiles, resolveSteamId } from './profiles'
+import { avatarUrl, fetchProfiles, resolveSteamId } from './profiles'
 
 const PUBLIC = '76561199044795099'
 const PRIVATE = '76561197960287930'
@@ -167,4 +167,14 @@ describe('resolveSteamId', () => {
         )
         expect(await resolveSteamId(api, 'nobody_here')).toBeNull()
     })
+})
+
+it("builds an avatar URL, none for Steam's default picture", () => {
+    expect(avatarUrl('c5d56249ee5d28a07db4ac9f7f60af961fab5426', 'full')).toBe(
+        'https://avatars.steamstatic.com/c5d56249ee5d28a07db4ac9f7f60af961fab5426_full.jpg',
+    )
+    expect(
+        avatarUrl('fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb', 'medium'),
+    ).toBeNull()
+    expect(avatarUrl('', 'medium')).toBeNull()
 })

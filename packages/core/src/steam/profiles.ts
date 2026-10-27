@@ -24,6 +24,15 @@ interface Bans {
     EconomyBan: string
 }
 
+// Steam's question mark for a profile without a picture: the initials look better.
+const DEFAULT_AVATAR = 'fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb'
+
+/** The picture behind a profile's `avatar` hash: `medium` is 64px, `full` 184px; null without one of its own. */
+export function avatarUrl(hash: string, size: 'medium' | 'full') {
+    if (hash === '' || hash === DEFAULT_AVATAR) return null
+    return `https://avatars.steamstatic.com/${hash}_${size}.jpg`
+}
+
 const VISIBILITY: Record<number, SteamSnapshot['visibility']> = {
     2: 'friends',
     3: 'public',

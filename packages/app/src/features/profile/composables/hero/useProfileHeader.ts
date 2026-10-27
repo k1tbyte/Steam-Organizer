@@ -57,6 +57,7 @@ export function useProfileHeader(
     return {
         visibility: computed(() => {
             const visibility = toValue(details).visibility
+            if (visibility === null) return null
             return {
                 icon: VISIBILITY_ICONS[visibility],
                 label: visibilityLabels.value[visibility],
@@ -86,26 +87,21 @@ export function useProfileHeader(
                 const { date, time } = stampParts(at, now, locale.value)
                 return { value: `${date}, ${time}`, short: date }
             }
-            const registered = stampParts(
-                toValue(details).registered,
-                now,
-                locale.value,
-            ).date
             const dates = [
                 { label: t('Added'), ...stamp(added) },
                 { label: t('Updated'), ...stamp(updated) },
             ]
-            // An account without a Steam profile has no registration.
-            return toValue(account).anonymous
-                ? dates
-                : [
-                      ...dates,
-                      {
-                          label: t('Registered'),
-                          value: registered,
-                          short: registered,
-                      },
-                  ]
+            const at = toValue(details).registered
+            if (at === null) return dates
+            const registered = stampParts(at, now, locale.value).date
+            return [
+                ...dates,
+                {
+                    label: t('Registered'),
+                    value: registered,
+                    short: registered,
+                },
+            ]
         }),
     }
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { avatarUrl } from '@so/core'
 import { FpIcon, tip } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -9,6 +10,8 @@ const props = withDefaults(
     defineProps<{
         name: string
         hue: number
+        /** Steam's avatar hash: the picture over the tint, the initials when it fails to load. */
+        avatar?: string
         level: number
         anonymous?: boolean
         /** The level-colored ring and number badge around the avatar. */
@@ -46,6 +49,17 @@ const SIZES = {
 const { t } = useI18n()
 const showRing = computed(() => props.ring && !props.anonymous)
 const sizing = computed(() => SIZES[props.size])
+const picture = computed(() =>
+    props.avatar
+        ? avatarUrl(props.avatar, props.size === 'xs' || props.size === 'sm' ? 'medium' : 'full')
+        : null,
+)
+
+// Keyed by the URL, so a recycled card's new picture starts visible again.
+function hideBroken(event: Event) {
+    const image = event.target as HTMLImageElement
+    image.hidden = true
+}
 </script>
 
 <template>
@@ -63,6 +77,16 @@ const sizing = computed(() => SIZES[props.size])
             :class="[showRing ? sizing.inset : 'inset-0', sizing.text]">
             <FpIcon v-if="anonymous" name="icon-[lucide--venetian-mask]" :class="size === 'xs' ? 'text-14' : 'text-20'" />
             <template v-else>{{ initialsOf(name) }}</template>
+            <img
+                v-if="picture"
+                :key="picture"
+                :src="picture"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+                class="absolute inset-0 size-full object-cover"
+                @error="hideBroken" />
         </span>
         <span
             v-if="showRing && sizing.badge"
@@ -122,6 +146,7 @@ const sizing = computed(() => SIZES[props.size])
     box-shadow: inset 0 0 0 var(--ring-w) var(--lvl);
 }
 .avatar {
+    overflow: hidden;
     background: oklch(var(--av-l) 0.11 var(--hue));
     border-radius: calc(var(--radius-base) * var(--r-avatar));
 }

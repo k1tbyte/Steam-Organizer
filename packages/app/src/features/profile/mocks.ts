@@ -13,6 +13,8 @@ export interface ProfileSample {
 /** Stands in for an account's own password; the vault would check a key derived from it. */
 export const DEMO_ACCOUNT_PASSWORD = 'demo'
 
+const DAY_MS = 86_400_000
+
 function fields(...pairs: [CredentialKind, string][]): CredentialField[] {
     return pairs.map(([kind, value]) => ({ kind, value }))
 }
@@ -41,7 +43,7 @@ const SAMPLE_PROFILES: Record<string, ProfileData> = {
         vanity: 'kyzzdef',
         stats: stats(5, 140, 67, 13876, 103, 1498.87, '100+', 37),
         banDetails: {},
-        lastBan: null,
+        lastBanAt: null,
         lock: null,
         revocationCode: 'R38214',
         credentials: {
@@ -79,7 +81,7 @@ const SAMPLE_PROFILES: Record<string, ProfileData> = {
             community: 'Since 12 Mar 2026',
             economy: 'Until 4 Dec 2026',
         },
-        lastBan: '222 days ago',
+        lastBanAt: Date.now() - 222 * DAY_MS,
         lock: { scope: 'credentials', recovery: true },
         revocationCode: null,
         credentials: {
@@ -103,7 +105,7 @@ const SAMPLE_PROFILES: Record<string, ProfileData> = {
         vanity: 'starwave',
         stats: stats(5, 212, 180, 4102, 9, 96.1, '100+', 3),
         banDetails: {},
-        lastBan: null,
+        lastBanAt: null,
         lock: { scope: 'everything', recovery: false },
         revocationCode: 'R70926',
         credentials: {
@@ -130,7 +132,7 @@ function derive(account: Account): ProfileData {
         visibility: ['public', 'friends', 'private'][
             seed % 3
         ] as ProfileData['visibility'],
-        registered: Date.parse(`1 ${account.since}`) || 0,
+        registered: Date.parse(`1 ${account.since}`) || null,
         vanity:
             account.anonymous || seed % 3 === 0
                 ? null
@@ -146,8 +148,10 @@ function derive(account: Account): ProfileData {
             seed % 80,
         ),
         banDetails: {},
-        lastBan:
-            account.bans.length > 0 ? `${100 + (seed % 400)} days ago` : null,
+        lastBanAt:
+            account.bans.length > 0
+                ? Date.now() - (100 + (seed % 400)) * DAY_MS
+                : null,
         lock:
             account.lock ??
             (account.locked ? { scope: 'credentials', recovery: true } : null),
@@ -206,7 +210,7 @@ export const profileMock = defineMock<ProfileSample>(
                     vac: 'Since 3 Jun 2019',
                     economy: 'Until 4 Dec 2026',
                 },
-                lastBan: '222 days ago',
+                lastBanAt: Date.now() - 222 * DAY_MS,
             }),
         },
         'No Steam Guard': { account: { guard: false } },

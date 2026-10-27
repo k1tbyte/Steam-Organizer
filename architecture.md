@@ -242,6 +242,7 @@ The old backend aggregated these calls and cached prices server-side for all use
 
 - Web API calls go through `steamApi(fetch, key)` in `core/steam`; a failure is a `SteamError`: `no-key` (no request made), `bad-key` (401/403), `offline` (fetch failed), `rate-limit` (429), `server` (anything else). The extension holds `api.steampowered.com` in `host_permissions`.
 - Add resolves the identifier locally (friend codes included) or by `ResolveVanityURL`, then reads summaries, bans and the level of a public profile; a failure blocks Add with Retry or a link to the key.
+- A refresh writes only `steam` (`useSteamRefresh`): an everything-locked account refreshes only while open, through `joinAccount` / `splitAccount`. Avatars load from `avatars.steamstatic.com` by the stored hash (`avatarUrl`).
 - Store API limit ~200 req / 5 min per IP → batch appids + request queue.
 - Caches live in IndexedDB beside the vault, never in its records (unlock stays fast), in two levels matched by id:
   - per account: `games` (`appId`, playtime, last played) and `friends` (`steamId`, since);

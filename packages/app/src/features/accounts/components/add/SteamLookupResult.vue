@@ -38,7 +38,7 @@ const { t } = useI18n()
         <FpButton v-else size="sm" variant="soft" :label="t('Open Settings')" @click="$emit('openSettings')" />
     </div>
     <div v-else-if="profile" class="flex h-14 items-center gap-3 rounded bg-surface-hi px-3">
-        <LevelAvatar size="sm" ring :name="profile.nickname" :hue="profile.hue" :level="profile.level" />
+        <LevelAvatar size="sm" ring :name="profile.nickname" :hue="profile.hue" :avatar="profile.avatar" :level="profile.level" />
         <span class="flex min-w-0 flex-1 flex-col gap-0.5">
             <span class="truncate font-semibold text-13.5 text-fg-1">{{ profile.nickname }}</span>
             <span class="truncate font-mono text-12 text-fg-3">{{ profile.summary }}</span>

@@ -14,7 +14,7 @@ const { t } = useI18n()
     <FpModal v-model:open="dialog.open" :title="t('Change account password')" width="min(92vw, 30rem)">
         <form id="account-password" class="flex flex-col gap-4" @submit.prevent="dialog.change">
             <div class="flex items-center gap-3 rounded bg-surface-hi px-3 py-2.5">
-                <LevelAvatar size="sm" :name="account.nickname" :hue="account.hue" :level="account.level" :anonymous="account.anonymous" />
+                <LevelAvatar size="sm" :name="account.nickname" :hue="account.hue" :avatar="account.avatar" :level="account.level" :anonymous="account.anonymous" />
                 <span class="min-w-0 flex-1 truncate font-semibold text-14 text-fg-1">{{ account.nickname }}</span>
                 <FpIcon name="icon-[lucide--lock]" class="text-fg-3" />
             </div>

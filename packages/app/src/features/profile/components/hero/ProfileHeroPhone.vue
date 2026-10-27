@@ -41,6 +41,7 @@ const editTags = (event: MouseEvent) => emit('editTags', event.currentTarget as 
                 size="lg"
                 :name="account.nickname"
                 :hue="account.hue"
+                :avatar="account.avatar"
                 :level="account.level"
                 :anonymous="account.anonymous"
                 :ring="!gate.hidesProfile" />
@@ -51,8 +52,8 @@ const editTags = (event: MouseEvent) => emit('editTags', event.currentTarget as 
                         {{ gate.chip.label }}
                     </ProfileChip>
                     <template v-if="!gate.hidesProfile && !account.anonymous">
-                        <AgeChip size="md" :years="account.years" :since="account.since" />
-                        <ProfileChip v-if="!gate.chip" size="lg" :icon="header.visibility.icon">
+                        <AgeChip v-if="account.since" size="md" :years="account.years" :since="account.since" />
+                        <ProfileChip v-if="!gate.chip && header.visibility" size="lg" :icon="header.visibility.icon">
                             {{ header.visibility.label }}
                         </ProfileChip>
                         <ProfileChip size="lg" :tone="bans.banned ? 'danger' : 'success'" :icon="bans.icon">

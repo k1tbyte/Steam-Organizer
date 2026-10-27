@@ -4,21 +4,24 @@ import { useI18n } from 'vue-i18n'
 import type { ProfileData } from '../model'
 import { stampParts } from '../services/stamps'
 
-/** The six Community tiles from the profile's Steam stats. */
+/** The six Community tiles from the profile's Steam stats; none without them. */
 export function useCommunity(details: MaybeRefOrGetter<ProfileData>) {
     const { t, locale } = useI18n()
 
     const tiles = computed(() => {
         const { stats, registered } = toValue(details)
+        if (!stats) return []
         const number = new Intl.NumberFormat(locale.value)
         const playedShare =
             stats.games === 0 ? 0 : (stats.played / stats.games) * 100
-        const since = stampParts(registered, Date.now(), locale.value).date
+        const since =
+            registered !== null &&
+            stampParts(registered, Date.now(), locale.value).date
         return [
             {
                 label: t('Years of service'),
                 value: number.format(stats.years),
-                sub: t('Since {date}', { date: since }),
+                sub: since ? t('Since {date}', { date: since }) : undefined,
             },
             {
                 label: t('Games'),

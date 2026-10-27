@@ -41,13 +41,14 @@ const editTags = (event: MouseEvent) => emit('editTags', event.currentTarget as 
                 size="xl"
                 :name="account.nickname"
                 :hue="account.hue"
+                :avatar="account.avatar"
                 :level="account.level"
                 :anonymous="account.anonymous"
                 :ring="!gate.hidesProfile" />
             <div class="flex min-w-0 flex-1 flex-col gap-2.5">
                 <AliasTitle :account="account" :editor="alias" :touch="false">
                     <ProfileChip v-if="gate.chip" v-bind="tip(t('Account has its own password'))" tone="accent" :icon="gate.chip.icon">{{ gate.chip.label }}</ProfileChip>
-                    <ProfileChip v-if="!gate.hidesProfile && !account.anonymous" v-bind="tip(t('Profile visibility'))" :icon="header.visibility.icon">{{ header.visibility.label }}</ProfileChip>
+                    <ProfileChip v-if="!gate.hidesProfile && header.visibility" v-bind="tip(t('Profile visibility'))" :icon="header.visibility.icon">{{ header.visibility.label }}</ProfileChip>
                     <FpButton
                         v-if="!gate.hidesProfile"
                         v-bind="tip(account.pinned ? t('Unpin') : t('Pin'))"
@@ -63,8 +64,8 @@ const editTags = (event: MouseEvent) => emit('editTags', event.currentTarget as 
                 </AliasTitle>
                 <template v-if="!gate.hidesProfile">
                     <div class="flex flex-wrap items-center gap-1.5">
-                        <AgeChip v-if="!account.anonymous" size="md" :years="account.years" :since="account.since" />
-                        <span v-if="!account.anonymous" class="mr-1.5 text-12.5 text-fg-3">
+                        <AgeChip v-if="account.since" size="md" :years="account.years" :since="account.since" />
+                        <span v-if="account.since" class="mr-1.5 text-12.5 text-fg-3">
                             {{ t('since {since}', { since: account.since }) }}
                         </span>
                         <AccountTagChip v-for="tag in account.tags" :key="tag.id" :tag="tag" />

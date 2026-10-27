@@ -70,7 +70,8 @@ export function useAccountCard(
         pinInset: computed(() => cornerInsetCss(props.touch)),
         rows: computed(() => cardRows(props.touch)),
         showLevel: computed(() => props.flags.level && steam.value),
-        showAge: computed(() => props.flags.age && steam.value),
+        // A private profile may hide its registration.
+        showAge: computed(() => props.flags.age && props.account.since !== ''),
         showId: computed(() => props.flags.id),
         showBans: computed(() => props.flags.bans && steam.value),
         // An everything lock seals the tags with the rest: nothing to show or edit.

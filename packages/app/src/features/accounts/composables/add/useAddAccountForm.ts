@@ -187,6 +187,7 @@ export function useAddAccountForm(open: Ref<boolean>) {
             return {
                 nickname: profile.nickname,
                 hue: hueOf(found.value.steamId),
+                avatar: profile.avatar,
                 level: profile.level,
                 clean: bans.length === 0,
                 summary: [level, ...age, visibility].join(' · '),

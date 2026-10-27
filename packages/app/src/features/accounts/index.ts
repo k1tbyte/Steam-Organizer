@@ -7,6 +7,7 @@ export { default as RemoveAccountsDialog } from './components/remove/RemoveAccou
 export { default as AccountTagPicker } from './components/tags/AccountTagPicker.vue'
 export { default as TagSwatches } from './components/tags/TagSwatches.vue'
 export { useFieldPlacement } from './composables/fields/useFieldPlacement'
+export { useSteamRefresh } from './composables/refresh/useSteamRefresh'
 export { useAccountLocks } from './composables/secrets/useAccountLocks'
 export { useAccountLogin } from './composables/secrets/useAccountLogin'
 export { useAccountPassword } from './composables/secrets/useAccountPassword'

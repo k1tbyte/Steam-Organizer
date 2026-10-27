@@ -58,7 +58,12 @@ export {
     type SteamErrorKind,
     steamApi,
 } from './steam/api'
-export { checkKey, fetchProfiles, resolveSteamId } from './steam/profiles'
+export {
+    avatarUrl,
+    checkKey,
+    fetchProfiles,
+    resolveSteamId,
+} from './steam/profiles'
 export {
     detectSteamId,
     parseAccountId,

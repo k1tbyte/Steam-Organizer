@@ -47,14 +47,17 @@ export interface ProfileStats {
 
 /** What the profile shows beyond the vault's `Account`: Steam data and the account's own lock. */
 export interface ProfileData {
-    visibility: Visibility
-    /** Epoch ms of the Steam registration. */
-    registered: number
+    /** null before the first refresh from Steam. */
+    visibility: Visibility | null
+    /** Epoch ms of the Steam registration; null when the profile hides it. */
+    registered: number | null
     vanity: string | null
-    stats: ProfileStats
+    /** null until the games and friends arrive. */
+    stats: ProfileStats | null
     /** Per active ban: since or until when ("Since 12 Mar 2026"). */
     banDetails: Partial<Record<BanKind, string>>
-    lastBan: string | null
+    /** Epoch ms of the latest ban. */
+    lastBanAt: number | null
     lock: LockInfo | null
     credentials: AccountCredentials
     /** The authenticator's revocation code; null without an authenticator. */

@@ -40,7 +40,7 @@ const noRecovery = computed(() =>
 <template>
     <form id="lock-account" class="flex flex-col gap-4.5" @submit.prevent="dialog.lock">
         <div class="flex items-center gap-3 rounded bg-surface-hi px-3 py-2.5">
-            <LevelAvatar size="sm" :name="account.nickname" :hue="account.hue" :level="account.level" :anonymous="account.anonymous" />
+            <LevelAvatar size="sm" :name="account.nickname" :hue="account.hue" :avatar="account.avatar" :level="account.level" :anonymous="account.anonymous" />
             <div class="flex min-w-0 flex-1 flex-col gap-px">
                 <span class="truncate font-semibold text-14 text-fg-1">{{ account.nickname }}</span>
                 <span class="text-12.5 text-fg-3">{{ t('Asked every time, even with the vault unlocked') }}</span>

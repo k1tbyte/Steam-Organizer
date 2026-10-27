@@ -33,7 +33,7 @@ const emit = defineEmits<{ lock: [] }>()
             <NoteSection v-if="!gate.locked" class="max-lg:order-last" :account="account" />
         </div>
         <div v-if="!account.anonymous" class="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-u-4">
-            <CommunitySection :details="details" />
+            <CommunitySection v-if="details.stats" :details="details" />
             <BansSection :class="bans.banned && 'lg:order-first'" :bans="bans" />
         </div>
     </div>

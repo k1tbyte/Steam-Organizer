@@ -13,6 +13,7 @@ import { useAccountPasswordDialog } from '../composables/lock/useAccountPassword
 import { useLockDialog } from '../composables/lock/useLockDialog'
 import { useBans } from '../composables/useBans'
 import type { ProfileIntent } from '../composables/useProfileMenu'
+import { useProfileRefresh } from '../composables/useProfileRefresh'
 import { useProfileTabs } from '../composables/useProfileTabs'
 import type { ProfileData } from '../model'
 import RemoveAuthenticatorDialog from './guard/RemoveAuthenticatorDialog.vue'
@@ -61,6 +62,12 @@ const tabs = reactive(
         { icons: desktop, guardHidden: () => gate.locked },
     ),
 )
+const steam = reactive(
+    useProfileRefresh(
+        () => props.account,
+        () => gate.hidesProfile,
+    ),
+)
 const lockDialog = reactive(useLockDialog(() => props.account.id))
 const passwordDialog = reactive(useAccountPasswordDialog(() => props.account))
 const authenticator = reactive(useAuthenticator(() => props.account))
@@ -87,7 +94,9 @@ const alias = reactive(
     <ProfileTopbar
         :nickname="account.nickname"
         :has-lock="details.lock !== null"
-        :refreshable="!gate.hidesProfile"
+        :refreshable="steam.refreshable"
+        :refreshing="steam.refreshing"
+        @refresh="steam.refresh"
         @lock="lockDialog.show"
         @intent="onIntent" />
 
