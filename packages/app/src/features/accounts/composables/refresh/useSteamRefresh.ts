@@ -17,6 +17,11 @@ import { useSteamApi } from '#features/steam'
 import { useVaultSession } from '#features/vault'
 
 type Profile = { steamId: string; steam: SteamSnapshot }
+export interface RefreshTarget {
+    id: string
+    steamId: string
+    refreshedAt: number | null
+}
 type Fresh = Map<string, Profile>
 
 /** A Steam ID changed meanwhile, or a refresh started later already landed. */
@@ -30,8 +35,9 @@ export function useSteamRefresh() {
     const session = useVaultSession()
     const steam = useSteamApi()
 
-    async function steamIdsOf(ids: readonly string[]) {
-        const found = new Map<string, string>()
+    /** The accounts a refresh reaches now, with their last refresh. */
+    async function targets(ids: readonly string[]): Promise<RefreshTarget[]> {
+        const found: RefreshTarget[] = []
         for (const id of ids) {
             const data = readAccount(session.contents?.data.get(id))
             if (!data) continue
@@ -40,17 +46,25 @@ export function useSteamRefresh() {
                     ? (await session.secretOf<AccountSecret>(id))?.hidden
                     : undefined
             const steamId = hidden?.steamId ?? data.steamId
-            if (steamId) found.set(id, steamId)
+            const steam = hidden?.steam ?? data.steam
+            if (steamId)
+                found.push({
+                    id,
+                    steamId,
+                    refreshedAt: steam?.refreshedAt ?? null,
+                })
         }
         return found
     }
 
-    function write(fresh: Fresh) {
+    /** Resolves to how many accounts it wrote: one deleted, relocked or changed meanwhile is left as it was. */
+    async function write(fresh: Fresh) {
         // Taken now, as `transact` takes the vault key: a relock while queued still lets the write land.
         const keys = new Map(
             [...fresh.keys()].map((id) => [id, session.keyOf(id)]),
         )
-        return session.transact(async (contents, key) => {
+        let count = 0
+        await session.transact(async (contents, key) => {
             const updatedAt = Date.now()
             const placement = readSettings(
                 contents.data.get(SETTINGS_ID),
@@ -96,28 +110,33 @@ export function useSteamRefresh() {
                     ]
                 }),
             )
-            return written.flat()
+            const records = written.flat()
+            count = records.length
+            return records
         })
+        return count
     }
 
     return {
         reachable: steam.reachable,
-        /** Resolves to the accounts Steam has no profile for now; rejects with a `SteamError`. */
-        async refresh(ids: readonly string[]): Promise<string[]> {
-            const steamIds = await steamIdsOf(ids)
-            if (steamIds.size === 0) return []
+        targets,
+        /** Resolves to how many it wrote and the accounts Steam has no profile for now; rejects with a `SteamError`. */
+        async refresh(
+            ids: readonly string[],
+        ): Promise<{ updated: number; missing: string[] }> {
+            const found = await targets(ids)
+            if (found.length === 0) return { updated: 0, missing: [] }
             const profiles = await fetchProfiles(await steam.api(), [
-                ...new Set(steamIds.values()),
+                ...new Set(found.map((target) => target.steamId)),
             ])
             const fresh: Fresh = new Map()
             const missing: string[] = []
-            for (const [id, steamId] of steamIds) {
+            for (const { id, steamId } of found) {
                 const profile = profiles.get(steamId)
                 if (profile) fresh.set(id, { steamId, steam: profile })
                 else missing.push(id)
             }
-            await write(fresh)
-            return missing
+            return { updated: await write(fresh), missing }
         },
     }
 }

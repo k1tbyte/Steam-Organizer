@@ -1,6 +1,6 @@
 import { defineMock } from '#core'
 
-import type { Account, AccountTag, BanKind, RefreshProgress } from './model'
+import type { Account, AccountTag, BanKind } from './model'
 
 /** What Copy password puts on the clipboard and a fill types: no vault is decrypted yet. */
 export const DEMO_STEAM_PASSWORD = '********'
@@ -291,14 +291,5 @@ export const accountsMock = defineMock<AccountsSample>(
             tags: TAGS,
         },
         'Anonymous only': { accounts: ANONYMOUS, tags: TAGS },
-    },
-)
-
-export const refreshMock = defineMock<RefreshProgress | null>(
-    'accounts.refresh',
-    'Refresh in flight',
-    {
-        'Eight left': { remaining: 8, progress: 0.62 },
-        Idle: null,
     },
 )

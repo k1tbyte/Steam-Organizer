@@ -6,17 +6,19 @@ import { useI18n } from 'vue-i18n'
 import { useScrollTop } from '#core'
 
 import { useEditMode } from '../../composables/edit/useEditMode'
+import { useBulkRefresh } from '../../composables/refresh/useBulkRefresh'
 import EditBar from '../edit/EditBar.vue'
 import TagFilterMenu from '../tags/TagFilterMenu.vue'
 import BanFilterChips from './BanFilterChips.vue'
 import CardFieldsPanel from './CardFieldsPanel.vue'
 import SortMenu from './SortMenu.vue'
 
-defineEmits<{ refreshAll: []; importExport: [] }>()
+defineEmits<{ importExport: [] }>()
 
 const { t } = useI18n()
 const desktop = useDesktopLayout()
 const edit = useEditMode()
+const bulk = useBulkRefresh()
 
 // Transparent at the page top, as in the mockup; the rail's surface once the list scrolls.
 const top = useScrollTop()
@@ -46,12 +48,14 @@ const scrolled = computed(() => top.value > 0)
                 <FpIcon name="icon-[lucide--square-pen]" />
             </FpButton>
             <FpButton
+                v-if="bulk.available"
                 v-bind="tip(t('Refresh all'), { label: true })"
                 square
                 size="sm"
                 variant="ghost"
                 class="text-fg-3!"
-                @click="$emit('refreshAll')">
+                :disabled="bulk.running.value"
+                @click="bulk.refreshAll">
                 <FpIcon name="icon-[lucide--refresh-cw]" />
             </FpButton>
             <FpButton
@@ -80,6 +84,17 @@ const scrolled = computed(() => top.value > 0)
                 class="shrink-0 text-fg-3!"
                 @click="edit.show()">
                 <FpIcon name="icon-[lucide--square-pen]" />
+            </FpButton>
+            <FpButton
+                v-if="bulk.available"
+                :aria-label="t('Refresh all')"
+                square
+                size="sm"
+                variant="ghost"
+                class="shrink-0 text-fg-3!"
+                :disabled="bulk.running.value"
+                @click="bulk.refreshAll">
+                <FpIcon name="icon-[lucide--refresh-cw]" />
             </FpButton>
         </div>
     </div>

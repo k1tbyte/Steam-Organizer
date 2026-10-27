@@ -79,7 +79,10 @@ it('writes the profile without touching editedAt, and names the accounts Steam l
     const { ids, data } = await vaultWith(KNOWN, GONE)
     const [known, gone] = ids as [string, string]
     const edited = data(known)?.editedAt
-    expect(await useSteamRefresh().refresh(ids)).toEqual([gone])
+    expect(await useSteamRefresh().refresh(ids)).toEqual({
+        updated: 1,
+        missing: [gone],
+    })
     expect(data(known)).toMatchObject({
         editedAt: edited,
         steam: { nickname: 'Fresh', avatar: 'abc' },
@@ -93,7 +96,10 @@ it('refreshes an everything-locked account only while it is open', async () => {
     const locks = useAccountLocks()
     await locks.setLock(id, '1234', 'everything', false)
 
-    expect(await useSteamRefresh().refresh([id])).toEqual([])
+    expect(await useSteamRefresh().refresh([id])).toEqual({
+        updated: 1,
+        missing: [],
+    })
     expect(session.contents?.data.get(id)).not.toHaveProperty('steam')
     expect(data(id)?.lock?.shown).toEqual({ nickname: 'Fresh', avatar: 'abc' })
     const secret = await session.secretOf<AccountSecret>(id)
@@ -101,7 +107,10 @@ it('refreshes an everything-locked account only while it is open', async () => {
 
     locks.relock(id)
     const before = session.contents?.records.find((record) => record.id === id)
-    expect(await useSteamRefresh().refresh([id])).toEqual([])
+    expect(await useSteamRefresh().refresh([id])).toEqual({
+        updated: 0,
+        missing: [],
+    })
     expect(session.contents?.records.find((record) => record.id === id)).toBe(
         before,
     )

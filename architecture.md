@@ -248,7 +248,7 @@ The old backend aggregated these calls and cached prices server-side for all use
   - per account: `games` (`appId`, playtime, last played) and `friends` (`steamId`, since);
   - shared: `apps[appId]` (name, image, price per currency, `fetchedAt`) and `profiles[steamId]` (friends outside the vault). Refreshing one account updates them for all.
   - TTL per entry; the user can sync them as a separate file next to the vault, sealed with the vault key (libraries and friends are personal). `steam.stats` in the record is computed from them at refresh, so the read-only web shows it without caches.
-- Batch refresh of many accounts streams results into UI as they arrive.
+- Bulk refresh runs in batches of 25, each one vault write, so cards update as batches land; Refresh all skips accounts refreshed within the hour.
 
 ---
 

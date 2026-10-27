@@ -9,6 +9,7 @@ import { NotificationsBell } from '#features/notifications'
 import { useAddAccountOverlay } from '../../composables/add/useAddAccountOverlay'
 import { useAccountsFilters } from '../../composables/list/useAccountsFilters'
 import { useAccountsList } from '../../composables/list/useAccountsList'
+import { useBulkRefresh } from '../../composables/refresh/useBulkRefresh'
 import { useRemoveAccounts } from '../../composables/useRemoveAccounts'
 import AddAccountOverlay from '../add/AddAccountOverlay.vue'
 import AccountsEditGrid from '../edit/AccountsEditGrid.vue'
@@ -24,6 +25,7 @@ const list = useAccountsList()
 const { resetFilters } = useAccountsFilters()
 const addOverlay = useAddAccountOverlay()
 const removal = reactive(useRemoveAccounts())
+const bulk = reactive(useBulkRefresh())
 </script>
 
 <template>
@@ -32,9 +34,11 @@ const removal = reactive(useRemoveAccounts())
         <template #center><AccountsSearch /></template>
         <template #actions>
             <RefreshActivity
-                v-if="list.refresh.value"
-                :remaining="list.refresh.value.remaining"
-                :progress="list.refresh.value.progress" />
+                v-if="bulk.progress"
+                :remaining="bulk.progress.remaining"
+                :progress="bulk.progress.progress"
+                :stopping="bulk.stopping"
+                @stop="bulk.stop" />
             <NotificationsBell />
             <FpButton v-if="desktop" color="accent" @click="addOverlay.show()">
                 <FpIcon name="icon-[lucide--plus]" />

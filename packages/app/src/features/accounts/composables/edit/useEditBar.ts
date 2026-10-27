@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 import { usePageActive } from '#core'
 
+import { useBulkRefresh } from '../refresh/useBulkRefresh'
 import { useVaultAccounts } from '../useVaultAccounts'
 import { useEditMode } from './useEditMode'
 import { useEditSelection } from './useEditSelection'
@@ -12,10 +13,9 @@ import { useEditSelection } from './useEditSelection'
 // Esc there belongs to the overlay.
 const OVERLAY = '[role="dialog"], [role="menu"], [role="listbox"]'
 
-/** What the bar does with the picked accounts; refresh and export have no listener yet. */
+/** What the bar does with the picked accounts; export has no listener yet. */
 export interface BatchIntents {
     editTags: (ids: string[]) => void
-    refresh: (ids: string[]) => void
     export: (ids: string[]) => void
     delete: (ids: string[]) => void
 }
@@ -28,6 +28,7 @@ export function useEditBar(intents: BatchIntents) {
     const mode = useEditMode()
     const selection = useEditSelection()
     const vault = useVaultAccounts()
+    const bulk = useBulkRefresh()
     const active = usePageActive()
     const inOverlay = (event: KeyboardEvent) =>
         event.target instanceof Element && event.target.closest(OVERLAY)
@@ -89,12 +90,17 @@ export function useEditBar(intents: BatchIntents) {
                     opens: true,
                     onSelect: act(intents.editTags),
                 },
-                {
-                    label: t('Refresh from Steam'),
-                    icon: 'icon-[lucide--refresh-cw]',
-                    disabled,
-                    onSelect: act(intents.refresh),
-                },
+                // Web can't reach Steam.
+                ...(bulk.available
+                    ? [
+                          {
+                              label: t('Refresh from Steam'),
+                              icon: 'icon-[lucide--refresh-cw]',
+                              disabled: disabled || bulk.running.value,
+                              onSelect: act(bulk.refreshPicked),
+                          },
+                      ]
+                    : []),
                 {
                     label: t('Export'),
                     icon: 'icon-[lucide--download]',

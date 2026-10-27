@@ -10,10 +10,7 @@ import RemoveAccountsDialog from '../remove/RemoveAccountsDialog.vue'
 import BatchTagPicker from '../tags/BatchTagPicker.vue'
 import TagFilterMenu from '../tags/TagFilterMenu.vue'
 
-const emit = defineEmits<{
-    refresh: [ids: string[]]
-    export: [ids: string[]]
-}>()
+const emit = defineEmits<{ export: [ids: string[]] }>()
 
 const { t } = useI18n()
 const removal = reactive(useRemoveAccounts())
@@ -26,7 +23,6 @@ const bar = useEditBar({
         tagging.value = ids
         tagsOpen.value = true
     },
-    refresh: (ids) => emit('refresh', ids),
     export: (ids) => emit('export', ids),
     delete: removal.ask,
 })

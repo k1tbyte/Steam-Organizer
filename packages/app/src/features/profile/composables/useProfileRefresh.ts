@@ -31,7 +31,7 @@ export function useProfileRefresh(
         if (refreshing.value) return
         refreshing.value = true
         try {
-            const missing = await steam.refresh([toValue(account).id])
+            const { missing } = await steam.refresh([toValue(account).id])
             if (missing.length > 0 && !left)
                 toast.add({
                     title: t('Steam has no profile with this ID'),

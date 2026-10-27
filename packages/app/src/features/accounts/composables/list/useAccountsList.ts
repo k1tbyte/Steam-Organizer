@@ -2,9 +2,6 @@ import { type AsyncStatus, useDesktopLayout } from '@so/ui'
 import { storeToRefs } from 'pinia'
 import { computed, watch } from 'vue'
 
-import { useMock } from '#core'
-
-import { refreshMock } from '../../mocks'
 import {
     filterAccounts,
     searchFieldIn,
@@ -26,8 +23,6 @@ export function useAccountsList() {
     const { tags } = useVaultTags()
     const { placement } = useFieldPlacement()
     const edit = useEditMode()
-    // The bulk refresh in flight has no source yet.
-    const refresh = useMock(() => undefined, refreshMock)
     // Edit mode moves accounts in the vault order: the search and filters apply, the sort waits.
     const visible = computed(() => {
         const shown = filterAccounts(accounts.value, {
@@ -51,7 +46,6 @@ export function useAccountsList() {
 
     return {
         vaultEmpty,
-        refresh,
         pinned: computed(() => visible.value.filter((a) => a.pinned)),
         rest: computed(() => visible.value.filter((a) => !a.pinned)),
         // Phones show what is left; desktop also shows what the vault holds.
