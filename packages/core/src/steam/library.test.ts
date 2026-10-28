@@ -182,3 +182,22 @@ it('keeps a collection only for the vault that sealed it, and only while asked t
     await steamCache.forgetCollection('a1')
     expect(changed).toEqual(['a2', 'a1', 'a1'])
 })
+
+it('prunes collections of accounts gone from the vault, leaving other vaults alone', async () => {
+    const { key } = await createVault('first')
+    const { key: other } = await createVault('second')
+    const entry = { games: [], friends: null, fetchedAt: 1 }
+    for (const id of ['kept', 'gone', 'added'])
+        await steamCache.putCollection(key, id, entry, () => true)
+    await steamCache.putCollection(other, 'theirs', entry, () => true)
+    let asked = 0
+    // 'added' joins the vault between the read and the write.
+    await steamCache.pruneCollections(
+        key,
+        (id) => id === 'kept' || (id === 'added' && asked++ > 0),
+    )
+    expect(await steamCache.collection(key, 'kept')).toEqual(entry)
+    expect(await steamCache.collection(key, 'added')).toEqual(entry)
+    expect(await steamCache.collection(key, 'gone')).toBeNull()
+    expect(await steamCache.collection(other, 'theirs')).toEqual(entry)
+})

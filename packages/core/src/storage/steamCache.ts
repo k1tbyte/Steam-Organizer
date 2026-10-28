@@ -67,6 +67,18 @@ export const steamCache = {
         await db.write(ACCOUNTS, (store) => store.delete(id))
         changed(id)
     },
+    /** Drops the collections `key` sealed for accounts `held` no longer has; another vault's stay, as they don't open. */
+    async pruneCollections(key: VaultKey, held: (id: string) => boolean) {
+        const ids = await db.read(ACCOUNTS, (store) => store.getAllKeys())
+        for (const id of ids as string[]) {
+            if (held(id) || !(await steamCache.collection(key, id))) continue
+            // Asked again as the write starts: an account added meanwhile keeps its new entry.
+            await db.write(ACCOUNTS, (store) => {
+                if (!held(id)) store.delete(id)
+            })
+            changed(id)
+        }
+    },
     /** Calls `listener` with an account's id once its collection is written or dropped; returns the unsubscribe. */
     onCollection(listener: (id: string) => void) {
         listeners.add(listener)

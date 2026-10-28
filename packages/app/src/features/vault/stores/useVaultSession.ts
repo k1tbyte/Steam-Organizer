@@ -4,6 +4,7 @@ import {
     changePassword as rewrapPassword,
     type SealedRecord,
     type StoredVault,
+    steamCache,
     unlockVault,
     type VaultFile,
     type VaultKey,
@@ -163,11 +164,23 @@ export const useVaultSession = defineStore('vault-session', () => {
                     await vaultStore.put(current)
                     remember(current)
                 }
-                opened.value = {
+                const opening = {
                     vault: current,
                     key: upgraded?.key ?? key,
                     contents,
                 }
+                opened.value = opening
+                // Accounts deleted before this unlock leave their Steam cache; one deleted since may yet come back by Undo,
+                // and a lock or another vault keeps all.
+                steamCache
+                    .pruneCollections(
+                        opening.key,
+                        (id) =>
+                            contents.data.has(id) ||
+                            opened.value?.key !== opening.key ||
+                            opened.value.contents.data.has(id),
+                    )
+                    .catch((error) => reportError(error, 'steam-cache'))
                 return 'opened'
             } catch (error) {
                 reportError(error, 'vault-session', { vault: vault.id })

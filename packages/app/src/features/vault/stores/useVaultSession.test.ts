@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto'
 
-import { sealRecord } from '@so/core'
+import { sealRecord, steamCache, type VaultKey } from '@so/core'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, expect, it } from 'vitest'
 
@@ -106,4 +106,29 @@ it('opens one record secret on demand', async () => {
     ])
     expect(await session.secretOf('r1')).toEqual({ password: 'pw' })
     expect(await session.secretOf('missing')).toBeUndefined()
+})
+
+it('drops on unlock the Steam cache of accounts the vault no longer has', async () => {
+    const session = await reload()
+    await session.create('Main', PASSWORD)
+    const entry = { games: [], friends: null, fetchedAt: 1 }
+    let sealedWith: VaultKey | undefined
+    await session.transact(async (_contents, key) => {
+        sealedWith = key
+        for (const id of ['r1', 'gone'])
+            await steamCache.putCollection(key, id, entry, () => true)
+        return [await sealRecord(key, { id: 'r1', updatedAt: 1, data: {} })]
+    })
+    const reloaded = await reload()
+    const dropped = new Promise((resolve) => {
+        const stop = steamCache.onCollection((id) => {
+            stop()
+            resolve(id)
+        })
+    })
+    await reloaded.unlock({ method: 'pw', password: PASSWORD })
+    expect(await dropped).toBe('gone')
+    const key = sealedWith as VaultKey
+    expect(await steamCache.collection(key, 'r1')).toEqual(entry)
+    expect(await steamCache.collection(key, 'gone')).toBeNull()
 })
