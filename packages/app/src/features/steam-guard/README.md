@@ -7,6 +7,7 @@ The Steam Guard control other screens place: a code masked until held, a 30s cou
 - A code comes from the authenticator the vault keeps for the account (`secretOf`): opened per call, only while held or copied, never cached. An id the vault does not hold is a sample and gets the demo code.
 - `useGuardClock` is one 1s clock for every mounted code, so a list of cards runs one interval; it stops with the last reader.
 - `services/guardCode.ts` holds the 30s window math, Steam's TOTP and the demo code.
+- Codes and the clock run on Steam's time (`services/steamClock.ts`: `steamNow`, synced by `useGuardCodes` at most hourly through `steamClockOffset` from `@so/core`; a code of this instant waits for a read in flight, 3 s at most). Web and the autofill content script cannot reach `QueryTime` and stay on the device clock.
 - `readMaFile` reads an SDA maFile (null without `shared_secret`; the SteamID64 is taken from the text, past JSON's number precision); `useMaFile(login)` holds a picked file and its problem (`broken`, or `another` when `account_name` differs from the login). The Add form and the profile import through it.
 
 ## Mocks

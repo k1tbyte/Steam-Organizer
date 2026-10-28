@@ -240,6 +240,7 @@ The old backend aggregated these calls and cached prices server-side for all use
 | Server time (TOTP) | `POST ITwoFactorService/QueryTime/v1` |
 | Prices | `store.steampowered.com/api/appdetails?filters=price_overview&appids=...` |
 
+- Steam Guard codes run on Steam's clock: `steamClockOffset` reads `QueryTime` (keyless, POST, no CORS) at most hourly where Steam is reachable; web and the autofill content script stay on the device clock.
 - Web API calls go through `steamApi(fetch, key)` in `core/steam`; a failure is a `SteamError`: `no-key` (no request made), `bad-key` (401/403), `offline` (fetch failed), `rate-limit` (429), `server` (anything else). The extension holds `api.steampowered.com` in `host_permissions`.
 - Add resolves the identifier locally (friend codes included) or by `ResolveVanityURL`, then reads summaries, bans, the level and collector badge (badge 13: Steam counts it apart from the library list) of a public profile; a failure blocks Add with Retry or a link to the key.
 - A refresh writes only `steam` (`useSteamRefresh`): an everything-locked account refreshes only while open, through `joinAccount` / `splitAccount`. Avatars load from `avatars.steamstatic.com` by the stored hash (`avatarUrl`).
@@ -284,7 +285,7 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 
 ### Phase 1: Core
 - [ ] `packages/core`: models, vault crypto (format v1), storage
-- [ ] Steam client: endpoints from 7, batching, caching
+- [x] Steam client: endpoints from 7, batching, caching
 - [ ] Drive sync over REST, per-half account merge, tombstone purge
 - [x] Steam ID conversions in core, CS2 friend code via MD5 (`@noble/hashes`)
 - [ ] Tests: crypto, Steam parsers, sync

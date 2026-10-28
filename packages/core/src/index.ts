@@ -84,6 +84,7 @@ export {
     vanityIn,
 } from './steam/steamId'
 export { libraryPrices } from './steam/store'
+export { steamClockOffset } from './steam/time'
 export { type CachedCollection, steamCache } from './storage/steamCache'
 export {
     type StoredVault,

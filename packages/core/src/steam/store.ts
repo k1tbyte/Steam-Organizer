@@ -1,5 +1,5 @@
 import { steamCache } from '../storage/steamCache'
-import { getJson } from './api'
+import { requestJson } from './api'
 import { STEAM_CURRENCIES, type SteamCurrency } from './currencies'
 
 const STORE = 'https://store.steampowered.com/api/appdetails'
@@ -21,7 +21,7 @@ async function fetchPrices(
     const prices = new Map<number, number | null>()
     for (let at = 0; at < appIds.length; at += BATCH) {
         const batch = appIds.slice(at, at + BATCH)
-        const details = await getJson<AppDetails>(
+        const details = await requestJson<AppDetails>(
             fetch,
             `${STORE}?${new URLSearchParams({ appids: batch.join(','), filters: 'price_overview', cc })}`,
             // The store has no key: a refusal is its rate limit.

@@ -2,7 +2,9 @@ import { computed, onScopeDispose, type Ref, shallowRef, watch } from 'vue'
 
 import { usePageActive } from '#core'
 
-const now = shallowRef(Date.now())
+import { steamNow } from '../services/steamClock'
+
+const now = shallowRef(steamNow())
 let users = 0
 let interval: ReturnType<typeof setInterval> | undefined
 
@@ -17,9 +19,9 @@ export function useGuardClock(): Readonly<Ref<number>> {
         if (!on) {
             if (--users === 0) clearInterval(interval)
         } else if (users++ === 0) {
-            now.value = Date.now()
+            now.value = steamNow()
             interval = setInterval(() => {
-                now.value = Date.now()
+                now.value = steamNow()
             }, 1000)
         }
     }

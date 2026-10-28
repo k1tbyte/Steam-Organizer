@@ -1,4 +1,4 @@
-const BASE = 'https://api.steampowered.com/'
+export const STEAM_API = 'https://api.steampowered.com/'
 
 /** A Web API key as Steam issues it: 32 hex digits. */
 export const isSteamKey = (key: string) => /^[0-9a-f]{32}$/i.test(key)
@@ -27,13 +27,13 @@ function failure(status: number): SteamErrorKind {
     return status === 429 ? 'rate-limit' : 'server'
 }
 
-/** One Steam GET, its failures as `SteamError`s. */
-export async function getJson<T>(
+/** One Steam request (a URL is a GET), its failures as `SteamError`s. */
+export async function requestJson<T>(
     fetch: typeof globalThis.fetch,
-    url: string,
+    request: string | Request,
     kindOf: (status: number) => SteamErrorKind = failure,
 ): Promise<T> {
-    const response = await fetch(url).catch(() => {
+    const response = await fetch(request).catch(() => {
         throw new SteamError('offline')
     })
     if (!response.ok) throw new SteamError(kindOf(response.status))
@@ -51,9 +51,9 @@ export function steamApi(
     return {
         async get<T>(path: string, params: Record<string, string>) {
             if (key === '') throw new SteamError('no-key')
-            return getJson<T>(
+            return requestJson<T>(
                 fetch,
-                `${BASE}${path}?${new URLSearchParams({ ...params, key })}`,
+                `${STEAM_API}${path}?${new URLSearchParams({ ...params, key })}`,
             )
         },
     }
