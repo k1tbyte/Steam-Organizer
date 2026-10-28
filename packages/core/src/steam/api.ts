@@ -27,6 +27,23 @@ function failure(status: number): SteamErrorKind {
     return status === 429 ? 'rate-limit' : 'server'
 }
 
+/** One Steam GET, its failures as `SteamError`s. */
+export async function getJson<T>(
+    fetch: typeof globalThis.fetch,
+    url: string,
+    kindOf: (status: number) => SteamErrorKind = failure,
+): Promise<T> {
+    const response = await fetch(url).catch(() => {
+        throw new SteamError('offline')
+    })
+    if (!response.ok) throw new SteamError(kindOf(response.status))
+    try {
+        return (await response.json()) as T
+    } catch {
+        throw new SteamError('server')
+    }
+}
+
 export function steamApi(
     fetch: typeof globalThis.fetch,
     key: string,
@@ -34,16 +51,10 @@ export function steamApi(
     return {
         async get<T>(path: string, params: Record<string, string>) {
             if (key === '') throw new SteamError('no-key')
-            const url = `${BASE}${path}?${new URLSearchParams({ ...params, key })}`
-            const response = await fetch(url).catch(() => {
-                throw new SteamError('offline')
-            })
-            if (!response.ok) throw new SteamError(failure(response.status))
-            try {
-                return (await response.json()) as T
-            } catch {
-                throw new SteamError('server')
-            }
+            return getJson<T>(
+                fetch,
+                `${BASE}${path}?${new URLSearchParams({ ...params, key })}`,
+            )
         },
     }
 }

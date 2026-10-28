@@ -7,6 +7,7 @@ import {
     FpIcon,
     FpInput,
     FpLabel,
+    FpSelect,
 } from '@so/ui'
 import { useId } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -59,6 +60,21 @@ const keyId = useId()
                 </FpInput>
             </FpFormField>
         </div>
+
+        <FpFormRow
+            plain
+            :label="t('Store currency')"
+            :description="t('Game prices and library value, from the next refresh')">
+            <div class="w-full sm:w-60">
+                <FpSelect
+                    size="sm"
+                    icon="icon-[lucide--coins]"
+                    :aria-label="t('Store currency')"
+                    :items="view.currencies.value"
+                    :model-value="view.currency.value"
+                    @update:model-value="view.setCurrency" />
+            </div>
+        </FpFormRow>
 
         <FpEyebrow class="ml-0! pt-2.5 pb-2">{{ t('Site access') }}</FpEyebrow>
         <FpFormRow

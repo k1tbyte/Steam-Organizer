@@ -4,7 +4,7 @@ import { parseAccountId, toSteamId64, vanityIn } from './steamId'
 
 // GetPlayerSummaries and GetPlayerBans take at most 100 ids.
 const BATCH = 100
-const LEVELS_AT_ONCE = 4
+const REQUESTS_AT_ONCE = 4
 
 interface Summary {
     steamid: string
@@ -59,21 +59,45 @@ function bansOf(bans: Bans | undefined): SteamBans {
     }
 }
 
-async function levelOf(api: SteamApi, steamid: string) {
-    const { response } = await api.get<{ response: { player_level?: number } }>(
-        'IPlayerService/GetSteamLevel/v1/',
-        { steamid },
-    )
-    return response.player_level ?? 0
+// The game collector badge's tiers below 1000 games; above, one per thousand.
+const BADGE_TIERS = [1, 5, 10, 25, 50, 100, 250, 500]
+const COLLECTOR_BADGE = 13
+
+function badgeOf(count: number) {
+    const tier =
+        count >= 1000
+            ? Math.floor(count / 1000) * 1000
+            : BADGE_TIERS.findLast((at) => count >= at)
+    return tier ? `${tier}+` : ''
 }
 
-async function eachLimited<T>(items: T[], run: (item: T) => Promise<void>) {
+// The collector badge counts games its own way, not as the library list does, so it comes from Steam.
+async function badgesOf(api: SteamApi, steamid: string) {
+    const { response } = await api.get<{
+        response: {
+            player_level?: number
+            badges?: { badgeid: number; level: number }[]
+        }
+    }>('IPlayerService/GetBadges/v1/', { steamid })
+    const collector = response.badges?.find(
+        (badge) => badge.badgeid === COLLECTOR_BADGE,
+    )
+    return {
+        level: response.player_level ?? 0,
+        badge: badgeOf(collector?.level ?? 0),
+    }
+}
+
+export async function eachLimited<T>(
+    items: T[],
+    run: (item: T) => Promise<void>,
+) {
     const queue = [...items]
     const worker = async () => {
         for (let item = queue.shift(); item; item = queue.shift())
             await run(item)
     }
-    await Promise.all(Array.from({ length: LEVELS_AT_ONCE }, worker))
+    await Promise.all(Array.from({ length: REQUESTS_AT_ONCE }, worker))
 }
 
 async function fetchBatch(
@@ -96,12 +120,12 @@ async function fetchBatch(
         bans.players.map((found) => [found.SteamId, found]),
     )
     const players = summaries.response.players
-    // A private profile hides its level: Steam answers it empty.
-    const levels = new Map<string, number>()
+    // A private profile hides its badges: Steam answers them empty.
+    const badges = new Map<string, { level: number; badge: string }>()
     await eachLimited(
         players.filter((player) => player.communityvisibilitystate === 3),
         async ({ steamid }) => {
-            levels.set(steamid, await levelOf(api, steamid))
+            badges.set(steamid, await badgesOf(api, steamid))
         },
     )
     for (const player of players)
@@ -109,7 +133,8 @@ async function fetchBatch(
             refreshedAt: now,
             nickname: player.personaname,
             avatar: player.avatarhash,
-            level: levels.get(player.steamid) ?? 0,
+            level: badges.get(player.steamid)?.level ?? 0,
+            badge: badges.get(player.steamid)?.badge ?? '',
             registeredAt: player.timecreated ? player.timecreated * 1000 : null,
             visibility:
                 VISIBILITY[player.communityvisibilitystate] ?? 'private',

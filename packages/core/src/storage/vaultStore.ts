@@ -1,4 +1,5 @@
 import type { VaultFile } from '../vault/vault'
+import { idb } from './idb'
 
 const DB_NAME = 'steam-organizer'
 const STORE = 'vaults'
@@ -14,58 +15,14 @@ export interface StoredVault {
     file: VaultFile
 }
 
-function settle<T>(request: IDBRequest<T>) {
-    return new Promise<T>((resolve, reject) => {
-        request.onsuccess = () => resolve(request.result)
-        request.onerror = () => reject(request.error)
-    })
-}
-
-let database: Promise<IDBDatabase> | null = null
-function open() {
-    if (database) return database
-    const request = indexedDB.open(DB_NAME, 1)
-    request.onupgradeneeded = () =>
-        request.result.createObjectStore(STORE, { keyPath: 'id' })
-    // A failed open, a connection the browser closed (storage cleared) or one another context upgrades
-    // or deletes is dropped, and the next call opens a fresh one.
-    const opening = settle(request).then((db) => {
-        db.onclose = forget
-        db.onversionchange = () => {
-            db.close()
-            forget()
-        }
-        return db
-    })
-    const forget = () => {
-        if (database === opening) database = null
-    }
-    opening.catch(forget)
-    database = opening
-    return opening
-}
-
-async function read<T>(query: (store: IDBObjectStore) => IDBRequest<T>) {
-    const db = await open()
-    return settle(query(db.transaction(STORE).objectStore(STORE)))
-}
-
-// Resolves once the transaction commits, not when the request succeeds: a write is durable only then.
-async function write(change: (store: IDBObjectStore) => void) {
-    const db = await open()
-    const transaction = db.transaction(STORE, 'readwrite')
-    change(transaction.objectStore(STORE))
-    await new Promise<void>((resolve, reject) => {
-        transaction.oncomplete = () => resolve()
-        transaction.onerror = () => reject(transaction.error)
-        transaction.onabort = () => reject(transaction.error)
-    })
-}
+const db = idb(DB_NAME, 1, (opened) =>
+    opened.createObjectStore(STORE, { keyPath: 'id' }),
+)
 
 export const vaultStore = {
-    list: () => read<StoredVault[]>((store) => store.getAll()),
+    list: () => db.read<StoredVault[]>(STORE, (store) => store.getAll()),
     get: (id: string) =>
-        read<StoredVault | undefined>((store) => store.get(id)),
-    put: (vault: StoredVault) => write((store) => store.put(vault)),
-    remove: (id: string) => write((store) => store.delete(id)),
+        db.read<StoredVault | undefined>(STORE, (store) => store.get(id)),
+    put: (vault: StoredVault) => db.write(STORE, (store) => store.put(vault)),
+    remove: (id: string) => db.write(STORE, (store) => store.delete(id)),
 }

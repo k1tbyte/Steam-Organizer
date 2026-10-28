@@ -15,6 +15,7 @@ import {
     SETTINGS_ID,
     sealRecord,
     splitAccount,
+    steamCache,
     steamTag,
     updateData,
     type VaultKey,
@@ -139,6 +140,8 @@ export function useAccountLocks() {
                 return { data: { ...data, lock }, key: created.key }
             })
             if (made) hold(made)
+            // Its games and friends were cached under the vault key, which no longer opens the account.
+            if (scope === 'everything') await steamCache.forgetCollection(id)
         },
 
         /** Takes the password off once the credential opens the account; false when it is wrong. */

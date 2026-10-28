@@ -46,9 +46,9 @@ export function useCommunity(details: MaybeRefOrGetter<ProfileData>) {
                 label: t('Library value'),
                 value: new Intl.NumberFormat(locale.value, {
                     style: 'currency',
-                    currency: 'USD',
+                    currency: stats.currency,
                 }).format(stats.value),
-                sub: t('Current store prices'),
+                sub: t('Full store prices'),
                 accent: true,
             },
             {

@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto'
 
-import { type AccountSecret, readAccount, steamApi } from '@so/core'
+import { type AccountSecret, readAccount, steamApi, steamCache } from '@so/core'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, expect, it, vi } from 'vitest'
 
@@ -14,6 +14,7 @@ const KNOWN = '76561198000000001'
 const GONE = '76561198000000002'
 
 let name = 'Fresh'
+let visibility = 1
 let hold: Promise<void> | null = null
 let arrived = () => {}
 
@@ -26,7 +27,7 @@ const fetch = (async (input: string | URL | Request) => {
     }
     const url = new URL(String(input))
     const ids = (url.searchParams.get('steamids') ?? '').split(',')
-    const known = ids.filter((id) => id === KNOWN)
+    const known = ids.filter((id) => id !== '' && id !== GONE)
     const reply: Record<string, unknown> = {
         '/ISteamUser/GetPlayerSummaries/v2/': {
             response: {
@@ -35,11 +36,38 @@ const fetch = (async (input: string | URL | Request) => {
                     personaname: persona,
                     avatarhash: 'abc',
                     profileurl: '',
-                    communityvisibilitystate: 1,
+                    communityvisibilitystate: visibility,
                 })),
             },
         },
         '/ISteamUser/GetPlayerBans/v1/': { players: [] },
+        '/IPlayerService/GetBadges/v1/': {
+            response: { player_level: 7, badges: [{ badgeid: 13, level: 6 }] },
+        },
+        '/IPlayerService/GetOwnedGames/v1/': {
+            response: {
+                game_count: 2,
+                games: [
+                    {
+                        appid: 10,
+                        name: 'Counter-Strike',
+                        playtime_forever: 120,
+                    },
+                    {
+                        appid: 440,
+                        name: 'Team Fortress 2',
+                        playtime_forever: 0,
+                    },
+                ],
+            },
+        },
+        '/ISteamUser/GetFriendList/v1/': {
+            friendslist: { friends: [{ steamid: GONE, friend_since: 0 }] },
+        },
+        '/api/appdetails': {
+            10: { success: true, data: { price_overview: { initial: 999 } } },
+            440: { success: true, data: [] },
+        },
     }
     return new Response(JSON.stringify(reply[url.pathname]))
 }) as typeof globalThis.fetch
@@ -47,12 +75,14 @@ const fetch = (async (input: string | URL | Request) => {
 vi.mock('#features/steam', () => ({
     useSteamApi: () => ({
         reachable: true,
+        fetch,
         api: async () => steamApi(fetch, 'KEY'),
     }),
 }))
 
 beforeEach(async () => {
     name = 'Fresh'
+    visibility = 1
     hold = null
     await new Promise((resolve) => {
         indexedDB.deleteDatabase('steam-organizer').onsuccess = resolve
@@ -138,4 +168,56 @@ it('keeps a newer snapshot over the reply to an older refresh', async () => {
     await older
     expect(data(ids[0] as string)?.steam?.nickname).toBe('Newer')
     vi.useRealTimers()
+})
+
+it('prices a public library into the stats and caches it, never an everything-locked one', async () => {
+    visibility = 3
+    const { session, ids, data } = await vaultWith(
+        KNOWN,
+        KNOWN.replace(/1$/, '3'),
+    )
+    const [open, locked] = ids as [string, string]
+    await useAccountLocks().setLock(locked, '1234', 'everything', false)
+    await useSteamRefresh().refresh(ids)
+    expect(data(open)?.steam).toMatchObject({
+        badge: '5+',
+        stats: {
+            games: 2,
+            played: 1,
+            hours: 2,
+            paid: 1,
+            value: 9.99,
+            currency: 'USD',
+            friends: 1,
+        },
+    })
+    const cached = await session.withKey((key) =>
+        steamCache.collection(key, open),
+    )
+    expect(cached?.games).toHaveLength(2)
+    expect(
+        await session.withKey((key) => steamCache.collection(key, locked)),
+    ).toBeNull()
+})
+
+it('caches nothing for an account given an everything lock while its refresh was out', async () => {
+    visibility = 3
+    const { session, ids } = await vaultWith(KNOWN)
+    const [id] = ids as [string]
+    let release = () => {}
+    hold = new Promise((resolve) => {
+        release = resolve
+    })
+    const inFlight = new Promise<void>((resolve) => {
+        arrived = resolve
+    })
+    const refreshed = useSteamRefresh().refresh(ids)
+    await inFlight
+    hold = null
+    await useAccountLocks().setLock(id, '1234', 'everything', false)
+    release()
+    expect(await refreshed).toMatchObject({ updated: 1 })
+    expect(
+        await session.withKey((key) => steamCache.collection(key, id)),
+    ).toBeNull()
 })

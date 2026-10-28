@@ -41,14 +41,17 @@ export interface SteamBans {
     lastBanDays: number | null
 }
 
+/** From the library at the refresh; a profile that hides its games has none. */
 export interface SteamStats {
     games: number
     played: number
     hours: number
     paid: number
+    /** The library at undiscounted store prices, in `currency`. */
     value: number
-    badge: string
-    friends: number
+    currency: string
+    /** null while the friend list is private. */
+    friends: number | null
 }
 
 /** The last refresh from Steam; a refresh moves `refreshedAt`, never the account's `editedAt`. */
@@ -57,6 +60,8 @@ export interface SteamSnapshot {
     nickname: string
     avatar: string
     level: number
+    /** The game collector badge tier ("100+"); '' below the first or on a private profile. */
+    badge: string
     registeredAt: number | null
     visibility: 'public' | 'friends' | 'private'
     vanity: string | null

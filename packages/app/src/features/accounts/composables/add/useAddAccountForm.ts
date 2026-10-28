@@ -9,6 +9,7 @@ import { useMaFile } from '#features/steam-guard'
 
 import { validateNewAccount } from '../../services/newAccount'
 import { bansOf, hueOf, steamYears } from '../../services/vaultAccounts'
+import { useSteamRefresh } from '../refresh/useSteamRefresh'
 import { useBanLabels } from '../useBanLabels'
 import { type AddResult, useVaultAccounts } from '../useVaultAccounts'
 import { useSteamLookup } from './useSteamLookup'
@@ -23,6 +24,7 @@ export function useAddAccountForm(open: Ref<boolean>) {
     const banLabels = useBanLabels()
     const linksSteam = useSteamApi().reachable
     const { openSteamSettings } = useSteamProblem()
+    const { refresh } = useSteamRefresh()
 
     const login = ref('')
     const password = ref('')
@@ -38,6 +40,15 @@ export function useAddAccountForm(open: Ref<boolean>) {
         refused.value = null
     })
 
+    // The lookup brings the profile alone; the library and its stats come with a refresh.
+    function fillLibrary(steamId: string) {
+        const wanted = toAccountId(steamId)
+        const id = accounts.value.find((a) => a.steamId === wanted)?.id
+        if (id)
+            refresh([id]).catch((error) =>
+                reportError(error, 'add-account-library'),
+            )
+    }
     const existing = computed(() => {
         return {
             logins: accounts.value.map((a) => a.login.toLowerCase()),
@@ -228,6 +239,7 @@ export function useAddAccountForm(open: Ref<boolean>) {
                 try {
                     const result = await add(account)
                     if (result !== 'added') refused.value = result
+                    else if (account.steamId) fillLibrary(account.steamId)
                     return result === 'added'
                 } catch (error) {
                     reportError(error, 'add-account')

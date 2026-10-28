@@ -44,7 +44,7 @@ export function useProfileTabs(
                     slot: 'friends',
                     label: t('Friends'),
                     icon: icon('icon-[lucide--users]'),
-                    count: stats?.friends,
+                    count: stats?.friends ?? undefined,
                 },
             )
         if (toValue(account).guard && !toValue(options.guardHidden))

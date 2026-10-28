@@ -234,20 +234,20 @@ The old backend aggregated these calls and cached prices server-side for all use
 | Summaries (≤100 ids) | `ISteamUser/GetPlayerSummaries/v2` |
 | Bans (≤100 ids) | `ISteamUser/GetPlayerBans/v1` |
 | Games | `IPlayerService/GetOwnedGames/v1` |
-| Level | `IPlayerService/GetSteamLevel/v1` |
+| Level, collector badge | `IPlayerService/GetBadges/v1` |
 | Friends | `ISteamUser/GetFriendList/v1` |
 | Vanity URL | `ISteamUser/ResolveVanityURL/v1` |
 | Server time (TOTP) | `POST ITwoFactorService/QueryTime/v1` |
 | Prices | `store.steampowered.com/api/appdetails?filters=price_overview&appids=...` |
 
 - Web API calls go through `steamApi(fetch, key)` in `core/steam`; a failure is a `SteamError`: `no-key` (no request made), `bad-key` (401/403), `offline` (fetch failed), `rate-limit` (429), `server` (anything else). The extension holds `api.steampowered.com` in `host_permissions`.
-- Add resolves the identifier locally (friend codes included) or by `ResolveVanityURL`, then reads summaries, bans and the level of a public profile; a failure blocks Add with Retry or a link to the key.
+- Add resolves the identifier locally (friend codes included) or by `ResolveVanityURL`, then reads summaries, bans, the level and collector badge (badge 13: Steam counts it apart from the library list) of a public profile; a failure blocks Add with Retry or a link to the key.
 - A refresh writes only `steam` (`useSteamRefresh`): an everything-locked account refreshes only while open, through `joinAccount` / `splitAccount`. Avatars load from `avatars.steamstatic.com` by the stored hash (`avatarUrl`).
 - Store API limit ~200 req / 5 min per IP → batch appids + request queue.
-- Caches live in IndexedDB beside the vault, never in its records (unlock stays fast), in two levels matched by id:
-  - per account: `games` (`appId`, playtime, last played) and `friends` (`steamId`, since);
-  - shared: `apps[appId]` (name, image, price per currency, `fetchedAt`) and `profiles[steamId]` (friends outside the vault). Refreshing one account updates them for all.
-  - TTL per entry; the user can sync them as a separate file next to the vault, sealed with the vault key (libraries and friends are personal). `steam.stats` in the record is computed from them at refresh, so the read-only web shows it without caches.
+- Caches live in their own IndexedDB database (`steamCache` in `core/storage`), never in vault records (unlock stays fast):
+  - per account record id: its games (`appId`, name, icon, playtime, last two weeks) and friends (`steamId`, since), sealed with the vault key (libraries and friend lists are personal). An everything-locked account caches none (its Steam data stays under the account key), and setting that lock drops its entry;
+  - shared: store prices per currency (`<currency>:<appId>`, undiscounted, in hundredths), kept a week. Friend profiles come with the Friends tab.
+  - A refresh reads the library and friends of public profiles (`withLibraries`; a private friend list answers 401, read as hidden), prices them in the vault's currency (`SettingsData.currency`, Settings → Steam) and stores `steam.stats`, so the read-only web shows stats without caches. Last played and achievements are left out: Steam gives no last played for other users' libraries, and achievements cost a request per game.
 - Bulk refresh runs in batches of 25, each one vault write, so cards update as batches land; Refresh all skips accounts refreshed within the hour.
 
 ---

@@ -1,10 +1,16 @@
 import type { VaultKey } from '../crypto/keys'
 import {
+    DEFAULT_CURRENCY,
+    isSteamCurrency,
+    type SteamCurrency,
+} from '../steam/currencies'
+import {
     type LiveRecord,
     openData,
     openSecret,
     type SealedRecord,
     sealRecord,
+    updateData,
 } from '../vault/vault'
 import {
     FIELD_DEFAULTS,
@@ -25,6 +31,8 @@ export interface SettingsData {
     fieldDefaults: FieldDefaults
     /** A placement change is still moving fields: set before the first account, cleared after the last. */
     moving?: boolean
+    /** Store prices and library values are in it. */
+    currency: SteamCurrency
 }
 
 export interface SettingsSecret {
@@ -58,6 +66,23 @@ export async function withSteamKey(
     })
 }
 
+/** The settings record with `patch` in its data; its secret stays as sealed. */
+export async function withSettings(
+    key: VaultKey,
+    record: SealedRecord | undefined,
+    patch: Partial<SettingsData>,
+): Promise<LiveRecord> {
+    const live = record && !('deleted' in record) ? record : undefined
+    const updatedAt = Date.now()
+    const data = {
+        ...readSettings(live && (await openData(key, live))),
+        ...patch,
+    }
+    return live
+        ? updateData(key, live, data, updatedAt)
+        : sealRecord(key, { id: SETTINGS_ID, updatedAt, data })
+}
+
 /** A vault without the record, or a field it does not name, reads as the defaults. */
 export function readSettings(value: unknown): SettingsData {
     const stored =
@@ -66,6 +91,9 @@ export function readSettings(value: unknown): SettingsData {
     return {
         ...stored,
         kind: RECORD.SETTINGS,
+        currency: isSteamCurrency(stored.currency)
+            ? stored.currency
+            : DEFAULT_CURRENCY,
         fieldDefaults: Object.fromEntries(
             MOVABLE_FIELDS.map((field) => [
                 field,

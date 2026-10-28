@@ -42,6 +42,7 @@ const fetch = (async (input: string | URL | Request) => {
 vi.mock('#features/steam', () => ({
     useSteamApi: () => ({
         reachable: true,
+        fetch,
         api: async () => steamApi(fetch, 'KEY'),
     }),
 }))

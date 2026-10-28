@@ -11,6 +11,8 @@ export function useSteamApi() {
     const session = useVaultSession()
     return {
         reachable: fetch !== null,
+        /** For Steam's keyless hosts (the store); null on web. */
+        fetch,
         /** The key is read per call, so one saved in Settings meanwhile applies; `key` checks a typed one instead. */
         async api(key?: string): Promise<SteamApi> {
             if (fetch === null) throw new Error('Steam is unreachable here')

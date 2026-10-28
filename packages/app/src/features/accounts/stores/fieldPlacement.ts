@@ -5,8 +5,7 @@ import {
     readSettings,
     SETTINGS_ID,
     type SettingsData,
-    sealRecord,
-    updateData,
+    withSettings,
 } from '@so/core'
 import { defineStore } from 'pinia'
 import { computed, shallowRef } from 'vue'
@@ -38,24 +37,10 @@ export const useFieldPlacementStore = defineStore('fieldPlacement', () => {
         let ids: string[] = []
         await session.transact(async (contents, key) => {
             ids = storedAccounts(contents.data).map(({ id }) => id)
-            const data = {
-                ...readSettings(contents.data.get(SETTINGS_ID)),
-                ...patch,
-            }
             const record = contents.records.find(
                 (found) => found.id === SETTINGS_ID,
             )
-            const now = Date.now()
-            // Other parts of the record (a later secret) stay as they are.
-            if (record && !('deleted' in record))
-                return [await updateData(key, record, data, now)]
-            return [
-                await sealRecord(key, {
-                    id: SETTINGS_ID,
-                    updatedAt: now,
-                    data,
-                }),
-            ]
+            return [await withSettings(key, record, patch)]
         })
         return ids
     }

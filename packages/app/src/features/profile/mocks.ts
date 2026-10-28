@@ -33,7 +33,17 @@ const stats = (
     value: number,
     badge: string,
     friends: number,
-) => ({ years, games, played, hours, paid, value, badge, friends })
+) => ({
+    years,
+    games,
+    played,
+    hours,
+    paid,
+    value,
+    currency: 'USD',
+    badge,
+    friends,
+})
 
 // The mockup's three profiles: a normal one, credentials locked with recovery, everything locked without.
 const SAMPLE_PROFILES: Record<string, ProfileData> = {

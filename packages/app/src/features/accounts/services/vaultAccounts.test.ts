@@ -35,6 +35,7 @@ describe('accountsIn', () => {
                             nickname: 'Nova',
                             avatar: '',
                             level: 12,
+                            badge: '',
                             registeredAt: null,
                             visibility: 'public',
                             vanity: null,

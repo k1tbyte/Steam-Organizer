@@ -1,0 +1,91 @@
+import type { VaultKey } from '../crypto/keys'
+import { openText, type Sealed, sealText } from '../crypto/seal'
+import type { Collection } from '../steam/collection'
+import { idb } from './idb'
+
+const ACCOUNTS = 'accounts'
+const PRICES = 'prices'
+
+// Apart from the vault's database: unlock never reads it.
+const db = idb('steam-organizer-cache', 1, (opened) => {
+    opened.createObjectStore(ACCOUNTS)
+    opened.createObjectStore(PRICES, { keyPath: 'key' })
+})
+
+export interface CachedCollection extends Collection {
+    fetchedAt: number
+}
+
+interface CachedPrice {
+    /** `<currency>:<appId>`. */
+    key: string
+    appId: number
+    cents: number | null
+    fetchedAt: number
+}
+
+const aad = (id: string) => `cache:${id}`
+
+/** Steam data too large for vault records. An account's games and friends are personal, sealed with the vault key; store prices are public. */
+export const steamCache = {
+    /** null when absent, or sealed under another vault's key. */
+    async collection(key: VaultKey, id: string) {
+        const sealed = await db.read<Sealed | undefined>(ACCOUNTS, (store) =>
+            store.get(id),
+        )
+        if (!sealed) return null
+        try {
+            return JSON.parse(
+                await openText(key.records, sealed, aad(id)),
+            ) as CachedCollection
+        } catch {
+            return null
+        }
+    },
+    /** `keep` is asked as the write's transaction starts: a change the vault committed before it wins, and a later forget runs after it. */
+    async putCollection(
+        key: VaultKey,
+        id: string,
+        entry: CachedCollection,
+        keep: () => boolean,
+    ) {
+        const sealed = await sealText(
+            key.records,
+            JSON.stringify(entry),
+            aad(id),
+        )
+        await db.write(ACCOUNTS, (store) => {
+            if (keep()) store.put(sealed, id)
+        })
+    },
+    forgetCollection: (id: string) =>
+        db.write(ACCOUNTS, (store) => store.delete(id)),
+
+    /** The prices in `currency` fetched after `since`, in hundredths; null for a free or unsold game. */
+    async prices(currency: string, since: number) {
+        // `;` follows `:`: the range holds every key of the currency.
+        const stored = await db.read<CachedPrice[]>(PRICES, (store) =>
+            store.getAll(IDBKeyRange.bound(`${currency}:`, `${currency};`)),
+        )
+        return new Map(
+            stored
+                .filter((price) => price.fetchedAt > since)
+                .map((price) => [price.appId, price.cents]),
+        )
+    },
+    putPrices(
+        currency: string,
+        prices: ReadonlyMap<number, number | null>,
+        fetchedAt: number,
+    ) {
+        return db.write(PRICES, (store) => {
+            for (const [appId, cents] of prices)
+                store.put({
+                    key: `${currency}:${appId}`,
+                    appId,
+                    cents,
+                    fetchedAt,
+                } satisfies CachedPrice)
+        })
+    },
+}

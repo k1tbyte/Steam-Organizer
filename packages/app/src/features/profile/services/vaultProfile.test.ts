@@ -11,6 +11,7 @@ const steam: SteamSnapshot = {
     nickname: 'kyzz',
     avatar: '',
     level: 12,
+    badge: '1+',
     registeredAt: 10 * DAY_MS,
     visibility: 'friends',
     vanity: 'kyzzdef',
@@ -21,11 +22,20 @@ const steam: SteamSnapshot = {
         economy: 'none',
         lastBanDays: 30,
     },
-    stats: null,
+    stats: {
+        games: 3,
+        played: 2,
+        hours: 12,
+        paid: 1,
+        value: 9.99,
+        currency: 'EUR',
+        friends: null,
+    },
 }
 
 it('reads the profile from the last refresh, the latest ban counted from it', () => {
-    expect(vaultProfile({ steam } as Account)).toMatchObject({
+    expect(vaultProfile({ steam, years: 0.2 } as Account)).toMatchObject({
+        stats: { games: 3, currency: 'EUR', years: 0.2, badge: '1+' },
         visibility: 'friends',
         registered: 10 * DAY_MS,
         vanity: 'kyzzdef',

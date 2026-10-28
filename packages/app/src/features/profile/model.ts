@@ -1,4 +1,4 @@
-import type { CredentialKind, ServiceCredentials } from '@so/core'
+import type { CredentialKind, ServiceCredentials, SteamStats } from '@so/core'
 
 import type { BanKind, LockInfo } from '#features/accounts'
 
@@ -32,17 +32,9 @@ export interface AccountCredentials {
     linked: ServiceCredentials[]
 }
 
-export interface ProfileStats {
+export interface ProfileStats extends SteamStats {
     years: number
-    games: number
-    played: number
-    hours: number
-    paid: number
-    /** US dollars at current store prices. */
-    value: number
-    /** The collector badge tier, as Steam names it ("100+"). */
     badge: string
-    friends: number
 }
 
 /** What the profile shows beyond the vault's `Account`: Steam data and the account's own lock. */
@@ -52,7 +44,7 @@ export interface ProfileData {
     /** Epoch ms of the Steam registration; null when the profile hides it. */
     registered: number | null
     vanity: string | null
-    /** null until the games and friends arrive. */
+    /** null while the profile hides its games, or before a refresh read them. */
     stats: ProfileStats | null
     /** Per active ban: since or until when ("Since 12 Mar 2026"). */
     banDetails: Partial<Record<BanKind, string>>

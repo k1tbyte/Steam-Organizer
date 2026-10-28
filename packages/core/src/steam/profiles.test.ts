@@ -58,11 +58,19 @@ const profiles = {
             .split(',')
             .map((id) => bans(id, id === PRIVATE ? 1 : 0)),
     }),
-    '/IPlayerService/GetSteamLevel/v1/': { response: { player_level: 21 } },
+    '/IPlayerService/GetBadges/v1/': {
+        response: {
+            player_level: 21,
+            badges: [
+                { badgeid: 1, level: 5 },
+                { badgeid: 13, level: 30 },
+            ],
+        },
+    },
 }
 
 describe('fetchProfiles', () => {
-    it('reads summaries, bans and the level of a public profile', async () => {
+    it('reads summaries, bans, the level and collector badge of a public profile', async () => {
         const calls: string[] = []
         const api = steamApi(fakeFetch(profiles, calls), 'KEY')
         const found = await fetchProfiles(api, [PUBLIC, PRIVATE], 1000)
@@ -71,6 +79,7 @@ describe('fetchProfiles', () => {
             nickname: 'name 099',
             avatar: 'fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb',
             level: 21,
+            badge: '25+',
             registeredAt: 1_500_000_000_000,
             visibility: 'public',
             vanity: 'kyzzdef',
@@ -85,15 +94,16 @@ describe('fetchProfiles', () => {
         })
         expect(found.get(PRIVATE)).toMatchObject({
             level: 0,
+            badge: '',
             registeredAt: null,
             visibility: 'private',
             vanity: null,
             bans: { vac: 1, lastBanDays: 120 },
         })
-        // The private profile's level is never asked for.
-        expect(
-            calls.filter((path) => path.includes('GetSteamLevel')),
-        ).toHaveLength(1)
+        // The private profile's badges are never asked for.
+        expect(calls.filter((path) => path.includes('GetBadges'))).toHaveLength(
+            1,
+        )
     })
 
     it('leaves out an id Steam has no profile for, and batches by 100', async () => {

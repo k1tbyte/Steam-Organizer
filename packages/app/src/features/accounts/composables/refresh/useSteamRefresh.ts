@@ -1,6 +1,7 @@
 import {
     type AccountData,
     type AccountSecret,
+    type Collection,
     fetchProfiles,
     joinAccount,
     openSecret,
@@ -10,7 +11,9 @@ import {
     type SteamSnapshot,
     sealRecord,
     splitAccount,
+    steamCache,
     updateData,
+    withLibraries,
 } from '@so/core'
 
 import { useSteamApi } from '#features/steam'
@@ -117,6 +120,34 @@ export function useSteamRefresh() {
         return count
     }
 
+    /** Each collection goes to the cache while the vault still holds its refresh: an everything lock moves `steam`
+     *  into the secret, so its account never matches, and a newer refresh or a lock set meanwhile wins. */
+    function cache(fresh: Fresh, collections: ReadonlyMap<string, Collection>) {
+        return session.withKey((key) =>
+            Promise.all(
+                [...fresh].flatMap(([id, { steamId, steam }]) => {
+                    const collection = collections.get(steamId)
+                    const held = () =>
+                        readAccount(session.contents?.data.get(id))?.steam
+                            ?.refreshedAt === steam.refreshedAt
+                    return collection
+                        ? [
+                              steamCache.putCollection(
+                                  key,
+                                  id,
+                                  {
+                                      ...collection,
+                                      fetchedAt: steam.refreshedAt,
+                                  },
+                                  held,
+                              ),
+                          ]
+                        : []
+                }),
+            ),
+        )
+    }
+
     return {
         reachable: steam.reachable,
         targets,
@@ -126,9 +157,20 @@ export function useSteamRefresh() {
         ): Promise<{ updated: number; missing: string[] }> {
             const found = await targets(ids)
             if (found.length === 0) return { updated: 0, missing: [] }
-            const profiles = await fetchProfiles(await steam.api(), [
-                ...new Set(found.map((target) => target.steamId)),
-            ])
+            const api = await steam.api()
+            // Web never refreshes: `api` throws there first.
+            if (steam.fetch === null) return { updated: 0, missing: [] }
+            const { currency } = readSettings(
+                session.contents?.data.get(SETTINGS_ID),
+            )
+            const { profiles, collections } = await withLibraries(
+                api,
+                steam.fetch,
+                await fetchProfiles(api, [
+                    ...new Set(found.map((target) => target.steamId)),
+                ]),
+                currency,
+            )
             const fresh: Fresh = new Map()
             const missing: string[] = []
             for (const { id, steamId } of found) {
@@ -136,7 +178,9 @@ export function useSteamRefresh() {
                 if (profile) fresh.set(id, { steamId, steam: profile })
                 else missing.push(id)
             }
-            return { updated: await write(fresh), missing }
+            const updated = await write(fresh)
+            await cache(fresh, collections)
+            return { updated, missing }
         },
     }
 }

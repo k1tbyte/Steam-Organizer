@@ -33,6 +33,7 @@ export {
     SETTINGS_ID,
     type SettingsData,
     type SettingsSecret,
+    withSettings,
     withSteamKey,
 } from './account/settings'
 export {
@@ -58,6 +59,13 @@ export {
     type SteamErrorKind,
     steamApi,
 } from './steam/api'
+export type { Collection, OwnedGame, SteamFriend } from './steam/collection'
+export {
+    DEFAULT_CURRENCY,
+    STEAM_CURRENCIES,
+    type SteamCurrency,
+} from './steam/currencies'
+export { withLibraries } from './steam/library'
 export {
     avatarUrl,
     checkKey,
@@ -75,6 +83,8 @@ export {
     toSteamId64,
     vanityIn,
 } from './steam/steamId'
+export { libraryPrices } from './steam/store'
+export { type CachedCollection, steamCache } from './storage/steamCache'
 export {
     type StoredVault,
     type VaultHome,
