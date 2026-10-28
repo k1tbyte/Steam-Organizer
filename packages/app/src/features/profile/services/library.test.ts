@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest'
 
-import { type LibraryGame, listGames } from './library'
+import { type LibraryGame, listFriends, listGames } from './library'
 
 const game = (
     name: string,
@@ -49,4 +49,33 @@ it('sorts by a column either way, ties by name, an unpriced game below a free on
     expect(names(listGames(games, '', 'all', { by: 'name', dir: -1 }))).toEqual(
         ['Rust', 'Portal 2', 'Elden Ring', 'Dota 2'],
     )
+})
+
+const friend = (nickname: string, since: number | null) => ({
+    steamId: nickname.toLowerCase(),
+    since,
+    nickname,
+    avatar: '',
+})
+const friends = [
+    friend('bravo', 100),
+    friend('Alpha', null),
+    friend('charlie', 300),
+    friend('Delta', 300),
+]
+
+it('lists friends by the newest friendship or by name, those in the vault apart', () => {
+    const nicknames = (
+        sort: 'since' | 'name',
+        filter: 'all' | 'vault' = 'all',
+    ) =>
+        listFriends(friends, '', filter, sort, (id) => id !== 'bravo').map(
+            (found) => found.nickname,
+        )
+    expect(nicknames('since')).toEqual(['charlie', 'Delta', 'bravo', 'Alpha'])
+    expect(nicknames('name')).toEqual(['Alpha', 'bravo', 'charlie', 'Delta'])
+    expect(nicknames('name', 'vault')).toEqual(['Alpha', 'charlie', 'Delta'])
+    expect(
+        listFriends(friends, 'DEL', 'all', 'name', () => false),
+    ).toHaveLength(1)
 })

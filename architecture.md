@@ -245,8 +245,8 @@ The old backend aggregated these calls and cached prices server-side for all use
 - A refresh writes only `steam` (`useSteamRefresh`): an everything-locked account refreshes only while open, through `joinAccount` / `splitAccount`. Avatars load from `avatars.steamstatic.com` by the stored hash (`avatarUrl`).
 - Store API limit ~200 req / 5 min per IP → batch appids + request queue.
 - Caches live in their own IndexedDB database (`steamCache` in `core/storage`), never in vault records (unlock stays fast):
-  - per account record id: its games (`appId`, name, icon, playtime, last two weeks) and friends (`steamId`, since), sealed with the vault key (libraries and friend lists are personal). An everything-locked account caches none (its Steam data stays under the account key), and setting that lock drops its entry;
-  - shared: store prices per currency (`<currency>:<appId>`, undiscounted, in hundredths), kept a week. Friend profiles come with the Friends tab.
+  - per account record id: its games (`appId`, name, icon, playtime, last two weeks) and friends (`steamId`, since, nickname and avatar from `GetPlayerSummaries`, 100 ids a request), sealed with the vault key (libraries and friend lists are personal). An everything-locked account caches none (its Steam data stays under the account key), and setting that lock drops its entry;
+  - shared: store prices per currency (`<currency>:<appId>`, undiscounted, in hundredths), kept a week.
   - A refresh reads the library and friends of public profiles (`withLibraries`; a private friend list answers 401, read as hidden), prices them in the vault's currency (`SettingsData.currency`, Settings → Steam) and stores `steam.stats`, so the read-only web shows stats without caches. Last played and achievements are left out: Steam gives no last played for other users' libraries, and achievements cost a request per game.
 - Bulk refresh runs in batches of 25, each one vault write, so cards update as batches land; Refresh all skips accounts refreshed within the hour.
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpCard, FpEmpty, FpIcon, FpTabs, useDesktopLayout } from '@so/ui'
+import { FpButton, FpCard, FpIcon, FpTabs, useDesktopLayout } from '@so/ui'
 import { reactive, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -20,6 +20,7 @@ import RemoveAuthenticatorDialog from './guard/RemoveAuthenticatorDialog.vue'
 import SteamGuardTab from './guard/SteamGuardTab.vue'
 import ProfileHero from './hero/ProfileHero.vue'
 import ProfileHeroPhone from './hero/ProfileHeroPhone.vue'
+import FriendsTab from './library/FriendsTab.vue'
 import GamesTab from './library/GamesTab.vue'
 import AccountLockGate from './lock/AccountLockGate.vue'
 import AccountPasswordDialog from './lock/AccountPasswordDialog.vue'
@@ -148,9 +149,7 @@ const alias = reactive(
                 <GamesTab :account="account" :details="details" />
             </template>
             <template #friends>
-                <FpEmpty :title="t('Friends')" :description="t('The friend list comes with Steam data.')">
-                    <template #leading><FpIcon name="icon-[lucide--users]" /></template>
-                </FpEmpty>
+                <FriendsTab :account="account" :details="details" />
             </template>
             <template #guard>
                 <SteamGuardTab

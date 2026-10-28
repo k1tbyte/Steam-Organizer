@@ -2,7 +2,7 @@ import type { SteamSnapshot, SteamStats } from '../account/records'
 import { type SteamApi, SteamError } from './api'
 import type { Collection } from './collection'
 import type { SteamCurrency } from './currencies'
-import { eachLimited } from './profiles'
+import { eachLimited, fetchNames } from './profiles'
 import { libraryPrices } from './store'
 
 interface Owned {
@@ -42,6 +42,8 @@ async function fetchFriends(api: SteamApi, steamid: string) {
         return (friendslist?.friends ?? []).map((friend) => ({
             steamId: friend.steamid,
             since: friend.friend_since ? friend.friend_since * 1000 : null,
+            nickname: '',
+            avatar: '',
         }))
     } catch (error) {
         // A private list answers 401; the key just read the profile, so it is not the key.
@@ -50,7 +52,7 @@ async function fetchFriends(api: SteamApi, steamid: string) {
     }
 }
 
-/** The games and friends of these public profiles. */
+/** The games and friends of these public profiles, each friend with its nickname and avatar. */
 export async function fetchCollections(
     api: SteamApi,
     steamIds: readonly string[],
@@ -63,6 +65,19 @@ export async function fetchCollections(
         ])
         found.set(steamId, { games, friends })
     })
+    const names = await fetchNames(api, [
+        ...new Set(
+            [...found.values()].flatMap(
+                ({ friends }) => friends?.map((friend) => friend.steamId) ?? [],
+            ),
+        ),
+    ])
+    for (const collection of found.values())
+        collection.friends =
+            collection.friends?.map((friend) => ({
+                ...friend,
+                ...names.get(friend.steamId),
+            })) ?? null
     return found
 }
 

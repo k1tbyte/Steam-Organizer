@@ -12,6 +12,10 @@ export interface SteamFriend {
     steamId: string
     /** Epoch ms; null for friendships older than Steam's record of them. */
     since: number | null
+    /** '' for a profile Steam no longer has. */
+    nickname: string
+    /** The avatar hash (`avatarUrl`). */
+    avatar: string
 }
 
 /** One account's games and friends; null where the profile hides them. */

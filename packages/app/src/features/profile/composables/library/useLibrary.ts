@@ -8,9 +8,11 @@ import {
     toValue,
     watch,
 } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { reportError, useMock } from '#core'
 import type { Account } from '#features/accounts'
+import { useSteamApi } from '#features/steam'
 import { useVaultSession } from '#features/vault'
 
 import { libraryMock } from '../../mocks'
@@ -23,7 +25,9 @@ export function useLibrary(
     account: MaybeRefOrGetter<Account>,
     details: MaybeRefOrGetter<ProfileData>,
 ) {
+    const { t } = useI18n()
     const session = useVaultSession()
+    const reachable = useSteamApi().reachable
     const id = toValue(account).id
     const held = computed(() => session.contents?.data.has(id) ?? false)
     // undefined until the first read; a refresh keeps the shown one until the next lands.
@@ -53,7 +57,7 @@ export function useLibrary(
             }
             // A refresh reads the library of a public profile only; an older public one's cache stays behind.
             if (steam.visibility !== 'public') {
-                read.value = { games: null }
+                read.value = { games: null, friends: null }
                 return
             }
             try {
@@ -70,6 +74,7 @@ export function useLibrary(
                             ...game,
                             price: prices.get(game.appId),
                         })) ?? null,
+                    friends: collection.friends,
                 }
             } catch (error) {
                 reportError(error, 'profile-library')
@@ -85,9 +90,24 @@ export function useLibrary(
     )
     return {
         library,
-        status: computed<AsyncStatus>(() => {
-            if (held.value && read.value === undefined) return 'loading'
-            return library.value?.games?.length ? 'ready' : 'empty'
-        }),
+        /** Why there is no cache to show. */
+        missing: computed(() =>
+            toValue(account).lock?.scope === 'everything'
+                ? t(
+                      'A fully locked account keeps no games or friends on this device.',
+                  )
+                : reachable
+                  ? t('Refresh the account to see its games and friends.')
+                  : t(
+                        'Games and friends come with a refresh in the browser extension.',
+                    ),
+        ),
+        /** The tab's status over its own list. */
+        statusOf: (list: (found: Library) => readonly unknown[] | null) =>
+            computed<AsyncStatus>(() => {
+                if (held.value && read.value === undefined) return 'loading'
+                const found = library.value
+                return found && list(found)?.length ? 'ready' : 'empty'
+            }),
     }
 }

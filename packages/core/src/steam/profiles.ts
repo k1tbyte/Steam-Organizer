@@ -100,26 +100,45 @@ export async function eachLimited<T>(
     await Promise.all(Array.from({ length: REQUESTS_AT_ONCE }, worker))
 }
 
+async function summariesOf(api: SteamApi, ids: string[]) {
+    const { response } = await api.get<{ response: { players: Summary[] } }>(
+        'ISteamUser/GetPlayerSummaries/v2/',
+        { steamids: ids.join(',') },
+    )
+    return response.players
+}
+
+/** The nickname and avatar hash of each of these SteamID64s Steam has a profile for. */
+export async function fetchNames(api: SteamApi, ids: readonly string[]) {
+    const batches: string[][] = []
+    for (let start = 0; start < ids.length; start += BATCH)
+        batches.push(ids.slice(start, start + BATCH))
+    const names = new Map<string, { nickname: string; avatar: string }>()
+    await eachLimited(batches, async (batch) => {
+        for (const player of await summariesOf(api, batch))
+            names.set(player.steamid, {
+                nickname: player.personaname,
+                avatar: player.avatarhash,
+            })
+    })
+    return names
+}
+
 async function fetchBatch(
     api: SteamApi,
     ids: string[],
     now: number,
     into: Map<string, SteamSnapshot>,
 ) {
-    const steamids = ids.join(',')
-    const [summaries, bans] = await Promise.all([
-        api.get<{ response: { players: Summary[] } }>(
-            'ISteamUser/GetPlayerSummaries/v2/',
-            { steamids },
-        ),
+    const [players, bans] = await Promise.all([
+        summariesOf(api, ids),
         api.get<{ players: Bans[] }>('ISteamUser/GetPlayerBans/v1/', {
-            steamids,
+            steamids: ids.join(','),
         }),
     ])
     const bansById = new Map(
         bans.players.map((found) => [found.SteamId, found]),
     )
-    const players = summaries.response.players
     // A private profile hides its badges: Steam answers them empty.
     const badges = new Map<string, { level: number; badge: string }>()
     await eachLimited(

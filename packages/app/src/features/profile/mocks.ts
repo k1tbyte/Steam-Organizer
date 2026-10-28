@@ -1,4 +1,8 @@
-import type { ServiceCredentials } from '@so/core'
+import {
+    type ServiceCredentials,
+    type SteamFriend,
+    toSteamId64,
+} from '@so/core'
 import { defineMock } from '#core'
 import type { Account } from '#features/accounts'
 
@@ -267,11 +271,38 @@ const sampleGame = ([
     price,
 })
 
+// The mockup's friends: nickname, friends since, the account ID of a sample account it is.
+const MOCKUP_FRIENDS: [string, string, string?][] = [
+    ['Halcyon_North', '2021-01', '38291044'],
+    ['Starwave', '2020-07', '1122309841'],
+    ['Lumen Drift', '2020-11'],
+    ['vex', '2021-05'],
+    ['frostbyte', '2023-02'],
+    ['pashtet', '2022-06'],
+    ['Dorado', '2022-02', '1402219980'],
+    ['Okami_77', '2020-09'],
+    ['Mollik', '2020-08', '318840219'],
+    ['tofu', '2024-03'],
+    ['Kestrel', '2021-04'],
+    ['Marisol', '2023-12'],
+]
+const sampleFriends: SteamFriend[] = MOCKUP_FRIENDS.map(
+    ([nickname, since, accountId], index) => ({
+        steamId: toSteamId64(accountId ?? String(500_000 + index)),
+        since: Date.parse(`${since}-01`),
+        nickname,
+        avatar: '',
+    }),
+)
+
 export const libraryMock = defineMock<Library | null>(
     'profile.library',
     'Profile library',
     {
-        'Mockup library': { games: MOCKUP_GAMES.map(sampleGame) },
+        'Mockup library': {
+            games: MOCKUP_GAMES.map(sampleGame),
+            friends: sampleFriends,
+        },
         // Ids no store app has: rows stay unique and the tiles fall back to initials.
         'Two thousand games': {
             games: Array.from({ length: 2000 }, (_, index) => {
@@ -286,9 +317,15 @@ export const libraryMock = defineMock<Library | null>(
                     price,
                 ])
             }),
+            friends: Array.from({ length: 2000 }, (_, index) => ({
+                steamId: toSteamId64(String(600_000 + index)),
+                since: Date.UTC(2015, 0, 1) + index * 86_400_000,
+                nickname: `${MOCKUP_FRIENDS[index % MOCKUP_FRIENDS.length]?.[0]} ${index + 1}`,
+                avatar: '',
+            })),
         },
-        'Empty library': { games: [] },
-        'Hidden library': { games: null },
+        'Empty library': { games: [], friends: [] },
+        'Hidden library': { games: null, friends: null },
         'Not refreshed': null,
     },
 )

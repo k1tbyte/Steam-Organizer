@@ -89,7 +89,8 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - From this device's cache of the last refresh `[no web]`. States: loading, not refreshed, hidden library, empty library, no results.
 
 ### Friends tab `[new]`
-- Friend list: avatar, nickname, friend since, open profile; friend count.
+- Friend list: avatar, nickname, friend since, open profile; friend count. Friends that are vault accounts are marked In vault and open there.
+- Search by nickname; All / In vault; sort by friends since or name. From the last refresh's cache `[no web]`; no online status or level, which a cache cannot keep current.
 
 ### Steam Guard `[new]`
 - Import a maFile from the profile header; a file without `shared_secret` (an encrypted SDA one) or for another login is refused and says why.

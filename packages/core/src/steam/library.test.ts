@@ -56,6 +56,19 @@ function fakeFetch(calls: string[] = []) {
                           },
                       })
                     : new Response('{}', { status: 401 })
+            case '/ISteamUser/GetPlayerSummaries/v2/':
+                return Response.json({
+                    response: {
+                        players: (url.searchParams.get('steamids') ?? '')
+                            .split(',')
+                            .filter((id) => id === '1')
+                            .map((id) => ({
+                                steamid: id,
+                                personaname: 'One',
+                                avatarhash: 'h1',
+                            })),
+                    },
+                })
             case '/api/appdetails':
                 return Response.json(
                     Object.fromEntries(
@@ -101,8 +114,13 @@ it('reads a library and friends, an empty one as empty, and a hidden one as null
             { appId: 620 },
         ],
         friends: [
-            { steamId: '1', since: 1_600_000_000_000 },
-            { steamId: '2', since: null },
+            {
+                steamId: '1',
+                since: 1_600_000_000_000,
+                nickname: 'One',
+                avatar: 'h1',
+            },
+            { steamId: '2', since: null, nickname: '', avatar: '' },
         ],
     })
     expect(collections.get(HIDDEN)).toEqual({ games: null, friends: null })

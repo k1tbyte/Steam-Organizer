@@ -13,15 +13,16 @@ const props = defineProps<{ account: Account; details: ProfileData }>()
 
 const { t } = useI18n()
 const desktop = useDesktopLayout()
-const { library, status } = useLibrary(
+const { library, statusOf, missing } = useLibrary(
     () => props.account,
     () => props.details,
 )
+const status = statusOf((found) => found.games)
 const table = reactive(
     useGamesTable(
-        () => props.account,
         () => props.details,
         library,
+        missing,
     ),
 )
 </script>

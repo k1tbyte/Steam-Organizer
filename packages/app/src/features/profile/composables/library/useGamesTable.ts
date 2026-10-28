@@ -8,9 +8,6 @@ import {
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { Account } from '#features/accounts'
-import { useSteamApi } from '#features/steam'
-
 import type { ProfileData } from '../../model'
 import {
     FIRST_DIR,
@@ -27,12 +24,11 @@ const CAPSULES =
 
 /** The Games tab: search, Played / Unplayed, sorting by a column (a cycling button on phones) and each row's display. */
 export function useGamesTable(
-    account: MaybeRefOrGetter<Account>,
     details: MaybeRefOrGetter<ProfileData>,
     library: Ref<Library | null | undefined>,
+    missing: Ref<string>,
 ) {
     const { t, locale } = useI18n()
-    const reachable = useSteamApi().reachable
     const query = ref('')
     const filter = ref<GameFilter>('all')
     const order = ref<GameOrder>({ by: 'playtime', dir: -1 })
@@ -151,21 +147,7 @@ export function useGamesTable(
                         "This profile's game details are private on Steam.",
                     ),
                 }
-            if (toValue(account).lock?.scope === 'everything')
-                return {
-                    title: t('Games'),
-                    description: t(
-                        'A fully locked account keeps no game list on this device.',
-                    ),
-                }
-            return {
-                title: t('Games'),
-                description: reachable
-                    ? t('Refresh the account to see its games.')
-                    : t(
-                          'The game list comes with a refresh in the browser extension.',
-                      ),
-            }
+            return { title: t('Games'), description: missing.value }
         }),
         /** What one row shows; called only for the rows on screen. */
         rowOf(game: LibraryGame) {
