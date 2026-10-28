@@ -40,8 +40,3 @@ export interface BackupsVault {
     /** `device` vaults have no history: they are offered a move to Drive. */
     location: 'drive' | 'device'
 }
-
-export interface DriveIdentity {
-    name: string
-    email: string
-}

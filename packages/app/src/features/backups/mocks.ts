@@ -1,6 +1,6 @@
 import { defineMock } from '#core'
 
-import type { Backup, BackupsVault, DriveIdentity, SyncSnapshot } from './model'
+import type { Backup, BackupsVault, SyncSnapshot } from './model'
 
 const KB = 1024
 
@@ -134,18 +134,6 @@ export const vaultMock = defineMock<BackupsVault>(
             name: 'Farm',
             accounts: 42,
             location: 'device',
-        },
-    },
-)
-
-export const driveMock = defineMock<DriveIdentity>(
-    'backups.drive',
-    'Google account',
-    {
-        'Alex Kim': { name: 'Alex Kim', email: 'alex.kim@gmail.com' },
-        'Long address': {
-            name: 'Alexandra Kimberly-Wolfeschlegelstein',
-            email: 'alexandra.kimberly-wolfeschlegelstein@example-company-mail.com',
         },
     },
 )

@@ -18,7 +18,11 @@ it('waits for the Steam clock before a code of this instant', async () => {
         new Promise<Response>((resolve) => {
             answer = resolve
         })) as typeof globalThis.fetch
-    const app = createApp({}).provide(PLATFORM, { kind: 'extension', fetch })
+    const app = createApp({}).provide(PLATFORM, {
+        kind: 'extension',
+        fetch,
+        google: null,
+    })
     setActivePinia(createPinia())
     const codeOf = app.runWithContext(useGuardCodes)
 

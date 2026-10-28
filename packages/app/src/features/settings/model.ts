@@ -50,7 +50,6 @@ export interface SecuritySettings {
 export type SyncInterval = '5' | '15' | '30'
 
 export interface SyncSettings {
-    connected: boolean
     autoSync: boolean
     interval: SyncInterval
     autoBackup: boolean

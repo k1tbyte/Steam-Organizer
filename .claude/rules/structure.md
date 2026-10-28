@@ -43,6 +43,7 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | client state that survives a reload | `readStored` / `writeStored` with a key constant in `core/storage.ts`; `localStorage` fails lint. A store writes in its actions, never from a `watch`: Vue ties a watcher to the component whose setup first used the store and keeps that page alive |
 | failure | `reportError(error, scope, context?)`, the only `console.error` (`noConsole` fails lint) |
 | debounce, interval | `useTimer` from `@so/ui/useTimer` |
+| Google sign-in, a request to Drive | `useDrive()` from `#features/drive` (`run(work)` with `@so/core`'s `driveApi`); never `Platform.google` directly |
 | a link into a Settings section from a feature | `useSettingsLink()` from `#core` (the shell provides it): settings imports the features it configures, so they never import it |
 | a screen's title, count, status, search and actions in the shell topbar | `PageTopbar` with its `status`, `center`, `actions`, `back` slots; the route sets `meta.nav`. The parts stay mounted while their page is hidden, so a global listener in one checks `usePageActive()` |
 | the page's scroll element (a virtual list, scroll to top) | `useScrollRoot()` from `#core`: each page has its own; a section root (`meta.resident`) keeps its offset while hidden, any other page starts at the top |

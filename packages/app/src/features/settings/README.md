@@ -20,7 +20,6 @@ Mockup: `Settings.dc.html` (Settings · Desktop, Settings · Mobile, Settings ·
 |---|---|---|---|
 | `settings.about` (Update available, Up to date) | nav footer: version and "Update to" link | build version, update check | `useAboutApp` |
 | `settings.vault` (Main vault, Long name, Empty vault) | Vault info card, reset consequences, phone index vault name | vault records: name, accounts, Guard authenticators, created date | `sources/useVaultInfo` |
-| `settings.google` (Alex Kim, Long identity) | Sync identity card, "Synced N min ago" line on the sync card and the phone index | backups feature's Drive sign-in and sync | `sources/useDriveSync` |
 | `settings.backups` (Seven backups, One backup, None) | Backup history line, "also delete N backups" in reset | backups feature's backup list | `sources/useBackupsInfo` |
 | `settings.steam` (Firefox, Chromium all allowed, Nothing allowed) | site Allowed / Allow, Firefox note | browser site permissions and the browser kind (`Platform` has none yet) | `sources/useSteamAccess` |
 

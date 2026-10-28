@@ -5,7 +5,14 @@ import type { Platform } from './core'
 import { createEntry } from './entry'
 import { createAppRouter } from './router'
 
-export type { Platform } from './core'
+// What a shell needs to build its `GoogleAuth`.
+export {
+    DRIVE_SCOPE,
+    GOOGLE_CLIENT_ID,
+    type GoogleToken,
+    googleToken,
+} from '@so/core'
+export type { GoogleAuth, Platform } from './core'
 
 export interface MountOptions {
     platform: Platform

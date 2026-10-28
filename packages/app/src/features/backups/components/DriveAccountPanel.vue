@@ -18,7 +18,7 @@ const { t } = useI18n()
 const desktop = useDesktopLayout()
 const { vault } = useBackupsVault()
 const { accountsOf } = useBackupLabels()
-const { identity, autoBackup, autoSync, openSyncSettings } = useDriveAccount()
+const { identity, autoBackup, autoSync, openSyncSettings, disconnect } = useDriveAccount()
 </script>
 
 <!-- Desktop: the account, the vault and the two switches beside the history. Phones keep the address only. -->
@@ -41,7 +41,8 @@ const { identity, autoBackup, autoSync, openSyncSettings } = useDriveAccount()
                     </span>
                     <button
                         type="button"
-                        class="touch-target transition-colors duration-fast hover:text-danger">
+                        class="touch-target transition-colors duration-fast hover:text-danger"
+                        @click="disconnect">
                         {{ t('Disconnect') }}
                     </button>
                 </div>

@@ -36,6 +36,14 @@ const view = useSyncSection()
             </span>
             <template #actions>
                 <FpButton
+                    v-if="view.expired.value"
+                    size="sm"
+                    color="danger"
+                    :label="t('Sign in again')"
+                    :loading="view.connecting.value"
+                    @click="view.connect" />
+                <FpButton
+                    v-else
                     size="sm"
                     variant="outline"
                     :loading="view.syncing.value"
@@ -64,6 +72,7 @@ const view = useSyncSection()
                     size="sm"
                     color="accent"
                     :label="t('Connect')"
+                    :loading="view.connecting.value"
                     @click="view.connect" />
             </template>
         </IdentityCard>

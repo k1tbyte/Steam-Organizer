@@ -3,15 +3,16 @@ import { FpAlert, FpButton, useDesktopLayout } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { useDriveAccount } from '../composables/useDriveAccount'
 import { useSyncStatus } from '../composables/useSyncStatus'
 
 const { t } = useI18n()
 const desktop = useDesktopLayout()
 const status = useSyncStatus()
+const { signInAgain, connecting } = useDriveAccount()
 const state = computed(() => status.value?.state)
 </script>
 
-<!-- The button is shown only: signing in again waits on the Drive connection. -->
 <template>
     <FpAlert
         v-if="state === 'error'"
@@ -24,14 +25,21 @@ const state = computed(() => status.value?.state)
                 : t('Sign-in expired. Changes stay on this device.')
         ">
         <template v-if="desktop" #trailing>
-            <FpButton color="danger" size="sm" :label="t('Sign in again')" />
+            <FpButton
+                color="danger"
+                size="sm"
+                :label="t('Sign in again')"
+                :loading="connecting"
+                @click="signInAgain" />
         </template>
         <template v-else #actions>
             <FpButton
                 block
                 color="danger"
                 size="xl"
-                :label="t('Sign in again')" />
+                :label="t('Sign in again')"
+                :loading="connecting"
+                @click="signInAgain" />
         </template>
     </FpAlert>
     <FpAlert

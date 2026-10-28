@@ -52,19 +52,19 @@ Each shell has its own entry and passes its adapter. Only that adapter is import
 ```ts
 interface Platform {
   fetch: typeof fetch | null        // null = Steam API unavailable (web)
-  getGoogleToken(): Promise<string> // OAuth differs per shell
+  google: GoogleAuth | null         // token(interactive, hint), revoke(token), prepare(): OAuth differs per shell; null in the content script
   openApp?(path: string): void      // popup and content script: open the full app at a route
 }
 ```
 
 | Shell | `fetch` | Google OAuth |
 |---|---|---|
-| web | `null` | Google Identity Services token client |
-| extension | global `fetch` (host_permissions) | `identity.launchWebAuthFlow` |
+| web | `null` | Google Identity Services token client: a token only from a click (no silent renewal on the web) |
+| extension | global `fetch` (host_permissions) | `identity.launchWebAuthFlow`, implicit flow, `prompt=none` renews silently; token in `storage.session` |
 | desktop | `@tauri-apps/plugin-http` | system browser + loopback redirect (PKCE) |
 
 - Storage: IndexedDB in the web and extension shells (extension requests `unlimitedStorage`). Desktop keeps a device vault as a real file (below), not in the WebView's IndexedDB: a profile folder the user never sees, wiped with the WebView profile. The vault store is a small interface in `core` (`list`, `get`, `put`, `remove`, today's `vaultStore`): IndexedDB lives in `core`, the Tauri file adapter in the desktop shell, handed over through `Platform`. Caches may stay in the WebView's IndexedDB.
-- Drive via plain REST + token. No `gapi` - MV3 forbids remotely hosted code.
+- Drive via plain REST + token (`driveApi` in `core/drive`). No `gapi` - MV3 forbids remotely hosted code. One OAuth client of type Web application serves every shell (`GOOGLE_CLIENT_ID` in core): JS origins for the web, `https://<id>.chromiumapp.org/` redirects for Chrome and Edge (the dev build pins its ID with a manifest `key`; a store listing brings its own), `extensions.allizom.org` for Firefox. Desktop takes its own Desktop app client (loopback + PKCE). Scope `drive.appdata`: the app's hidden folder only; tokens are retired five minutes early (`googleToken`).
 
 ---
 

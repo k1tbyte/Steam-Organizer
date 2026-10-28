@@ -51,6 +51,19 @@ export {
     type VaultSlots,
 } from './crypto/keys'
 export type { Sealed } from './crypto/seal'
+export {
+    type DriveApi,
+    DriveError,
+    type DriveErrorKind,
+    type DriveFile,
+    driveApi,
+} from './drive/drive'
+export {
+    DRIVE_SCOPE,
+    GOOGLE_CLIENT_ID,
+    type GoogleToken,
+    googleToken,
+} from './drive/google'
 export { UnsupportedVaultError, WrongPasswordError } from './errors'
 export {
     isSteamKey,

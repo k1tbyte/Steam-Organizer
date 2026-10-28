@@ -1,6 +1,7 @@
 import type { Platform } from '@so/app'
 import { browser } from 'wxt/browser'
 
+import { extensionGoogle } from './google'
 import type { OpenAppMessage } from './messages'
 
 /** The full app page, opened on a route. */
@@ -13,6 +14,7 @@ export function openAppPage(path: string) {
 export const extensionPlatform: Platform = {
     kind: 'extension',
     fetch: globalThis.fetch.bind(globalThis),
+    google: extensionGoogle,
 }
 
 /** The popup closes once it hands over to the app tab. */
@@ -23,9 +25,10 @@ export const popupPlatform: Platform = {
     },
 }
 
-/** Content scripts reach tabs only through the background. */
+/** Content scripts reach tabs only through the background, and sign in to nothing. */
 export const contentPlatform: Platform = {
     ...extensionPlatform,
+    google: null,
     openApp(path) {
         const message: OpenAppMessage = { type: 'open-app', path }
         void browser.runtime.sendMessage(message)

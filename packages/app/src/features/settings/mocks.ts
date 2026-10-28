@@ -16,12 +16,6 @@ export interface VaultInfo {
     created: string
 }
 
-export interface GoogleAccount {
-    name: string
-    email: string
-    syncedMinutesAgo: number
-}
-
 export interface SteamAccess {
     grants: Record<SiteKey, boolean>
     /** Firefox asks for each site separately. */
@@ -53,23 +47,6 @@ export const vaultMock = defineMock<VaultInfo>('settings.vault', 'Vault', {
         created: '21 Oct 2026',
     },
 })
-
-export const googleMock = defineMock<GoogleAccount>(
-    'settings.google',
-    'Google account',
-    {
-        'Alex Kim': {
-            name: 'Alex Kim',
-            email: 'alex.kim@gmail.com',
-            syncedMinutesAgo: 2,
-        },
-        'Long identity': {
-            name: 'Alexandria Konstantinopoulou-Williams',
-            email: 'alexandria.konstantinopoulou.williams@example-company.com',
-            syncedMinutesAgo: 41,
-        },
-    },
-)
 
 export const backupsMock = defineMock<{ count: number }>(
     'settings.backups',

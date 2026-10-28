@@ -39,7 +39,7 @@ export function useSettingsSummary() {
             case 'security':
                 return lock.labelOf(store.security.lockAfter)
             case 'sync':
-                return store.sync.connected ? t('On') : t('Off')
+                return drive.connected.value ? t('On') : t('Off')
             case 'fields':
                 return t('{count} secret', {
                     count: secretCount(FIELD_KEYS, placement.value),

@@ -16,7 +16,6 @@ export const useSettingsStore = defineStore('settings', () => {
         biometrics: false,
     })
     const sync = ref<SyncSettings>({
-        connected: true,
         autoSync: true,
         interval: '15',
         autoBackup: true,

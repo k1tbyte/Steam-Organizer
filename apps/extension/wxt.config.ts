@@ -9,6 +9,10 @@ const STEAM_HOSTS = [
     'https://help.steampowered.com/*',
 ]
 
+// Public half of a dev key: a fixed extension ID, so Google's redirect URI stays registered. A store listing brings its own.
+const DEV_KEY =
+    'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlLiHw8/2zSc2dRwY8jZJjhMaEbhyq4+5cO+HlrEryj9808D/GYtcQEIzDt1TOqeaqbwB+9ttT/eAouW42iGssdiHySjs8fAT9875UFmn2Ge4SgBQZT6tt/aCA7y8uEQ4qUnnhDIOQ/iSowuzUgEtsUsEAJeZp+/E4Wk8xfPGGrY2+Ita/WgV0MXrPM7WhPKklpOlN5Z9ocsiKPVNKAuLK9csVfZpR1GQ4wb8esKHPEHECWWr2hvNTV4Z9Makfo/q6cJ1+Vz0TEbZhr2BTNy8m+BBALNts02hlxWgXx30/bBj0OOc1qx3q5Ps9GBgXFP17BsVf8R5ZqqSidAO2uOzgQIDAQAB'
+
 export default defineConfig({
     modules: ['@wxt-dev/module-vue'],
     manifestVersion: 3,
@@ -40,14 +44,20 @@ export default defineConfig({
             },
         ],
     }),
-    manifest: {
+    manifest: ({ browser }) => ({
         name: 'Steam Organizer',
-        permissions: ['storage', 'unlimitedStorage'],
-        // The Web API is fetched by the app pages only: no content script runs there.
-        host_permissions: [...STEAM_HOSTS, 'https://api.steampowered.com/*'],
+        ...(browser !== 'firefox' && { key: DEV_KEY }),
+        permissions: ['storage', 'unlimitedStorage', 'identity'],
+        // The Web APIs are fetched by the app pages only: no content script runs there.
+        host_permissions: [
+            ...STEAM_HOSTS,
+            'https://api.steampowered.com/*',
+            'https://www.googleapis.com/*',
+            'https://oauth2.googleapis.com/*',
+        ],
         // WXT hoists the UI's @font-face into the host document, which fetches the files as the page.
         web_accessible_resources: [
             { resources: ['assets/*.woff2'], matches: STEAM_HOSTS },
         ],
-    },
+    }),
 })
