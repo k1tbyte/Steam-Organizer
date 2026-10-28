@@ -3,6 +3,7 @@ import { defineMock } from '#core'
 import type { Account } from '#features/accounts'
 
 import type { CredentialField, CredentialKind, ProfileData } from './model'
+import type { Library, LibraryGame } from './services/library'
 
 /** One variant edits what the open account shows: its profile data, and the account fields the sections depend on. */
 export interface ProfileSample {
@@ -227,5 +228,67 @@ export const profileMock = defineMock<ProfileSample>(
         'Private profile': {
             details: (base) => ({ ...base, visibility: 'private' }),
         },
+    },
+)
+
+// The mockup's library: appid, name, hours, hours in the past two weeks, price.
+const MOCKUP_GAMES: [number, string, number, number, number | null][] = [
+    [730, 'Counter-Strike 2', 4210, 18.5, null],
+    [570, 'Dota 2', 2880, 0, null],
+    [252490, 'Rust', 1622, 9.2, 3999],
+    [440, 'Team Fortress 2', 1204, 0, null],
+    [359550, "Tom Clancy's Rainbow Six Siege", 920, 0, 1999],
+    [271590, 'Grand Theft Auto V', 640, 0, 2999],
+    [4000, "Garry's Mod", 530, 0, 999],
+    [105600, 'Terraria', 410, 0, 999],
+    [1245620, 'Elden Ring', 388, 0, 5999],
+    [1091500, 'Cyberpunk 2077', 212, 0, 5999],
+    [413150, 'Stardew Valley', 156, 3.1, 1499],
+    [892970, 'Valheim', 98, 0, 1999],
+    [1174180, 'Red Dead Redemption 2', 74, 0, 5999],
+    [620, 'Portal 2', 22, 0, 999],
+    [1086940, "Baldur's Gate 3", 0, 0, 5999],
+    [289070, "Sid Meier's Civilization VI", 0, 0, 5999],
+    [1172470, 'Apex Legends', 0, 0, null],
+]
+
+const sampleGame = ([
+    appId,
+    name,
+    hours,
+    recent,
+    price,
+]: (typeof MOCKUP_GAMES)[number]): LibraryGame => ({
+    appId,
+    name,
+    icon: '',
+    minutes: hours * 60,
+    recentMinutes: recent * 60,
+    price,
+})
+
+export const libraryMock = defineMock<Library | null>(
+    'profile.library',
+    'Profile library',
+    {
+        'Mockup library': { games: MOCKUP_GAMES.map(sampleGame) },
+        // Ids no store app has: rows stay unique and the tiles fall back to initials.
+        'Two thousand games': {
+            games: Array.from({ length: 2000 }, (_, index) => {
+                const [, name, hours, recent, price] = MOCKUP_GAMES[
+                    index % MOCKUP_GAMES.length
+                ] as (typeof MOCKUP_GAMES)[number]
+                return sampleGame([
+                    90_000_000 + index,
+                    `${name} ${index + 1}`,
+                    (hours * (index % 7)) % 900,
+                    recent,
+                    price,
+                ])
+            }),
+        },
+        'Empty library': { games: [] },
+        'Hidden library': { games: null },
+        'Not refreshed': null,
     },
 )

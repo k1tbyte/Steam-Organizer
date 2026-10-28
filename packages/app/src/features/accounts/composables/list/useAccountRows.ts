@@ -3,26 +3,14 @@ import { useResizeObserver } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { computed, type Ref, ref, watch } from 'vue'
 
-import { useScrollRoot } from '#core'
+import { assignSlots, offsetWithin, useScrollRoot } from '#core'
 
 import type { Account } from '../../model'
 import { buildRows, columnsFor, rowHeight } from '../../services/listRows'
-import { assignSlots } from '../../services/listSlots'
 import { useCardFieldsStore } from '../../stores/cardFields'
 import { useCardMetrics } from '../useCardMetrics'
 
 const OVERSCAN_ROWS = 3
-
-// Layout offsets ignore transforms: the list may mount inside a page that is still sliding in.
-function offsetWithin(el: HTMLElement, scroller: HTMLElement): number {
-    let top = 0
-    let node: HTMLElement | null = el
-    while (node && node !== scroller) {
-        top += node.offsetTop
-        node = node.offsetParent as HTMLElement | null
-    }
-    return top
-}
 
 /** The list as virtual rows of cards against the shell's scroll container. The column count follows the list's width and row heights come from the card layout, so no row is ever measured. */
 export function useAccountRows(

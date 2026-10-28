@@ -25,6 +25,10 @@ interface CachedPrice {
 }
 
 const aad = (id: string) => `cache:${id}`
+const listeners = new Set<(id: string) => void>()
+const changed = (id: string) => {
+    for (const listener of listeners) listener(id)
+}
 
 /** Steam data too large for vault records. An account's games and friends are personal, sealed with the vault key; store prices are public. */
 export const steamCache = {
@@ -57,9 +61,19 @@ export const steamCache = {
         await db.write(ACCOUNTS, (store) => {
             if (keep()) store.put(sealed, id)
         })
+        changed(id)
     },
-    forgetCollection: (id: string) =>
-        db.write(ACCOUNTS, (store) => store.delete(id)),
+    async forgetCollection(id: string) {
+        await db.write(ACCOUNTS, (store) => store.delete(id))
+        changed(id)
+    },
+    /** Calls `listener` with an account's id once its collection is written or dropped; returns the unsubscribe. */
+    onCollection(listener: (id: string) => void) {
+        listeners.add(listener)
+        return () => {
+            listeners.delete(listener)
+        }
+    },
 
     /** The prices in `currency` fetched after `since`, in hundredths; null for a free or unsold game. */
     async prices(currency: string, since: number) {

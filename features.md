@@ -84,9 +84,9 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Collapsible sections, state remembered.
 
 ### Games tab
-- Virtualized list: image, name, price, app ID, playtime.
-- Search by name; sort by price, name, ID, playtime; ascending / descending.
-- Cached first, then fetched `[no web]`. States: loading, empty library, no results.
+- Virtualized list: store image, name, playtime with a bar, past 2 weeks, price; a row opens the store page. Steam gives no last played for other users' libraries, achievements cost a request per game.
+- Search by name; All / Played / Unplayed; sort by playtime, past 2 weeks, name, price, ascending / descending.
+- From this device's cache of the last refresh `[no web]`. States: loading, not refreshed, hidden library, empty library, no results.
 
 ### Friends tab `[new]`
 - Friend list: avatar, nickname, friend since, open profile; friend count.

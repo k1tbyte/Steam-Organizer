@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { assignSlots } from './listSlots'
+import { assignSlots } from './slots'
 
 const slotsOf = (map: Map<string, number>) => Object.fromEntries(map)
 

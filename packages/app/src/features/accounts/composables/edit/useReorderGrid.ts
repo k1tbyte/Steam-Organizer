@@ -10,11 +10,10 @@ import {
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useScrollRoot, useScrollTop } from '#core'
+import { assignSlots, useScrollRoot, useScrollTop } from '#core'
 
 import type { Account } from '../../model'
 import { cornerInsetCss } from '../../services/cardLayout'
-import { assignSlots } from '../../services/listSlots'
 import {
     dropIndex,
     type Group,

@@ -20,6 +20,7 @@ import RemoveAuthenticatorDialog from './guard/RemoveAuthenticatorDialog.vue'
 import SteamGuardTab from './guard/SteamGuardTab.vue'
 import ProfileHero from './hero/ProfileHero.vue'
 import ProfileHeroPhone from './hero/ProfileHeroPhone.vue'
+import GamesTab from './library/GamesTab.vue'
 import AccountLockGate from './lock/AccountLockGate.vue'
 import AccountPasswordDialog from './lock/AccountPasswordDialog.vue'
 import LockAccountDialog from './lock/LockAccountDialog.vue'
@@ -144,9 +145,7 @@ const alias = reactive(
                     @lock="lockDialog.show" />
             </template>
             <template #games>
-                <FpEmpty :title="t('Games')" :description="t('The game list comes with Steam data.')">
-                    <template #leading><FpIcon name="icon-[lucide--gamepad-2]" /></template>
-                </FpEmpty>
+                <GamesTab :account="account" :details="details" />
             </template>
             <template #friends>
                 <FpEmpty :title="t('Friends')" :description="t('The friend list comes with Steam data.')">

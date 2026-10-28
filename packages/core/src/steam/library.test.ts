@@ -148,6 +148,8 @@ it('fetches only the prices it has no fresh copy of', async () => {
 })
 
 it('keeps a collection only for the vault that sealed it, and only while asked to', async () => {
+    const changed: string[] = []
+    const stop = steamCache.onCollection((id) => changed.push(id))
     const { key } = await createVault('first')
     const { key: other } = await createVault('second')
     const entry = { games: [], friends: null, fetchedAt: 1 }
@@ -158,4 +160,7 @@ it('keeps a collection only for the vault that sealed it, and only while asked t
     expect(await steamCache.collection(other, 'a1')).toBeNull()
     await steamCache.forgetCollection('a1')
     expect(await steamCache.collection(key, 'a1')).toBeNull()
+    stop()
+    await steamCache.forgetCollection('a1')
+    expect(changed).toEqual(['a2', 'a1', 'a1'])
 })

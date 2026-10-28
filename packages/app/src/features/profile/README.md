@@ -10,6 +10,7 @@ One account's page at `/accounts/:id` (`meta: { nav: 'accounts', hero: true }`; 
 - A locked account asks its own password even with the vault open (`composables/lock/useAccountGate` over `useUnlockForm` and `useAccountLocks` from accounts): credentials only, or everything but the nickname and avatar. "Forgot it? Use master password" switches the field when recovery is on and says so when it is off. Leaving the page (unmount or a kept page going inactive) or locking the vault locks it again. A sample opens with `demo`, and the master password check falls back to the demo session.
 - Refresh in the topbar (`useProfileRefresh`, not on web, an anonymous account or a closed lock) runs `useSteamRefresh` from accounts; a gone profile or a failure toasts, with Retry or Open Settings.
 - Steam links open the real Steam and SteamDB pages for the SteamID64 (`services/steamLinks.ts`).
+- Games (`components/library/`) lists the games this device cached at the account's last refresh (`useLibrary` over `steamCache` from `@so/core`, priced in that refresh's currency, read again when a refresh lands), virtual by rows (`usePageRows` from `#core`). `useGamesTable` holds the search, All / Played / Unplayed and the sort (a column header on desktop, a cycling button on phones; `services/library.ts`); a row opens the game's store page, its tile is the store capsule over initials. Web, a never refreshed account and an everything lock have no cache, a hidden library says so.
 - Steam Guard comes from `features/steam-guard`: the header control, and the tab's code (hold to show, copy while hidden) and revocation code. `useAuthenticator` imports a maFile from the header (a refused file replaces the Import row until another is picked) and removes the authenticator after the revocation code is confirmed saved. An anonymous account keeps Steam Guard.
 - Lock account is `?lock-account` (`useLockDialog`): a modal on desktop, a sheet on phones; the account stays open until the page is left. Change account password is `?account-password` (`useAccountPasswordDialog`): the current or master password proves a new password or takes the lock off (Remove lock).
 
@@ -20,9 +21,10 @@ Mockup: `Profile.dc.html` (Desktop, Mobile, Locked account, Mobile · Locked, Lo
 | Mock (variants) | UI built | Source | Wire in |
 |---|---|---|---|
 | `profile.details` (Sample accounts, Credentials locked, recovery on, Everything locked, no recovery, No linked services, Active bans, No Steam Guard, Private profile) | a sample account's profile; a vault account reads its last refresh, without per-ban dates | Steam gives no per-ban dates | `useProfile` |
+| `profile.library` (Mockup library, Two thousand games, Empty library, Hidden library, Not refreshed) | a sample account's Games tab | samples have no cache | `useLibrary` |
 
 `Sample accounts` derives a profile from any account; a1, a12 and a8 carry the mockup's own. Every other variant edits whichever account is open.
 
 Delete account asks first (`RemoveAccountsDialog` from `features/accounts`); the page then goes back to the list. The hero's tag button opens `AccountTagPicker` from `features/accounts`.
 
-Games and Friends are empty states until Steam data arrives.
+Friends is an empty state until its list is built.
