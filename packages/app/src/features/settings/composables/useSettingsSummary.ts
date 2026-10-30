@@ -5,12 +5,12 @@ import { useAppearancePref } from '#core'
 import { useFieldPlacement, useVaultTags } from '#features/accounts'
 import { useVaultServices } from '#features/linked-services'
 import { useSteamKey } from '#features/steam'
+import { useVaultSession } from '#features/vault'
 
 import type { SectionKey } from '../model'
 import { FIELD_KEYS, secretCount } from '../services/fieldSecrecy'
 import { useSettingsStore } from '../stores/settingsStore'
 import { useDriveSync } from './sources/useDriveSync'
-import { useVaultInfo } from './sources/useVaultInfo'
 import { useLockAfterOptions } from './useLockAfterOptions'
 
 /** Values on the phone index: each one reads what its section edits. */
@@ -20,7 +20,7 @@ export function useSettingsSummary() {
     const store = useSettingsStore()
     const { placement } = useFieldPlacement()
     const lock = useLockAfterOptions()
-    const vault = useVaultInfo()
+    const session = useVaultSession()
     const drive = useDriveSync()
     const steam = useSteamKey()
     const { tags } = useVaultTags()
@@ -49,7 +49,7 @@ export function useSettingsSummary() {
             case 'services':
                 return String(services.value.length)
             case 'vault':
-                return vault.value?.name ?? ''
+                return session.vault?.name ?? ''
             case 'steam':
                 return steam.key.value ? t('Key set') : t('Not set')
             case 'bots':
@@ -57,7 +57,7 @@ export function useSettingsSummary() {
         }
     }
 
-    const vaultName = computed(() => vault.value?.name ?? '')
+    const vaultName = computed(() => session.vault?.name ?? '')
     const syncLine = computed(() =>
         t('Google Drive · {status}', { status: drive.statusText.value }),
     )

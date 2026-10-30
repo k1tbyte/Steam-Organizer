@@ -2,8 +2,10 @@
 import { FpButton, FpFormRow, FpIcon, FpIconTile } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
+import { MAX_VAULT_NAME_LENGTH, ResetVaultDialog } from '#features/vault'
+
 import IdentityCard from '../../components/IdentityCard.vue'
-import ResetVaultDialog from '../../dialogs/reset/ResetVaultDialog.vue'
+import NameField from '../../components/NameField.vue'
 import { useVaultSection } from './useVaultSection'
 
 const { t } = useI18n()
@@ -16,14 +18,23 @@ const view = useVaultSection()
             <template #leading>
                 <FpIconTile name="icon-[lucide--vault]" color="accent" />
             </template>
-            <span class="font-semibold text-14 text-fg-1">{{ view.vault.value.name }}</span>
+            <NameField
+                v-if="view.renaming.value"
+                v-model="view.draft.value"
+                :maxlength="MAX_VAULT_NAME_LENGTH"
+                :label="t('Vault name')"
+                :message="undefined"
+                @save="view.saveRename"
+                @cancel="view.cancelRename"
+                @leave="view.saveRename" />
+            <span v-else class="truncate font-semibold text-14 text-fg-1">{{ view.vault.value.name }}</span>
             <span class="text-12.5 text-fg-3">{{ view.details.value }}</span>
-            <template #actions>
+            <template v-if="!view.renaming.value" #actions>
                 <FpButton
                     size="sm"
                     variant="ghost"
                     :label="t('Rename')"
-                    @click="view.rename" />
+                    @click="view.startRename" />
             </template>
         </IdentityCard>
         <FpFormRow
@@ -65,6 +76,6 @@ const view = useVaultSection()
                 </div>
             </div>
         </div>
-        <ResetVaultDialog v-model:open="view.resetOpen.value" />
+        <ResetVaultDialog v-model:open="view.resetOpen.value" :vault="view.vault.value" />
     </div>
 </template>

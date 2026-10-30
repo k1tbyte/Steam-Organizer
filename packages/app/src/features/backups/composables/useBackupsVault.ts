@@ -1,14 +1,9 @@
-import { readAccount } from '@so/core'
 import { computed } from 'vue'
 
 import { useDrive } from '#features/drive'
-import { useVaultSession, type VaultContents } from '#features/vault'
+import { tally, useVaultSession } from '#features/vault'
 
 import type { BackupsVault } from '../model'
-
-export const countAccounts = (contents: VaultContents | null) =>
-    [...(contents?.data.values() ?? [])].filter((data) => readAccount(data))
-        .length
 
 /** The open vault as backups see it. */
 export function useBackupsVault() {
@@ -19,7 +14,7 @@ export function useBackupsVault() {
         session.vault
             ? {
                   name: session.vault.name,
-                  accounts: countAccounts(session.contents),
+                  accounts: tally(session.contents).accounts,
               }
             : null,
     )

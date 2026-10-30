@@ -17,7 +17,13 @@ import {
 import { defineStore } from 'pinia'
 import { computed, ref, shallowRef, watch } from 'vue'
 
-import { reportError, useMock } from '#core'
+import {
+    LAST_VAULT_STORAGE_KEY,
+    readStored,
+    reportError,
+    useMock,
+    writeStored,
+} from '#core'
 
 import { DEMO_PASSWORD, DEMO_PIN, sessionMock } from '../mocks'
 import type { Credential, SessionState, UnlockResult } from '../model'
@@ -98,6 +104,7 @@ export const useVaultSession = defineStore('vault-session', () => {
         return run
     }
     const unlocked = ref(false)
+    const lastVaultId = ref(readStored(LAST_VAULT_STORAGE_KEY))
 
     const real = computed<SessionState | undefined>(() => {
         if (unlocked.value) return 'unlocked'
@@ -149,6 +156,10 @@ export const useVaultSession = defineStore('vault-session', () => {
     function open() {
         unlocked.value = true
         override.value = 'unlocked'
+        const id = opened.value?.vault.id
+        if (!id) return
+        lastVaultId.value = id
+        writeStored(LAST_VAULT_STORAGE_KEY, id)
     }
 
     /** Unwraps the picked vault's key, or the first one's. */
@@ -166,7 +177,9 @@ export const useVaultSession = defineStore('vault-session', () => {
         if (typeof key === 'string') return key
         // In the queue, from the latest file: a write that lands meanwhile is never undone.
         return serial(async () => {
-            const latest = storedVault(vault.id) ?? vault
+            // Removed meanwhile: opening or upgrading it would bring it back.
+            const latest = storedVault(vault.id)
+            if (!latest) return 'unreadable'
             try {
                 const next = await openVault(latest, key, credential.password)
                 if (next.vault !== latest) {
@@ -249,6 +262,35 @@ export const useVaultSession = defineStore('vault-session', () => {
                 reportError(error, 'vault-session', { vault: file.id })
                 return 'unreadable'
             }
+        })
+    }
+
+    /** Deletes a vault from this device after the writes queued before it. The open one drops its key and Steam cache,
+     *  so the state turns `locked` or `new` and the guard moves the page. */
+    function remove(id: string): Promise<void> {
+        return serial(async () => {
+            await vaultStore.remove(id)
+            vaults.value = (vaults.value ?? []).filter((item) => item.id !== id)
+            const active = opened.value
+            if (active?.vault.id !== id) return
+            opened.value = null
+            recordKeys.value = new Map()
+            keyEpoch++
+            unlocked.value = false
+            override.value = null
+            steamCache
+                .pruneCollections(active.key, () => false)
+                .catch((error) => reportError(error, 'steam-cache'))
+        })
+    }
+
+    /** Renames the open vault; the name labels it on this device and never enters the file. */
+    function rename(name: string): Promise<void> {
+        const id = opened.value?.vault.id
+        if (id === undefined) return Promise.resolve()
+        return serial(async () => {
+            const vault = storedVault(id)
+            if (vault) await save({ ...vault, name }, vault.file)
         })
     }
 
@@ -371,11 +413,15 @@ export const useVaultSession = defineStore('vault-session', () => {
     return {
         state,
         vaults: computed(() => vaults.value ?? []),
-        /** The open vault's id and name; null while none is open. */
+        /** The open vault's id, name and home; null while none is open. */
         vault: computed(() => {
             const vault = opened.value?.vault
-            return vault ? { id: vault.id, name: vault.name } : null
+            return vault
+                ? { id: vault.id, name: vault.name, home: vault.home }
+                : null
         }),
+        /** The vault opened last on this device, if any. */
+        lastVaultId: computed(() => lastVaultId.value),
         /** The open vault's records; null while none is open (mock mode, the demo restore). */
         contents: computed(() => opened.value?.contents ?? null),
         load,
@@ -386,6 +432,8 @@ export const useVaultSession = defineStore('vault-session', () => {
         verify,
         create,
         adopt,
+        remove,
+        rename,
         changePassword,
         transact,
         snapshot,

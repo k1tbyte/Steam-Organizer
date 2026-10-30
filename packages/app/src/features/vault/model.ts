@@ -9,6 +9,9 @@ export const LOCATION_ICON: Record<VaultLocation, string> = {
     folder: 'icon-[lucide--folder-open]',
 }
 
+/** Fits the unlock picker and a Drive backup's label. */
+export const MAX_VAULT_NAME_LENGTH = 64
+
 export type UnlockMethod = 'bio' | 'pin' | 'pw'
 
 export interface VaultSummary {

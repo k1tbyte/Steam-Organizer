@@ -56,7 +56,7 @@ export function useSteamAccess() {
         if (!draft.password) return router.replace('/welcome/password')
         creating.value = true
         try {
-            await session.create(draft.name, draft.password)
+            await session.create(draft.name.trim(), draft.password)
             if (key) await saveKey(key)
         } catch (error) {
             reportError(error, 'onboarding')

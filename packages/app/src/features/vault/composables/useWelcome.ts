@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 
 import { usePlatform } from '#core'
 
+import { useVaultSession } from '../stores/useVaultSession'
 import { useOnboardingFrame } from './useOnboardingFrame'
 
 export interface StartOption {
@@ -17,6 +18,7 @@ export function useWelcome() {
     const { t } = useI18n()
     const router = useRouter()
     const platform = usePlatform()
+    const session = useVaultSession()
     const { desktop } = useOnboardingFrame()
 
     // The phone frame trims the copy to fit.
@@ -79,5 +81,16 @@ export function useWelcome() {
         // Waits on the extension store listing.
     }
 
-    return { options, intro, assurance, webOnlyNotice, choose, getExtension }
+    return {
+        options,
+        intro,
+        assurance,
+        webOnlyNotice,
+        // Adding a vault from the unlock screen can go back to it.
+        back: computed(() =>
+            session.state === 'locked' ? '/unlock' : undefined,
+        ),
+        choose,
+        getExtension,
+    }
 }

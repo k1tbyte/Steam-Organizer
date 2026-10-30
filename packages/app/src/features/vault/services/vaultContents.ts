@@ -1,5 +1,6 @@
 import {
     openData,
+    readAccount,
     readRecords,
     type SealedRecord,
     type VaultFile,
@@ -54,4 +55,17 @@ export async function withChanges(
         records,
         data: await openInto(key, changed, new Map(contents.data)),
     }
+}
+
+/** Accounts in the vault and those with a Steam Guard authenticator; one hidden by an `everything` lock counts without. */
+export function tally(contents: VaultContents | null) {
+    let accounts = 0
+    let authenticators = 0
+    for (const data of contents?.data.values() ?? []) {
+        const account = readAccount(data)
+        if (!account) continue
+        accounts++
+        if (account.guard) authenticators++
+    }
+    return { accounts, authenticators }
 }

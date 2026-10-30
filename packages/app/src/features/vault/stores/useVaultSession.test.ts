@@ -77,7 +77,11 @@ it('snapshots after the writes queued before it; the key still reads that file a
     ])
     const before = await session.snapshot()
     expect(before?.contents.data.get('a')).toEqual({ n: 1 })
-    expect(session.vault).toEqual({ id: before?.file.id, name: 'Main' })
+    expect(session.vault).toEqual({
+        id: before?.file.id,
+        name: 'Main',
+        home: 'device',
+    })
 
     expect(await session.changePassword(PASSWORD, 'new one')).toBe(true)
     let read: SealedRecord[] = []
@@ -119,6 +123,56 @@ it('adopts a vault file from elsewhere with the password it was made with, and k
     expect(reloaded.vaults.map(({ id, name }) => [id, name])).toEqual([
         [backup.file.id, 'Restored'],
     ])
+})
+
+it('renames the open vault on this device and remembers it as the last opened', async () => {
+    const session = await reload()
+    await session.create('Main', PASSWORD)
+    const id = session.vault?.id
+    expect(session.lastVaultId).toBe(id)
+    await session.rename('Farm')
+    expect(session.vault?.name).toBe('Farm')
+
+    const reloaded = await reload()
+    expect(reloaded.vaults.map(({ id, name }) => [id, name])).toEqual([
+        [id, 'Farm'],
+    ])
+})
+
+it('removes a vault after the writes queued before it; the open one drops its key', async () => {
+    const session = await reload()
+    await session.create('Farm', PASSWORD)
+    const farm = session.vault?.id ?? ''
+    await session.create('Main', PASSWORD)
+    const main = session.vault?.id ?? ''
+
+    void session.transact(async (_, key) => [
+        await sealRecord(key, { id: 'a', updatedAt: 1, data: { n: 1 } }),
+    ])
+    await session.remove(main)
+    expect(session.state).toBe('locked')
+    expect(session.vault).toBeNull()
+    await session.transact(async (_, key) => [
+        await sealRecord(key, { id: 'b', updatedAt: 1, data: { n: 2 } }),
+    ])
+    expect((await vaultStore.list()).map(({ id }) => id)).toEqual([farm])
+
+    await session.remove(farm)
+    expect(session.state).toBe('new')
+    expect(await vaultStore.list()).toEqual([])
+})
+
+it('never opens a vault removed while its password was being checked', async () => {
+    const first = await reload()
+    await first.create('Main', PASSWORD)
+    const id = first.vault?.id ?? ''
+
+    const session = await reload()
+    const unlocking = session.unlock({ method: 'pw', password: PASSWORD }, id)
+    await session.remove(id)
+    expect(await unlocking).toBe('unreadable')
+    expect(session.vault).toBeNull()
+    expect(await vaultStore.list()).toEqual([])
 })
 
 it('lets drafts flush before the key drops', async () => {

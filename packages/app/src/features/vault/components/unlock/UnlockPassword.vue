@@ -68,5 +68,11 @@ const desktop = useDesktopLayout()
         <FpButton v-if="canUsePin" variant="ghost" color="accent" size="xl" @click="$emit('usePin')">
             {{ t('Use PIN') }}
         </FpButton>
+        <div class="flex items-center justify-center gap-1.5 text-13 text-fg-3">
+            {{ t('Forgot it?') }}
+            <FpButton variant="link" color="danger" @click="$emit('reset')">
+                {{ t('Reset vault') }}
+            </FpButton>
+        </div>
     </div>
 </template>

@@ -24,6 +24,9 @@ export const ACCOUNTS_VIEW_STORAGE_KEY = 'so:accounts:view'
 export const PROFILE_ID_FORMAT_STORAGE_KEY = 'so:profile:id-format'
 export const PROFILE_SECTIONS_STORAGE_KEY = 'so:profile:sections'
 
+// Vaults (features/vault): the one opened last, which the unlock screen offers first.
+export const LAST_VAULT_STORAGE_KEY = 'so:vault:last'
+
 // Google Drive (features/drive): the account this device backs up to; the token is never stored here.
 export const DRIVE_ACCOUNT_STORAGE_KEY = 'so:drive:account'
 

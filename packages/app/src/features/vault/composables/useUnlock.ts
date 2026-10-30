@@ -1,7 +1,8 @@
 import { type AsyncStatus, useDesktopLayout } from '@so/ui'
 import { useTimer } from '@so/ui/useTimer'
-import { computed, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 import { useMock } from '#core'
 
@@ -9,6 +10,7 @@ import { vaultsMock } from '../mocks'
 import { type Credential, LOCATION_ICON, type UnlockMethod } from '../model'
 import { isPinLocked, PIN_LENGTH, pinTriesLeft } from '../services/pinAttempts'
 import { useVaultSession } from '../stores/useVaultSession'
+import { useRemoveVault } from './useRemoveVault'
 
 // Lets the last dot paint before the PIN is judged.
 const PIN_SETTLE_MS = 160
@@ -26,6 +28,7 @@ const METHOD_ICON: Record<UnlockMethod, string> = {
 export function useUnlock() {
     const { t } = useI18n()
     const session = useVaultSession()
+    const router = useRouter()
     const desktop = useDesktopLayout()
     // Vaults on this device open with the master password only until PIN and Hello slots exist.
     const vaults = useMock(
@@ -46,12 +49,14 @@ export function useUnlock() {
         vaults.value?.length ? 'ready' : 'empty',
     )
 
-    const pickedVaultId = ref<string>()
+    const pickedVaultId = ref(session.lastVaultId ?? undefined)
     const vault = computed(
         () =>
             vaults.value?.find((item) => item.id === pickedVaultId.value) ??
             vaults.value?.[0],
     )
+    const resetOpen = ref(false)
+    const removal = reactive(useRemoveVault(vault))
     const vaultRows = computed(() =>
         (vaults.value ?? []).map((item) => ({
             ...item,
@@ -131,9 +136,14 @@ export function useUnlock() {
         return desktop.value ? method.value : phoneMethod.value
     })
 
+    // A vault removed during the animation leaves the picker on another one: that one stays locked.
     function succeed() {
+        const opened = vault.value?.id
         opening.value = true
-        timer.arm(OPENING_MS, session.open)
+        timer.arm(OPENING_MS, () => {
+            if (vault.value?.id === opened) session.open()
+            else opening.value = false
+        })
     }
 
     // An answer for a vault picked away meanwhile is dropped, with the key it unwrapped.
@@ -238,15 +248,12 @@ export function useUnlock() {
     }
 
     function addVault() {
-        // Waits on the add-vault flow.
+        void router.push('/welcome')
     }
 
     function removeFromDevice() {
-        // Waits on vault storage.
-    }
-
-    function resetVault() {
-        // Waits on the hold-to-reset flow.
+        pickerOpen.value = false
+        removal.ask()
     }
 
     return {
@@ -277,6 +284,7 @@ export function useUnlock() {
         switchToPin,
         addVault,
         removeFromDevice,
-        resetVault,
+        removal,
+        resetOpen,
     }
 }

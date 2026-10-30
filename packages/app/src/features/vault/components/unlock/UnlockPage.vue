@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
     FpAsyncView,
+    FpConfirmModal,
     FpEmpty,
     FpIcon,
     FpToggleGroup,
@@ -11,6 +12,7 @@ import { useI18n } from 'vue-i18n'
 
 import { useUnlock } from '../../composables/useUnlock'
 import BrandFrame from '../BrandFrame.vue'
+import ResetVaultDialog from '../reset/ResetVaultDialog.vue'
 import UnlockHello from './UnlockHello.vue'
 import UnlockOpening from './UnlockOpening.vue'
 import UnlockPassword from './UnlockPassword.vue'
@@ -47,7 +49,8 @@ const {
     switchToPin,
     addVault,
     removeFromDevice,
-    resetVault,
+    removal,
+    resetOpen,
 } = useUnlock()
 </script>
 
@@ -117,7 +120,7 @@ const {
                     :can-use-pin="canUsePin"
                     @submit="submitPassword"
                     @use-pin="switchToPin"
-                    @reset="resetVault" />
+                    @reset="resetOpen = true" />
                 <UnlockOpening v-else :vault-name="vault?.name ?? ''" />
             </div>
 
@@ -129,5 +132,16 @@ const {
                 </FpEmpty>
             </template>
         </FpAsyncView>
+        <ResetVaultDialog v-model:open="resetOpen" :vault />
+        <FpConfirmModal
+            v-model:open="removal.open"
+            :title="removal.title"
+            :description="t('Its accounts are deleted from this browser. Backups in Google Drive and exported files stay, and can bring it back.')"
+            :confirm-label="t('Remove')"
+            :cancel-label="t('Cancel')"
+            confirm-color="danger"
+            :error="removal.error"
+            :pending="removal.pending"
+            @confirm="removal.confirm" />
     </BrandFrame>
 </template>

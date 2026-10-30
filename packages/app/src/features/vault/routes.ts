@@ -13,7 +13,8 @@ export const vaultRoutes: RouteRecordRaw[] = [
     {
         path: '/welcome',
         component: () => import('./components/onboarding/OnboardingLayout.vue'),
-        meta: { vaultAccess: ['new'] },
+        // Locked too: Add vault on the unlock screen starts here.
+        meta: { vaultAccess: ['new', 'locked'] },
         children: [
             {
                 path: '',

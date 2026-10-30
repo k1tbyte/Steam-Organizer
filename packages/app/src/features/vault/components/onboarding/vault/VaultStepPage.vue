@@ -12,6 +12,7 @@ import { useI18n } from 'vue-i18n'
 
 import { useOnboardingFrame } from '../../../composables/useOnboardingFrame'
 import { useVaultStep } from '../../../composables/useVaultStep'
+import { MAX_VAULT_NAME_LENGTH } from '../../../model'
 import OnboardingStep from '../OnboardingStep.vue'
 import StorageChoice from './StorageChoice.vue'
 
@@ -44,6 +45,7 @@ const {
                 id="vault-name"
                 v-model="draft.name"
                 :size="fieldSize"
+                :maxlength="MAX_VAULT_NAME_LENGTH"
                 :aria-label="t('Vault name')"
                 :placeholder="t('Main vault')">
                 <template #leading><FpIcon name="icon-[lucide--vault]" /></template>

@@ -5,12 +5,11 @@ import { useI18n } from 'vue-i18n'
 
 import { usePageActive } from '#core'
 import { useDrive, useDriveProblem } from '#features/drive'
-import { useVaultSession } from '#features/vault'
+import { tally, useVaultSession } from '#features/vault'
 
 import type { BackupRow } from '../model'
 import { useBackupList } from '../stores/useBackupList'
 import { useBackupLabels } from './useBackupLabels'
-import { countAccounts } from './useBackupsVault'
 import { useSyncStatus } from './useSyncStatus'
 
 interface Saving {
@@ -123,7 +122,7 @@ export function useBackupHistory() {
         const meta = {
             vaultName: vault.name,
             kind: 'manual' as const,
-            accounts: countAccounts(snapshot.contents),
+            accounts: tally(snapshot.contents).accounts,
         }
         // Through the map's proxy, so the row shows.
         const entry = saving.get(op.at)

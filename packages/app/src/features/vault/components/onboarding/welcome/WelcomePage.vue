@@ -8,13 +8,14 @@ import StartOption from './StartOption.vue'
 import WebOnlyNotice from './WebOnlyNotice.vue'
 
 const { t } = useI18n()
-const { options, intro, assurance, webOnlyNotice, choose, getExtension } =
+const { options, intro, assurance, webOnlyNotice, back, choose, getExtension } =
     useWelcome()
 </script>
 
 <template>
     <OnboardingStep
         brand
+        :back
         :title="t('Your Steam accounts, encrypted on this device')"
         :description="intro">
         <div class="flex flex-col gap-2">
