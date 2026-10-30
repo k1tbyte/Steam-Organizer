@@ -13,7 +13,6 @@ export function useBackupLabels() {
     const { t } = useI18n()
 
     function titleOf(backup: Backup): string {
-        if (backup.name) return backup.name
         return backup.kind === 'auto' ? t('Auto backup') : t('Manual backup')
     }
 

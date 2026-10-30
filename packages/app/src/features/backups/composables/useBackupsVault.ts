@@ -1,13 +1,30 @@
+import { readAccount } from '@so/core'
 import { computed } from 'vue'
 
-import { useMock } from '#core'
+import { useDrive } from '#features/drive'
+import { useVaultSession, type VaultContents } from '#features/vault'
 
-import { vaultMock } from '../mocks'
+import type { BackupsVault } from '../model'
 
-/** The open vault as backups see it; waits on the vault feature. */
+export const countAccounts = (contents: VaultContents | null) =>
+    [...(contents?.data.values() ?? [])].filter((data) => readAccount(data))
+        .length
+
+/** The open vault as backups see it. */
 export function useBackupsVault() {
-    const vault = useMock(() => undefined, vaultMock)
-    const onDevice = computed(() => vault.value?.location === 'device')
+    const session = useVaultSession()
+    const drive = useDrive()
+
+    const vault = computed<BackupsVault | null>(() =>
+        session.vault
+            ? {
+                  name: session.vault.name,
+                  accounts: countAccounts(session.contents),
+              }
+            : null,
+    )
+    // Without Drive the vault has nowhere to keep backups.
+    const onDevice = computed(() => drive.state.value === 'disconnected')
 
     return { vault, onDevice }
 }

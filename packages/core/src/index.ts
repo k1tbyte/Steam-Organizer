@@ -52,6 +52,14 @@ export {
 } from './crypto/keys'
 export type { Sealed } from './crypto/seal'
 export {
+    type Backup,
+    type BackupKind,
+    type BackupMeta,
+    listBackups,
+    readBackup,
+    saveBackup,
+} from './drive/backups'
+export {
     type DriveApi,
     DriveError,
     type DriveErrorKind,
@@ -111,6 +119,7 @@ export {
     type OpenRecord,
     openData,
     openSecret,
+    parseVaultFile,
     readRecords,
     type SealedRecord,
     sealRecord,

@@ -1,6 +1,12 @@
 import 'fake-indexeddb/auto'
 
-import { sealRecord, steamCache, type VaultKey } from '@so/core'
+import {
+    readRecords,
+    type SealedRecord,
+    sealRecord,
+    steamCache,
+    type VaultKey,
+} from '@so/core'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, expect, it } from 'vitest'
 
@@ -60,6 +66,25 @@ it('changes the master password of the open vault', async () => {
     expect(await reloaded.unlock({ method: 'pw', password: 'new one' })).toBe(
         'opened',
     )
+})
+
+it('snapshots after the writes queued before it; the key still reads that file after a password change', async () => {
+    const session = await reload()
+    await session.create('Main', PASSWORD)
+    void session.transact(async (_, key) => [
+        await sealRecord(key, { id: 'a', updatedAt: 1, data: { n: 1 } }),
+    ])
+    const before = await session.snapshot()
+    expect(before?.contents.data.get('a')).toEqual({ n: 1 })
+    expect(session.vault).toEqual({ id: before?.file.id, name: 'Main' })
+
+    expect(await session.changePassword(PASSWORD, 'new one')).toBe(true)
+    let read: SealedRecord[] = []
+    await session.transact(async (_, key) => {
+        if (before) read = await readRecords(key, before.file)
+        return []
+    })
+    expect(read.map(({ id }) => id)).toEqual(['a'])
 })
 
 it('lets drafts flush before the key drops', async () => {

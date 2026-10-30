@@ -61,6 +61,24 @@ export async function createVault(
     return { file: await writeRecords(key, file, []), key }
 }
 
+/** A vault file from outside (a backup, an import): a newer format or a damaged file refuses. */
+export function parseVaultFile(text: string): VaultFile {
+    let file: Partial<VaultFile> | null
+    try {
+        file = JSON.parse(text)
+    } catch {
+        throw new UnsupportedVaultError()
+    }
+    const valid =
+        file?.format === VAULT_FORMAT &&
+        file.version === 1 &&
+        typeof file.id === 'string' &&
+        typeof file.body === 'string' &&
+        typeof file.slots?.password === 'object'
+    if (!valid) throw new UnsupportedVaultError()
+    return file as VaultFile
+}
+
 export async function unlockVault(
     file: VaultFile,
     password: string,

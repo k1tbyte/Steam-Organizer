@@ -1,22 +1,39 @@
-import { useTimer } from '@so/ui/useTimer'
-import { computed, type Ref, ref, watch, watchEffect } from 'vue'
+import {
+    type Backup,
+    DriveError,
+    readBackup,
+    readRecords,
+    type SealedRecord,
+    UnsupportedVaultError,
+} from '@so/core'
+import {
+    computed,
+    onScopeDispose,
+    type Ref,
+    ref,
+    shallowRef,
+    watch,
+    watchEffect,
+} from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useQueryOverlay } from '#core'
+import { reportError, useQueryOverlay } from '#core'
+import { useDrive, useDriveProblem } from '#features/drive'
+import { useVaultSession } from '#features/vault'
 
-import type { Backup } from '../model'
 import { formatDate } from '../services/backupFormat'
-import { passwordProblem } from '../services/restorePassword'
+import { restoredRecords } from '../services/restoredRecords'
 import { useBackupLabels } from './useBackupLabels'
 import { useBackupsVault } from './useBackupsVault'
 
-const RESTORE_MS = 1100
-// Mock: the real check opens the backup with the password.
-const DEMO_PASSWORD = 'demo'
-
 type Phase = 'form' | 'busy' | 'done'
 
-/** The restore dialog: `?restore=<backup id>`, the password check for older backups, then busy and done. */
+interface Problem {
+    title: string
+    description: string
+}
+
+/** The restore dialog: `?restore=<backup id>`, then busy and done. The open vault's key reads its own backups, whatever the password was then. */
 export function useRestoreBackup(backups: Readonly<Ref<Backup[] | undefined>>) {
     const { t } = useI18n()
     const {
@@ -25,13 +42,19 @@ export function useRestoreBackup(backups: Readonly<Ref<Backup[] | undefined>>) {
         show,
         close,
     } = useQueryOverlay('restore')
+    const session = useVaultSession()
+    const drive = useDrive()
+    const { problemOf } = useDriveProblem()
     const { vault } = useBackupsVault()
     const labels = useBackupLabels()
-    const timer = useTimer()
 
-    const password = ref('')
-    const problem = ref<string | null>(null)
+    const problem = shallowRef<Problem | null>(null)
     const phase = ref<Phase>('form')
+    // Bumped by each opening, each submit and the page going away: an older restore never lands or speaks for this one.
+    let attempt = 0
+    onScopeDispose(() => {
+        attempt++
+    })
 
     const backup = computed(() =>
         backups.value?.find(({ id }) => id === backupId.value),
@@ -45,8 +68,7 @@ export function useRestoreBackup(backups: Readonly<Ref<Backup[] | undefined>>) {
     // A flow starts over when it opens, not when it closes: the exit animation keeps its content.
     watch(isOpen, (opened) => {
         if (!opened) return
-        timer.cancel()
-        password.value = ''
+        attempt++
         problem.value = null
         phase.value = 'form'
     })
@@ -65,42 +87,78 @@ export function useRestoreBackup(backups: Readonly<Ref<Backup[] | undefined>>) {
             when: labels.whenOf(current),
             accounts: current.accounts,
             size: labels.sizeOf(current),
-            olderPassword: current.olderPassword === true,
             date: formatDate(current.createdAt),
         }
     })
 
-    function submit() {
+    function unreadable(error: unknown) {
+        if (error instanceof DriveError) return problemOf(error)
+        if (!(error instanceof UnsupportedVaultError))
+            reportError(error, 'backups')
+        return {
+            title: t("This backup can't be opened"),
+            description: t(
+                'It was made by a newer version of the app, or the file is damaged.',
+            ),
+        }
+    }
+
+    async function submit() {
         const current = backup.value
         if (current === undefined || phase.value !== 'form') return
-        if (current.olderPassword) {
-            const wrong = passwordProblem(password.value, DEMO_PASSWORD)
-            if (wrong !== null) {
-                problem.value =
-                    wrong === 'blank'
-                        ? t('Enter the password this backup was made with')
-                        : t('Wrong password for this backup')
-                return
-            }
-        }
+        const mine = ++attempt
+        const vaultId = session.vault?.id
+        problem.value = null
         phase.value = 'busy'
-        timer.arm(RESTORE_MS, () => {
-            phase.value = 'done'
-        })
+        const settle = (next: Phase, found: Problem | null = null) => {
+            if (mine !== attempt) return
+            phase.value = next
+            problem.value = found
+        }
+        let read: SealedRecord[] | undefined
+        try {
+            const file = await drive.run((api) => readBackup(api, current.id))
+            read = await session.withKey((key) => readRecords(key, file))
+        } catch (error) {
+            return settle('form', unreadable(error))
+        }
+        // Read under one vault's key, written only into that vault.
+        if (!read || mine !== attempt || session.vault?.id !== vaultId)
+            return settle('form')
+        const backupRecords = read
+        const restored: string[] = []
+        try {
+            await session.transact(async ({ records }) => {
+                const changed = restoredRecords(
+                    records,
+                    backupRecords,
+                    Date.now(),
+                )
+                restored.push(...changed.map(({ id }) => id))
+                return changed
+            })
+        } catch (error) {
+            reportError(error, 'backups')
+            return settle('form', {
+                title: t("Couldn't restore the backup"),
+                description: t(
+                    'Saving on this device failed; the vault stays as it was.',
+                ),
+            })
+        }
+        // A locked account may come back sealed under its key of that time.
+        for (const id of restored) session.dropKey(id)
+        settle('done')
     }
 
     return {
         open,
         summary,
         vault,
-        password,
         problem,
         busy: computed(() => phase.value === 'busy'),
         done: computed(() => phase.value === 'done'),
         show,
-        clearProblem: () => {
-            problem.value = null
-        },
         submit,
         close: () => close(),
     }

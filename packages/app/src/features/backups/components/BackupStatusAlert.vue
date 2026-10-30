@@ -9,7 +9,7 @@ import { useSyncStatus } from '../composables/useSyncStatus'
 const { t } = useI18n()
 const desktop = useDesktopLayout()
 const status = useSyncStatus()
-const { signInAgain, connecting } = useDriveAccount()
+const { connect, connecting } = useDriveAccount()
 const state = computed(() => status.value?.state)
 </script>
 
@@ -30,7 +30,7 @@ const state = computed(() => status.value?.state)
                 size="sm"
                 :label="t('Sign in again')"
                 :loading="connecting"
-                @click="signInAgain" />
+                @click="connect" />
         </template>
         <template v-else #actions>
             <FpButton
@@ -39,7 +39,7 @@ const state = computed(() => status.value?.state)
                 size="xl"
                 :label="t('Sign in again')"
                 :loading="connecting"
-                @click="signInAgain" />
+                @click="connect" />
         </template>
     </FpAlert>
     <FpAlert

@@ -1,13 +1,5 @@
 <script setup lang="ts">
-import {
-    FpAlert,
-    FpButton,
-    FpFormField,
-    FpIcon,
-    FpIconTile,
-    FpInput,
-    FpModal,
-} from '@so/ui'
+import { FpAlert, FpButton, FpIconTile, FpModal } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { useBackupLabels } from '../composables/useBackupLabels'
@@ -17,7 +9,7 @@ const props = defineProps<{ restore: RestoreBackup }>()
 
 const { t } = useI18n()
 const { accountsOf } = useBackupLabels()
-const { open, summary, vault, password, problem, busy, done } = props.restore
+const { open, summary, vault, problem, busy, done } = props.restore
 </script>
 
 <template>
@@ -36,7 +28,7 @@ const { open, summary, vault, password, problem, busy, done } = props.restore
                             <span class="text-12.5 text-fg-3">{{ summary.when }}</span>
                         </div>
                     </div>
-                    <dl class="grid grid-cols-3 gap-2 border-stroke-1 border-t border-dashed pt-3">
+                    <dl class="grid grid-cols-2 gap-2 border-stroke-1 border-t border-dashed pt-3">
                         <div class="flex flex-col gap-0.5">
                             <dt class="text-12 text-fg-3">{{ t('Accounts') }}</dt>
                             <dd class="font-mono font-semibold text-15 text-fg-1">{{ summary.accounts }}</dd>
@@ -45,33 +37,12 @@ const { open, summary, vault, password, problem, busy, done } = props.restore
                             <dt class="text-12 text-fg-3">{{ t('Size') }}</dt>
                             <dd class="font-mono font-semibold text-15 text-fg-1">{{ summary.size }}</dd>
                         </div>
-                        <div class="flex flex-col gap-0.5">
-                            <dt class="text-12 text-fg-3">{{ t('Password') }}</dt>
-                            <dd class="font-semibold text-13.5 text-fg-1">
-                                {{ summary.olderPassword ? t('Older') : t('Current') }}
-                            </dd>
-                        </div>
                     </dl>
                 </div>
                 <FpAlert color="warning">
                     {{ t('Replaces everything in {name} ({accounts} now). Changes made after this backup are lost.', { name: vault.name, accounts: accountsOf(vault.accounts) }) }}
                 </FpAlert>
-                <FpFormField
-                    v-if="summary.olderPassword"
-                    :label="t('Backup password')"
-                    :description="t('Made before you changed the master password')"
-                    :error="problem ?? undefined">
-                    <FpInput
-                        v-model="password"
-                        type="password"
-                        :placeholder="t('Password at that time')"
-                        @update:model-value="restore.clearProblem"
-                        @keydown.enter="restore.submit">
-                        <template #leading>
-                            <FpIcon name="icon-[lucide--key-round]" />
-                        </template>
-                    </FpInput>
-                </FpFormField>
+                <FpAlert v-if="problem" color="danger" :title="problem.title" :description="problem.description" />
             </div>
             <div v-else class="flex flex-col items-center gap-2.5 px-3 pt-4 pb-1 text-center">
                 <FpIconTile size="lg" color="success" name="icon-[lucide--circle-check]" />

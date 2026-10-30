@@ -56,10 +56,12 @@ const restore = useRestoreBackup(history.backups)
             <BackupHistory
                 :rows="history.rows.value"
                 :status="history.status.value"
+                :problem="history.failure.value"
                 @restore="restore.show"
                 @ask-delete="history.askDelete"
                 @cancel-delete="history.cancelDelete"
-                @remove="history.remove" />
+                @remove="history.remove"
+                @retry="history.retry" />
         </div>
         <DriveAccountPanel />
     </div>

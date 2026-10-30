@@ -120,7 +120,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 ## 7. Backups and Sync (Google Drive)
 
 - Connect / disconnect Google account; shows name, email, avatar.
-- Backup history: name, date. Restore: shows date, account count, size; asks backup password if it differs. Delete (confirm).
+- Backup history: kind, date. Restore: shows date, account count, size; the vault keeps its current master password. Delete (confirm).
 - Backup now `[new]`.
 - Auto backup after changes (setting).
 - Auto sync: check Drive on focus, interval and "sync now" `[new]`; newer cloud copy replaces local.

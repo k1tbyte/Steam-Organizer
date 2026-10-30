@@ -262,6 +262,23 @@ export const useVaultSession = defineStore('vault-session', () => {
         })
     }
 
+    /** The open vault's latest file and records, read in the queue: a write accepted before lands first. */
+    function snapshot(): Promise<
+        { file: VaultFile; contents: VaultContents } | undefined
+    > {
+        const target = opened.value
+        if (!target) return Promise.resolve(undefined)
+        return serial(async () => {
+            const vault = storedVault(target.vault.id)
+            if (!vault) return undefined
+            const contents =
+                opened.value?.vault === vault
+                    ? opened.value.contents
+                    : await openContents(target.key, vault.file)
+            return { file: vault.file, contents }
+        })
+    }
+
     /** Opens one record's secret part, with the record's own key when one is held; undefined while no vault is open or it holds no such record. */
     async function secretOf<Secret>(id: string): Promise<Secret | undefined> {
         const target = opened.value
@@ -320,6 +337,11 @@ export const useVaultSession = defineStore('vault-session', () => {
     return {
         state,
         vaults: computed(() => vaults.value ?? []),
+        /** The open vault's id and name; null while none is open. */
+        vault: computed(() => {
+            const vault = opened.value?.vault
+            return vault ? { id: vault.id, name: vault.name } : null
+        }),
         /** The open vault's records; null while none is open (mock mode, the demo restore). */
         contents: computed(() => opened.value?.contents ?? null),
         load,
@@ -331,6 +353,7 @@ export const useVaultSession = defineStore('vault-session', () => {
         create,
         changePassword,
         transact,
+        snapshot,
         secretOf,
         withKey,
         /** A record's held key, reactive; undefined while it is locked. */

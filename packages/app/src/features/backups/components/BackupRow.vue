@@ -34,12 +34,6 @@ const { t } = useI18n()
         </template>
         <template #badge>
             <FpBadge v-if="row.latest" color="accent" :label="t('Latest')" />
-            <FpBadge
-                v-if="row.olderPassword"
-                v-bind="tip(t('Made before the master password changed'))"
-                outline
-                icon="icon-[lucide--key-round]"
-                :label="t('Older password')" />
         </template>
         <template #meta>
             <span class="text-12.5 text-fg-3 tabular-nums">{{ row.meta }}</span>

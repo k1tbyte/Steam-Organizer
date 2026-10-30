@@ -25,13 +25,6 @@ const { t } = useI18n()
                 <div class="flex min-w-0 items-center gap-2">
                     <span class="truncate font-medium text-13.5 text-fg-1">{{ row.title }}</span>
                     <FpBadge v-if="row.latest" color="accent" :label="t('Latest')" />
-                    <span
-                        v-if="row.olderPassword"
-                        class="flex shrink-0 text-12 text-fg-3"
-                        role="img"
-                        :aria-label="t('Older password')">
-                        <FpIcon name="icon-[lucide--key-round]" />
-                    </span>
                 </div>
                 <span class="text-12 text-fg-3">{{ row.metaShort }}</span>
             </div>
