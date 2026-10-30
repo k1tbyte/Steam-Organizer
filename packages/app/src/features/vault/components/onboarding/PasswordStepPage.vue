@@ -10,8 +10,8 @@ import {
 } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import { useMasterPassword } from '../../composables/useMasterPassword'
-import { useOnboardingFrame } from '../../composables/useOnboardingFrame'
+import { useMasterPassword } from '../../composables/onboarding/useMasterPassword'
+import { useOnboardingFrame } from '../../composables/onboarding/useOnboardingFrame'
 import FieldNote from '../FieldNote.vue'
 import OnboardingStep from './OnboardingStep.vue'
 

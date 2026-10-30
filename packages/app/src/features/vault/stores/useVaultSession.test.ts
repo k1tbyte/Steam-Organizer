@@ -175,6 +175,26 @@ it('never opens a vault removed while its password was being checked', async () 
     expect(await vaultStore.list()).toEqual([])
 })
 
+it("replaces the open vault's records with another copy's, tombstoning the rest", async () => {
+    const session = await reload()
+    await session.create('Main', PASSWORD)
+    await session.transact(async (_, key) => [
+        await sealRecord(key, { id: 'a', updatedAt: 1, data: { n: 1 } }),
+    ])
+    const copy = await session.snapshot()
+    await session.transact(async (_, key) => [
+        await sealRecord(key, { id: 'a', updatedAt: 2, data: { n: 2 } }),
+        await sealRecord(key, { id: 'b', updatedAt: 2, data: { n: 3 } }),
+    ])
+    const records =
+        copy && (await session.withKey((key) => readRecords(key, copy.file)))
+    await session.replaceRecords(records ?? [])
+    expect([...(session.contents?.data ?? [])]).toEqual([['a', { n: 1 }]])
+    expect(
+        session.contents?.records.find(({ id }) => id === 'b'),
+    ).toMatchObject({ deleted: true })
+})
+
 it('lets drafts flush before the key drops', async () => {
     const session = await reload()
     await session.create('Main', PASSWORD)

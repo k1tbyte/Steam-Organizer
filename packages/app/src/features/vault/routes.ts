@@ -46,6 +46,12 @@ export const vaultRoutes: RouteRecordRaw[] = [
                 component: () =>
                     import('./components/onboarding/RestorePage.vue'),
             },
+            {
+                path: 'import',
+                name: 'import',
+                component: () =>
+                    import('./components/onboarding/ImportPage.vue'),
+            },
         ],
     },
     {

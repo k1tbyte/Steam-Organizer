@@ -2,7 +2,7 @@
 import { FpBadge, FpChoice, FpIcon, FpIconTile } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import type { StorageOption } from '../../../composables/useVaultStep'
+import type { StorageOption } from '../../../composables/onboarding/useVaultStep'
 
 defineProps<{ option: StorageOption }>()
 const { t } = useI18n()

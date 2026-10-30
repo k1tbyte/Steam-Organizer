@@ -1,15 +1,18 @@
 import { useToast } from '@so/ui'
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { reportError } from '#core'
 import { tally, useVaultSession } from '#features/vault'
+
+import { useImportVault } from './useImportVault'
 
 export function useVaultSection() {
     const { t } = useI18n()
     const session = useVaultSession()
     const toast = useToast()
     const resetOpen = ref(false)
+    const exportOpen = ref(false)
     const renaming = ref(false)
     const draft = ref('')
 
@@ -45,10 +48,6 @@ export function useVaultSection() {
         })
     }
 
-    // Export and Import open their own flows once the vault feature owns them.
-    function exportVault() {}
-    function importVault() {}
-
     return {
         vault: computed(() => session.vault),
         details,
@@ -60,7 +59,7 @@ export function useVaultSection() {
         cancelRename: () => {
             renaming.value = false
         },
-        exportVault,
-        importVault,
+        exportOpen,
+        importing: reactive(useImportVault()),
     }
 }

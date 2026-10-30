@@ -10,8 +10,8 @@ import {
 } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import { useOnboardingFrame } from '../../../composables/useOnboardingFrame'
-import { useVaultStep } from '../../../composables/useVaultStep'
+import { useOnboardingFrame } from '../../../composables/onboarding/useOnboardingFrame'
+import { useVaultStep } from '../../../composables/onboarding/useVaultStep'
 import { MAX_VAULT_NAME_LENGTH } from '../../../model'
 import OnboardingStep from '../OnboardingStep.vue'
 import StorageChoice from './StorageChoice.vue'

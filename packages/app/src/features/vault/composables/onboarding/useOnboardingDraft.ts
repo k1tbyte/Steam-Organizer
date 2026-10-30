@@ -1,6 +1,6 @@
 import { type InjectionKey, inject, provide, reactive } from 'vue'
 
-import type { VaultLocation } from '../model'
+import type { VaultLocation } from '../../model'
 
 /** What the vault step collects; the layout owns it, so Back from a later step keeps it. */
 export interface OnboardingDraft {

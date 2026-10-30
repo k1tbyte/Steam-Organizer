@@ -123,6 +123,7 @@ export {
     readRecords,
     type SealedRecord,
     sealRecord,
+    serializeVaultFile,
     type Tombstone,
     unlockVault,
     updateData,

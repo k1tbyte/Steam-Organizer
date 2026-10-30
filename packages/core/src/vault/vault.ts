@@ -61,6 +61,9 @@ export async function createVault(
     return { file: await writeRecords(key, file, []), key }
 }
 
+/** The file as Drive backups and exports hold it; `parseVaultFile` reads it back. */
+export const serializeVaultFile = (file: VaultFile) => JSON.stringify(file)
+
 /** A vault file from outside (a backup, an import): a newer format or a damaged file refuses. */
 export function parseVaultFile(text: string): VaultFile {
     let file: Partial<VaultFile> | null

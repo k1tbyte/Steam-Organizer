@@ -1,4 +1,8 @@
-import { parseVaultFile, type VaultFile } from '../vault/vault'
+import {
+    parseVaultFile,
+    serializeVaultFile,
+    type VaultFile,
+} from '../vault/vault'
 import type { DriveApi, DriveFile } from './drive'
 
 export type BackupKind = 'auto' | 'manual'
@@ -69,7 +73,7 @@ export async function saveBackup(
             kind: meta.kind,
             accounts: String(meta.accounts),
         },
-        JSON.stringify(file),
+        serializeVaultFile(file),
     )
     return toBackup(saved)
 }

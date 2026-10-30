@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n'
 import { formatDate, formatSize, formatTime, reportError } from '#core'
 import { type DriveProblem, useDrive, useDriveProblem } from '#features/drive'
 
-import { useVaultSession } from '../stores/useVaultSession'
+import { useVaultSession } from '../../stores/useVaultSession'
 
 /** Onboarding's restore: sign in to Google, pick a backup of any vault on that Drive, open it with the password it was made with. */
 export function useRestore() {
@@ -104,6 +104,13 @@ export function useRestore() {
     async function restore() {
         const backup = picked.value
         if (!backup || restoring.value) return
+        // Adopting would overwrite it unasked; its Backups page restores with a warning.
+        if (session.vaults.some(({ id }) => id === backup.vaultId)) {
+            problem.value = t(
+                'This vault is already on this device. Unlock it to restore a backup from its Backups page.',
+            )
+            return
+        }
         const mine = new AbortController()
         running = mine
         restoring.value = true

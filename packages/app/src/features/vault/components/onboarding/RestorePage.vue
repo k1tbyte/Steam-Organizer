@@ -13,8 +13,8 @@ import {
 } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import { useOnboardingFrame } from '../../composables/useOnboardingFrame'
-import { useRestore } from '../../composables/useRestore'
+import { useOnboardingFrame } from '../../composables/onboarding/useOnboardingFrame'
+import { useRestore } from '../../composables/onboarding/useRestore'
 import FieldNote from '../FieldNote.vue'
 import OnboardingStep from './OnboardingStep.vue'
 

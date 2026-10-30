@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FpButton, FpDropdownMenu } from '@so/ui'
 
-import { useLanguageMenu } from '../../../composables/useLanguageMenu'
+import { useLanguageMenu } from '../../../composables/onboarding/useLanguageMenu'
 
 const { items, current } = useLanguageMenu()
 </script>

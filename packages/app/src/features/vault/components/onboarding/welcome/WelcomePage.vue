@@ -2,7 +2,7 @@
 import { FpIcon } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import { useWelcome } from '../../../composables/useWelcome'
+import { useWelcome } from '../../../composables/onboarding/useWelcome'
 import OnboardingStep from '../OnboardingStep.vue'
 import StartOption from './StartOption.vue'
 import WebOnlyNotice from './WebOnlyNotice.vue'

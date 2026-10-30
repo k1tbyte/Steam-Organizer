@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { FpButton, FpFormRow, FpIcon, FpIconTile } from '@so/ui'
+import { FpButton, FpConfirmModal, FpFormRow, FpIcon, FpIconTile } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { MAX_VAULT_NAME_LENGTH, ResetVaultDialog } from '#features/vault'
 
 import IdentityCard from '../../components/IdentityCard.vue'
 import NameField from '../../components/NameField.vue'
+import ExportVaultDialog from '../../dialogs/export/ExportVaultDialog.vue'
 import { useVaultSection } from './useVaultSection'
 
 const { t } = useI18n()
@@ -42,8 +43,8 @@ const view = useVaultSection()
             inline
             class="mt-2.5"
             :label="t('Export')"
-            :description="t('Whole vault to an encrypted file with its own password')">
-            <FpButton size="sm" variant="soft" @click="view.exportVault">
+            :description="t('Whole vault to an encrypted file')">
+            <FpButton size="sm" variant="soft" @click="view.exportOpen.value = true">
                 <FpIcon name="icon-[lucide--download]" class="text-14" />
                 {{ t('Export…') }}
             </FpButton>
@@ -53,7 +54,7 @@ const view = useVaultSection()
             inline
             :label="t('Import')"
             :description="t('Replaces everything in this vault with the file\'s contents')">
-            <FpButton size="sm" variant="soft" @click="view.importVault">
+            <FpButton size="sm" variant="soft" @click="view.importing.pick">
                 <FpIcon name="icon-[lucide--upload]" class="text-14" />
                 {{ t('Import…') }}
             </FpButton>
@@ -77,5 +78,16 @@ const view = useVaultSection()
             </div>
         </div>
         <ResetVaultDialog v-model:open="view.resetOpen.value" :vault="view.vault.value" />
+        <ExportVaultDialog v-model:open="view.exportOpen.value" />
+        <FpConfirmModal
+            v-model:open="view.importing.open"
+            :title="view.importing.title"
+            :description="t('Every account here is replaced by the file\'s, and those it lacks are deleted. Other devices follow at their next sync.')"
+            :confirm-label="t('Replace')"
+            :cancel-label="t('Cancel')"
+            confirm-color="danger"
+            :error="view.importing.error"
+            :pending="view.importing.pending"
+            @confirm="view.importing.confirm" />
     </div>
 </template>

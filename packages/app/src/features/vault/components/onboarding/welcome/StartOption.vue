@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FpIcon, FpIconTile } from '@so/ui'
 
-import type { StartOption } from '../../../composables/useWelcome'
+import type { StartOption } from '../../../composables/onboarding/useWelcome'
 
 defineProps<{ option: StartOption }>()
 defineEmits<{ choose: [] }>()

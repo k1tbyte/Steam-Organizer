@@ -1,17 +1,8 @@
 <script setup lang="ts">
-import {
-    FpAlert,
-    FpButton,
-    FpFormField,
-    FpIcon,
-    FpIconTile,
-    FpInput,
-    FpModal,
-    FpSegmentedMeter,
-    FpShake,
-} from '@so/ui'
+import { FpAlert, FpButton, FpIconTile, FpModal } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
+import PasswordFields from './PasswordFields.vue'
 import { useChangePassword } from './useChangePassword'
 
 const open = defineModel<boolean>('open', { default: false })
@@ -26,43 +17,10 @@ const view = useChangePassword(open)
             id="change-master-password"
             class="flex flex-col gap-4"
             @submit.prevent="view.submit">
-            <FpFormField :label="t('Current password')" :error="view.currentError.value">
-                <FpShake :trigger="view.failedAttempts.value">
-                    <FpInput
-                        v-model="view.current.value"
-                        type="password"
-                        autocomplete="current-password"
-                        :placeholder="t('Master password')">
-                        <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
-                    </FpInput>
-                </FpShake>
-            </FpFormField>
-            <div class="flex flex-col gap-2.5">
-                <FpFormField :label="t('New password')">
-                    <FpInput
-                        v-model="view.next.value"
-                        type="password"
-                        autocomplete="new-password"
-                        :placeholder="view.lengthHint.value">
-                        <template #leading><FpIcon name="icon-[lucide--lock-keyhole]" /></template>
-                    </FpInput>
-                </FpFormField>
-                <FpSegmentedMeter
-                    :value="view.strength.value"
-                    :tone="view.strengthTone.value"
-                    :label="view.strengthLabel.value" />
-                <FpFormField :error="view.repeatError.value">
-                    <FpInput
-                        v-model="view.repeat.value"
-                        type="password"
-                        autocomplete="new-password"
-                        :aria-label="t('Repeat new password')"
-                        :placeholder="t('Repeat new password')"
-                        :valid="view.repeatMatches.value">
-                        <template #leading><FpIcon name="icon-[lucide--repeat-2]" /></template>
-                    </FpInput>
-                </FpFormField>
-            </div>
+            <PasswordFields
+                :fields="view.fields"
+                :next-label="t('New password')"
+                :repeat-label="t('Repeat new password')" />
             <FpAlert
                 :description="t('Accounts aren\'t re-encrypted, so this takes a moment. PIN and Windows Hello keep working. Other devices ask for the new password on their next unlock.')" />
         </form>
@@ -86,7 +44,7 @@ const view = useChangePassword(open)
                     type="submit"
                     form="change-master-password"
                     color="accent"
-                    :disabled="!view.canSubmit.value"
+                    :disabled="!view.fields.complete.value"
                     :loading="view.saving.value"
                     :label="t('Change password')" />
             </template>

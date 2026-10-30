@@ -3,7 +3,7 @@ import { FpButton, FpIcon } from '@so/ui'
 import logoUrl from '@so/ui/logo.svg'
 import { useI18n } from 'vue-i18n'
 
-import { useOnboardingFrame } from '../../composables/useOnboardingFrame'
+import { useOnboardingFrame } from '../../composables/onboarding/useOnboardingFrame'
 
 defineProps<{
     title: string

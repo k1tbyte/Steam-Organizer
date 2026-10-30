@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 
 import { usePlatform } from '#core'
 
-import { useVaultSession } from '../stores/useVaultSession'
+import { useVaultSession } from '../../stores/useVaultSession'
 import { useOnboardingFrame } from './useOnboardingFrame'
 
 export interface StartOption {
@@ -73,8 +73,7 @@ export function useWelcome() {
 
     function choose(key: StartOption['key']) {
         if (key === 'create') void router.push('/welcome/vault')
-        else if (key === 'restore') void router.push('/welcome/restore')
-        // Import encrypted file: waits on the vault file format.
+        else void router.push(`/welcome/${key}`)
     }
 
     function getExtension() {

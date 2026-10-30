@@ -21,7 +21,6 @@ import { formatDate, reportError, useQueryOverlay } from '#core'
 import { useDrive, useDriveProblem } from '#features/drive'
 import { useVaultSession } from '#features/vault'
 
-import { restoredRecords } from '../services/restoredRecords'
 import { useBackupLabels } from './useBackupLabels'
 import { useBackupsVault } from './useBackupsVault'
 
@@ -124,18 +123,8 @@ export function useRestoreBackup(backups: Readonly<Ref<Backup[] | undefined>>) {
         // Read under one vault's key, written only into that vault.
         if (!read || mine !== attempt || session.vault?.id !== vaultId)
             return settle('form')
-        const backupRecords = read
-        const restored: string[] = []
         try {
-            await session.transact(async ({ records }) => {
-                const changed = restoredRecords(
-                    records,
-                    backupRecords,
-                    Date.now(),
-                )
-                restored.push(...changed.map(({ id }) => id))
-                return changed
-            })
+            await session.replaceRecords(read)
         } catch (error) {
             reportError(error, 'backups')
             return settle('form', {
@@ -145,8 +134,6 @@ export function useRestoreBackup(backups: Readonly<Ref<Backup[] | undefined>>) {
                 ),
             })
         }
-        // A locked account may come back sealed under its key of that time.
-        for (const id of restored) session.dropKey(id)
         settle('done')
     }
 

@@ -4,8 +4,8 @@ import { useRouter } from 'vue-router'
 
 import { useMock } from '#core'
 
-import { driveAccountMock, folderAccessMock } from '../mocks'
-import { LOCATION_ICON, type VaultLocation } from '../model'
+import { driveAccountMock, folderAccessMock } from '../../mocks'
+import { LOCATION_ICON, type VaultLocation } from '../../model'
 import { useOnboardingDraft } from './useOnboardingDraft'
 
 export interface StorageOption {

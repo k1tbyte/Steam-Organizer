@@ -27,6 +27,7 @@ import {
 
 import { DEMO_PASSWORD, DEMO_PIN, sessionMock } from '../mocks'
 import type { Credential, SessionState, UnlockResult } from '../model'
+import { restoredRecords } from '../services/restoredRecords'
 import {
     EMPTY_CONTENTS,
     openContents,
@@ -338,6 +339,22 @@ export const useVaultSession = defineStore('vault-session', () => {
         })
     }
 
+    /** Makes another copy's records (a backup, an export) the open vault's: each stamped now, the rest tombstoned. */
+    async function replaceRecords(records: readonly SealedRecord[]) {
+        const restored: string[] = []
+        await transact(async (contents) => {
+            const changed = restoredRecords(
+                contents.records,
+                records,
+                Date.now(),
+            )
+            restored.push(...changed.map(({ id }) => id))
+            return changed
+        })
+        // A locked account may come back sealed under its key of that time.
+        for (const id of restored) dropKey(id)
+    }
+
     /** The open vault's latest file and records, read in the queue: a write accepted before lands first. */
     function snapshot(): Promise<
         { file: VaultFile; contents: VaultContents } | undefined
@@ -436,6 +453,7 @@ export const useVaultSession = defineStore('vault-session', () => {
         rename,
         changePassword,
         transact,
+        replaceRecords,
         snapshot,
         secretOf,
         withKey,

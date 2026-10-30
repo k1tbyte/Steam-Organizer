@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router'
 
 import { reportError } from '#core'
 
-import { useVaultSession } from '../stores/useVaultSession'
+import { useVaultSession } from '../../stores/useVaultSession'
 import { useOnboardingDraft } from './useOnboardingDraft'
 
 export function useSteamAccess() {

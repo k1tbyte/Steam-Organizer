@@ -109,7 +109,7 @@ export {
     type UseResizableOptions,
     useResizable,
 } from './composables/useResizable'
-export { openFilePicker } from './filePicker'
+export { openFilePicker, saveFile } from './filePicker'
 export {
     durationToken,
     easingToken,

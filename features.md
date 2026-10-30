@@ -130,8 +130,8 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 
 ## 8. Export / Import
 
-- Export the whole vault to an encrypted file (own password).
-- Import an encrypted file: replaces vault, warning first.
+- Export the whole vault to an encrypted file (the master password, or its own).
+- Import an encrypted file: replaces vault, warning first; only this vault's file, another vault's is added as a vault of its own (Add vault, Import encrypted file).
 
 ---
 

@@ -2,8 +2,8 @@
 import { FpButton, FpCard, FpDot, FpFormField, FpIcon, FpIconTile, FpInput } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import { useOnboardingFrame } from '../../composables/useOnboardingFrame'
-import { useSteamAccess } from '../../composables/useSteamAccess'
+import { useOnboardingFrame } from '../../composables/onboarding/useOnboardingFrame'
+import { useSteamAccess } from '../../composables/onboarding/useSteamAccess'
 import OnboardingStep from './OnboardingStep.vue'
 
 const { t } = useI18n()

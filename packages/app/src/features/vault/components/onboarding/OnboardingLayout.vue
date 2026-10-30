@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { provideOnboardingDraft } from '../../composables/useOnboardingDraft'
-import { useOnboardingFrame } from '../../composables/useOnboardingFrame'
+import { provideOnboardingDraft } from '../../composables/onboarding/useOnboardingDraft'
+import { useOnboardingFrame } from '../../composables/onboarding/useOnboardingFrame'
 import BrandFrame from '../BrandFrame.vue'
 import LanguageMenu from './welcome/LanguageMenu.vue'
 

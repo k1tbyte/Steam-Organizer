@@ -21,7 +21,8 @@ export function useOnboardingFrame() {
                 step: step.value,
                 total: STEPS,
             })
-        return route.name === 'restore' ? t('Restore') : undefined
+        if (route.name === 'restore') return t('Restore')
+        return route.name === 'import' ? t('Import') : undefined
     })
     const stepCounter = computed(() =>
         step.value ? `${step.value} / ${STEPS}` : undefined,
