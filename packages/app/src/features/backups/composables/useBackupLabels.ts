@@ -1,12 +1,8 @@
 import { useI18n } from 'vue-i18n'
 
+import { backupDay, formatDate, formatSize, formatTime } from '#core'
+
 import type { Backup } from '../model'
-import {
-    backupDay,
-    formatDate,
-    formatSize,
-    formatTime,
-} from '../services/backupFormat'
 
 /** How one backup reads on screen; the history and the restore dialog share it. */
 export function useBackupLabels() {

@@ -1,11 +1,7 @@
 import { defineMock } from '#core'
+import type { GoogleAccount } from '#features/drive'
 
-import type {
-    DriveAccount,
-    DriveBackups,
-    SessionState,
-    VaultSummary,
-} from './model'
+import type { SessionState, VaultSummary } from './model'
 
 /** What the demo accepts: no vault is decrypted yet. */
 export const DEMO_PIN = '123456'
@@ -49,34 +45,10 @@ export const vaultsMock = defineMock<VaultSummary[]>(
     },
 )
 
-export const driveAccountMock = defineMock<DriveAccount>(
+export const driveAccountMock = defineMock<GoogleAccount>(
     'vault.drive',
     'Google account',
     { 'Alex Kim': { name: 'Alex Kim', email: 'alex.kim@gmail.com' } },
-)
-
-export const backupsMock = defineMock<DriveBackups | null>(
-    'vault.backups',
-    'Drive backups',
-    {
-        'Latest and six more': {
-            latest: {
-                date: 'Oct 18, 2026 · 21:40',
-                meta: '128 accounts · 46 KB',
-                accounts: 128,
-            },
-            others: 6,
-        },
-        'Only one': {
-            latest: {
-                date: 'Oct 18, 2026 · 21:40',
-                meta: '128 accounts · 46 KB',
-                accounts: 128,
-            },
-            others: 0,
-        },
-        None: null,
-    },
 )
 
 export const folderAccessMock = defineMock<boolean>(

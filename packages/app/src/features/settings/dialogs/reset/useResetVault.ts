@@ -1,7 +1,8 @@
 import { computed, type Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useBackupsInfo } from '../../composables/sources/useBackupsInfo'
+import { useBackupCount } from '#features/backups'
+
 import { useVaultInfo } from '../../composables/sources/useVaultInfo'
 import { canContinueReset, RESET_STEPS } from '../../services/vaultReset'
 
@@ -9,7 +10,7 @@ import { canContinueReset, RESET_STEPS } from '../../services/vaultReset'
 export function useResetVault(open: Ref<boolean>) {
     const { t } = useI18n()
     const vault = useVaultInfo()
-    const backups = useBackupsInfo()
+    const backups = useBackupCount()
 
     const step = ref(1)
     const alsoDeleteBackups = ref(true)
@@ -28,7 +29,7 @@ export function useResetVault(open: Ref<boolean>) {
     const vaultName = computed(() => vault.value?.name ?? '')
     const accounts = computed(() => vault.value?.accounts ?? 0)
     const authenticators = computed(() => vault.value?.authenticators ?? 0)
-    const backupCount = computed(() => backups.value?.count ?? 0)
+    const backupCount = computed(() => backups.value ?? 0)
     const hasBackups = computed(() => backupCount.value > 0)
     const hasAuthenticators = computed(() => authenticators.value > 0)
 

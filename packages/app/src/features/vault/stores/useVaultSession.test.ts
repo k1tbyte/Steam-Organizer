@@ -6,6 +6,7 @@ import {
     sealRecord,
     steamCache,
     type VaultKey,
+    vaultStore,
 } from '@so/core'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, expect, it } from 'vitest'
@@ -85,6 +86,39 @@ it('snapshots after the writes queued before it; the key still reads that file a
         return []
     })
     expect(read.map(({ id }) => id)).toEqual(['a'])
+})
+
+it('adopts a vault file from elsewhere with the password it was made with, and keeps it', async () => {
+    const source = await reload()
+    await source.create('Main', PASSWORD)
+    await source.transact(async (_, key) => [
+        await sealRecord(key, { id: 'a', updatedAt: 1, data: { n: 1 } }),
+    ])
+    const backup = await source.snapshot()
+    await new Promise((resolve) => {
+        indexedDB.deleteDatabase('steam-organizer').onsuccess = resolve
+    })
+
+    const session = await reload()
+    if (!backup) throw new Error('no snapshot')
+    expect(await session.adopt('Restored', backup.file, 'nope')).toBe('wrong')
+    const given = new AbortController()
+    given.abort()
+    await expect(
+        session.adopt('Restored', backup.file, PASSWORD, given.signal),
+    ).rejects.toThrow()
+    expect(session.state).toBe('new')
+    expect(await vaultStore.list()).toEqual([])
+    expect(await session.adopt('Restored', backup.file, PASSWORD)).toBe(
+        'opened',
+    )
+    expect(session.state).toBe('unlocked')
+    expect(session.contents?.data.get('a')).toEqual({ n: 1 })
+
+    const reloaded = await reload()
+    expect(reloaded.vaults.map(({ id, name }) => [id, name])).toEqual([
+        [backup.file.id, 'Restored'],
+    ])
 })
 
 it('lets drafts flush before the key drops', async () => {

@@ -17,11 +17,10 @@ import {
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { reportError, useQueryOverlay } from '#core'
+import { formatDate, reportError, useQueryOverlay } from '#core'
 import { useDrive, useDriveProblem } from '#features/drive'
 import { useVaultSession } from '#features/vault'
 
-import { formatDate } from '../services/backupFormat'
 import { restoredRecords } from '../services/restoredRecords'
 import { useBackupLabels } from './useBackupLabels'
 import { useBackupsVault } from './useBackupsVault'

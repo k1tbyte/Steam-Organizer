@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { backupDay, formatDate, formatSize, formatTime } from './backupFormat'
+import { backupDay, formatDate, formatSize, formatTime } from './format'
 
 const at = (day: number, hour: number, minute = 0) =>
     new Date(2026, 9, day, hour, minute).getTime()

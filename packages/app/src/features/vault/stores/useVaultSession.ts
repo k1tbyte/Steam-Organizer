@@ -47,6 +47,23 @@ async function demoVerify(credential: Credential) {
         : credential.password === DEMO_PASSWORD
 }
 
+// A vault made before recovery slots gets one at its master-password unlock.
+async function openVault(
+    vault: StoredVault,
+    key: VaultKey,
+    password: string,
+): Promise<OpenVault> {
+    const contents = await openContents(key, vault.file)
+    const upgraded = await withRecovery(vault.file, key, password)
+    return upgraded
+        ? {
+              vault: { ...vault, file: upgraded.file },
+              key: upgraded.key,
+              contents,
+          }
+        : { vault, key, contents }
+}
+
 async function opens(
     vault: StoredVault,
     password: string,
@@ -151,33 +168,20 @@ export const useVaultSession = defineStore('vault-session', () => {
         return serial(async () => {
             const latest = storedVault(vault.id) ?? vault
             try {
-                const contents = await openContents(key, latest.file)
-                const upgraded = await withRecovery(
-                    latest.file,
-                    key,
-                    credential.password,
-                )
-                const current = upgraded
-                    ? { ...latest, file: upgraded.file }
-                    : latest
-                if (upgraded) {
-                    await vaultStore.put(current)
-                    remember(current)
+                const next = await openVault(latest, key, credential.password)
+                if (next.vault !== latest) {
+                    await vaultStore.put(next.vault)
+                    remember(next.vault)
                 }
-                const opening = {
-                    vault: current,
-                    key: upgraded?.key ?? key,
-                    contents,
-                }
-                opened.value = opening
+                opened.value = next
                 // Accounts deleted before this unlock leave their Steam cache; one deleted since may yet come back by Undo,
                 // and a lock or another vault keeps all.
                 steamCache
                     .pruneCollections(
-                        opening.key,
+                        next.key,
                         (id) =>
-                            contents.data.has(id) ||
-                            opened.value?.key !== opening.key ||
+                            next.contents.data.has(id) ||
+                            opened.value?.key !== next.key ||
                             opened.value.contents.data.has(id),
                     )
                     .catch((error) => reportError(error, 'steam-cache'))
@@ -216,6 +220,36 @@ export const useVaultSession = defineStore('vault-session', () => {
         opened.value = { vault, key, contents: EMPTY_CONTENTS }
         open()
         remember(vault)
+    }
+
+    /** Stores a vault file from elsewhere (a Drive backup) on this device, replacing one with its id, and opens it.
+     *  An aborted `signal` stops it with its reason up to the write; a write begun finishes and opens. */
+    async function adopt(
+        name: string,
+        file: VaultFile,
+        password: string,
+        signal?: AbortSignal,
+    ): Promise<UnlockResult> {
+        const vault: StoredVault = { id: file.id, name, home: 'device', file }
+        const key = await opens(vault, password)
+        if (typeof key === 'string') return key
+        return serial(async () => {
+            try {
+                signal?.throwIfAborted()
+                const next = await openVault(vault, key, password)
+                signal?.throwIfAborted()
+                await vaultStore.put(next.vault)
+                // One synchronous step: the guard never sees the stored vault as locked.
+                opened.value = next
+                open()
+                remember(next.vault)
+                return 'opened'
+            } catch (error) {
+                if (signal?.aborted) throw error
+                reportError(error, 'vault-session', { vault: file.id })
+                return 'unreadable'
+            }
+        })
     }
 
     async function save(
@@ -351,6 +385,7 @@ export const useVaultSession = defineStore('vault-session', () => {
         unlock,
         verify,
         create,
+        adopt,
         changePassword,
         transact,
         snapshot,

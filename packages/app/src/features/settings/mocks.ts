@@ -48,16 +48,6 @@ export const vaultMock = defineMock<VaultInfo>('settings.vault', 'Vault', {
     },
 })
 
-export const backupsMock = defineMock<{ count: number }>(
-    'settings.backups',
-    'Drive backups',
-    {
-        'Seven backups': { count: 7 },
-        'One backup': { count: 1 },
-        None: { count: 0 },
-    },
-)
-
 export const steamMock = defineMock<SteamAccess>(
     'settings.steam',
     'Steam access',

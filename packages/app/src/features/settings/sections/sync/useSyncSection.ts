@@ -2,7 +2,8 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-import { useBackupsInfo } from '../../composables/sources/useBackupsInfo'
+import { useBackupCount } from '#features/backups'
+
 import { useDriveSync } from '../../composables/sources/useDriveSync'
 import type { SyncInterval } from '../../model'
 import { useSettingsStore } from '../../stores/settingsStore'
@@ -14,7 +15,7 @@ export function useSyncSection() {
     const router = useRouter()
     const store = useSettingsStore()
     const drive = useDriveSync()
-    const backups = useBackupsInfo()
+    const backups = useBackupCount()
 
     const intervalItems = computed(() =>
         INTERVALS.map((minutes) => ({
@@ -26,7 +27,7 @@ export function useSyncSection() {
     const backupsLine = computed(() =>
         t(
             'No backups yet | {count} backup in Google Drive | {count} backups in Google Drive',
-            backups.value?.count ?? 0,
+            backups.value ?? 0,
         ),
     )
 

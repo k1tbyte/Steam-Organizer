@@ -28,17 +28,6 @@ export type Credential =
     | { method: 'pin'; pin: string }
     | { method: 'pw'; password: string }
 
-export interface DriveAccount {
-    name: string
-    email: string
-}
-
-export interface DriveBackups {
-    latest: { date: string; meta: string; accounts: number }
-    /** Older backups beyond the latest. */
-    others: number
-}
-
 declare module 'vue-router' {
     interface RouteMeta {
         /** Session states that may open the page; unset means unlocked only. */
