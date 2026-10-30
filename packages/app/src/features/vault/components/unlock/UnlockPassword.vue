@@ -29,7 +29,7 @@ const desktop = useDesktopLayout()
                     @keydown.enter="$emit('submit')">
                     <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
                     <template #trailing>
-                        <FpButton color="accent" size="xl" @click="$emit('submit')">
+                        <FpButton color="accent" size="xl" class="-mr-2.5" @click="$emit('submit')">
                             {{ t('Unlock') }}
                         </FpButton>
                     </template>
