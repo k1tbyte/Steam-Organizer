@@ -34,3 +34,19 @@ it('lets another context delete the database, then opens a fresh one', async () 
     })
     expect(await vaultStore.list()).toEqual([])
 })
+
+it('keeps the revision and the Drive link with the file', async () => {
+    const linked: StoredVault = {
+        ...vault('d', 'Synced'),
+        revision: 3,
+        sync: {
+            account: 'alex@x.com',
+            copyId: 'f1',
+            version: '12',
+            revision: 2,
+            syncedAt: 1,
+        },
+    }
+    await vaultStore.put(linked)
+    expect(await vaultStore.get('d')).toEqual(linked)
+})

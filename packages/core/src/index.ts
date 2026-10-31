@@ -117,6 +117,7 @@ export { type CachedCollection, steamCache } from './storage/steamCache'
 export {
     type StoredVault,
     type VaultHome,
+    type VaultSync,
     vaultStore,
 } from './storage/vaultStore'
 export { type MergedRecords, mergeRecords } from './vault/merge'

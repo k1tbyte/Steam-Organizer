@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 
 import FieldNote from '../FieldNote.vue'
 
-defineProps<{ message: string; attempts: number; pinLocked: boolean; canUsePin: boolean }>()
+defineProps<{ message: string; attempts: number; pinLocked: boolean; canUsePin: boolean; busy: boolean }>()
 defineEmits<{ submit: []; usePin: []; reset: [] }>()
 
 const password = defineModel<string>({ required: true })
@@ -29,7 +29,7 @@ const desktop = useDesktopLayout()
                     @keydown.enter="$emit('submit')">
                     <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
                     <template #trailing>
-                        <FpButton color="accent" size="xl" class="-mr-2.5" @click="$emit('submit')">
+                        <FpButton color="accent" size="xl" class="-mr-2.5" :loading="busy" @click="$emit('submit')">
                             {{ t('Unlock') }}
                         </FpButton>
                     </template>
@@ -64,7 +64,7 @@ const desktop = useDesktopLayout()
             </FpFormField>
         </FpShake>
         <span v-if="message" class="text-12.5 text-danger leading-snug">{{ message }}</span>
-        <FpButton block color="accent" size="2xl" @click="$emit('submit')">{{ t('Unlock') }}</FpButton>
+        <FpButton block color="accent" size="2xl" :loading="busy" @click="$emit('submit')">{{ t('Unlock') }}</FpButton>
         <FpButton v-if="canUsePin" variant="ghost" color="accent" size="xl" @click="$emit('usePin')">
             {{ t('Use PIN') }}
         </FpButton>

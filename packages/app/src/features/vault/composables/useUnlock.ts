@@ -1,10 +1,12 @@
+import { DriveError, listCopies, readCopy, type VaultFile } from '@so/core'
 import { type AsyncStatus, useDesktopLayout } from '@so/ui'
 import { useTimer } from '@so/ui/useTimer'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-import { useMock } from '#core'
+import { reportError, useMock } from '#core'
+import { useDrive } from '#features/drive'
 
 import { vaultsMock } from '../mocks'
 import { type Credential, LOCATION_ICON, type UnlockMethod } from '../model'
@@ -28,6 +30,7 @@ const METHOD_ICON: Record<UnlockMethod, string> = {
 export function useUnlock() {
     const { t } = useI18n()
     const session = useVaultSession()
+    const drive = useDrive()
     const router = useRouter()
     const desktop = useDesktopLayout()
     // Vaults on this device open with the master password only until PIN and Hello slots exist.
@@ -79,6 +82,8 @@ export function useUnlock() {
     const failedAttempts = ref(0)
     const passwordPaused = ref(false)
     const waitingForHello = ref(false)
+    // The password is being checked, and after a refusal maybe against the Drive copy.
+    const checkingPassword = ref(false)
     const opening = ref(false)
     const picked = ref<UnlockMethod>()
 
@@ -146,10 +151,31 @@ export function useUnlock() {
         })
     }
 
+    // A linked vault's copy may carry a password changed on another device. Only a silent token: no Google window here.
+    async function driveCopy(id: string): Promise<VaultFile | undefined> {
+        const sync = session.vaults.find((item) => item.id === id)?.sync
+        const email = drive.account.value?.email
+        if (!sync || drive.state.value !== 'connected') return undefined
+        if (sync.account !== null && sync.account !== email) return undefined
+        try {
+            return await drive.run(async (api) => {
+                const [copy] = await listCopies(api, id)
+                return copy && readCopy(api, copy.id)
+            })
+        } catch (error) {
+            if (!(error instanceof DriveError)) reportError(error, 'vault')
+            return undefined
+        }
+    }
+
     // An answer for a vault picked away meanwhile is dropped, with the key it unwrapped.
     async function attempt(credential: Credential) {
         const forVault = vault.value?.id
-        const result = await session.unlock(credential, forVault)
+        let result = await session.unlock(credential, forVault)
+        if (result === 'wrong' && credential.method === 'pw' && forVault) {
+            const copy = await driveCopy(forVault)
+            if (copy) result = await session.unlock(credential, forVault, copy)
+        }
         if (vault.value?.id === forVault) return result
         if (result === 'opened') session.lock()
         return null
@@ -197,9 +223,13 @@ export function useUnlock() {
 
     async function submitPassword() {
         if (password.value === '' || passwordPaused.value) return
+        if (checkingPassword.value) return
+        checkingPassword.value = true
         const result = await attempt({
             method: 'pw',
             password: password.value,
+        }).finally(() => {
+            checkingPassword.value = false
         })
         if (result === null) return
         if (result === 'opened') return succeed()
@@ -277,6 +307,7 @@ export function useUnlock() {
         pressDelete,
         password,
         passwordError,
+        checkingPassword,
         submitPassword,
         waitingForHello,
         startHello,

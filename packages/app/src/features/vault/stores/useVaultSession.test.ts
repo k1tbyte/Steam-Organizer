@@ -1,12 +1,16 @@
 import 'fake-indexeddb/auto'
 
 import {
+    createVault,
     readRecords,
+    changePassword as rewrap,
     type SealedRecord,
     sealRecord,
     steamCache,
+    type VaultFile,
     type VaultKey,
     vaultStore,
+    writeRecords,
 } from '@so/core'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, expect, it } from 'vitest'
@@ -81,6 +85,7 @@ it('snapshots after the writes queued before it; the key still reads that file a
         id: before?.file.id,
         name: 'Main',
         home: 'device',
+        sync: null,
     })
 
     expect(await session.changePassword(PASSWORD, 'new one')).toBe(true)
@@ -264,4 +269,222 @@ it('drops on unlock the Steam cache of accounts the vault no longer has', async 
     const key = sealedWith as VaultKey
     expect(await steamCache.collection(key, 'r1')).toEqual(entry)
     expect(await steamCache.collection(key, 'gone')).toBeNull()
+})
+
+const COPY = { account: 'alex@x.com', copyId: 'f1', version: '1' }
+
+/** A linked vault, its first push acknowledged, with record `a`. */
+async function synced() {
+    const session = await reload()
+    await session.create('Main', PASSWORD, true)
+    await session.transact(async (_, key) => [
+        await sealRecord(key, { id: 'a', updatedAt: 1, data: { n: 1 } }),
+    ])
+    const pushed = await merged(session, null)
+    if (!pushed) throw new Error('not linked')
+    expect(await session.markSynced(pushed.receipt, COPY)).toBe(true)
+    return { session, file: pushed.file, id: pushed.file.id }
+}
+
+/** `file` with `records` written over it, as another device would push it. */
+async function copyWith(
+    session: ReturnType<typeof useVaultSession>,
+    file: VaultFile,
+    records: (key: VaultKey) => Promise<SealedRecord[]>,
+) {
+    const copy = await session.withKey(async (key) =>
+        writeRecords(key, file, [
+            ...(await readRecords(key, file)),
+            ...(await records(key)),
+        ]),
+    )
+    if (!copy) throw new Error('no vault open')
+    return copy
+}
+
+const stored = async (id: string) => vaultStore.get(id)
+
+async function merged(
+    session: ReturnType<typeof useVaultSession>,
+    copy: VaultFile | null,
+) {
+    const result = await session.mergeCopy(copy)
+    if (!result) throw new Error('not linked')
+    return result
+}
+
+it('moves the revision with every change to the file, but not with a rename', async () => {
+    const session = await reload()
+    await session.create('Main', PASSWORD)
+    const id = session.vault?.id ?? ''
+    expect((await stored(id))?.revision).toBe(0)
+    await session.transact(async (_, key) => [
+        await sealRecord(key, { id: 'a', updatedAt: 1, data: { n: 1 } }),
+    ])
+    expect((await stored(id))?.revision).toBe(1)
+    await session.rename('Farm')
+    expect((await stored(id))?.revision).toBe(1)
+    await session.changePassword(PASSWORD, 'new one')
+    expect((await stored(id))?.revision).toBe(2)
+    expect(session.vault?.sync).toBeNull()
+})
+
+it('creates a linked vault with its first push pending', async () => {
+    const session = await reload()
+    await session.create('Main', PASSWORD, true)
+    expect(session.vault?.sync).toEqual({ syncedAt: null, pending: true })
+    const pushed = await merged(session, null)
+    expect(pushed?.push).toBe(true)
+    await session.markSynced(pushed.receipt, COPY)
+    expect(session.vault?.sync?.pending).toBe(false)
+    expect((await stored(pushed.file.id))?.sync).toMatchObject({
+        ...COPY,
+        revision: 0,
+    })
+})
+
+it('takes a newer record from the copy without asking for a push', async () => {
+    const { session, file } = await synced()
+    const copy = await copyWith(session, file, async (key) => [
+        await sealRecord(key, { id: 'a', updatedAt: 2, data: { n: 2 } }),
+    ])
+    const result = await merged(session, copy)
+    expect(result.push).toBe(false)
+    expect(session.contents?.data.get('a')).toEqual({ n: 2 })
+    // The merge wrote the file: the receipt carries that revision, so marking it leaves nothing pending.
+    await session.markSynced(result.receipt, { ...COPY, version: '2' })
+    expect(session.vault?.sync?.pending).toBe(false)
+})
+
+it('asks for a push when this device has a record the copy lacks', async () => {
+    const { session, file } = await synced()
+    await session.transact(async (_, key) => [
+        await sealRecord(key, { id: 'b', updatedAt: 3, data: { n: 3 } }),
+    ])
+    const result = await merged(session, file)
+    expect(result.push).toBe(true)
+    expect(session.contents?.data.get('b')).toEqual({ n: 3 })
+})
+
+it("adopts the copy's newer slots: after a reload the old password is refused", async () => {
+    const { session, file, id } = await synced()
+    const copy = await rewrap(file, PASSWORD, 'new one')
+    expect((await session.mergeCopy(copy))?.push).toBe(false)
+
+    const reloaded = await reload()
+    expect(
+        await reloaded.unlock({ method: 'pw', password: PASSWORD }, id),
+    ).toBe('wrong')
+    expect(
+        await reloaded.unlock({ method: 'pw', password: 'new one' }, id),
+    ).toBe('opened')
+})
+
+it('writes nothing for a copy the key cannot open', async () => {
+    const { session, file, id } = await synced()
+    const before = await stored(id)
+    const other = await createVault(PASSWORD)
+    const foreign = { ...other.file, id }
+    await expect(session.mergeCopy(foreign)).rejects.toThrow()
+    await expect(session.mergeCopy({ ...file, id: 'other' })).rejects.toThrow()
+    expect(await stored(id)).toEqual(before)
+})
+
+it('keeps a write after the receipt pending', async () => {
+    const { session } = await synced()
+    await session.transact(async (_, key) => [
+        await sealRecord(key, { id: 'b', updatedAt: 3, data: { n: 3 } }),
+    ])
+    const pushing = await merged(session, null)
+    await session.transact(async (_, key) => [
+        await sealRecord(key, { id: 'c', updatedAt: 4, data: { n: 4 } }),
+    ])
+    expect(await session.markSynced(pushing.receipt, COPY)).toBe(true)
+    expect(session.vault?.sync?.pending).toBe(true)
+})
+
+it('refuses a receipt for a vault removed or linked again since', async () => {
+    const { session, id } = await synced()
+    const relinked = await merged(session, null)
+    await session.unlink()
+    expect(session.vault?.sync).toBeNull()
+    expect(await session.markSynced(relinked.receipt, COPY)).toBe(false)
+    await session.link()
+    expect(await session.markSynced(relinked.receipt, COPY)).toBe(false)
+    expect(session.vault?.sync).toEqual({ syncedAt: null, pending: true })
+
+    const removed = await merged(session, null)
+    await session.remove(id)
+    expect(await session.markSynced(removed.receipt, COPY)).toBe(false)
+    expect(await stored(id)).toBeUndefined()
+})
+
+it('hands a lock the file with a draft flushed at that lock', async () => {
+    const { session } = await synced()
+    let key: VaultKey | undefined
+    await session.withKey(async (held) => {
+        key = held
+    })
+    let left: Promise<unknown> = Promise.resolve()
+    // The engine registers first; the draft still lands before the snapshot is read.
+    session.onLocked((snapshot) => {
+        left = snapshot
+    })
+    session.onBeforeLock(() => {
+        void session.transact(async (_, held) => [
+            await sealRecord(held, { id: 'draft', updatedAt: 5, data: {} }),
+        ])
+    })
+    session.lock()
+    const snapshot = (await left) as { file: VaultFile } | undefined
+    if (!snapshot || !key) throw new Error('no snapshot')
+    const records = await readRecords(key, snapshot.file)
+    expect(records.map(({ id }) => id)).toContain('draft')
+})
+
+it('counts a recovery slot added to an adopted copy as a change to push', async () => {
+    const source = await reload()
+    await source.create('Main', PASSWORD)
+    const made = await source.snapshot()
+    if (!made) throw new Error('no snapshot')
+    await new Promise((resolve) => {
+        indexedDB.deleteDatabase('steam-organizer').onsuccess = resolve
+    })
+    const session = await reload()
+    const { password } = made.file.slots
+    expect(
+        await session.adopt(
+            'Main',
+            { ...made.file, slots: { password } },
+            PASSWORD,
+            undefined,
+            COPY,
+        ),
+    ).toBe('opened')
+    expect(session.vault?.sync?.pending).toBe(true)
+    const pushed = await merged(session, made.file)
+    expect(pushed?.push).toBe(true)
+    expect(pushed?.file.slots.recovery).toBeDefined()
+
+    const plain = await reload()
+    expect(
+        await plain.adopt('Main', made.file, PASSWORD, undefined, COPY),
+    ).toBe('opened')
+    expect(plain.vault?.sync?.pending).toBe(false)
+})
+
+it("unlocks with the copy's newer password and keeps it", async () => {
+    const { file, id } = await synced()
+    const copy = await rewrap(file, PASSWORD, 'new one')
+    const other = await createVault('new one')
+
+    const session = await reload()
+    const typed = { method: 'pw', password: 'new one' } as const
+    expect(await session.unlock(typed, id)).toBe('wrong')
+    expect(await session.unlock(typed, id, { ...other.file, id })).toBe('wrong')
+    expect(await session.unlock(typed, id, copy)).toBe('opened')
+    expect(session.contents?.data.get('a')).toEqual({ n: 1 })
+
+    const reloaded = await reload()
+    expect(await reloaded.unlock(typed, id)).toBe('opened')
 })

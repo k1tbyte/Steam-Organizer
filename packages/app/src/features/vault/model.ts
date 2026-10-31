@@ -1,3 +1,5 @@
+import type { VaultFile } from '@so/core'
+
 /** `new`: no vault yet (onboarding), `locked`: unlock screen, `unlocked`: the app. */
 export type SessionState = 'new' | 'locked' | 'unlocked'
 
@@ -21,6 +23,33 @@ export interface VaultSummary {
     /** The picker's second line: size and where it lives or last synced. */
     meta: string
     methods: UnlockMethod[]
+}
+
+/** What a sync pushes and then confirms with `markSynced`: the stored link and revision that file holds. */
+export interface SyncReceipt {
+    vaultId: string
+    revision: number
+    /** The Drive copy the vault was linked to when the file was read. */
+    link: {
+        account: string | null
+        copyId: string | null
+        version: string | null
+    }
+    /** Moves with every link and unlink on this device: a receipt from before one is refused. */
+    linkEpoch: number
+}
+
+/** The open vault's file after a merge with its Drive copy; `push` when the copy lacks something. */
+export interface MergedCopy {
+    file: VaultFile
+    receipt: SyncReceipt
+    push: boolean
+}
+
+/** The file a lock left with changes still to push. */
+export interface LockedSnapshot {
+    file: VaultFile
+    receipt: SyncReceipt
 }
 
 /** `unreadable`: a damaged file or a newer format, which no credential opens. */

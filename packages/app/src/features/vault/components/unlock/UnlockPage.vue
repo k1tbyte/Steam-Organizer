@@ -42,6 +42,7 @@ const {
     pressDelete,
     password,
     passwordError,
+    checkingPassword,
     submitPassword,
     waitingForHello,
     startHello,
@@ -118,6 +119,7 @@ const {
                     :attempts="failedAttempts"
                     :pin-locked="pinLocked"
                     :can-use-pin="canUsePin"
+                    :busy="checkingPassword"
                     @submit="submitPassword"
                     @use-pin="switchToPin"
                     @reset="resetOpen = true" />
