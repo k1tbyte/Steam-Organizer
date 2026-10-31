@@ -42,6 +42,11 @@ export function useSyncStatus() {
         error: t('Sync failed'),
         offline: t('Offline'),
     }))
+    const errors = computed(() => ({
+        expired: t('Sign-in expired'),
+        disconnected: t('Not connected'),
+        failed: t('Sync failed'),
+    }))
 
     // A sign-in that needs the user, or no network, outranks what the last sync said.
     const state = computed<SyncState | undefined>(() => {
@@ -63,21 +68,26 @@ export function useSyncStatus() {
         return formatAgo(syncedAt, minute.value) ?? t('just now')
     })
 
+    // Why it is `error`: the sign-in, no Google account, or the last run (Retry may help).
+    const cause = computed(() => {
+        if (state.value !== 'error') return undefined
+        const connection = drive.state.value
+        return connection === 'expired' || connection === 'disconnected'
+            ? connection
+            : 'failed'
+    })
+
     return computed(() => {
         const current = state.value
         if (current === undefined) return undefined
         return {
             state: current,
-            label: labels.value[current],
+            label: cause.value
+                ? errors.value[cause.value]
+                : labels.value[current],
             // Only a good sync has an age worth showing.
             age: current === 'synced' ? age.value : '',
-            /** Why it is `error`: the sign-in, no Google account, or the last run (Retry may help). */
-            cause:
-                current !== 'error'
-                    ? undefined
-                    : drive.state.value === 'connected'
-                      ? ('failed' as const)
-                      : drive.state.value,
+            cause: cause.value,
         }
     })
 }

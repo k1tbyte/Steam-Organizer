@@ -1,5 +1,4 @@
 import { defineMock } from '#core'
-import type { GoogleAccount } from '#features/drive'
 
 import type { SessionState, VaultSummary } from './model'
 
@@ -43,12 +42,6 @@ export const vaultsMock = defineMock<VaultSummary[]>(
         'One vault': [MAIN],
         'Password only': [OBSIDIAN],
     },
-)
-
-export const driveAccountMock = defineMock<GoogleAccount>(
-    'vault.drive',
-    'Google account',
-    { 'Alex Kim': { name: 'Alex Kim', email: 'alex.kim@gmail.com' } },
 )
 
 export const folderAccessMock = defineMock<boolean>(

@@ -29,6 +29,7 @@ const {
     failure,
     latest,
     heading,
+    pickedCopy,
     others,
     listOpen,
     restoreLabel,
@@ -114,7 +115,7 @@ const {
                         </button>
                     </div>
                     <div v-else-if="latest" class="flex items-center gap-3">
-                        <FpIconTile name="icon-[lucide--archive]" color="accent" />
+                        <FpIconTile :name="latest.icon" color="accent" />
                         <div class="flex min-w-0 flex-1 flex-col gap-0.5">
                             <span class="font-semibold text-14.5 text-fg-1">{{ latest.date }}</span>
                             <span class="truncate font-mono text-12.5 text-fg-3">{{ latest.meta }}</span>
@@ -123,14 +124,20 @@ const {
                 </FpCard>
 
                 <div class="flex flex-col gap-2">
-                    <FpFormField :label="t('Backup password')" :error="problem !== null">
+                    <FpFormField
+                        :label="pickedCopy ? t('Master password') : t('Backup password')"
+                        :error="problem !== null">
                         <FpShake :trigger="failedAttempts">
                             <FpInput
                                 v-model="password"
                                 type="password"
                                 no-reveal
                                 :size="fieldSize"
-                                :placeholder="t('Password used when the backup was made')"
+                                :placeholder="
+                                    pickedCopy
+                                        ? t('The vault\'s master password')
+                                        : t('Password used when the backup was made')
+                                "
                                 @submit="restore">
                                 <template #leading><FpIcon name="icon-[lucide--key-round]" /></template>
                             </FpInput>
@@ -141,7 +148,7 @@ const {
 
                 <template #empty>
                     <FpEmpty
-                        :title="t('No backups on this Drive')"
+                        :title="t('Nothing to restore on this Drive')"
                         :description="t('Make a backup in Steam Organizer first, or create a new vault.')">
                         <template #leading><FpIcon name="icon-[lucide--cloud-off]" /></template>
                     </FpEmpty>

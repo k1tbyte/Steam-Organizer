@@ -1,11 +1,17 @@
-import { DriveError, listCopies, readCopy, type VaultFile } from '@so/core'
+import {
+    DriveError,
+    listCopies,
+    readCopy,
+    type StoredVault,
+    type VaultFile,
+} from '@so/core'
 import { type AsyncStatus, useDesktopLayout } from '@so/ui'
 import { useTimer } from '@so/ui/useTimer'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-import { reportError, useMock } from '#core'
+import { formatAgo, reportError, useMock } from '#core'
 import { useDrive } from '#features/drive'
 
 import { vaultsMock } from '../mocks'
@@ -33,14 +39,21 @@ export function useUnlock() {
     const drive = useDrive()
     const router = useRouter()
     const desktop = useDesktopLayout()
+    // Read when the picker shows; the age needs no clock of its own here.
+    function metaOf({ home, sync }: StoredVault) {
+        if (!sync) return home === 'device' ? t('This device') : t('Folder')
+        if (sync.syncedAt === null) return t('Google Drive')
+        const ago = formatAgo(sync.syncedAt, Date.now()) ?? t('just now')
+        return t('Google Drive · synced {ago}', { ago })
+    }
     // Vaults on this device open with the master password only until PIN and Hello slots exist.
     const vaults = useMock(
         () =>
             session.vaults.map((item) => ({
                 id: item.id,
                 name: item.name,
-                location: item.home,
-                meta: item.home === 'device' ? t('This device') : t('Folder'),
+                location: item.sync ? ('drive' as const) : item.home,
+                meta: metaOf(item),
                 methods: ['pw' as const],
             })),
         vaultsMock,

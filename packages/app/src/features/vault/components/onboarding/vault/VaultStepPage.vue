@@ -22,9 +22,12 @@ const {
     draft,
     options,
     account,
+    signedIn,
+    connecting,
     folderPath,
     ready,
-    toggleGoogle,
+    signIn,
+    changeAccount,
     toggleFolder,
     next,
 } = useVaultStep()
@@ -61,11 +64,12 @@ const {
 
         <template v-if="draft.location === 'drive'">
             <FpButton
-                v-if="!draft.signedInToGoogle"
+                v-if="!signedIn"
                 block
                 variant="soft"
                 :size="buttonSize"
-                @click="toggleGoogle">
+                :loading="connecting"
+                @click="signIn">
                 <FpIcon name="icon-[simple-icons--google]" aria-hidden="true" />
                 {{ t('Sign in with Google') }}
             </FpButton>
@@ -77,7 +81,7 @@ const {
                         {{ t("The vault file goes to the app's Drive folder") }}
                     </span>
                 </span>
-                <FpButton variant="ghost" size="sm" @click="toggleGoogle">{{ t('Change') }}</FpButton>
+                <FpButton variant="ghost" size="sm" @click="changeAccount">{{ t('Change') }}</FpButton>
             </div>
         </template>
 

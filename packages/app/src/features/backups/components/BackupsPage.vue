@@ -16,7 +16,7 @@ import SyncStatus from './SyncStatus.vue'
 
 const { t } = useI18n()
 const desktop = useDesktopLayout()
-const { vault, onDevice } = useBackupsVault()
+const { vault, onDevice, needsDrive, noHistory } = useBackupsVault()
 const history = useBackupHistory()
 const restore = useRestoreBackup(history.backups)
 </script>
@@ -24,7 +24,7 @@ const restore = useRestoreBackup(history.backups)
 <template>
     <PageTopbar
         :title="t('Backups')"
-        :count="onDevice ? undefined : history.count.value">
+        :count="noHistory ? undefined : history.count.value">
         <template #status>
             <span
                 v-if="onDevice && vault"
@@ -34,7 +34,7 @@ const restore = useRestoreBackup(history.backups)
             </span>
             <SyncStatus v-else detailed />
         </template>
-        <template v-if="vault && !onDevice" #actions>
+        <template v-if="vault && !noHistory" #actions>
             <FpButton
                 color="accent"
                 :size="desktop ? 'md' : 'xl'"
@@ -47,7 +47,7 @@ const restore = useRestoreBackup(history.backups)
         </template>
     </PageTopbar>
 
-    <DeviceVaultEmpty v-if="onDevice && vault" :name="vault.name" />
+    <DeviceVaultEmpty v-if="noHistory && vault" :name="vault.name" :disconnected="needsDrive" />
     <div
         v-else-if="vault"
         class="grid gap-3 px-4 pb-4 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-u-5 lg:px-u-6 lg:pt-u-5 lg:pb-u-6">

@@ -1,4 +1,4 @@
-import { DriveError, listBackups } from '@so/core'
+import { DriveError, listBackups, listCopies } from '@so/core'
 import { useToast } from '@so/ui'
 import { computed, type Ref, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -31,17 +31,30 @@ export function useResetVault(
     const alsoDeleteBackups = ref(true)
     const typedName = ref('')
     const backupIds = shallowRef<string[]>()
+    // A synced vault's copy goes with it, whatever the checkbox says.
+    const hasCopy = ref(false)
     const backupsUnknown = ref(false)
     const resetting = ref(false)
     const problem = shallowRef<Problem | null>(null)
     // A list asked for an earlier opening never lands.
     let request = 0
 
+    const isSynced = (vaultId: string) =>
+        session.vaults.some(({ id, sync }) => id === vaultId && sync)
+
     async function loadBackups(vaultId: string) {
         const attempt = ++request
+        const synced = isSynced(vaultId)
         try {
-            const found = await drive.run((api) => listBackups(api, vaultId))
-            if (attempt === request) backupIds.value = found.map(({ id }) => id)
+            const [backups, copies] = await drive.run((api) =>
+                Promise.all([
+                    listBackups(api, vaultId),
+                    synced ? listCopies(api, vaultId) : [],
+                ]),
+            )
+            if (attempt !== request) return
+            backupIds.value = backups.map(({ id }) => id)
+            hasCopy.value = copies.length > 0
         } catch (error) {
             if (attempt !== request) return
             if (!(error instanceof DriveError)) reportError(error, 'vault')
@@ -59,6 +72,7 @@ export function useResetVault(
             typedName.value = ''
             problem.value = null
             backupIds.value = undefined
+            hasCopy.value = false
             backupsUnknown.value = false
             request++
             const id = vault.value?.id
@@ -83,6 +97,21 @@ export function useResetVault(
     const isLastStep = computed(() => step.value === RESET_STEPS)
 
     const lastStepSummary = computed(() => {
+        if (hasCopy.value) {
+            if (!hasBackups.value)
+                return t(
+                    'Deletes the vault on this device and its synced copy in Google Drive.',
+                )
+            return alsoDeleteBackups.value
+                ? t(
+                      'Deletes the vault on this device, its synced copy and its {count} backups in Google Drive.',
+                      { count: backupCount.value },
+                  )
+                : t(
+                      'Deletes the vault on this device and its synced copy in Google Drive. Its {count} backups stay.',
+                      { count: backupCount.value },
+                  )
+        }
         if (!hasBackups.value) return t('Deletes the vault on this device.')
         return alsoDeleteBackups.value
             ? t(
@@ -106,7 +135,7 @@ export function useResetVault(
         step.value = Math.max(1, step.value - 1)
     }
 
-    const removeBackup = (id: string) =>
+    const removeFile = (id: string) =>
         drive
             .run((api) => api.remove(id))
             .catch((error) => {
@@ -116,21 +145,28 @@ export function useResetVault(
                     throw error
             })
 
-    /** Backups first: one that fails keeps the vault here, so the hold can be tried again. */
+    /** Drive first: a file that fails keeps the vault here, so the hold can be tried again. Other devices then keep the
+     *  vault on their own, as its copy is gone. */
     async function reset() {
         const id = vault.value?.id
         if (!id || resetting.value) return
         resetting.value = true
         problem.value = null
         try {
+            // Listed again: a list that landed after step 1 still finds it.
+            if (isSynced(id) && drive.state.value !== 'disconnected')
+                for (const copy of await drive.run((api) =>
+                    listCopies(api, id),
+                ))
+                    await removeFile(copy.id)
             if (hasBackups.value && alsoDeleteBackups.value)
                 for (const backup of backupIds.value ?? [])
-                    await removeBackup(backup)
+                    await removeFile(backup)
             await session.remove(id)
         } catch (error) {
             if (error instanceof DriveError)
                 problem.value = {
-                    title: t("Couldn't delete the backups from Google Drive"),
+                    title: t("Couldn't delete the vault from Google Drive"),
                     description: problemOf(error).description,
                 }
             else {
@@ -181,6 +217,7 @@ export function useResetVault(
         }),
         backupCount,
         hasBackups,
+        hasCopy,
         backupsUnknown,
         nameMatches: computed(() =>
             canContinueReset(2, typedName.value, vaultName.value),

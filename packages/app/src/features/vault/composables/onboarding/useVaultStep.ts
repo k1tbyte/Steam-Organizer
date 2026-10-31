@@ -1,10 +1,12 @@
+import { useToast } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-import { useMock } from '#core'
+import { reportError, useMock } from '#core'
+import { useDrive, useDriveProblem } from '#features/drive'
 
-import { driveAccountMock, folderAccessMock } from '../../mocks'
+import { folderAccessMock } from '../../mocks'
 import { LOCATION_ICON, type VaultLocation } from '../../model'
 import { useOnboardingDraft } from './useOnboardingDraft'
 
@@ -24,7 +26,11 @@ export function useVaultStep() {
     const { t } = useI18n()
     const router = useRouter()
     const draft = useOnboardingDraft()
-    const account = useMock(() => undefined, driveAccountMock)
+    const drive = useDrive()
+    // The web loads Google's script ahead, so its window opens on the click.
+    drive.prepare()
+    const { problemOf } = useDriveProblem()
+    const toast = useToast()
     const canWriteFolders = useMock(
         () => 'showDirectoryPicker' in window,
         folderAccessMock,
@@ -60,15 +66,29 @@ export function useVaultStep() {
         },
     ])
 
+    const signedIn = computed(() => drive.state.value === 'connected')
     const ready = computed(() => {
         if (draft.name.trim() === '') return false
-        if (draft.location === 'drive') return draft.signedInToGoogle
+        if (draft.location === 'drive') return signedIn.value
         if (draft.location === 'folder') return draft.folderChosen
         return true
     })
 
-    function toggleGoogle() {
-        draft.signedInToGoogle = !draft.signedInToGoogle
+    // A closed Google window is a quiet false; a failure says why.
+    function signIn() {
+        drive.connect().catch((error) =>
+            toast.add({
+                color: 'danger',
+                title: t("Couldn't connect Google Drive"),
+                description: problemOf(error).description,
+            }),
+        )
+    }
+
+    // Signed out first, so Google offers its account picker; the sign-in starts in the same click.
+    function changeAccount() {
+        drive.disconnect().catch((error) => reportError(error, 'drive'))
+        signIn()
     }
 
     function toggleFolder() {
@@ -82,10 +102,13 @@ export function useVaultStep() {
     return {
         draft,
         options,
-        account,
+        account: drive.account,
+        signedIn,
+        connecting: drive.connecting,
         folderPath: OBSIDIAN_PATH,
         ready,
-        toggleGoogle,
+        signIn,
+        changeAccount,
         toggleFolder,
         next,
     }

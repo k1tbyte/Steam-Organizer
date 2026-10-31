@@ -56,7 +56,12 @@ export function useSteamAccess() {
         if (!draft.password) return router.replace('/welcome/password')
         creating.value = true
         try {
-            await session.create(draft.name.trim(), draft.password)
+            // A Drive vault is linked here; the shell's sync pushes its first copy.
+            await session.create(
+                draft.name.trim(),
+                draft.password,
+                draft.location === 'drive',
+            )
             if (key) await saveKey(key)
         } catch (error) {
             reportError(error, 'onboarding')

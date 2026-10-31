@@ -6,7 +6,6 @@ import type { VaultLocation } from '../../model'
 export interface OnboardingDraft {
     name: string
     location: VaultLocation
-    signedInToGoogle: boolean
     folderChosen: boolean
     /** The master password, held until the last step creates the vault. */
     password: string
@@ -18,7 +17,6 @@ export function provideOnboardingDraft(): OnboardingDraft {
     const draft = reactive<OnboardingDraft>({
         name: 'Main vault',
         location: 'drive',
-        signedInToGoogle: false,
         folderChosen: false,
         password: '',
     })

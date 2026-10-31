@@ -59,6 +59,15 @@ const view = useResetVault(open, toRef(props, 'vault'))
                         </span>
                     </span>
                 </li>
+                <li v-if="view.hasCopy.value" class="flex items-start gap-2.5 p-2">
+                    <FpIcon name="icon-[simple-icons--googledrive]" class="mt-px text-16 text-fg-3" />
+                    <span class="flex flex-col gap-0.5">
+                        <span class="text-13.5 leading-snug text-fg-1">{{ t('Its synced copy in Google Drive') }}</span>
+                        <span class="text-12.5 leading-snug text-fg-3">
+                            {{ t('Other devices keep the vault, on their own.') }}
+                        </span>
+                    </span>
+                </li>
                 <li class="flex items-start gap-2.5 p-2">
                     <FpIcon name="icon-[lucide--fingerprint]" class="mt-px text-16 text-fg-3" />
                     <span class="text-13.5 leading-snug text-fg-1">

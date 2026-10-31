@@ -24,7 +24,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 
 - First run: create vault - name, location (this device / Google Drive / folder) `[new]`, master password with warning that it can't be recovered.
 - Several vaults: picker on unlock screen, add / remove vault `[new]`.
-- Or restore from Google Drive: sign in, see latest backup (date, account count), enter its password.
+- Or restore from Google Drive: sign in, see each vault's synced copy first (account count, last update), then its backups (date, account count); a synced copy opens with the vault's master password and joins this device to its sync, a backup with the password of its time and stays on this device.
 - Or import from an encrypted file.
 - Unlock screen: master password, PIN `[new]` or biometrics `[new]`; wrong password / PIN feedback.
 - Lock manually; auto-lock by user policy `[new]`.
@@ -124,6 +124,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Backup now `[new]`.
 - Auto backup after changes (setting): at most one a day, only after a change; the newest 10 auto backups stay, manual ones are never deleted.
 - Auto sync: check Drive on open, focus, interval, after changes and "sync now" `[new]`; changes merge account by account (a refresh on one device never undoes an edit on another), deletions carry over, the later password change wins.
+- Move to Google Drive `[new]`: a vault kept on this device gets backup history and sync in one step; a copy Drive already holds of it is merged, not duplicated. Google Drive picked when creating a vault does the same from the start.
 - A vault whose Drive copy is gone (reset elsewhere, app data removed, another Google account) stays on the device with a notice; nothing is recreated silently.
 - Status: saved, syncing, error, offline.
 

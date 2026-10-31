@@ -2,19 +2,46 @@ import {
     type Backup,
     DriveError,
     listBackups,
+    listCopies,
     readBackup,
+    readCopy,
     UnsupportedVaultError,
+    type VaultCopy,
 } from '@so/core'
 import { type AsyncStatus, useToast } from '@so/ui'
 import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { formatDate, formatSize, formatTime, reportError } from '#core'
+import {
+    formatAgo,
+    formatDate,
+    formatSize,
+    formatTime,
+    reportError,
+} from '#core'
 import { type DriveProblem, useDrive, useDriveProblem } from '#features/drive'
 
 import { useVaultSession } from '../../stores/useVaultSession'
 
-/** Onboarding's restore: sign in to Google, pick a backup of any vault on that Drive, open it with the password it was made with. */
+/** What Restore offers: a vault's synced copy (adopting it links the vault) or one of its backups (kept on this device). */
+type Source = ({ from: 'copy' } & VaultCopy) | ({ from: 'backup' } & Backup)
+
+const dateOf = (source: Source) =>
+    source.from === 'copy' ? source.modifiedAt : source.createdAt
+
+/** Synced copies first, the latest one the first pick; then backups, newest first. */
+function sources(copies: VaultCopy[], backups: Backup[]): Source[] {
+    const byDate = (a: Source, b: Source) => dateOf(b) - dateOf(a)
+    return [
+        ...copies
+            .map((copy) => ({ from: 'copy' as const, ...copy }))
+            .sort(byDate),
+        ...backups.map((backup) => ({ from: 'backup' as const, ...backup })),
+    ]
+}
+
+/** Onboarding's restore: sign in to Google, pick a vault's synced copy or a backup of any vault on that Drive, open it with
+ *  its password. */
 export function useRestore() {
     const { t } = useI18n()
     const session = useVaultSession()
@@ -23,7 +50,7 @@ export function useRestore() {
     const { problemOf } = useDriveProblem()
     const toast = useToast()
 
-    const backups = shallowRef<Backup[]>()
+    const backups = shallowRef<Source[]>()
     const failure = shallowRef<DriveProblem | null>(null)
     const pickedId = ref<string | null>(null)
     const listOpen = ref(false)
@@ -47,9 +74,11 @@ export function useRestore() {
         if (drive.state.value === 'disconnected') return
         const attempt = ++request
         try {
-            const found = await drive.run((api) => listBackups(api))
+            const found = await drive.run((api) =>
+                Promise.all([listCopies(api), listBackups(api)]),
+            )
             if (attempt !== request) return
-            backups.value = found
+            backups.value = sources(...found)
             failure.value = null
         } catch (error) {
             if (attempt === request) failure.value = problemOf(error)
@@ -85,17 +114,37 @@ export function useRestore() {
         return backups.value.length ? 'ready' : 'empty'
     })
 
-    const describe = (backup: Backup) => ({
-        id: backup.id,
-        date: `${formatDate(backup.createdAt)} · ${formatTime(backup.createdAt)}`,
-        meta: [
-            backup.vaultName,
-            t('{count} account | {count} accounts', backup.accounts),
-            formatSize(backup.sizeBytes),
-        ]
-            .filter(Boolean)
-            .join(' · '),
-    })
+    const accountsOf = (count: number) =>
+        t('{count} account | {count} accounts', count)
+
+    const describe = (source: Source) =>
+        source.from === 'copy'
+            ? {
+                  id: source.id,
+                  icon: 'icon-[lucide--cloud]',
+                  date: source.vaultName || t('Restored vault'),
+                  meta: [
+                      t('Synced copy'),
+                      accountsOf(source.accounts),
+                      t('updated {ago}', {
+                          ago:
+                              formatAgo(source.modifiedAt, Date.now()) ??
+                              t('just now'),
+                      }),
+                  ].join(' · '),
+              }
+            : {
+                  id: source.id,
+                  icon: 'icon-[lucide--archive]',
+                  date: `${formatDate(source.createdAt)} · ${formatTime(source.createdAt)}`,
+                  meta: [
+                      source.vaultName,
+                      accountsOf(source.accounts),
+                      formatSize(source.sizeBytes),
+                  ]
+                      .filter(Boolean)
+                      .join(' · '),
+              }
 
     watch(password, () => {
         problem.value = null
@@ -116,18 +165,32 @@ export function useRestore() {
         restoring.value = true
         problem.value = null
         try {
-            const file = await drive.run((api) => readBackup(api, backup.id))
+            const copy = backup.from === 'copy'
+            const email = drive.account.value?.email
+            const file = await drive.run((api) =>
+                copy ? readCopy(api, backup.id) : readBackup(api, backup.id),
+            )
             mine.signal.throwIfAborted()
+            // A synced copy links the vault to it; a backup stays on this device.
             const result = await session.adopt(
                 backup.vaultName || t('Restored vault'),
                 file,
                 password.value,
                 mine.signal,
+                copy && email
+                    ? {
+                          account: email,
+                          copyId: backup.id,
+                          version: backup.version,
+                      }
+                    : undefined,
             )
             if (mine.signal.aborted) return
             // Opened: the vault guard leaves onboarding on its own.
             if (result === 'wrong') {
-                problem.value = t('Wrong password for this backup')
+                problem.value = copy
+                    ? t('Wrong master password')
+                    : t('Wrong password for this backup')
                 failedAttempts.value++
             } else if (result === 'unreadable')
                 problem.value = t("This backup can't be opened")
@@ -156,11 +219,14 @@ export function useRestore() {
         status,
         failure,
         latest: computed(() => picked.value && describe(picked.value)),
-        heading: computed(() =>
-            picked.value === backups.value?.[0]
+        heading: computed(() => {
+            if (picked.value?.from === 'copy') return t('Synced copy')
+            return picked.value === backups.value?.[0]
                 ? t('Latest backup')
-                : t('Backup'),
-        ),
+                : t('Backup')
+        }),
+        /** A synced copy opens with the vault's master password now, a backup with the one of its time. */
+        pickedCopy: computed(() => picked.value?.from === 'copy'),
         others: computed(() =>
             (backups.value ?? []).map((backup) => ({
                 ...describe(backup),

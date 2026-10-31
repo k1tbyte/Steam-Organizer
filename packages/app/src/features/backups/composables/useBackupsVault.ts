@@ -18,8 +18,20 @@ export function useBackupsVault() {
               }
             : null,
     )
-    // Without Drive the vault has nowhere to keep backups.
-    const onDevice = computed(() => drive.state.value === 'disconnected')
+    // Backups and sync come together: a vault kept on this device has no history.
+    const onDevice = computed(
+        () => session.vault !== null && !session.vault.sync,
+    )
+    // A synced vault while Google is signed out: the history is out of reach.
+    const needsDrive = computed(
+        () => !!session.vault?.sync && drive.state.value === 'disconnected',
+    )
 
-    return { vault, onDevice }
+    return {
+        vault,
+        onDevice,
+        needsDrive,
+        /** The history and Backup now are out of reach. */
+        noHistory: computed(() => onDevice.value || needsDrive.value),
+    }
 }

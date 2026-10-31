@@ -19,8 +19,9 @@ export function useVaultSection() {
     const details = computed(() => {
         const vault = session.vault
         if (!vault) return ''
+        const home = vault.home === 'device' ? t('This device') : t('Folder')
         return [
-            vault.home === 'device' ? t('This device') : t('Folder'),
+            vault.sync ? t('Google Drive') : home,
             t(
                 '{count} account | {count} accounts',
                 tally(session.contents).accounts,
