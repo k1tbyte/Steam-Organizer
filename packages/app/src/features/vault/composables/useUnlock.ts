@@ -7,7 +7,7 @@ import {
 } from '@so/core'
 import { type AsyncStatus, useDesktopLayout } from '@so/ui'
 import { useTimer } from '@so/ui/useTimer'
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, onScopeDispose, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
@@ -181,16 +181,23 @@ export function useUnlock() {
         }
     }
 
-    // An answer for a vault picked away meanwhile is dropped, with the key it unwrapped.
+    let left = false
+    onScopeDispose(() => {
+        left = true
+    })
+
+    // An answer for a vault picked away, or after leaving the page, is dropped with the key it unwrapped;
+    // a vault another flow opened meanwhile stays.
     async function attempt(credential: Credential) {
         const forVault = vault.value?.id
         let result = await session.unlock(credential, forVault)
         if (result === 'wrong' && credential.method === 'pw' && forVault) {
             const copy = await driveCopy(forVault)
-            if (copy) result = await session.unlock(credential, forVault, copy)
+            if (copy && !left)
+                result = await session.unlock(credential, forVault, copy)
         }
-        if (vault.value?.id === forVault) return result
-        if (result === 'opened') session.lock()
+        if (!left && vault.value?.id === forVault) return result
+        if (result === 'opened' && session.state !== 'unlocked') session.lock()
         return null
     }
 

@@ -28,9 +28,12 @@ export function useAutoSync() {
     const afterChange = useTimer()
     const backupCheck = useTimer()
 
+    // Checked again when it fires: switching Auto sync off meanwhile starts nothing.
     function auto() {
         if (!engine.settings.autoSync) return
-        settle.arm(TRIGGER_SETTLE_MS, () => void engine.sync())
+        settle.arm(TRIGGER_SETTLE_MS, () => {
+            if (engine.settings.autoSync) void engine.sync()
+        })
     }
 
     // Registered here, before any page's draft writers: the session still hands it the file after their writes.
@@ -96,9 +99,9 @@ export function useAutoSync() {
         { immediate: true },
     )
 
-    // Every write gives new contents; a merge from Drive leaves nothing pending by the time this runs.
+    // Every write gives the vault a new file, a password change too; a merge from Drive leaves nothing pending by then.
     watch(
-        () => session.contents,
+        () => session.vaults.find(({ id }) => id === session.vault?.id)?.file,
         () => {
             afterChange.arm(SYNC_AFTER_CHANGE_MS, () => {
                 if (session.vault?.sync?.pending) auto()

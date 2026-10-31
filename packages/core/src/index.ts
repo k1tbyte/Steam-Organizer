@@ -44,6 +44,7 @@ export {
     openAccountKey,
 } from './crypto/accountKeys'
 export {
+    importRecovery,
     loginTag,
     type PasswordSlot,
     steamTag,
@@ -120,7 +121,7 @@ export {
     type VaultSync,
     vaultStore,
 } from './storage/vaultStore'
-export { type MergedRecords, mergeRecords } from './vault/merge'
+export { type MergedRecords, mergeRecords, restampEdited } from './vault/merge'
 export {
     changePassword,
     createVault,

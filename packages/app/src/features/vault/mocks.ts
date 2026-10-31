@@ -1,10 +1,22 @@
 import { defineMock } from '#core'
 
-import type { SessionState, VaultSummary } from './model'
+import type { Credential, SessionState, VaultSummary } from './model'
 
 /** What the demo accepts: no vault is decrypted yet. */
-export const DEMO_PIN = '123456'
-export const DEMO_PASSWORD = 'demo'
+const DEMO_PIN = '123456'
+const DEMO_PASSWORD = 'demo'
+// Stands in for the Windows Hello prompt.
+const HELLO_DELAY_MS = 1300
+
+export async function demoVerify(credential: Credential) {
+    if (credential.method === 'bio') {
+        await new Promise((resolve) => setTimeout(resolve, HELLO_DELAY_MS))
+        return true
+    }
+    return credential.method === 'pin'
+        ? credential.pin === DEMO_PIN
+        : credential.password === DEMO_PASSWORD
+}
 
 const MAIN: VaultSummary = {
     id: 'main',

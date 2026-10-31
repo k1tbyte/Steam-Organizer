@@ -1,47 +1,39 @@
-import { useToast } from '@so/ui'
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { onScopeDispose, ref, watch } from 'vue'
 
-import { useSettingsLink } from '#core'
-import { useDrive, useDriveProblem } from '#features/drive'
+import { usePageActive, useSettingsLink } from '#core'
+import { useDrive, useDriveSignIn } from '#features/drive'
 import { useVaultSession } from '#features/vault'
 
 import { useVaultSync } from '../stores/useVaultSync'
 
 /** The vault without Drive history: move one kept on this device to Drive, connect Google for a synced one, or export it by hand. */
 export function useMoveToDrive() {
-    const { t } = useI18n()
     const session = useVaultSession()
     const drive = useDrive()
     drive.prepare()
     const engine = useVaultSync()
-    const { problemOf } = useDriveProblem()
-    const toast = useToast()
+    const signIn = useDriveSignIn()
     const openSettings = useSettingsLink()
     const moving = ref(false)
 
-    // From the click, so Google may open its window; a closed one is a quiet false.
-    async function connect() {
-        try {
-            return await drive.connect()
-        } catch (error) {
-            toast.add({
-                color: 'danger',
-                title: t("Couldn't connect Google Drive"),
-                description: problemOf(error).description,
-            })
-            return false
-        }
-    }
+    // Bumped on leaving the page (it stays mounted behind others): a sign-in that ends after links nothing.
+    let attempt = 0
+    const leave = () => attempt++
+    watch(usePageActive(), (active) => active || leave())
+    onScopeDispose(leave)
 
-    /** Links the open vault and syncs it: a copy Drive already has of it is merged, not duplicated. Offline, it pushes later. */
+    /** Links the open vault and syncs it: a copy Drive already has of it is merged, not duplicated. Offline, it pushes later.
+     *  A sign-in that ends after leaving the page or with another vault open links nothing. */
     async function moveToDrive() {
-        if (moving.value) return
+        const id = session.vault?.id
+        if (moving.value || !id) return
+        const mine = ++attempt
         moving.value = true
         try {
             const state = drive.state.value
             if (state === 'disconnected' || state === 'expired')
-                if (!(await connect())) return
+                if (!(await signIn())) return
+            if (mine !== attempt || session.vault?.id !== id) return
             await session.link()
             await engine.syncNow()
         } finally {
@@ -53,7 +45,7 @@ export function useMoveToDrive() {
         connecting: drive.connecting,
         moving,
         moveToDrive,
-        connect: () => void connect(),
+        connect: () => void signIn(),
         exportFile: () => openSettings('vault'),
     }
 }

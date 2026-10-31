@@ -83,6 +83,13 @@ export const useVaultSync = defineStore('vault-sync', () => {
     let flight: Promise<void> | null = null
     let again = false
     let checking: Promise<void> | null = null
+    // Syncs and lock pushes take turns: an upload finishing late never lands over a newer one.
+    let lane: Promise<unknown> = Promise.resolve()
+    function inLane<T>(task: () => Promise<T>): Promise<T> {
+        const turn = lane.then(task)
+        lane = turn.catch(() => {})
+        return turn
+    }
 
     const failure = computed(() =>
         failed.value && failed.value.at === backups.scope
@@ -171,7 +178,9 @@ export const useVaultSync = defineStore('vault-sync', () => {
         // Two first pushes crossed: each copy merges in, the oldest last, since it is the one kept.
         let merged: MergedCopy | undefined
         for (const copy of [...extras, kept]) {
-            merged = await session.mergeCopy(await readCopy(api, copy.id))
+            const file = await readCopy(api, copy.id)
+            if (stale()) return
+            merged = await session.mergeCopy(file)
             if (!merged || stale()) return
         }
         if (!merged) return
@@ -189,7 +198,7 @@ export const useVaultSync = defineStore('vault-sync', () => {
             try {
                 do {
                     again = false
-                    await run()
+                    await inLane(run)
                 } while (again)
             } finally {
                 flight = null
@@ -199,7 +208,11 @@ export const useVaultSync = defineStore('vault-sync', () => {
     }
 
     /** Pushes the file a lock left, without its key, only over the copy it was merged with; else it waits for the next unlock. */
-    async function flush(pending: Promise<LockedSnapshot | undefined>) {
+    function flush(pending: Promise<LockedSnapshot | undefined>) {
+        return inLane(() => pushLocked(pending))
+    }
+
+    async function pushLocked(pending: Promise<LockedSnapshot | undefined>) {
         const snapshot = await pending.catch(() => undefined)
         const email = drive.account.value?.email
         if (!snapshot || !email || drive.state.value !== 'connected') return

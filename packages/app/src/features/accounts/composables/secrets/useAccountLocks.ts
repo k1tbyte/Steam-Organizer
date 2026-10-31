@@ -96,11 +96,17 @@ export function useAccountLocks() {
             const placement = readSettings(
                 contents.data.get(SETTINGS_ID),
             ).fieldDefaults
-            const parts = splitAccount(changed.data, whole.secret, placement)
+            // A lock is the user's edit: a sync keeps it over a refresh made elsewhere.
+            const now = Date.now()
+            const parts = splitAccount(
+                { ...changed.data, editedAt: now },
+                whole.secret,
+                placement,
+            )
             return [
                 await sealRecord(
                     key,
-                    { id, updatedAt: Date.now(), ...parts },
+                    { id, updatedAt: now, ...parts },
                     changed.key,
                 ),
             ]
@@ -182,13 +188,13 @@ export function useAccountLocks() {
                     )
                     if (!slots) return []
                     rewrapped = true
+                    const now = Date.now()
                     const data = publicData({
                         ...live.data,
                         lock: { ...lock, slots },
+                        editedAt: now,
                     })
-                    return [
-                        await updateData(key, live.record, data, Date.now()),
-                    ]
+                    return [await updateData(key, live.record, data, now)]
                 }),
             )
             if (changed === WRONG) return false

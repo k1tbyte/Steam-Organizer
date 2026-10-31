@@ -41,8 +41,14 @@ export function vaultFiles(
         ]
     }
 
-    async function persist(vault: StoredVault, contents?: VaultContents) {
+    // `opening` installs a vault's key before the list shows it: the guard never sees it stored but locked.
+    async function persist(
+        vault: StoredVault,
+        contents?: VaultContents,
+        opening?: () => void,
+    ) {
         await vaultStore.put(vault)
+        opening?.()
         saved(vault, contents)
         remember(vault)
         return vault

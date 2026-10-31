@@ -66,6 +66,7 @@ describe('splitAccount', () => {
             [
                 'addedAt',
                 'alias',
+                'editedAt',
                 'kind',
                 'lock',
                 'loginTag',

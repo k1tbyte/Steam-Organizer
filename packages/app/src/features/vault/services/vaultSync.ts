@@ -1,4 +1,5 @@
 import {
+    importRecovery,
     mergeRecords,
     newerSlots,
     readRecords,
@@ -55,8 +56,8 @@ export const receiptOf = (
 })
 
 export interface CopyMerge {
-    /** The file and records to store; null while this device's side is unchanged. */
-    changed: { file: VaultFile; contents: VaultContents } | null
+    /** The file and records to store, and the key for its slots; null while this device's side is unchanged. */
+    changed: { file: VaultFile; contents: VaultContents; key: VaultKey } | null
     /** Records taken from the copy. */
     taken: string[]
     /** The copy lacks something: a record, the later slots or a change not pushed yet. */
@@ -92,5 +93,11 @@ export async function mergeCopyInto(
         { ...vault.file, slots },
         contents.records,
     )
-    return { changed: { file, contents }, taken, push }
+    // Two devices that each added a recovery slot hold different pairs: new account locks seal to the one kept.
+    const recovery = slots.recovery
+    const rekeyed =
+        recovery && recovery.publicKey !== local.recovery?.publicKey
+            ? { ...key, recovery: await importRecovery(recovery) }
+            : key
+    return { changed: { file, contents, key: rekeyed }, taken, push }
 }

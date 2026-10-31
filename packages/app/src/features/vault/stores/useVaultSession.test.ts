@@ -180,6 +180,18 @@ it('never opens a vault removed while its password was being checked', async () 
     expect(await vaultStore.list()).toEqual([])
 })
 
+it('never lets a late unlock replace a vault another flow opened', async () => {
+    const first = await reload()
+    await first.create('Farm', PASSWORD)
+    const farm = first.vault?.id ?? ''
+    const session = await reload()
+    await session.create('Main', PASSWORD)
+    expect(
+        await session.unlock({ method: 'pw', password: PASSWORD }, farm),
+    ).toBe('unreadable')
+    expect(session.vault?.name).toBe('Main')
+})
+
 it("replaces the open vault's records with another copy's, tombstoning the rest", async () => {
     const session = await reload()
     await session.create('Main', PASSWORD)
@@ -193,8 +205,12 @@ it("replaces the open vault's records with another copy's, tombstoning the rest"
     ])
     const records =
         copy && (await session.withKey((key) => readRecords(key, copy.file)))
+    const restoredAt = Date.now()
     await session.replaceRecords(records ?? [])
     expect([...(session.contents?.data ?? [])]).toEqual([['a', { n: 1 }]])
+    expect(session.contents?.records[0]?.updatedAt).toBeGreaterThanOrEqual(
+        restoredAt,
+    )
     expect(
         session.contents?.records.find(({ id }) => id === 'b'),
     ).toMatchObject({ deleted: true })

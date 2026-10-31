@@ -8,6 +8,8 @@ const KEPT = [
     'order',
     'pinned',
     'addedAt',
+    // A sync merges a whole locked account by it.
+    'editedAt',
     'loginTag',
     'lock',
 ] as const satisfies (keyof AccountData)[]

@@ -1,10 +1,9 @@
-import { useToast } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 import { reportError, useMock } from '#core'
-import { useDrive, useDriveProblem } from '#features/drive'
+import { useDrive, useDriveSignIn } from '#features/drive'
 
 import { folderAccessMock } from '../../mocks'
 import { LOCATION_ICON, type VaultLocation } from '../../model'
@@ -29,8 +28,6 @@ export function useVaultStep() {
     const drive = useDrive()
     // The web loads Google's script ahead, so its window opens on the click.
     drive.prepare()
-    const { problemOf } = useDriveProblem()
-    const toast = useToast()
     const canWriteFolders = useMock(
         () => 'showDirectoryPicker' in window,
         folderAccessMock,
@@ -74,15 +71,9 @@ export function useVaultStep() {
         return true
     })
 
-    // A closed Google window is a quiet false; a failure says why.
+    const driveSignIn = useDriveSignIn()
     function signIn() {
-        drive.connect().catch((error) =>
-            toast.add({
-                color: 'danger',
-                title: t("Couldn't connect Google Drive"),
-                description: problemOf(error).description,
-            }),
-        )
+        void driveSignIn()
     }
 
     // Signed out first, so Google offers its account picker; the sign-in starts in the same click.

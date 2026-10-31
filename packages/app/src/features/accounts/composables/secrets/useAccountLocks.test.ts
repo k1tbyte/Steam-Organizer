@@ -58,6 +58,19 @@ it('locks an account: open until relocked, then sealed from the vault key', asyn
     expect((await session.secretOf<AccountSecret>(id))?.login).toBe('alpha')
 })
 
+it('stamps a lock and its removal as edits, so a sync keeps them over a refresh elsewhere', async () => {
+    const before = Date.now()
+    const { session, locks, id } = await lockedAccount('credentials')
+    const editedAt = () =>
+        (session.contents?.data.get(id) as { editedAt?: number } | undefined)
+            ?.editedAt ?? 0
+    expect(editedAt()).toBeGreaterThanOrEqual(before)
+    const locked = editedAt()
+    await new Promise((resolve) => setTimeout(resolve, 2))
+    expect(await locks.removeLock(id, { password: '1234' })).toBe(true)
+    expect(editedAt()).toBeGreaterThan(locked)
+})
+
 it('opens through recovery with the master password, and locks again with the vault', async () => {
     const { session, locks, id, account } = await lockedAccount('credentials')
     session.lock()

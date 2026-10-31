@@ -8,7 +8,7 @@ import {
     UnsupportedVaultError,
     type VaultCopy,
 } from '@so/core'
-import { type AsyncStatus, useToast } from '@so/ui'
+import type { AsyncStatus } from '@so/ui'
 import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -19,7 +19,12 @@ import {
     formatTime,
     reportError,
 } from '#core'
-import { type DriveProblem, useDrive, useDriveProblem } from '#features/drive'
+import {
+    type DriveProblem,
+    useDrive,
+    useDriveProblem,
+    useDriveSignIn,
+} from '#features/drive'
 
 import { useVaultSession } from '../../stores/useVaultSession'
 
@@ -48,7 +53,7 @@ export function useRestore() {
     const drive = useDrive()
     drive.prepare()
     const { problemOf } = useDriveProblem()
-    const toast = useToast()
+    const signIn = useDriveSignIn()
 
     const backups = shallowRef<Source[]>()
     const failure = shallowRef<DriveProblem | null>(null)
@@ -124,7 +129,6 @@ export function useRestore() {
                   icon: 'icon-[lucide--cloud]',
                   date: source.vaultName || t('Restored vault'),
                   meta: [
-                      t('Synced copy'),
                       accountsOf(source.accounts),
                       t('updated {ago}', {
                           ago:
@@ -227,11 +231,28 @@ export function useRestore() {
         }),
         /** A synced copy opens with the vault's master password now, a backup with the one of its time. */
         pickedCopy: computed(() => picked.value?.from === 'copy'),
+        description: computed(() =>
+            picked.value?.from === 'copy'
+                ? t(
+                      'The vault opens on this device with its master password and stays in sync.',
+                  )
+                : t(
+                      'The backup is decrypted on this device with the password it was made with.',
+                  ),
+        ),
+        // The card's heading names a synced copy; a row in the list says it itself.
         others: computed(() =>
-            (backups.value ?? []).map((backup) => ({
-                ...describe(backup),
-                picked: backup === picked.value,
-            })),
+            (backups.value ?? []).map((backup) => {
+                const row = describe(backup)
+                return {
+                    ...row,
+                    meta:
+                        backup.from === 'copy'
+                            ? `${t('Synced copy')} · ${row.meta}`
+                            : row.meta,
+                    picked: backup === picked.value,
+                }
+            }),
         ),
         listOpen,
         restoreLabel: computed(() =>
@@ -246,15 +267,7 @@ export function useRestore() {
         restoring,
         restore,
         retry: load,
-        // A closed Google window is a quiet false; a failure says why.
-        signIn: () =>
-            drive.connect().catch((error) =>
-                toast.add({
-                    color: 'danger',
-                    title: t("Couldn't connect Google Drive"),
-                    description: problemOf(error).description,
-                }),
-            ),
+        signIn: () => void signIn(),
         // Google offers its account picker at the next sign-in.
         switchAccount: () =>
             drive.disconnect().catch((error) => reportError(error, 'drive')),

@@ -1,9 +1,8 @@
-import { useToast } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { reportError, useSettingsLink } from '#core'
-import { useDrive, useDriveProblem } from '#features/drive'
+import { useDrive, useDriveSignIn } from '#features/drive'
 
 import { useVaultSync } from '../stores/useVaultSync'
 
@@ -12,8 +11,7 @@ export function useDriveAccount() {
     const { t } = useI18n()
     const drive = useDrive()
     drive.prepare()
-    const { problemOf } = useDriveProblem()
-    const toast = useToast()
+    const signIn = useDriveSignIn()
     const openSettings = useSettingsLink()
     const engine = useVaultSync()
 
@@ -35,15 +33,7 @@ export function useDriveAccount() {
         ),
         openSyncSettings: () => openSettings('sync'),
         retrySync: () => void engine.syncNow(),
-        // A closed Google window is a quiet false; a failure says why.
-        connect: () =>
-            drive.connect().catch((error) =>
-                toast.add({
-                    color: 'danger',
-                    title: t("Couldn't connect Google Drive"),
-                    description: problemOf(error).description,
-                }),
-            ),
+        connect: () => void signIn(),
         disconnect: () =>
             drive.disconnect().catch((error) => reportError(error, 'drive')),
     }

@@ -6,7 +6,7 @@ import {
     type SteamSnapshot,
 } from '../account/records'
 import { openData, openSecret, sealRecord } from '../index'
-import { mergeRecords } from './merge'
+import { mergeRecords, restampEdited } from './merge'
 import type { SealedRecord } from './vault'
 import { createVault } from './vault'
 
@@ -223,13 +223,51 @@ describe('merge by record', () => {
         expect([data?.alias, data?.steam?.level]).toEqual(['Main', 42])
     })
 
-    it('merges an everything-locked account whole, by its stamp', async () => {
+    it('merges an everything-locked account whole, by the later user edit, then by its stamp', async () => {
         const lock = { scope: 'everything' as const, slots: {} as never }
-        const older = await seal('a', 5, { ...account({ lock, editedAt: 9 }) })
-        const newer = await seal('a', 6, { ...account({ lock, editedAt: 1 }) })
-        expect(await mergeRecords(key, [older], [newer])).toEqual({
-            toLocal: [newer],
+        const { steam: _, ...hidden } = account({ lock, editedAt: 9 })
+        const locked = await seal('a', 5, hidden)
+        // Refreshed elsewhere after the lock, from the copy before it.
+        const refreshed = await seal(
+            'a',
+            8,
+            account({ steam: snapshot(8, 11) }),
+        )
+        expect(await mergeRecords(key, [locked], [refreshed])).toEqual({
+            toLocal: [],
+            toRemote: true,
+        })
+        const same = await seal('a', 6, { ...hidden, alias: 'x' })
+        expect(await mergeRecords(key, [locked], [same])).toEqual({
+            toLocal: [same],
             toRemote: false,
+        })
+    })
+
+    it('restamps a restored account as edited now, so it outlives later edits elsewhere', async () => {
+        const restored = await restampEdited(
+            key,
+            await seal('a', 2, account({ note: 'old', editedAt: 2 })),
+            30,
+        )
+        expect(restored.updatedAt).toBe(30)
+        expect(await dataOf([restored], 'a')).toMatchObject({
+            editedAt: 30,
+            note: 'old',
+        })
+        const edited = await seal(
+            'a',
+            20,
+            account({ note: 'new', editedAt: 20 }),
+        )
+        expect(await mergeRecords(key, [restored], [edited])).toEqual({
+            toLocal: [],
+            toRemote: true,
+        })
+        const tag = await seal('t', 1, { kind: RECORD.TAG, label: 'a' })
+        expect(await restampEdited(key, tag, 30)).toEqual({
+            ...tag,
+            updatedAt: 30,
         })
     })
 })

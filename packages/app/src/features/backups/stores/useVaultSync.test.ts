@@ -28,6 +28,8 @@ const drive = vi.hoisted(() => {
         /** Made reactive by the mock below, as the real connection is. */
         connection: { email: 'alex@x.com' },
         failing: false,
+        /** Holds downloads until it settles. */
+        gate: Promise.resolve() as Promise<unknown>,
         api: {
             async list(properties: Record<string, string>) {
                 return files.filter((file) =>
@@ -73,6 +75,7 @@ const drive = vi.hoisted(() => {
                 return file
             },
             async download(id: string) {
+                await drive.gate
                 if (drive.failing) throw new Error('download failed')
                 return find(id)?.body ?? ''
             },
@@ -104,6 +107,7 @@ beforeEach(async () => {
     drive.files.length = 0
     drive.connection.email = 'alex@x.com'
     drive.failing = false
+    drive.gate = Promise.resolve()
     await new Promise((resolve) => {
         indexedDB.deleteDatabase('steam-organizer').onsuccess = resolve
     })
@@ -228,6 +232,22 @@ it('treats another Google account as the copy gone', async () => {
     await a.engine.sync()
     expect(a.session.vault?.sync).toBeNull()
     expect(a.notices).toEqual([{ kind: 'gone', vaultName: 'Main' }])
+})
+
+it('never merges a copy downloaded for the Google account switched away from', async () => {
+    const { a, b } = await twoDevices()
+    await write(b, 'two', 2, 2)
+    await b.engine.sync()
+    let release = () => {}
+    drive.gate = new Promise<void>((done) => {
+        release = done
+    })
+    const syncing = a.engine.sync()
+    await vi.waitFor(() => expect(a.engine.running).toBe(true))
+    drive.connection.email = 'sam@x.com'
+    release()
+    await syncing
+    expect(dataOf(a)).toEqual({ one: { n: 1 } })
 })
 
 it('tells the first failure of a streak, never writes over an unread copy, and clears on success', async () => {

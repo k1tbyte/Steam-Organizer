@@ -30,6 +30,7 @@ const {
     latest,
     heading,
     pickedCopy,
+    description,
     others,
     listOpen,
     restoreLabel,
@@ -48,7 +49,7 @@ const {
 <template>
     <OnboardingStep
         :title="t('Restore from Google Drive')"
-        :description="t('The backup is decrypted on this device with the password it was made with.')"
+        :description="description"
         back="/welcome">
         <FpCard v-if="!signedIn">
             <div class="flex flex-col items-center gap-3 py-2 text-center">

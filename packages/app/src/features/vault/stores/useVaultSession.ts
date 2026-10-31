@@ -1,6 +1,7 @@
 import {
     createVault,
     openSecret,
+    restampEdited,
     changePassword as rewrapPassword,
     type SealedRecord,
     type StoredVault,
@@ -9,7 +10,6 @@ import {
     type VaultKey,
     type VaultSlots,
     type VaultSync,
-    vaultStore,
     WrongPasswordError,
     writeRecords,
 } from '@so/core'
@@ -24,7 +24,7 @@ import {
     writeStored,
 } from '#core'
 
-import { DEMO_PASSWORD, DEMO_PIN, sessionMock } from '../mocks'
+import { demoVerify, sessionMock } from '../mocks'
 import type {
     Credential,
     LockedSnapshot,
@@ -54,19 +54,6 @@ interface OpenVault {
     vault: StoredVault
     key: VaultKey
     contents: VaultContents
-}
-
-// Stands in for the Windows Hello prompt.
-const HELLO_DELAY_MS = 1300
-
-async function demoVerify(credential: Credential) {
-    if (credential.method === 'bio') {
-        await new Promise((resolve) => setTimeout(resolve, HELLO_DELAY_MS))
-        return true
-    }
-    return credential.method === 'pin'
-        ? credential.pin === DEMO_PIN
-        : credential.password === DEMO_PASSWORD
 }
 
 /** Whether a vault is open: the router guard reads `state`, the lock button and unlock flow write it.
@@ -177,9 +164,9 @@ export const useVaultSession = defineStore('vault-session', () => {
         const unwrapped = key
         // In the queue, from the latest file: a write that lands meanwhile is never undone.
         return serial(async () => {
-            // Removed meanwhile: opening or upgrading it would bring it back.
+            // Removed meanwhile: opening or upgrading it would bring it back. Opened by another flow: that one stays.
             const latest = storedVault(vault.id)
-            if (!latest) return 'unreadable'
+            if (!latest || unlocked.value) return 'unreadable'
             const file = viaCopy
                 ? await withCopySlots(latest.file, unwrapped, viaCopy)
                 : latest.file
@@ -238,13 +225,11 @@ export const useVaultSession = defineStore('vault-session', () => {
         await storeOpen({ vault, key, contents: EMPTY_CONTENTS })
     }
 
-    async function storeOpen(next: OpenVault) {
-        await vaultStore.put(next.vault)
-        // One synchronous step: the guard never sees the stored vault as locked.
-        opened.value = next
-        open()
-        files.remember(next.vault)
-    }
+    const storeOpen = (next: OpenVault) =>
+        persist(next.vault, undefined, () => {
+            opened.value = next
+            open()
+        })
 
     /** Stores a vault file from elsewhere (a Drive backup or copy) on this device, replacing one with its id, and opens it.
      *  `sync` links it to the Drive copy it came from. An aborted `signal` stops it with its reason up to the write;
@@ -336,6 +321,9 @@ export const useVaultSession = defineStore('vault-session', () => {
                       merged.changed.contents,
                   )
                 : vault
+            const rekeyed = merged.changed?.key
+            if (rekeyed && rekeyed !== key && opened.value?.vault === stored)
+                opened.value = { ...opened.value, key: rekeyed }
             // A locked account may come back sealed under another key.
             for (const id of merged.taken) recordKeys.drop(id)
             return {
@@ -361,10 +349,14 @@ export const useVaultSession = defineStore('vault-session', () => {
     ): Promise<void> {
         const target = opened.value
         if (!target) return Promise.resolve()
-        const { key } = target
         return serial(async () => {
             const vault = storedVault(target.vault.id)
             if (!vault) return
+            // Still open, its key may have taken another recovery half from a merge queued before.
+            const key =
+                opened.value?.vault.id === vault.id
+                    ? opened.value.key
+                    : target.key
             const current = await contentsOf(vault, key)
             const changed = await change(current, key)
             if (changed.length === 0) return
@@ -377,14 +369,17 @@ export const useVaultSession = defineStore('vault-session', () => {
     /** Makes another copy's records (a backup, an export) the open vault's: each stamped now, the rest tombstoned. */
     async function replaceRecords(records: readonly SealedRecord[]) {
         const restored: string[] = []
-        await transact(async (contents) => {
-            const changed = restoredRecords(
-                contents.records,
-                records,
-                Date.now(),
-            )
+        await transact(async (contents, key) => {
+            const now = Date.now()
+            const changed = restoredRecords(contents.records, records, now)
             restored.push(...changed.map(({ id }) => id))
-            return changed
+            return Promise.all(
+                changed.map((record) =>
+                    'deleted' in record
+                        ? record
+                        : restampEdited(key, record, now),
+                ),
+            )
         })
         // A locked account may come back sealed under its key of that time.
         for (const id of restored) recordKeys.drop(id)
