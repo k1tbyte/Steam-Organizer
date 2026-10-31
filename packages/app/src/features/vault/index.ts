@@ -1,7 +1,12 @@
 import { defineAsyncComponent } from 'vue'
 
 export { useUndoDelete } from './composables/useUndoDelete'
-export { MAX_VAULT_NAME_LENGTH } from './model'
+export {
+    type LockedSnapshot,
+    MAX_VAULT_NAME_LENGTH,
+    type MergedCopy,
+    type SyncReceipt,
+} from './model'
 export { installVaultGuard, vaultRoutes } from './routes'
 export { tally, type VaultContents } from './services/vaultContents'
 export { useVaultSession } from './stores/useVaultSession'

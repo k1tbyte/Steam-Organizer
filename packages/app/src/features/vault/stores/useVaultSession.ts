@@ -37,6 +37,7 @@ import { restoredRecords } from '../services/restoredRecords'
 import {
     EMPTY_CONTENTS,
     openContents,
+    tally,
     type VaultContents,
     withChanges,
 } from '../services/vaultContents'
@@ -111,13 +112,18 @@ export const useVaultSession = defineStore('vault-session', () => {
     function lock() {
         // Drafts queue their writes while the key is still here; the queue lands them after.
         for (const flush of drafts) flush()
-        const linked = opened.value?.vault.sync ? opened.value.vault.id : null
-        if (linked !== null && lockWatchers.size) {
+        const active = opened.value
+        if (active?.vault.sync && lockWatchers.size) {
+            const { accounts } = tally(active.contents)
             // Queued after the drafts, so it holds what they wrote; the file is sealed, no key needed.
             const snapshot = serial(async () => {
-                const vault = storedVault(linked)
+                const vault = storedVault(active.vault.id)
                 return vault && pendingIn(vault)
-                    ? { file: vault.file, receipt: files.receipt(vault) }
+                    ? {
+                          file: vault.file,
+                          receipt: files.receipt(vault),
+                          accounts,
+                      }
                     : undefined
             })
             for (const watcher of lockWatchers) watcher(snapshot)

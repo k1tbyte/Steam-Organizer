@@ -3,16 +3,25 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { reportError } from '#core'
+import { useSyncStatus, useVaultSync } from '#features/backups'
 import { useDrive } from '#features/drive'
+import { useVaultSession } from '#features/vault'
 
-import { useSettingsStore } from '../../stores/settingsStore'
+const COLORS = {
+    synced: 'success',
+    syncing: 'accent',
+    error: 'danger',
+    offline: 'neutral',
+} as const satisfies Record<string, SemanticColor>
 
-/** The Google identity and the sync line; the sync itself (Sync now, its age) waits on the backups feature. */
+/** The Google identity and the open vault's sync line, with Sync now for a synced vault. */
 export function useDriveSync() {
     const { t } = useI18n()
-    const store = useSettingsStore()
     const drive = useDrive()
     drive.prepare()
+    const session = useVaultSession()
+    const engine = useVaultSync()
+    const status = useSyncStatus()
 
     const connected = computed(() => drive.state.value !== 'disconnected')
 
@@ -25,14 +34,18 @@ export function useDriveSync() {
             case 'offline':
                 return t('Offline')
         }
-        if (store.syncing) return t('Syncing…')
-        return store.syncedJustNow ? t('Synced just now') : t('Synced')
+        const current = status.value
+        if (current === undefined) return t('Connected')
+        if (current.state !== 'synced') return current.label
+        return current.age
+            ? t('Synced {ago}', { ago: current.age })
+            : t('Synced')
     })
 
     const statusColor = computed<SemanticColor>(() => {
         if (drive.state.value === 'expired') return 'danger'
         if (drive.state.value !== 'connected') return 'neutral'
-        return store.syncing ? 'accent' : 'success'
+        return status.value ? COLORS[status.value.state] : 'success'
     })
 
     return {
@@ -40,10 +53,13 @@ export function useDriveSync() {
         connected,
         expired: computed(() => drive.state.value === 'expired'),
         connecting: drive.connecting,
-        syncing: computed(() => store.syncing),
+        canSyncNow: computed(
+            () => drive.state.value === 'connected' && !!session.vault?.sync,
+        ),
+        syncing: computed(() => engine.running),
         statusText,
         statusColor,
-        syncNow: store.syncNow,
+        syncNow: () => void engine.syncNow(),
         connect: () =>
             drive.connect().catch((error) => reportError(error, 'drive')),
         disconnect: () =>

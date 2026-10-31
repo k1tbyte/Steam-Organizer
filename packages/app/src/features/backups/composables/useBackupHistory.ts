@@ -10,7 +10,6 @@ import { tally, useVaultSession } from '#features/vault'
 import type { BackupRow } from '../model'
 import { useBackupList } from '../stores/useBackupList'
 import { useBackupLabels } from './useBackupLabels'
-import { useSyncStatus } from './useSyncStatus'
 
 interface Saving {
     at: string
@@ -25,7 +24,6 @@ export function useBackupHistory() {
     const drive = useDrive()
     const { problemOf } = useDriveProblem()
     const toast = useToast()
-    const sync = useSyncStatus()
     const labels = useBackupLabels()
     const active = usePageActive()
 
@@ -77,15 +75,9 @@ export function useBackupHistory() {
         return store.list ? 'empty' : 'loading'
     })
 
-    const canBackUp = computed(() => {
-        const state = sync.value?.state
-        return (
-            drive.state.value === 'connected' &&
-            state !== 'error' &&
-            state !== 'offline' &&
-            !savingHere.value
-        )
-    })
+    const canBackUp = computed(
+        () => drive.state.value === 'connected' && !savingHere.value,
+    )
 
     function fail(title: string, error: unknown) {
         toast.add({

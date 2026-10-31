@@ -122,8 +122,9 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Connect / disconnect Google account; shows name, email, avatar.
 - Backup history: kind, date. Restore: shows date, account count, size; the vault keeps its current master password. Delete (confirm).
 - Backup now `[new]`.
-- Auto backup after changes (setting).
-- Auto sync: check Drive on focus, interval and "sync now" `[new]`; newer cloud copy replaces local.
+- Auto backup after changes (setting): at most one a day, only after a change; the newest 10 auto backups stay, manual ones are never deleted.
+- Auto sync: check Drive on open, focus, interval, after changes and "sync now" `[new]`; changes merge account by account (a refresh on one device never undoes an edit on another), deletions carry over, the later password change wins.
+- A vault whose Drive copy is gone (reset elsewhere, app data removed, another Google account) stays on the device with a notice; nothing is recreated silently.
 - Status: saved, syncing, error, offline.
 
 ---

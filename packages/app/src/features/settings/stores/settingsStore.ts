@@ -1,13 +1,10 @@
-import { useTimer } from '@so/ui/useTimer'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-import type { SecuritySettings, SiteKey, SyncSettings } from '../model'
-
-const SYNC_NOW_MS = 1200
+import type { SecuritySettings, SiteKey } from '../model'
 
 /** What this device holds for the settings sections. Each part moves to its owner when wired
- *  (vault settings, Drive sync, Steam access); `null` and empty mean "not changed here yet". */
+ *  (vault settings, Steam access); `null` and empty mean "not changed here yet". */
 export const useSettingsStore = defineStore('settings', () => {
     const security = ref<SecuritySettings>({
         lockAfter: '15m',
@@ -15,31 +12,10 @@ export const useSettingsStore = defineStore('settings', () => {
         pin: true,
         biometrics: false,
     })
-    const sync = ref<SyncSettings>({
-        autoSync: true,
-        interval: '15',
-        autoBackup: true,
-    })
-    const syncing = ref(false)
-    const syncedJustNow = ref(false)
     const allowedSites = ref<SiteKey[]>([])
-
-    const timer = useTimer()
 
     function setSecurity(patch: Partial<SecuritySettings>) {
         security.value = { ...security.value, ...patch }
-    }
-
-    function setSync(patch: Partial<SyncSettings>) {
-        sync.value = { ...sync.value, ...patch }
-    }
-
-    function syncNow() {
-        syncing.value = true
-        timer.arm(SYNC_NOW_MS, () => {
-            syncing.value = false
-            syncedJustNow.value = true
-        })
     }
 
     function allowSite(key: SiteKey) {
@@ -49,13 +25,8 @@ export const useSettingsStore = defineStore('settings', () => {
 
     return {
         security: computed(() => security.value),
-        sync: computed(() => sync.value),
-        syncing: computed(() => syncing.value),
-        syncedJustNow: computed(() => syncedJustNow.value),
         allowedSites: computed(() => allowedSites.value),
         setSecurity,
-        setSync,
-        syncNow,
         allowSite,
     }
 })

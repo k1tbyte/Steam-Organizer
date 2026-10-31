@@ -1,11 +1,13 @@
 import { useToast } from '@so/ui'
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { reportError, useSettingsLink } from '#core'
 import { useDrive, useDriveProblem } from '#features/drive'
 
-/** The connected Google account and the two switches beside the history. */
+import { useVaultSync } from '../stores/useVaultSync'
+
+/** The connected Google account, the two switches beside the history and Retry for a failed sync. */
 export function useDriveAccount() {
     const { t } = useI18n()
     const drive = useDrive()
@@ -13,17 +15,26 @@ export function useDriveAccount() {
     const { problemOf } = useDriveProblem()
     const toast = useToast()
     const openSettings = useSettingsLink()
+    const engine = useVaultSync()
 
-    // Both switches live in Settings later; here they only flip.
-    const autoBackup = ref(true)
-    const autoSync = ref(true)
+    const setting = <K extends 'autoBackup' | 'autoSync'>(key: K) =>
+        computed({
+            get: () => engine.settings[key],
+            set: (on: boolean) => engine.setSettings({ [key]: on }),
+        })
 
     return {
         identity: drive.account,
         connecting: drive.connecting,
-        autoBackup,
-        autoSync,
+        autoBackup: setting('autoBackup'),
+        autoSync: setting('autoSync'),
+        syncLine: computed(() =>
+            t('On focus and every {minutes} min', {
+                minutes: engine.settings.interval,
+            }),
+        ),
         openSyncSettings: () => openSettings('sync'),
+        retrySync: () => void engine.syncNow(),
         // A closed Google window is a quiet false; a failure says why.
         connect: () =>
             drive.connect().catch((error) =>

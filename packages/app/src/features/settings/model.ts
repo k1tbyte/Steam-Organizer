@@ -47,14 +47,6 @@ export interface SecuritySettings {
     biometrics: boolean
 }
 
-export type SyncInterval = '5' | '15' | '30'
-
-export interface SyncSettings {
-    autoSync: boolean
-    interval: SyncInterval
-    autoBackup: boolean
-}
-
 export type FieldKey =
     | MovableField
     | 'nickname'

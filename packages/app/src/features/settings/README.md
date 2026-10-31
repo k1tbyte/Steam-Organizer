@@ -22,6 +22,6 @@ Mockup: `Settings.dc.html` (Settings · Desktop, Settings · Mobile, Settings ·
 | `settings.about` (Update available, Up to date) | nav footer: version and "Update to" link | build version, update check | `useAboutApp` |
 | `settings.steam` (Firefox, Chromium all allowed, Nothing allowed) | site Allowed / Allow, Firefox note | browser site permissions and the browser kind (`Platform` has none yet) | `sources/useSteamAccess` |
 
-Local state until the owners exist, all in `stores/settingsStore.ts`: lock timeout, master password after restart, PIN and biometrics flags, Google connected flag, Auto sync, interval, Auto backup, Sync now (1.2 s), field secrecy defaults, allowed sites. They start at the mockup's values and are not persisted.
+Local state until the owners exist, all in `stores/settingsStore.ts`: lock timeout, master password after restart, PIN and biometrics flags, allowed sites. They start at the mockup's values and are not persisted. Sync & backup is real: Auto sync, its interval and Auto backup are the backups engine's (`useVaultSync` from `#features/backups`, kept per device), the status line reads `useSyncStatus` (`sources/useDriveSync.ts`), and Sync now shows for a synced open vault.
 
 Unwired intents: "Update to ..." in the nav footer, Lock vault on the phone vault card, PIN Change (setup flow). Change master password rewraps the open vault through `useVaultSession().changePassword`; with no real vault open it takes the demo `demo`.

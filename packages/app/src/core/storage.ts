@@ -30,6 +30,9 @@ export const LAST_VAULT_STORAGE_KEY = 'so:vault:last'
 // Google Drive (features/drive): the account this device backs up to; the token is never stored here.
 export const DRIVE_ACCOUNT_STORAGE_KEY = 'so:drive:account'
 
+// Drive sync (features/backups): Auto sync, its interval and Auto backup, per device.
+export const SYNC_SETTINGS_STORAGE_KEY = 'so:sync'
+
 export function readStored(key: string): string | null {
     try {
         return localStorage.getItem(key)

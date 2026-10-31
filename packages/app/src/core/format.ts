@@ -16,6 +16,17 @@ export function backupDay(at: number, now: number): BackupDay {
     return at >= today.getTime() ? 'yesterday' : 'older'
 }
 
+/** How long ago `at` was in its largest whole unit ("2 min ago", "3 hr ago", "5 days ago"); null under a minute. */
+export function formatAgo(at: number, now: number): string | null {
+    const minutes = Math.floor((now - at) / MINUTE_MS)
+    if (minutes < 1) return null
+    const relative = new Intl.RelativeTimeFormat(LOCALE, { style: 'short' })
+    if (minutes < 60) return relative.format(-minutes, 'minute')
+    const hours = Math.floor(minutes / 60)
+    if (hours < 24) return relative.format(-hours, 'hour')
+    return relative.format(-Math.floor(hours / 24), 'day')
+}
+
 export function formatTime(at: number): string {
     return new Intl.DateTimeFormat(LOCALE, {
         hour: '2-digit',

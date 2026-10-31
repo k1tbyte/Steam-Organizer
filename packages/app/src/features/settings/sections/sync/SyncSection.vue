@@ -43,7 +43,7 @@ const view = useSyncSection()
                     :loading="view.connecting.value"
                     @click="view.connect" />
                 <FpButton
-                    v-else
+                    v-else-if="view.canSyncNow.value"
                     size="sm"
                     variant="outline"
                     :loading="view.syncing.value"
@@ -82,7 +82,7 @@ const view = useSyncSection()
             inline
             class="mt-2.5"
             :label="t('Auto sync')"
-            :description="t('Check Drive when the app opens or gets focus. A newer cloud copy replaces the local one.')">
+            :description="t('Check Drive when the app opens or gets focus. Changes from other devices merge account by account.')">
             <FpSwitch
                 :model-value="view.autoSync.value"
                 :aria-label="t('Auto sync')"

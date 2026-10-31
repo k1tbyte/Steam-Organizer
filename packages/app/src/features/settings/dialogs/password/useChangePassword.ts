@@ -1,4 +1,4 @@
-import { type Ref, ref, watch } from 'vue'
+import { computed, type Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { reportError } from '#core'
@@ -40,5 +40,12 @@ export function useChangePassword(open: Ref<boolean>) {
         }
     }
 
-    return { fields, done, saving, submit }
+    return {
+        fields,
+        done,
+        saving,
+        submit,
+        /** Other devices learn the new password through the Drive copy. */
+        synced: computed(() => !!session.vault?.sync),
+    }
 }

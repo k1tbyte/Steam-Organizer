@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { backupDay, formatDate, formatSize, formatTime } from './format'
+import {
+    backupDay,
+    formatAgo,
+    formatDate,
+    formatSize,
+    formatTime,
+} from './format'
 
 const at = (day: number, hour: number, minute = 0) =>
     new Date(2026, 9, day, hour, minute).getTime()
@@ -35,5 +41,17 @@ describe('formatting', () => {
         expect(formatSize(186 * 1024)).toBe('186 KB')
         expect(formatSize(10)).toBe('1 KB')
         expect(formatSize(2.5 * 1024 * 1024)).toBe('2.5 MB')
+    })
+})
+
+describe('formatAgo', () => {
+    const now = at(21, 14, 5)
+
+    it('has no age under a minute, then the largest whole unit', () => {
+        expect(formatAgo(now - 59_000, now)).toBeNull()
+        expect(formatAgo(now + 5_000, now)).toBeNull()
+        expect(formatAgo(now - 2 * 60_000, now)).toBe('2 min ago')
+        expect(formatAgo(at(21, 11, 5), now)).toBe('3 hr ago')
+        expect(formatAgo(at(16, 14, 5), now)).toBe('5 days ago')
     })
 })

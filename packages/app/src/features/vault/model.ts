@@ -50,6 +50,8 @@ export interface MergedCopy {
 export interface LockedSnapshot {
     file: VaultFile
     receipt: SyncReceipt
+    /** Accounts at the lock, for the copy's label. */
+    accounts: number
 }
 
 /** `unreadable`: a damaged file or a newer format, which no credential opens. */

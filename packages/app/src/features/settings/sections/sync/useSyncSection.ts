@@ -2,23 +2,24 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-import { useBackupCount } from '#features/backups'
+import {
+    SYNC_INTERVALS,
+    type SyncInterval,
+    useBackupCount,
+    useVaultSync,
+} from '#features/backups'
 
 import { useDriveSync } from '../../composables/sources/useDriveSync'
-import type { SyncInterval } from '../../model'
-import { useSettingsStore } from '../../stores/settingsStore'
-
-const INTERVALS: SyncInterval[] = ['5', '15', '30']
 
 export function useSyncSection() {
     const { t } = useI18n()
     const router = useRouter()
-    const store = useSettingsStore()
+    const engine = useVaultSync()
     const drive = useDriveSync()
     const backups = useBackupCount()
 
     const intervalItems = computed(() =>
-        INTERVALS.map((minutes) => ({
+        SYNC_INTERVALS.map((minutes) => ({
             value: minutes,
             label: t('{minutes} min', { minutes }),
         })),
@@ -37,14 +38,14 @@ export function useSyncSection() {
 
     return {
         ...drive,
-        autoSync: computed(() => store.sync.autoSync),
-        setAutoSync: (on: boolean) => store.setSync({ autoSync: on }),
-        interval: computed(() => store.sync.interval),
+        autoSync: computed(() => engine.settings.autoSync),
+        setAutoSync: (on: boolean) => engine.setSettings({ autoSync: on }),
+        interval: computed(() => engine.settings.interval),
         setInterval: (value: SyncInterval) =>
-            store.setSync({ interval: value }),
+            engine.setSettings({ interval: value }),
         intervalItems,
-        autoBackup: computed(() => store.sync.autoBackup),
-        setAutoBackup: (on: boolean) => store.setSync({ autoBackup: on }),
+        autoBackup: computed(() => engine.settings.autoBackup),
+        setAutoBackup: (on: boolean) => engine.setSettings({ autoBackup: on }),
         hasBackupsInfo: computed(() => backups.value !== undefined),
         backupsLine,
         openBackups,

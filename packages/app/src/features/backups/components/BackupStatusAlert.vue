@@ -9,13 +9,14 @@ import { useSyncStatus } from '../composables/useSyncStatus'
 const { t } = useI18n()
 const desktop = useDesktopLayout()
 const status = useSyncStatus()
-const { connect, connecting } = useDriveAccount()
+const { connect, connecting, retrySync } = useDriveAccount()
 const state = computed(() => status.value?.state)
+const cause = computed(() => status.value?.cause)
 </script>
 
 <template>
     <FpAlert
-        v-if="state === 'error'"
+        v-if="cause === 'expired'"
         color="danger"
         icon="icon-[lucide--cloud-alert]"
         :title="t(`Couldn't reach Google Drive`)"
@@ -40,6 +41,19 @@ const state = computed(() => status.value?.state)
                 :label="t('Sign in again')"
                 :loading="connecting"
                 @click="connect" />
+        </template>
+    </FpAlert>
+    <FpAlert
+        v-else-if="cause === 'failed'"
+        color="danger"
+        icon="icon-[lucide--cloud-alert]"
+        :title="t('Drive sync failed')"
+        :description="t('Changes are saved on this device.')">
+        <template v-if="desktop" #trailing>
+            <FpButton color="danger" size="sm" :label="t('Retry')" @click="retrySync" />
+        </template>
+        <template v-else #actions>
+            <FpButton block color="danger" size="xl" :label="t('Retry')" @click="retrySync" />
         </template>
     </FpAlert>
     <FpAlert

@@ -3,6 +3,7 @@ import { useDesktopLayout } from '@so/ui'
 import { computed, shallowRef } from 'vue'
 
 import { type PageContext, providePage, provideSettingsLink, useTopbarOutlets } from '#core'
+import { useAutoSync } from '#features/backups'
 import { type SectionKey, SettingsHost, useSettingsEntry } from '#features/settings'
 
 import { useLockClearsToasts } from '../composables/useLockClearsToasts'
@@ -14,6 +15,8 @@ import ShellTabBar from './ShellTabBar.vue'
 const desktop = useDesktopLayout()
 useSectionMemory()
 useLockClearsToasts()
+// The shell lives as long as the unlocked session, so Drive sync does too.
+useAutoSync()
 const settings = useSettingsEntry()
 provideSettingsLink((section) => settings.open(section as SectionKey))
 const { showTabBar } = useShellNav()

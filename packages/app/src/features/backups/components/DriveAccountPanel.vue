@@ -18,7 +18,7 @@ const { t } = useI18n()
 const desktop = useDesktopLayout()
 const { vault } = useBackupsVault()
 const { accountsOf } = useBackupLabels()
-const { identity, autoBackup, autoSync, openSyncSettings, disconnect } = useDriveAccount()
+const { identity, autoBackup, autoSync, syncLine, openSyncSettings, disconnect } = useDriveAccount()
 </script>
 
 <!-- Desktop: the account, the vault and the two switches beside the history. Phones keep the address only. -->
@@ -58,7 +58,7 @@ const { identity, autoBackup, autoSync, openSyncSettings, disconnect } = useDriv
                     <FpSwitch
                         v-model="autoSync"
                         :label="t('Auto sync')"
-                        :description="t('On focus and every 15 min')" />
+                        :description="syncLine" />
                 </div>
                 <div class="border-stroke-1 border-t py-3">
                     <FpButton variant="link" color="accent" @click="openSyncSettings">

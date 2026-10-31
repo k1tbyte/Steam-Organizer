@@ -139,6 +139,8 @@ Google Drive is a layer over any home, not a home of its own:
 - **Synced copy**: one `VaultFile` per vault in the same folder (`@so/core` `drive/vaultCopy.ts`), app properties `type: vault`, vault id, vault name, account count. Written over in place (`update`); Drive's `version` moves with every write, by any device. Of two copies of one vault (two first pushes that crossed) the oldest is kept.
 - **Link** (`StoredVault.sync`): the Google account, copy id and Drive `version` last merged, and the local `revision` that copy holds. Every change to the file moves `revision`, so `revision !== sync.revision` is a change to push. A sync downloads only when Drive's version moved past the one merged (same account and copy id), merges, pushes when the copy lacks something, and records the version it left. Drive v3 has no conditional writes, so two pushes may cross and the later overwrite the earlier; lost updates heal, because each device keeps its own changes and pushes again once Drive's version moves past the one it merged, and the merge is per record, idempotent and newest-wins.
 - **Merge** (`vault/merge.ts`, `mergeRecords`), per record id: a record one side lacks is taken; identical records (same stamp and sealed parts, or two tombstones of one stamp) stay; against a tombstone the newer `updatedAt` wins and a tie goes to the tombstone; two live accounts merge per half (Sync 3) unless an `everything` lock sealed `editedAt` and `steam` away, the user side's sealed secret carried unopened; anything else goes to the newer `updatedAt`, a tie to the remote copy. The result is idempotent: merging it again with either side changes nothing, so devices converge whatever order they sync in.
+- **Copy gone** (a reset elsewhere, app data removed from Drive, another Google account than the link's): the vault stays on the device as device-only (`unlink`) with a notice; Move to Google Drive uploads it again. Nothing is recreated silently.
+- **Auto backup** (synced vaults only): at most one a day, only after a change (a record stamped after the newest auto backup); the newest 10 auto backups stay, manual ones are never deleted.
 - **Slots** carry `changedAt`, stamped by a password change and a recovery-slot upgrade (a created vault has none, 0). A merge keeps the slots changed later (`newerSlots`): of two password changes made before a sync, the later wins.
 - **Exports**: the same `VaultFile` saved as `<vault name>.sovault` (`serializeVaultFile`), as stored or rewrapped under the file's own password. Imported into the open vault, a file of the same vault id restores like a backup; onboarding adopts any export with its password.
 - **Binary container** (to do, a format version bump, before the first release): magic bytes, the JSON header, then the raw sealed body, no base64 (a third smaller). Files on disk (`.sovault`), Drive and exports use it; IndexedDB keeps bytes, not strings.
@@ -223,9 +225,9 @@ Own password on a single account, asked even in an unlocked vault. Any length (P
 - Locked accounts ignore the vault's field placement: every movable field is sealed. Scope "everything except nickname and avatar": `data` keeps only `kind`, `alias`, `order`, `pinned`, `addedAt`, `loginTag` and the lock with the Steam nickname and avatar; the rest moves into `secret.hidden` under the account key (`splitAccount` / `joinAccount` in core, the one place every writer passes). The list shows it as a placeholder with the lock mark; the hidden Steam ID leaves a keyed tag (`lock.steamTag`, like `loginTag`), so Add and Undo still catch a duplicate.
 
 ### Sync
-1. Local change → encrypt → push to Drive with timestamp.
-2. Clients check Drive on focus, manual sync or interval.
-3. Merge by record: newer `updatedAt` wins per account, deletions kept as tombstones. Concurrent edits of different accounts never conflict. Inside one account, after opening both copies, the user fields come from the newer `editedAt` and `steam` from the newer `refreshedAt`: a bulk refresh on one device never overwrites a note edited on another.
+1. Local change → encrypt → push to Drive (done: `#features/backups` `useVaultSync`, 3 s after a change and on lock).
+2. Clients check Drive on open, focus, manual sync or interval (done).
+3. Merge by record (done: `mergeRecords`): newer `updatedAt` wins per account, deletions kept as tombstones. Concurrent edits of different accounts never conflict. Inside one account, after opening both copies, the user fields come from the newer `editedAt` and `steam` from the newer `refreshedAt`: a bulk refresh on one device never overwrites a note edited on another.
 4. Tombstones are purged with the sync (to do): older than N days once every copy synced past them; a copy offline longer than that can bring a deleted record back.
 5. Order keys stay unique (to do): two devices adding at the end take the same key, and no key fits between equal neighbours, so a move there fails. The merge rekeys a tied run.
 
@@ -292,7 +294,8 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 ### Phase 1: Core
 - [ ] `packages/core`: models, vault crypto (format v1), storage
 - [x] Steam client: endpoints from 7, batching, caching
-- [ ] Drive sync over REST, per-half account merge, tombstone purge
+- [x] Drive sync over REST, per-half account merge
+- [ ] Tombstone purge, order-key ties (Sync 4, 5)
 - [x] Steam ID conversions in core, CS2 friend code via MD5 (`@noble/hashes`)
 - [ ] Tests: crypto, Steam parsers, sync
 

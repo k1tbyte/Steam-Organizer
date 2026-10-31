@@ -22,12 +22,16 @@ const view = useChangePassword(open)
                 :next-label="t('New password')"
                 :repeat-label="t('Repeat new password')" />
             <FpAlert
+                v-if="view.synced.value"
                 :description="t('Accounts aren\'t re-encrypted, so this takes a moment. PIN and Windows Hello keep working. Other devices ask for the new password on their next unlock.')" />
+            <FpAlert
+                v-else
+                :description="t('Accounts aren\'t re-encrypted, so this takes a moment. PIN and Windows Hello keep working.')" />
         </form>
         <div v-else class="flex flex-col items-center gap-2.5 px-3 pt-4 text-center">
             <FpIconTile name="icon-[lucide--circle-check]" size="lg" color="success" />
             <span class="font-semibold text-16 text-fg-1">{{ t('Master password changed') }}</span>
-            <span class="text-13 leading-snug text-fg-3">
+            <span v-if="view.synced.value" class="text-13 leading-snug text-fg-3">
                 {{ t('Synced to Google Drive. Other devices will ask for the new password next time.') }}
             </span>
         </div>
