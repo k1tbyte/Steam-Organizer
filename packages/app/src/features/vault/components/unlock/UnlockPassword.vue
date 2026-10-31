@@ -4,8 +4,16 @@ import { useI18n } from 'vue-i18n'
 
 import FieldNote from '../FieldNote.vue'
 
-defineProps<{ message: string; attempts: number; pinLocked: boolean; canUsePin: boolean; busy: boolean }>()
-defineEmits<{ submit: []; usePin: []; reset: [] }>()
+defineProps<{
+    message: string
+    attempts: number
+    pinLocked: boolean
+    canUsePin: boolean
+    busy: boolean
+    canCheckCopy: boolean
+    signingIn: boolean
+}>()
+defineEmits<{ submit: []; usePin: []; reset: []; checkCopy: [] }>()
 
 const password = defineModel<string>({ required: true })
 const { t } = useI18n()
@@ -37,6 +45,12 @@ const desktop = useDesktopLayout()
             </FpFormField>
         </FpShake>
         <FieldNote v-if="message">{{ message }}</FieldNote>
+        <div v-if="canCheckCopy" class="flex flex-wrap items-center justify-center gap-1.5 text-13 text-fg-3">
+            {{ t('Changed it on another device?') }}
+            <FpButton variant="link" color="accent" :loading="signingIn" @click="$emit('checkCopy')">
+                {{ t('Sign in with Google') }}
+            </FpButton>
+        </div>
         <div class="flex items-center justify-center gap-1.5 pt-1.5 text-13 text-fg-3">
             {{ t('Forgot it?') }}
             <FpButton variant="link" color="danger" @click="$emit('reset')">
@@ -64,6 +78,12 @@ const desktop = useDesktopLayout()
             </FpFormField>
         </FpShake>
         <span v-if="message" class="text-12.5 text-danger leading-snug">{{ message }}</span>
+        <div v-if="canCheckCopy" class="flex flex-wrap items-center justify-center gap-1.5 text-13 text-fg-3">
+            {{ t('Changed it on another device?') }}
+            <FpButton variant="link" color="accent" :loading="signingIn" @click="$emit('checkCopy')">
+                {{ t('Sign in with Google') }}
+            </FpButton>
+        </div>
         <FpButton block color="accent" size="2xl" :loading="busy" @click="$emit('submit')">{{ t('Unlock') }}</FpButton>
         <FpButton v-if="canUsePin" variant="ghost" color="accent" size="xl" @click="$emit('usePin')">
             {{ t('Use PIN') }}

@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 import { formatAgo, reportError, useMock } from '#core'
-import { useDrive } from '#features/drive'
+import { useDrive, useDriveSignIn } from '#features/drive'
 
 import { vaultsMock } from '../mocks'
 import { type Credential, LOCATION_ICON, type UnlockMethod } from '../model'
@@ -37,6 +37,7 @@ export function useUnlock() {
     const { t } = useI18n()
     const session = useVaultSession()
     const drive = useDrive()
+    const signIn = useDriveSignIn()
     const router = useRouter()
     const desktop = useDesktopLayout()
     // Read when the picker shows; the age needs no clock of its own here.
@@ -99,6 +100,9 @@ export function useUnlock() {
     const checkingPassword = ref(false)
     const opening = ref(false)
     const picked = ref<UnlockMethod>()
+    // The vault whose password was last refused without its Drive copy checked.
+    const refused = ref<string>()
+    if (session.vaults.some(({ sync }) => sync)) drive.prepare()
 
     watch(password, () => {
         if (!passwordPaused.value) passwordError.value = ''
@@ -261,6 +265,7 @@ export function useUnlock() {
         }
         wrongPasswords.value++
         failedAttempts.value++
+        refused.value = vault.value?.id
         if (wrongPasswords.value >= PASSWORD_TRIES_BEFORE_PAUSE) {
             passwordPaused.value = true
             passwordError.value = t('Too many attempts. Try again in 30 s.')
@@ -277,6 +282,22 @@ export function useUnlock() {
                 left: PASSWORD_TRIES_BEFORE_PAUSE - wrongPasswords.value,
             },
         )
+    }
+
+    // After a reload the web has no token: a password changed on another device needs Google to reach the copy.
+    const canCheckCopy = computed(
+        () =>
+            refused.value === vault.value?.id &&
+            vault.value?.location === 'drive' &&
+            !passwordPaused.value &&
+            (drive.state.value === 'disconnected' ||
+                drive.state.value === 'expired'),
+    )
+
+    async function checkCopy() {
+        const forVault = vault.value?.id
+        if (!(await signIn()) || left || vault.value?.id !== forVault) return
+        await submitPassword()
     }
 
     async function startHello() {
@@ -329,6 +350,9 @@ export function useUnlock() {
         passwordError,
         checkingPassword,
         submitPassword,
+        canCheckCopy,
+        checkCopy,
+        signingIn: drive.connecting,
         waitingForHello,
         startHello,
         switchToPassword,

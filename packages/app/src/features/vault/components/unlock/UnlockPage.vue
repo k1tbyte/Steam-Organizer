@@ -44,6 +44,9 @@ const {
     passwordError,
     checkingPassword,
     submitPassword,
+    canCheckCopy,
+    checkCopy,
+    signingIn,
     waitingForHello,
     startHello,
     switchToPassword,
@@ -120,7 +123,10 @@ const {
                     :pin-locked="pinLocked"
                     :can-use-pin="canUsePin"
                     :busy="checkingPassword"
+                    :can-check-copy="canCheckCopy"
+                    :signing-in="signingIn"
                     @submit="submitPassword"
+                    @check-copy="checkCopy"
                     @use-pin="switchToPin"
                     @reset="resetOpen = true" />
                 <UnlockOpening v-else :vault-name="vault?.name ?? ''" />
