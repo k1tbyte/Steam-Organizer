@@ -22,16 +22,37 @@ export interface DriveFile {
     name: string
     size: number
     createdTime: number
-    /** Plaintext, readable before unlock: each key and value fit 124 bytes together. */
+    modifiedTime: number
+    /** Drive's counter of the file's changes: it moves with every write, by anyone. */
+    version: string
+    /** Plaintext, readable before unlock: each key and value fit 124 bytes together (`fit`). */
     appProperties: Record<string, string>
 }
 
-interface RawFile extends Omit<DriveFile, 'size' | 'createdTime'> {
+interface RawFile
+    extends Omit<
+        DriveFile,
+        'size' | 'createdTime' | 'modifiedTime' | 'version'
+    > {
     size?: string
     createdTime: string
+    modifiedTime?: string
+    version?: string
 }
 
-const FILE_FIELDS = 'id,name,size,createdTime,appProperties'
+const FILE_FIELDS =
+    'id,name,size,createdTime,modifiedTime,version,appProperties'
+// Drive holds 124 bytes of key and value together per app property.
+const PROPERTY_BYTES = 124
+
+/** `value` cut to what Drive holds beside `key` in one app property. */
+export function fit(key: string, value: string): string {
+    const chars = [...value]
+    const encoder = new TextEncoder()
+    while (encoder.encode(key + chars.join('')).length > PROPERTY_BYTES)
+        chars.pop()
+    return chars.join('')
+}
 
 const literal = (text: string) => text.replace(/['\\]/g, '\\$&')
 
@@ -58,8 +79,28 @@ const toFile = (raw: RawFile): DriveFile => ({
     ...raw,
     size: Number(raw.size ?? 0),
     createdTime: Date.parse(raw.createdTime),
+    modifiedTime: Date.parse(raw.modifiedTime ?? raw.createdTime),
+    version: raw.version ?? '',
     appProperties: raw.appProperties ?? {},
 })
+
+function multipart(metadata: object, body: string) {
+    const boundary = crypto.randomUUID()
+    return {
+        type: `multipart/related; boundary=${boundary}`,
+        body: [
+            `--${boundary}`,
+            'Content-Type: application/json; charset=UTF-8',
+            '',
+            JSON.stringify(metadata),
+            `--${boundary}`,
+            'Content-Type: application/octet-stream',
+            '',
+            body,
+            `--${boundary}--`,
+        ].join('\r\n'),
+    }
+}
 
 /** Drive v3 inside the app's hidden folder (`drive.appdata`), under the token `token` gives per request. */
 export function driveApi(
@@ -111,31 +152,33 @@ export function driveApi(
             appProperties: Record<string, string>,
             body: string,
         ): Promise<DriveFile> {
-            const boundary = crypto.randomUUID()
-            const metadata = JSON.stringify({
-                name,
-                parents: ['appDataFolder'],
-                appProperties,
-            })
-            const multipart = [
-                `--${boundary}`,
-                'Content-Type: application/json; charset=UTF-8',
-                '',
-                metadata,
-                `--${boundary}`,
-                'Content-Type: application/octet-stream',
-                '',
+            const upload = multipart(
+                { name, parents: ['appDataFolder'], appProperties },
                 body,
-                `--${boundary}--`,
-            ].join('\r\n')
+            )
             const response = await call(
                 `${UPLOAD}?uploadType=multipart&fields=${FILE_FIELDS}`,
                 {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': `multipart/related; boundary=${boundary}`,
-                    },
-                    body: multipart,
+                    headers: { 'Content-Type': upload.type },
+                    body: upload.body,
+                },
+            )
+            return toFile((await response.json()) as RawFile)
+        },
+        /** Replaces the body of file `id` and sets `appProperties` on it; no write is conditional, so the last one wins. */
+        async update(
+            id: string,
+            appProperties: Record<string, string>,
+            body: string,
+        ): Promise<DriveFile> {
+            const upload = multipart({ appProperties }, body)
+            const response = await call(
+                `${UPLOAD}/${id}?uploadType=multipart&fields=${FILE_FIELDS}`,
+                {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': upload.type },
+                    body: upload.body,
                 },
             )
             return toFile((await response.json()) as RawFile)

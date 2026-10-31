@@ -76,6 +76,50 @@ it('uploads the metadata and the body as one multipart request', async () => {
     expect(parts[2]).toContain('\r\n\r\n{"sealed":true}\r\n')
 })
 
+it('replaces a file in place: its body and app properties, never its folder', async () => {
+    let sent:
+        | { url: string; method: string; type: string; body: string }
+        | undefined
+    const fetch = (async (url: string, init: RequestInit) => {
+        sent = {
+            url,
+            method: String(init.method),
+            type: new Headers(init.headers).get('Content-Type') ?? '',
+            body: String(init.body),
+        }
+        return Response.json({
+            id: 'v1',
+            name: 'vault.json',
+            size: '9',
+            createdTime: '2026-10-28T10:00:00Z',
+            modifiedTime: '2026-10-30T10:00:00Z',
+            version: '7',
+            appProperties: { type: 'vault' },
+        })
+    }) as typeof globalThis.fetch
+    const file = await driveApi(fetch, token).update(
+        'v1',
+        { type: 'vault' },
+        '{"sealed":2}',
+    )
+    expect(file).toMatchObject({
+        version: '7',
+        modifiedTime: Date.parse('2026-10-30T10:00:00Z'),
+        size: 9,
+    })
+    expect(sent?.method).toBe('PATCH')
+    const url = new URL(sent?.url ?? '')
+    expect(url.pathname).toBe('/upload/drive/v3/files/v1')
+    expect(url.searchParams.get('uploadType')).toBe('multipart')
+    expect(url.searchParams.get('fields')).toContain('version')
+    const boundary = sent?.type.match(/boundary=(.+)$/)?.[1] ?? ''
+    const parts = sent?.body.split(`--${boundary}`) ?? []
+    expect(JSON.parse(parts[1]?.split('\r\n\r\n')[1] ?? '')).toEqual({
+        appProperties: { type: 'vault' },
+    })
+    expect(parts[2]).toContain('\r\n\r\n{"sealed":2}\r\n')
+})
+
 it('tells an expired token, a rate limit, a full Drive and no network apart', async () => {
     const answer = (status: number, reason = '') =>
         driveApi(

@@ -3,7 +3,7 @@ import {
     serializeVaultFile,
     type VaultFile,
 } from '../vault/vault'
-import type { DriveApi, DriveFile } from './drive'
+import { type DriveApi, type DriveFile, fit } from './drive'
 
 export type BackupKind = 'auto' | 'manual'
 
@@ -21,16 +21,6 @@ export interface Backup {
 export type BackupMeta = Pick<Backup, 'vaultName' | 'kind' | 'accounts'>
 
 const TYPE = 'backup'
-// Drive holds 124 bytes of key and value together per app property.
-const PROPERTY_BYTES = 124
-
-function fit(key: string, value: string): string {
-    const chars = [...value]
-    const encoder = new TextEncoder()
-    while (encoder.encode(key + chars.join('')).length > PROPERTY_BYTES)
-        chars.pop()
-    return chars.join('')
-}
 
 const toBackup = ({
     id,

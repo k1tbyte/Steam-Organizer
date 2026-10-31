@@ -100,12 +100,16 @@ export async function withRecovery(
     password: string,
 ): Promise<{ file: VaultFile; key: VaultKey } | null> {
     if (file.slots.recovery) return null
-    const recovery = await addRecovery(file.slots, password)
+    const slots = await addRecovery(file.slots, password)
     return {
-        file: { ...file, slots: { ...file.slots, recovery } },
-        key: { ...key, recovery: await importRecovery(recovery) },
+        file: { ...file, slots },
+        key: { ...key, recovery: await importRecovery(slots.recovery) },
     }
 }
+
+/** `remote` when its slots changed later than `local`'s: the later password change wins a sync. */
+export const newerSlots = (local: VaultSlots, remote: VaultSlots) =>
+    (remote.changedAt ?? 0) > (local.changedAt ?? 0) ? remote : local
 
 /** Rewraps both slots; the recovery pair carries over, so locked accounts' recovery slots stay as they are. */
 export async function changePassword(

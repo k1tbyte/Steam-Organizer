@@ -40,7 +40,14 @@ export interface RecoverySlot {
     privateKey: Sealed
 }
 
-export type VaultSlots = { password: PasswordSlot; recovery?: RecoverySlot }
+export type VaultSlots = {
+    password: PasswordSlot
+    recovery?: RecoverySlot
+    /** When the master password slots last changed here; a created vault has none (0). Of two copies the later change wins. */
+    changedAt?: number
+}
+
+type MasterSlots = { password: PasswordSlot; recovery: RecoverySlot }
 
 function derive(
     root: CryptoKey,
@@ -175,7 +182,7 @@ async function masterSlots(
     secret: Uint8Array<ArrayBuffer>,
     password: string,
     recovery: (root: CryptoKey) => Promise<RecoverySlot>,
-): Promise<Required<VaultSlots>> {
+): Promise<MasterSlots> {
     const kdf = newKdf()
     const root = await masterRoot(password, kdf)
     return {
@@ -273,7 +280,7 @@ export async function rewrapSlots(
     slots: VaultSlots,
     oldPassword: string,
     newPassword: string,
-): Promise<Required<VaultSlots>> {
+): Promise<MasterSlots & { changedAt: number }> {
     const { iv, cipher } = slotParts(slots.password)
     const oldRoot = await masterRoot(oldPassword, slots.password.kdf)
     const secret = new Uint8Array(
@@ -286,7 +293,7 @@ export async function rewrapSlots(
         ),
     )
     try {
-        return await masterSlots(secret, newPassword, async (root) => {
+        const next = await masterSlots(secret, newPassword, async (root) => {
             if (!slots.recovery) return newRecovery(root)
             const sealed = splitSealed(slots.recovery.privateKey)
             const pkcs8 = new Uint8Array(
@@ -302,12 +309,19 @@ export async function rewrapSlots(
                 pkcs8,
             )
         })
+        return { ...next, changedAt: Date.now() }
     } finally {
         secret.fill(0)
     }
 }
 
-/** A recovery slot for a vault made before it existed; the master password was just typed to unlock. */
-export async function addRecovery(slots: VaultSlots, password: string) {
-    return newRecovery(await masterRoot(password, slots.password.kdf))
+/** The slots with a recovery slot for a vault made before it existed; the master password was just typed to unlock. */
+export async function addRecovery(
+    slots: VaultSlots,
+    password: string,
+): Promise<VaultSlots & { recovery: RecoverySlot }> {
+    const recovery = await newRecovery(
+        await masterRoot(password, slots.password.kdf),
+    )
+    return { ...slots, recovery, changedAt: Date.now() }
 }

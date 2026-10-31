@@ -4,6 +4,7 @@ import {
     changePassword,
     createVault,
     type LiveRecord,
+    newerSlots,
     openData,
     openSecret,
     readRecords,
@@ -74,6 +75,19 @@ describe('vault file', () => {
         await expect(
             changePassword(file, 'wrong', 'other'),
         ).rejects.toBeInstanceOf(WrongPasswordError)
+    })
+
+    it('stamps a password change, so the later one wins a sync', async () => {
+        expect(file.slots.changedAt).toBeUndefined()
+        const before = Date.now()
+        const changed = await changePassword(file, PASSWORD, 'new one')
+        expect(changed.slots.changedAt).toBeGreaterThanOrEqual(before)
+        expect(newerSlots(file.slots, changed.slots)).toBe(changed.slots)
+        expect(newerSlots(changed.slots, file.slots)).toBe(changed.slots)
+        // A tie keeps the local slots.
+        expect(newerSlots(changed.slots, { ...changed.slots })).toBe(
+            changed.slots,
+        )
     })
 
     it('refuses a part moved to another record', async () => {

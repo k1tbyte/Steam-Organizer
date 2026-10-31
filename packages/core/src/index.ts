@@ -72,6 +72,13 @@ export {
     type GoogleToken,
     googleToken,
 } from './drive/google'
+export {
+    listCopies,
+    readCopy,
+    saveCopy,
+    type VaultCopy,
+    type VaultCopyMeta,
+} from './drive/vaultCopy'
 export { UnsupportedVaultError, WrongPasswordError } from './errors'
 export {
     isSteamKey,
@@ -112,10 +119,12 @@ export {
     type VaultHome,
     vaultStore,
 } from './storage/vaultStore'
+export { type MergedRecords, mergeRecords } from './vault/merge'
 export {
     changePassword,
     createVault,
     type LiveRecord,
+    newerSlots,
     type OpenRecord,
     openData,
     openSecret,

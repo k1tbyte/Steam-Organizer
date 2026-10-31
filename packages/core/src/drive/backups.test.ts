@@ -27,6 +27,8 @@ function fakeDrive() {
                 name,
                 size: body.length,
                 createdTime: files.length,
+                modifiedTime: files.length,
+                version: '1',
                 appProperties,
                 body,
             }
