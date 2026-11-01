@@ -53,13 +53,22 @@ export const keepsPastRestart = ({
     masterAfterRestart,
 }: SecuritySettings) => lockAfter === 'never' && !masterAfterRestart
 
-/** A kept session idle past its timeout. No record of activity counts as idle: it fails closed. */
-export function isIdle(
+/** Milliseconds until the idle timeout, null for a policy with none. No record of activity, or one in the future
+ *  (the clock went back), is already past: it fails closed. */
+export function idleLeft(
     { lockAfter }: SecuritySettings,
     lastActive: number | undefined,
     now: number,
-): boolean {
+): number | null {
     const limit = timeoutMs(lockAfter)
-    if (limit === null) return false
-    return lastActive === undefined || now - lastActive >= limit
+    if (limit === null) return null
+    if (lastActive === undefined || lastActive > now) return 0
+    return Math.max(0, limit - (now - lastActive))
 }
+
+/** A kept session idle past its timeout. */
+export const isIdle = (
+    settings: SecuritySettings,
+    lastActive: number | undefined,
+    now: number,
+) => idleLeft(settings, lastActive, now) === 0

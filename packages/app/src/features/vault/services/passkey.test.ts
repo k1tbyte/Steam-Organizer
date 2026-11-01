@@ -45,6 +45,15 @@ it('enrolls a platform passkey for the shell RP ID and returns its PRF bits', as
     expect(authenticator.calls.get).toHaveLength(0)
 })
 
+it('zeroes the browser-owned PRF buffer once the bits are copied', async () => {
+    authenticator = fakeAuthenticator()
+    const made = await enroll('vault-a')
+    if (!made.ok) throw new Error('enroll failed')
+    expect(made.value.bits.some((byte) => byte !== 0)).toBe(true)
+    for (const output of authenticator.outputs)
+        expect(new Uint8Array(output).every((byte) => byte === 0)).toBe(true)
+})
+
 it('asks for the PRF with an assertion when the creation gives none', async () => {
     authenticator = fakeAuthenticator({ prf: 'get-only' })
     const made = await enroll('vault-a')

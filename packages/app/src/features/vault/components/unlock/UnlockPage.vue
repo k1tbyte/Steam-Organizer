@@ -102,7 +102,8 @@ const {
                 <UnlockHello
                     v-if="view === 'bio'"
                     :waiting="waitingForHello"
-                    @start="startHello" />
+                    @start="startHello"
+                    @use-password="switchToPassword" />
                 <UnlockPin
                     v-else-if="view === 'pin'"
                     :pin

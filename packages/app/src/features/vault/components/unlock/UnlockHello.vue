@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { FpButton, FpIcon } from '@so/ui'
+import { FpButton, FpIcon, useDesktopLayout } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { useHelloLabel } from '../../composables/useHelloLabel'
 
 defineProps<{ waiting: boolean }>()
-defineEmits<{ start: [] }>()
+defineEmits<{ start: []; usePassword: [] }>()
 const { t } = useI18n()
 const hello = useHelloLabel()
+const desktop = useDesktopLayout()
 </script>
 
 <template>
@@ -25,5 +26,9 @@ const hello = useHelloLabel()
             {{ t('Waiting for {hello}…', { hello }) }}
         </FpButton>
         <span class="text-center text-12.5 text-fg-3">{{ t('Uses a passkey on this device') }}</span>
+        <!-- Phones have no method tabs: without a PIN this is the way to the password. -->
+        <FpButton v-if="!desktop" variant="ghost" color="accent" size="xl" @click="$emit('usePassword')">
+            {{ t('Use master password') }}
+        </FpButton>
     </div>
 </template>

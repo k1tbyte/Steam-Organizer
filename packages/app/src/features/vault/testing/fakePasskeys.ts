@@ -16,6 +16,7 @@ export function fakeAuthenticator(
         get: [] as CredentialRequestOptions[],
     }
     const state = { cancel: false }
+    const outputs: ArrayBuffer[] = []
     const text = (bytes: BufferSource) =>
         new Uint8Array(
             bytes instanceof ArrayBuffer
@@ -32,7 +33,12 @@ export function fakeAuthenticator(
             ...(secrets.get(id) ?? []),
             ...text(salt),
         ])
-        return (await crypto.subtle.digest('SHA-256', joined)) as ArrayBuffer
+        const output = (await crypto.subtle.digest(
+            'SHA-256',
+            joined,
+        )) as ArrayBuffer
+        outputs.push(output)
+        return output
     }
 
     const Stub = {
@@ -97,6 +103,8 @@ export function fakeAuthenticator(
 
     return {
         calls,
+        /** Every PRF buffer handed to the page, to see whether it was zeroed after use. */
+        outputs,
         /** The user closes the next prompts. */
         cancel(on = true) {
             state.cancel = on

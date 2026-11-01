@@ -16,7 +16,7 @@ export function useEnableHello(open: Ref<boolean>) {
     const failedAttempts = ref(0)
     const saving = ref(false)
 
-    // The flow restarts when it opens; the password never stays in the page afterwards.
+    // The flow restarts when it opens, and a turned-on Hello clears the password at once.
     watch(open, (isOpen) => {
         if (!isOpen) return
         password.value = ''
@@ -45,6 +45,7 @@ export function useEnableHello(open: Ref<boolean>) {
                     error.value = t("Couldn't set up {hello}", {
                         hello: hello.value,
                     })
+                if (result === 'ok') password.value = ''
                 return result === 'ok'
             })
         } catch (cause) {

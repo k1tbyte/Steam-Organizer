@@ -159,10 +159,12 @@ export function useUnlock() {
             pinError.value = ''
         },
     })
-    // Phones have no tabs: the PIN pad while it works, the password otherwise, Hello is a key on the pad.
-    const phoneMethod = computed<'pin' | 'pw'>(() =>
-        canUsePin.value && picked.value !== 'pw' ? 'pin' : 'pw',
-    )
+    // Phones have no tabs: the PIN pad while it works (Hello is a key on it), else Hello alone, else the password.
+    const phoneMethod = computed<'bio' | 'pin' | 'pw'>(() => {
+        if (picked.value === 'pw') return 'pw'
+        if (canUsePin.value) return 'pin'
+        return hasBio.value ? 'bio' : 'pw'
+    })
 
     const view = computed<UnlockMethod | 'opening'>(() => {
         if (opening.value) return 'opening'

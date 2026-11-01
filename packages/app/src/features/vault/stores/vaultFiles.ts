@@ -90,6 +90,18 @@ export function vaultFiles(
             file: VaultFile,
             contents?: VaultContents,
         ) => persist(withFile(stored, file), contents),
+        /** Takes in what another page stored since this one loaded: vaults it lacks, and newer files of those it has. */
+        refresh: () =>
+            serial(async () => {
+                for (const stored of await vaultStore.list()) {
+                    const known = get(stored.id)
+                    if (
+                        !known ||
+                        (stored.revision ?? 0) > (known.revision ?? 0)
+                    )
+                        remember(stored)
+                }
+            }),
         async remove(id: string) {
             await vaultStore.remove(id)
             list.value = (list.value ?? []).filter((item) => item.id !== id)

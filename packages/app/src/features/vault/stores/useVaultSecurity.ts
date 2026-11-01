@@ -9,7 +9,7 @@ import { computed, ref } from 'vue'
 import { reportError } from '#core'
 
 import type { HelloState, PinState } from '../model'
-import { dropPrf, enrollPrf } from '../services/deviceSlots'
+import { dropPrf, enrollPrf, forgetDevice } from '../services/deviceSlots'
 import { enroll, passkeysAvailable } from '../services/passkey'
 import { isPinLocked } from '../services/pinAttempts'
 import { dropPin, enrollPin } from '../services/pinSlots'
@@ -41,6 +41,15 @@ export const useVaultSecurity = defineStore('vault-security', () => {
         return available.value ? 'off' : 'unavailable'
     })
 
+    // A vault removed while a prompt or a PBKDF2 ran must not keep the slots it just got.
+    async function stillStored(id: string) {
+        if (session.vaults.some((vault) => vault.id === id)) return true
+        await forgetDevice(id).catch((error) =>
+            reportError(error, 'vault-security'),
+        )
+        return false
+    }
+
     /** Sets or changes the PIN: the master password moves the secret under the PIN's key. `wrong`: that password. */
     async function setPin(
         password: string,
@@ -54,7 +63,7 @@ export const useVaultSecurity = defineStore('vault-security', () => {
                 await enrollPin(id, key, from, value)
                 return true
             })
-            if (!done) return 'failed'
+            if (!done || !(await stillStored(id))) return 'failed'
         } catch (error) {
             if (error instanceof WrongPasswordError) return 'wrong'
             reportError(error, 'vault-security')
@@ -91,9 +100,9 @@ export const useVaultSecurity = defineStore('vault-security', () => {
                 await openSecretSlot(from)
                 const made = await enroll(id)
                 if (!made.ok)
-                    return made.reason === 'cancelled'
-                        ? 'cancelled'
-                        : 'unavailable'
+                    return made.reason === 'unsupported'
+                        ? 'unavailable'
+                        : made.reason
                 try {
                     await enrollPrf(
                         id,
@@ -108,6 +117,7 @@ export const useVaultSecurity = defineStore('vault-security', () => {
                 return 'ok'
             })
             if (result !== 'ok') return result ?? 'failed'
+            if (!(await stillStored(id))) return 'failed'
         } catch (error) {
             if (error instanceof WrongPasswordError) return 'wrong'
             reportError(error, 'vault-security')

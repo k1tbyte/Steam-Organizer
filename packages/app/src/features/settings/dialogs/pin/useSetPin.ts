@@ -18,14 +18,17 @@ export function useSetPin(open: Ref<boolean>) {
     const failedAttempts = ref(0)
     const saving = ref(false)
 
-    // The flow restarts when it opens; none of it is kept in the page afterwards.
-    watch(open, (isOpen) => {
-        if (!isOpen) return
+    function clear() {
         password.value = ''
         pin.value = ''
         repeat.value = ''
         passwordError.value = ''
         repeatError.value = ''
+    }
+
+    // The flow restarts when it opens, and a saved PIN clears the fields at once.
+    watch(open, (isOpen) => {
+        if (isOpen) clear()
     })
     watch(password, () => {
         passwordError.value = ''
@@ -58,6 +61,7 @@ export function useSetPin(open: Ref<boolean>) {
                     refuse(t('Wrong master password'), passwordError)
                 else if (result === 'failed')
                     passwordError.value = t("Couldn't save the PIN")
+                if (result === 'ok') clear()
                 return result === 'ok'
             })
         } catch (error) {

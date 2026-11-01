@@ -1,5 +1,6 @@
 import { prfWrap, type SecretSlot, slotOf } from '@so/core'
 
+import { reportError } from '../../../core/reportError'
 import { passkeyRpId } from '../../../core/session/passkeys'
 import { readPlaced } from './deviceSlots'
 
@@ -33,18 +34,14 @@ const fresh = (bytes: number) => crypto.getRandomValues(new Uint8Array(bytes))
 function failure(error: unknown): { ok: false; reason: PasskeyFailure } {
     const name = (error as { name?: unknown } | null)?.name
     // The user closed the prompt, it timed out, or the platform refused the user verification.
-    return {
-        ok: false,
-        reason:
-            name === 'NotAllowedError' || name === 'AbortError'
-                ? 'cancelled'
-                : 'failed',
-    }
+    if (name === 'NotAllowedError' || name === 'AbortError')
+        return { ok: false, reason: 'cancelled' }
+    reportError(error, 'passkey')
+    return { ok: false, reason: 'failed' }
 }
 
-/** Whether a platform authenticator with the PRF extension can be used here: the browser says so
- *  (`getClientCapabilities`) where it can, else a user-verifying platform authenticator is taken to have it.
- *  False without an RP ID from the shell. */
+/** Whether a platform authenticator with PRF can be used: `getClientCapabilities` says so where it exists, else a
+ *  user-verifying platform authenticator is taken to have it. False without the shell's RP ID. */
 export async function passkeysAvailable(): Promise<boolean> {
     if (passkeyRpId() === undefined) return false
     if (
@@ -71,16 +68,16 @@ function prfOf(credential: Credential | null) {
     return results?.prf
 }
 
-const copyOf = (bits: BufferSource) =>
-    new Uint8Array(
+/** Copies the browser's PRF buffer and zeroes the original. */
+function takeBits(bits: BufferSource): Uint8Array<ArrayBuffer> {
+    const view =
         bits instanceof ArrayBuffer
-            ? bits.slice(0)
-            : new Uint8Array(
-                  bits.buffer,
-                  bits.byteOffset,
-                  bits.byteLength,
-              ).slice().buffer,
-    )
+            ? new Uint8Array(bits)
+            : new Uint8Array(bits.buffer, bits.byteOffset, bits.byteLength)
+    const copy = view.slice()
+    view.fill(0)
+    return copy
+}
 
 /** Registers a platform passkey for the vault and reads its PRF output: from the creation when the authenticator
  *  gives it, else from one assertion. The RP ID is the shell's, the same one every assertion uses. */
@@ -124,7 +121,7 @@ export async function enroll(
         if (prf.results?.first)
             return {
                 ok: true,
-                value: { credentialId, bits: copyOf(prf.results.first) },
+                value: { credentialId, bits: takeBits(prf.results.first) },
             }
         const asked = await prfBits(credentialId, vaultId)
         return asked.ok
@@ -163,7 +160,7 @@ export async function prfBits(
         })
         const first = prfOf(asserted)?.results?.first
         return first
-            ? { ok: true, value: copyOf(first) }
+            ? { ok: true, value: takeBits(first) }
             : { ok: false, reason: 'unsupported' }
     } catch (error) {
         return failure(error)

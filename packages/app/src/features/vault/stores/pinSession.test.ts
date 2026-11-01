@@ -135,6 +135,26 @@ it('shows an open vault its paused PIN once another page used up the tries', asy
     expect(security.pin).toBe('paused')
 })
 
+it('counts the same way where there are no Web Locks', async () => {
+    const { session, id } = await withPin()
+    session.lock()
+    Object.defineProperty(globalThis.navigator, 'locks', {
+        value: undefined,
+        configurable: true,
+    })
+    try {
+        expect(await session.unlock({ method: 'pin', pin: WRONG }, id)).toBe(
+            'wrong',
+        )
+        expect(wrongOf(session, id)).toBe(1)
+        expect(await session.unlock({ method: 'pin', pin: PIN }, id)).toBe(
+            'opened',
+        )
+    } finally {
+        Reflect.deleteProperty(globalThis.navigator, 'locks')
+    }
+})
+
 it('resets the count on a right PIN', async () => {
     const { session, id } = await withPin()
     session.lock()

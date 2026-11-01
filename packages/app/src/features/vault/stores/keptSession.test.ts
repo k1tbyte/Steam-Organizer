@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto'
 
-import { deviceStore } from '@so/core'
+import { deviceStore, steamCache } from '@so/core'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 
@@ -198,4 +198,48 @@ it('locks every page when one locks, and restores a locked page when another unl
     popup.session.lock()
     await vi.waitFor(() => expect(app.session.state).toBe('locked'))
     expect(await readKept()).toBeUndefined()
+})
+
+it('restores a page that loaded before the vault existed, once another page creates it', async () => {
+    const early = await page()
+    expect(early.session.state).toBe('new')
+
+    const { session: creator } = await createdUnder('15m')
+    await vi.waitFor(() => expect(early.session.state).toBe('unlocked'))
+    expect(early.session.vault?.name).toBe('Main')
+    // The page that knew the vault all along keeps its session, and the entry stays.
+    expect(creator.state).toBe('unlocked')
+    expect(await readKept()).toBeDefined()
+})
+
+it('locks a page whose restore finishes after another page locked', async () => {
+    await createdUnder('15m')
+    const real = area
+    let reads = 0
+    // The entry is there for the restore's first look, and gone for the second: a lock in between.
+    installSessionArea({
+        ...real,
+        get: (key) =>
+            key === 'so:kept' && ++reads > 1
+                ? Promise.resolve(undefined)
+                : real.get(key),
+    })
+    const { session } = await page()
+    expect(session.state).toBe('locked')
+    expect(session.contents).toBeNull()
+})
+
+it('prunes the Steam cache and clears the entry when the open vault is removed', async () => {
+    const prune = vi.spyOn(steamCache, 'pruneCollections')
+    const { session } = await createdUnder('never')
+    const id = session.vault?.id ?? ''
+
+    await session.remove(id)
+    await vi.waitFor(async () => expect(await readKept()).toBeUndefined())
+    expect(prune.mock.calls.some(([, keep]) => keep('any') === false)).toBe(
+        true,
+    )
+    expect(session.state).toBe('new')
+    expect(await deviceStore.list()).toEqual([])
+    prune.mockRestore()
 })

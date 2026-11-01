@@ -126,10 +126,17 @@ export async function movePlaced(
         })
 }
 
-/** A deleted vault leaves nothing here (`deviceStore.remove` drops the disk record). */
-export async function forgetPlaced(vaultId: string) {
+/** A deleted vault leaves nothing of its device slots, in any home. The steps run apart: one failing never keeps the
+ *  others from running. */
+export async function forgetDevice(vaultId: string) {
     memory.delete(vaultId)
-    await sessionArea().remove(areaKey(vaultId))
+    const failures: unknown[] = []
+    for (const step of [
+        () => sessionArea().remove(areaKey(vaultId)),
+        () => deviceStore.remove(vaultId),
+    ])
+        await step().catch((error: unknown) => failures.push(error))
+    if (failures.length) throw failures[0]
 }
 
 /** After a master-password unlock: a PIN that was paused counts from zero, and a PIN or passkey a restart took

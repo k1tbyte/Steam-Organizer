@@ -1,7 +1,7 @@
 import { deviceStore, type Sealed } from '@so/core'
 
 import { reportError } from '#core'
-import { forgetPlaced } from '../services/deviceSlots'
+import { forgetDevice } from '../services/deviceSlots'
 import {
     readActive,
     readKept,
@@ -38,16 +38,28 @@ export interface KeptFound {
  *  area holds it, for how long), and finds it again after a reload or a restart. */
 export function keptSession() {
     let held: { vaultId: string; sealed: Sealed } | null = null
-
-    async function drop(vaultId = held?.vaultId) {
-        try {
-            await removeKept()
-            if (vaultId)
-                await deviceStore.update(vaultId, (slots) => withKept(slots))
-        } catch (error) {
-            reportError(error, 'vault-session')
-        }
+    // Keeping and dropping take turns, so a lock never lets a keep in flight write the entry back.
+    let turn: Promise<unknown> = Promise.resolve()
+    const inTurn = <T>(task: () => Promise<T>) => {
+        const run = turn.then(task)
+        turn = run.catch(() => {})
+        return run
     }
+
+    async function dropNow(vaultId: string | undefined) {
+        for (const step of [
+            () => removeKept(),
+            () =>
+                vaultId
+                    ? deviceStore.update(vaultId, (slots) => withKept(slots))
+                    : Promise.resolve(),
+        ])
+            await step().catch((error: unknown) =>
+                reportError(error, 'vault-session'),
+            )
+    }
+
+    const drop = (vaultId = held?.vaultId) => inTurn(() => dropNow(vaultId))
 
     return {
         /** The ciphertext of the vault just opened; undefined (no device key) holds nothing. */
@@ -60,36 +72,42 @@ export function keptSession() {
         heldVault: () => held?.vaultId,
         drop,
         /** Removes a deleted vault's device slots, and the kept entry if it is that vault's. */
-        async forget(vaultId: string) {
-            try {
-                if ((await readKept())?.vault === vaultId) await removeKept()
-                await deviceStore.remove(vaultId)
-                await forgetPlaced(vaultId)
-            } catch (error) {
-                reportError(error, 'vault-session')
-            }
+        forget(vaultId: string) {
+            return inTurn(async () => {
+                await readKept()
+                    .then((entry) =>
+                        entry?.vault === vaultId ? removeKept() : undefined,
+                    )
+                    .catch((error) => reportError(error, 'vault-session'))
+                await forgetDevice(vaultId).catch((error) =>
+                    reportError(error, 'vault-session'),
+                )
+            })
         },
         /** Puts the held ciphertext where the lock policy says: the session area, with the activity stamp for a
          *  timeout, and on disk for Never; Immediately keeps nothing. Run at an open and at a policy change. */
-        async keep() {
-            if (!held) return
-            const { vaultId, sealed } = held
-            const settings = readSecuritySettings()
-            if (!keepsSession(settings)) return drop(vaultId)
-            try {
-                // The stamp first: a page restoring from the entry never finds one without it.
-                if (timeoutMs(settings.lockAfter) !== null)
-                    await writeActive(Date.now())
-                await writeKept({ vault: vaultId, sealed })
-                await deviceStore.update(vaultId, (slots) =>
-                    withKept(
-                        slots,
-                        keepsPastRestart(settings) ? sealed : undefined,
-                    ),
-                )
-            } catch (error) {
-                reportError(error, 'vault-session')
-            }
+        keep() {
+            return inTurn(async () => {
+                // Read in the turn: a lock before it has released the ciphertext.
+                if (!held) return
+                const { vaultId, sealed } = held
+                const settings = readSecuritySettings()
+                if (!keepsSession(settings)) return dropNow(vaultId)
+                try {
+                    // The stamp first: a page restoring from the entry never finds one without it.
+                    if (timeoutMs(settings.lockAfter) !== null)
+                        await writeActive(Date.now())
+                    await writeKept({ vault: vaultId, sealed })
+                    await deviceStore.update(vaultId, (slots) =>
+                        withKept(
+                            slots,
+                            keepsPastRestart(settings) ? sealed : undefined,
+                        ),
+                    )
+                } catch (error) {
+                    reportError(error, 'vault-session')
+                }
+            })
         },
         /** The kept session a page may restore: the session area's entry while the policy allows it, else after a
          *  restart the copy on disk. One past its timeout, or of a vault gone, is dropped. */
@@ -100,8 +118,9 @@ export function keptSession() {
             const settings = readSecuritySettings()
             const entry = await readKept()
             if (entry) {
+                // A vault this page does not know yet is not a dead entry: the page's list may be older.
+                if (!vaultIds.includes(entry.vault)) return undefined
                 const alive =
-                    vaultIds.includes(entry.vault) &&
                     keepsSession(settings) &&
                     !isIdle(settings, await readActive(), Date.now())
                 if (alive)

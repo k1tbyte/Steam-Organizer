@@ -2,6 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 
 import { type LockAfter, SECURITY_DEFAULTS } from '../model'
 import {
+    idleLeft,
     isIdle,
     keepsPastRestart,
     keepsSession,
@@ -50,6 +51,15 @@ it('keeps a session for every policy but Immediately, and past a restart only fo
     expect(keepsPastRestart(settings('never'))).toBe(true)
     expect(keepsPastRestart(settings('never', true))).toBe(false)
     expect(keepsPastRestart(settings('1m'))).toBe(false)
+})
+
+it('counts the idle time left, and fails closed on no stamp or one from the future', () => {
+    expect(idleLeft(settings('1m'), 1000, 1000 + 20_000)).toBe(40_000)
+    expect(idleLeft(settings('1m'), 1000, 1000 + MINUTE * 2)).toBe(0)
+    expect(idleLeft(settings('1m'), undefined, 1000)).toBe(0)
+    // The clock went back: a stamp after now is not fresh.
+    expect(idleLeft(settings('1m'), 5000, 1000)).toBe(0)
+    expect(idleLeft(settings('never'), 5000, 1000)).toBeNull()
 })
 
 it('calls a kept session idle at its limit, and one with no activity record too', () => {

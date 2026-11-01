@@ -18,9 +18,8 @@ import { isPinLocked, PIN_LENGTH } from './pinAttempts'
 
 const isPin = (pin: string) => new RegExp(`^\\d{${PIN_LENGTH}}$`).test(pin)
 
-/** The PIN's slot when `pin` opens `file`; a wrong PIN counts against the slot's three tries, which are saved with it
- *  (a reload never resets them). At three the answer is `wrong` without trying. The count is one transition across pages:
- *  re-reading it, trying the PIN and saving it hold a Web Lock together. */
+/** The PIN's slot when `pin` opens `file`; a wrong one counts against the three tries saved with the slot, and at three
+ *  the answer is `wrong` untried. Re-reading the count, trying and saving it hold one Web Lock. */
 export function tryPin(
     file: VaultFile,
     pin: string,

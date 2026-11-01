@@ -2,8 +2,10 @@ import { useTimer } from '@so/ui/useTimer'
 import { useEventListener } from '@vueuse/core'
 import { watch } from 'vue'
 
+import { reportError, SECURITY_SETTINGS_STORAGE_KEY } from '#core'
+
 import { readActive, writeActive } from '../services/keptEntry'
-import { readSecuritySettings, timeoutMs } from '../services/lockPolicy'
+import { idleLeft, readSecuritySettings } from '../services/lockPolicy'
 import { useLockPolicy } from '../stores/useLockPolicy'
 import { useVaultSession } from '../stores/useVaultSession'
 
@@ -27,47 +29,63 @@ export function useAutoLock() {
     let active = Date.now()
     let stamped = 0
 
-    async function check() {
+    // A mock session holds no vault: there is nothing to lock for real.
+    const open = () => session.state === 'unlocked' && session.vault !== null
+
+    /** Ms of idle time left, or null where the policy has none. Another page's activity moves it too. */
+    async function idleTime(local: number) {
+        const shared = await readActive()
+        return idleLeft(
+            readSecuritySettings(),
+            Math.max(shared ?? 0, local),
+            Date.now(),
+        )
+    }
+
+    async function check(local = active) {
         timer.cancel()
-        if (session.state !== 'unlocked') return
-        const limit = timeoutMs(readSecuritySettings().lockAfter)
-        if (limit === null) return
-        // Another page may have been used since: its stamp moves the deadline.
-        const last = Math.max((await readActive()) ?? 0, active)
-        const left = last + limit - Date.now()
-        if (left <= 0) session.lock()
+        if (!open()) return
+        const left = await idleTime(local)
+        if (left === null) return
+        if (left === 0) session.lock()
         else timer.arm(left, () => void check())
     }
 
-    function onActivity() {
+    async function onActivity() {
         const now = Date.now()
+        const before = active
         active = now
-        if (now - stamped < STAMP_EVERY_MS || session.state !== 'unlocked')
-            return
+        if (!open()) return
+        // A deadline timer that lagged (a suspended page) must not let activity revive an expired session.
+        if ((await idleTime(before)) === 0) return session.lock()
+        if (now - stamped < STAMP_EVERY_MS) return
         stamped = now
-        if (timeoutMs(readSecuritySettings().lockAfter) !== null)
-            void writeActive(now)
+        if (readSecuritySettings().lockAfter !== 'now') await writeActive(now)
     }
 
     function hide() {
-        if (
-            session.state === 'unlocked' &&
-            readSecuritySettings().lockAfter === 'now'
-        )
-            session.lock()
+        if (open() && readSecuritySettings().lockAfter === 'now') session.lock()
     }
 
-    useEventListener(window, ACTIVITY, onActivity, { passive: true })
+    const failed = (error: unknown) => reportError(error, 'auto-lock')
+    useEventListener(window, ACTIVITY, () => void onActivity().catch(failed), {
+        passive: true,
+    })
     useEventListener(document, 'visibilitychange', () => {
         if (document.visibilityState === 'hidden') hide()
-        else void check()
+        else void check().catch(failed)
     })
     useEventListener(window, 'pagehide', hide)
+    // The popup or the app page changed the policy: the armed deadline is for the old one.
+    useEventListener(window, 'storage', (event: StorageEvent) => {
+        if (event.key === SECURITY_SETTINGS_STORAGE_KEY)
+            void check().catch(failed)
+    })
     watch(
         [() => session.state, () => policy.policy.lockAfter],
         ([state]) => {
             if (state === 'unlocked') active = Date.now()
-            void check()
+            void check().catch(failed)
         },
         { immediate: true },
     )

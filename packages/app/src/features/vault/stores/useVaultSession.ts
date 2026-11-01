@@ -90,6 +90,8 @@ export const useVaultSession = defineStore('vault-session', () => {
         unlocked: () => unlocked.value,
         openedId: () => opened.value?.vault.id,
         epoch: () => epoch,
+        refreshVaults: () =>
+            opened.value ? Promise.resolve() : files.refresh(),
         openRestored: (vault, slot) =>
             openWith(vault, slot, { restored: true }),
         open,
@@ -199,6 +201,9 @@ export const useVaultSession = defineStore('vault-session', () => {
                 )
                 kept.watch(() => void revival.follow())
                 await revival.restore()
+            } catch (error) {
+                // The guard awaits this: a failure here leaves the vaults locked, never the app stuck.
+                reportError(error, 'vault-session')
             } finally {
                 restoring.value = false
             }
@@ -247,6 +252,8 @@ export const useVaultSession = defineStore('vault-session', () => {
         if (typeof key === 'string') return key
         const unwrapped = key
         const sealed = restored ? slot.sealed : await sealForDevice(used)
+        // The key this open installs: a lock or another open since must not arm slots from it.
+        let records: VaultKey | undefined
         // In the queue, from the latest file: a write that lands meanwhile is never undone.
         const result = await serial(async () => {
             // Removed meanwhile: opening or upgrading it would bring it back. Opened by another flow, or locked since
@@ -276,6 +283,7 @@ export const useVaultSession = defineStore('vault-session', () => {
                     contents: next.contents,
                 }
                 kept.hold(stored.id, sealed)
+                records = next.key
                 const current = opened.value
                 // Accounts deleted before this unlock leave their Steam cache; one deleted since may yet come back by Undo,
                 // and a lock or another vault keeps all.
@@ -294,8 +302,12 @@ export const useVaultSession = defineStore('vault-session', () => {
                 return 'unreadable'
             }
         })
-        const records = opened.value?.key
-        if (result === 'opened' && password !== undefined && records) {
+        if (
+            result === 'opened' &&
+            password !== undefined &&
+            records &&
+            at === epoch
+        ) {
             await armAfterPassword(vault.id, records, used).catch((error) =>
                 reportError(error, 'vault-session'),
             )
@@ -376,19 +388,21 @@ export const useVaultSession = defineStore('vault-session', () => {
     function remove(id: string): Promise<void> {
         return serial(async () => {
             await files.remove(id)
+            const active = opened.value
+            // Before the entry goes: its removal would lock this page through the watch, and `active` with it.
+            if (active?.vault.id === id) {
+                epoch++
+                opened.value = null
+                recordKeys.clear()
+                kept.release()
+                unlocked.value = false
+                override.value = null
+                steamCache
+                    .pruneCollections(active.key, () => false)
+                    .catch((error) => reportError(error, 'steam-cache'))
+            }
             await kept.forget(id)
             device.forget(id)
-            const active = opened.value
-            if (active?.vault.id !== id) return
-            epoch++
-            opened.value = null
-            recordKeys.clear()
-            kept.release()
-            unlocked.value = false
-            override.value = null
-            steamCache
-                .pruneCollections(active.key, () => false)
-                .catch((error) => reportError(error, 'steam-cache'))
         })
     }
 

@@ -17,6 +17,8 @@ export interface RestoreHost {
     openedId: () => string | undefined
     /** Bumped by every lock: an answer that began before one never opens. */
     epoch: () => number
+    /** Takes in the vaults another page stored since this page loaded. */
+    refreshVaults: () => Promise<void>
     openRestored: (
         vault: StoredVault,
         slot: Awaited<ReturnType<typeof deviceSlotOf>>,
@@ -31,9 +33,11 @@ export function keptRestore(
     kept: ReturnType<typeof keptSession>,
     host: RestoreHost,
 ) {
-    async function restore() {
+    async function restore(stale = false) {
         if (host.unlocked()) return
         const at = host.epoch()
+        // Another page's unlock may be of a vault, or a file, this page has not seen.
+        if (stale) await host.refreshVaults()
         const found = await kept.find(host.vaultIds(), host.lastVaultId())
         const vault = found && host.vault(found.vaultId)
         if (!found || !vault || host.unlocked() || at !== host.epoch()) return
@@ -46,8 +50,11 @@ export function keptRestore(
         } catch (error) {
             reportError(error, 'vault-session')
         }
-        if (result === 'opened' && at === host.epoch() && host.openedId())
+        if (result === 'opened' && at === host.epoch() && host.openedId()) {
+            // Another page may have locked meanwhile, which this page did not see locked: its entry is the live signal.
+            if (!found.onDisk && !(await kept.read())) return host.lockLocal()
             return host.open(found.onDisk)
+        }
         // A lock or another unlock came first: that one's entry stays.
         if (!host.unlocked() && at === host.epoch())
             await kept.drop(found.vaultId)
@@ -62,10 +69,10 @@ export function keptRestore(
                 host.lockLocal()
             return
         }
-        if (!host.unlocked()) return restore()
+        if (!host.unlocked()) return restore(true)
         if (entry.vault !== host.openedId()) {
             host.lockLocal()
-            return restore()
+            return restore(true)
         }
     }
 
