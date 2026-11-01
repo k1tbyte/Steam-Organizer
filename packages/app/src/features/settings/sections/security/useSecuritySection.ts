@@ -1,53 +1,44 @@
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { useLockPolicy } from '#features/vault'
+
 import { useLockAfterOptions } from '../../composables/useLockAfterOptions'
-import type { LockAfter } from '../../model'
-import { useSettingsStore } from '../../stores/settingsStore'
 
 export function useSecuritySection() {
     const { t } = useI18n()
-    const store = useSettingsStore()
+    const lockPolicy = useLockPolicy()
     const lock = useLockAfterOptions()
+    // PIN and Hello are not wired yet: local switches, as before.
+    const pin = ref(true)
+    const biometrics = ref(false)
 
     const pinDescription = computed(() =>
-        store.security.pin
+        pin.value
             ? t('6 digits · this device only')
             : t('Quick unlock on this device only'),
     )
 
-    function setLockAfter(value: LockAfter) {
-        store.setSecurity({ lockAfter: value })
-    }
-
-    function setMasterAfterRestart(on: boolean) {
-        store.setSecurity({ masterAfterRestart: on })
-    }
-
-    function setPin(on: boolean) {
-        store.setSecurity({ pin: on })
-    }
-
-    function setBiometrics(on: boolean) {
-        store.setSecurity({ biometrics: on })
-    }
-
-    function changePin() {
-        // The PIN setup flow arrives with the vault feature; the button only states the intent.
-    }
-
     return {
         lockItems: lock.items,
-        lockAfter: computed(() => store.security.lockAfter),
-        setLockAfter,
-        neverLocks: computed(() => store.security.lockAfter === 'never'),
-        masterAfterRestart: computed(() => store.security.masterAfterRestart),
-        setMasterAfterRestart,
-        pin: computed(() => store.security.pin),
+        lockAfter: computed(() => lockPolicy.policy.lockAfter),
+        setLockAfter: lockPolicy.setLockAfter,
+        neverLocks: computed(() => lockPolicy.policy.lockAfter === 'never'),
+        masterAfterRestart: computed(
+            () => lockPolicy.policy.masterAfterRestart,
+        ),
+        setMasterAfterRestart: lockPolicy.setMasterAfterRestart,
+        pin,
         pinDescription,
-        setPin,
-        changePin,
-        biometrics: computed(() => store.security.biometrics),
-        setBiometrics,
+        setPin: (on: boolean) => {
+            pin.value = on
+        },
+        changePin() {
+            // The PIN setup flow arrives with the PIN slot; the button only states the intent.
+        },
+        biometrics,
+        setBiometrics: (on: boolean) => {
+            biometrics.value = on
+        },
     }
 }

@@ -12,7 +12,7 @@ export {
     type GoogleToken,
     googleToken,
 } from '@so/core'
-export type { GoogleAuth, Platform } from './core'
+export type { GoogleAuth, Platform, SessionArea } from './core'
 
 export interface MountOptions {
     platform: Platform

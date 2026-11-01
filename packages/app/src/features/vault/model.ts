@@ -54,6 +54,33 @@ export interface LockedSnapshot {
     accounts: number
 }
 
+export const LOCK_AFTER = [
+    'now',
+    '1m',
+    '5m',
+    '15m',
+    '30m',
+    '1h',
+    '4h',
+    'restart',
+    'never',
+] as const
+/** `now` keeps nothing and locks when the page is hidden; a time keeps the session that long without activity;
+ *  `restart` until the browser restarts; `never` past it. */
+export type LockAfter = (typeof LOCK_AFTER)[number]
+
+/** Kept per device: each one picks how long its session stays open. */
+export interface SecuritySettings {
+    lockAfter: LockAfter
+    /** Nothing that opens the vault (the kept session, PIN, Hello) survives a restart. */
+    masterAfterRestart: boolean
+}
+
+export const SECURITY_DEFAULTS: SecuritySettings = {
+    lockAfter: '15m',
+    masterAfterRestart: false,
+}
+
 /** `unreadable`: a damaged file or a newer format, which no credential opens. */
 export type UnlockResult = 'opened' | 'wrong' | 'unreadable'
 

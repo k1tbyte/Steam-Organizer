@@ -15,12 +15,15 @@ import {
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, expect, it } from 'vitest'
 
+import { installSessionArea, memorySessionArea } from '#core'
+
 import { useVaultSession } from './useVaultSession'
 
 const PASSWORD = 'correct horse'
 
-// A fresh Pinia is a reload: only what IndexedDB kept survives it.
+// A fresh Pinia and a fresh session area: a closed tab or a restart, so only what IndexedDB kept survives it.
 async function reload() {
+    installSessionArea(memorySessionArea())
     setActivePinia(createPinia())
     const session = useVaultSession()
     await session.load()

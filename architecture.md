@@ -54,6 +54,8 @@ interface Platform {
   fetch: typeof fetch | null        // null = Steam API unavailable (web)
   google: GoogleAuth | null         // token(interactive, hint), revoke(token), prepare(): OAuth differs per shell; null in the content script
   openApp?(path: string): void      // popup and content script: open the full app at a route
+  session?: SessionArea             // where a kept session lives: get/set/remove/watch(key), restartBound; absent = the tab's sessionStorage
+  passkeys?: { rpId: string }       // WebAuthn relying party; absent = no Hello (Firefox extension)
 }
 ```
 
@@ -156,18 +158,23 @@ The **vault key** is a random 256-bit secret, held after unlock as a non-extract
 |---|---|---|
 | Master password | PBKDF2-HMAC-SHA256, 600k iterations, random salt → HKDF root → `slot:password` key | in vault file (synced) |
 | Recovery | an RSA-OAEP 3072 key pair: the public half in clear, the private half sealed by `slot:recovery` from the same master root | in vault file (synced) |
+| Device | a random non-extractable AES-GCM key, made once per device (origin) | IndexedDB `steam-organizer-device` (the key itself); the sealed secret in the session area or, for Never, beside it |
 | PIN | PBKDF2 over PIN | this device only |
 | Biometrics | WebAuthn PRF of a passkey (Windows Hello, Touch ID, Android) | this device only |
 
-- Changing master password rewraps the vault key and the recovery private key (old KEK is at hand while the old password is typed); the pair stays, so locked accounts' recovery slots and data are untouched. Rewrapping and enrolling a PIN are the only steps that hold the raw secret, behind the master password.
+- Changing master password rewraps the vault key and the recovery private key (old KEK is at hand while the old password is typed); the pair stays, so locked accounts' recovery slots and data are untouched. The secret moves from one slot to another with `unwrapKey` into an **extractable AES-GCM** key and `wrapKey` under the target (`resealSecretSlot`), so its bytes never sit in script memory; HKDF keys cannot be extractable, so the session root stays non-extractable. Only a password change reads the raw secret, behind the old password. At every unlock the session reseals the secret under the device key once and holds that ciphertext beside its key, so a lock-policy change only moves it and never needs a password.
 - The recovery pair is asymmetric on purpose: a symmetric key that only encrypts still decrypts its own AES-GCM output (the keystream), so the session holds just the public key. A vault made before the pair gets one at its next master-password unlock.
 - PIN is low entropy → its slot never leaves the device (offline brute force).
 - PRF in 2026: Windows Hello (Win 11 Feb 2026 update, Chrome/Edge 147+, Firefox 148+), macOS (Chrome 132+, Firefox 139+), Android passkeys. Extension pages: Chrome 122+, Firefox 150+.
 
 ### Lock policy (user setting, Bitwarden-like)
-- Timeout: immediately, 1 / 5 / 15 / 30 min, 1 / 4 h, on browser restart, never.
-- Vault key is a non-extractable `CryptoKey`: page JS can use it, not read it. `storage.*` can't hold a `CryptoKey` → to survive popup close / restart it is wrapped by a non-extractable device key in IndexedDB, wrapped blob kept in `storage.session` (until restart) or `storage.local` ("never", warned).
-- Option "master password on browser restart": PIN slot kept in `storage.session` only.
+- Per device (`so:security`): Lock after (immediately, 1 / 5 / 15 / 30 min, 1 / 4 h, on browser restart, never; default 15 min) and "Master password after restart".
+- Vault key is a non-extractable `CryptoKey`: page JS can use it, not read it. `storage.*` can't hold a `CryptoKey` → to survive a reload, popup close or restart the secret is resealed under the device key (above), and that ciphertext (`deviceSealed`) is what the policy keeps. A policy change only moves it.
+- **Immediately:** nothing is kept. The page locks when it is hidden (`visibilitychange`) or closed.
+- **1 min - 4 h:** `deviceSealed` sits in the session area with a shared `lastActive` (pointer, key, wheel and touch write it at most every 15 s). Every page locks once `now - lastActive` passes the timeout, and a page that opens or reloads restores the session if it has not.
+- **On browser restart:** kept in the session area, no timer. **Never:** also in the device IndexedDB, so it survives a restart (Settings warns). With "Master password after restart" on, Never keeps the session in the session area only.
+- **Session area** (`Platform.session`): the extension's `storage.session`, shared by the app page and the popup and gone at browser restart; on the web the tab's `sessionStorage`, which survives a reload. It says which kind it is (`restartBound`). The web has no area bound to the browser's run, so there "On browser restart" lasts until the tab closes (a restored tab may bring it back), a documented weaker guarantee.
+- **The kept entry in the session area is the one live signal under every policy.** A lock in one page removes it (and the IndexedDB copy) and every other page locks; an unlock writes it and a locked page restores. The session subscribes in `load()` and keeps the subscription while locked; the auto-lock composable only watches its page (activity, visibility, the deadline). Autofill (a content script without `storage.session`) stays out.
 
 ### Records
 A record is `{ id, updatedAt, data, secret? }`: a random `id` (UUID, not SteamID), two sealed parts. A deleted record stays as a tombstone (`{ id, updatedAt, deleted: true }`), so a sync tells a deletion from a record another copy never had, until a sync purges it after 90 days (Sync 4).
@@ -302,11 +309,13 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 
 ### Phase 2: Vue App + Web Shell
 - [ ] Wire view-models to core, drop mocks screen by screen
+- [x] Lock policy and kept session: device key, session area, cross-page lock, idle timeout
 - [ ] Pages: accounts, profile (summary, games, friends), backups, settings
 - [ ] `apps/web`: PWA shell, read-only mode
 
 ### Phase 3: Extension
 - [ ] `apps/extension` on WXT: app page, popup, background
+- [x] Popup restores the app page's kept session (`storage.session`), and a lock in either locks both
 - [ ] Host permission flow (Firefox optional permissions)
 - [ ] Google OAuth via `identity.launchWebAuthFlow`
 - [ ] Steam login autofill content script

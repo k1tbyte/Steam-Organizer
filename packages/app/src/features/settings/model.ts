@@ -29,24 +29,6 @@ export interface SettingsGroup {
     sections: SettingsSection[]
 }
 
-export type LockAfter =
-    | 'now'
-    | '1m'
-    | '5m'
-    | '15m'
-    | '30m'
-    | '1h'
-    | '4h'
-    | 'restart'
-    | 'never'
-
-export interface SecuritySettings {
-    lockAfter: LockAfter
-    masterAfterRestart: boolean
-    pin: boolean
-    biometrics: boolean
-}
-
 export type FieldKey =
     | MovableField
     | 'nickname'

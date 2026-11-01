@@ -5,11 +5,10 @@ import { useAppearancePref } from '#core'
 import { useFieldPlacement, useVaultTags } from '#features/accounts'
 import { useVaultServices } from '#features/linked-services'
 import { useSteamKey } from '#features/steam'
-import { useVaultPlace, useVaultSession } from '#features/vault'
+import { useLockPolicy, useVaultPlace, useVaultSession } from '#features/vault'
 
 import type { SectionKey } from '../model'
 import { FIELD_KEYS, secretCount } from '../services/fieldSecrecy'
-import { useSettingsStore } from '../stores/settingsStore'
 import { useDriveSync } from './sources/useDriveSync'
 import { useLockAfterOptions } from './useLockAfterOptions'
 
@@ -17,7 +16,7 @@ import { useLockAfterOptions } from './useLockAfterOptions'
 export function useSettingsSummary() {
     const { t } = useI18n()
     const mode = useAppearancePref('mode')
-    const store = useSettingsStore()
+    const lockPolicy = useLockPolicy()
     const { placement } = useFieldPlacement()
     const lock = useLockAfterOptions()
     const session = useVaultSession()
@@ -38,7 +37,7 @@ export function useSettingsSummary() {
             case 'appearance':
                 return modeLabels.value[mode.state.value]
             case 'security':
-                return lock.labelOf(store.security.lockAfter)
+                return lock.labelOf(lockPolicy.policy.lockAfter)
             case 'sync':
                 return drive.connected.value ? t('On') : t('Off')
             case 'fields':

@@ -3,7 +3,7 @@ import { computed } from 'vue'
 
 import { usePlatform } from '#core'
 import { type SyncState, useSyncStatus } from '#features/backups'
-import { useVaultSession } from '#features/vault'
+import { useAutoLock, useVaultSession } from '#features/vault'
 
 const VIEW = { unlocked: 'accounts', locked: 'locked', new: 'setup' } as const
 
@@ -18,6 +18,7 @@ const DOT: Record<SyncState, SemanticColor> = {
 export function usePopupFrame() {
     const session = useVaultSession()
     void session.load()
+    useAutoLock()
     const platform = usePlatform()
     // The popup runs no sync: it shows what the app page left.
     const status = useSyncStatus()

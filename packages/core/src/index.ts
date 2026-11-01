@@ -44,15 +44,28 @@ export {
     createAccountKey,
     openAccountKey,
 } from './crypto/accountKeys'
+export { type Kdf, newKdf, passwordBits, type VaultKey } from './crypto/kdf'
 export {
     importRecovery,
     loginTag,
     type PasswordSlot,
     steamTag,
-    type VaultKey,
     type VaultSlots,
 } from './crypto/keys'
 export type { Sealed } from './crypto/seal'
+export {
+    createDeviceKey,
+    deviceWrap,
+    openSecretSlot,
+    passwordSecretSlot,
+    pinWrap,
+    pinWrapFromBits,
+    prfWrap,
+    resealSecretSlot,
+    type SecretSlot,
+    type SecretWrap,
+    slotOf,
+} from './crypto/secretSlots'
 export {
     type Backup,
     type BackupKind,
@@ -115,6 +128,13 @@ export {
 } from './steam/steamId'
 export { libraryPrices } from './steam/store'
 export { steamClockOffset } from './steam/time'
+export {
+    type DeviceSlots,
+    deviceStore,
+    type PinSlot,
+    type PrfSlot,
+    type StoredSlots,
+} from './storage/deviceStore'
 export { type CachedCollection, steamCache } from './storage/steamCache'
 export {
     type StoredVault,
@@ -143,6 +163,7 @@ export {
     serializeVaultFile,
     type Tombstone,
     unlockVault,
+    unlockVaultWith,
     updateData,
     VAULT_FORMAT,
     type VaultFile,

@@ -8,6 +8,7 @@ import {
     type VaultSlots,
 } from '../crypto/keys'
 import { openText, type Sealed, sealText } from '../crypto/seal'
+import { openSecretSlot, type SecretSlot } from '../crypto/secretSlots'
 import { UnsupportedVaultError } from '../errors'
 
 export const VAULT_FORMAT = 'steam-organizer-vault'
@@ -86,9 +87,31 @@ export async function unlockVault(
     file: VaultFile,
     password: string,
 ): Promise<VaultKey> {
+    assertReadable(file)
+    return withPublicRecovery(
+        file,
+        await unlockSlot(file.slots.password, password),
+    )
+}
+
+/** Opens the file with any slot of its secret (a device slot, a PIN, a passkey); a wrong key is `WrongPasswordError`. */
+export async function unlockVaultWith(
+    file: VaultFile,
+    slot: SecretSlot,
+): Promise<VaultKey> {
+    assertReadable(file)
+    return withPublicRecovery(file, await openSecretSlot(slot))
+}
+
+function assertReadable(file: VaultFile) {
     if (file.format !== VAULT_FORMAT || file.version !== 1)
         throw new UnsupportedVaultError()
-    const key = await unlockSlot(file.slots.password, password)
+}
+
+async function withPublicRecovery(
+    file: VaultFile,
+    key: VaultKey,
+): Promise<VaultKey> {
     const { recovery } = file.slots
     return recovery ? { ...key, recovery: await importRecovery(recovery) } : key
 }

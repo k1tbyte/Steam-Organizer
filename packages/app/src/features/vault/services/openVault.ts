@@ -1,7 +1,9 @@
 import {
     newerSlots,
+    passwordSecretSlot,
     readRecords,
-    unlockVault,
+    type SecretSlot,
+    unlockVaultWith,
     type VaultFile,
     type VaultKey,
     WrongPasswordError,
@@ -33,18 +35,44 @@ export async function openVault(
         : { key, contents }
 }
 
-/** The key `password` unwraps from `file`'s slots, or why it does not. */
-export async function opens(
+/** The slot `password` makes of the file's password slot (the one PBKDF2), or `unreadable` for a damaged one. */
+export async function passwordSlotOf(
     file: VaultFile,
     password: string,
+): Promise<SecretSlot | 'unreadable'> {
+    try {
+        return await passwordSecretSlot(file.slots.password, password)
+    } catch (error) {
+        reportError(error, 'vault-session', { vault: file.id })
+        return 'unreadable'
+    }
+}
+
+/** The key `slot` unwraps from `file`, or why it does not. */
+export async function opens(
+    file: VaultFile,
+    slot: SecretSlot,
 ): Promise<VaultKey | Exclude<UnlockResult, 'opened'>> {
     try {
-        return await unlockVault(file, password)
+        return await unlockVaultWith(file, slot)
     } catch (error) {
         if (error instanceof WrongPasswordError) return 'wrong'
         reportError(error, 'vault-session', { vault: file.id })
         return 'unreadable'
     }
+}
+
+/** The key and the slot `password` makes of `file`, which later moves the secret under the device key. */
+export async function opensPassword(
+    file: VaultFile,
+    password: string,
+): Promise<
+    { key: VaultKey; slot: SecretSlot } | Exclude<UnlockResult, 'opened'>
+> {
+    const slot = await passwordSlotOf(file, password)
+    if (typeof slot === 'string') return slot
+    const key = await opens(file, slot)
+    return typeof key === 'string' ? key : { key, slot }
 }
 
 /** This device's file for a key its Drive copy's slots unwrapped (a password changed on another device): with the

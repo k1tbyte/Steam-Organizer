@@ -2,7 +2,7 @@ import type { ToggleOption } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { LockAfter } from '../model'
+import type { LockAfter } from '#features/vault'
 
 /** The nine lock timeouts, in the order the security section lists them. */
 export function useLockAfterOptions() {

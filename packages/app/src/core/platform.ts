@@ -1,6 +1,8 @@
 import type { GoogleToken } from '@so/core'
 import { type InjectionKey, inject } from 'vue'
 
+import type { SessionArea } from './session/sessionArea'
+
 /** Google sign-in for Drive, which each shell does its own way. */
 export interface GoogleAuth {
     /** A token for `DRIVE_SCOPE`; null when the user closed the prompt, or silently there is none to give.
@@ -20,6 +22,11 @@ export interface Platform {
     google: GoogleAuth | null
     /** Opens the full app at a route path; absent where the app already is the page. */
     openApp?: (path: string) => void
+    /** Where a kept session lives and is shared between pages; absent: the tab's `sessionStorage`. */
+    session?: SessionArea
+    /** The WebAuthn relying party this shell's pages sign in to; absent where no stable one exists (Firefox's
+     *  per-profile extension host), so Hello shows as unavailable there. */
+    passkeys?: { rpId: string }
 }
 
 export const PLATFORM: InjectionKey<Platform> = Symbol('platform')

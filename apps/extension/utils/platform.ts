@@ -3,6 +3,7 @@ import { browser } from 'wxt/browser'
 
 import { extensionGoogle } from './google'
 import type { OpenAppMessage } from './messages'
+import { extensionSession } from './sessionArea'
 
 /** The full app page, opened on a route. */
 export function openAppPage(path: string) {
@@ -15,6 +16,7 @@ export const extensionPlatform: Platform = {
     kind: 'extension',
     fetch: globalThis.fetch.bind(globalThis),
     google: extensionGoogle,
+    session: extensionSession,
 }
 
 /** The popup closes once it hands over to the app tab. */

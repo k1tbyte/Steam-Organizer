@@ -33,6 +33,20 @@ export const DRIVE_ACCOUNT_STORAGE_KEY = 'so:drive:account'
 // Drive sync (features/backups): Auto sync, its interval and Auto backup, per device.
 export const SYNC_SETTINGS_STORAGE_KEY = 'so:sync'
 
+// Security (features/vault): Lock after and Master password after restart, per device.
+export const SECURITY_SETTINGS_STORAGE_KEY = 'so:security'
+
+/** The tab's `sessionStorage`; undefined where there is none (node) or storage is denied. */
+export function tabStorage(): Storage | undefined {
+    try {
+        return typeof sessionStorage === 'undefined'
+            ? undefined
+            : sessionStorage
+    } catch {
+        return undefined
+    }
+}
+
 export function readStored(key: string): string | null {
     try {
         return localStorage.getItem(key)

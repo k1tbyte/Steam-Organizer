@@ -1,13 +1,9 @@
 import { UnsupportedVaultError } from '../errors'
+import { checked, type Kdf, newKdf, passwordBits, type VaultKey } from './kdf'
 import {
-    checked,
-    type Kdf,
-    newKdf,
     openRecovery,
     type PasswordSlot,
-    passwordBits,
     slotParts,
-    type VaultKey,
     type VaultSlots,
 } from './keys'
 import { gcm, sealBytes } from './seal'

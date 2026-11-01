@@ -2,6 +2,7 @@ import { createPinia } from 'pinia'
 import { type Component, createApp, watch } from 'vue'
 
 import {
+    installSessionArea,
     PLATFORM,
     type Platform,
     restoreAppearance,
@@ -17,6 +18,7 @@ export function createEntry(
     themed?: HTMLElement,
 ) {
     startMocks(import.meta.env.DEV)
+    installSessionArea(platform.session)
     restoreAppearance(themed)
     // The locale follows the language pref; screens only set the pref.
     watch(

@@ -5,6 +5,7 @@ import { computed, shallowRef } from 'vue'
 import { type PageContext, providePage, provideSettingsLink, useTopbarOutlets } from '#core'
 import { useAutoSync } from '#features/backups'
 import { type SectionKey, SettingsHost, useSettingsEntry } from '#features/settings'
+import { useAutoLock } from '#features/vault'
 
 import { useLockClearsToasts } from '../composables/useLockClearsToasts'
 import { useSectionMemory, useShellNav } from '../composables/useShellNav'
@@ -17,6 +18,8 @@ useSectionMemory()
 useLockClearsToasts()
 // The shell lives as long as the unlocked session, so Drive sync does too.
 useAutoSync()
+// And the lock policy: the idle timeout and Immediately, for this page.
+useAutoLock()
 const settings = useSettingsEntry()
 provideSettingsLink((section) => settings.open(section as SectionKey))
 const { showTabBar } = useShellNav()
