@@ -18,6 +18,7 @@ export {
     readAccount,
     readService,
     readTag,
+    rekeyTies,
     type ServiceCredentials,
     type ServiceData,
     type SteamBans,
@@ -121,7 +122,12 @@ export {
     type VaultSync,
     vaultStore,
 } from './storage/vaultStore'
-export { type MergedRecords, mergeRecords, restampEdited } from './vault/merge'
+export {
+    type MergedRecords,
+    mergeRecords,
+    restampEdited,
+    TOMBSTONE_TTL_MS,
+} from './vault/merge'
 export {
     changePassword,
     createVault,

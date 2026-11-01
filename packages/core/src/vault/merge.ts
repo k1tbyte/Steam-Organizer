@@ -7,9 +7,14 @@ import {
     updateData,
 } from './vault'
 
+/** A tombstone older than this is purged by a sync: a copy offline for longer can bring a deleted record back. */
+export const TOMBSTONE_TTL_MS = 90 * 24 * 60 * 60 * 1000
+
 export interface MergedRecords {
     /** Results that differ from the local record, for the local file. */
     toLocal: SealedRecord[]
+    /** Local records the file drops: expired tombstones, and live records one beat. */
+    purged: string[]
     /** Some result differs from the remote copy, so it needs a push. */
     toRemote: boolean
 }
@@ -113,27 +118,41 @@ async function mergeOne(
     return local.updatedAt > remote.updatedAt ? local : remote
 }
 
-/** Merges two copies of one vault record by record; merging the result again with either side changes nothing.
- *  A tie goes to a tombstone, then to `remote`. */
+const expired = (record: SealedRecord, now: number | undefined) =>
+    now !== undefined &&
+    'deleted' in record &&
+    record.updatedAt < now - TOMBSTONE_TTL_MS
+
+/** Merges two copies of one vault record by record; merging the result again with either side as the sync leaves it changes nothing.
+ *  A tie goes to a tombstone, then to `remote`. With `now`, a tombstone past the TTL is dropped once the copy holds one too, and never pushed back. */
 export async function mergeRecords(
     key: VaultKey,
     local: readonly SealedRecord[],
     remote: readonly SealedRecord[],
+    now?: number,
 ): Promise<MergedRecords> {
     const remoteById = new Map(remote.map((record) => [record.id, record]))
     const toLocal: SealedRecord[] = []
+    const purged: string[] = []
     let toRemote = false
     for (const record of local) {
         const other = remoteById.get(record.id)
         remoteById.delete(record.id)
         if (!other) {
-            toRemote = true
+            if (expired(record, now)) purged.push(record.id)
+            else toRemote = true
             continue
         }
         const merged = await mergeOne(key, record, other)
+        // A copy still holding the record takes the tombstone first, so devices that hold it drop it too.
+        if (expired(merged, now) && 'deleted' in other) {
+            purged.push(record.id)
+            continue
+        }
         if (!identical(merged, record)) toLocal.push(merged)
         if (!identical(merged, other)) toRemote = true
     }
-    toLocal.push(...remoteById.values())
-    return { toLocal, toRemote }
+    for (const record of remoteById.values())
+        if (!expired(record, now)) toLocal.push(record)
+    return { toLocal, purged, toRemote }
 }

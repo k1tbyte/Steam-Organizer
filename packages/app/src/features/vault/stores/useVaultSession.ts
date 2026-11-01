@@ -295,8 +295,8 @@ export const useVaultSession = defineStore('vault-session', () => {
         })
     }
 
-    /** Merges the open linked vault with `copy`, its file on Drive, in the queue on the latest file; without one it only
-     *  reads the file to push. A copy the key can't open throws and writes nothing. Undefined without an open linked vault. */
+    /** Merges the open linked vault with `copy`, its file on Drive, in the queue on the latest file; without one a pending
+     *  file is pushed as is, any other merges with itself, which only purges. A copy the key can't open throws and writes nothing. Undefined without an open linked vault. */
     function mergeCopy(
         copy: VaultFile | null,
     ): Promise<MergedCopy | undefined> {
@@ -306,14 +306,20 @@ export const useVaultSession = defineStore('vault-session', () => {
         return serial(async () => {
             const vault = storedVault(target.vault.id)
             if (!vault?.sync) return undefined
-            if (!copy)
+            // Pending changes may hold tombstones the copy never saw: purging them would lose the deletion.
+            if (!copy && pendingIn(vault))
                 return {
                     file: vault.file,
                     receipt: files.receipt(vault),
-                    push: pendingIn(vault),
+                    push: true,
                 }
             const current = await contentsOf(vault, key)
-            const merged = await mergeCopyInto(key, vault, current, copy)
+            const merged = await mergeCopyInto(
+                key,
+                vault,
+                current,
+                copy ?? vault.file,
+            )
             const stored = merged.changed
                 ? await save(
                       vault,

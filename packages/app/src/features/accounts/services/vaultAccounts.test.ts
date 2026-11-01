@@ -1,4 +1,4 @@
-import { type AccountData, RECORD, readAccount } from '@so/core'
+import { type AccountData, RECORD, readAccount, rekeyTies } from '@so/core'
 import { describe, expect, it } from 'vitest'
 
 import { accountsIn, placedKeys, storedAccounts } from './vaultAccounts'
@@ -85,6 +85,26 @@ describe('placedKeys', () => {
         })
         expect([...keys.keys()]).toEqual(['a2', 'a0'])
         expect(orderAfter(keys)).toEqual(['h0', 'a1', 'a2', 'a0', 'h1'])
+    })
+
+    it('fails between accounts that share a key, and places the move once they are rekeyed', () => {
+        const tied = storedAccounts(
+            new Map([
+                ['x', account({ order: 'a1' })],
+                ['y', account({ order: 'a1' })],
+                ['z', account({ order: 'a2' })],
+            ]),
+        )
+        const move = { ids: ['z'], after: 'x', before: null }
+        expect(() => placedKeys(tied, move)).toThrow()
+        const keys = rekeyTies(tied.map(({ id, data }) => ({ id, ...data })))
+        const apart = tied.map(({ id, data }) => ({
+            id,
+            data: { ...data, order: keys.get(id) ?? data.order },
+        }))
+        const [placed] = placedKeys(apart, move).values()
+        const y = apart.find(({ id }) => id === 'y')?.data.order ?? ''
+        expect('a1' < (placed ?? '') && (placed ?? '') < y).toBe(true)
     })
 
     it('moves nothing when the neighbour is gone', () => {

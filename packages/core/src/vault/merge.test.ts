@@ -6,7 +6,7 @@ import {
     type SteamSnapshot,
 } from '../account/records'
 import { openData, openSecret, sealRecord } from '../index'
-import { mergeRecords, restampEdited } from './merge'
+import { mergeRecords, restampEdited, TOMBSTONE_TTL_MS } from './merge'
 import type { SealedRecord } from './vault'
 import { createVault } from './vault'
 
@@ -64,13 +64,16 @@ const tomb = (id: string, updatedAt: number): SealedRecord => ({
 function apply(
     records: readonly SealedRecord[],
     changes: readonly SealedRecord[],
+    purged: readonly string[] = [],
 ): SealedRecord[] {
     const byId = new Map(changes.map((record) => [record.id, record]))
-    const next = records.map((record) => {
-        const changed = byId.get(record.id)
-        byId.delete(record.id)
-        return changed ?? record
-    })
+    const next = records
+        .filter(({ id }) => !purged.includes(id))
+        .map((record) => {
+            const changed = byId.get(record.id)
+            byId.delete(record.id)
+            return changed ?? record
+        })
     return [...next, ...byId.values()]
 }
 
@@ -86,10 +89,12 @@ describe('merge by record', () => {
         const theirs = await seal('theirs', 1, { kind: RECORD.TAG, label: 'b' })
         expect(await mergeRecords(key, [mine], [])).toEqual({
             toLocal: [],
+            purged: [],
             toRemote: true,
         })
         expect(await mergeRecords(key, [], [theirs])).toEqual({
             toLocal: [theirs],
+            purged: [],
             toRemote: false,
         })
     })
@@ -102,29 +107,33 @@ describe('merge by record', () => {
                 [tag, tomb('gone', 2)],
                 [structuredClone(tag), tomb('gone', 2)],
             ),
-        ).toEqual({ toLocal: [], toRemote: false })
+        ).toEqual({ toLocal: [], purged: [], toRemote: false })
     })
 
     it('lets the newer side win against a tombstone, and the tombstone win a tie', async () => {
         const live = await seal('a', 5, account())
         expect(await mergeRecords(key, [live], [tomb('a', 4)])).toEqual({
             toLocal: [],
+            purged: [],
             toRemote: true,
         })
         expect(await mergeRecords(key, [live], [tomb('a', 6)])).toEqual({
             toLocal: [tomb('a', 6)],
+            purged: [],
             toRemote: false,
         })
         expect(await mergeRecords(key, [live], [tomb('a', 5)])).toEqual({
             toLocal: [tomb('a', 5)],
+            purged: [],
             toRemote: false,
         })
         expect(await mergeRecords(key, [tomb('a', 5)], [live])).toEqual({
             toLocal: [],
+            purged: [],
             toRemote: true,
         })
         expect(await mergeRecords(key, [tomb('a', 3)], [tomb('a', 4)])).toEqual(
-            { toLocal: [tomb('a', 4)], toRemote: false },
+            { toLocal: [tomb('a', 4)], purged: [], toRemote: false },
         )
     })
 
@@ -133,11 +142,13 @@ describe('merge by record', () => {
         const newer = await seal('t', 2, { kind: RECORD.TAG, label: 'new' })
         expect(await mergeRecords(key, [newer], [older])).toEqual({
             toLocal: [],
+            purged: [],
             toRemote: true,
         })
         const tied = await seal('t', 1, { kind: RECORD.TAG, label: 'tied' })
         expect(await mergeRecords(key, [tied], [older])).toEqual({
             toLocal: [older],
+            purged: [],
             toRemote: false,
         })
     })
@@ -180,10 +191,12 @@ describe('merge by record', () => {
         const stale = await seal('a', 6, account({ steam: snapshot(2, 1) }))
         expect(await mergeRecords(key, [edited], [stale])).toEqual({
             toLocal: [],
+            purged: [],
             toRemote: true,
         })
         expect(await mergeRecords(key, [stale], [edited])).toEqual({
             toLocal: [edited],
+            purged: [],
             toRemote: false,
         })
     })
@@ -235,11 +248,13 @@ describe('merge by record', () => {
         )
         expect(await mergeRecords(key, [locked], [refreshed])).toEqual({
             toLocal: [],
+            purged: [],
             toRemote: true,
         })
         const same = await seal('a', 6, { ...hidden, alias: 'x' })
         expect(await mergeRecords(key, [locked], [same])).toEqual({
             toLocal: [same],
+            purged: [],
             toRemote: false,
         })
     })
@@ -262,6 +277,7 @@ describe('merge by record', () => {
         )
         expect(await mergeRecords(key, [restored], [edited])).toEqual({
             toLocal: [],
+            purged: [],
             toRemote: true,
         })
         const tag = await seal('t', 1, { kind: RECORD.TAG, label: 'a' })
@@ -331,5 +347,116 @@ describe('sync through one copy', () => {
             [...records].sort((a, b) => (a.id < b.id ? -1 : 1))
         expect(sorted(deviceA)).toEqual(sorted(copy))
         expect(sorted(deviceB)).toEqual(sorted(copy))
+    })
+})
+
+describe('tombstone purge', () => {
+    const DAY = 24 * 60 * 60 * 1000
+    const NOW = 500 * DAY
+    const OLD = NOW - 100 * DAY
+    const FRESH = NOW - 10 * DAY
+    const tag = (id: string, at: number) =>
+        seal(id, at, { kind: RECORD.TAG, label: id })
+
+    it('drops an expired tombstone both sides hold, with no push', async () => {
+        expect(
+            await mergeRecords(key, [tomb('a', OLD)], [tomb('a', OLD)], NOW),
+        ).toEqual({ toLocal: [], purged: ['a'], toRemote: false })
+        expect(
+            await mergeRecords(
+                key,
+                [tomb('a', OLD)],
+                [tomb('a', OLD - DAY)],
+                NOW,
+            ),
+        ).toEqual({ toLocal: [], purged: ['a'], toRemote: false })
+    })
+
+    it('never pushes back nor re-adds an expired tombstone only one side holds', async () => {
+        const mine = await tag('mine', FRESH)
+        expect(await mergeRecords(key, [tomb('a', OLD)], [], NOW)).toEqual({
+            toLocal: [],
+            purged: ['a'],
+            toRemote: false,
+        })
+        expect(await mergeRecords(key, [], [tomb('a', OLD)], NOW)).toEqual({
+            toLocal: [],
+            purged: [],
+            toRemote: false,
+        })
+        // A record this side alone holds still asks for a push beside it.
+        expect(
+            await mergeRecords(key, [mine, tomb('a', OLD)], [], NOW),
+        ).toEqual({ toLocal: [], purged: ['a'], toRemote: true })
+    })
+
+    it('lets an expired tombstone beat an older live record: dropped here, pushed first to a copy that holds the record', async () => {
+        const stale = await tag('a', OLD - 10 * DAY)
+        expect(await mergeRecords(key, [stale], [tomb('a', OLD)], NOW)).toEqual(
+            { toLocal: [], purged: ['a'], toRemote: false },
+        )
+        expect(await mergeRecords(key, [tomb('a', OLD)], [stale], NOW)).toEqual(
+            { toLocal: [], purged: [], toRemote: true },
+        )
+    })
+
+    it('keeps a tombstone that is not expired, and a record newer than an expired one', async () => {
+        const cutoff = NOW - TOMBSTONE_TTL_MS
+        expect(await mergeRecords(key, [], [tomb('a', FRESH)], NOW)).toEqual({
+            toLocal: [tomb('a', FRESH)],
+            purged: [],
+            toRemote: false,
+        })
+        expect(await mergeRecords(key, [tomb('a', FRESH)], [], NOW)).toEqual({
+            toLocal: [],
+            purged: [],
+            toRemote: true,
+        })
+        expect(
+            (await mergeRecords(key, [], [tomb('a', cutoff)], NOW)).toLocal,
+        ).toEqual([tomb('a', cutoff)])
+        expect(
+            (await mergeRecords(key, [], [tomb('a', cutoff - 1)], NOW)).toLocal,
+        ).toEqual([])
+        const revived = await tag('a', FRESH)
+        expect(
+            await mergeRecords(key, [tomb('a', OLD)], [revived], NOW),
+        ).toEqual({ toLocal: [revived], purged: [], toRemote: false })
+    })
+
+    it('purges nothing without a time', async () => {
+        expect(await mergeRecords(key, [], [tomb('a', 1)])).toEqual({
+            toLocal: [tomb('a', 1)],
+            purged: [],
+            toRemote: false,
+        })
+    })
+
+    it('is idempotent: merging the files as the sync left them changes nothing', async () => {
+        const kept = await tag('kept', FRESH)
+        const stale = await tag('stale', OLD - DAY)
+        const local = [kept, tomb('both', OLD), tomb('mine', OLD), stale]
+        const remote = [
+            kept,
+            tomb('both', OLD),
+            tomb('their old', OLD),
+            tomb('stale', OLD),
+            tomb('fresh', FRESH),
+        ]
+        const first = await mergeRecords(key, local, remote, NOW)
+        expect(first.toRemote).toBe(false)
+        const merged = apply(local, first.toLocal, first.purged)
+        expect(merged.map(({ id }) => id).sort()).toEqual(['fresh', 'kept'])
+        for (const [mine, theirs] of [
+            [merged, remote],
+            [remote, merged],
+        ] as const) {
+            const again = await mergeRecords(key, mine, theirs, NOW)
+            expect(again.toLocal).toEqual([])
+            expect(again.toRemote).toBe(false)
+        }
+        expect((await mergeRecords(key, merged, remote, NOW)).purged).toEqual(
+            [],
+        )
     })
 })

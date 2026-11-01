@@ -38,23 +38,26 @@ export async function openContents(
     return { records, data: await openInto(key, records, new Map()) }
 }
 
-/** `changed` replace the records with their ids or join at the end; only their data parts open again. */
+/** `changed` replace the records with their ids or join at the end; only their data parts open again. `dropped` ids leave. */
 export async function withChanges(
     key: VaultKey,
     contents: VaultContents,
     changed: readonly SealedRecord[],
+    dropped: readonly string[] = [],
 ): Promise<VaultContents> {
     const byId = new Map(changed.map((record) => [record.id, record]))
-    const records = contents.records.map((record) => {
-        const next = byId.get(record.id)
-        byId.delete(record.id)
-        return next ?? record
-    })
+    const gone = new Set(dropped)
+    const records = contents.records
+        .filter((record) => !gone.has(record.id))
+        .map((record) => {
+            const next = byId.get(record.id)
+            byId.delete(record.id)
+            return next ?? record
+        })
     records.push(...byId.values())
-    return {
-        records,
-        data: await openInto(key, changed, new Map(contents.data)),
-    }
+    const data = new Map(contents.data)
+    for (const id of gone) data.delete(id)
+    return { records, data: await openInto(key, changed, data) }
 }
 
 /** Accounts in the vault and those with a Steam Guard authenticator; one hidden by an `everything` lock counts without. */

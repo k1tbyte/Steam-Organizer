@@ -176,3 +176,37 @@ export const orderKeys = (
     before: string | null,
     count: number,
 ) => generateNKeysBetween(after, before, count)
+
+// Code units, as the account list sorts: never by locale.
+const compareKeys = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
+
+/** New keys for accounts sharing an order key: by `order` then `id`, the first of a run keeps it and the rest take keys
+ *  between it and the next distinct key. The visible order stays, and devices holding the same accounts compute the same keys. */
+export function rekeyTies(
+    accounts: readonly { id: string; order: string }[],
+): Map<string, string> {
+    const sorted = [...accounts].sort(
+        (a, b) => compareKeys(a.order, b.order) || compareKeys(a.id, b.id),
+    )
+    const rekeyed = new Map<string, string>()
+    let start = 0
+    while (start < sorted.length) {
+        const order = (sorted[start] as { order: string }).order
+        let end = start + 1
+        while (sorted[end]?.order === order) end++
+        if (end - start > 1) {
+            const keys = orderKeys(
+                order,
+                sorted[end]?.order ?? null,
+                end - start - 1,
+            )
+            for (const [index, key] of keys.entries())
+                rekeyed.set(
+                    (sorted[start + 1 + index] as { id: string }).id,
+                    key,
+                )
+        }
+        start = end
+    }
+    return rekeyed
+}

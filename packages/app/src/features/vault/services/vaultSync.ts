@@ -1,10 +1,14 @@
 import {
     importRecovery,
+    type LiveRecord,
     mergeRecords,
     newerSlots,
+    readAccount,
     readRecords,
+    rekeyTies,
     type StoredVault,
     UnsupportedVaultError,
+    updateData,
     type VaultFile,
     type VaultKey,
     type VaultSync,
@@ -58,36 +62,68 @@ export const receiptOf = (
 export interface CopyMerge {
     /** The file and records to store, and the key for its slots; null while this device's side is unchanged. */
     changed: { file: VaultFile; contents: VaultContents; key: VaultKey } | null
-    /** Records taken from the copy. */
+    /** Records taken from the copy or purged: a locked account may come back sealed under another key, or be gone. */
     taken: string[]
-    /** The copy lacks something: a record, the later slots or a change not pushed yet. */
+    /** The copy lacks something: a record, the later slots, a rekey or a change not pushed yet. */
     push: boolean
 }
 
-/** Merges Drive's copy into the vault's file, read as `current`. A copy of another vault, or one the key can't open, throws. */
+/** The accounts sharing an order key, resealed with new ones: `order` is public data, so a locked account rekeys without
+ *  its secret. Both stamps stay, so a deletion or move made meanwhile wins; a tie the copy brings back rekeys again. */
+async function rekeyedTies(
+    key: VaultKey,
+    contents: VaultContents,
+): Promise<LiveRecord[]> {
+    const accounts = []
+    for (const [id, value] of contents.data) {
+        const account = readAccount(value)
+        if (account) accounts.push({ id, order: account.order })
+    }
+    const keys = rekeyTies(accounts)
+    const rekeyed: LiveRecord[] = []
+    for (const record of contents.records) {
+        const order = keys.get(record.id)
+        if (order === undefined || 'deleted' in record) continue
+        const data = contents.data.get(record.id) as object
+        rekeyed.push(
+            await updateData(key, record, { ...data, order }, record.updatedAt),
+        )
+    }
+    return rekeyed
+}
+
+/** Merges Drive's copy into the vault's file, read as `current`, at `now`: tombstones older than the TTL are purged
+ *  and accounts left with a tied order key rekeyed. A copy of another vault, or one the key can't open, throws. */
 export async function mergeCopyInto(
     key: VaultKey,
     vault: StoredVault,
     current: VaultContents,
     copy: VaultFile,
+    now = Date.now(),
 ): Promise<CopyMerge> {
     if (copy.id !== vault.id) throw new UnsupportedVaultError()
     const remote = await readRecords(key, copy)
-    const { toLocal, toRemote } = await mergeRecords(
+    const { toLocal, purged, toRemote } = await mergeRecords(
         key,
         current.records,
         remote,
+        now,
     )
+    let contents = current
+    if (toLocal.length > 0 || purged.length > 0)
+        contents = await withChanges(key, current, toLocal, purged)
+    const rekeyed = await rekeyedTies(key, contents)
+    if (rekeyed.length > 0) contents = await withChanges(key, contents, rekeyed)
     const local = vault.file.slots
     const slots = newerSlots(local, copy.slots)
     const push =
         toRemote ||
+        rekeyed.length > 0 ||
         (local.changedAt ?? 0) > (copy.slots.changedAt ?? 0) ||
         pendingIn(vault)
-    const taken = toLocal.map(({ id }) => id)
-    if (toLocal.length === 0 && slots === local)
+    const taken = [...toLocal.map(({ id }) => id), ...purged]
+    if (contents === current && slots === local)
         return { changed: null, taken, push }
-    const contents = await withChanges(key, current, toLocal)
     const file = await writeRecords(
         key,
         { ...vault.file, slots },
@@ -95,9 +131,9 @@ export async function mergeCopyInto(
     )
     // Two devices that each added a recovery slot hold different pairs: new account locks seal to the one kept.
     const recovery = slots.recovery
-    const rekeyed =
+    const rekeyedKey =
         recovery && recovery.publicKey !== local.recovery?.publicKey
             ? { ...key, recovery: await importRecovery(recovery) }
             : key
-    return { changed: { file, contents, key: rekeyed }, taken, push }
+    return { changed: { file, contents, key: rekeyedKey }, taken, push }
 }

@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import {
     createVault,
@@ -9,6 +9,7 @@ import {
     RECORD,
     readAccount,
     readTag,
+    rekeyTies,
     sealRecord,
     updateData,
 } from '../index'
@@ -63,4 +64,80 @@ it('places keys between neighbours, past either end and in order', () => {
     const [before] = orderKeys(null, first, 1) as [string]
     const [after] = orderKeys(last, null, 1) as [string]
     expect(before < first && after > last).toBe(true)
+})
+
+describe('rekeyTies', () => {
+    const accounts = (...entries: [string, string][]) =>
+        entries.map(([id, order]) => ({ id, order }))
+    const byOrder = (list: { id: string; order: string }[]) =>
+        list
+            .toSorted(
+                (a, b) =>
+                    (a.order < b.order ? -1 : a.order > b.order ? 1 : 0) ||
+                    (a.id < b.id ? -1 : 1),
+            )
+            .map(({ id }) => id)
+    /** The accounts with the new keys applied, as the merge reseals them. */
+    const rekeyed = (list: { id: string; order: string }[]) => {
+        const keys = rekeyTies(list)
+        return list.map(({ id, order }) => ({
+            id,
+            order: keys.get(id) ?? order,
+        }))
+    }
+
+    it('changes nothing without ties', () => {
+        expect(rekeyTies([])).toEqual(new Map())
+        expect(
+            rekeyTies(accounts(['a', 'a0'], ['b', 'a1'], ['c', 'a2'])),
+        ).toEqual(new Map())
+    })
+
+    it('keeps the first of a run by id and rekeys the rest between it and the next key', () => {
+        const list = accounts(
+            ['c', 'a1'],
+            ['a', 'a1'],
+            ['d', 'a2'],
+            ['b', 'a1'],
+        )
+        const keys = rekeyTies(list)
+        expect([...keys.keys()].sort()).toEqual(['b', 'c'])
+        const [first, second] = [keys.get('b'), keys.get('c')] as [
+            string,
+            string,
+        ]
+        expect('a1' < first && first < second && second < 'a2').toBe(true)
+        expect(byOrder(rekeyed(list))).toEqual(['a', 'b', 'c', 'd'])
+    })
+
+    it('rekeys several runs, one at the start, one at the end', () => {
+        const list = accounts(
+            ['a', 'a0'],
+            ['b', 'a0'],
+            ['c', 'a1'],
+            ['d', 'a2'],
+            ['e', 'a2'],
+            ['f', 'a2'],
+        )
+        const before = byOrder(list)
+        const keys = rekeyTies(list)
+        expect([...keys.keys()].sort()).toEqual(['b', 'e', 'f'])
+        const next = rekeyed(list)
+        expect(byOrder(next)).toEqual(before)
+        expect(new Set(next.map(({ order }) => order)).size).toBe(list.length)
+        expect((keys.get('e') as string) > 'a2').toBe(true)
+        expect((keys.get('b') as string) < 'a1').toBe(true)
+    })
+
+    it('gives every device holding the same accounts the same keys', () => {
+        const list = accounts(
+            ['x', 'a1'],
+            ['m', 'a1'],
+            ['q', 'a1'],
+            ['k', 'a0'],
+            ['z', 'a0'],
+        )
+        expect(rekeyTies(list.toReversed())).toEqual(rekeyTies(list))
+        expect(rekeyTies(rekeyed(list))).toEqual(new Map())
+    })
 })
