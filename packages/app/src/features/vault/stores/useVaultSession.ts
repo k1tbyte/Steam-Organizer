@@ -25,36 +25,20 @@ import {
 } from '#core'
 
 import { demoVerify, sessionMock } from '../mocks'
-import type {
-    Credential,
-    LockedSnapshot,
-    MergedCopy,
-    SessionState,
-    UnlockResult,
-} from '../model'
+import type { Credential, SessionState, UnlockResult } from '../model'
 import { opens, openVault, withCopySlots } from '../services/openVault'
 import { restoredRecords } from '../services/restoredRecords'
 import {
     EMPTY_CONTENTS,
+    type OpenVault,
     openContents,
-    tally,
     type VaultContents,
     withChanges,
 } from '../services/vaultContents'
-import {
-    FIRST_PUSH,
-    mergeCopyInto,
-    newVault,
-    pendingIn,
-} from '../services/vaultSync'
+import { FIRST_PUSH, newVault, pendingIn } from '../services/vaultSync'
 import { recordKeyring } from './recordKeys'
 import { vaultFiles } from './vaultFiles'
-
-interface OpenVault {
-    vault: StoredVault
-    key: VaultKey
-    contents: VaultContents
-}
+import { vaultSyncSide } from './vaultSyncSide'
 
 /** Whether a vault is open: the router guard reads `state`, the lock button and unlock flow write it.
  *  Vaults on this device come from `@so/core`; a mock vault (mock mode, Drive restore) takes the demo credentials. */
@@ -73,6 +57,12 @@ export const useVaultSession = defineStore('vault-session', () => {
             }
     })
     const { serial, get: storedVault, save, persist } = files
+    // A lock meanwhile still lets an accepted change land, on records read again from the file.
+    const contentsOf = async (vault: StoredVault, key: VaultKey) =>
+        opened.value?.vault === vault
+            ? opened.value.contents
+            : openContents(key, vault.file)
+    const sync = vaultSyncSide(files, opened, recordKeys, contentsOf)
     const unlocked = ref(false)
     const lastVaultId = ref(readStored(LAST_VAULT_STORAGE_KEY))
 
@@ -92,29 +82,11 @@ export const useVaultSession = defineStore('vault-session', () => {
     )
 
     const drafts = new Set<() => void>()
-    const lockWatchers = new Set<
-        (snapshot: Promise<LockedSnapshot | undefined>) => void
-    >()
 
     function lock() {
         // Drafts queue their writes while the key is still here; the queue lands them after.
         for (const flush of drafts) flush()
-        const active = opened.value
-        if (active?.vault.sync && lockWatchers.size) {
-            const { accounts } = tally(active.contents)
-            // Queued after the drafts, so it holds what they wrote; the file is sealed, no key needed.
-            const snapshot = serial(async () => {
-                const vault = storedVault(active.vault.id)
-                return vault && pendingIn(vault)
-                    ? {
-                          file: vault.file,
-                          receipt: files.receipt(vault),
-                          accounts,
-                      }
-                    : undefined
-            })
-            for (const watcher of lockWatchers) watcher(snapshot)
-        }
+        sync.checkpoint(opened.value)
         opened.value = null
         recordKeys.clear()
         unlocked.value = false
@@ -125,14 +97,6 @@ export const useVaultSession = defineStore('vault-session', () => {
     function onBeforeLock(flush: () => void) {
         drafts.add(flush)
         return () => drafts.delete(flush)
-    }
-
-    /** Hands `watcher` every lock of a linked vault: the file it left with changes still to push, read after the drafts. */
-    function onLocked(
-        watcher: (snapshot: Promise<LockedSnapshot | undefined>) => void,
-    ) {
-        lockWatchers.add(watcher)
-        return () => lockWatchers.delete(watcher)
     }
 
     /** A vault was created, restored or unlocked. */
@@ -295,57 +259,6 @@ export const useVaultSession = defineStore('vault-session', () => {
         })
     }
 
-    /** Merges the open linked vault with `copy`, its file on Drive, in the queue on the latest file; without one a pending
-     *  file is pushed as is, any other merges with itself, which only purges. A copy the key can't open throws and writes nothing. Undefined without an open linked vault. */
-    function mergeCopy(
-        copy: VaultFile | null,
-    ): Promise<MergedCopy | undefined> {
-        const target = opened.value
-        if (!target?.vault.sync) return Promise.resolve(undefined)
-        const { key } = target
-        return serial(async () => {
-            const vault = storedVault(target.vault.id)
-            if (!vault?.sync) return undefined
-            // Pending changes may hold tombstones the copy never saw: purging them would lose the deletion.
-            if (!copy && pendingIn(vault))
-                return {
-                    file: vault.file,
-                    receipt: files.receipt(vault),
-                    push: true,
-                }
-            const current = await contentsOf(vault, key)
-            const merged = await mergeCopyInto(
-                key,
-                vault,
-                current,
-                copy ?? vault.file,
-            )
-            const stored = merged.changed
-                ? await save(
-                      vault,
-                      merged.changed.file,
-                      merged.changed.contents,
-                  )
-                : vault
-            const rekeyed = merged.changed?.key
-            if (rekeyed && rekeyed !== key && opened.value?.vault === stored)
-                opened.value = { ...opened.value, key: rekeyed }
-            // A locked account may come back sealed under another key.
-            for (const id of merged.taken) recordKeys.drop(id)
-            return {
-                file: stored.file,
-                receipt: files.receipt(stored),
-                push: merged.push,
-            }
-        })
-    }
-
-    // A lock meanwhile still lets an accepted change land, on records read again from the file.
-    const contentsOf = async (vault: StoredVault, key: VaultKey) =>
-        opened.value?.vault === vault
-            ? opened.value.contents
-            : openContents(key, vault.file)
-
     /** Writes the records `change` returns to the vault open now; it runs in the queue on the latest records, so changes to one record never overwrite each other. */
     function transact(
         change: (
@@ -467,7 +380,7 @@ export const useVaultSession = defineStore('vault-session', () => {
         load: files.load,
         lock,
         onBeforeLock,
-        onLocked,
+        onLocked: sync.onLocked,
         open,
         unlock,
         verify,
@@ -475,14 +388,10 @@ export const useVaultSession = defineStore('vault-session', () => {
         adopt,
         remove,
         rename,
-        /** Links the open vault to Drive: its next sync pushes it, or merges it into the copy Drive has. */
-        link: () => files.link(opened.value?.vault.id),
-        /** Keeps vault `id` (the open one by default) on this device only. */
-        unlink: (id = opened.value?.vault.id) => files.unlink(id),
-        mergeCopy,
-        /** Records that Drive's copy holds the file a receipt was read with. Needs no open vault; refused for a vault
-         *  removed or linked again since. A write after the receipt stays pending. */
-        markSynced: files.markSynced,
+        link: sync.link,
+        unlink: sync.unlink,
+        mergeCopy: sync.mergeCopy,
+        markSynced: sync.markSynced,
         changePassword,
         transact,
         replaceRecords,

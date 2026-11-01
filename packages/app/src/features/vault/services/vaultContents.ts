@@ -3,6 +3,7 @@ import {
     readAccount,
     readRecords,
     type SealedRecord,
+    type StoredVault,
     type VaultFile,
     type VaultKey,
 } from '@so/core'
@@ -12,6 +13,13 @@ export interface VaultContents {
     records: readonly SealedRecord[]
     /** The opened data part of every live record, by id. */
     data: ReadonlyMap<string, unknown>
+}
+
+/** What a session holds while a vault is open: its stored file, its key and its records. */
+export interface OpenVault {
+    vault: StoredVault
+    key: VaultKey
+    contents: VaultContents
 }
 
 export const EMPTY_CONTENTS: VaultContents = { records: [], data: new Map() }
