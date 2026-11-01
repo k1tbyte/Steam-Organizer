@@ -22,9 +22,18 @@ import {
 } from '#core'
 
 import { demoVerify, sessionMock } from '../mocks'
-import type { Credential, SessionState, UnlockResult } from '../model'
-import { deviceSlotOf, sealForDevice } from '../services/deviceUnlock'
-import { keepsSession, readSecuritySettings } from '../services/lockPolicy'
+import type {
+    Credential,
+    SecuritySettings,
+    SessionState,
+    UnlockResult,
+} from '../model'
+import {
+    armAfterPassword,
+    movePlaced,
+    sealForDevice,
+} from '../services/deviceSlots'
+import { readSecuritySettings } from '../services/lockPolicy'
 import {
     opens,
     opensPassword,
@@ -32,12 +41,15 @@ import {
     passwordSlotOf,
     withCopySlots,
 } from '../services/openVault'
+import { tryPin } from '../services/pinSlots'
 import {
     EMPTY_CONTENTS,
     type OpenVault,
     openContents,
 } from '../services/vaultContents'
 import { FIRST_PUSH, newVault, pendingIn } from '../services/vaultSync'
+import { deviceFacts } from './deviceFacts'
+import { keptRestore } from './keptRestore'
 import { keptSession } from './keptSession'
 import { recordKeyring } from './recordKeys'
 import { vaultFiles } from './vaultFiles'
@@ -69,6 +81,19 @@ export const useVaultSession = defineStore('vault-session', () => {
     const sync = vaultSyncSide(files, opened, recordKeys, contentsOf)
     const records = vaultRecords(files, opened, recordKeys, contentsOf)
     const kept = keptSession()
+    const device = deviceFacts()
+    const revival = keptRestore(kept, {
+        vaultIds: () => (files.list.value ?? []).map(({ id }) => id),
+        vault: storedVault,
+        lastVaultId: () => lastVaultId.value ?? undefined,
+        unlocked: () => unlocked.value,
+        openedId: () => opened.value?.vault.id,
+        epoch: () => epoch,
+        openRestored: (vault, slot) =>
+            openWith(vault, slot, { restored: true }),
+        open,
+        lockLocal,
+    })
     const unlocked = ref(false)
     // Held back while `load()` looks for a kept session, so a restore never flashes the locked screen.
     const restoring = ref(false)
@@ -138,8 +163,18 @@ export const useVaultSession = defineStore('vault-session', () => {
         copy?: VaultFile,
     ): Promise<UnlockResult> {
         const vault = vaultId ? storedVault(vaultId) : files.list.value?.[0]
-        if (!vault) return (await demoVerify(credential)) ? 'opened' : 'wrong'
-        // PIN and Hello slots come later; such a vault lists the password only.
+        if (!vault) {
+            const ok = await demoVerify(credential)
+            if (credential.method === 'pin' && vaultId)
+                device.demoPin(vaultId, ok)
+            return ok ? 'opened' : 'wrong'
+        }
+        if (credential.method === 'pin') {
+            const tried = await tryPin(vault.file, credential.pin)
+            await device.refresh([vault.id])
+            return typeof tried === 'string' ? tried : openWith(vault, tried)
+        }
+        // Hello arrives with its slot.
         if (credential.method !== 'pw') return 'wrong'
         const { password } = credential
         const slot = await passwordSlotOf(vault.file, password)
@@ -156,8 +191,11 @@ export const useVaultSession = defineStore('vault-session', () => {
             restoring.value = true
             try {
                 await files.load()
-                kept.watch(() => void followKept())
-                await restoreKept()
+                await device.refresh(
+                    (files.list.value ?? []).map(({ id }) => id),
+                )
+                kept.watch(() => void revival.follow())
+                await revival.restore()
             } finally {
                 restoring.value = false
             }
@@ -165,48 +203,13 @@ export const useVaultSession = defineStore('vault-session', () => {
         return loading
     }
 
-    async function restoreKept() {
-        if (unlocked.value) return
-        const at = epoch
-        const found = await kept.find(
-            (files.list.value ?? []).map(({ id }) => id),
-            lastVaultId.value ?? undefined,
-        )
-        const vault = found && storedVault(found.vaultId)
-        if (!found || !vault || unlocked.value || at !== epoch) return
-        let result: UnlockResult = 'unreadable'
-        try {
-            result = await openWith(vault, await deviceSlotOf(found.sealed), {
-                restored: true,
-            })
-        } catch (error) {
-            reportError(error, 'vault-session')
-        }
-        if (result === 'opened' && at === epoch && opened.value)
-            return open(found.onDisk)
-        // A lock or another unlock came first: that one's entry stays.
-        if (!unlocked.value && at === epoch) await kept.drop(found.vaultId)
-    }
-
-    // The event may be older than the entry, so the entry is read again.
-    async function followKept() {
-        const entry = await kept.read()
-        if (!entry) {
-            // Immediately keeps none: its removal is not another page's lock.
-            if (unlocked.value && keepsSession(readSecuritySettings()))
-                lockLocal()
-            return
-        }
-        if (!unlocked.value) return restoreKept()
-        if (entry.vault !== opened.value?.vault.id) {
-            lockLocal()
-            return restoreKept()
-        }
-    }
-
-    /** The lock policy changed: the kept session moves to where the new one keeps it, without a password. */
-    function policyChanged() {
-        return unlocked.value ? kept.keep() : Promise.resolve()
+    /** The lock policy changed: the kept session and the PIN slots move to where the new one keeps them, without a
+     *  password or a PIN. */
+    async function policyChanged(previous: SecuritySettings) {
+        const ids = (files.list.value ?? []).map(({ id }) => id)
+        await movePlaced(ids, previous, readSecuritySettings())
+        await device.refresh(ids)
+        if (unlocked.value) await kept.keep()
     }
 
     interface OpenOptions {
@@ -242,7 +245,7 @@ export const useVaultSession = defineStore('vault-session', () => {
         const unwrapped = key
         const sealed = restored ? slot.sealed : await sealForDevice(used)
         // In the queue, from the latest file: a write that lands meanwhile is never undone.
-        return serial(async () => {
+        const result = await serial(async () => {
             // Removed meanwhile: opening or upgrading it would bring it back. Opened by another flow, or locked since
             // the answer began: that one stays.
             const latest = storedVault(vault.id)
@@ -288,6 +291,14 @@ export const useVaultSession = defineStore('vault-session', () => {
                 return 'unreadable'
             }
         })
+        const records = opened.value?.key
+        if (result === 'opened' && password !== undefined && records) {
+            await armAfterPassword(vault.id, records, used).catch((error) =>
+                reportError(error, 'vault-session'),
+            )
+            await device.refresh([vault.id])
+        }
+        return result
     }
 
     /** Checks the open vault's master password without touching the session. */
@@ -363,6 +374,7 @@ export const useVaultSession = defineStore('vault-session', () => {
         return serial(async () => {
             await files.remove(id)
             await kept.forget(id)
+            device.forget(id)
             const active = opened.value
             if (active?.vault.id !== id) return
             epoch++
@@ -430,6 +442,9 @@ export const useVaultSession = defineStore('vault-session', () => {
         contents: computed(() => opened.value?.contents ?? null),
         load,
         policyChanged,
+        /** What each vault on this device opens with besides the password (see `DeviceFacts`), by vault id. */
+        device: computed(() => device.facts.value),
+        refreshDevice: device.refresh,
         lock,
         onBeforeLock,
         onLocked: sync.onLocked,

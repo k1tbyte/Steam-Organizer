@@ -17,12 +17,13 @@ export const useLockPolicy = defineStore('lock-policy', () => {
 
     function change(patch: Partial<SecuritySettings>) {
         // Read again: the popup or the app page may have changed the other field since.
-        settings.value = { ...readSecuritySettings(), ...patch }
+        const previous = readSecuritySettings()
+        settings.value = { ...previous, ...patch }
         writeStored(
             SECURITY_SETTINGS_STORAGE_KEY,
             JSON.stringify(settings.value),
         )
-        return useVaultSession().policyChanged()
+        return useVaultSession().policyChanged(previous)
     }
 
     return {

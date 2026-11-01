@@ -48,7 +48,9 @@ export function useUnlock() {
         const ago = formatAgo(sync.syncedAt, Date.now()) ?? t('just now')
         return t('Google Drive · synced {ago}', { ago })
     }
-    // Vaults on this device open with the master password only until PIN and Hello slots exist.
+    // The master password always opens a vault; a PIN slot on this device adds the PIN, even paused (its tab shows why).
+    const methodsOf = (id: string): UnlockMethod[] =>
+        session.device.get(id)?.pin ? ['pin', 'pw'] : ['pw']
     const vaults = useMock(
         () =>
             session.vaults.map((item) => ({
@@ -56,7 +58,7 @@ export function useUnlock() {
                 name: item.name,
                 location: item.sync ? ('drive' as const) : item.home,
                 meta: metaOf(item),
-                methods: ['pw' as const],
+                methods: methodsOf(item.id),
             })),
         vaultsMock,
     )
@@ -89,7 +91,10 @@ export function useUnlock() {
 
     const pin = ref('')
     const pinError = ref('')
-    const wrongPins = ref(0)
+    // The wrong tries live with the slot: a reload or another page never resets them.
+    const wrongPins = computed(
+        () => session.device.get(vault.value?.id ?? '')?.pin?.wrong ?? 0,
+    )
     const password = ref('')
     const passwordError = ref('')
     const wrongPasswords = ref(0)
@@ -211,7 +216,6 @@ export function useUnlock() {
         const result = await attempt({ method: 'pin', pin: pin.value })
         if (result === null) return
         if (result === 'opened') return succeed()
-        wrongPins.value++
         failedAttempts.value++
         pin.value = ''
         const left = pinTriesLeft(wrongPins.value)

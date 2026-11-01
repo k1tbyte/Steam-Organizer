@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n'
 
 import { useSecuritySection } from './useSecuritySection'
 
-defineEmits<{ changePassword: [] }>()
+defineEmits<{ changePassword: []; setPin: [] }>()
 
 const { t } = useI18n()
 const view = useSecuritySection()
@@ -72,20 +72,20 @@ const view = useSecuritySection()
                     size="sm"
                     variant="soft"
                     :label="t('Change')"
-                    @click="view.changePin" />
+                    @click="$emit('setPin')" />
                 <FpButton
                     size="sm"
                     variant="ghost"
                     class="text-fg-3! hover:bg-danger-soft! hover:text-danger!"
                     :label="t('Remove')"
-                    @click="view.setPin(false)" />
+                    @click="view.removePin" />
             </div>
             <FpButton
                 v-else
                 size="sm"
                 color="accent"
                 :label="t('Set PIN')"
-                @click="view.setPin(true)" />
+                @click="$emit('setPin')" />
         </FpFormRow>
         <FpFormRow
             plain

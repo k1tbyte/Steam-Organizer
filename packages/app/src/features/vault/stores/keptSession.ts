@@ -1,6 +1,7 @@
 import { deviceStore, type Sealed } from '@so/core'
 
 import { reportError } from '#core'
+import { forgetPlaced } from '../services/deviceSlots'
 import {
     readActive,
     readKept,
@@ -63,6 +64,7 @@ export function keptSession() {
             try {
                 if ((await readKept())?.vault === vaultId) await removeKept()
                 await deviceStore.remove(vaultId)
+                await forgetPlaced(vaultId)
             } catch (error) {
                 reportError(error, 'vault-session')
             }

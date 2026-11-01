@@ -9,7 +9,7 @@ import {
     type VaultKey,
     vaultKey,
 } from './kdf'
-import { gcm, type Sealed, splitSealed } from './seal'
+import { gcm, openBytes, type Sealed, sealBytes, splitSealed } from './seal'
 
 const SECRET_BYTES = 32
 const GCM_TAG_BYTES = 16
@@ -141,3 +141,19 @@ export async function resealSecretSlot(
     out.set(wrapped, IV_BYTES)
     return out.toBase64()
 }
+
+export type RearmKind = 'pin' | 'prf'
+
+const rearmAad = (kind: RearmKind) => `rearm:${kind}`
+
+/** PBKDF2 bits or a PRF output sealed under the vault's `records` key: only an unlocked vault reads them back, which
+ *  is how a master-password unlock arms the PIN and the passkey again after a restart. */
+export const sealRearm = (
+    key: VaultKey,
+    kind: RearmKind,
+    bits: Uint8Array<ArrayBuffer>,
+) => sealBytes(key.records, bits, rearmAad(kind))
+
+/** The caller zeroes the bits once used. */
+export const openRearm = (key: VaultKey, kind: RearmKind, sealed: Sealed) =>
+    openBytes(key.records, sealed, rearmAad(kind))

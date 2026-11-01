@@ -81,6 +81,16 @@ export const SECURITY_DEFAULTS: SecuritySettings = {
     masterAfterRestart: false,
 }
 
+/** What a vault on this device opens with besides the master password; never a slot or a key. */
+export interface DeviceFacts {
+    /** Wrong tries since the last master-password unlock; at three the PIN is paused. */
+    pin?: { wrong: number }
+    prf?: true
+}
+
+/** `paused`: three wrong PINs turned it off until the next master-password unlock. */
+export type PinState = 'off' | 'on' | 'paused'
+
 /** `unreadable`: a damaged file or a newer format, which no credential opens. */
 export type UnlockResult = 'opened' | 'wrong' | 'unreadable'
 

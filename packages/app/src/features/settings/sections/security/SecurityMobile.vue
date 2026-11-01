@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n'
 
 import { useSecuritySection } from './useSecuritySection'
 
-defineEmits<{ changePassword: [] }>()
+const emit = defineEmits<{ changePassword: []; setPin: [] }>()
 
 const { t } = useI18n()
 const view = useSecuritySection()
@@ -23,7 +23,8 @@ const toggles = computed(() => [
         label: t('PIN'),
         description: view.pinDescription.value,
         on: view.pin.value,
-        set: view.setPin,
+        // Turning it on asks for the master password and the digits; turning it off asks nothing.
+        set: (on: boolean) => (on ? emit('setPin') : view.removePin()),
     },
     {
         key: 'biometrics',
@@ -92,7 +93,7 @@ const toggles = computed(() => [
             block
             size="2xl"
             variant="soft"
-            @click="$emit('changePassword')">
+            @click="emit('changePassword')">
             <FpIcon name="icon-[lucide--key-round]" />
             {{ t('Change master password') }}
         </FpButton>

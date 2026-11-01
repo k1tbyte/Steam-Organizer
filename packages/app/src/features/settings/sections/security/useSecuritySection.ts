@@ -1,23 +1,27 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useLockPolicy } from '#features/vault'
+import { useLockPolicy, useVaultSecurity } from '#features/vault'
 
 import { useLockAfterOptions } from '../../composables/useLockAfterOptions'
 
 export function useSecuritySection() {
     const { t } = useI18n()
     const lockPolicy = useLockPolicy()
+    const security = useVaultSecurity()
     const lock = useLockAfterOptions()
-    // PIN and Hello are not wired yet: local switches, as before.
-    const pin = ref(true)
+    // Hello is not wired yet: a local switch, as before.
     const biometrics = ref(false)
 
-    const pinDescription = computed(() =>
-        pin.value
+    const pinDescription = computed(() => {
+        if (security.pin === 'paused')
+            return t(
+                'Paused after 3 wrong tries. Unlock with the master password once.',
+            )
+        return security.pin === 'on'
             ? t('6 digits · this device only')
-            : t('Quick unlock on this device only'),
-    )
+            : t('Quick unlock on this device only')
+    })
 
     return {
         lockItems: lock.items,
@@ -28,14 +32,10 @@ export function useSecuritySection() {
             () => lockPolicy.policy.masterAfterRestart,
         ),
         setMasterAfterRestart: lockPolicy.setMasterAfterRestart,
-        pin,
+        /** A PIN slot exists, paused or not: Change and Remove apply. */
+        pin: computed(() => security.pin !== 'off'),
         pinDescription,
-        setPin: (on: boolean) => {
-            pin.value = on
-        },
-        changePin() {
-            // The PIN setup flow arrives with the PIN slot; the button only states the intent.
-        },
+        removePin: security.removePin,
         biometrics,
         setBiometrics: (on: boolean) => {
             biometrics.value = on

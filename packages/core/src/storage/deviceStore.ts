@@ -28,7 +28,10 @@ export interface DeviceSlots {
     prf?: PrfSlot
     /** The PIN's PBKDF2 bits and the PRF output, sealed under the vault's `records` key: a master-password unlock
      *  opens them and arms both slots again after a restart. */
-    rearm?: { pin?: Sealed; prf?: Sealed }
+    rearm?: {
+        pin?: { kdf: Kdf; bits: Sealed }
+        prf?: { credentialId: string; bits: Sealed }
+    }
     /** The session kept past a restart (Lock after: Never), sealed under the device key. */
     kept?: Sealed
 }

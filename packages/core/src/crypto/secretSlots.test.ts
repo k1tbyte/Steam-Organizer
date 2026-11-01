@@ -6,11 +6,13 @@ import {
     deviceWrap,
     loginTag,
     newKdf,
+    openRearm,
     openSecretSlot,
     passwordSecretSlot,
     pinWrap,
     prfWrap,
     resealSecretSlot,
+    sealRearm,
     slotOf,
     UnsupportedVaultError,
     unlockVault,
@@ -112,4 +114,15 @@ describe('secret slots', () => {
             await resealSecretSlot(slot, device),
         )
     })
+})
+
+it('seals re-arm material under the records key: only an unlocked vault reads it back', async () => {
+    const { key } = await created()
+    const bits = crypto.getRandomValues(new Uint8Array(32))
+    const sealed = await sealRearm(key, 'pin', bits)
+
+    expect(await openRearm(key, 'pin', sealed)).toEqual(bits)
+    await expect(openRearm(key, 'prf', sealed)).rejects.toThrow()
+    const { key: other } = await created()
+    await expect(openRearm(other, 'pin', sealed)).rejects.toThrow()
 })

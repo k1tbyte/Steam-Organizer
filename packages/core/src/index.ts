@@ -56,14 +56,17 @@ export type { Sealed } from './crypto/seal'
 export {
     createDeviceKey,
     deviceWrap,
+    openRearm,
     openSecretSlot,
     passwordSecretSlot,
     pinWrap,
     pinWrapFromBits,
     prfWrap,
+    type RearmKind,
     resealSecretSlot,
     type SecretSlot,
     type SecretWrap,
+    sealRearm,
     slotOf,
 } from './crypto/secretSlots'
 export {
