@@ -1,7 +1,7 @@
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useLockPolicy, useVaultSecurity } from '#features/vault'
+import { useHelloLabel, useLockPolicy, useVaultSecurity } from '#features/vault'
 
 import { useLockAfterOptions } from '../../composables/useLockAfterOptions'
 
@@ -10,8 +10,7 @@ export function useSecuritySection() {
     const lockPolicy = useLockPolicy()
     const security = useVaultSecurity()
     const lock = useLockAfterOptions()
-    // Hello is not wired yet: a local switch, as before.
-    const biometrics = ref(false)
+    const hello = useHelloLabel()
 
     const pinDescription = computed(() => {
         if (security.pin === 'paused')
@@ -36,9 +35,15 @@ export function useSecuritySection() {
         pin: computed(() => security.pin !== 'off'),
         pinDescription,
         removePin: security.removePin,
-        biometrics,
-        setBiometrics: (on: boolean) => {
-            biometrics.value = on
-        },
+        /** What the OS calls it: Windows Hello, Touch ID, Fingerprint, Passkey. */
+        helloLabel: hello,
+        helloOn: computed(() => security.hello === 'on'),
+        helloUnavailable: computed(() => security.hello === 'unavailable'),
+        helloHint: computed(() =>
+            security.hello === 'unavailable'
+                ? t('Not available on this device')
+                : t('A passkey on this device opens the vault'),
+        ),
+        disableHello: security.disableHello,
     }
 }

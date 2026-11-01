@@ -12,11 +12,13 @@ import {
 import { toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { useHelloLabel } from '../../composables/useHelloLabel'
 import { useResetVault } from '../../composables/useResetVault'
 
 const props = defineProps<{ vault?: { id: string; name: string } }>()
 const open = defineModel<boolean>('open', { default: false })
 const { t } = useI18n()
+const hello = useHelloLabel()
 const view = useResetVault(open, toRef(props, 'vault'))
 </script>
 
@@ -71,7 +73,7 @@ const view = useResetVault(open, toRef(props, 'vault'))
                 <li class="flex items-start gap-2.5 p-2">
                     <FpIcon name="icon-[lucide--fingerprint]" class="mt-px text-16 text-fg-3" />
                     <span class="text-13.5 leading-snug text-fg-1">
-                        {{ t('PIN and Windows Hello unlock on this device') }}
+                        {{ t('PIN and {hello} unlock on this device', { hello }) }}
                     </span>
                 </li>
             </ul>

@@ -41,6 +41,7 @@ import {
     passwordSlotOf,
     withCopySlots,
 } from '../services/openVault'
+import { passkeySlot } from '../services/passkey'
 import { tryPin } from '../services/pinSlots'
 import {
     EMPTY_CONTENTS,
@@ -174,8 +175,10 @@ export const useVaultSession = defineStore('vault-session', () => {
             await device.refresh([vault.id])
             return typeof tried === 'string' ? tried : openWith(vault, tried)
         }
-        // Hello arrives with its slot.
-        if (credential.method !== 'pw') return 'wrong'
+        if (credential.method === 'bio') {
+            const tried = await passkeySlot(vault.id)
+            return typeof tried === 'string' ? tried : openWith(vault, tried)
+        }
         const { password } = credential
         const slot = await passwordSlotOf(vault.file, password)
         if (typeof slot === 'string') return slot

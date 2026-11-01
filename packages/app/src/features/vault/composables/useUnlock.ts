@@ -18,6 +18,7 @@ import { vaultsMock } from '../mocks'
 import { type Credential, LOCATION_ICON, type UnlockMethod } from '../model'
 import { isPinLocked, PIN_LENGTH, pinTriesLeft } from '../services/pinAttempts'
 import { useVaultSession } from '../stores/useVaultSession'
+import { useHelloLabel } from './useHelloLabel'
 import { useRemoveVault } from './useRemoveVault'
 import { useVaultPlace } from './useVaultPlace'
 
@@ -41,6 +42,7 @@ export function useUnlock() {
     const signIn = useDriveSignIn()
     const router = useRouter()
     const desktop = useDesktopLayout()
+    const hello = useHelloLabel()
     const placeOf = useVaultPlace()
     // Read when the picker shows; the age needs no clock of its own here.
     function metaOf({ home, sync }: StoredVault) {
@@ -48,9 +50,12 @@ export function useUnlock() {
         const ago = formatAgo(sync.syncedAt, Date.now()) ?? t('just now')
         return t('Google Drive · synced {ago}', { ago })
     }
-    // The master password always opens a vault; a PIN slot on this device adds the PIN, even paused (its tab shows why).
-    const methodsOf = (id: string): UnlockMethod[] =>
-        session.device.get(id)?.pin ? ['pin', 'pw'] : ['pw']
+    // The master password always opens a vault; a passkey or PIN slot on this device adds Hello and the PIN, the PIN even paused (its tab shows why).
+    const methodsOf = (id: string): UnlockMethod[] => [
+        ...(session.device.get(id)?.prf ? (['bio'] as const) : []),
+        ...(session.device.get(id)?.pin ? (['pin'] as const) : []),
+        'pw',
+    ]
     const vaults = useMock(
         () =>
             session.vaults.map((item) => ({
@@ -133,7 +138,7 @@ export function useUnlock() {
             value,
             icon: METHOD_ICON[value],
             label: {
-                bio: t('Windows Hello'),
+                bio: hello.value,
                 pin: t('PIN'),
                 pw: t('Password'),
             }[value],

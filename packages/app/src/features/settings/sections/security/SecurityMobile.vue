@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n'
 
 import { useSecuritySection } from './useSecuritySection'
 
-const emit = defineEmits<{ changePassword: []; setPin: [] }>()
+const emit = defineEmits<{ changePassword: []; setPin: []; enableHello: [] }>()
 
 const { t } = useI18n()
 const view = useSecuritySection()
@@ -28,15 +28,19 @@ const toggles = computed(() => [
     },
     {
         key: 'biometrics',
-        label: t('Fingerprint'),
-        description: t('A passkey on this phone'),
-        on: view.biometrics.value,
-        set: view.setBiometrics,
+        label: view.helloLabel.value,
+        description: view.helloUnavailable.value
+            ? t('Not available on this device')
+            : t('A passkey on this phone'),
+        on: view.helloOn.value,
+        disabled: view.helloUnavailable.value,
+        // Turning it on asks for the master password, then the platform; turning it off asks nothing.
+        set: (on: boolean) => (on ? emit('enableHello') : view.disableHello()),
     },
     {
         key: 'restart',
         label: t('Master password after restart'),
-        description: t('Then PIN and fingerprint work again'),
+        description: t('Then PIN and {hello} work again', { hello: view.helloLabel.value }),
         on: view.masterAfterRestart.value,
         set: view.setMasterAfterRestart,
     },
@@ -84,6 +88,7 @@ const toggles = computed(() => [
                     <FpSwitch
                         size="lg"
                         :model-value="toggle.on"
+                        :disabled="toggle.disabled"
                         :aria-label="toggle.label"
                         @update:model-value="toggle.set" />
                 </label>

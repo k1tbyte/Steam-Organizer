@@ -2,11 +2,14 @@
 import { FpAlert, FpButton, FpIconTile, FpModal } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
+import { useHelloLabel } from '#features/vault'
+
 import PasswordFields from './PasswordFields.vue'
 import { useChangePassword } from './useChangePassword'
 
 const open = defineModel<boolean>('open', { default: false })
 const { t } = useI18n()
+const hello = useHelloLabel()
 const view = useChangePassword(open)
 </script>
 
@@ -23,10 +26,10 @@ const view = useChangePassword(open)
                 :repeat-label="t('Repeat new password')" />
             <FpAlert
                 v-if="view.synced.value"
-                :description="t('Accounts aren\'t re-encrypted, so this takes a moment. PIN and Windows Hello keep working. Other devices ask for the new password on their next unlock.')" />
+                :description="t('Accounts aren\'t re-encrypted, so this takes a moment. PIN and {hello} keep working. Other devices ask for the new password on their next unlock.', { hello })" />
             <FpAlert
                 v-else
-                :description="t('Accounts aren\'t re-encrypted, so this takes a moment. PIN and Windows Hello keep working.')" />
+                :description="t('Accounts aren\'t re-encrypted, so this takes a moment. PIN and {hello} keep working.', { hello })" />
         </form>
         <div v-else class="flex flex-col items-center gap-2.5 px-3 pt-4 text-center">
             <FpIconTile name="icon-[lucide--circle-check]" size="lg" color="success" />

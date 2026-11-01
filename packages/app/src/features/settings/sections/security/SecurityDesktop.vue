@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n'
 
 import { useSecuritySection } from './useSecuritySection'
 
-defineEmits<{ changePassword: []; setPin: [] }>()
+defineEmits<{ changePassword: []; setPin: []; enableHello: [] }>()
 
 const { t } = useI18n()
 const view = useSecuritySection()
@@ -89,15 +89,16 @@ const view = useSecuritySection()
         </FpFormRow>
         <FpFormRow
             plain
-            :label="t('Windows Hello')"
-            :description="t('A passkey on this device opens the vault')">
+            :label="view.helloLabel.value"
+            :description="view.helloHint.value">
             <template #leading>
                 <FpIconTile name="icon-[lucide--fingerprint]" size="sm" />
             </template>
             <FpSwitch
-                :model-value="view.biometrics.value"
-                :aria-label="t('Windows Hello')"
-                @update:model-value="view.setBiometrics" />
+                :model-value="view.helloOn.value"
+                :disabled="view.helloUnavailable.value"
+                :aria-label="view.helloLabel.value"
+                @update:model-value="(on: boolean) => (on ? $emit('enableHello') : view.disableHello())" />
         </FpFormRow>
     </div>
 </template>

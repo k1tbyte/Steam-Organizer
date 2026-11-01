@@ -9,13 +9,14 @@ import {
     FpSegmentedMeter,
 } from '@so/ui'
 import { useI18n } from 'vue-i18n'
-
 import { useMasterPassword } from '../../composables/onboarding/useMasterPassword'
 import { useOnboardingFrame } from '../../composables/onboarding/useOnboardingFrame'
+import { useHelloLabel } from '../../composables/useHelloLabel'
 import FieldNote from '../FieldNote.vue'
 import OnboardingStep from './OnboardingStep.vue'
 
 const { t } = useI18n()
+const hello = useHelloLabel()
 const { fieldSize, buttonSize } = useOnboardingFrame()
 const {
     password,
@@ -32,7 +33,7 @@ const {
 <template>
     <OnboardingStep
         :title="t('Set a master password')"
-        :description="t('It encrypts everything in the vault. Later you can also unlock this device with a PIN or Windows Hello.')"
+        :description="t('It encrypts everything in the vault. Later you can also unlock this device with a PIN or {hello}.', { hello })"
         back="/welcome/vault">
         <div class="flex flex-col gap-2">
             <FpFormField :label="t('Master password')">

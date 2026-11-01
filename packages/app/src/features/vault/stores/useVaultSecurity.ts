@@ -1,10 +1,16 @@
-import { passwordSecretSlot, WrongPasswordError } from '@so/core'
+import {
+    openSecretSlot,
+    passwordSecretSlot,
+    WrongPasswordError,
+} from '@so/core'
 import { defineStore } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 import { reportError } from '#core'
 
-import type { PinState } from '../model'
+import type { HelloState, PinState } from '../model'
+import { dropPrf, enrollPrf } from '../services/deviceSlots'
+import { enroll, passkeysAvailable } from '../services/passkey'
 import { isPinLocked } from '../services/pinAttempts'
 import { dropPin, enrollPin } from '../services/pinSlots'
 import { useVaultSession } from './useVaultSession'
@@ -22,6 +28,17 @@ export const useVaultSecurity = defineStore('vault-security', () => {
         const slot = facts.value?.pin
         if (!slot) return 'off'
         return isPinLocked(slot.wrong) ? 'paused' : 'on'
+    })
+
+    // Whether this shell and device can make a passkey with PRF; asked once, the answer does not change.
+    const available = ref(false)
+    void passkeysAvailable().then((yes) => {
+        available.value = yes
+    })
+
+    const hello = computed<HelloState>(() => {
+        if (facts.value?.prf) return 'on'
+        return available.value ? 'off' : 'unavailable'
     })
 
     /** Sets or changes the PIN: the master password moves the secret under the PIN's key. `wrong`: that password. */
@@ -59,5 +76,58 @@ export const useVaultSecurity = defineStore('vault-security', () => {
         await session.refreshDevice([id])
     }
 
-    return { pin, setPin, removePin }
+    /** Turns Hello on: the master password is checked first (it is the slot the secret moves from), then the platform
+     *  asks the user once and a passkey's PRF output wraps the secret. `cancelled`: the prompt was closed. */
+    async function enableHello(
+        password: string,
+    ): Promise<'ok' | 'wrong' | 'cancelled' | 'unavailable' | 'failed'> {
+        const id = session.vault?.id
+        if (id === undefined) return 'failed'
+        if (hello.value === 'unavailable') return 'unavailable'
+        try {
+            const result = await session.withKey(async (key, slots) => {
+                const from = await passwordSecretSlot(slots.password, password)
+                // Before the platform prompt: a wrong password never gets that far.
+                await openSecretSlot(from)
+                const made = await enroll(id)
+                if (!made.ok)
+                    return made.reason === 'cancelled'
+                        ? 'cancelled'
+                        : 'unavailable'
+                try {
+                    await enrollPrf(
+                        id,
+                        key,
+                        from,
+                        made.value.credentialId,
+                        made.value.bits,
+                    )
+                } finally {
+                    made.value.bits.fill(0)
+                }
+                return 'ok'
+            })
+            if (result !== 'ok') return result ?? 'failed'
+        } catch (error) {
+            if (error instanceof WrongPasswordError) return 'wrong'
+            reportError(error, 'vault-security')
+            return 'failed'
+        }
+        await session.refreshDevice([id])
+        return 'ok'
+    }
+
+    /** Turning it off asks nothing. The passkey stays in the OS, unused. */
+    async function disableHello() {
+        const id = session.vault?.id
+        if (id === undefined) return
+        try {
+            await dropPrf(id)
+        } catch (error) {
+            reportError(error, 'vault-security')
+        }
+        await session.refreshDevice([id])
+    }
+
+    return { pin, setPin, removePin, hello, enableHello, disableHello }
 })

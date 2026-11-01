@@ -6,6 +6,11 @@ import { createWebHistory } from 'vue-router'
 import { webGoogle } from './google'
 
 mountApp('#app', {
-    platform: { kind: 'web', fetch: null, google: webGoogle },
+    platform: {
+        kind: 'web',
+        fetch: null,
+        google: webGoogle,
+        passkeys: { rpId: location.hostname },
+    },
     history: createWebHistory(),
 })

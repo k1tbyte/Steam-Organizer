@@ -1,9 +1,11 @@
 import { defineAsyncComponent } from 'vue'
 
 export { useAutoLock } from './composables/useAutoLock'
+export { useHelloLabel } from './composables/useHelloLabel'
 export { useUndoDelete } from './composables/useUndoDelete'
 export { useVaultPlace } from './composables/useVaultPlace'
 export {
+    type HelloState,
     LOCK_AFTER,
     type LockAfter,
     type LockedSnapshot,

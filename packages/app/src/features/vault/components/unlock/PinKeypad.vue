@@ -2,10 +2,13 @@
 import { FpIcon } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
+import { useHelloLabel } from '../../composables/useHelloLabel'
+
 defineProps<{ hasBio: boolean; waiting: boolean }>()
 defineEmits<{ digit: [digit: string]; delete: []; bio: [] }>()
 
 const { t } = useI18n()
+const hello = useHelloLabel()
 const DIGITS = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 const KEY =
     'surface grid size-19 place-items-center rounded-full text-26 font-medium text-fg-1 transition-colors duration-press active:bg-surface-hi'
@@ -26,7 +29,7 @@ const KEY =
             type="button"
             class="grid size-19 place-items-center rounded-full text-28 text-accent-ink transition-colors duration-fast"
             :class="waiting && 'bg-accent-soft'"
-            :aria-label="t('Unlock with Windows Hello')"
+            :aria-label="t('Unlock with {hello}', { hello })"
             @click="$emit('bio')">
             <FpIcon name="icon-[lucide--fingerprint]" />
         </button>

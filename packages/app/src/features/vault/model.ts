@@ -88,6 +88,9 @@ export interface DeviceFacts {
     prf?: true
 }
 
+/** `unavailable`: this shell or device cannot make a passkey with PRF. */
+export type HelloState = 'unavailable' | 'off' | 'on'
+
 /** `paused`: three wrong PINs turned it off until the next master-password unlock. */
 export type PinState = 'off' | 'on' | 'paused'
 

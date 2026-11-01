@@ -160,7 +160,7 @@ The **vault key** is a random 256-bit secret, held after unlock as a non-extract
 | Recovery | an RSA-OAEP 3072 key pair: the public half in clear, the private half sealed by `slot:recovery` from the same master root | in vault file (synced) |
 | Device | a random non-extractable AES-GCM key, made once per device (origin) | IndexedDB `steam-organizer-device` (the key itself); the sealed secret in the session area or, for Never, beside it |
 | PIN | PBKDF2-HMAC-SHA256 over the 6 digits (own salt, 600k) → HKDF → `slot:pin` | this device only: IndexedDB, or the session area / page memory with "Master password after restart" |
-| Biometrics | WebAuthn PRF of a passkey (Windows Hello, Touch ID, Android) | this device only |
+| Hello (biometrics) | WebAuthn PRF of a platform passkey (Windows Hello, Touch ID, Android): 32 bytes → HKDF → `slot:prf` | this device only, like the PIN's |
 
 - Changing master password rewraps the vault key and the recovery private key (old KEK is at hand while the old password is typed); the pair stays, so locked accounts' recovery slots and data are untouched. The secret moves from one slot to another with `unwrapKey` into an **extractable AES-GCM** key and `wrapKey` under the target (`resealSecretSlot`), so its bytes never sit in script memory; HKDF keys cannot be extractable, so the session root stays non-extractable. Only a password change reads the raw secret, behind the old password. At every unlock the session reseals the secret under the device key once and holds that ciphertext beside its key, so a lock-policy change only moves it and never needs a password.
 - The recovery pair is asymmetric on purpose: a symmetric key that only encrypts still decrypts its own AES-GCM output (the keystream), so the session holds just the public key. A vault made before the pair gets one at its next master-password unlock.
@@ -175,6 +175,7 @@ The **vault key** is a random 256-bit secret, held after unlock as a non-extract
 - **On browser restart:** kept in the session area, no timer. **Never:** also in the device IndexedDB, so it survives a restart (Settings warns). With "Master password after restart" on, Never keeps the session in the session area only.
 - **PIN:** set and change ask the master password (it is the slot the secret moves from), then 6 digits twice; remove asks nothing. 3 wrong PINs turn the PIN off until the next master-password unlock; the count is saved with the slot, so a reload does not reset it. The check is one transition across pages: a Web Lock (`navigator.locks`, named per vault) is held over re-reading the count, trying the PIN and saving the count, and setting or removing a slot takes the same lock (no Web Locks in node tests: it runs directly).
 - **"Master password after restart":** nothing that opens the vault survives a restart. The PIN slot (and the passkey's, below) lives in the session area instead of IndexedDB, and the material to rebuild it - the PIN's PBKDF2 bits - stays in IndexedDB sealed under the vault's `records` key. The next master-password unlock opens it and rebuilds the slot in the session area, so the PIN is not asked for twice. The web has no area bound to the browser's run, so there the slots stay in page memory only and a reload asks the master password (it fails closed). Toggling the option moves the existing slots.
+- **Hello (WebAuthn PRF):** enabling confirms the master password, runs `navigator.credentials.create` (platform authenticator, `userVerification: 'required'`, `extensions.prf`) and, if it returned no PRF result, one `get` with `prf.eval` (a fixed salt per vault id); the 32 bytes wrap the secret and are sealed under `records` as the re-arm material (zeroed once used). Unlocking is a `get` with `allowCredentials: [id]`. The RP ID comes from the shell (`Platform.passkeys`) and is the same for enrollment and assertions: the web's `location.hostname`; a Chrome extension's ID, which the manifest key keeps stable; **none in the Firefox extension** (its moz-extension host is a per-profile UUID), where Hello shows as unavailable. Hello is not offered in the popup (a platform dialog may close it): the popup restores a kept session or takes the password. The label follows the OS (Windows Hello, Touch ID, Fingerprint on Android, else Passkey).
 - **Session area** (`Platform.session`): the extension's `storage.session`, shared by the app page and the popup and gone at browser restart; on the web the tab's `sessionStorage`, which survives a reload. It says which kind it is (`restartBound`). The web has no area bound to the browser's run, so there "On browser restart" lasts until the tab closes (a restored tab may bring it back), a documented weaker guarantee.
 - **The kept entry in the session area is the one live signal under every policy.** A lock in one page removes it (and the IndexedDB copy) and every other page locks; an unlock writes it and a locked page restores. The session subscribes in `load()` and keeps the subscription while locked; the auto-lock composable only watches its page (activity, visibility, the deadline). Autofill (a content script without `storage.session`) stays out.
 
@@ -313,12 +314,14 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 - [ ] Wire view-models to core, drop mocks screen by screen
 - [x] Lock policy and kept session: device key, session area, cross-page lock, idle timeout
 - [x] PIN: device slot, three tries across pages, restart re-arm
+- [x] Hello (WebAuthn PRF): enroll and unlock, RP ID per shell, OS label
 - [ ] Pages: accounts, profile (summary, games, friends), backups, settings
 - [ ] `apps/web`: PWA shell, read-only mode
 
 ### Phase 3: Extension
 - [ ] `apps/extension` on WXT: app page, popup, background
 - [x] Popup restores the app page's kept session (`storage.session`), and a lock in either locks both
+- [ ] Hello in the Firefox extension (needs a stable RP ID there)
 - [ ] Host permission flow (Firefox optional permissions)
 - [ ] Google OAuth via `identity.launchWebAuthFlow`
 - [ ] Steam login autofill content script

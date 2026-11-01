@@ -11,6 +11,7 @@ import {
     resealSecretSlot,
     type Sealed,
     type SecretSlot,
+    sealRearm,
     slotOf,
     type VaultKey,
 } from '@so/core'
@@ -180,4 +181,39 @@ export async function armAfterPassword(
             return undefined
         }
     }
+}
+
+/** Moves the secret from the password slot under a new passkey's PRF key, and seals the PRF output under `records`
+ *  for Master password after restart. The caller zeroes `bits`. */
+export function enrollPrf(
+    vaultId: string,
+    records: VaultKey,
+    from: SecretSlot,
+    credentialId: string,
+    bits: Uint8Array<ArrayBuffer>,
+) {
+    return withSlotsLock(vaultId, async () => {
+        const key = await resealSecretSlot(from, await prfWrap(bits))
+        const sealed = await sealRearm(records, 'prf', bits)
+        await deviceStore.update(vaultId, (slots) => ({
+            ...slots,
+            rearm: { ...slots.rearm, prf: { credentialId, bits: sealed } },
+        }))
+        await changePlaced(vaultId, (placed) => ({
+            ...placed,
+            prf: { credentialId, key },
+        }))
+    })
+}
+
+export function dropPrf(vaultId: string) {
+    return withSlotsLock(vaultId, async () => {
+        await changePlaced(vaultId, ({ prf: _, ...rest }) => rest)
+        await deviceStore.update(vaultId, ({ rearm, ...rest }) => {
+            const { prf: __, ...others } = rearm ?? {}
+            return Object.keys(others).length
+                ? { ...rest, rearm: others }
+                : rest
+        })
+    })
 }
