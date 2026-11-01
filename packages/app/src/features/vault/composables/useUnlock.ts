@@ -19,6 +19,7 @@ import { type Credential, LOCATION_ICON, type UnlockMethod } from '../model'
 import { isPinLocked, PIN_LENGTH, pinTriesLeft } from '../services/pinAttempts'
 import { useVaultSession } from '../stores/useVaultSession'
 import { useRemoveVault } from './useRemoveVault'
+import { useVaultPlace } from './useVaultPlace'
 
 // Lets the last dot paint before the PIN is judged.
 const PIN_SETTLE_MS = 160
@@ -40,10 +41,10 @@ export function useUnlock() {
     const signIn = useDriveSignIn()
     const router = useRouter()
     const desktop = useDesktopLayout()
+    const placeOf = useVaultPlace()
     // Read when the picker shows; the age needs no clock of its own here.
     function metaOf({ home, sync }: StoredVault) {
-        if (!sync) return home === 'device' ? t('This device') : t('Folder')
-        if (sync.syncedAt === null) return t('Google Drive')
+        if (sync?.syncedAt == null) return placeOf(home, !!sync)
         const ago = formatAgo(sync.syncedAt, Date.now()) ?? t('just now')
         return t('Google Drive · synced {ago}', { ago })
     }

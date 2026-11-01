@@ -1,6 +1,7 @@
 import { defineAsyncComponent } from 'vue'
 
 export { useUndoDelete } from './composables/useUndoDelete'
+export { useVaultPlace } from './composables/useVaultPlace'
 export {
     type LockedSnapshot,
     MAX_VAULT_NAME_LENGTH,

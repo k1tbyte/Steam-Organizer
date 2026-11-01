@@ -11,7 +11,7 @@ import SettingsMobileRow from './SettingsMobileRow.vue'
 
 const { t } = useI18n()
 const { groups } = useSettingsSections()
-const { summaryOf, vaultName, syncLine, syncColor } = useSettingsSummary()
+const { summaryOf, vaultName, vaultLine, syncColor, lock } = useSettingsSummary()
 const about = useAboutApp()
 </script>
 
@@ -24,8 +24,8 @@ const about = useAboutApp()
                 <div class="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span class="font-semibold text-14.5 text-fg-1">{{ vaultName }}</span>
                     <span class="flex items-center gap-1.5 text-12 text-fg-3">
-                        <FpDot :color="syncColor" />
-                        {{ syncLine }}
+                        <FpDot v-if="syncColor" :color="syncColor" />
+                        {{ vaultLine }}
                     </span>
                 </div>
                 <FpButton
@@ -33,7 +33,8 @@ const about = useAboutApp()
                     round
                     size="xl"
                     variant="soft"
-                    :aria-label="t('Lock vault')">
+                    :aria-label="t('Lock vault')"
+                    @click="lock">
                     <FpIcon name="icon-[lucide--lock]" />
                 </FpButton>
             </div>

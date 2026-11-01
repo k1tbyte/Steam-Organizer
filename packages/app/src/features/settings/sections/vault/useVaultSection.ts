@@ -3,13 +3,14 @@ import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { reportError } from '#core'
-import { tally, useVaultSession } from '#features/vault'
+import { tally, useVaultPlace, useVaultSession } from '#features/vault'
 
 import { useImportVault } from './useImportVault'
 
 export function useVaultSection() {
     const { t } = useI18n()
     const session = useVaultSession()
+    const placeOf = useVaultPlace()
     const toast = useToast()
     const resetOpen = ref(false)
     const exportOpen = ref(false)
@@ -19,9 +20,8 @@ export function useVaultSection() {
     const details = computed(() => {
         const vault = session.vault
         if (!vault) return ''
-        const home = vault.home === 'device' ? t('This device') : t('Folder')
         return [
-            vault.sync ? t('Google Drive') : home,
+            placeOf(vault.home, !!vault.sync),
             t(
                 '{count} account | {count} accounts',
                 tally(session.contents).accounts,

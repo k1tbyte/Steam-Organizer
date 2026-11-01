@@ -5,7 +5,7 @@ import { useAppearancePref } from '#core'
 import { useFieldPlacement, useVaultTags } from '#features/accounts'
 import { useVaultServices } from '#features/linked-services'
 import { useSteamKey } from '#features/steam'
-import { useVaultSession } from '#features/vault'
+import { useVaultPlace, useVaultSession } from '#features/vault'
 
 import type { SectionKey } from '../model'
 import { FIELD_KEYS, secretCount } from '../services/fieldSecrecy'
@@ -13,7 +13,7 @@ import { useSettingsStore } from '../stores/settingsStore'
 import { useDriveSync } from './sources/useDriveSync'
 import { useLockAfterOptions } from './useLockAfterOptions'
 
-/** Values on the phone index: each one reads what its section edits. */
+/** The phone index: each value reads what its section edits, and the vault card locks. */
 export function useSettingsSummary() {
     const { t } = useI18n()
     const mode = useAppearancePref('mode')
@@ -21,6 +21,7 @@ export function useSettingsSummary() {
     const { placement } = useFieldPlacement()
     const lock = useLockAfterOptions()
     const session = useVaultSession()
+    const placeOf = useVaultPlace()
     const drive = useDriveSync()
     const steam = useSteamKey()
     const { tags } = useVaultTags()
@@ -58,9 +59,21 @@ export function useSettingsSummary() {
     }
 
     const vaultName = computed(() => session.vault?.name ?? '')
-    const syncLine = computed(() =>
-        t('Google Drive · {status}', { status: drive.statusText.value }),
+    const vaultLine = computed(() => {
+        const vault = session.vault
+        if (!vault?.sync) return vault ? placeOf(vault.home, false) : ''
+        return t('Google Drive · {status}', { status: drive.statusText.value })
+    })
+    // The dot is the sync status: a vault kept on this device alone has none.
+    const syncColor = computed(() =>
+        session.vault?.sync ? drive.statusColor.value : undefined,
     )
 
-    return { summaryOf, vaultName, syncLine, syncColor: drive.statusColor }
+    return {
+        summaryOf,
+        vaultName,
+        vaultLine,
+        syncColor,
+        lock: session.lock,
+    }
 }

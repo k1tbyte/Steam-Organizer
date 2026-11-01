@@ -24,4 +24,4 @@ Mockup: `Settings.dc.html` (Settings · Desktop, Settings · Mobile, Settings ·
 
 Local state until the owners exist, all in `stores/settingsStore.ts`: lock timeout, master password after restart, PIN and biometrics flags, allowed sites. They start at the mockup's values and are not persisted. Sync & backup is real: Auto sync, its interval and Auto backup are the backups engine's (`useVaultSync` from `#features/backups`, kept per device), the status line reads `useSyncStatus` (`sources/useDriveSync.ts`), and Sync now shows for a synced open vault.
 
-Unwired intents: "Update to ..." in the nav footer, Lock vault on the phone vault card, PIN Change (setup flow). Change master password rewraps the open vault through `useVaultSession().changePassword`; with no real vault open it takes the demo `demo`.
+Unwired intents: "Update to ..." in the nav footer, PIN Change (setup flow). Change master password rewraps the open vault through `useVaultSession().changePassword`; with no real vault open it takes the demo `demo`.
