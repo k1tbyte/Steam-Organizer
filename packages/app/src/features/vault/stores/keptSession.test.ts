@@ -1,35 +1,20 @@
-import 'fake-indexeddb/auto'
-
 import { deviceStore, steamCache } from '@so/core'
-import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 
-import { installSessionArea, memorySessionArea, type SessionArea } from '#core'
+import { installSessionArea, sessionArea } from '#core'
 
 import type { LockAfter } from '../model'
-import { readActive, readKept, writeKept } from '../services/device/keptEntry'
-import { useLockPolicy } from './useLockPolicy'
-import { useVaultSession } from './useVaultSession'
+import {
+    readActive,
+    readKept,
+    removeKept,
+    writeActive,
+    writeKept,
+} from '../services/device/keptEntry'
+import { freshDevice, page, restart } from '../testing/sessionPages'
 
 const PASSWORD = 'correct horse'
 const MINUTE = 60_000
-
-let area: SessionArea
-
-// One browser tab or popup: its own Pinia over the shared session area and IndexedDB.
-async function page() {
-    const pinia = createPinia()
-    setActivePinia(pinia)
-    const session = useVaultSession(pinia)
-    await session.load()
-    return { session, policy: useLockPolicy(pinia) }
-}
-
-// A restart: the session area is gone, the disk is not.
-function restart() {
-    area = memorySessionArea()
-    installSessionArea(area)
-}
 
 async function createdUnder(lockAfter: LockAfter, masterAfterRestart = false) {
     const first = await page()
@@ -49,18 +34,8 @@ async function createdUnder(lockAfter: LockAfter, masterAfterRestart = false) {
 }
 
 beforeEach(async () => {
-    const data = new Map<string, string>()
-    vi.stubGlobal('localStorage', {
-        getItem: (key: string) => data.get(key) ?? null,
-        setItem: (key: string, value: string) => data.set(key, value),
-        removeItem: (key: string) => data.delete(key),
-    })
     vi.useFakeTimers({ toFake: ['Date'] })
-    restart()
-    for (const name of ['steam-organizer', 'steam-organizer-device'])
-        await new Promise((resolve) => {
-            indexedDB.deleteDatabase(name).onsuccess = resolve
-        })
+    await freshDevice()
 })
 
 afterEach(() => {
@@ -214,7 +189,7 @@ it('restores a page that loaded before the vault existed, once another page crea
 
 it('locks a page whose restore finishes after another page locked', async () => {
     await createdUnder('15m')
-    const real = area
+    const real = sessionArea()
     let reads = 0
     // The entry is there for the restore's first look, and gone for the second: a lock in between.
     installSessionArea({
@@ -242,4 +217,94 @@ it('prunes the Steam cache and clears the entry when the open vault is removed',
     expect(session.state).toBe('new')
     expect(await deviceStore.list()).toEqual([])
     prune.mockRestore()
+})
+
+it('drops the copy on disk before the live entry at a Never lock, so a page loading meanwhile cannot restore from it', async () => {
+    const { session } = await createdUnder('never')
+    const real = sessionArea()
+    let diskAtRemoval: boolean | undefined
+    installSessionArea({
+        ...real,
+        async remove(key) {
+            if (key === 'so:kept')
+                diskAtRemoval = (await deviceStore.list()).some(
+                    ({ kept }) => kept,
+                )
+            return real.remove(key)
+        },
+    })
+    session.lock()
+    await vi.waitFor(async () => expect(await readKept()).toBeUndefined())
+    expect(diskAtRemoval).toBe(false)
+})
+
+it('takes the vault another page opened when the one a restore began with was locked meanwhile', async () => {
+    const { session: first } = await createdUnder('15m')
+    first.lock()
+    await first.create('Other', PASSWORD)
+    first.open()
+    await vi.waitFor(async () =>
+        expect((await readKept())?.vault).toBe(first.vault?.id),
+    )
+    const other = await readKept()
+    first.lock()
+    await vi.waitFor(async () => expect(await readKept()).toBeUndefined())
+    const main = first.vaults.find(({ name }) => name === 'Main')?.id
+    expect(await first.unlock({ method: 'pw', password: PASSWORD }, main)).toBe(
+        'opened',
+    )
+    first.open()
+    await vi.waitFor(async () => expect((await readKept())?.vault).toBe(main))
+
+    // The restore reads Main's entry; by its second look Main was locked and Other opened.
+    const real = sessionArea()
+    let reads = 0
+    installSessionArea({
+        ...real,
+        get: (key) =>
+            key === 'so:kept' && ++reads > 1
+                ? Promise.resolve(JSON.stringify(other))
+                : real.get(key),
+    })
+    const { session } = await page()
+    await vi.waitFor(() => expect(session.vault?.name).toBe('Other'))
+    expect(session.state).toBe('unlocked')
+})
+
+it('refuses a password unlock that began before a lock', async () => {
+    const { session: first } = await createdUnder('15m')
+    const entry = await readKept()
+    first.lock()
+    await vi.waitFor(async () => expect(await readKept()).toBeUndefined())
+
+    const { session } = await page()
+    const pending = session.unlock({ method: 'pw', password: PASSWORD })
+    // Another page unlocks and locks while the PBKDF2 runs.
+    await writeActive(Date.now())
+    await writeKept(entry as NonNullable<typeof entry>)
+    await vi.waitFor(() => expect(session.state).toBe('unlocked'))
+    await removeKept()
+    await vi.waitFor(() => expect(session.state).toBe('locked'))
+
+    expect(await pending).not.toBe('opened')
+    expect(session.state).toBe('locked')
+})
+
+it('locks a restore from disk whose copy a lock removed while it opened', async () => {
+    const { session: first } = await createdUnder('never')
+    const id = first.vault?.id ?? ''
+    restart()
+    const list = deviceStore.list.bind(deviceStore)
+    const spy = vi
+        .spyOn(deviceStore, 'list')
+        .mockImplementationOnce(async () => {
+            const found = await list()
+            // Another page restored the same copy and locked before this one finished opening it.
+            await deviceStore.update(id, ({ kept: _, ...rest }) => rest)
+            return found
+        })
+    const { session } = await page()
+    expect(session.state).toBe('locked')
+    expect(session.contents).toBeNull()
+    spy.mockRestore()
 })

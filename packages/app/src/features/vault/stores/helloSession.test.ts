@@ -1,33 +1,14 @@
-import 'fake-indexeddb/auto'
-
 import { deviceStore } from '@so/core'
-import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 
-import { installSessionArea, memorySessionArea } from '#core'
-
 import { fakeAuthenticator } from '../testing/fakePasskeys'
-import { useLockPolicy } from './useLockPolicy'
-import { useVaultSecurity } from './useVaultSecurity'
-import { useVaultSession } from './useVaultSession'
+import { freshDevice, page, restart } from '../testing/sessionPages'
 
 vi.setConfig({ testTimeout: 30_000 })
 
 const PASSWORD = 'correct horse'
 
 let authenticator: ReturnType<typeof fakeAuthenticator>
-
-async function page() {
-    const pinia = createPinia()
-    setActivePinia(pinia)
-    const session = useVaultSession(pinia)
-    await session.load()
-    const security = useVaultSecurity(pinia)
-    return { session, security, policy: useLockPolicy(pinia) }
-}
-
-// A restart: the session area is gone, the disk is not.
-const restart = () => installSessionArea(memorySessionArea())
 
 async function withHello() {
     restart()
@@ -40,17 +21,8 @@ async function withHello() {
 }
 
 beforeEach(async () => {
-    const data = new Map<string, string>()
-    vi.stubGlobal('localStorage', {
-        getItem: (key: string) => data.get(key) ?? null,
-        setItem: (key: string, value: string) => data.set(key, value),
-        removeItem: (key: string) => data.delete(key),
-    })
     authenticator = fakeAuthenticator()
-    for (const name of ['steam-organizer', 'steam-organizer-device'])
-        await new Promise((resolve) => {
-            indexedDB.deleteDatabase(name).onsuccess = resolve
-        })
+    await freshDevice()
 })
 
 afterEach(() => {

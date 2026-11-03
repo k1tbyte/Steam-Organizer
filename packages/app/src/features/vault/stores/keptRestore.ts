@@ -52,9 +52,11 @@ export function keptRestore(
             reportError(error, 'vault-session')
         }
         if (result === 'opened' && at === epoch() && openedId()) {
-            // Another page may have locked meanwhile, which this page did not see locked: its entry is the live signal.
-            if (!found.onDisk && !(await kept.read()))
-                return actions.lockLocal()
+            // Another page may have locked meanwhile, and maybe opened another vault.
+            if (!(await kept.still(found))) {
+                actions.lockLocal()
+                return restore(true)
+            }
             return actions.open(found.onDisk)
         }
         // A lock or another unlock came first: that one's entry stays.

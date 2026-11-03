@@ -1,6 +1,8 @@
 import '@so/app/styles.css'
 
 import { mountAutofill } from '@so/app/autofill'
+import { createShadowRootUi } from 'wxt/utils/content-script-ui/shadow-root'
+import { defineContentScript } from 'wxt/utils/define-content-script'
 
 import { contentPlatform } from '../../utils/platform'
 

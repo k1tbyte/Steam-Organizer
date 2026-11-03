@@ -15,6 +15,8 @@ const DEV_KEY =
 
 export default defineConfig({
     modules: ['@wxt-dev/module-vue'],
+    // Auto-imports scan the app package too, and read a local named like a WXT util (`storage`) as one.
+    imports: false,
     manifestVersion: 3,
     // Apart from the web shell's 3000.
     dev: { server: { port: 3010 } },

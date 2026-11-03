@@ -40,11 +40,12 @@ export function keptSession() {
 
     async function dropNow(vaultId: string | undefined) {
         const failed = (error: unknown) => reportError(error, 'vault-session')
-        await removeKept().catch(failed)
+        // The disk copy first: a page loading meanwhile finds the live entry, whose removal then locks it.
         if (vaultId)
             await deviceStore
                 .update(vaultId, (slots) => withKept(slots))
                 .catch(failed)
+        await removeKept().catch(failed)
     }
 
     const drop = (vaultId = held?.vaultId) => inTurn(() => dropNow(vaultId))
@@ -129,6 +130,13 @@ export function keptSession() {
             return found?.kept
                 ? { vaultId: found.vaultId, sealed: found.kept, onDisk: true }
                 : undefined
+        },
+        /** Whether what `find` returned is still kept where it was found: a lock meanwhile removed or replaced it. */
+        async still({ vaultId, sealed, onDisk }: KeptFound) {
+            const now = onDisk
+                ? (await deviceStore.get(vaultId))?.kept
+                : (await readKept())?.sealed
+            return now === sealed
         },
         read: readKept,
         watch: watchKept,

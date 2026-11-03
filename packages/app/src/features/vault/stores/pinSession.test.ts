@@ -1,41 +1,15 @@
-import 'fake-indexeddb/auto'
-
 import { deviceStore } from '@so/core'
-import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 
-import { installSessionArea, memorySessionArea, type SessionArea } from '#core'
+import { sessionArea } from '#core'
 
-import { useLockPolicy } from './useLockPolicy'
-import { useVaultSecurity } from './useVaultSecurity'
-import { useVaultSession } from './useVaultSession'
+import { freshDevice, type Page, page, restart } from '../testing/sessionPages'
 
 vi.setConfig({ testTimeout: 30_000 })
 
 const PASSWORD = 'correct horse'
 const PIN = '123456'
 const WRONG = '654321'
-
-let area: SessionArea
-
-// One page: its own Pinia over the shared session area and IndexedDB.
-async function page() {
-    const pinia = createPinia()
-    setActivePinia(pinia)
-    const session = useVaultSession(pinia)
-    await session.load()
-    return {
-        session,
-        security: useVaultSecurity(pinia),
-        policy: useLockPolicy(pinia),
-    }
-}
-
-// A restart: the session area is gone, the disk is not.
-function restart(restartBound = true) {
-    area = { ...memorySessionArea(), restartBound }
-    installSessionArea(area)
-}
 
 async function withPin(restartBound = true) {
     restart(restartBound)
@@ -46,23 +20,10 @@ async function withPin(restartBound = true) {
     return { ...first, id }
 }
 
-const wrongOf = (
-    session: Awaited<ReturnType<typeof page>>['session'],
-    id: string,
-) => session.device.get(id)?.pin?.wrong
+const wrongOf = (session: Page['session'], id: string) =>
+    session.device.get(id)?.pin?.wrong
 
-beforeEach(async () => {
-    const data = new Map<string, string>()
-    vi.stubGlobal('localStorage', {
-        getItem: (key: string) => data.get(key) ?? null,
-        setItem: (key: string, value: string) => data.set(key, value),
-        removeItem: (key: string) => data.delete(key),
-    })
-    for (const name of ['steam-organizer', 'steam-organizer-device'])
-        await new Promise((resolve) => {
-            indexedDB.deleteDatabase(name).onsuccess = resolve
-        })
-})
+beforeEach(freshDevice)
 
 afterEach(() => vi.unstubAllGlobals())
 
@@ -245,7 +206,7 @@ it('keeps the PIN in page memory only on the web, where no area is bound to the 
     const { session, policy, id } = await withPin(false)
     await policy.setMasterAfterRestart(true)
     expect((await deviceStore.get(id))?.pin).toBeUndefined()
-    expect(await area.get(`so:slots:${id}`)).toBeUndefined()
+    expect(await sessionArea().get(`so:slots:${id}`)).toBeUndefined()
     session.lock()
     expect(await session.unlock({ method: 'pin', pin: PIN }, id)).toBe('opened')
 })

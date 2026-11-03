@@ -81,11 +81,20 @@ export function useAutoLock() {
         if (event.key === SECURITY_SETTINGS_STORAGE_KEY)
             void check().catch(failed)
     })
+
+    // A restored page keeps the deadline it found, even one passed while it opened; an unlock finds no stamp (its lock
+    // removed it) and starts one.
+    async function opened() {
+        active = (await readActive()) ?? Date.now()
+    }
+
     watch(
         [() => session.state, () => policy.policy.lockAfter],
-        ([state]) => {
-            if (state === 'unlocked') active = Date.now()
-            void check().catch(failed)
+        ([state], previous) => {
+            const opening = state === 'unlocked' && previous?.[0] !== state
+            void (opening ? opened() : Promise.resolve())
+                .then(() => check())
+                .catch(failed)
         },
         { immediate: true },
     )

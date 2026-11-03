@@ -12,7 +12,9 @@ const desktop = useDesktopLayout()
 </script>
 
 <template>
-    <div class="flex flex-col gap-2.5">
+    <div
+        class="flex flex-col"
+        :class="desktop ? 'gap-2.5' : 'min-h-0 flex-1 justify-center gap-3 px-5 pb-10'">
         <FpButton
             v-if="!waiting"
             block

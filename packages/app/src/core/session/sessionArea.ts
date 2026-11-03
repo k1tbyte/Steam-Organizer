@@ -44,26 +44,26 @@ export function memorySessionArea(): SessionArea {
     }
 }
 
-function webSessionArea(storage: Storage): SessionArea {
+function webSessionArea(tab: Storage): SessionArea {
     return {
         restartBound: false,
         async get(key) {
             try {
-                return storage.getItem(key) ?? undefined
+                return tab.getItem(key) ?? undefined
             } catch {
                 return undefined
             }
         },
         async set(key, value) {
-            storage.setItem(key, value)
+            tab.setItem(key, value)
         },
         async remove(key) {
-            storage.removeItem(key)
+            tab.removeItem(key)
         },
         // A tab's own writes raise no event: only other windows sharing the storage hear them.
         watch(key, listener) {
             const hear = (event: StorageEvent) => {
-                if (event.storageArea === storage && event.key === key)
+                if (event.storageArea === tab && event.key === key)
                     listener(event.newValue ?? undefined)
             }
             addEventListener('storage', hear)
