@@ -16,7 +16,11 @@ import { useDrive, useDriveSignIn } from '#features/drive'
 
 import { vaultsMock } from '../mocks'
 import { type Credential, LOCATION_ICON, type UnlockMethod } from '../model'
-import { isPinLocked, PIN_LENGTH, pinTriesLeft } from '../services/pinAttempts'
+import {
+    isPinLocked,
+    PIN_LENGTH,
+    pinTriesLeft,
+} from '../services/device/pinAttempts'
 import { useVaultSession } from '../stores/useVaultSession'
 import { useHelloLabel } from './useHelloLabel'
 import { useRemoveVault } from './useRemoveVault'

@@ -1,7 +1,7 @@
 import { shallowRef } from 'vue'
 
 import type { DeviceFacts } from '../model'
-import { readPlaced } from '../services/deviceSlots'
+import { readPlaced } from '../services/device/deviceSlots'
 
 /** The session's device half: what each vault on this device opens with besides the password, as the unlock screen
  *  and Settings read it. Never a slot or a key: only that one exists and how many wrong tries it holds. */

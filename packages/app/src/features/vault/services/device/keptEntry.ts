@@ -1,7 +1,7 @@
 import type { Sealed } from '@so/core'
 
-import { sessionArea } from '../../../core/session/sessionArea'
-import { parseRecord } from '../../../core/storage'
+import { sessionArea } from '../../../../core/session/sessionArea'
+import { parseRecord } from '../../../../core/storage'
 
 const KEPT_KEY = 'so:kept'
 // Apart from the entry: an activity write can never bring a removed entry back.

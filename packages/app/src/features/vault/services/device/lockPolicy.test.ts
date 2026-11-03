@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 
-import { type LockAfter, SECURITY_DEFAULTS } from '../model'
+import { type LockAfter, SECURITY_DEFAULTS } from '../../model'
 import {
     idleLeft,
     isIdle,

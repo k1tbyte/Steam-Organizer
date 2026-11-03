@@ -4,13 +4,13 @@ import {
     parseRecord,
     readStored,
     SECURITY_SETTINGS_STORAGE_KEY,
-} from '../../../core/storage'
+} from '../../../../core/storage'
 import {
     LOCK_AFTER,
     type LockAfter,
     SECURITY_DEFAULTS,
     type SecuritySettings,
-} from '../model'
+} from '../../model'
 
 const MINUTE_MS = 60_000
 const TIMEOUT_MS: Partial<Record<LockAfter, number>> = {

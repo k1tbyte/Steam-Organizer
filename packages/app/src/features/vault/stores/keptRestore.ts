@@ -3,8 +3,11 @@ import type { StoredVault } from '@so/core'
 import { reportError } from '#core'
 
 import type { UnlockResult } from '../model'
-import { deviceSlotOf } from '../services/deviceSlots'
-import { keepsSession, readSecuritySettings } from '../services/lockPolicy'
+import { deviceSlotOf } from '../services/device/deviceSlots'
+import {
+    keepsSession,
+    readSecuritySettings,
+} from '../services/device/lockPolicy'
 import type { keptSession } from './keptSession'
 
 /** What the restore reads and does in the session, by closure: it never holds the session's state itself. */

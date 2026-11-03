@@ -33,8 +33,10 @@ import {
     armAfterPassword,
     movePlaced,
     sealForDevice,
-} from '../services/deviceSlots'
-import { readSecuritySettings } from '../services/lockPolicy'
+} from '../services/device/deviceSlots'
+import { readSecuritySettings } from '../services/device/lockPolicy'
+import { passkeySlot } from '../services/device/passkey'
+import { tryPin } from '../services/device/pinSlots'
 import {
     opens,
     opensPassword,
@@ -42,8 +44,6 @@ import {
     passwordSlotOf,
     withCopySlots,
 } from '../services/openVault'
-import { passkeySlot } from '../services/passkey'
-import { tryPin } from '../services/pinSlots'
 import {
     EMPTY_CONTENTS,
     type OpenVault,

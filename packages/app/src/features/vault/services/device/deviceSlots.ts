@@ -15,10 +15,10 @@ import {
     type VaultKey,
 } from '@so/core'
 
-import { reportError } from '../../../core/reportError'
-import { sessionArea } from '../../../core/session/sessionArea'
-import { parseRecord } from '../../../core/storage'
-import type { SecuritySettings } from '../model'
+import { reportError } from '../../../../core/reportError'
+import { sessionArea } from '../../../../core/session/sessionArea'
+import { parseRecord } from '../../../../core/storage'
+import type { SecuritySettings } from '../../model'
 import { readSecuritySettings } from './lockPolicy'
 
 /** The secret sealed under this device's key, to keep it past a reload. Undefined where the device key is out of

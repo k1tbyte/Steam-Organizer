@@ -4,8 +4,8 @@ import { watch } from 'vue'
 
 import { reportError, SECURITY_SETTINGS_STORAGE_KEY } from '#core'
 
-import { readActive, writeActive } from '../services/keptEntry'
-import { idleLeft, readSecuritySettings } from '../services/lockPolicy'
+import { readActive, writeActive } from '../services/device/keptEntry'
+import { idleLeft, readSecuritySettings } from '../services/device/lockPolicy'
 import { useLockPolicy } from '../stores/useLockPolicy'
 import { useVaultSession } from '../stores/useVaultSession'
 

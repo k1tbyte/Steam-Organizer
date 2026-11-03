@@ -1,7 +1,7 @@
 import { deviceStore, type Sealed } from '@so/core'
 
 import { reportError, serialQueue } from '#core'
-import { forgetDevice } from '../services/deviceSlots'
+import { forgetDevice } from '../services/device/deviceSlots'
 import {
     readActive,
     readKept,
@@ -9,14 +9,14 @@ import {
     watchKept,
     writeActive,
     writeKept,
-} from '../services/keptEntry'
+} from '../services/device/keptEntry'
 import {
     isIdle,
     keepsPastRestart,
     keepsSession,
     readSecuritySettings,
     timeoutMs,
-} from '../services/lockPolicy'
+} from '../services/device/lockPolicy'
 
 const withKept = (
     slots: Parameters<Parameters<typeof deviceStore.update>[1]>[0],

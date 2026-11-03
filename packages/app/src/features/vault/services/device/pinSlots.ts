@@ -10,14 +10,13 @@ import {
     type VaultFile,
     type VaultKey,
 } from '@so/core'
-
+import { opens } from '../openVault'
 import {
     changePlaced,
     readPlaced,
     saveSlot,
     withSlotsLock,
 } from './deviceSlots'
-import { opens } from './openVault'
 import { isPinLocked, PIN_LENGTH } from './pinAttempts'
 
 const isPin = (pin: string) => new RegExp(`^\\d{${PIN_LENGTH}}$`).test(pin)

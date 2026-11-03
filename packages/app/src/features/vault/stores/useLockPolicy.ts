@@ -8,7 +8,7 @@ import {
     SECURITY_DEFAULTS,
     type SecuritySettings,
 } from '../model'
-import { readSecuritySettings } from '../services/lockPolicy'
+import { readSecuritySettings } from '../services/device/lockPolicy'
 import { useVaultSession } from './useVaultSession'
 
 /** Lock after and Master password after restart, kept per device. A change moves the kept session at once. */

@@ -7,8 +7,8 @@ import {
     type VaultKey,
 } from '@so/core'
 
-import { reportError } from '../../../core/reportError'
-import { passkeyRpId } from '../../../core/session/passkeys'
+import { reportError } from '../../../../core/reportError'
+import { passkeyRpId } from '../../../../core/session/passkeys'
 import { readPlaced, saveSlot, withSlotsLock } from './deviceSlots'
 
 export type PasskeyFailure = 'cancelled' | 'unsupported' | 'failed'

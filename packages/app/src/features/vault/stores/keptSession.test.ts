@@ -7,7 +7,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { installSessionArea, memorySessionArea, type SessionArea } from '#core'
 
 import type { LockAfter } from '../model'
-import { readActive, readKept, writeKept } from '../services/keptEntry'
+import { readActive, readKept, writeKept } from '../services/device/keptEntry'
 import { useLockPolicy } from './useLockPolicy'
 import { useVaultSession } from './useVaultSession'
 

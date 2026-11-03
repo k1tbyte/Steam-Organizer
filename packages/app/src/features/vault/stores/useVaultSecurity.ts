@@ -12,10 +12,14 @@ import { computed, ref } from 'vue'
 import { reportError } from '#core'
 
 import type { HelloState, PinState } from '../model'
-import { dropSlot, forgetDevice } from '../services/deviceSlots'
-import { enroll, enrollPrf, passkeysAvailable } from '../services/passkey'
-import { isPinLocked } from '../services/pinAttempts'
-import { enrollPin } from '../services/pinSlots'
+import { dropSlot, forgetDevice } from '../services/device/deviceSlots'
+import {
+    enroll,
+    enrollPrf,
+    passkeysAvailable,
+} from '../services/device/passkey'
+import { isPinLocked } from '../services/device/pinAttempts'
+import { enrollPin } from '../services/device/pinSlots'
 import { useVaultSession } from './useVaultSession'
 
 /** How the open vault opens on this device besides the master password. */

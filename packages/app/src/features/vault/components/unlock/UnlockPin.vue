@@ -3,7 +3,7 @@ import { FpButton, FpFormField, FpPinInput, FpShake, useDesktopLayout } from '@s
 import { onMounted, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { PIN_LENGTH } from '../../services/pinAttempts'
+import { PIN_LENGTH } from '../../services/device/pinAttempts'
 import FieldNote from '../FieldNote.vue'
 import PinKeypad from './PinKeypad.vue'
 

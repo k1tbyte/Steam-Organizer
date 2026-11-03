@@ -1,6 +1,6 @@
 import { afterEach, expect, it } from 'vitest'
 
-import { fakeAuthenticator } from '../testing/fakePasskeys'
+import { fakeAuthenticator } from '../../testing/fakePasskeys'
 import { enroll, passkeysAvailable, prfBits } from './passkey'
 
 let authenticator: ReturnType<typeof fakeAuthenticator>
