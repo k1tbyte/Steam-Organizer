@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpIcon, FpPopover, tip } from '@so/ui'
+import { FpButton, FpFootnote, FpIcon, FpPopover, tip } from '@so/ui'
 import { reactive, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -91,12 +91,13 @@ function remove() {
                     :touch="touch"
                     @toggle-reveal="creds.toggleReveal(field.id)" />
             </div>
-            <p
+            <FpFootnote
                 v-if="gate.canRelock"
-                class="flex items-center gap-1.5 border-stroke-1 border-t border-dashed pt-3 text-12 text-fg-3">
-                <FpIcon name="icon-[lucide--timer]" class="text-13" />
+                dashed
+                icon="icon-[lucide--timer]"
+                class="gap-1.5! text-12!">
                 {{ t('Locks again when you leave this account or lock the vault') }}
-            </p>
+            </FpFootnote>
             <div v-else class="flex items-center gap-1 border-stroke-1 border-t border-dashed pt-3 max-lg:gap-1.5 max-lg:pt-2.5">
                 <span class="min-w-0 flex-1 text-12 text-fg-3">{{ creds.hint }}</span>
                 <FpPopover v-if="creds.removable" v-model:open="confirming" sheet width="16rem" placement="bottom-end" :label="t('Remove service')">

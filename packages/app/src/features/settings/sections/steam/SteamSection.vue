@@ -2,6 +2,7 @@
 import {
     FpButton,
     FpEyebrow,
+    FpFootnote,
     FpFormField,
     FpFormRow,
     FpIcon,
@@ -12,7 +13,6 @@ import {
 import { useId } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import SectionNote from '../../components/SectionNote.vue'
 import { useSteamSection } from './useSteamSection'
 
 const { t } = useI18n()
@@ -102,8 +102,8 @@ const keyId = useId()
                 :label="t('Allow')"
                 @click="view.allowSite(site.key)" />
         </FpFormRow>
-        <SectionNote v-if="view.showFirefoxNote.value" icon="icon-[simple-icons--firefoxbrowser]">
+        <FpFootnote v-if="view.showFirefoxNote.value" icon="icon-[simple-icons--firefoxbrowser]">
             {{ t('Firefox asks for each site separately. Without access, autofill and Steam data are off for that site.') }}
-        </SectionNote>
+        </FpFootnote>
     </div>
 </template>

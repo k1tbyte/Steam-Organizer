@@ -10,9 +10,9 @@ import {
 
 import { tabMock } from '../mocks'
 import { isPaletteKeyIgnored } from '../services/picker'
-import { useAccountGate } from './useAccountGate'
 import { useAccountPicker } from './useAccountPicker'
 import { useFillFeedback } from './useFillFeedback'
+import { usePopupAccountGate } from './usePopupAccountGate'
 
 const BANNER_ICON = {
     signin: 'icon-[lucide--log-in]',
@@ -34,7 +34,7 @@ export function useQuickAccess() {
     const platform = usePlatform()
     const tab = useMock(() => undefined, tabMock)
     const picker = useAccountPicker()
-    const gate = useAccountGate()
+    const gate = usePopupAccountGate()
     const passwordOf = useAccountPassword()
     const loginOf = useAccountLogin()
     const { filled, markFilled } = useFillFeedback()

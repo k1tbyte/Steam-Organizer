@@ -1,8 +1,15 @@
-import { prfWrap, type SecretSlot, slotOf } from '@so/core'
+import {
+    prfWrap,
+    resealSecretSlot,
+    type SecretSlot,
+    sealRearm,
+    slotOf,
+    type VaultKey,
+} from '@so/core'
 
 import { reportError } from '../../../core/reportError'
 import { passkeyRpId } from '../../../core/session/passkeys'
-import { readPlaced } from './deviceSlots'
+import { readPlaced, saveSlot, withSlotsLock } from './deviceSlots'
 
 export type PasskeyFailure = 'cancelled' | 'unsupported' | 'failed'
 
@@ -167,25 +174,25 @@ export async function prfBits(
     }
 }
 
-export type HelloKind = 'windows' | 'touchid' | 'fingerprint' | 'passkey'
-
-/** What the OS calls its platform authenticator, from the platform and user agent strings. */
-export function helloKindOf(platform: string, userAgent: string): HelloKind {
-    const both = `${platform} ${userAgent}`
-    if (/android/i.test(both)) return 'fingerprint'
-    if (/iphone|ipad|ipod|mac/i.test(both)) return 'touchid'
-    if (/win/i.test(both)) return 'windows'
-    return 'passkey'
-}
-
-export function helloKind(): HelloKind {
-    const nav = globalThis.navigator as
-        | (Navigator & { userAgentData?: { platform?: string } })
-        | undefined
-    return helloKindOf(
-        nav?.userAgentData?.platform ?? nav?.platform ?? '',
-        nav?.userAgent ?? '',
-    )
+/** Moves the secret from the password slot under a new passkey's PRF key, and seals the PRF output under `records`
+ *  for Master password after restart. The caller zeroes `bits`. */
+export function enrollPrf(
+    vaultId: string,
+    records: VaultKey,
+    from: SecretSlot,
+    credentialId: string,
+    bits: Uint8Array<ArrayBuffer>,
+) {
+    return withSlotsLock(vaultId, async () => {
+        const key = await resealSecretSlot(from, await prfWrap(bits))
+        const sealed = await sealRearm(records, 'prf', bits)
+        await saveSlot(
+            vaultId,
+            'prf',
+            { credentialId, bits: sealed },
+            { credentialId, key },
+        )
+    })
 }
 
 /** The vault's passkey slot once the user verifies on the platform prompt; `wrong` when there is none, the ceremony

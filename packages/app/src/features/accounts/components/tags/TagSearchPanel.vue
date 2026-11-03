@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpIcon, FpInput, FpKbd } from '@so/ui'
+import { FpIcon, FpInput, FpKbd, FpOptionRow } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import type { TagSearchState } from '../../composables/tags/useTagSearch'
@@ -32,14 +32,11 @@ const { t } = useI18n()
             <slot />
         </div>
         <div v-if="search.fresh" class="flex flex-col gap-2.5 border-t border-stroke-1 px-3.5 pt-2 pb-3">
-            <button
-                type="button"
-                class="touch-row -mx-1.5 flex h-8 cursor-pointer items-center gap-2 rounded px-1.5 text-left text-13 text-fg-1 hover:bg-hover"
-                @click="emit('create')">
+            <FpOptionRow class="-mx-1.5 gap-2! px-1.5!" @click="emit('create')">
                 <FpIcon name="icon-[lucide--plus]" class="text-14 text-accent-ink" />
                 <span class="min-w-0 flex-1 truncate">{{ t('Create “{label}”', { label: search.fresh }) }}</span>
                 <FpKbd>↵</FpKbd>
-            </button>
+            </FpOptionRow>
             <TagSwatches :swatches="search.swatches" @pick="search.pick" />
         </div>
     </div>

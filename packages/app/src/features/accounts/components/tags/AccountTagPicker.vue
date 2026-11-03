@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpIcon, FpPopover } from '@so/ui'
+import { FpIcon, FpOptionRow, FpPopover } from '@so/ui'
 import { reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -33,17 +33,11 @@ watch(open, (shown) => {
         :label="t('Edit tags')">
         <template #content>
             <TagSearchPanel :search="picker.search" @submit="picker.submit" @create="picker.create">
-                <button
-                    v-for="row in picker.rows"
-                    :key="row.id"
-                    type="button"
-                    :aria-pressed="row.on"
-                    class="touch-row flex h-8 cursor-pointer items-center gap-2.5 rounded px-2 text-left text-13 text-fg-1 hover:bg-hover"
-                    @click="picker.toggle(row.id)">
+                <FpOptionRow v-for="row in picker.rows" :key="row.id" :aria-pressed="row.on" @click="picker.toggle(row.id)">
                     <span class="tag-dot size-2 rounded-full" :style="{ '--hue': row.hue }" />
                     <span class="min-w-0 flex-1 truncate">{{ row.label }}</span>
                     <FpIcon v-if="row.on" name="icon-[lucide--check]" class="text-14 text-accent-ink" />
-                </button>
+                </FpOptionRow>
             </TagSearchPanel>
         </template>
     </FpPopover>

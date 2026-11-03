@@ -1,7 +1,7 @@
 import {
+    type DeviceSlots,
     deviceStore,
     deviceWrap,
-    type Kdf,
     openRearm,
     type PinSlot,
     type PrfSlot,
@@ -11,7 +11,6 @@ import {
     resealSecretSlot,
     type Sealed,
     type SecretSlot,
-    sealRearm,
     slotOf,
     type VaultKey,
 } from '@so/core'
@@ -147,19 +146,18 @@ export async function armAfterPassword(
     await withSlotsLock(vaultId, async () => {
         const settings = readSecuritySettings()
         const placed = await readPlaced(vaultId, settings)
-        const rearm = (await deviceStore.get(vaultId))?.rearm
+        const { pin, prf } = (await deviceStore.get(vaultId))?.rearm ?? {}
         const next: Placed = { ...placed }
         if (next.pin?.wrong) next.pin = { ...next.pin, wrong: 0 }
-        if (settings.masterAfterRestart && !next.pin && rearm?.pin)
-            next.pin = await rebuild(rearm.pin.bits, 'pin', async (key) => ({
-                kdf: (rearm.pin as { kdf: Kdf }).kdf,
+        if (settings.masterAfterRestart && !next.pin && pin)
+            next.pin = await rebuild(pin.bits, 'pin', async (key) => ({
+                kdf: pin.kdf,
                 key,
                 wrong: 0,
             }))
-        if (settings.masterAfterRestart && !next.prf && rearm?.prf)
-            next.prf = await rebuild(rearm.prf.bits, 'prf', async (key) => ({
-                credentialId: (rearm.prf as { credentialId: string })
-                    .credentialId,
+        if (settings.masterAfterRestart && !next.prf && prf)
+            next.prf = await rebuild(prf.bits, 'prf', async (key) => ({
+                credentialId: prf.credentialId,
                 key,
             }))
         if (JSON.stringify(next) !== JSON.stringify(placed))
@@ -188,34 +186,27 @@ export async function armAfterPassword(
     }
 }
 
-/** Moves the secret from the password slot under a new passkey's PRF key, and seals the PRF output under `records`
- *  for Master password after restart. The caller zeroes `bits`. */
-export function enrollPrf(
+type Rearm = NonNullable<DeviceSlots['rearm']>
+
+/** A new slot and the sealed material that builds it again after a restart. Call inside `withSlotsLock`. */
+export async function saveSlot<K extends RearmKind>(
     vaultId: string,
-    records: VaultKey,
-    from: SecretSlot,
-    credentialId: string,
-    bits: Uint8Array<ArrayBuffer>,
+    kind: K,
+    rearm: NonNullable<Rearm[K]>,
+    slot: NonNullable<Placed[K]>,
 ) {
-    return withSlotsLock(vaultId, async () => {
-        const key = await resealSecretSlot(from, await prfWrap(bits))
-        const sealed = await sealRearm(records, 'prf', bits)
-        await deviceStore.update(vaultId, (slots) => ({
-            ...slots,
-            rearm: { ...slots.rearm, prf: { credentialId, bits: sealed } },
-        }))
-        await changePlaced(vaultId, (placed) => ({
-            ...placed,
-            prf: { credentialId, key },
-        }))
-    })
+    await deviceStore.update(vaultId, (slots) => ({
+        ...slots,
+        rearm: { ...slots.rearm, [kind]: rearm },
+    }))
+    await changePlaced(vaultId, (placed) => ({ ...placed, [kind]: slot }))
 }
 
-export function dropPrf(vaultId: string) {
+export function dropSlot(vaultId: string, kind: RearmKind) {
     return withSlotsLock(vaultId, async () => {
-        await changePlaced(vaultId, ({ prf: _, ...rest }) => rest)
+        await changePlaced(vaultId, ({ [kind]: _, ...rest }) => rest)
         await deviceStore.update(vaultId, ({ rearm, ...rest }) => {
-            const { prf: __, ...others } = rearm ?? {}
+            const { [kind]: __, ...others } = rearm ?? {}
             return Object.keys(others).length
                 ? { ...rest, rearm: others }
                 : rest

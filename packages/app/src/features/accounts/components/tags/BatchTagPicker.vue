@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpCheckbox, FpPopover } from '@so/ui'
+import { FpButton, FpCheckbox, FpOptionRow, FpPopover } from '@so/ui'
 import { reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -37,17 +37,14 @@ function apply() {
         <template #content>
             <TagSearchPanel :search="batch.search" @submit="batch.submit" @create="batch.create">
                 <!-- The label passes a press anywhere on the row to the box; the box's own next state is ignored for the tag's cycle. -->
-                <label
-                    v-for="row in batch.rows"
-                    :key="row.id"
-                    class="touch-row flex h-8 cursor-pointer items-center gap-2.5 rounded px-2 text-13 text-fg-1 hover:bg-hover">
+                <FpOptionRow v-for="row in batch.rows" :key="row.id" as="label">
                     <FpCheckbox :model-value="row.checked" size="sm" @update:model-value="batch.toggle(row.id)" />
                     <span class="tag-dot size-2 rounded-full" :style="{ '--hue': row.hue }" />
                     <span class="min-w-0 flex-1 truncate">{{ row.label }}</span>
                     <span class="font-mono text-11.5" :class="row.changed ? 'text-accent-ink' : 'text-fg-3'">
                         {{ row.count }}
                     </span>
-                </label>
+                </FpOptionRow>
             </TagSearchPanel>
             <div class="flex items-center gap-1.5 border-t border-stroke-1 py-2 pr-2 pl-3.5">
                 <span class="min-w-0 flex-1 truncate text-12 text-fg-3">{{ batch.note }}</span>

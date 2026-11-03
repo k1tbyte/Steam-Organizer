@@ -3,6 +3,7 @@ import {
     FpAvatar,
     FpButton,
     FpCard,
+    FpFootnote,
     FpIcon,
     FpSwitch,
     FpTruncate,
@@ -34,15 +35,14 @@ const { identity, autoBackup, autoSync, syncLine, openSyncSettings, disconnect }
                     </div>
                     <FpIcon name="icon-[simple-icons--googledrive]" class="text-17 text-fg-3" />
                 </div>
-                <div class="flex items-center gap-2 border-stroke-1 border-t border-dashed pt-3 text-12.5 text-fg-3">
-                    <FpIcon name="icon-[lucide--vault]" class="text-14" />
+                <FpFootnote dashed icon="icon-[lucide--vault]">
                     <span class="flex-1">
                         {{ t('{name} · {accounts}', { name: vault.name, accounts: accountsOf(vault.accounts) }) }}
                     </span>
                     <FpButton variant="link" size="xs" class="font-normal! text-fg-3! hover:text-danger!" @click="disconnect">
                         {{ t('Disconnect') }}
                     </FpButton>
-                </div>
+                </FpFootnote>
             </FpCard>
             <FpCard flush class="px-4 py-1">
                 <div class="border-stroke-1 border-t py-3">

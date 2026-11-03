@@ -1,6 +1,9 @@
 import {
     openSecretSlot,
     passwordSecretSlot,
+    type RearmKind,
+    type SecretSlot,
+    type VaultKey,
     WrongPasswordError,
 } from '@so/core'
 import { defineStore } from 'pinia'
@@ -9,10 +12,10 @@ import { computed, ref } from 'vue'
 import { reportError } from '#core'
 
 import type { HelloState, PinState } from '../model'
-import { dropPrf, enrollPrf, forgetDevice } from '../services/deviceSlots'
-import { enroll, passkeysAvailable } from '../services/passkey'
+import { dropSlot, forgetDevice } from '../services/deviceSlots'
+import { enroll, enrollPrf, passkeysAvailable } from '../services/passkey'
 import { isPinLocked } from '../services/pinAttempts'
-import { dropPin, enrollPin } from '../services/pinSlots'
+import { enrollPin } from '../services/pinSlots'
 import { useVaultSession } from './useVaultSession'
 
 /** How the open vault opens on this device besides the master password. */
@@ -50,72 +53,26 @@ export const useVaultSecurity = defineStore('vault-security', () => {
         return false
     }
 
-    /** Sets or changes the PIN: the master password moves the secret under the PIN's key. `wrong`: that password. */
-    async function setPin(
+    /** Runs `work` with the slot the secret moves from, once the master password opens it (`wrong` otherwise). Any
+     *  result but `ok` from `work` is returned as is. */
+    async function enrolling<R extends string = never>(
         password: string,
-        value: string,
-    ): Promise<'ok' | 'wrong' | 'failed'> {
+        work: (
+            id: string,
+            key: VaultKey,
+            from: SecretSlot,
+        ) => Promise<'ok' | R>,
+    ): Promise<'ok' | 'wrong' | 'failed' | R> {
         const id = session.vault?.id
         if (id === undefined) return 'failed'
         try {
-            const done = await session.withKey(async (key, slots) => {
-                const from = await passwordSecretSlot(slots.password, password)
-                await enrollPin(id, key, from, value)
-                return true
-            })
-            if (!done || !(await stillStored(id))) return 'failed'
-        } catch (error) {
-            if (error instanceof WrongPasswordError) return 'wrong'
-            reportError(error, 'vault-security')
-            return 'failed'
-        }
-        await session.refreshDevice([id])
-        return 'ok'
-    }
-
-    /** Removing asks nothing: it only takes a way in away. */
-    async function removePin() {
-        const id = session.vault?.id
-        if (id === undefined) return
-        try {
-            await dropPin(id)
-        } catch (error) {
-            reportError(error, 'vault-security')
-        }
-        await session.refreshDevice([id])
-    }
-
-    /** Turns Hello on: the master password is checked first (it is the slot the secret moves from), then the platform
-     *  asks the user once and a passkey's PRF output wraps the secret. `cancelled`: the prompt was closed. */
-    async function enableHello(
-        password: string,
-    ): Promise<'ok' | 'wrong' | 'cancelled' | 'unavailable' | 'failed'> {
-        const id = session.vault?.id
-        if (id === undefined) return 'failed'
-        if (hello.value === 'unavailable') return 'unavailable'
-        try {
-            const result = await session.withKey(async (key, slots) => {
-                const from = await passwordSecretSlot(slots.password, password)
-                // Before the platform prompt: a wrong password never gets that far.
-                await openSecretSlot(from)
-                const made = await enroll(id)
-                if (!made.ok)
-                    return made.reason === 'unsupported'
-                        ? 'unavailable'
-                        : made.reason
-                try {
-                    await enrollPrf(
-                        id,
-                        key,
-                        from,
-                        made.value.credentialId,
-                        made.value.bits,
-                    )
-                } finally {
-                    made.value.bits.fill(0)
-                }
-                return 'ok'
-            })
+            const result = await session.withKey(async (key, slots) =>
+                work(
+                    id,
+                    key,
+                    await passwordSecretSlot(slots.password, password),
+                ),
+            )
             if (result !== 'ok') return result ?? 'failed'
             if (!(await stillStored(id))) return 'failed'
         } catch (error) {
@@ -127,17 +84,59 @@ export const useVaultSecurity = defineStore('vault-security', () => {
         return 'ok'
     }
 
-    /** Turning it off asks nothing. The passkey stays in the OS, unused. */
-    async function disableHello() {
+    async function dropping(kind: RearmKind) {
         const id = session.vault?.id
         if (id === undefined) return
         try {
-            await dropPrf(id)
+            await dropSlot(id, kind)
         } catch (error) {
             reportError(error, 'vault-security')
         }
         await session.refreshDevice([id])
     }
+
+    /** Sets or changes the PIN: the master password moves the secret under the PIN's key. `wrong`: that password. */
+    const setPin = (password: string, value: string) =>
+        enrolling(password, async (id, key, from) => {
+            await enrollPin(id, key, from, value)
+            return 'ok'
+        })
+
+    /** Removing asks nothing: it only takes a way in away. */
+    const removePin = () => dropping('pin')
+
+    /** Turns Hello on: the master password is checked first (it is the slot the secret moves from), then the platform
+     *  asks the user once and a passkey's PRF output wraps the secret. `cancelled`: the prompt was closed. */
+    async function enableHello(
+        password: string,
+    ): Promise<'ok' | 'wrong' | 'cancelled' | 'unavailable' | 'failed'> {
+        // No open vault is 'failed', not 'unavailable'.
+        if (session.vault && hello.value === 'unavailable') return 'unavailable'
+        return enrolling(password, async (id, key, from) => {
+            // Before the platform prompt: a wrong password never gets that far.
+            await openSecretSlot(from)
+            const made = await enroll(id)
+            if (!made.ok)
+                return made.reason === 'unsupported'
+                    ? 'unavailable'
+                    : made.reason
+            try {
+                await enrollPrf(
+                    id,
+                    key,
+                    from,
+                    made.value.credentialId,
+                    made.value.bits,
+                )
+            } finally {
+                made.value.bits.fill(0)
+            }
+            return 'ok'
+        })
+    }
+
+    /** Turning it off asks nothing. The passkey stays in the OS, unused. */
+    const disableHello = () => dropping('prf')
 
     return { pin, setPin, removePin, hello, enableHello, disableHello }
 })

@@ -7,7 +7,6 @@ import {
     FpIcon,
     FpSwitch,
 } from '@so/ui'
-import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useSecuritySection } from './useSecuritySection'
@@ -15,36 +14,7 @@ import { useSecuritySection } from './useSecuritySection'
 const emit = defineEmits<{ changePassword: []; setPin: []; enableHello: [] }>()
 
 const { t } = useI18n()
-const view = useSecuritySection()
-
-const toggles = computed(() => [
-    {
-        key: 'pin',
-        label: t('PIN'),
-        description: view.pinDescription.value,
-        on: view.pin.value,
-        // Turning it on asks for the master password and the digits; turning it off asks nothing.
-        set: (on: boolean) => (on ? emit('setPin') : view.removePin()),
-    },
-    {
-        key: 'biometrics',
-        label: view.helloLabel.value,
-        description: view.helloUnavailable.value
-            ? t('Not available on this device')
-            : t('A passkey on this phone'),
-        on: view.helloOn.value,
-        disabled: view.helloUnavailable.value,
-        // Turning it on asks for the master password, then the platform; turning it off asks nothing.
-        set: (on: boolean) => (on ? emit('enableHello') : view.disableHello()),
-    },
-    {
-        key: 'restart',
-        label: t('Master password after restart'),
-        description: t('Then PIN and {hello} work again', { hello: view.helloLabel.value }),
-        on: view.masterAfterRestart.value,
-        set: view.setMasterAfterRestart,
-    },
-])
+const view = useSecuritySection(emit)
 </script>
 
 <template>
@@ -66,9 +36,9 @@ const toggles = computed(() => [
                 </button>
             </FpCard>
             <FpAlert
-                v-if="view.neverLocks.value"
+                v-if="view.neverWarning.value"
                 color="warning"
-                :description="t('The vault stays open until you lock it yourself.')" />
+                :description="view.neverWarning.value" />
             <p class="px-1 text-12 leading-snug text-fg-3">
                 {{ t('Time without activity in the app, popup or autofill') }}
             </p>
@@ -78,8 +48,8 @@ const toggles = computed(() => [
             <FpCard flush class="pl-3.5">
                 <!-- biome-ignore lint/a11y/noLabelWithoutControl: the switch inside is the control -->
                 <label
-                    v-for="toggle in toggles"
-                    :key="toggle.key"
+                    v-for="(toggle, key) in view.rows.value"
+                    :key="key"
                     class="flex min-h-14 cursor-pointer items-center gap-3 border-stroke-1 border-t py-1.5 pr-3.5">
                     <span class="flex min-w-0 flex-1 flex-col gap-px">
                         <span class="text-14 text-fg-1">{{ toggle.label }}</span>

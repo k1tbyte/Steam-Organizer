@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpBadge, FpButton, FpCheckbox, FpEyebrow, FpIcon, FpPopover, FpToggleGroup } from '@so/ui'
+import { FpBadge, FpButton, FpCheckbox, FpEyebrow, FpIcon, FpOptionRow, FpPopover, FpToggleGroup } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { useTagFilter } from '../../composables/tags/useTagFilter'
@@ -34,15 +34,12 @@ const filter = useTagFilter()
                 {{ t('No tags yet. Add them from a card or a profile.') }}
             </p>
             <div class="flex flex-col gap-px p-1.5">
-                <label
-                    v-for="row in filter.rows.value"
-                    :key="row.id"
-                    class="touch-row flex h-8 cursor-pointer items-center gap-2.5 rounded px-2 text-13 text-fg-1 hover:bg-hover">
+                <FpOptionRow v-for="row in filter.rows.value" :key="row.id" as="label">
                     <FpCheckbox :model-value="row.on" size="sm" @update:model-value="filter.toggle(row.id)" />
                     <span class="tag-dot size-2 rounded-full" :style="{ '--hue': row.hue }" />
                     <span class="min-w-0 flex-1 truncate">{{ row.label }}</span>
                     <span class="font-mono text-11.5 text-fg-3">{{ row.count }}</span>
-                </label>
+                </FpOptionRow>
             </div>
             <div v-if="filter.count.value" class="border-t border-stroke-1 p-1.5">
                 <FpButton size="sm" variant="ghost" block class="justify-start!" @click="filter.clear()">

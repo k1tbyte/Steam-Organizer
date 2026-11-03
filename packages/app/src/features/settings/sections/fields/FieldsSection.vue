@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { FpAlert, FpButton, FpEyebrow, FpFormRow, FpIcon, FpProgress, FpToggleGroup } from '@so/ui'
+import { FpAlert, FpButton, FpEyebrow, FpFootnote, FpFormRow, FpIcon, FpProgress, FpToggleGroup } from '@so/ui'
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import SectionNote from '../../components/SectionNote.vue'
 import { useFieldsSection } from './useFieldsSection'
 
 const { t } = useI18n()
@@ -68,8 +67,8 @@ const view = reactive(useFieldsSection())
         </FpAlert>
         <FpAlert v-else-if="view.done" color="success" class="mt-3" :description="view.done" />
 
-        <SectionNote icon="icon-[lucide--info]" class="mt-3">
+        <FpFootnote icon="icon-[lucide--info]" class="mt-3">
             {{ t('Searchable fields work in search and filters. Secret ones open only when shown. Folder vaults also choose which fields show up in Obsidian notes.') }}
-        </SectionNote>
+        </FpFootnote>
     </div>
 </template>

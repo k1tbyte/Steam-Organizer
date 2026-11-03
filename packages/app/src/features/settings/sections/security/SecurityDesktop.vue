@@ -12,10 +12,10 @@ import { useI18n } from 'vue-i18n'
 
 import { useSecuritySection } from './useSecuritySection'
 
-defineEmits<{ changePassword: []; setPin: []; enableHello: [] }>()
+const emit = defineEmits<{ changePassword: []; setPin: []; enableHello: [] }>()
 
 const { t } = useI18n()
-const view = useSecuritySection()
+const view = useSecuritySection(emit)
 </script>
 
 <template>
@@ -35,18 +35,18 @@ const view = useSecuritySection()
             </div>
         </FpFormRow>
         <FpAlert
-            v-if="view.neverLocks.value"
+            v-if="view.neverWarning.value"
             color="warning"
             class="mb-3.5"
-            :description="t('The vault stays open in this browser until you lock it yourself. Anyone with this browser profile can open it.')" />
+            :description="view.neverWarning.value" />
         <FpFormRow
             plain
-            :label="t('Master password after browser restart')"
-            :description="t('PIN and biometrics work again once you\'ve unlocked with it')">
+            :label="view.rows.value.restart.label"
+            :description="view.rows.value.restart.description">
             <FpSwitch
-                :model-value="view.masterAfterRestart.value"
-                :aria-label="t('Master password after browser restart')"
-                @update:model-value="view.setMasterAfterRestart" />
+                :model-value="view.rows.value.restart.on"
+                :aria-label="view.rows.value.restart.label"
+                @update:model-value="view.rows.value.restart.set" />
         </FpFormRow>
 
         <FpEyebrow class="ml-0! pt-5.5 pb-2">{{ t('Unlock with') }}</FpEyebrow>
@@ -63,11 +63,11 @@ const view = useSecuritySection()
                 :label="t('Change…')"
                 @click="$emit('changePassword')" />
         </FpFormRow>
-        <FpFormRow plain :label="t('PIN')" :description="view.pinDescription.value">
+        <FpFormRow plain :label="view.rows.value.pin.label" :description="view.rows.value.pin.description">
             <template #leading>
                 <FpIconTile name="icon-[lucide--grid-3x3]" size="sm" />
             </template>
-            <div v-if="view.pin.value" class="flex gap-1.5">
+            <div v-if="view.rows.value.pin.on" class="flex gap-1.5">
                 <FpButton
                     size="sm"
                     variant="soft"
@@ -78,7 +78,7 @@ const view = useSecuritySection()
                     variant="ghost"
                     class="text-fg-3! hover:bg-danger-soft! hover:text-danger!"
                     :label="t('Remove')"
-                    @click="view.removePin" />
+                    @click="view.rows.value.pin.set(false)" />
             </div>
             <FpButton
                 v-else
@@ -89,16 +89,16 @@ const view = useSecuritySection()
         </FpFormRow>
         <FpFormRow
             plain
-            :label="view.helloLabel.value"
-            :description="view.helloHint.value">
+            :label="view.rows.value.hello.label"
+            :description="view.rows.value.hello.description">
             <template #leading>
                 <FpIconTile name="icon-[lucide--fingerprint]" size="sm" />
             </template>
             <FpSwitch
-                :model-value="view.helloOn.value"
-                :disabled="view.helloUnavailable.value"
-                :aria-label="view.helloLabel.value"
-                @update:model-value="(on: boolean) => (on ? $emit('enableHello') : view.disableHello())" />
+                :model-value="view.rows.value.hello.on"
+                :disabled="view.rows.value.hello.disabled"
+                :aria-label="view.rows.value.hello.label"
+                @update:model-value="view.rows.value.hello.set" />
         </FpFormRow>
     </div>
 </template>

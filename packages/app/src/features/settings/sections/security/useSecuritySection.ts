@@ -5,11 +5,18 @@ import { useHelloLabel, useLockPolicy, useVaultSecurity } from '#features/vault'
 
 import { useLockAfterOptions } from '../../composables/useLockAfterOptions'
 
-export function useSecuritySection() {
+/** Turning PIN or Hello on asks for the master password in the section's dialog; turning it off asks nothing. */
+interface Ask {
+    (event: 'setPin'): void
+    (event: 'enableHello'): void
+}
+
+export function useSecuritySection(ask: Ask) {
     const { t } = useI18n()
     const lockPolicy = useLockPolicy()
     const security = useVaultSecurity()
     const lock = useLockAfterOptions()
+    // What the OS calls it: Windows Hello, Touch ID, Fingerprint, Passkey.
     const hello = useHelloLabel()
 
     const pinDescription = computed(() => {
@@ -26,24 +33,45 @@ export function useSecuritySection() {
         lockItems: lock.items,
         lockAfter: computed(() => lockPolicy.policy.lockAfter),
         setLockAfter: lockPolicy.setLockAfter,
-        neverLocks: computed(() => lockPolicy.policy.lockAfter === 'never'),
-        masterAfterRestart: computed(
-            () => lockPolicy.policy.masterAfterRestart,
+        /** Empty unless the vault never locks by itself. */
+        neverWarning: computed(() =>
+            lockPolicy.policy.lockAfter === 'never'
+                ? t(
+                      'The vault stays open in this browser until you lock it yourself. Anyone with this browser profile can open it.',
+                  )
+                : '',
         ),
-        setMasterAfterRestart: lockPolicy.setMasterAfterRestart,
-        /** A PIN slot exists, paused or not: Change and Remove apply. */
-        pin: computed(() => security.pin !== 'off'),
-        pinDescription,
-        removePin: security.removePin,
-        /** What the OS calls it: Windows Hello, Touch ID, Fingerprint, Passkey. */
-        helloLabel: hello,
-        helloOn: computed(() => security.hello === 'on'),
-        helloUnavailable: computed(() => security.hello === 'unavailable'),
-        helloHint: computed(() =>
-            security.hello === 'unavailable'
-                ? t('Not available on this device')
-                : t('A passkey on this device opens the vault'),
-        ),
-        disableHello: security.disableHello,
+        rows: computed(() => ({
+            pin: {
+                label: t('PIN'),
+                description: pinDescription.value,
+                // A PIN slot exists, paused or not: Change and Remove apply.
+                on: security.pin !== 'off',
+                disabled: false,
+                set: (on: boolean) =>
+                    on ? ask('setPin') : security.removePin(),
+            },
+            hello: {
+                label: hello.value,
+                description:
+                    security.hello === 'unavailable'
+                        ? t('Not available on this device')
+                        : t('A passkey on this device opens the vault'),
+                on: security.hello === 'on',
+                disabled: security.hello === 'unavailable',
+                set: (on: boolean) =>
+                    on ? ask('enableHello') : security.disableHello(),
+            },
+            restart: {
+                label: t('Master password after browser restart'),
+                description: t(
+                    "PIN and {hello} work again once you've unlocked with it",
+                    { hello: hello.value },
+                ),
+                on: lockPolicy.policy.masterAfterRestart,
+                disabled: false,
+                set: lockPolicy.setMasterAfterRestart,
+            },
+        })),
     }
 }

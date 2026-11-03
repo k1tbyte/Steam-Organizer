@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpIcon, FpSlider } from '@so/ui'
+import { FpButton, FpFootnote, FpIcon, FpSlider } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
@@ -37,14 +37,12 @@ const { t } = useI18n()
             <FpSlider v-model="dim" :min="0" :max="85" :step="5" size="xs" :label="t('Dim')" />
             <span class="text-right font-medium font-mono text-12 text-fg-2">{{ dim }}%</span>
         </div>
-        <div
-            v-if="suggestGlass"
-            class="flex items-center gap-2 border-stroke-1 border-t border-dashed pt-2.5 text-12.5 text-fg-3">
+        <FpFootnote v-if="suggestGlass" dashed>
             <span class="flex-1">{{ t('Cards read best on images with the Glass surface') }}</span>
             <FpButton size="sm" variant="ghost" color="accent" @click="$emit('useGlass')">
                 {{ t('Use Glass') }}
             </FpButton>
-        </div>
+        </FpFootnote>
         <span class="text-12 text-fg-3">
             {{ t('Stays on this device. Not synced or saved in the vault.') }}
         </span>

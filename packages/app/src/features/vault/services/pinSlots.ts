@@ -1,5 +1,4 @@
 import {
-    deviceStore,
     newKdf,
     passwordBits,
     pinWrap,
@@ -12,7 +11,12 @@ import {
     type VaultKey,
 } from '@so/core'
 
-import { changePlaced, readPlaced, withSlotsLock } from './deviceSlots'
+import {
+    changePlaced,
+    readPlaced,
+    saveSlot,
+    withSlotsLock,
+} from './deviceSlots'
 import { opens } from './openVault'
 import { isPinLocked, PIN_LENGTH } from './pinAttempts'
 
@@ -57,28 +61,14 @@ export function enrollPin(
                 await pinWrapFromBits(bits),
             )
             const sealed = await sealRearm(records, 'pin', bits)
-            await deviceStore.update(vaultId, (slots) => ({
-                ...slots,
-                rearm: { ...slots.rearm, pin: { kdf, bits: sealed } },
-            }))
-            await changePlaced(vaultId, (placed) => ({
-                ...placed,
-                pin: { kdf, key, wrong: 0 },
-            }))
+            await saveSlot(
+                vaultId,
+                'pin',
+                { kdf, bits: sealed },
+                { kdf, key, wrong: 0 },
+            )
         } finally {
             bits.fill(0)
         }
-    })
-}
-
-export function dropPin(vaultId: string) {
-    return withSlotsLock(vaultId, async () => {
-        await changePlaced(vaultId, ({ pin: _, ...rest }) => rest)
-        await deviceStore.update(vaultId, ({ rearm, ...rest }) => {
-            const { pin: __, ...others } = rearm ?? {}
-            return Object.keys(others).length
-                ? { ...rest, rearm: others }
-                : rest
-        })
     })
 }

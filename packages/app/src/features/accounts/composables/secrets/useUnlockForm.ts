@@ -15,8 +15,11 @@ export function useUnlockForm(
     const password = ref('')
     const error = ref<'blank' | 'wrong' | null>(null)
     const busy = ref(false)
+    // Bumped by every reset: an answer for a form left meanwhile (another account, the other mode) changes nothing.
+    let generation = 0
 
     function reset() {
+        generation++
         usesMaster.value = false
         password.value = ''
         error.value = null
@@ -68,12 +71,14 @@ export function useUnlockForm(
             }
             if (busy.value) return false
             busy.value = true
+            const at = generation
             try {
                 const accepted = await accepts(
                     usesMaster.value
                         ? { master: entered }
                         : { password: entered },
                 )
+                if (at !== generation) return false
                 error.value = accepted ? null : 'wrong'
                 if (accepted) reset()
                 return accepted

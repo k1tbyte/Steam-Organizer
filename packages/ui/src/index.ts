@@ -12,6 +12,7 @@ export {
     default as FpDot,
 } from './components/display/Dot.vue'
 export { default as FpEyebrow } from './components/display/Eyebrow.vue'
+export { default as FpFootnote } from './components/display/Footnote.vue'
 export { default as FpKbd } from './components/display/Kbd.vue'
 export {
     type AccordionItem,
@@ -95,6 +96,7 @@ export type {
     MenuGroup,
     MenuItem,
 } from './components/overlays/menu'
+export { default as FpOptionRow } from './components/overlays/OptionRow.vue'
 export { default as FpPopover } from './components/overlays/Popover.vue'
 export { default as FpTooltipHost } from './components/overlays/TooltipHost.vue'
 export { type TipOptions, tip } from './components/overlays/tip'

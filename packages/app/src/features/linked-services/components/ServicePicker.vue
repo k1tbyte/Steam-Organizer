@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpIcon, FpInput, FpKbd, FpPopover } from '@so/ui'
+import { FpIcon, FpInput, FpKbd, FpOptionRow, FpPopover } from '@so/ui'
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -38,27 +38,18 @@ const search = reactive(useServicePicker(picked, () => props.taken))
                 </FpInput>
             </div>
             <div v-if="search.found.length > 0" class="flex flex-col gap-px p-1.5">
-                <button
-                    v-for="service in search.found"
-                    :key="service.id"
-                    type="button"
-                    class="touch-row flex h-8 cursor-pointer items-center gap-2.5 rounded px-2 text-left text-13 text-fg-1 hover:bg-hover"
-                    :aria-pressed="service.id === picked"
-                    @click="search.pick(service.id)">
+                <FpOptionRow v-for="service in search.found" :key="service.id" :aria-pressed="service.id === picked" @click="search.pick(service.id)">
                     <ServiceIcon :service="service" class="text-15 text-fg-2" />
                     <span class="min-w-0 flex-1 truncate">{{ service.name }}</span>
                     <FpIcon v-if="service.id === picked" name="icon-[lucide--check]" class="text-14 text-accent-ink" />
-                </button>
+                </FpOptionRow>
             </div>
             <div v-if="search.fresh" class="border-t border-stroke-1 p-1.5">
-                <button
-                    type="button"
-                    class="touch-row flex h-8 w-full cursor-pointer items-center gap-2 rounded px-2 text-left text-13 text-fg-1 hover:bg-hover"
-                    @click="search.create">
+                <FpOptionRow class="w-full gap-2!" @click="search.create">
                     <FpIcon name="icon-[lucide--plus]" class="text-14 text-accent-ink" />
                     <span class="min-w-0 flex-1 truncate">{{ t('Add “{name}”', { name: search.fresh }) }}</span>
                     <FpKbd>↵</FpKbd>
-                </button>
+                </FpOptionRow>
             </div>
         </template>
     </FpPopover>
