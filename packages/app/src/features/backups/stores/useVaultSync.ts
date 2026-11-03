@@ -13,9 +13,13 @@ import { defineStore } from 'pinia'
 import { computed, ref, shallowRef } from 'vue'
 
 import {
+    flag,
+    oneOf,
+    parseRecord,
     readStored,
     reportError,
     SYNC_SETTINGS_STORAGE_KEY,
+    serialQueue,
     writeStored,
 } from '#core'
 import { useDrive } from '#features/drive'
@@ -36,21 +40,11 @@ import { autoBackupDue, prunedAutoBackups } from '../services/autoBackup'
 import { useBackupList } from './useBackupList'
 
 function storedSettings(): SyncSettings {
-    try {
-        const saved = JSON.parse(
-            readStored(SYNC_SETTINGS_STORAGE_KEY) || '{}',
-        ) as Partial<SyncSettings>
-        const flag = (value: unknown, fallback: boolean) =>
-            typeof value === 'boolean' ? value : fallback
-        return {
-            autoSync: flag(saved.autoSync, SYNC_DEFAULTS.autoSync),
-            interval: SYNC_INTERVALS.find((value) => value === saved.interval)
-                ? (saved.interval as SyncSettings['interval'])
-                : SYNC_DEFAULTS.interval,
-            autoBackup: flag(saved.autoBackup, SYNC_DEFAULTS.autoBackup),
-        }
-    } catch {
-        return SYNC_DEFAULTS
+    const saved = parseRecord(readStored(SYNC_SETTINGS_STORAGE_KEY))
+    return {
+        autoSync: flag(saved.autoSync, SYNC_DEFAULTS.autoSync),
+        interval: oneOf(SYNC_INTERVALS, saved.interval, SYNC_DEFAULTS.interval),
+        autoBackup: flag(saved.autoBackup, SYNC_DEFAULTS.autoBackup),
     }
 }
 
@@ -84,12 +78,7 @@ export const useVaultSync = defineStore('vault-sync', () => {
     let again = false
     let checking: Promise<void> | null = null
     // Syncs and lock pushes take turns: an upload finishing late never lands over a newer one.
-    let lane: Promise<unknown> = Promise.resolve()
-    function inLane<T>(task: () => Promise<T>): Promise<T> {
-        const turn = lane.then(task)
-        lane = turn.catch(() => {})
-        return turn
-    }
+    const inLane = serialQueue()
 
     const failure = computed(() =>
         failed.value && failed.value.at === backups.scope

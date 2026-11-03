@@ -4,10 +4,10 @@ import {
     FpConfirmModal,
     FpEmpty,
     FpIcon,
+    FpLogo,
     FpToggleGroup,
     useDesktopLayout,
 } from '@so/ui'
-import logoUrl from '@so/ui/logo.svg'
 import { useI18n } from 'vue-i18n'
 
 import { useUnlock } from '../../composables/useUnlock'
@@ -69,7 +69,7 @@ const {
                 ">
                 <div v-if="desktop" class="flex flex-col items-center gap-3.5 pb-1.5 text-center">
                     <span class="surface grid size-16 place-items-center rounded">
-                        <img :src="logoUrl" alt="" class="size-8.5" />
+                        <FpLogo class="size-8.5" />
                     </span>
                     <h2 class="font-title text-26 text-fg-1 leading-[1.15]">{{ t('Welcome back') }}</h2>
                 </div>

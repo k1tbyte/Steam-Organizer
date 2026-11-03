@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpCountdownRing, FpIcon } from '@so/ui'
-import logoUrl from '@so/ui/logo.svg'
+import { FpButton, FpCountdownRing, FpIcon, FpLogo } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -29,7 +28,7 @@ const fill = async () => emit('fill', await currentCode())
         role="dialog"
         :aria-label="t('Steam Guard code')"
         class="surface-float pointer-events-auto fixed flex min-w-87 items-center justify-center gap-2.5 py-1.5 pr-1.5 pl-2 whitespace-nowrap">
-        <img :src="logoUrl" alt="" class="ml-0.5 size-4.5" />
+        <FpLogo class="ml-0.5 size-4.5" />
         <template v-if="notice">
             <span class="font-semibold text-13 text-fg-1">{{ notice.title }}</span>
             <FpButton color="accent" size="sm" @click="$emit('unlock')">{{ notice.action }}</FpButton>

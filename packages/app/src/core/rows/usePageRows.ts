@@ -9,7 +9,7 @@ import {
     watch,
 } from 'vue'
 
-import { useScrollRoot } from '../page'
+import { useScrollRoot } from '../shell/page'
 import { assignSlots } from './slots'
 
 const OVERSCAN_ROWS = 6

@@ -1,3 +1,4 @@
+import { flag, oneOf, parseRecord } from '../../../core/storage'
 import {
     type AccountsView,
     BAN_KINDS,
@@ -32,32 +33,13 @@ export const DEFAULT_VIEW: AccountsView = {
     direction: 'desc',
 }
 
-function parseRecord(raw: string | null): Record<string, unknown> {
-    try {
-        const value: unknown = JSON.parse(raw ?? '')
-        return typeof value === 'object' && value !== null
-            ? (value as Record<string, unknown>)
-            : {}
-    } catch {
-        return {}
-    }
-}
-
-function oneOf<T extends string>(
-    allowed: readonly T[],
-    value: unknown,
-    fallback: T,
-): T {
-    return allowed.includes(value as T) ? (value as T) : fallback
-}
-
 /** Stored text back to flags: a missing or malformed entry reads as its default. */
 export function parseCardFlags(raw: string | null): CardFlags {
     const stored = parseRecord(raw)
     return Object.fromEntries(
         Object.entries(DEFAULT_CARD_FLAGS).map(([key, fallback]) => [
             key,
-            typeof stored[key] === 'boolean' ? stored[key] : fallback,
+            flag(stored[key], fallback),
         ]),
     ) as unknown as CardFlags
 }

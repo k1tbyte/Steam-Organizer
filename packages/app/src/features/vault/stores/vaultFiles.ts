@@ -6,7 +6,7 @@ import {
 } from '@so/core'
 import { shallowRef } from 'vue'
 
-import { reportError } from '#core'
+import { reportError, serialQueue } from '#core'
 
 import type { SyncReceipt } from '../model'
 import type { VaultContents } from '../services/vaultContents'
@@ -21,15 +21,9 @@ export function vaultFiles(
     const list = shallowRef<StoredVault[] | null>(null)
     let loading: Promise<void> | null = null
     // One writer at a time: each change reads the latest file inside the queue, so none restores an older one.
-    let queue: Promise<unknown> = Promise.resolve()
+    const serial = serialQueue()
     // Bumped by every link and unlink: a sync read before one never marks the new link synced.
     const linkEpochs = new Map<string, number>()
-
-    function serial<T>(task: () => Promise<T>): Promise<T> {
-        const run = queue.then(task)
-        queue = run.catch(() => {})
-        return run
-    }
 
     // Inside the queue the list holds each vault's latest file: every save lands there, lock or not.
     const get = (id: string) => list.value?.find((item) => item.id === id)

@@ -8,7 +8,7 @@ import {
 } from 'vue'
 import { type RouteLocationRaw, useRoute, useRouter } from 'vue-router'
 
-import { usePageActive } from './page'
+import { usePageActive } from './shell/page'
 
 interface QueryOverlayOptions<V extends string> {
     /** Accepted values: an unknown or bare one reads as the first, never a dead URL. */

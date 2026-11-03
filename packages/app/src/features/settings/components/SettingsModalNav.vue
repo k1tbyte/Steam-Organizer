@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { FpNavMenu, FpScrollArea } from '@so/ui'
-import logoUrl from '@so/ui/logo.svg'
+import { FpButton, FpLogo, FpNavMenu, FpScrollArea } from '@so/ui'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -30,7 +29,7 @@ const items = computed(() =>
 <template>
     <nav class="flex min-h-0 flex-col border-r border-stroke-1 bg-surface-lo px-2.5 pt-4.5 pb-3">
         <div class="flex items-center gap-2.5 px-2 pb-2">
-            <img :src="logoUrl" alt="" class="size-5.5" />
+            <FpLogo class="size-5.5" />
             <span class="font-semibold text-15 tracking-title text-fg-1">{{ t('Settings') }}</span>
         </div>
         <FpScrollArea class="min-h-0 flex-1">
@@ -43,12 +42,9 @@ const items = computed(() =>
         <div v-if="about" class="flex items-center gap-2 px-2.5 py-2 font-mono text-12 text-fg-3">
             {{ t('v{version}', { version: about.version }) }}
             <span class="flex-1" />
-            <button
-                v-if="about.update"
-                type="button"
-                class="cursor-pointer font-medium font-sans text-12 text-accent-ink hover:text-fg-1">
+            <FpButton v-if="about.update" variant="link" color="accent" class="font-sans text-12!">
                 {{ t('Update to {version}', { version: about.update }) }}
-            </button>
+            </FpButton>
         </div>
     </nav>
 </template>

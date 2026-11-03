@@ -18,6 +18,7 @@ import {
 
 import { reportError } from '../../../core/reportError'
 import { sessionArea } from '../../../core/session/sessionArea'
+import { parseRecord } from '../../../core/storage'
 import type { SecuritySettings } from '../model'
 import { readSecuritySettings } from './lockPolicy'
 
@@ -64,13 +65,10 @@ const only = ({ pin, prf }: Placed): Placed => ({
 async function readAt(home: Home, vaultId: string): Promise<Placed> {
     if (home === 'disk') return only((await deviceStore.get(vaultId)) ?? {})
     if (home === 'memory') return only(memory.get(vaultId) ?? {})
-    try {
-        return only(
-            JSON.parse((await sessionArea().get(areaKey(vaultId))) ?? '{}'),
-        )
-    } catch {
-        return {}
-    }
+    const raw = await sessionArea()
+        .get(areaKey(vaultId))
+        .catch(() => undefined)
+    return only(parseRecord(raw))
 }
 
 async function writeAt(home: Home, vaultId: string, placed: Placed) {

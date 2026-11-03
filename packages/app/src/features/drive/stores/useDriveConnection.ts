@@ -4,6 +4,7 @@ import { computed, ref } from 'vue'
 
 import {
     DRIVE_ACCOUNT_STORAGE_KEY,
+    parseRecord,
     readStored,
     usePlatform,
     writeStored,
@@ -12,14 +13,8 @@ import {
 import type { DriveState, GoogleAccount } from '../model'
 
 function storedAccount(): GoogleAccount | null {
-    try {
-        const saved = JSON.parse(
-            readStored(DRIVE_ACCOUNT_STORAGE_KEY) || 'null',
-        ) as GoogleAccount | null
-        return saved?.email ? saved : null
-    } catch {
-        return null
-    }
+    const saved = parseRecord(readStored(DRIVE_ACCOUNT_STORAGE_KEY))
+    return saved.email ? (saved as unknown as GoogleAccount) : null
 }
 
 // Read late, so a test's stub applies.

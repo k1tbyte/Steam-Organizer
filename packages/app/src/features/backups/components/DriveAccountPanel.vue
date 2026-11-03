@@ -39,12 +39,9 @@ const { identity, autoBackup, autoSync, syncLine, openSyncSettings, disconnect }
                     <span class="flex-1">
                         {{ t('{name} · {accounts}', { name: vault.name, accounts: accountsOf(vault.accounts) }) }}
                     </span>
-                    <button
-                        type="button"
-                        class="touch-target transition-colors duration-fast hover:text-danger"
-                        @click="disconnect">
+                    <FpButton variant="link" size="xs" class="font-normal! text-fg-3! hover:text-danger!" @click="disconnect">
                         {{ t('Disconnect') }}
-                    </button>
+                    </FpButton>
                 </div>
             </FpCard>
             <FpCard flush class="px-4 py-1">

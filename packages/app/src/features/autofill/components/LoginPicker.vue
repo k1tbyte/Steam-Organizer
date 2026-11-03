@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpIcon, FpInput, FpKbd } from '@so/ui'
-import logoUrl from '@so/ui/logo.svg'
+import { FpButton, FpIcon, FpInput, FpKbd, FpLogo } from '@so/ui'
 import { onMounted, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -41,7 +40,7 @@ onMounted(() => search.value?.focus())
         class="surface-float pointer-events-auto fixed flex w-85 flex-col"
         @keydown="onKeydown">
         <header class="flex items-center gap-2 border-b border-stroke-1 py-2 pr-2 pl-2.5">
-            <img :src="logoUrl" alt="" class="size-4" />
+            <FpLogo class="size-4" />
             <div
                 v-if="!notice"
                 class="flex h-7.5 min-w-0 flex-1 items-center rounded bg-surface-hi px-2 text-13">

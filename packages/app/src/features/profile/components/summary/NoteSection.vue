@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpTextarea } from '@so/ui'
+import { FpButton, FpTextarea } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import type { Account } from '#features/accounts'
@@ -20,7 +20,9 @@ const { note, count, status, faded, save, retry } = useProfileNote(() => props.a
             <span class="flex items-center gap-3 text-12">
                 <span v-if="status === 'failed'" class="text-danger">
                     {{ t('Not saved') }} ·
-                    <button type="button" class="cursor-pointer font-medium hover:underline" @click="retry">{{ t('Retry') }}</button>
+                    <FpButton variant="link" color="danger" class="text-12! hover:text-danger! hover:underline" @click="retry">
+                        {{ t('Retry') }}
+                    </FpButton>
                 </span>
                 <span v-else-if="status === 'saving'" class="text-fg-3">{{ t('Saving…') }}</span>
                 <span v-else-if="status === 'saved'" class="text-fg-3 transition-opacity duration-slow" :class="faded && 'opacity-0'">

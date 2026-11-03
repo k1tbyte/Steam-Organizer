@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { FpScrollArea, useDesktopLayout } from '@so/ui'
-import logoUrl from '@so/ui/logo.svg'
+import { FpLogo, FpScrollArea, useDesktopLayout } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -11,7 +10,7 @@ const desktop = useDesktopLayout()
 <template>
     <div v-if="desktop" class="flex h-dvh flex-col">
         <header class="flex h-16 shrink-0 items-center gap-2.5 px-7">
-            <img :src="logoUrl" alt="" class="size-6.5" />
+            <FpLogo class="size-6.5" />
             <span class="font-semibold text-14.5 text-fg-1 tracking-title">
                 {{ t('Steam Organizer') }}
             </span>

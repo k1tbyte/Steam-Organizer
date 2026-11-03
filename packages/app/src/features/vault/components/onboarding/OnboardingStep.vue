@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpIcon } from '@so/ui'
-import logoUrl from '@so/ui/logo.svg'
+import { FpButton, FpIcon, FpLogo } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { useOnboardingFrame } from '../../composables/onboarding/useOnboardingFrame'
@@ -63,7 +62,7 @@ const { desktop, stepCounter, goBack } = useOnboardingFrame()
                           brand ? 'gap-5.5 pt-6 pb-7' : 'gap-4.5 pt-3 pb-4',
                       ]
             ">
-            <img v-if="brand && !desktop" :src="logoUrl" alt="" class="size-10" />
+            <FpLogo v-if="brand && !desktop" class="size-10" />
             <div class="flex flex-col gap-2">
                 <h2 class="font-title text-26 text-fg-1 leading-[1.15]">{{ title }}</h2>
                 <p v-if="description" class="text-14.5 text-fg-3 text-pretty leading-[1.55]">

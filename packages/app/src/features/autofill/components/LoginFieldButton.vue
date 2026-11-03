@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { FpButton } from '@so/ui'
-import logoUrl from '@so/ui/logo.svg'
+import { FpButton, FpLogo } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{ open: boolean }>()
@@ -18,6 +17,6 @@ const { t } = useI18n()
         :aria-label="t('Steam Organizer')"
         :aria-expanded="open"
         @click="$emit('toggle')">
-        <img :src="logoUrl" alt="" class="size-4" />
+        <FpLogo class="size-4" />
     </FpButton>
 </template>

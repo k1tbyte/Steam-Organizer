@@ -1,6 +1,6 @@
 import { deviceStore, type Sealed } from '@so/core'
 
-import { reportError } from '#core'
+import { reportError, serialQueue } from '#core'
 import { forgetDevice } from '../services/deviceSlots'
 import {
     readActive,
@@ -39,12 +39,7 @@ export interface KeptFound {
 export function keptSession() {
     let held: { vaultId: string; sealed: Sealed } | null = null
     // Keeping and dropping take turns, so a lock never lets a keep in flight write the entry back.
-    let turn: Promise<unknown> = Promise.resolve()
-    const inTurn = <T>(task: () => Promise<T>) => {
-        const run = turn.then(task)
-        turn = run.catch(() => {})
-        return run
-    }
+    const inTurn = serialQueue()
 
     async function dropNow(vaultId: string | undefined) {
         for (const step of [

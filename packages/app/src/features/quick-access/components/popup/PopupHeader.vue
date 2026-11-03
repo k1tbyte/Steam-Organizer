@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpDot, FpIcon, type SemanticColor, tip } from '@so/ui'
-import logoUrl from '@so/ui/logo.svg'
+import { FpButton, FpDot, FpIcon, FpLogo, type SemanticColor, tip } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{ unlocked: boolean; syncDot: { color: SemanticColor; label: string } | null }>()
@@ -11,7 +10,7 @@ const { t } = useI18n()
 
 <template>
     <header class="flex h-12 shrink-0 items-center gap-2 border-b border-stroke-1 pr-2 pl-3.5">
-        <img :src="logoUrl" alt="" class="size-5" />
+        <FpLogo class="size-5" />
         <span class="font-semibold text-13.5 tracking-title text-fg-1">{{ t('Steam Organizer') }}</span>
         <span class="flex-1" />
         <FpDot v-if="syncDot" v-bind="tip(syncDot.label)" :color="syncDot.color" class="mr-1.5" />

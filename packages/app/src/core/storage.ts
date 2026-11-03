@@ -66,3 +66,30 @@ export function removeStored(key: string): void {
         localStorage.removeItem(key)
     } catch {}
 }
+
+export function parseRecord(
+    raw: string | null | undefined,
+): Record<string, unknown> {
+    try {
+        const value: unknown = JSON.parse(raw ?? '')
+        return typeof value === 'object' &&
+            value !== null &&
+            !Array.isArray(value)
+            ? (value as Record<string, unknown>)
+            : {}
+    } catch {
+        return {}
+    }
+}
+
+export function oneOf<T extends string>(
+    allowed: readonly T[],
+    value: unknown,
+    fallback: T,
+): T {
+    return allowed.includes(value as T) ? (value as T) : fallback
+}
+
+export function flag(value: unknown, fallback: boolean): boolean {
+    return typeof value === 'boolean' ? value : fallback
+}

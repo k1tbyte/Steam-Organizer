@@ -1,4 +1,7 @@
 import {
+    flag,
+    oneOf,
+    parseRecord,
     readStored,
     SECURITY_SETTINGS_STORAGE_KEY,
 } from '../../../core/storage'
@@ -21,21 +24,17 @@ const TIMEOUT_MS: Partial<Record<LockAfter, number>> = {
 
 /** Read from storage each time: the popup and the app page share it, and each must see the other's change. */
 export function readSecuritySettings(): SecuritySettings {
-    try {
-        const saved = JSON.parse(
-            readStored(SECURITY_SETTINGS_STORAGE_KEY) || '{}',
-        ) as Partial<SecuritySettings>
-        return {
-            lockAfter:
-                LOCK_AFTER.find((value) => value === saved.lockAfter) ??
-                SECURITY_DEFAULTS.lockAfter,
-            masterAfterRestart:
-                typeof saved.masterAfterRestart === 'boolean'
-                    ? saved.masterAfterRestart
-                    : SECURITY_DEFAULTS.masterAfterRestart,
-        }
-    } catch {
-        return SECURITY_DEFAULTS
+    const saved = parseRecord(readStored(SECURITY_SETTINGS_STORAGE_KEY))
+    return {
+        lockAfter: oneOf(
+            LOCK_AFTER,
+            saved.lockAfter,
+            SECURITY_DEFAULTS.lockAfter,
+        ),
+        masterAfterRestart: flag(
+            saved.masterAfterRestart,
+            SECURITY_DEFAULTS.masterAfterRestart,
+        ),
     }
 }
 

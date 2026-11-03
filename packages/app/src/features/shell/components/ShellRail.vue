@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { FpIcon, tip } from '@so/ui'
-import logoUrl from '@so/ui/logo.svg'
+import { FpIcon, FpLogo, tip } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 import { useShellNav } from '../composables/useShellNav'
@@ -26,7 +25,7 @@ function look(item: ShellNavItem, ownFill = false) {
 <template>
     <aside
         class="layer-chrome flex w-16 shrink-0 flex-col items-center gap-1.5 border-r border-stroke-1 bg-canvas-elev py-4 backdrop-surface">
-        <img :src="logoUrl" alt="" class="mb-3.5 size-7" />
+        <FpLogo class="mb-3.5 size-7" />
         <div class="relative flex flex-col gap-1.5">
             <span v-if="railIndex >= 0" class="rail-glider absolute top-0 left-0 size-10 rounded bg-accent-soft" :style="{ '--i': railIndex }" aria-hidden="true" />
             <ShellNavLink

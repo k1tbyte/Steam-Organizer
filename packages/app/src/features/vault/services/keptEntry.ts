@@ -1,6 +1,7 @@
 import type { Sealed } from '@so/core'
 
 import { sessionArea } from '../../../core/session/sessionArea'
+import { parseRecord } from '../../../core/storage'
 
 const KEPT_KEY = 'so:kept'
 // Apart from the entry: an activity write can never bring a removed entry back.
@@ -14,17 +15,13 @@ export interface KeptEntry {
 }
 
 export async function readKept(): Promise<KeptEntry | undefined> {
-    try {
-        const entry = JSON.parse(
-            (await sessionArea().get(KEPT_KEY)) ?? 'null',
-        ) as Partial<KeptEntry> | null
-        return typeof entry?.vault === 'string' &&
-            typeof entry.sealed === 'string'
-            ? { vault: entry.vault, sealed: entry.sealed }
-            : undefined
-    } catch {
-        return undefined
-    }
+    const raw = await sessionArea()
+        .get(KEPT_KEY)
+        .catch(() => undefined)
+    const { vault, sealed } = parseRecord(raw)
+    return typeof vault === 'string' && typeof sealed === 'string'
+        ? { vault, sealed }
+        : undefined
 }
 
 export const writeKept = (entry: KeptEntry) =>

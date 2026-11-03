@@ -40,7 +40,8 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | modal, drawer, a section or id inside one | `useQueryOverlay` (Routes below) |
 | loading, empty, error states | `FpAsyncView` fed by one `status` |
 | sample data for a block without a source | `defineMock` + `useMock` (`core/mock/README.md`) |
-| client state that survives a reload | `readStored` / `writeStored` with a key constant in `core/storage.ts`; `localStorage` fails lint. A store writes in its actions, never from a `watch`: Vue ties a watcher to the component whose setup first used the store and keeps that page alive |
+| client state that survives a reload | `readStored` / `writeStored` with a key constant in `core/storage.ts`, read back with `parseRecord` / `oneOf` / `flag` (never a `JSON.parse` of your own); `localStorage` fails lint. A store writes in its actions, never from a `watch`: Vue ties a watcher to the component whose setup first used the store and keeps that page alive |
+| async work that must run one at a time (writes over one file, a sync lane) | `serialQueue()` from `#core`: a failed task rejects its caller and never blocks the next |
 | failure | `reportError(error, scope, context?)`, the only `console.error` (`noConsole` fails lint) |
 | debounce, interval | `useTimer` from `@so/ui/useTimer` |
 | Google sign-in, a request to Drive | `useDrive()` from `#features/drive` (`run(work)` with `@so/core`'s `driveApi`), `useDriveProblem()` for a failure's copy; never `Platform.google` directly |

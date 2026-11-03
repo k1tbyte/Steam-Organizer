@@ -7,7 +7,13 @@ import {
     shallowReactive,
 } from 'vue'
 
-import { MOCKS_STORAGE_KEY, readStored, writeStored } from '../storage'
+import {
+    MOCKS_STORAGE_KEY,
+    oneOf,
+    parseRecord,
+    readStored,
+    writeStored,
+} from '../storage'
 
 /** `live` shows only real data, `fill` samples what has no source yet, `mock` samples everything. */
 export type MockMode = 'live' | 'fill' | 'mock'
@@ -75,12 +81,13 @@ export function startMocks(enabled: boolean) {
     state.enabled = enabled
     state.mode = enabled ? 'fill' : 'live'
     if (!enabled) return
-    try {
-        const stored = JSON.parse(readStored(MOCKS_STORAGE_KEY) ?? '{}')
-        if (['live', 'fill', 'mock'].includes(stored.mode))
-            state.mode = stored.mode
-        if (stored.picks) state.picks = stored.picks
-    } catch {}
+    const stored = parseRecord(readStored(MOCKS_STORAGE_KEY))
+    state.mode = oneOf<MockMode>(
+        ['live', 'fill', 'mock'],
+        stored.mode,
+        state.mode,
+    )
+    if (stored.picks) state.picks = stored.picks as Record<string, string>
 }
 
 /** The panel's view: mode and per-mock variant, persisted on change. */
