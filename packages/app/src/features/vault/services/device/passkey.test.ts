@@ -103,7 +103,7 @@ it('maps a cancelled, unsupported or failed ceremony to a result, never a thrown
     authenticator.restore()
 
     authenticator = fakeAuthenticator({ prf: 'none' })
-    expect(await enroll('v')).toBe('unsupported')
+    expect(await enroll('v')).toBe('no-prf')
     authenticator.restore()
 
     authenticator = fakeAuthenticator()

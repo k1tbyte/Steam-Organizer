@@ -11,8 +11,9 @@ import { reportError } from '../../../../core/reportError'
 import { passkeyRpId } from '../../../../core/session/passkeys'
 import { readPlaced, saveSlot, withSlotsLock } from './deviceSlots'
 
-/** A ceremony never throws a `DOMException` into the UI: a cancel, a missing PRF and a failure are results. */
-export type PasskeyFailure = 'cancelled' | 'unsupported' | 'failed'
+/** A ceremony never throws a `DOMException` into the UI: a cancel, a missing PRF and a failure are results. `no-prf`: a
+ *  passkey came back without the PRF output, as a password manager's does (Bitwarden). */
+export type PasskeyFailure = 'cancelled' | 'unsupported' | 'no-prf' | 'failed'
 
 export interface PasskeyEnrollment {
     credentialId: string
@@ -117,7 +118,8 @@ export async function enroll(
         })
         const credential = created as PublicKeyCredential | null
         const prf = prfOf(credential)
-        if (!credential || !prf?.enabled) return 'unsupported'
+        if (!credential) return 'unsupported'
+        if (!prf?.enabled) return 'no-prf'
         const credentialId = new Uint8Array(credential.rawId).toBase64({
             alphabet: 'base64url',
         })
@@ -157,7 +159,7 @@ export async function prfBits(
             },
         })
         const first = prfOf(asserted)?.results?.first
-        return first ? takeBits(first) : 'unsupported'
+        return first ? takeBits(first) : 'no-prf'
     } catch (error) {
         return failure(error)
     }

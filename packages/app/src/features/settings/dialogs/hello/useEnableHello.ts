@@ -41,6 +41,11 @@ export function useEnableHello(open: Ref<boolean>) {
                     })
                 else if (result === 'unavailable')
                     error.value = t('Not available on this device')
+                else if (result === 'no-prf')
+                    error.value = t(
+                        "This passkey can't unlock the vault. Save it with {hello} on this device, not in a password manager.",
+                        { hello: hello.value },
+                    )
                 else if (result === 'failed')
                     error.value = t("Couldn't set up {hello}", {
                         hello: hello.value,

@@ -73,6 +73,24 @@ it('leaves Hello off when the prompt is closed, and says when it cannot be used'
     expect(await other.security.enableHello(PASSWORD)).toBe('unavailable')
 })
 
+it('refuses a passkey without PRF output, as a password manager makes in Safari, and keeps no slot', async () => {
+    authenticator.restore()
+    authenticator = fakeAuthenticator({
+        prf: 'none',
+        capabilities: { passkeyPlatformAuthenticator: true },
+        uvpaa: false,
+    })
+    const { session, security } = await page()
+    await session.create('Main', PASSWORD)
+    await vi.waitFor(() => expect(security.hello).toBe('off'))
+
+    expect(await security.enableHello(PASSWORD)).toBe('no-prf')
+    expect(security.hello).toBe('off')
+    expect(
+        (await deviceStore.get(session.vault?.id ?? ''))?.prf,
+    ).toBeUndefined()
+})
+
 it('keeps Hello working through a master password change, and turning it off asks nothing', async () => {
     const { session, security, id } = await withHello()
     expect(await session.changePassword(PASSWORD, 'new one')).toBe(true)

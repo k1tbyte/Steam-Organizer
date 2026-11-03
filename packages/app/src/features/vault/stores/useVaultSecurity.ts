@@ -113,7 +113,9 @@ export const useVaultSecurity = defineStore('vault-security', () => {
      *  asks the user once and a passkey's PRF output wraps the secret. `cancelled`: the prompt was closed. */
     async function enableHello(
         password: string,
-    ): Promise<'ok' | 'wrong' | 'cancelled' | 'unavailable' | 'failed'> {
+    ): Promise<
+        'ok' | 'wrong' | 'cancelled' | 'unavailable' | 'no-prf' | 'failed'
+    > {
         // No open vault is 'failed', not 'unavailable'.
         if (session.vault && hello.value === 'unavailable') return 'unavailable'
         return enrolling(password, async (id, key, from) => {
