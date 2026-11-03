@@ -10,3 +10,4 @@ paths:
 - Never import the `@so/ui` barrel into code under test: it loads `.vue` files. Use subpaths (`@so/ui/useTimer`).
 - `tests/docs/refs.test.ts` fails when a rule names a path that no longer exists or its `paths` match nothing: rename the reference with the file.
 - A new contract rule goes in `tests/ui/rules.ts`; `baseline.json` counts only go down.
+- Vaults and PINs made in tests derive with 1k PBKDF2 rounds, not 600k (`tests/setup/fastKdf.ts`, every project): opening reads the count from the file, so no test depends on it.

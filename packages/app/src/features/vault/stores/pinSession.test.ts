@@ -5,8 +5,6 @@ import { sessionArea } from '#core'
 
 import { freshDevice, type Page, page, restart } from '../testing/sessionPages'
 
-vi.setConfig({ testTimeout: 30_000 })
-
 const PASSWORD = 'correct horse'
 const PIN = '123456'
 const WRONG = '654321'

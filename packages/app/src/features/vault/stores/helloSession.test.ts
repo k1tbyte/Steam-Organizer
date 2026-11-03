@@ -4,8 +4,6 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { fakeAuthenticator } from '../testing/fakePasskeys'
 import { freshDevice, page, restart } from '../testing/sessionPages'
 
-vi.setConfig({ testTimeout: 30_000 })
-
 const PASSWORD = 'correct horse'
 
 let authenticator: ReturnType<typeof fakeAuthenticator>

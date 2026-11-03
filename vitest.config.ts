@@ -10,7 +10,12 @@ const noSfc = {
 // Inline projects don't inherit root `pool` or `plugins`.
 const project = (name: string, include: string) => ({
     plugins: [noSfc],
-    test: { name, include: [include], pool: 'threads' as const },
+    test: {
+        name,
+        include: [include],
+        pool: 'threads' as const,
+        setupFiles: ['tests/setup/fastKdf.ts'],
+    },
 })
 
 export default defineConfig({
