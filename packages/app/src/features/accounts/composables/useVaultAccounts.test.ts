@@ -137,3 +137,14 @@ it('undoes a deletion beside other anonymous accounts, unless its Steam ID came 
     const reloaded = await reopened()
     expect(ids(reloaded).sort()).toEqual(['anon', 'new', 'spare'])
 })
+
+it('loads, never empty, until the vault opens and after it locks', async () => {
+    const session = useVaultSession()
+    const vault = useVaultAccounts()
+    expect(vault.loading.value).toBe(true)
+    await session.create('Main', PASSWORD)
+    expect(vault.loading.value).toBe(false)
+    expect(vault.accounts.value).toEqual([])
+    session.lock()
+    expect(vault.loading.value).toBe(true)
+})

@@ -320,7 +320,7 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 - [x] PIN: device slot, three tries across pages, restart re-arm
 - [x] Hello (WebAuthn PRF): enroll and unlock, RP ID per shell, OS label
 - [x] Pages: accounts, profile (summary, games, friends), backups, settings
-- [ ] Accounts import / export (toolbar button and edit bar emit, nothing handles them), list loading state
+- [x] Accounts import / export (toolbar menu, the edit bar's partial export, import by file kind, the old app's exports), list loading state
 - [x] Notifications from real sources (refresh results, new bans, backup saves, updates), row click, read state kept: a log per vault on this device, ids and numbers only
 - [x] Settings: version and update check in the nav footer (one version, the root `package.json`'s)
 - [ ] Settings: background image to IndexedDB

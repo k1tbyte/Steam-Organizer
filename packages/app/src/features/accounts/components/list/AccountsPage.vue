@@ -12,6 +12,7 @@ import { useAccountsList } from '../../composables/list/useAccountsList'
 import { useBulkRefresh } from '../../composables/refresh/useBulkRefresh'
 import { useRemoveAccounts } from '../../composables/useRemoveAccounts'
 import AddAccountOverlay from '../add/AddAccountOverlay.vue'
+import AccountsSkeleton from '../card/AccountsSkeleton.vue'
 import AccountsEditGrid from '../edit/AccountsEditGrid.vue'
 import RemoveAccountsDialog from '../remove/RemoveAccountsDialog.vue'
 import AccountsEmpty from './AccountsEmpty.vue'
@@ -59,6 +60,10 @@ const bulk = reactive(useBulkRefresh())
             @toggle-pin="list.togglePin"
             @delete="(id) => removal.ask([id])"
             @delete-now="(id) => removal.removeNow([id])" />
+        <!-- Shown once the wait outlasts a flash; a quick open lands on the list directly. -->
+        <template #loading="{ delayed }">
+            <AccountsSkeleton v-if="delayed" />
+        </template>
         <template #empty>
             <AccountsEmpty :vault-empty="list.vaultEmpty.value" @add="addOverlay.show()" @reset="resetFilters" />
         </template>

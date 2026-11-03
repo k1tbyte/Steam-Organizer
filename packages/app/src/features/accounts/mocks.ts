@@ -272,7 +272,7 @@ function generate(count: number): Account[] {
     )
 }
 
-export const accountsMock = defineMock<AccountsSample>(
+export const accountsMock = defineMock<AccountsSample | undefined>(
     'accounts.list',
     'Accounts',
     {
@@ -291,5 +291,7 @@ export const accountsMock = defineMock<AccountsSample>(
             tags: TAGS,
         },
         'Anonymous only': { accounts: ANONYMOUS, tags: TAGS },
+        // The vault's contents still opening.
+        Loading: undefined,
     },
 )

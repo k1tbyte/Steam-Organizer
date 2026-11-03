@@ -237,6 +237,8 @@ export function useVaultAccounts() {
 
     return {
         accounts,
+        /** No contents yet (the vault opening or closing) and no sample: the list waits instead of showing it empty. */
+        loading: computed(() => sample.value === undefined),
         /** A sample may open the list on a search, so "no results" can be reviewed without typing. */
         presetQuery: computed(() => sample.value?.query),
         togglePin(id: string) {

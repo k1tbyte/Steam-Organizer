@@ -19,7 +19,7 @@ export function useAccountsList() {
     const desktop = useDesktopLayout()
     const store = useAccountsViewStore()
     const { view } = storeToRefs(store)
-    const { accounts, presetQuery, togglePin } = useVaultAccounts()
+    const { accounts, loading, presetQuery, togglePin } = useVaultAccounts()
     const { tags } = useVaultTags()
     const { placement } = useFieldPlacement()
     const edit = useEditMode()
@@ -53,14 +53,16 @@ export function useAccountsList() {
         rest: computed(() => visible.value.filter((a) => !a.pinned)),
         // Phones show what is left; desktop also shows what the vault holds.
         count: computed(() => {
+            if (loading.value) return ''
             const shown = visible.value.length
             return desktop.value && !vaultEmpty.value
                 ? `${shown}/${accounts.value.length}`
                 : String(shown)
         }),
-        status: computed<AsyncStatus>(() =>
-            visible.value.length === 0 ? 'empty' : 'ready',
-        ),
+        status: computed<AsyncStatus>(() => {
+            if (loading.value) return 'loading'
+            return visible.value.length === 0 ? 'empty' : 'ready'
+        }),
         togglePin,
         editing: computed(() => edit.open.value),
         /** The name an account shows by; the bell resolves its entries through it, so its log holds ids only. */
