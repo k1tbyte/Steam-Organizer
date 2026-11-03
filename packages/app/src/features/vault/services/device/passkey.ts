@@ -42,8 +42,8 @@ function failure(error: unknown): PasskeyFailure {
     return 'failed'
 }
 
-/** Whether a platform authenticator with PRF can be used: `getClientCapabilities` says so where it exists, else a
- *  user-verifying platform authenticator is taken to have it. False without the shell's RP ID. */
+/** Whether a platform authenticator with PRF can be used: `getClientCapabilities` says so where it reports PRF, else a
+ *  passkey or user-verifying platform authenticator is taken to have it (enrolling checks). False without the shell's RP ID. */
 export async function passkeysAvailable(): Promise<boolean> {
     if (passkeyRpId() === undefined) return false
     if (
@@ -55,6 +55,8 @@ export async function passkeysAvailable(): Promise<boolean> {
         const capabilities = await PublicKeyCredential.getClientCapabilities?.()
         if (capabilities && 'extension:prf' in capabilities)
             return capabilities['extension:prf'] === true
+        // Safari reports no extensions, and no user-verifying authenticator even with Touch ID: its passkeys are iCloud Keychain's.
+        if (capabilities?.passkeyPlatformAuthenticator) return true
         return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
     } catch {
         return false

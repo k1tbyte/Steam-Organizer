@@ -7,9 +7,20 @@ export type PrfAnswer = 'create' | 'get-only' | 'none'
 /** A platform authenticator in node: `navigator.credentials` and `PublicKeyCredential` over a PRF of its own
  *  (SHA-256 of a per-credential secret and the salt, so the same salt always gives the same bits). */
 export function fakeAuthenticator(
-    options: { prf?: PrfAnswer; rpId?: string; capabilities?: boolean } = {},
+    options: {
+        prf?: PrfAnswer
+        rpId?: string
+        /** `true` reports the PRF extension, a record is reported as is (Safari's has no extensions). */
+        capabilities?: boolean | Record<string, boolean>
+        uvpaa?: boolean
+    } = {},
 ) {
-    const { prf = 'create', rpId = 'so.test', capabilities = true } = options
+    const {
+        prf = 'create',
+        rpId = 'so.test',
+        capabilities = true,
+        uvpaa = true,
+    } = options
     const secrets = new Map<string, Uint8Array>()
     const calls = {
         create: [] as CredentialCreationOptions[],
@@ -43,9 +54,12 @@ export function fakeAuthenticator(
 
     const Stub = {
         getClientCapabilities: capabilities
-            ? async () => ({ 'extension:prf': prf !== 'none' })
+            ? async () =>
+                  capabilities === true
+                      ? { 'extension:prf': prf !== 'none' }
+                      : capabilities
             : undefined,
-        isUserVerifyingPlatformAuthenticatorAvailable: async () => true,
+        isUserVerifyingPlatformAuthenticatorAvailable: async () => uvpaa,
     }
 
     const saltIn = (extensions: unknown) =>

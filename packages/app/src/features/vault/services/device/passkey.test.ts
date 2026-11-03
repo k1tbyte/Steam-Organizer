@@ -26,6 +26,22 @@ it('is available when the browser reports the PRF extension, or without a report
     expect(await passkeysAvailable()).toBe(true)
 })
 
+it('is available in Safari, which reports a passkey authenticator but no extensions and no user-verifying one', async () => {
+    const safari = {
+        passkeyPlatformAuthenticator: true,
+        userVerifyingPlatformAuthenticator: false,
+    }
+    authenticator = fakeAuthenticator({ capabilities: safari, uvpaa: false })
+    expect(await passkeysAvailable()).toBe(true)
+    authenticator.restore()
+
+    authenticator = fakeAuthenticator({
+        capabilities: { ...safari, passkeyPlatformAuthenticator: false },
+        uvpaa: false,
+    })
+    expect(await passkeysAvailable()).toBe(false)
+})
+
 it('is not available without an RP ID from the shell', async () => {
     authenticator = fakeAuthenticator()
     const { installPasskeys } = await import('#core')
