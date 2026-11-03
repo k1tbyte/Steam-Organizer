@@ -1,4 +1,4 @@
-import { deviceStore, type Sealed } from '@so/core'
+import { type DeviceSlots, deviceStore, type Sealed } from '@so/core'
 
 import { reportError, serialQueue } from '#core'
 import { forgetDevice } from '../services/device/deviceSlots'
@@ -18,10 +18,7 @@ import {
     timeoutMs,
 } from '../services/device/lockPolicy'
 
-const withKept = (
-    slots: Parameters<Parameters<typeof deviceStore.update>[1]>[0],
-    sealed?: Sealed,
-) => {
+const withKept = (slots: DeviceSlots, sealed?: Sealed) => {
     const { kept: _, ...rest } = slots
     return sealed ? { ...rest, kept: sealed } : rest
 }
@@ -42,16 +39,12 @@ export function keptSession() {
     const inTurn = serialQueue()
 
     async function dropNow(vaultId: string | undefined) {
-        for (const step of [
-            () => removeKept(),
-            () =>
-                vaultId
-                    ? deviceStore.update(vaultId, (slots) => withKept(slots))
-                    : Promise.resolve(),
-        ])
-            await step().catch((error: unknown) =>
-                reportError(error, 'vault-session'),
-            )
+        const failed = (error: unknown) => reportError(error, 'vault-session')
+        await removeKept().catch(failed)
+        if (vaultId)
+            await deviceStore
+                .update(vaultId, (slots) => withKept(slots))
+                .catch(failed)
     }
 
     const drop = (vaultId = held?.vaultId) => inTurn(() => dropNow(vaultId))

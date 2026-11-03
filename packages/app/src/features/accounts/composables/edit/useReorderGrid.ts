@@ -1,13 +1,6 @@
 import { durationToken } from '@so/ui'
 import { useTimer } from '@so/ui/useTimer'
-import {
-    computed,
-    nextTick,
-    onScopeDispose,
-    type Ref,
-    shallowRef,
-    watch,
-} from 'vue'
+import { computed, onScopeDispose, type Ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { assignSlots, useScrollRoot, useScrollTop } from '#core'
@@ -26,6 +19,7 @@ import { useVaultAccounts } from '../useVaultAccounts'
 import { useEditSelection } from './useEditSelection'
 import { useListDrag } from './useListDrag'
 import { useMarquee } from './useMarquee'
+import { useReorderKeys } from './useReorderKeys'
 
 // Neighbours make room once the pointer rests over a slot this long, so a card passing over them leaves them still.
 const DWELL_MS = 150
@@ -95,6 +89,8 @@ export function useReorderGrid(
     // A click that ends a drag picks nothing.
     let dragged = false
 
+    const land = () => landing.arm(durationToken('--dur-slow'), flush)
+
     const drag = useListDrag(list, {
         start(id) {
             dragged = true
@@ -114,7 +110,7 @@ export function useReorderGrid(
                         ? dropIndex(point, geometry(current.group))
                         : null,
             }
-            landing.arm(durationToken('--dur-slow'), flush)
+            land()
         },
     })
 
@@ -332,75 +328,19 @@ export function useReorderGrid(
         }
     })
 
-    // Keeps a card moved by keys on screen: its slot is arithmetic, the node may still be sliding.
-    function reveal(group: Group, index: number) {
-        const el = scroller.value
-        if (!el) return
-        const { top, columns, rowHeight } = geometry(group)
-        const from =
-            grid.margin.value + top + Math.floor(index / columns) * rowHeight
-        const to = from + grid.sizes.value.cardPx
-        if (from < el.scrollTop) el.scrollTop = from
-        else if (to > el.scrollTop + el.clientHeight)
-            el.scrollTop = to - el.clientHeight
-    }
-
-    /** Arrows move the card by one, or by a row, within its group; presses add up until it lands. A selection stays put. */
-    function nudge(event: KeyboardEvent, id: string) {
-        const { columns } = grid.cell.value
-        const step = {
-            ArrowLeft: -1,
-            ArrowRight: 1,
-            ArrowUp: -columns,
-            ArrowDown: columns,
-        }[event.key]
-        if (step === undefined || drag.held.value) return
-        event.preventDefault()
-        const own = move.value
-        if (own?.id !== id || own.ids.length > 1 || !holds(own, own.group))
-            flush()
-        const current = move.value ?? begin(id, false)
-        if (!current) return
-        const to = clamp(
-            (current.to ?? current.home) + step,
-            members(current.group).length - 1,
-        )
-        if (to === current.to) return
-        move.value = { ...current, to }
-        landing.arm(durationToken('--dur-slow'), flush)
-        reveal(current.group, to)
-    }
-
-    // Cards go inert, out of Tab, only while the keyboard is in the grid: inert content costs Chrome a compositor layer per card part.
-    const keyboard = shallowRef(false)
-    function focusIn(event: FocusEvent) {
-        const cell = event.currentTarget as HTMLElement
-        const target = event.target as HTMLElement
-        keyboard.value = target.matches(':focus-visible')
-        // Shift+Tab from below lands on a card's own control: the cell is the card's one stop.
-        if (keyboard.value && target !== cell) cell.focus()
-    }
-    function focusOut(event: FocusEvent) {
-        if (!list.value?.contains(event.relatedTarget as Node | null))
-            keyboard.value = false
-    }
-    // Vue moves nodes on a commit or a long scroll, which drops their focus: the focused account gets it back while on screen.
-    // One that left is blurred first: its node is about to show another account.
-    watch(view, ({ cells }) => {
-        const active = document.activeElement
-        if (!(active instanceof HTMLElement) || !list.value?.contains(active))
-            return
-        const id = active.closest<HTMLElement>('[data-id]')?.dataset.id
-        if (!id || !cells.some((cell) => cell.account.id === id))
-            return active.blur()
-        nextTick(() => {
-            if (!list.value?.contains(document.activeElement))
-                list.value
-                    ?.querySelector<HTMLElement>(
-                        `[data-id="${CSS.escape(id)}"]`,
-                    )
-                    ?.focus({ preventScroll: true })
-        })
+    const cells = computed(() => view.value.cells)
+    const keys = useReorderKeys(list, {
+        move,
+        held: drag.held,
+        cells,
+        grid,
+        scroller,
+        begin,
+        holds,
+        flush,
+        land,
+        members,
+        geometry,
     })
 
     const marquee = useMarquee(list, {
@@ -421,7 +361,7 @@ export function useReorderGrid(
         cardWidth: computed(() => `${grid.cell.value.cellWidth}px`),
         cornerInset: computed(() => cornerInsetCss(grid.touch.value)),
         totalSize: grid.totalSize,
-        cells: computed(() => view.value.cells),
+        cells,
         headings: computed(() => view.value.headings),
         announcement,
         /** A press on a card or (`handle`) its handle. */
@@ -442,9 +382,6 @@ export function useReorderGrid(
             )
         },
         marquee,
-        nudge,
-        keyboard,
-        focusIn,
-        focusOut,
+        ...keys,
     }
 }

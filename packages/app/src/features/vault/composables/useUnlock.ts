@@ -1,37 +1,23 @@
-import {
-    DriveError,
-    listCopies,
-    readCopy,
-    type StoredVault,
-    type VaultFile,
-} from '@so/core'
+import type { StoredVault, VaultFile } from '@so/core'
 import { type AsyncStatus, useDesktopLayout } from '@so/ui'
 import { useTimer } from '@so/ui/useTimer'
-import { computed, onScopeDispose, reactive, ref, watch } from 'vue'
+import { computed, onScopeDispose, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-import { formatAgo, reportError, useMock } from '#core'
-import { useDrive, useDriveSignIn } from '#features/drive'
+import { formatAgo, useMock } from '#core'
 
 import { vaultsMock } from '../mocks'
 import { type Credential, LOCATION_ICON, type UnlockMethod } from '../model'
-import {
-    isPinLocked,
-    PIN_LENGTH,
-    pinTriesLeft,
-} from '../services/device/pinAttempts'
 import { useVaultSession } from '../stores/useVaultSession'
 import { useHelloLabel } from './useHelloLabel'
 import { useRemoveVault } from './useRemoveVault'
+import { useUnlockPassword } from './useUnlockPassword'
+import { useUnlockPin } from './useUnlockPin'
 import { useVaultPlace } from './useVaultPlace'
 
-// Lets the last dot paint before the PIN is judged.
-const PIN_SETTLE_MS = 160
 // The success state shows while the vault opens.
 const OPENING_MS = 700
-const PASSWORD_TRIES_BEFORE_PAUSE = 5
-const PASSWORD_PAUSE_MS = 30_000
 
 const METHOD_ICON: Record<UnlockMethod, string> = {
     bio: 'icon-[lucide--fingerprint]',
@@ -42,8 +28,6 @@ const METHOD_ICON: Record<UnlockMethod, string> = {
 export function useUnlock() {
     const { t } = useI18n()
     const session = useVaultSession()
-    const drive = useDrive()
-    const signIn = useDriveSignIn()
     const router = useRouter()
     const desktop = useDesktopLayout()
     const hello = useHelloLabel()
@@ -72,7 +56,6 @@ export function useUnlock() {
         vaultsMock,
     )
     const timer = useTimer()
-    const pauseTimer = useTimer()
 
     const status = computed<AsyncStatus>(() =>
         vaults.value?.length ? 'ready' : 'empty',
@@ -98,45 +81,19 @@ export function useUnlock() {
     )
     const pickerOpen = ref(false)
 
-    const pin = ref('')
-    const pinError = ref('')
-    // The wrong tries live with the slot: a reload or another page never resets them.
-    const wrongPins = computed(
-        () => session.device.get(vault.value?.id ?? '')?.pin?.wrong ?? 0,
-    )
-    const password = ref('')
-    const passwordError = ref('')
-    const wrongPasswords = ref(0)
     // Never resets: the fields shake on every change.
     const failedAttempts = ref(0)
-    const passwordPaused = ref(false)
     const waitingForHello = ref(false)
-    // The password is being checked, and after a refusal maybe against the Drive copy.
-    const checkingPassword = ref(false)
     const opening = ref(false)
     const picked = ref<UnlockMethod>()
-    // The vault whose password was last refused without its Drive copy checked.
-    const refused = ref<string>()
-    if (session.vaults.some(({ sync }) => sync)) drive.prepare()
-
-    watch(password, () => {
-        if (!passwordPaused.value) passwordError.value = ''
-    })
 
     function pickVault(id: string) {
         pickedVaultId.value = id
         pickerOpen.value = false
-        pin.value = ''
-        pinError.value = ''
+        pin.resetPin()
     }
 
-    const hasPin = computed(() => vault.value?.methods.includes('pin') ?? false)
     const hasBio = computed(() => vault.value?.methods.includes('bio') ?? false)
-    const pinLocked = computed(
-        () => hasPin.value && isPinLocked(wrongPins.value),
-    )
-    const canUsePin = computed(() => hasPin.value && !pinLocked.value)
-
     const methods = computed(() =>
         (vault.value?.methods ?? []).map((value) => ({
             value,
@@ -146,7 +103,7 @@ export function useUnlock() {
                 pin: t('PIN'),
                 pw: t('Password'),
             }[value],
-            disabled: value === 'pin' && pinLocked.value,
+            disabled: value === 'pin' && pin.pinLocked.value,
         })),
     )
 
@@ -160,13 +117,13 @@ export function useUnlock() {
         },
         set(value) {
             picked.value = value
-            pinError.value = ''
+            pin.pinError.value = ''
         },
     })
     // Phones have no tabs: the PIN pad while it works (Hello is a key on it), else Hello alone, else the password.
     const phoneMethod = computed<'bio' | 'pin' | 'pw'>(() => {
         if (picked.value === 'pw') return 'pw'
-        if (canUsePin.value) return 'pin'
+        if (pin.canUsePin.value) return 'pin'
         return hasBio.value ? 'bio' : 'pw'
     })
 
@@ -185,136 +142,43 @@ export function useUnlock() {
         })
     }
 
-    // A linked vault's copy may carry a password changed on another device. Only a silent token: no Google window here.
-    async function driveCopy(id: string): Promise<VaultFile | undefined> {
-        const sync = session.vaults.find((item) => item.id === id)?.sync
-        const email = drive.account.value?.email
-        if (!sync || drive.state.value !== 'connected') return undefined
-        if (sync.account !== null && sync.account !== email) return undefined
-        try {
-            return await drive.run(async (api) => {
-                const [copy] = await listCopies(api, id)
-                return copy && readCopy(api, copy.id)
-            })
-        } catch (error) {
-            if (!(error instanceof DriveError)) reportError(error, 'vault')
-            return undefined
-        }
-    }
-
-    let left = false
+    let disposed = false
     onScopeDispose(() => {
-        left = true
+        disposed = true
     })
+
+    const isStale = (forVault: string | undefined) =>
+        disposed || vault.value?.id !== forVault
 
     // An answer for a vault picked away, or after leaving the page, is dropped with the key it unwrapped;
     // a vault another flow opened meanwhile stays.
-    async function attempt(credential: Credential) {
+    async function attempt(
+        credential: Credential,
+        copyOf?: (id: string) => Promise<VaultFile | undefined>,
+    ) {
         const forVault = vault.value?.id
         let result = await session.unlock(credential, forVault)
-        if (result === 'wrong' && credential.method === 'pw' && forVault) {
-            const copy = await driveCopy(forVault)
-            if (copy && !left)
+        if (result === 'wrong' && forVault && copyOf) {
+            const copy = await copyOf(forVault)
+            if (copy && !disposed)
                 result = await session.unlock(credential, forVault, copy)
         }
-        if (!left && vault.value?.id === forVault) return result
+        if (!isStale(forVault)) return result
         if (result === 'opened' && session.state !== 'unlocked') session.lock()
         return null
     }
 
-    async function submitPin() {
-        if (pin.value.length < PIN_LENGTH) return
-        const result = await attempt({ method: 'pin', pin: pin.value })
-        if (result === null) return
-        if (result === 'opened') return succeed()
-        failedAttempts.value++
-        pin.value = ''
-        const left = pinTriesLeft(wrongPins.value)
-        if (left === 0) {
-            picked.value = 'pw'
-            return
-        }
-        pinError.value =
-            left === 1
-                ? t('Wrong PIN. 1 try left, then the master password.')
-                : t('Wrong PIN. {left} tries left, then the master password.', {
-                      left,
-                  })
+    const ctx = {
+        vault,
+        attempt,
+        isStale,
+        succeed,
+        failedAttempts,
+        picked,
+        opening,
     }
-
-    function onPinInput(next: string) {
-        if (next === pin.value) return
-        pin.value = next
-        // A cleared pad is the reset after a wrong PIN: it keeps the message.
-        if (next !== '') pinError.value = ''
-        if (next.length === PIN_LENGTH) timer.arm(PIN_SETTLE_MS, submitPin)
-    }
-
-    function pressDigit(digit: string) {
-        if (opening.value || pin.value.length >= PIN_LENGTH) return
-        onPinInput(pin.value + digit)
-    }
-
-    function pressDelete() {
-        if (opening.value) return
-        pin.value = pin.value.slice(0, -1)
-        pinError.value = ''
-    }
-
-    async function submitPassword() {
-        if (password.value === '' || passwordPaused.value) return
-        if (checkingPassword.value) return
-        checkingPassword.value = true
-        const result = await attempt({
-            method: 'pw',
-            password: password.value,
-        }).finally(() => {
-            checkingPassword.value = false
-        })
-        if (result === null) return
-        if (result === 'opened') return succeed()
-        if (result === 'unreadable') {
-            passwordError.value = t(
-                "Can't open this vault: the file is damaged or newer",
-            )
-            return
-        }
-        wrongPasswords.value++
-        failedAttempts.value++
-        refused.value = vault.value?.id
-        if (wrongPasswords.value >= PASSWORD_TRIES_BEFORE_PAUSE) {
-            passwordPaused.value = true
-            passwordError.value = t('Too many attempts. Try again in 30 s.')
-            pauseTimer.arm(PASSWORD_PAUSE_MS, () => {
-                passwordPaused.value = false
-                wrongPasswords.value = 0
-                passwordError.value = ''
-            })
-            return
-        }
-        passwordError.value = t(
-            'Wrong password. {left} attempts before a 30 s pause.',
-            {
-                left: PASSWORD_TRIES_BEFORE_PAUSE - wrongPasswords.value,
-            },
-        )
-    }
-
-    // After a reload the web has no token: a password changed on another device needs Google to reach the copy.
-    const canCheckCopy = computed(
-        () =>
-            refused.value === vault.value?.id &&
-            vault.value?.location === 'drive' &&
-            !passwordPaused.value &&
-            (drive.state.value === 'disconnected' ||
-                drive.state.value === 'expired'),
-    )
-
-    async function checkCopy() {
-        const forVault = vault.value?.id
-        if (!(await signIn()) || left || vault.value?.id !== forVault) return
-        await submitPassword()
-    }
+    const pin = useUnlockPin(ctx)
+    const password = useUnlockPassword(ctx)
 
     async function startHello() {
         if (waitingForHello.value) return
@@ -330,8 +194,7 @@ export function useUnlock() {
 
     function switchToPin() {
         picked.value = 'pin'
-        pin.value = ''
-        pinError.value = ''
+        pin.resetPin()
     }
 
     function addVault() {
@@ -354,21 +217,9 @@ export function useUnlock() {
         method,
         view,
         hasBio,
-        canUsePin,
-        pinLocked,
-        pin,
-        pinError,
         failedAttempts,
-        onPinInput,
-        pressDigit,
-        pressDelete,
-        password,
-        passwordError,
-        checkingPassword,
-        submitPassword,
-        canCheckCopy,
-        checkCopy,
-        signingIn: drive.connecting,
+        pin: reactive(pin),
+        password: reactive(password),
         waitingForHello,
         startHello,
         switchToPassword,

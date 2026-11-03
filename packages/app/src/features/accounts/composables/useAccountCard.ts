@@ -11,7 +11,7 @@ import {
     cornerInsetCss,
     hasFooter,
 } from '../services/cardLayout'
-import { useAccountLogin } from './secrets/useAccountLogin'
+import { useAccountCredentials } from './secrets/useAccountCredentials'
 
 const SECRET_MASK = '••••••'
 const MAX_SHOWN_TAGS = 3
@@ -27,7 +27,7 @@ export function useAccountCard(
 ) {
     const { t } = useI18n()
     const { copied, copy, reset } = useCopyFeedback()
-    const loginOf = useAccountLogin()
+    const { loginOf } = useAccountCredentials()
     // A recycled list card shows another account: its copy mark and focus belonged to the last one.
     watch(
         () => props.account.id,

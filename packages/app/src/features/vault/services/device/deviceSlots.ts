@@ -128,11 +128,9 @@ export async function movePlaced(
 export async function forgetDevice(vaultId: string) {
     memory.delete(vaultId)
     const failures: unknown[] = []
-    for (const step of [
-        () => sessionArea().remove(areaKey(vaultId)),
-        () => deviceStore.remove(vaultId),
-    ])
-        await step().catch((error: unknown) => failures.push(error))
+    const keep = (error: unknown) => failures.push(error)
+    await sessionArea().remove(areaKey(vaultId)).catch(keep)
+    await deviceStore.remove(vaultId).catch(keep)
     if (failures.length) throw failures[0]
 }
 

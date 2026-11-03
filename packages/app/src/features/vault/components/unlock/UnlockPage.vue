@@ -32,21 +32,9 @@ const {
     method,
     view,
     hasBio,
-    canUsePin,
-    pinLocked,
-    pin,
-    pinError,
     failedAttempts,
-    onPinInput,
-    pressDigit,
-    pressDelete,
+    pin,
     password,
-    passwordError,
-    checkingPassword,
-    submitPassword,
-    canCheckCopy,
-    checkCopy,
-    signingIn,
     waitingForHello,
     startHello,
     switchToPassword,
@@ -106,28 +94,28 @@ const {
                     @use-password="switchToPassword" />
                 <UnlockPin
                     v-else-if="view === 'pin'"
-                    :pin
-                    :message="pinError"
+                    :pin="pin.pin"
+                    :message="pin.pinError"
                     :attempts="failedAttempts"
                     :has-bio="hasBio"
                     :waiting="waitingForHello"
-                    @input="onPinInput"
-                    @digit="pressDigit"
-                    @delete="pressDelete"
+                    @input="pin.onPinInput"
+                    @digit="pin.pressDigit"
+                    @delete="pin.pressDelete"
                     @bio="startHello"
                     @use-password="switchToPassword" />
                 <UnlockPassword
                     v-else-if="view === 'pw'"
-                    v-model="password"
-                    :message="passwordError"
+                    v-model="password.password"
+                    :message="password.passwordError"
                     :attempts="failedAttempts"
-                    :pin-locked="pinLocked"
-                    :can-use-pin="canUsePin"
-                    :busy="checkingPassword"
-                    :can-check-copy="canCheckCopy"
-                    :signing-in="signingIn"
-                    @submit="submitPassword"
-                    @check-copy="checkCopy"
+                    :pin-locked="pin.pinLocked"
+                    :can-use-pin="pin.canUsePin"
+                    :busy="password.checkingPassword"
+                    :can-check-copy="password.canCheckCopy"
+                    :signing-in="password.signingIn"
+                    @submit="password.submitPassword"
+                    @check-copy="password.checkCopy"
                     @use-pin="switchToPin"
                     @reset="resetOpen = true" />
                 <UnlockOpening v-else :vault-name="vault?.name ?? ''" />

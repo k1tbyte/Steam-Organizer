@@ -7,8 +7,7 @@ import { copyText, usePageActive } from '#core'
 import { useGuardCodes } from '#features/steam-guard'
 
 import type { Account } from '../../model'
-import { useAccountLogin } from '../secrets/useAccountLogin'
-import { useAccountPassword } from '../secrets/useAccountPassword'
+import { useAccountCredentials } from '../secrets/useAccountCredentials'
 import { CARD, useCardTarget } from './useCardTarget'
 
 export interface AccountIntents {
@@ -25,8 +24,7 @@ export function useAccountMenu(intents: AccountIntents) {
     const { t } = useI18n()
     const router = useRouter()
     const toast = useToast()
-    const passwordOf = useAccountPassword()
-    const loginOf = useAccountLogin()
+    const { loginOf, passwordOf } = useAccountCredentials()
     const codeOf = useGuardCodes()
     const active = usePageActive()
 

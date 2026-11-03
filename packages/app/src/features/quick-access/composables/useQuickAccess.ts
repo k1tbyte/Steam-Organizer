@@ -2,11 +2,7 @@ import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useCopyFeedback, useMock, usePlatform } from '#core'
-import {
-    type Account,
-    useAccountLogin,
-    useAccountPassword,
-} from '#features/accounts'
+import { type Account, useAccountCredentials } from '#features/accounts'
 
 import { tabMock } from '../mocks'
 import { isPaletteKeyIgnored } from '../services/picker'
@@ -35,8 +31,7 @@ export function useQuickAccess() {
     const tab = useMock(() => undefined, tabMock)
     const picker = useAccountPicker()
     const gate = usePopupAccountGate()
-    const passwordOf = useAccountPassword()
-    const loginOf = useAccountLogin()
+    const { loginOf, passwordOf } = useAccountCredentials()
     const { filled, markFilled } = useFillFeedback()
     const loginCopy = useCopyFeedback()
     const passwordCopy = useCopyFeedback()

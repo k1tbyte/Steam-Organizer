@@ -4,8 +4,7 @@ import { computed, ref, watch } from 'vue'
 import { reportError } from '#core'
 import {
     type Account,
-    useAccountLogin,
-    useAccountPassword,
+    useAccountCredentials,
     useVaultAccounts,
 } from '#features/accounts'
 import { useFillFeedback } from '#features/quick-access'
@@ -28,8 +27,7 @@ const GUARD_GAP_PX = 38
 export function useAutofill() {
     const host = useHostPage()
     const { accounts } = useVaultAccounts()
-    const passwordOf = useAccountPassword()
-    const loginOf = useAccountLogin()
+    const { loginOf, passwordOf } = useAccountCredentials()
     const { filled, markFilled } = useFillFeedback()
     const viewport = useWindowSize()
 
