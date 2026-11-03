@@ -11,12 +11,8 @@ import { reportError } from '../../../../core/reportError'
 import { passkeyRpId } from '../../../../core/session/passkeys'
 import { readPlaced, saveSlot, withSlotsLock } from './deviceSlots'
 
-export type PasskeyFailure = 'cancelled' | 'unsupported' | 'failed'
-
 /** A ceremony never throws a `DOMException` into the UI: a cancel, a missing PRF and a failure are results. */
-export type PasskeyResult<T> =
-    | { ok: true; value: T }
-    | { ok: false; reason: PasskeyFailure }
+export type PasskeyFailure = 'cancelled' | 'unsupported' | 'failed'
 
 export interface PasskeyEnrollment {
     credentialId: string
@@ -38,13 +34,12 @@ const saltOf = async (vaultId: string) =>
 
 const fresh = (bytes: number) => crypto.getRandomValues(new Uint8Array(bytes))
 
-function failure(error: unknown): { ok: false; reason: PasskeyFailure } {
+function failure(error: unknown): PasskeyFailure {
     const name = (error as { name?: unknown } | null)?.name
     // The user closed the prompt, it timed out, or the platform refused the user verification.
-    if (name === 'NotAllowedError' || name === 'AbortError')
-        return { ok: false, reason: 'cancelled' }
+    if (name === 'NotAllowedError' || name === 'AbortError') return 'cancelled'
     reportError(error, 'passkey')
-    return { ok: false, reason: 'failed' }
+    return 'failed'
 }
 
 /** Whether a platform authenticator with PRF can be used: `getClientCapabilities` says so where it exists, else a
@@ -90,10 +85,10 @@ function takeBits(bits: BufferSource): Uint8Array<ArrayBuffer> {
  *  gives it, else from one assertion. The RP ID is the shell's, the same one every assertion uses. */
 export async function enroll(
     vaultId: string,
-): Promise<PasskeyResult<PasskeyEnrollment>> {
+): Promise<PasskeyEnrollment | PasskeyFailure> {
     const rpId = passkeyRpId()
     if (rpId === undefined || !globalThis.navigator?.credentials)
-        return { ok: false, reason: 'unsupported' }
+        return 'unsupported'
     try {
         const salt = await saltOf(vaultId)
         const created = await navigator.credentials.create({
@@ -120,20 +115,14 @@ export async function enroll(
         })
         const credential = created as PublicKeyCredential | null
         const prf = prfOf(credential)
-        if (!credential || !prf?.enabled)
-            return { ok: false, reason: 'unsupported' }
+        if (!credential || !prf?.enabled) return 'unsupported'
         const credentialId = new Uint8Array(credential.rawId).toBase64({
             alphabet: 'base64url',
         })
         if (prf.results?.first)
-            return {
-                ok: true,
-                value: { credentialId, bits: takeBits(prf.results.first) },
-            }
-        const asked = await prfBits(credentialId, vaultId)
-        return asked.ok
-            ? { ok: true, value: { credentialId, bits: asked.value } }
-            : asked
+            return { credentialId, bits: takeBits(prf.results.first) }
+        const bits = await prfBits(credentialId, vaultId)
+        return typeof bits === 'string' ? bits : { credentialId, bits }
     } catch (error) {
         return failure(error)
     }
@@ -143,10 +132,10 @@ export async function enroll(
 export async function prfBits(
     credentialId: string,
     vaultId: string,
-): Promise<PasskeyResult<Uint8Array<ArrayBuffer>>> {
+): Promise<Uint8Array<ArrayBuffer> | PasskeyFailure> {
     const rpId = passkeyRpId()
     if (rpId === undefined || !globalThis.navigator?.credentials)
-        return { ok: false, reason: 'unsupported' }
+        return 'unsupported'
     try {
         const asserted = await navigator.credentials.get({
             publicKey: {
@@ -166,9 +155,7 @@ export async function prfBits(
             },
         })
         const first = prfOf(asserted)?.results?.first
-        return first
-            ? { ok: true, value: takeBits(first) }
-            : { ok: false, reason: 'unsupported' }
+        return first ? takeBits(first) : 'unsupported'
     } catch (error) {
         return failure(error)
     }
@@ -202,11 +189,11 @@ export async function passkeySlot(
 ): Promise<SecretSlot | 'wrong'> {
     const slot = (await readPlaced(vaultId)).prf
     if (!slot) return 'wrong'
-    const asked = await prfBits(slot.credentialId, vaultId)
-    if (!asked.ok) return 'wrong'
+    const bits = await prfBits(slot.credentialId, vaultId)
+    if (typeof bits === 'string') return 'wrong'
     try {
-        return slotOf(await prfWrap(asked.value), slot.key)
+        return slotOf(await prfWrap(bits), slot.key)
     } finally {
-        asked.value.fill(0)
+        bits.fill(0)
     }
 }

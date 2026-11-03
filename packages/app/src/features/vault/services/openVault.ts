@@ -11,7 +11,7 @@ import {
 } from '@so/core'
 
 import { reportError } from '../../../core/reportError'
-import type { UnlockResult } from '../model'
+import type { OpenRefusal } from '../model'
 import { openContents, type VaultContents } from './vaultContents'
 
 export interface OpenedVault {
@@ -52,7 +52,7 @@ export async function passwordSlotOf(
 export async function opens(
     file: VaultFile,
     slot: SecretSlot,
-): Promise<VaultKey | Exclude<UnlockResult, 'opened'>> {
+): Promise<VaultKey | OpenRefusal> {
     try {
         return await unlockVaultWith(file, slot)
     } catch (error) {
@@ -66,9 +66,7 @@ export async function opens(
 export async function opensPassword(
     file: VaultFile,
     password: string,
-): Promise<
-    { key: VaultKey; slot: SecretSlot } | Exclude<UnlockResult, 'opened'>
-> {
+): Promise<{ key: VaultKey; slot: SecretSlot } | OpenRefusal> {
     const slot = await passwordSlotOf(file, password)
     if (typeof slot === 'string') return slot
     const key = await opens(file, slot)

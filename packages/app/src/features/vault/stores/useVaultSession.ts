@@ -11,7 +11,7 @@ import {
     WrongPasswordError,
 } from '@so/core'
 import { defineStore } from 'pinia'
-import { computed, ref, shallowRef, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import {
     LAST_VAULT_STORAGE_KEY,
@@ -44,16 +44,12 @@ import {
     passwordSlotOf,
     withCopySlots,
 } from '../services/openVault'
-import {
-    EMPTY_CONTENTS,
-    type OpenVault,
-    openContents,
-} from '../services/vaultContents'
+import { EMPTY_CONTENTS, type OpenVault } from '../services/vaultContents'
 import { FIRST_PUSH, newVault, pendingIn } from '../services/vaultSync'
 import { deviceFacts } from './deviceFacts'
 import { keptRestore } from './keptRestore'
 import { keptSession } from './keptSession'
-import { recordKeyring } from './recordKeys'
+import { openState } from './openState'
 import { vaultFiles } from './vaultFiles'
 import { vaultRecords } from './vaultRecords'
 import { vaultSyncSide } from './vaultSyncSide'
@@ -61,9 +57,8 @@ import { vaultSyncSide } from './vaultSyncSide'
 /** Whether a vault is open: the router guard reads `state`, the lock button and unlock flow write it.
  *  Vaults on this device come from `@so/core`; a mock vault (mock mode, Drive restore) takes the demo credentials. */
 export const useVaultSession = defineStore('vault-session', () => {
-    // Unwrapped by unlock, kept through the opening animation until `open()`.
-    const opened = shallowRef<OpenVault | null>(null)
-    const recordKeys = recordKeyring()
+    const openVaultState = openState()
+    const { opened, unlocked, recordKeys, epoch } = openVaultState
     // A lock meanwhile keeps the key dropped; the list still takes the new file, or the old one would open again.
     const files = vaultFiles((vault, contents) => {
         const active = opened.value
@@ -75,34 +70,19 @@ export const useVaultSession = defineStore('vault-session', () => {
             }
     })
     const { serial, get: storedVault, save, persist } = files
-    // A lock meanwhile still lets an accepted change land, on records read again from the file.
-    const contentsOf = async (vault: StoredVault, key: VaultKey) =>
-        opened.value?.vault === vault
-            ? opened.value.contents
-            : openContents(key, vault.file)
-    const sync = vaultSyncSide(files, opened, recordKeys, contentsOf)
-    const records = vaultRecords(files, opened, recordKeys, contentsOf)
+    const sync = vaultSyncSide(files, openVaultState)
+    const records = vaultRecords(files, openVaultState)
     const kept = keptSession()
     const device = deviceFacts()
-    const revival = keptRestore(kept, {
-        vaultIds: () => (files.list.value ?? []).map(({ id }) => id),
-        vault: storedVault,
+    const revival = keptRestore(kept, files, openVaultState, {
         lastVaultId: () => lastVaultId.value ?? undefined,
-        unlocked: () => unlocked.value,
-        openedId: () => opened.value?.vault.id,
-        epoch: () => epoch,
-        refreshVaults: () =>
-            opened.value ? Promise.resolve() : files.refresh(),
         openRestored: (vault, slot) =>
             openWith(vault, slot, { restored: true }),
         open,
         lockLocal,
     })
-    const unlocked = ref(false)
     // Held back while `load()` looks for a kept session, so a restore never flashes the locked screen.
     const restoring = ref(false)
-    // Bumped by every lock: an answer that began before one (a slow restore) never opens.
-    let epoch = 0
     const lastVaultId = ref(readStored(LAST_VAULT_STORAGE_KEY))
 
     const real = computed<SessionState | undefined>(() => {
@@ -127,11 +107,8 @@ export const useVaultSession = defineStore('vault-session', () => {
         // Drafts queue their writes while the key is still here; the queue lands them after.
         for (const flush of drafts) flush()
         sync.checkpoint(opened.value)
-        if (opened.value || unlocked.value) epoch++
-        opened.value = null
-        recordKeys.clear()
+        openVaultState.close()
         kept.release()
-        unlocked.value = false
         override.value = 'locked'
     }
 
@@ -167,7 +144,7 @@ export const useVaultSession = defineStore('vault-session', () => {
         copy?: VaultFile,
     ): Promise<UnlockResult> {
         // Taken before the PBKDF2, the PIN or the passkey: a lock meanwhile refuses the answer.
-        const at = epoch
+        const at = epoch()
         const vault = vaultId ? storedVault(vaultId) : files.list.value?.[0]
         if (!vault) {
             // A vault removed meanwhile; only a sample vault takes the demo credentials.
@@ -245,7 +222,7 @@ export const useVaultSession = defineStore('vault-session', () => {
     async function openWith(
         vault: StoredVault,
         slot: SecretSlot,
-        { password, copy, restored, at = epoch }: OpenOptions = {},
+        { password, copy, restored, at = epoch() }: OpenOptions = {},
     ): Promise<UnlockResult> {
         let used = slot
         let key = await opens(vault.file, slot)
@@ -269,7 +246,7 @@ export const useVaultSession = defineStore('vault-session', () => {
             // Removed meanwhile: opening or upgrading it would bring it back. Opened by another flow, or locked since
             // the answer began: that one stays.
             const latest = storedVault(vault.id)
-            if (!latest || unlocked.value || at !== epoch) return 'unreadable'
+            if (!latest || unlocked.value || at !== epoch()) return 'unreadable'
             const file = viaCopy
                 ? await withCopySlots(latest.file, unwrapped, viaCopy)
                 : latest.file
@@ -316,7 +293,7 @@ export const useVaultSession = defineStore('vault-session', () => {
             result === 'opened' &&
             password !== undefined &&
             records &&
-            at === epoch
+            at === epoch()
         ) {
             await armAfterPassword(vault.id, records, used).catch((error) =>
                 reportError(error, 'vault-session'),
@@ -402,11 +379,8 @@ export const useVaultSession = defineStore('vault-session', () => {
             const active = opened.value
             // Before the entry goes: its removal would lock this page through the watch, and `active` with it.
             if (active?.vault.id === id) {
-                epoch++
-                opened.value = null
-                recordKeys.clear()
+                openVaultState.close()
                 kept.release()
-                unlocked.value = false
                 override.value = null
                 steamCache
                     .pruneCollections(active.key, () => false)

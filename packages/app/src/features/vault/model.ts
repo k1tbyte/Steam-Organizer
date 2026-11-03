@@ -96,6 +96,7 @@ export type PinState = 'off' | 'on' | 'paused'
 
 /** `unreadable`: a damaged file or a newer format, which no credential opens. */
 export type UnlockResult = 'opened' | 'wrong' | 'unreadable'
+export type OpenRefusal = Exclude<UnlockResult, 'opened'>
 
 export type Credential =
     | { method: 'bio' }

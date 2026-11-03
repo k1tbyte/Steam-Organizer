@@ -7,6 +7,12 @@ let authenticator: ReturnType<typeof fakeAuthenticator>
 
 afterEach(() => authenticator?.restore())
 
+async function enrolled(vaultId: string) {
+    const made = await enroll(vaultId)
+    if (typeof made === 'string') throw new Error(made)
+    return made
+}
+
 it('is available when the browser reports the PRF extension, or without a report a user-verifying authenticator', async () => {
     authenticator = fakeAuthenticator()
     expect(await passkeysAvailable()).toBe(true)
@@ -25,15 +31,13 @@ it('is not available without an RP ID from the shell', async () => {
     const { installPasskeys } = await import('#core')
     installPasskeys(undefined)
     expect(await passkeysAvailable()).toBe(false)
-    expect(await enroll('vault')).toEqual({ ok: false, reason: 'unsupported' })
+    expect(await enroll('vault')).toBe('unsupported')
 })
 
 it('enrolls a platform passkey for the shell RP ID and returns its PRF bits', async () => {
     authenticator = fakeAuthenticator({ rpId: 'steam.example' })
-    const made = await enroll('vault-a')
-    expect(made.ok).toBe(true)
-    if (!made.ok) return
-    expect(made.value.bits).toHaveLength(32)
+    const made = await enrolled('vault-a')
+    expect(made.bits).toHaveLength(32)
 
     const [request] = authenticator.calls.create
     const publicKey = request?.publicKey
@@ -47,17 +51,15 @@ it('enrolls a platform passkey for the shell RP ID and returns its PRF bits', as
 
 it('zeroes the browser-owned PRF buffer once the bits are copied', async () => {
     authenticator = fakeAuthenticator()
-    const made = await enroll('vault-a')
-    if (!made.ok) throw new Error('enroll failed')
-    expect(made.value.bits.some((byte) => byte !== 0)).toBe(true)
+    const made = await enrolled('vault-a')
+    expect(made.bits.some((byte) => byte !== 0)).toBe(true)
     for (const output of authenticator.outputs)
         expect(new Uint8Array(output).every((byte) => byte === 0)).toBe(true)
 })
 
 it('asks for the PRF with an assertion when the creation gives none', async () => {
     authenticator = fakeAuthenticator({ prf: 'get-only' })
-    const made = await enroll('vault-a')
-    expect(made.ok).toBe(true)
+    await enrolled('vault-a')
     expect(authenticator.calls.get).toHaveLength(1)
     const asked = authenticator.calls.get[0]?.publicKey
     expect(asked?.rpId).toBe('so.test')
@@ -66,12 +68,12 @@ it('asks for the PRF with an assertion when the creation gives none', async () =
 
 it('gives the same bits for the same vault and other bits for another', async () => {
     authenticator = fakeAuthenticator()
-    const made = await enroll('vault-a')
-    if (!made.ok) throw new Error('enroll failed')
-    const again = await prfBits(made.value.credentialId, 'vault-a')
-    const other = await prfBits(made.value.credentialId, 'vault-b')
-    expect(again).toEqual({ ok: true, value: made.value.bits })
-    expect(other.ok && other.value).not.toEqual(made.value.bits)
+    const made = await enrolled('vault-a')
+    const again = await prfBits(made.credentialId, 'vault-a')
+    const other = await prfBits(made.credentialId, 'vault-b')
+    expect(again).toEqual(made.bits)
+    expect(other).toHaveLength(32)
+    expect(other).not.toEqual(made.bits)
     // An assertion names only the enrolled credential.
     const allowed = authenticator.calls.get.at(-1)?.publicKey?.allowCredentials
     expect(allowed).toHaveLength(1)
@@ -80,15 +82,12 @@ it('gives the same bits for the same vault and other bits for another', async ()
 it('maps a cancelled, unsupported or failed ceremony to a result, never a thrown DOMException', async () => {
     authenticator = fakeAuthenticator()
     authenticator.cancel()
-    expect(await enroll('v')).toEqual({ ok: false, reason: 'cancelled' })
-    expect(await prfBits('AAAA', 'v')).toEqual({
-        ok: false,
-        reason: 'cancelled',
-    })
+    expect(await enroll('v')).toBe('cancelled')
+    expect(await prfBits('AAAA', 'v')).toBe('cancelled')
     authenticator.restore()
 
     authenticator = fakeAuthenticator({ prf: 'none' })
-    expect(await enroll('v')).toEqual({ ok: false, reason: 'unsupported' })
+    expect(await enroll('v')).toBe('unsupported')
     authenticator.restore()
 
     authenticator = fakeAuthenticator()
@@ -97,5 +96,5 @@ it('maps a cancelled, unsupported or failed ceremony to a result, never a thrown
             throw new DOMException('bad', 'SecurityError')
         },
     })
-    expect(await enroll('v')).toEqual({ ok: false, reason: 'failed' })
+    expect(await enroll('v')).toBe('failed')
 })

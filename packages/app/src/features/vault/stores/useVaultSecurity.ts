@@ -120,20 +120,12 @@ export const useVaultSecurity = defineStore('vault-security', () => {
             // Before the platform prompt: a wrong password never gets that far.
             await openSecretSlot(from)
             const made = await enroll(id)
-            if (!made.ok)
-                return made.reason === 'unsupported'
-                    ? 'unavailable'
-                    : made.reason
+            if (typeof made === 'string')
+                return made === 'unsupported' ? 'unavailable' : made
             try {
-                await enrollPrf(
-                    id,
-                    key,
-                    from,
-                    made.value.credentialId,
-                    made.value.bits,
-                )
+                await enrollPrf(id, key, from, made.credentialId, made.bits)
             } finally {
-                made.value.bits.fill(0)
+                made.bits.fill(0)
             }
             return 'ok'
         })

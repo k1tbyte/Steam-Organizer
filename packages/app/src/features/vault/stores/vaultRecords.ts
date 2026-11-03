@@ -2,30 +2,21 @@ import {
     openSecret,
     restampEdited,
     type SealedRecord,
-    type StoredVault,
     type VaultFile,
     type VaultKey,
     type VaultSlots,
     writeRecords,
 } from '@so/core'
-import type { ShallowRef } from 'vue'
-
 import { restoredRecords } from '../services/restoredRecords'
-import {
-    type OpenVault,
-    type VaultContents,
-    withChanges,
-} from '../services/vaultContents'
-import type { recordKeyring } from './recordKeys'
+import { type VaultContents, withChanges } from '../services/vaultContents'
+import type { OpenState } from './openState'
 import type { vaultFiles } from './vaultFiles'
 
 /** The session's records half: writes in the one queue, the open vault's file and records as they stand, one secret
  *  opened on demand, and the key for what needs it outside the queue. */
 export function vaultRecords(
     files: ReturnType<typeof vaultFiles>,
-    opened: ShallowRef<OpenVault | null>,
-    recordKeys: ReturnType<typeof recordKeyring>,
-    contentsOf: (vault: StoredVault, key: VaultKey) => Promise<VaultContents>,
+    { opened, recordKeys, contentsOf }: OpenState,
 ) {
     const { serial, get: storedVault, save } = files
 

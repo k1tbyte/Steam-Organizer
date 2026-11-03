@@ -1,23 +1,16 @@
-import type { StoredVault, VaultFile, VaultKey } from '@so/core'
-import type { ShallowRef } from 'vue'
+import type { VaultFile } from '@so/core'
 
 import type { LockedSnapshot, MergedCopy } from '../model'
-import {
-    type OpenVault,
-    tally,
-    type VaultContents,
-} from '../services/vaultContents'
+import { type OpenVault, tally } from '../services/vaultContents'
 import { mergeCopyInto, pendingIn } from '../services/vaultSync'
-import type { recordKeyring } from './recordKeys'
+import type { OpenState } from './openState'
 import type { vaultFiles } from './vaultFiles'
 
 /** The session's Drive half: merging the vault with its copy, the checkpoint a lock leaves for the sync, and the link.
  *  The sync engine in `#features/backups` drives it; the session only holds the vault it works on. */
 export function vaultSyncSide(
     files: ReturnType<typeof vaultFiles>,
-    opened: ShallowRef<OpenVault | null>,
-    recordKeys: ReturnType<typeof recordKeyring>,
-    contentsOf: (vault: StoredVault, key: VaultKey) => Promise<VaultContents>,
+    { opened, recordKeys, contentsOf }: OpenState,
 ) {
     const { serial, get: storedVault, save } = files
     const lockWatchers = new Set<

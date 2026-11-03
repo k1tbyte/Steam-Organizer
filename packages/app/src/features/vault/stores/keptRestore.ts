@@ -1,4 +1,4 @@
-import type { StoredVault } from '@so/core'
+import type { SecretSlot, StoredVault } from '@so/core'
 
 import { reportError } from '#core'
 
@@ -9,22 +9,15 @@ import {
     readSecuritySettings,
 } from '../services/device/lockPolicy'
 import type { keptSession } from './keptSession'
+import type { OpenState } from './openState'
+import type { vaultFiles } from './vaultFiles'
 
-/** What the restore reads and does in the session, by closure: it never holds the session's state itself. */
-export interface RestoreHost {
-    vaultIds: () => string[]
-    vault: (id: string) => StoredVault | undefined
+/** What only the session does: the restore calls it, and never holds the session's state itself. */
+export interface RestoreActions {
     lastVaultId: () => string | undefined
-    unlocked: () => boolean
-    /** The open vault's id while a key is held. */
-    openedId: () => string | undefined
-    /** Bumped by every lock: an answer that began before one never opens. */
-    epoch: () => number
-    /** Takes in the vaults another page stored since this page loaded. */
-    refreshVaults: () => Promise<void>
     openRestored: (
         vault: StoredVault,
-        slot: Awaited<ReturnType<typeof deviceSlotOf>>,
+        slot: SecretSlot,
     ) => Promise<UnlockResult>
     open: (keep: boolean) => void
     lockLocal: () => void
@@ -34,33 +27,38 @@ export interface RestoreHost {
  *  another page locks this one. */
 export function keptRestore(
     kept: ReturnType<typeof keptSession>,
-    host: RestoreHost,
+    files: ReturnType<typeof vaultFiles>,
+    { opened, unlocked, epoch }: OpenState,
+    actions: RestoreActions,
 ) {
+    const openedId = () => opened.value?.vault.id
+
     async function restore(stale = false) {
-        if (host.unlocked()) return
-        const at = host.epoch()
-        // Another page's unlock may be of a vault, or a file, this page has not seen.
-        if (stale) await host.refreshVaults()
-        const found = await kept.find(host.vaultIds(), host.lastVaultId())
-        const vault = found && host.vault(found.vaultId)
-        if (!found || !vault || host.unlocked() || at !== host.epoch()) return
+        if (unlocked.value) return
+        const at = epoch()
+        // Another page's unlock may be of a vault, or a file, this page has not seen; an open vault keeps its list.
+        if (stale && !opened.value) await files.refresh()
+        const vaultIds = (files.list.value ?? []).map(({ id }) => id)
+        const found = await kept.find(vaultIds, actions.lastVaultId())
+        const vault = found && files.get(found.vaultId)
+        if (!found || !vault || unlocked.value || at !== epoch()) return
         let result: UnlockResult = 'unreadable'
         try {
-            result = await host.openRestored(
+            result = await actions.openRestored(
                 vault,
                 await deviceSlotOf(found.sealed),
             )
         } catch (error) {
             reportError(error, 'vault-session')
         }
-        if (result === 'opened' && at === host.epoch() && host.openedId()) {
+        if (result === 'opened' && at === epoch() && openedId()) {
             // Another page may have locked meanwhile, which this page did not see locked: its entry is the live signal.
-            if (!found.onDisk && !(await kept.read())) return host.lockLocal()
-            return host.open(found.onDisk)
+            if (!found.onDisk && !(await kept.read()))
+                return actions.lockLocal()
+            return actions.open(found.onDisk)
         }
         // A lock or another unlock came first: that one's entry stays.
-        if (!host.unlocked() && at === host.epoch())
-            await kept.drop(found.vaultId)
+        if (!unlocked.value && at === epoch()) await kept.drop(found.vaultId)
     }
 
     // The event may be older than the entry, so the entry is read again.
@@ -68,13 +66,13 @@ export function keptRestore(
         const entry = await kept.read()
         if (!entry) {
             // Immediately keeps none: its removal is not another page's lock.
-            if (host.unlocked() && keepsSession(readSecuritySettings()))
-                host.lockLocal()
+            if (unlocked.value && keepsSession(readSecuritySettings()))
+                actions.lockLocal()
             return
         }
-        if (!host.unlocked()) return restore(true)
-        if (entry.vault !== host.openedId()) {
-            host.lockLocal()
+        if (!unlocked.value) return restore(true)
+        if (entry.vault !== openedId()) {
+            actions.lockLocal()
             return restore(true)
         }
     }
