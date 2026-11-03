@@ -15,6 +15,7 @@ import { computed, ref, shallowRef, watch } from 'vue'
 
 import {
     LAST_VAULT_STORAGE_KEY,
+    mocksOn,
     readStored,
     reportError,
     useMock,
@@ -165,8 +166,12 @@ export const useVaultSession = defineStore('vault-session', () => {
         vaultId?: string,
         copy?: VaultFile,
     ): Promise<UnlockResult> {
+        // Taken before the PBKDF2, the PIN or the passkey: a lock meanwhile refuses the answer.
+        const at = epoch
         const vault = vaultId ? storedVault(vaultId) : files.list.value?.[0]
         if (!vault) {
+            // A vault removed meanwhile; only a sample vault takes the demo credentials.
+            if (!mocksOn()) return 'unreadable'
             const ok = await demoVerify(credential)
             if (credential.method === 'pin' && vaultId)
                 device.demoPin(vaultId, ok)
@@ -175,16 +180,20 @@ export const useVaultSession = defineStore('vault-session', () => {
         if (credential.method === 'pin') {
             const tried = await tryPin(vault.file, credential.pin)
             await device.refresh([vault.id])
-            return typeof tried === 'string' ? tried : openWith(vault, tried)
+            return typeof tried === 'string'
+                ? tried
+                : openWith(vault, tried, { at })
         }
         if (credential.method === 'bio') {
             const tried = await passkeySlot(vault.id)
-            return typeof tried === 'string' ? tried : openWith(vault, tried)
+            return typeof tried === 'string'
+                ? tried
+                : openWith(vault, tried, { at })
         }
         const { password } = credential
         const slot = await passwordSlotOf(vault.file, password)
         if (typeof slot === 'string') return slot
-        return openWith(vault, slot, { password, copy })
+        return openWith(vault, slot, { password, copy, at })
     }
 
     let loading: Promise<void> | null = null
@@ -227,6 +236,8 @@ export const useVaultSession = defineStore('vault-session', () => {
         copy?: VaultFile
         /** `slot` is the device slot of a kept session: its ciphertext is already the one to keep. */
         restored?: boolean
+        /** The lock epoch the attempt began in. */
+        at?: number
     }
 
     /** Every way in ends here: opens the vault's records with `slot`, moves the secret under the device key once
@@ -234,9 +245,8 @@ export const useVaultSession = defineStore('vault-session', () => {
     async function openWith(
         vault: StoredVault,
         slot: SecretSlot,
-        { password, copy, restored }: OpenOptions = {},
+        { password, copy, restored, at = epoch }: OpenOptions = {},
     ): Promise<UnlockResult> {
-        const at = epoch
         let used = slot
         let key = await opens(vault.file, slot)
         const viaCopy =
@@ -319,7 +329,8 @@ export const useVaultSession = defineStore('vault-session', () => {
     /** Checks the open vault's master password without touching the session. */
     async function verify(credential: Credential): Promise<boolean> {
         const vault = opened.value?.vault
-        if (!vault || credential.method !== 'pw') return demoVerify(credential)
+        if (credential.method !== 'pw') return false
+        if (!vault) return mocksOn() && demoVerify(credential)
         return (
             typeof (await opensPassword(vault.file, credential.password)) !==
             'string'
@@ -419,7 +430,9 @@ export const useVaultSession = defineStore('vault-session', () => {
     function changePassword(current: string, next: string): Promise<boolean> {
         const id = opened.value?.vault.id
         if (id === undefined)
-            return demoVerify({ method: 'pw', password: current })
+            return mocksOn()
+                ? demoVerify({ method: 'pw', password: current })
+                : Promise.resolve(false)
         return serial(async () => {
             const vault = storedVault(id)
             if (!vault) return false

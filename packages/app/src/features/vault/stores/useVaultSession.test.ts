@@ -183,6 +183,19 @@ it('never opens a vault removed while its password was being checked', async () 
     expect(await vaultStore.list()).toEqual([])
 })
 
+it('never takes the demo credentials for a vault it does not have', async () => {
+    const session = await reload()
+    await session.create('Main', PASSWORD)
+    session.lock()
+    expect(await session.unlock({ method: 'bio' }, 'gone')).toBe('unreadable')
+    expect(
+        await session.unlock({ method: 'pw', password: 'demo' }, 'gone'),
+    ).toBe('unreadable')
+    expect(await session.verify({ method: 'pw', password: 'demo' })).toBe(false)
+    expect(await session.changePassword('demo', 'next')).toBe(false)
+    expect(session.state).toBe('locked')
+})
+
 it('never lets a late unlock replace a vault another flow opened', async () => {
     const first = await reload()
     await first.create('Farm', PASSWORD)

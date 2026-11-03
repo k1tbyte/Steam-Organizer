@@ -1,6 +1,7 @@
 import { useWindowSize } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 
+import { reportError } from '#core'
 import {
     type Account,
     useAccountLogin,
@@ -127,7 +128,14 @@ export function useAutofill() {
         async fillAccount(account: Account) {
             lastFilledId.value = account.id
             pickerOpen.value = false
-            host.fillLogin(await loginOf(account), await passwordOf(account))
+            try {
+                host.fillLogin(
+                    await loginOf(account),
+                    await passwordOf(account),
+                )
+            } catch (error) {
+                reportError(error, 'autofill')
+            }
         },
         fillCode(code: string) {
             host.fillCode(code)

@@ -1,6 +1,7 @@
 import { computed, reactive, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { mocksOn } from '#core'
 import { type Account, useAccountLocks } from '#features/accounts'
 import { useVaultSession } from '#features/vault'
 
@@ -47,7 +48,7 @@ export function useAccountGate() {
             try {
                 accepted = session.contents?.data.has(id)
                     ? await locks.unlock(id, { password: entered })
-                    : entered === DEMO_ACCOUNT_PASSWORD
+                    : mocksOn() && entered === DEMO_ACCOUNT_PASSWORD
             } finally {
                 busy = false
             }

@@ -8,7 +8,7 @@ import {
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { usePageActive } from '#core'
+import { mocksOn, usePageActive } from '#core'
 import {
     type Account,
     type LockInfo,
@@ -37,7 +37,9 @@ export function useAccountGate(
         if (held.value) return locks.unlock(account().id, credential)
         if ('master' in credential)
             return session.verify({ method: 'pw', password: credential.master })
-        return Promise.resolve(credential.password === DEMO_ACCOUNT_PASSWORD)
+        return Promise.resolve(
+            mocksOn() && credential.password === DEMO_ACCOUNT_PASSWORD,
+        )
     }
     const form = useUnlockForm(lock, accepts)
 

@@ -61,6 +61,9 @@ export function useMock<T>(
     })
 }
 
+/** Samples may show; never in a production build. Demo answers check it, so a real path never falls into one. */
+export const mocksOn = () => state.mode !== 'live'
+
 function pickOf(mock: Mock<unknown>): string {
     const picked = state.picks[mock.key]
     return picked !== undefined && picked in mock.variants
