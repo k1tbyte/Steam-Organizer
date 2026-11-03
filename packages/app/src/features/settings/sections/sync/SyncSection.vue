@@ -10,6 +10,8 @@ import {
 } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
+import { StopSyncDialog } from '#features/backups'
+
 import IdentityCard from '../../components/IdentityCard.vue'
 import { useSyncSection } from './useSyncSection'
 
@@ -125,5 +127,14 @@ const view = useSyncSection()
                 <FpIcon name="icon-[lucide--arrow-right]" class="text-14" />
             </FpButton>
         </FpFormRow>
+        <FpFormRow
+            v-if="view.stopping.synced"
+            plain
+            inline
+            :label="t('Stop syncing')"
+            :description="t('Keep this vault on this device only. Drive keeps its copy and backups.')">
+            <FpButton size="sm" variant="soft" :label="t('Stop syncing…')" @click="view.stopping.ask" />
+        </FpFormRow>
+        <StopSyncDialog :stopping="view.stopping" />
     </div>
 </template>

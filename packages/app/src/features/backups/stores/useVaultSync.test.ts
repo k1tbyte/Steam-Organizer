@@ -6,6 +6,7 @@ import {
     listCopies,
     readCopy,
     type SealedRecord,
+    saveBackup,
     sealRecord,
 } from '@so/core'
 import { createPinia, setActivePinia } from 'pinia'
@@ -230,6 +231,38 @@ it('keeps the vault on this device when its copy is gone, and says so once', asy
     expect(a.notices).toEqual([{ kind: 'gone', vaultName: 'Main' }])
     expect(drive.files).toHaveLength(0)
     expect(dataOf(a)).toEqual({ one: { n: 1 }, two: { n: 2 } })
+})
+
+it('stops syncing: the vault stays here, the copy and backups stay in Drive, the other device keeps its own', async () => {
+    const { a, b } = await twoDevices()
+    const snapshot = await a.session.snapshot()
+    if (!snapshot) throw new Error('The vault is open')
+    await saveBackup(drive.api, snapshot.file, {
+        vaultName: 'Main',
+        kind: 'manual',
+        accounts: 0,
+    })
+    // A sync in flight lands first; none starts after.
+    drive.gate = new Promise((resolve) => setTimeout(resolve, 5))
+    await write(a, 'two', 2, 2)
+    const running = a.engine.sync()
+    await a.engine.stop()
+    await running
+    const inDrive = drive.files.map(({ id, version }) => `${id}@${version}`)
+    expect(a.session.vault?.sync).toBeNull()
+
+    await write(a, 'three', 3, 3)
+    await a.engine.sync()
+    expect(dataOf(a)).toEqual({ one: { n: 1 }, two: { n: 2 }, three: { n: 3 } })
+    expect(a.notices).toEqual([])
+    expect(drive.files.map(({ id, version }) => `${id}@${version}`)).toEqual(
+        inDrive,
+    )
+    expect(await listBackups(drive.api, a.session.vault?.id)).toHaveLength(1)
+    // The other device still syncs with the copy, which holds what the last sync pushed.
+    await b.engine.sync()
+    expect(dataOf(b)).toEqual({ one: { n: 1 }, two: { n: 2 } })
+    expect(b.session.vault?.sync).not.toBeNull()
 })
 
 it('treats another Google account as the copy gone', async () => {

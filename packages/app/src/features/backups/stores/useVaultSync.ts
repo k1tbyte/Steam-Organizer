@@ -298,6 +298,14 @@ export const useVaultSync = defineStore('vault-sync', () => {
             return sync()
         },
         flush,
+        /** Stops syncing the open vault: it stays on this device only (`unlink`), its Drive copy and backups stay, and
+         *  other devices keep their own. Runs in the sync lane, so a sync in flight lands first and none starts after. */
+        async stop() {
+            const open = session.vault
+            if (!open?.sync) return
+            await inLane(() => session.unlink(open.id))
+            if (failed.value?.at === backups.scope) failed.value = null
+        },
         /** Saves an auto backup when one is due, then keeps the newest ten. */
         backUpIfDue() {
             checking ??= backUp().finally(() => {

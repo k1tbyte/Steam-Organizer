@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
@@ -6,6 +6,7 @@ import {
     SYNC_INTERVALS,
     type SyncInterval,
     useBackupCount,
+    useStopSync,
     useVaultSync,
 } from '#features/backups'
 
@@ -49,5 +50,6 @@ export function useSyncSection() {
         hasBackupsInfo: computed(() => backups.value !== undefined),
         backupsLine,
         openBackups,
+        stopping: reactive(useStopSync()),
     }
 }

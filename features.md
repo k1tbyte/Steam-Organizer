@@ -126,6 +126,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Auto sync: check Drive on open, focus, interval, after changes and "sync now" `[new]`; changes merge account by account (a refresh on one device never undoes an edit on another), deletions carry over, the later password change wins.
 - Move to Google Drive `[new]`: a vault kept on this device gets backup history and sync in one step; a copy Drive already holds of it is merged, not duplicated. Google Drive picked when creating a vault does the same from the start.
 - A vault whose Drive copy is gone (reset elsewhere, app data removed, another Google account) stays on the device with a notice; nothing is recreated silently.
+- Stop syncing (Settings, Backups) `[new]`: after a confirm the vault stays on this device as a vault of its own; its copy and backups stay in Drive, and other devices synced to it keep their own copy.
 - Status: saved, syncing, error, offline.
 
 ---
