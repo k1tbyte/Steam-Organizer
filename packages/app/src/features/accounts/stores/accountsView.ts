@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
 import { ACCOUNTS_VIEW_STORAGE_KEY, readStored, writeStored } from '#core'
+import { useVaultSession } from '#features/vault'
 
 import type {
     AccountsView,
@@ -12,17 +13,28 @@ import type {
     TagMatch,
 } from '../model'
 import { nextBanMode } from '../services/filters'
-import { DEFAULT_VIEW, parseView } from '../services/storedState'
+import { DEFAULT_VIEW, parseView, serializeView } from '../services/storedState'
 
-/** The list's search, ban and tag filters and sort (shared by the topbar search and the filter strip, remembered across reloads) and the pin and order changes not yet in the vault. */
+/** The list's search, ban and tag filters and sort (shared by the topbar search and the filter strip; filters and sort
+ *  remembered per vault) and the pin and order changes not yet in the vault. */
 export const useAccountsViewStore = defineStore('accounts-view', () => {
-    const state = ref<AccountsView>(
-        parseView(readStored(ACCOUNTS_VIEW_STORAGE_KEY)),
+    const session = useVaultSession()
+    const key = computed(() =>
+        session.vault
+            ? `${ACCOUNTS_VIEW_STORAGE_KEY}:${session.vault.id}`
+            : null,
+    )
+    // Read afresh when another vault opens; a sample with no vault open keeps its view in memory.
+    const state = computed(() =>
+        reactive<AccountsView>(
+            parseView(key.value ? readStored(key.value) : null),
+        ),
     )
 
     // Saved by each action: a watcher made in the first caller's setup would keep that page alive.
-    const save = () =>
-        writeStored(ACCOUNTS_VIEW_STORAGE_KEY, JSON.stringify(state.value))
+    const save = () => {
+        if (key.value) writeStored(key.value, serializeView(state.value))
+    }
 
     // Shown until the vault has them, so a moved card never snaps back while it saves; a sample keeps them for the session.
     const pins = ref<Record<string, boolean>>({})
@@ -55,7 +67,6 @@ export const useAccountsViewStore = defineStore('accounts-view', () => {
         },
         setQuery(query: string) {
             state.value.query = query
-            save()
         },
         setField(field: SearchField) {
             state.value.field = field

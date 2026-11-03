@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
+import type { AccountsView } from '../model'
+
 import {
     DEFAULT_CARD_FLAGS,
     DEFAULT_VIEW,
     parseCardFlags,
     parseView,
+    serializeView,
 } from './storedState'
 
 describe('parseCardFlags', () => {
@@ -24,9 +27,9 @@ describe('parseCardFlags', () => {
 })
 
 describe('parseView', () => {
-    it('round-trips a stored view', () => {
-        const view = {
-            query: 'kyz',
+    it('round-trips a view without its search', () => {
+        const view: AccountsView = {
+            query: '',
             field: 'note',
             bans: {
                 vac: 'require',
@@ -39,7 +42,16 @@ describe('parseView', () => {
             sort: 'level',
             direction: 'asc',
         }
-        expect(parseView(JSON.stringify(view))).toEqual(view)
+        expect(parseView(serializeView({ ...view, query: 'kyz' }))).toEqual(
+            view,
+        )
+    })
+
+    it('never stores or reads back the search', () => {
+        expect(
+            serializeView({ ...DEFAULT_VIEW, query: 'login1' }),
+        ).not.toContain('login1')
+        expect(parseView(JSON.stringify({ query: 'kyz' })).query).toBe('')
     })
 
     it('replaces a value outside its set with the default', () => {

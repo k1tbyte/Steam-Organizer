@@ -49,7 +49,7 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Ban filters: VAC, game, community, economy - each require / exclude / ignore.
 - Tags: colored labels on a card, picked or created from the card, its menu or the profile; a batch in edit mode sets each tag on all, none or as it was. Tag filter: any or all of the picked tags `[new]`.
 - Sort: none, created, added, last update, level; ascending / descending.
-- Search, filter and sort state is remembered.
+- Filter and sort state is remembered per vault; the search is not.
 - Pin / unpin (unpin returns to previous position).
 - Edit mode: drag and drop within pinned / unpinned group; search, ban and tag filters apply, the sort waits; pick several (click, Shift+click, select all, a rectangle on desktop), drag them as one stack, act on them in batch (pin, unpin, tags, refresh, export, delete).
 - Bulk refresh of accounts older than 1h: progress, stop, summary (done / already fresh / failed) `[no web]`.

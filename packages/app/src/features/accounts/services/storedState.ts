@@ -44,11 +44,15 @@ export function parseCardFlags(raw: string | null): CardFlags {
     ) as unknown as CardFlags
 }
 
+// The search is never stored: it may be a login typed in, left on disk after the vault locks.
+export const serializeView = (view: AccountsView) =>
+    JSON.stringify({ ...view, query: undefined })
+
 export function parseView(raw: string | null): AccountsView {
     const stored = parseRecord(raw)
     const bans = (stored.bans ?? {}) as Record<string, unknown>
     return {
-        query: typeof stored.query === 'string' ? stored.query : '',
+        query: '',
         field: oneOf(SEARCH_FIELDS, stored.field, DEFAULT_VIEW.field),
         bans: Object.fromEntries(
             BAN_KINDS.map((kind) => [

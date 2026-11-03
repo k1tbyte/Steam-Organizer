@@ -16,7 +16,7 @@ export const BG_NAME_STORAGE_KEY = 'so:bg-name'
 export const BG_BLUR_STORAGE_KEY = 'so:bg-blur'
 export const BG_DIM_STORAGE_KEY = 'so:bg-dim'
 
-// Accounts list (features/accounts): card fields and the search, filter and sort view.
+// Accounts list (features/accounts): card fields, and the filter and sort view per vault (`:<vault id>`).
 export const ACCOUNTS_CARD_FIELDS_STORAGE_KEY = 'so:accounts:fields'
 export const ACCOUNTS_VIEW_STORAGE_KEY = 'so:accounts:view'
 
