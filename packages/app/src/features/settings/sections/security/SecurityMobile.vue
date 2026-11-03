@@ -40,7 +40,7 @@ const view = useSecuritySection(emit)
                 color="warning"
                 :description="view.neverWarning.value" />
             <p class="px-1 text-12 leading-snug text-fg-3">
-                {{ t('Time without activity in the app, popup or autofill') }}
+                {{ t('Time without activity in the app or popup') }}
             </p>
         </section>
         <section class="flex flex-col gap-2">
