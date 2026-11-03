@@ -21,4 +21,4 @@ Mockup: `Extension.dc.html` (Popup, Popup · Locked).
 
 The accounts, the vault session and the master password come from the `accounts.list` (One locked, Empty) and `vault.session` (Locked, New vault) mocks. "No results" is reached by typing.
 
-Unwired intents: the fill (the banner and Enter show "Filled" for 1.5s, nothing reaches the tab), the clipboard writes of the password (the demo value), a real tab address.
+Unwired intents: the fill (the banner and Enter show "Filled" for 1.5s, nothing reaches the tab), a real tab address. Copy login and copy password are real for vault accounts.

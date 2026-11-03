@@ -21,7 +21,7 @@ Mockup: `Onboarding.dc.html` (Welcome, Vault, Master password, Restore from Driv
 | Mock (variants) | UI built | Source | Wire in |
 |---|---|---|---|
 | `vault.session` (Unlocked, Locked, New vault) | the guard, Welcome / Unlock routing, rail Lock | live: the vaults in IndexedDB; the mock shows the states in mock mode | `useVaultSession` |
-| `vault.list` (Three vaults, One vault, Password only) | vault picker, unlock methods | live: the stored vaults; the mock keeps Drive, folder, PIN and Hello in mock mode until they exist | `useUnlock` |
+| `vault.list` (Three vaults, One vault, Password only) | vault picker, unlock methods | live: the stored vaults, their Drive link, PIN and Hello slots; the mock shows picker states in mock mode | `useUnlock` |
 | `vault.folders` (Supported, Not in this browser) | Folder option and its "Not available in this browser" note | `showDirectoryPicker` probe is live; the mock overrides it | `useVaultStep` |
 
-Unwired intents: Get the extension, Choose folder, Grant Steam access. The Folder choice is a mock: such a vault is created on this device. The session does not survive a reload (the lock policy), and a deep link to a later onboarding step is not blocked (the Steam step sends one without a password back to it).
+Unwired intents: Get the extension, Choose folder, Grant Steam access (the button only flips local state). The Folder choice is a mock: such a vault is created on this device. A deep link to a later onboarding step is not blocked (the Steam step sends one without a password back to it).

@@ -17,7 +17,7 @@
 | UI | Vue 3 + TypeScript + Vite |
 | Components | UI kit ported from author's other project (Vue + **Reka UI** + Tailwind v4), design system updated per new mockups |
 | State / routing / i18n | Pinia, vue-router, vue-i18n |
-| Virtual list | Port own VirtualScroller (grid + stack layouts) |
+| Virtual list | TanStack Virtual (`@tanstack/vue-virtual`): `useAccountRows` for the card grid, `usePageRows` for one-height rows |
 | Extension | **WXT** + `@wxt-dev/module-vue` |
 | Desktop / mobile shell | Tauri v2 |
 | Monorepo | pnpm workspaces + Turborepo |
@@ -51,6 +51,7 @@ Each shell has its own entry and passes its adapter. Only that adapter is import
 
 ```ts
 interface Platform {
+  kind: 'web' | 'extension'
   fetch: typeof fetch | null        // null = Steam API unavailable (web)
   google: GoogleAuth | null         // token(interactive, hint), revoke(token), prepare(): OAuth differs per shell; null in the content script
   openApp?(path: string): void      // popup and content script: open the full app at a route
@@ -78,7 +79,7 @@ interface Platform {
 | Drive sync | ✓ | ✓ | ✓ |
 | Steam Guard codes (TOTP from `shared_secret`) | ✓ local clock | ✓ | ✓ |
 | Steam profiles, games, bans, prices | - | ✓ | ✓ |
-| Steam login autofill | - | ✓ | ✓ Windows (see Desktop autofill) |
+| Steam login autofill | - | UI built, no vault in the content script yet (see 10) | ✓ Windows (see Desktop autofill) |
 | Game launcher autofill (Epic, Battle.net, EA, Ubisoft) | - | - | ✓ Windows |
 | Bots via ASF (see 9) | - | ✓ | ✓ |
 
@@ -86,7 +87,7 @@ interface Platform {
 - Chrome, Edge, Firefox (desktop + Android). Safari is not supported.
 - Full UI opens as an extension page (WXT unlisted page), compact popup for quick access.
 - Extension pages fetch Steam directly. Content scripts can't bypass CORS - they go through background.
-- Firefox MV3: `host_permissions` are optional - app requests them via `permissions.request` and shows grant state.
+- Firefox MV3: the user can withhold `host_permissions`. To do: the app requests them via `permissions.request` and shows grant state; no request flow exists yet (onboarding and Settings show sample grants).
 
 ### Desktop (parked)
 Built after web + extension. Chromeless window with custom title bar (`data-tauri-drag-region`). Extras over extension: managing a local ASF, desktop autofill.
@@ -113,7 +114,7 @@ Firefox Android extension covers Android. iOS only via Obsidian plugin (later), 
 ## 6. Data & Encryption
 
 - Master password is never stored.
-- Extension: unlocked vault key is shared by app page, popup and autofill via extension storage (see lock policy). Content scripts get credentials only via background messages.
+- Extension: the kept session is shared by app page and popup through `storage.session` (see lock policy). Content scripts get credentials only via background messages (to do: the background relays only `open-app` today, so the autofill content script holds no vault).
 - Steam Web API key is stored inside the vault (`SettingsSecret.steamApiKey`, the settings record's secret).
 
 ### Vault locations
@@ -123,7 +124,7 @@ User picks where each vault lives; several vaults, switch on unlock screen. Ever
 |---|---|---|
 | This device | standalone file, kept in IndexedDB; on desktop a file in the app data folder | none |
 | File (planned) | standalone file at a path the user picks: File System Access API on Chrome/Edge, any path on desktop | user's own (Dropbox, OneDrive, Syncthing) |
-| Folder | Markdown notes, Obsidian Bases compatible | user's own (Obsidian Sync, git, Syncthing) |
+| Folder (planned) | Markdown notes, Obsidian Bases compatible | user's own (Obsidian Sync, git, Syncthing) |
 
 - A file on disk is written atomically (a temp file renamed over it) and keeps the previous version beside it (`.bak`).
 - One writer per vault across tabs and the popup (to do): each write holds a Web Lock (`navigator.locks`) on the vault id, rereads the stored file inside it and reopens when it changed; a `BroadcastChannel` tells the other contexts to reload. Today each context writes from its own copy, so two open tabs can undo each other's writes.
@@ -147,7 +148,7 @@ Google Drive is a layer over any home, not a home of its own:
 - **Slots** carry `changedAt`, stamped by a password change and a recovery-slot upgrade (a created vault has none, 0). A merge keeps the slots changed later (`newerSlots`): of two password changes made before a sync, the later wins.
 - **Exports**: the same `VaultFile` saved as `<vault name>.sovault` (`serializeVaultFile`), as stored or rewrapped under the file's own password. Imported into the open vault, a file of the same vault id restores like a backup; onboarding adopts any export with its password.
 - **Binary container** (to do, a format version bump, before the first release): magic bytes, the JSON header, then the raw sealed body, no base64 (a third smaller). Files on disk (`.sovault`), Drive and exports use it; IndexedDB keeps bytes, not strings.
-- **Folder**: `vault.md` header note + one note per record. Frontmatter (app-owned) = `public` fields + sealed `data` / `secret`; note body is user-owned and never touched. Note file name = nickname only if nickname is `public`, else record id.
+- **Folder** (planned): `vault.md` header note + one note per record. Frontmatter (app-owned) = `public` fields + sealed `data` / `secret`; note body is user-owned and never touched. Note file name = nickname only if nickname is `public`, else record id.
 - Folder writes: Chrome/Edge via File System Access API (web, extension page), Obsidian plugin, desktop. Not in Firefox (no API).
 - `core` owns the model; each location is only a serializer + IO adapter.
 
@@ -214,13 +215,13 @@ interface AccountSecret {
 }
 TagData      { kind: TAG; label; hue }               // one record per tag: renames touch one record, syncs merge tags one by one
 ServiceData  { kind: SERVICE; name; icon? }          // a linked service beyond the built-in set; icon = SVG markup drawn as a mask
-SettingsData { kind: SETTINGS; fieldDefaults: Record<'login' | 'note' | 'phone' | 'email', 'searchable' | 'secret'>; moving? }   // id `settings`: copies merge, never double
+SettingsData { kind: SETTINGS; fieldDefaults: Record<'login' | 'note' | 'phone' | 'email', 'searchable' | 'secret'>; moving?; currency }   // id `settings`: copies merge, never double
 SettingsSecret { steamApiKey? }
-PresetData   { kind: PRESET; name; appearance knobs; image? }   // synced appearance presets
+PresetData   { kind: PRESET; name; appearance knobs; image? }   // planned: the kind is reserved, nothing reads or writes it yet
 ```
 
 - Movable fields: `login`, `note`, `phone`, `email`, one vault-wide placement (`fieldDefaults`, per-account placement skipped for now). Changing it moves (never copies) the field between parts in every account, after an explicit confirm in Settings: the record takes the new placement with `moving` first, accounts move in batches, `moving` clears after the last, so a closed app finishes it later. Every writer places fields by the placement it reads in its transaction; readers merge both parts. Nickname and alias always stay in `data`; password, linked credentials and authenticator always `secret`, never `public`.
-- Appearance stays device-local and themes the lock screen. Presets sync through the vault; a device applies one only when the user picks it, or follows one it was set to auto-apply.
+- Appearance stays device-local and themes the lock screen. Presets (planned) sync through the vault; a device applies one only when the user picks it, or follows one it was set to auto-apply.
 - Search and sort see only `public` + `data`.
 - Payloads evolve by a tolerant reader: a missing field reads as its default, so adding one keeps the format version; renaming or removing one bumps it, with a migration at unlock.
 - Sealing: AES-256-GCM, random IV, AAD = record id + part name (blobs can't be swapped between records). WebCrypto only, no compression - sealed parts don't compress.
@@ -263,7 +264,7 @@ The old backend aggregated these calls and cached prices server-side for all use
 - Web API calls go through `steamApi(fetch, key)` in `core/steam`; a failure is a `SteamError`: `no-key` (no request made), `bad-key` (401/403), `offline` (fetch failed), `rate-limit` (429), `server` (anything else). The extension holds `api.steampowered.com` in `host_permissions`.
 - Add resolves the identifier locally (friend codes included) or by `ResolveVanityURL`, then reads summaries, bans, the level and collector badge (badge 13: Steam counts it apart from the library list) of a public profile; a failure blocks Add with Retry or a link to the key.
 - A refresh writes only `steam` (`useSteamRefresh`): an everything-locked account refreshes only while open, through `joinAccount` / `splitAccount`. Avatars load from `avatars.steamstatic.com` by the stored hash (`avatarUrl`).
-- Store API limit ~200 req / 5 min per IP → batch appids + request queue.
+- Store API limit ~200 req / 5 min per IP: prices go in batches of 200 appids, one request after another, and a 403/429 reads as `rate-limit` (no queue or backoff yet).
 - Caches live in their own IndexedDB database (`steamCache` in `core/storage`), never in vault records (unlock stays fast):
   - per account record id: its games (`appId`, name, icon, playtime, last two weeks) and friends (`steamId`, since, nickname and avatar from `GetPlayerSummaries`, 100 ids a request), sealed with the vault key (libraries and friend lists are personal). An everything-locked account caches none (its Steam data stays under the account key), and setting that lock drops its entry. Unlock drops the entries this vault's key opens for accounts it no longer has (deleted here or on a synced device; Undo keeps the entry), another vault's stay;
   - shared: store prices per currency (`<currency>:<appId>`, undiscounted, in hundredths), kept a week.
@@ -299,33 +300,45 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 ## 10. Roadmap
 
 ### Phase 0: Design port
-- [ ] `packages/ui` retuned to the mockups, appearance knobs, shell, settings container
-- [ ] All screens on mock view-models: accounts, vault, backups, settings, profile, extension popup and autofill
+- [x] `packages/ui` retuned to the mockups, appearance knobs, shell, settings container
+- [x] All screens on mock view-models: accounts, vault, backups, settings, profile, extension popup and autofill
 
 ### Phase 1: Core
-- [ ] `packages/core`: models, vault crypto (format v1), storage
+- [x] `packages/core`: models, vault crypto (format v1), storage
+- [ ] Binary container (format version bump, before the first release, see 6)
 - [x] Steam client: endpoints from 7, batching, caching
 - [x] Drive sync over REST, per-half account merge
 - [x] Tombstone purge, order-key ties (Sync 4, 5)
 - [x] Steam ID conversions in core, CS2 friend code via MD5 (`@noble/hashes`)
-- [ ] Tests: crypto, Steam parsers, sync
+- [x] Tests: crypto, Steam parsers, sync
 
 ### Phase 2: Vue App + Web Shell
-- [ ] Wire view-models to core, drop mocks screen by screen
+- [x] Wire view-models to core: accounts, vault, profile, backups, Drive, Steam, linked services, Settings (Tags, Fields, Linked services, Steam, Vault, Security, Sync & backup)
+- [ ] Drop the remaining mocks: notifications, version and update check, Steam site access, onboarding (Get the extension, Folder, Grant access)
 - [x] Lock policy and kept session: device key, session area, cross-page lock, idle timeout
 - [x] PIN: device slot, three tries across pages, restart re-arm
 - [x] Hello (WebAuthn PRF): enroll and unlock, RP ID per shell, OS label
-- [ ] Pages: accounts, profile (summary, games, friends), backups, settings
-- [ ] `apps/web`: PWA shell, read-only mode
+- [x] Pages: accounts, profile (summary, games, friends), backups, settings
+- [ ] Accounts import / export (toolbar button and edit bar emit, nothing handles them), list loading state
+- [ ] Notifications from real sources (refresh results, VAC finds, backup saves, updates), row click, read state kept
+- [ ] Settings: version and update check in the nav footer, background image to IndexedDB
+- [ ] Appearance presets synced through the vault (`PRESET` kind reserved, no writer)
+- [ ] Stop syncing a vault from Drive (`unlink` runs only for a gone copy, no UI)
+- [ ] One writer per vault across tabs and the popup (Web Lock + `BroadcastChannel`, see 6)
+- [ ] File and Folder vault homes (onboarding's Folder creates a device vault)
+- [x] `apps/web`: PWA shell, Steam data read-only (`Platform.fetch` null)
+- [ ] Web: "update available" prompt (`registerType: 'prompt'` is set, no UI)
 
 ### Phase 3: Extension
-- [ ] `apps/extension` on WXT: app page, popup, background
+- [x] `apps/extension` on WXT: app page, popup, background
 - [x] Popup restores the app page's kept session (`storage.session`), and a lock in either locks both
 - [ ] Hello in the Firefox extension (needs a stable RP ID there)
 - [ ] Host permission flow (Firefox optional permissions)
-- [ ] Google OAuth via `identity.launchWebAuthFlow`
-- [ ] Steam login autofill content script
-- [ ] Builds: Chrome, Edge, Firefox
+- [x] Google OAuth via `identity.launchWebAuthFlow`
+- [x] Steam login autofill content script: detects the login and Guard prompt, picker, field fill
+- [ ] Autofill reads the vault: the content script loads none, the background relays only `open-app`
+- [ ] Popup fill into the active tab (needs content script messaging; the tab context is a mock)
+- [x] Builds: Chrome, Edge, Firefox
 
 ### Phase 4: Desktop (parked)
 - [ ] Tauri shell over `packages/app` + `plugin-http`

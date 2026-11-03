@@ -15,7 +15,7 @@ Mockup: `Extension.dc.html` (Autofill · Account picker, Autofill · Steam Guard
 
 | Mock (variants) | UI built | Source | Wire in |
 |---|---|---|---|
-| `accounts.list`, `vault.session` (shared) | the picker, the notices, the Guard account | the vault | `useVaultAccounts`, `useVaultSession` |
+| `accounts.list`, `vault.session` (shared) | the picker, the notices, the Guard account | the vault, once the content script reaches it (see Unwired) | `useVaultAccounts`, `useVaultSession` |
 
 A content script reads the host page's `localStorage`, so a mock variant is picked by writing `so:mocks` on the Steam page; dev builds only.
 

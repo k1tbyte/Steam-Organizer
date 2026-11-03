@@ -11,6 +11,6 @@ Mockup: `Accounts.dc.html` (Desktop, notifications popover; the Mobile bell is a
 
 | Mock (variants) | UI built | Source | Wire in |
 |---|---|---|---|
-| `notifications.list` (Two unread, All read, Empty, Many unread) | bell badge, panel rows with tone tile and unread dot | refresh results, VAC ban finds, backup saves, update checks | `useNotifications` |
+| `notifications.list` (Two unread, All read, Empty, Many unread) | bell badge, panel rows with tone tile and unread dot | none yet: waits on refresh results, VAC ban finds, backup saves, update checks | `useNotifications` |
 
 Unwired intents: a row click (should open its source: the banned account, Backups, the update prompt), read state that survives a reload.
