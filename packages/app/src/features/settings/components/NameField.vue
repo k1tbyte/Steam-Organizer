@@ -26,7 +26,7 @@ onMounted(() => input.value?.focus())
             @blur="emit('leave')">
             <template #trailing>
                 <span class="flex items-center gap-1 text-11.5 text-fg-3 max-lg:hidden">
-                    <FpKbd>↵</FpKbd> {{ t('save') }} · <FpKbd value="Esc" /> {{ t('cancel') }}
+                    <FpKbd value="Enter" /> {{ t('save') }} · <FpKbd value="Esc" /> {{ t('cancel') }}
                 </span>
             </template>
         </FpInput>

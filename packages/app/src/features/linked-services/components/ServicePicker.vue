@@ -25,7 +25,7 @@ const search = reactive(useServicePicker(picked, () => props.taken))
             <FpIcon name="icon-[lucide--chevrons-up-down]" class="text-14 text-fg-3" />
         </button>
         <template #content>
-            <div class="border-b border-stroke-1 px-1.5 py-1">
+            <div class="flex h-10 items-center border-b border-stroke-1 px-3">
                 <FpInput
                     v-model="search.query"
                     bare
@@ -48,7 +48,7 @@ const search = reactive(useServicePicker(picked, () => props.taken))
                 <FpOptionRow class="w-full gap-2!" @click="search.create">
                     <FpIcon name="icon-[lucide--plus]" class="text-14 text-accent-ink" />
                     <span class="min-w-0 flex-1 truncate">{{ t('Add “{name}”', { name: search.fresh }) }}</span>
-                    <FpKbd>↵</FpKbd>
+                    <FpKbd value="Enter" />
                 </FpOptionRow>
             </div>
         </template>

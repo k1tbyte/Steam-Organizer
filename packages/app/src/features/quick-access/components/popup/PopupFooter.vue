@@ -12,7 +12,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const hints = computed(() => [
     { key: '↑↓', label: t('select') },
-    ...(props.canFill ? [{ key: '↵', label: t('fill') }] : []),
+    ...(props.canFill ? [{ key: 'Enter', label: t('fill') }] : []),
     { key: '⌘C', label: t('password') },
 ])
 </script>

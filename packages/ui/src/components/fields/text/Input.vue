@@ -71,7 +71,7 @@ defineExpose({
 <template>
     <!-- biome-ignore lint/a11y/noLabelWithoutControl: the label wraps the native input right below -->
     <label
-        class="inline-flex w-full cursor-text items-center gap-2 text-fg-1"
+        class="flex w-full cursor-text items-center gap-2 text-fg-1"
         :class="[!bare && ['field rounded', FIELD_SIZES[size]], disabled && 'pointer-events-none opacity-50']"
         :data-warning="warning || undefined"
         :data-valid="valid || undefined">

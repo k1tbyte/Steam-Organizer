@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FpButton, FpDrawer, FpModal, useDesktopLayout } from '@so/ui'
+import { FpButton, FpDrawer, FpKbd, FpModal, useDesktopLayout } from '@so/ui'
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -27,7 +27,7 @@ const form = reactive(useAddAccountForm(overlay.open))
             <FpButton variant="ghost" :label="t('Cancel')" @click="overlay.open.value = false" />
             <FpButton type="submit" form="add-account" color="accent" :loading="form.saving" :disabled="!form.canAdd">
                 {{ t('Add account') }}
-                <span class="rounded bg-accent-fg/15 px-1 font-medium font-mono text-11">↵</span>
+                <FpKbd value="Enter" class="h-4! min-w-4! bg-accent-fg/15 px-1! text-accent-fg!" />
             </FpButton>
         </template>
     </FpModal>

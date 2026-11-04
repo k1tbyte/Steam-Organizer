@@ -23,7 +23,7 @@ defineEmits<{ fill: [] }>()
         <FpButton size="xs" color="accent" class="max-w-37.5 shrink-0" :disabled @click="$emit('fill')">
             <FpIcon v-if="filled" name="icon-[lucide--check]" />
             <span class="truncate">{{ label }}</span>
-            <FpKbd v-if="!filled" class="h-4! min-w-4! bg-accent-fg/15 px-1! text-accent-fg!" value="↵" />
+            <FpKbd v-if="!filled" class="h-4! min-w-4! bg-accent-fg/15 px-1! text-accent-fg!" value="Enter" />
         </FpButton>
     </div>
 </template>

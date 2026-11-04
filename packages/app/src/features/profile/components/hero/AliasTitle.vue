@@ -37,7 +37,7 @@ watch(
                 @blur="editor.save" />
         </div>
         <span v-if="!touch" class="flex items-center gap-1.5 text-12 text-fg-3">
-            <FpKbd value="↵" />{{ t('save') }}
+            <FpKbd value="Enter" />{{ t('save') }}
             <FpKbd value="Esc" class="ml-1" />{{ t('cancel') }}
             <span v-if="editor.clears" class="ml-1">{{ t('Empty shows the Steam name') }}</span>
         </span>

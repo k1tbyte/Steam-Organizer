@@ -85,7 +85,7 @@ onMounted(() => search.value?.focus())
                             role="img"
                             :aria-label="t('Steam Guard code will be filled too')"
                             class="shrink-0 text-14 text-accent-ink" />
-                        <FpKbd v-if="at === index" value="↵" class="px-1.25!" />
+                        <FpKbd v-if="at === index" value="Enter" class="px-1.25!" />
                     </PickerRow>
                 </template>
             </PickerList>

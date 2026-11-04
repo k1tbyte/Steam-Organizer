@@ -14,7 +14,7 @@ const { t } = useI18n()
 <!-- A tag picker's frame: the search, the caller's rows, and the create row with its swatches while the label is new. -->
 <template>
     <div class="flex min-h-0 flex-col">
-        <div class="border-b border-stroke-1 px-1.5 py-1">
+        <div class="flex h-10 items-center border-b border-stroke-1 px-3">
             <FpInput
                 v-model="search.query"
                 bare
@@ -35,7 +35,7 @@ const { t } = useI18n()
             <FpOptionRow class="-mx-1.5 gap-2! px-1.5!" @click="emit('create')">
                 <FpIcon name="icon-[lucide--plus]" class="text-14 text-accent-ink" />
                 <span class="min-w-0 flex-1 truncate">{{ t('Create “{label}”', { label: search.fresh }) }}</span>
-                <FpKbd>↵</FpKbd>
+                <FpKbd value="Enter" />
             </FpOptionRow>
             <TagSwatches :swatches="search.swatches" @pick="search.pick" />
         </div>
