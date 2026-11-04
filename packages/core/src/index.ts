@@ -4,6 +4,8 @@ export {
     type AccountLock,
     type AccountSecret,
     type Authenticator,
+    BAN_KINDS,
+    type BanKind,
     CREDENTIAL_KINDS,
     type CredentialKind,
     FIELD_DEFAULTS,

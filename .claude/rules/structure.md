@@ -44,6 +44,8 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | async work that must run one at a time (writes over one file, a sync lane) | `serialQueue()` from `#core`: a failed task rejects its caller and never blocks the next |
 | failure | `reportError(error, scope, context?)`, the only `console.error` (`noConsole` fails lint) |
 | debounce, interval | `useTimer` from `@so/ui/useTimer` |
+| an age label that moves with the time ("2 min ago", "2 h") | `useMinuteClock()` from `#core`: one interval for every reader, never a clock of your own |
+| telling the user something happened to the vault (a refresh, a ban, a backup) | `useNotificationLog().push(vaultId, event, { route })` from `#features/notifications`: kinds, numbers and ids only, names resolve when the bell shows them |
 | Google sign-in, a request to Drive | `useDrive()` from `#features/drive` (`run(work)` with `@so/core`'s `driveApi`), `useDriveProblem()` for a failure's copy; never `Platform.google` directly |
 | the open vault's Drive sync: its status line, Sync now, the sync settings | `useSyncStatus()`, `useVaultSync()` (`syncNow`, `settings`, `setSettings`) and `SyncStatus` from `#features/backups`; never a sync of your own |
 | when the open vault locks (idle timeout, Immediately on a hidden page), how long a session is kept | `useLockPolicy()` (`policy`, `setLockAfter`, `setMasterAfterRestart`) and `useAutoLock()` (once per page) from `#features/vault`; never a timer or a `visibilitychange` listener of your own, and never `Platform.session` directly |

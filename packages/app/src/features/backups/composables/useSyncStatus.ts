@@ -1,32 +1,12 @@
-import { computed, onScopeDispose, shallowRef } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { formatAgo } from '#core'
+import { formatAgo, useMinuteClock } from '#core'
 import { useDrive } from '#features/drive'
 import { useVaultSession } from '#features/vault'
 
 import type { SyncState } from '../model'
 import { useVaultSync } from '../stores/useVaultSync'
-
-const MINUTE_MS = 60_000
-
-// One clock for every status line: the age moves once a minute.
-const now = shallowRef(Date.now())
-let readers = 0
-let clock: ReturnType<typeof setInterval> | undefined
-
-function useMinuteClock() {
-    if (readers++ === 0) {
-        now.value = Date.now()
-        clock = setInterval(() => {
-            now.value = Date.now()
-        }, MINUTE_MS)
-    }
-    onScopeDispose(() => {
-        if (--readers === 0) clearInterval(clock)
-    })
-    return now
-}
 
 /** The open vault's Drive sync as the status line shows it; undefined for a vault on this device only. */
 export function useSyncStatus() {

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, shallowRef } from 'vue'
 
+import { useNotificationLog } from '#features/notifications'
 import { useVaultSession } from '#features/vault'
 
 import { useSteamRefresh } from '../composables/refresh/useSteamRefresh'
@@ -8,6 +9,9 @@ import { useSteamRefresh } from '../composables/refresh/useSteamRefresh'
 // Each batch is one vault write; a smaller one moves the progress and a Stop sooner.
 const BATCH = 25
 const FRESH_MS = 60 * 60 * 1000
+
+const reachedAny = (result: RefreshResult) =>
+    result.updated + result.missing + result.left.length > 0
 
 export interface RefreshRun {
     /** 0 until the accounts to refresh are known. */
@@ -31,14 +35,34 @@ export interface RefreshResult {
 export const useBulkRefreshStore = defineStore('bulkRefresh', () => {
     const session = useVaultSession()
     const steam = useSteamRefresh()
+    const notifications = useNotificationLog()
     const run = shallowRef<RefreshRun | null>(null)
 
-    /** Resolves to null while another run is on, or once a vault lock ended this one. */
+    /** Resolves to null while another run is on, or once a vault lock ended this one. A run that reached an account
+     *  is logged to the bell; one that found everything fresh is not. */
     async function start(
         ids: readonly string[],
         skipFresh: boolean,
     ): Promise<RefreshResult | null> {
         if (run.value) return null
+        const vaultId = session.vault?.id
+        const result = await refresh(ids, skipFresh)
+        if (vaultId && result && reachedAny(result))
+            notifications.push(vaultId, {
+                kind: 'refresh',
+                updated: result.updated,
+                fresh: result.fresh,
+                missing: result.missing,
+                left: result.left.length,
+                failed: result.error !== undefined,
+            })
+        return result
+    }
+
+    async function refresh(
+        ids: readonly string[],
+        skipFresh: boolean,
+    ): Promise<RefreshResult | null> {
         let locked = false
         const unsubscribe = session.onBeforeLock(() => {
             locked = true

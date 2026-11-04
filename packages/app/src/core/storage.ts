@@ -36,6 +36,9 @@ export const SYNC_SETTINGS_STORAGE_KEY = 'so:sync'
 // Security (features/vault): Lock after and Master password after restart, per device.
 export const SECURITY_SETTINGS_STORAGE_KEY = 'so:security'
 
+// Notifications (features/notifications): each vault's log by vault id, ids and numbers only.
+export const NOTIFICATIONS_STORAGE_KEY = 'so:notifications'
+
 /** The tab's `sessionStorage`; undefined where there is none (node) or storage is denied. */
 export function tabStorage(): Storage | undefined {
     try {

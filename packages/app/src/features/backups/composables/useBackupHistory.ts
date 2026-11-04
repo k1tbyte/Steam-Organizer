@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 import { usePageActive } from '#core'
 import { useDrive, useDriveProblem } from '#features/drive'
+import { useNotificationLog } from '#features/notifications'
 import { tally, useVaultSession } from '#features/vault'
 
 import type { BackupRow } from '../model'
@@ -28,6 +29,7 @@ export function useBackupHistory() {
     const active = usePageActive()
 
     const store = useBackupList()
+    const notifications = useNotificationLog()
     // Saves in flight by scope: each shows and blocks Backup now only in its own.
     const saving = reactive(new Map<string, Saving>())
     const confirmingId = ref<string | null>(null)
@@ -130,6 +132,15 @@ export function useBackupHistory() {
             saveBackup(api, snapshot.file, meta),
         )
         store.added(op.at, saved)
+        notifications.push(
+            saved.vaultId,
+            {
+                kind: 'backup',
+                accounts: saved.accounts,
+                bytes: saved.sizeBytes,
+            },
+            { route: '/backups' },
+        )
     }
 
     async function remove(id: string) {

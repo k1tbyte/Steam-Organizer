@@ -15,6 +15,8 @@ const GONE = '76561198000000002'
 
 let name = 'Fresh'
 let visibility = 1
+/** KNOWN's bans as Steam reports them. */
+let banned = false
 let hold: Promise<void> | null = null
 let arrived = () => {}
 
@@ -40,7 +42,20 @@ const fetch = (async (input: string | URL | Request) => {
                 })),
             },
         },
-        '/ISteamUser/GetPlayerBans/v1/': { players: [] },
+        '/ISteamUser/GetPlayerBans/v1/': {
+            players: banned
+                ? [
+                      {
+                          SteamId: KNOWN,
+                          CommunityBanned: true,
+                          NumberOfVACBans: 1,
+                          NumberOfGameBans: 0,
+                          DaysSinceLastBan: 0,
+                          EconomyBan: 'none',
+                      },
+                  ]
+                : [],
+        },
         '/IPlayerService/GetBadges/v1/': {
             response: { player_level: 7, badges: [{ badgeid: 13, level: 6 }] },
         },
@@ -72,6 +87,11 @@ const fetch = (async (input: string | URL | Request) => {
     return new Response(JSON.stringify(reply[url.pathname]))
 }) as typeof globalThis.fetch
 
+const logged = vi.hoisted(() => ({ push: vi.fn() }))
+vi.mock('#features/notifications', () => ({
+    useNotificationLog: () => logged,
+}))
+
 vi.mock('#features/steam', () => ({
     useSteamApi: () => ({
         reachable: true,
@@ -81,8 +101,10 @@ vi.mock('#features/steam', () => ({
 }))
 
 beforeEach(async () => {
+    logged.push.mockClear()
     name = 'Fresh'
     visibility = 1
+    banned = false
     hold = null
     await new Promise((resolve) => {
         indexedDB.deleteDatabase('steam-organizer').onsuccess = resolve
@@ -118,6 +140,28 @@ it('writes the profile without touching editedAt, and names the accounts Steam l
         steam: { nickname: 'Fresh', avatar: 'abc' },
     })
     expect(data(gone)?.steam).toBeNull()
+})
+
+it('logs the bans a refresh finds that the stored Steam data lacked, one entry per account', async () => {
+    const { session, ids } = await vaultWith(KNOWN, KNOWN.replace(/1$/, '3'))
+    const [known] = ids as [string]
+    const { refresh } = useSteamRefresh()
+    // The first snapshot has nothing to compare with.
+    await refresh(ids)
+    expect(logged.push).not.toHaveBeenCalled()
+
+    banned = true
+    await refresh(ids)
+    expect(logged.push.mock.calls).toEqual([
+        [
+            session.vault?.id,
+            { kind: 'ban', account: known, bans: ['vac', 'community'] },
+            { route: `/accounts/${known}` },
+        ],
+    ])
+    logged.push.mockClear()
+    await refresh(ids)
+    expect(logged.push).not.toHaveBeenCalled()
 })
 
 it('refreshes an everything-locked account only while it is open', async () => {

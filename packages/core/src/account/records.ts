@@ -41,6 +41,14 @@ export interface SteamBans {
     lastBanDays: number | null
 }
 
+export const BAN_KINDS = [
+    'vac',
+    'game',
+    'community',
+    'economy',
+] as const satisfies readonly (keyof SteamBans)[]
+export type BanKind = (typeof BAN_KINDS)[number]
+
 /** From the library at the refresh; a profile that hides its games has none. */
 export interface SteamStats {
     games: number

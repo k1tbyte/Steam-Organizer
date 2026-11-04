@@ -13,12 +13,22 @@ import {
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useNotifications } from '../composables/useNotifications'
+import { type NameOf, useNotifications } from '../composables/useNotifications'
+
+const props = defineProps<{
+    /** Account names come from the page that owns them: the log holds ids only. */
+    nameOf: NameOf
+}>()
 
 const { t } = useI18n()
 const desktop = useDesktopLayout()
-const { items, unread, badge, markAllRead } = useNotifications()
+const { items, unread, badge, markAllRead, open: openItem } = useNotifications(() => props.nameOf)
 const open = ref(false)
+
+function choose(id: string) {
+    open.value = false
+    openItem(id)
+}
 </script>
 
 <template>
@@ -61,19 +71,21 @@ const open = ref(false)
                 </FpButton>
             </div>
             <ul v-if="items.length > 0" class="flex flex-col px-1.5 pb-1.5">
-                <li
-                    v-for="item in items"
-                    :key="item.id"
-                    class="flex items-start gap-3 rounded p-2.5 transition-colors duration-fast hover:bg-hover">
-                    <FpIconTile :name="item.icon" :color="item.tone" size="sm" />
-                    <span class="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <span class="font-medium text-13.5 text-fg-1">{{ item.title }}</span>
-                        <span class="text-12.5 text-fg-3">{{ item.body }}</span>
-                    </span>
-                    <span class="flex shrink-0 items-center gap-1.5 text-12 text-fg-3">
-                        {{ item.time }}
-                        <FpDot size="md" color="accent" :class="!item.unread && 'invisible'" />
-                    </span>
+                <li v-for="item in items" :key="item.id">
+                    <button
+                        type="button"
+                        class="touch-row flex w-full items-start gap-3 rounded p-2.5 text-left transition-colors duration-fast hover:bg-hover"
+                        @click="choose(item.id)">
+                        <FpIconTile :name="item.icon" :color="item.tone" size="sm" />
+                        <span class="flex min-w-0 flex-1 flex-col gap-0.5">
+                            <span class="font-medium text-13.5 text-fg-1">{{ item.title }}</span>
+                            <span class="text-12.5 text-fg-3">{{ item.body }}</span>
+                        </span>
+                        <span class="flex shrink-0 items-center gap-1.5 text-12 text-fg-3">
+                            {{ item.time }}
+                            <FpDot size="md" color="accent" :class="!item.unread && 'invisible'" />
+                        </span>
+                    </button>
                 </li>
             </ul>
             <FpEmpty v-else :title="t('You are all caught up')" />

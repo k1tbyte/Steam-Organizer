@@ -3,15 +3,20 @@ import { watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useAppUpdate, useAppUpdateWatch } from '#core'
+import { useNotificationLog } from '#features/notifications'
+import { useVaultSession } from '#features/vault'
 
 // Once per version per page: an unlock mounts the shell again, never the page.
 const toasted = new Set<string | null>()
 
-/** Watches for a new build (web only) and toasts it once with Reload. The shell calls it once. */
+/** Watches for a new build (web only): toasts it once with Reload, and logs it once in each vault opened while it
+ *  waits. The shell calls it once. */
 export function useUpdatePrompt() {
     useAppUpdateWatch()
     const { t } = useI18n()
     const toast = useToast()
+    const session = useVaultSession()
+    const notifications = useNotificationLog()
     const { update, apply } = useAppUpdate()
 
     watch(
@@ -27,6 +32,20 @@ export function useUpdatePrompt() {
                 icon: 'icon-[lucide--download]',
                 action: { label: t('Reload'), onClick: apply },
             })
+        },
+        { immediate: true },
+    )
+
+    // A build still waiting after a reload is found again: `once` keeps one entry for it.
+    watch(
+        () => [update.value, session.vault?.id] as const,
+        ([found, vaultId]) => {
+            if (found && vaultId)
+                notifications.push(
+                    vaultId,
+                    { kind: 'update', version: found.version },
+                    { once: true },
+                )
         },
         { immediate: true },
     )

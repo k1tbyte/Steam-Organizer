@@ -16,8 +16,12 @@ import {
     withLibraries,
 } from '@so/core'
 
+import { useNotificationLog } from '#features/notifications'
 import { useSteamApi } from '#features/steam'
 import { useVaultSession } from '#features/vault'
+
+import type { BanKind } from '../../model'
+import { newBans } from '../../services/refresh/banDiff'
 
 type Profile = { steamId: string; steam: SteamSnapshot }
 export interface RefreshTarget {
@@ -26,6 +30,8 @@ export interface RefreshTarget {
     refreshedAt: number | null
 }
 type Fresh = Map<string, Profile>
+/** Accounts whose refresh landed with bans the stored Steam data did not have. */
+type BanFinds = { id: string; bans: BanKind[] }[]
 
 /** A Steam ID changed meanwhile, or a refresh started later already landed. */
 const stale = (data: AccountData, next: Profile) =>
@@ -37,6 +43,7 @@ const stale = (data: AccountData, next: Profile) =>
 export function useSteamRefresh() {
     const session = useVaultSession()
     const steam = useSteamApi()
+    const notifications = useNotificationLog()
 
     /** The accounts a refresh reaches now, with their last refresh. */
     async function targets(ids: readonly string[]): Promise<RefreshTarget[]> {
@@ -60,13 +67,19 @@ export function useSteamRefresh() {
         return found
     }
 
-    /** Resolves to how many accounts it wrote: one deleted, relocked or changed meanwhile is left as it was. */
+    /** Resolves to how many accounts it wrote and the new bans among them: one deleted, relocked or changed
+     *  meanwhile is left as it was. */
     async function write(fresh: Fresh) {
         // Taken now, as `transact` takes the vault key: a relock while queued still lets the write land.
         const keys = new Map(
             [...fresh.keys()].map((id) => [id, session.keyOf(id)]),
         )
         let count = 0
+        const finds: BanFinds = []
+        const compare = (id: string, data: AccountData, next: Profile) => {
+            const bans = newBans(data.steam?.bans, next.steam.bans)
+            if (bans.length > 0) finds.push({ id, bans })
+        }
         await session.transact(async (contents, key) => {
             const updatedAt = Date.now()
             const placement = readSettings(
@@ -77,17 +90,18 @@ export function useSteamRefresh() {
                     const next = fresh.get(record.id)
                     const data = readAccount(contents.data.get(record.id))
                     if (!next || !data || 'deleted' in record) return []
-                    if (data.lock?.scope !== 'everything')
-                        return stale(data, next)
-                            ? []
-                            : [
-                                  await updateData(
-                                      key,
-                                      record,
-                                      { ...data, steam: next.steam },
-                                      updatedAt,
-                                  ),
-                              ]
+                    if (data.lock?.scope !== 'everything') {
+                        if (stale(data, next)) return []
+                        compare(record.id, data, next)
+                        return [
+                            await updateData(
+                                key,
+                                record,
+                                { ...data, steam: next.steam },
+                                updatedAt,
+                            ),
+                        ]
+                    }
                     const accountKey = keys.get(record.id)
                     const secret =
                         accountKey &&
@@ -99,6 +113,7 @@ export function useSteamRefresh() {
                     if (!secret) return []
                     const whole = joinAccount(data, secret)
                     if (stale(whole.data, next)) return []
+                    compare(record.id, whole.data, next)
                     const parts = splitAccount(
                         { ...whole.data, steam: next.steam },
                         whole.secret,
@@ -117,7 +132,7 @@ export function useSteamRefresh() {
             count = records.length
             return records
         })
-        return count
+        return { count, finds }
     }
 
     /** Each collection goes to the cache while the vault still holds its refresh: an everything lock moves `steam`
@@ -178,7 +193,16 @@ export function useSteamRefresh() {
                 if (profile) fresh.set(id, { steamId, steam: profile })
                 else missing.push(id)
             }
-            const updated = await write(fresh)
+            // The vault the write lands in: `transact` takes the one open now.
+            const vaultId = session.vault?.id
+            const { count: updated, finds } = await write(fresh)
+            if (vaultId)
+                for (const { id, bans } of finds)
+                    notifications.push(
+                        vaultId,
+                        { kind: 'ban', account: id, bans },
+                        { route: `/accounts/${id}` },
+                    )
             await cache(fresh, collections)
             return { updated, missing }
         },

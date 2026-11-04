@@ -1,7 +1,11 @@
-import type { LockScope, SteamSnapshot } from '@so/core'
+import {
+    BAN_KINDS,
+    type BanKind,
+    type LockScope,
+    type SteamSnapshot,
+} from '@so/core'
 
-export const BAN_KINDS = ['vac', 'game', 'community', 'economy'] as const
-export type BanKind = (typeof BAN_KINDS)[number]
+export { BAN_KINDS, type BanKind }
 
 /** A label with its dot color; the hue is the tag's own, not derived from the name. */
 export interface AccountTag {

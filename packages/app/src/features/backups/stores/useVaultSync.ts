@@ -23,6 +23,7 @@ import {
     writeStored,
 } from '#core'
 import { useDrive } from '#features/drive'
+import { useNotificationLog } from '#features/notifications'
 import {
     type LockedSnapshot,
     type MergedCopy,
@@ -70,6 +71,7 @@ export const useVaultSync = defineStore('vault-sync', () => {
     const session = useVaultSession()
     const drive = useDrive()
     const backups = useBackupList()
+    const notifications = useNotificationLog()
     const settings = ref(storedSettings())
     const running = ref(false)
     const failed = shallowRef<{ at: string; error: unknown } | null>(null)
@@ -255,6 +257,15 @@ export const useVaultSync = defineStore('vault-sync', () => {
                         accounts: tally(snapshot.contents).accounts,
                     })
                     backups.added(at, saved)
+                    notifications.push(
+                        saved.vaultId,
+                        {
+                            kind: 'backup',
+                            accounts: saved.accounts,
+                            bytes: saved.sizeBytes,
+                        },
+                        { route: '/backups' },
+                    )
                     all = [saved, ...found]
                 }
                 const pruned = prunedAutoBackups(all)

@@ -39,7 +39,7 @@ const bulk = reactive(useBulkRefresh())
                 :progress="bulk.progress.progress"
                 :stopping="bulk.stopping"
                 @stop="bulk.stop" />
-            <NotificationsBell />
+            <NotificationsBell :name-of="list.nameOf" />
             <FpButton v-if="desktop" color="accent" @click="addOverlay.show()">
                 <FpIcon name="icon-[lucide--plus]" />
                 {{ t('Add') }}

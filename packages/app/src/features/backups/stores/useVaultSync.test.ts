@@ -87,6 +87,11 @@ const drive = vi.hoisted(() => {
     }
 })
 
+const logged = vi.hoisted(() => ({ push: vi.fn() }))
+vi.mock('#features/notifications', () => ({
+    useNotificationLog: () => logged,
+}))
+
 vi.mock('#features/drive', async () => {
     const { computed, reactive } = await import('vue')
     drive.connection = reactive(drive.connection)
@@ -104,6 +109,7 @@ vi.mock('#features/drive', async () => {
 })
 
 beforeEach(async () => {
+    logged.push.mockClear()
     drive.files.length = 0
     drive.connection.email = 'alex@x.com'
     drive.failing = false
@@ -307,6 +313,18 @@ it('saves an auto backup at most once a day after a change, keeping the newest t
     await a.engine.backUpIfDue()
     let backups = await listBackups(drive.api, vaultId)
     expect(backups.map(({ kind }) => kind)).toEqual(['auto'])
+    // The bell hears of the backup with its counts, never of a sync write.
+    expect(logged.push.mock.calls).toEqual([
+        [
+            vaultId,
+            {
+                kind: 'backup',
+                accounts: backups[0]?.accounts,
+                bytes: backups[0]?.sizeBytes,
+            },
+            { route: '/backups' },
+        ],
+    ])
 
     // Twelve old auto backups, none due (nothing changed since), and a manual one: the newest ten autos stay.
     drive.files.splice(

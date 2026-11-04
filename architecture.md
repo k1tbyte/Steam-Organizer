@@ -314,13 +314,13 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 
 ### Phase 2: Vue App + Web Shell
 - [x] Wire view-models to core: accounts, vault, profile, backups, Drive, Steam, linked services, Settings (Tags, Fields, Linked services, Steam, Vault, Security, Sync & backup)
-- [ ] Drop the remaining mocks: notifications, Steam site access, onboarding (Get the extension, Folder, Grant access)
+- [ ] Drop the remaining mocks: Steam site access, onboarding (Get the extension, Folder, Grant access)
 - [x] Lock policy and kept session: device key, session area, cross-page lock, idle timeout
 - [x] PIN: device slot, three tries across pages, restart re-arm
 - [x] Hello (WebAuthn PRF): enroll and unlock, RP ID per shell, OS label
 - [x] Pages: accounts, profile (summary, games, friends), backups, settings
 - [ ] Accounts import / export (toolbar button and edit bar emit, nothing handles them), list loading state
-- [ ] Notifications from real sources (refresh results, VAC finds, backup saves, updates), row click, read state kept
+- [x] Notifications from real sources (refresh results, new bans, backup saves, updates), row click, read state kept: a log per vault on this device, ids and numbers only
 - [x] Settings: version and update check in the nav footer (one version, the root `package.json`'s)
 - [ ] Settings: background image to IndexedDB
 - [ ] Appearance presets synced through the vault (`PRESET` kind reserved, no writer)

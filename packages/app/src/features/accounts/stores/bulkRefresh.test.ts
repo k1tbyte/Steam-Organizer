@@ -39,6 +39,11 @@ const fetch = (async (input: string | URL | Request) => {
     return new Response(JSON.stringify(reply[url.pathname]))
 }) as typeof globalThis.fetch
 
+const logged = vi.hoisted(() => ({ push: vi.fn() }))
+vi.mock('#features/notifications', () => ({
+    useNotificationLog: () => logged,
+}))
+
 vi.mock('#features/steam', () => ({
     useSteamApi: () => ({
         reachable: true,
@@ -48,6 +53,7 @@ vi.mock('#features/steam', () => ({
 }))
 
 beforeEach(async () => {
+    logged.push.mockClear()
     down = false
     hold = null
     await new Promise((resolve) => {
@@ -93,6 +99,26 @@ it('skips accounts refreshed within the hour, unless every pick is asked for', a
     expect(store.run).toBeNull()
 })
 
+it('logs a run that reached an account to the vault it ran for, not one that found all fresh', async () => {
+    const { session, ids } = await vaultOf(2)
+    const store = useBulkRefreshStore()
+    await store.start(ids, true)
+    await store.start(ids, true)
+    expect(logged.push.mock.calls).toEqual([
+        [
+            session.vault?.id,
+            {
+                kind: 'refresh',
+                updated: 2,
+                fresh: 0,
+                missing: 0,
+                left: 0,
+                failed: false,
+            },
+        ],
+    ])
+})
+
 it('stops after the batch in flight, naming the accounts it left', async () => {
     const { ids } = await vaultOf(26)
     const { result, release } = await heldRun(ids)
@@ -108,10 +134,20 @@ it('ends on a Steam failure with what is left, and on a vault lock with nothing'
     const failed = await useBulkRefreshStore().start(ids, false)
     expect(failed?.error).toBeInstanceOf(SteamError)
     expect(failed?.left).toEqual(ids)
+    expect(logged.push).toHaveBeenLastCalledWith(session.vault?.id, {
+        kind: 'refresh',
+        updated: 0,
+        fresh: 0,
+        missing: 0,
+        left: 1,
+        failed: true,
+    })
 
     down = false
     const { result, release } = await heldRun(ids)
+    logged.push.mockClear()
     session.lock()
     release()
     expect(await result).toBeNull()
+    expect(logged.push).not.toHaveBeenCalled()
 })

@@ -43,6 +43,9 @@ export function useAccountsList() {
     )
 
     const vaultEmpty = computed(() => accounts.value.length === 0)
+    const names = computed(
+        () => new Map(accounts.value.map(({ id, nickname }) => [id, nickname])),
+    )
 
     return {
         vaultEmpty,
@@ -60,5 +63,7 @@ export function useAccountsList() {
         ),
         togglePin,
         editing: computed(() => edit.open.value),
+        /** The name an account shows by; the bell resolves its entries through it, so its log holds ids only. */
+        nameOf: (id: string) => names.value.get(id) ?? null,
     }
 }
