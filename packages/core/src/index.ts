@@ -1,4 +1,5 @@
 export { joinAccount, publicData, splitAccount } from './account/lock'
+export { takePictures, withPictures } from './account/presetPictures'
 export {
     type AccountData,
     type AccountLock,

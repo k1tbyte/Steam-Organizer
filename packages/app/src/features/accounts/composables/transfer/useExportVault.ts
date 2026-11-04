@@ -3,6 +3,7 @@ import {
     serializeVaultFile,
     type VaultFile,
     WrongPasswordError,
+    withPictures,
     writeRecords,
 } from '@so/core'
 import { saveFile, useToast } from '@so/ui'
@@ -41,15 +42,28 @@ export function useExportVault(
         () => !ownPassword.value || fields.complete.value,
     )
 
-    /** The stored file, or a partial one sealed with the same key; the count of accounts it holds. */
+    /** The stored file with the preset pictures this device holds, or a partial one sealed with the same key; the count of
+     *  accounts it holds. */
     async function exported(
         ids: readonly string[] | undefined,
     ): Promise<{ file: VaultFile; accounts?: number } | undefined> {
         const latest = await session.snapshot()
-        if (!latest || !ids) return latest && { file: latest.file }
+        if (!latest) return undefined
         const { file, contents } = latest
         return session.withKey(async (key) => {
             if (session.vault?.id !== file.id) return undefined
+            if (!ids) {
+                const whole = await withPictures(
+                    key,
+                    contents.records,
+                    contents.data,
+                )
+                return {
+                    file: whole.carried
+                        ? await writeRecords(key, file, whole.records)
+                        : file,
+                }
+            }
             const { records, accounts } = await partialRecords(
                 key,
                 contents,

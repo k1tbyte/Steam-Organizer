@@ -43,6 +43,7 @@ import {
     openVault,
     passwordSlotOf,
     withCopySlots,
+    withoutPictures,
 } from '../services/openVault'
 import { EMPTY_CONTENTS, type OpenVault } from '../services/vaultContents'
 import { newLink, newVault, pendingIn } from '../services/vaultSync'
@@ -363,12 +364,13 @@ export const useVaultSession = defineStore('vault-session', () => {
         return serial(async () => {
             try {
                 signal?.throwIfAborted()
-                const next = await openVault(file, key, password)
+                const own = await withoutPictures(file, key)
+                const next = await openVault(own, key, password)
                 signal?.throwIfAborted()
                 // The copy as adopted is what its link holds: a recovery slot added now is a change to push.
                 const baseline = newVault(
                     name,
-                    file,
+                    own,
                     sync &&
                         newLink({ ...sync, revision: 0, syncedAt: Date.now() }),
                 )

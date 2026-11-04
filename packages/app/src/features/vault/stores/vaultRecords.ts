@@ -4,6 +4,7 @@ import {
     type SealedRecord,
     type StoredVault,
     sameBody,
+    takePictures,
     type VaultFile,
     type VaultKey,
     type VaultSlots,
@@ -58,7 +59,8 @@ export function vaultRecords(
         const restored: string[] = []
         await transact(async (contents, key) => {
             const now = Date.now()
-            const changed = restoredRecords(contents.records, records, now)
+            const { records: incoming } = await takePictures(key, records)
+            const changed = restoredRecords(contents.records, incoming, now)
             restored.push(...changed.map(({ id }) => id))
             return Promise.all(
                 changed.map((record) =>

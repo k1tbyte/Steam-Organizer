@@ -4,11 +4,13 @@ import {
     passwordSecretSlot,
     readRecords,
     type SecretSlot,
+    takePictures,
     unlockVaultWith,
     type VaultFile,
     type VaultKey,
     WrongPasswordError,
     withRecovery,
+    writeRecords,
 } from '@so/core'
 
 import { reportError } from '#core/reportError'
@@ -34,6 +36,12 @@ export async function openVault(
     return upgraded
         ? { key: upgraded.key, contents, upgraded: upgraded.file }
         : { key: await withFileRecovery(key, file), contents }
+}
+
+/** The file as this device stores it: preset pictures a whole export carries go to the cache. */
+export async function withoutPictures(file: VaultFile, key: VaultKey) {
+    const taken = await takePictures(key, await readRecords(key, file))
+    return taken.taken ? writeRecords(key, file, taken.records) : file
 }
 
 /** `key` sealing new account locks to `file`'s recovery pair: one unwrapped from an older file (before another page or

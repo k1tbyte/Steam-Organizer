@@ -1,7 +1,9 @@
 import 'fake-indexeddb/auto'
 
 import {
+    backgroundStore,
     createVault,
+    RECORD,
     readRecords,
     changePassword as rewrap,
     type SealedRecord,
@@ -10,6 +12,7 @@ import {
     type VaultFile,
     type VaultKey,
     vaultStore,
+    withPictures,
     writeRecords,
 } from '@so/core'
 import { createPinia, setActivePinia } from 'pinia'
@@ -131,6 +134,51 @@ it('adopts a vault file from elsewhere with the password it was made with, and k
     expect(reloaded.vaults.map(({ id, name }) => [id, name])).toEqual([
         [backup.file.id, 'Restored'],
     ])
+})
+
+it('takes the preset pictures a whole export carries into the cache, never into the stored vault', async () => {
+    const source = await reload()
+    await source.create('Main', PASSWORD)
+    const preset = {
+        kind: RECORD.PRESET,
+        name: 'Photo',
+        look: { background: 'image' },
+        image: { id: 'i1', colors: '' },
+    }
+    await source.transact(async (_, key) => [
+        await sealRecord(key, { id: 'p', updatedAt: 1, data: preset }),
+    ])
+    await backgroundStore.write('i1', new Blob([new Uint8Array([7])]))
+    const latest = await source.snapshot()
+    const exported =
+        latest &&
+        (await source.withKey(async (key) => {
+            const { records } = await withPictures(
+                key,
+                latest.contents.records,
+                latest.contents.data,
+            )
+            return writeRecords(key, latest.file, records)
+        }))
+    if (!exported) throw new Error('no export')
+    await backgroundStore.remove('i1')
+    await new Promise((resolve) => {
+        indexedDB.deleteDatabase('steam-organizer').onsuccess = resolve
+    })
+
+    const session = await reload()
+    expect(await session.adopt('Main', exported, PASSWORD)).toBe('opened')
+    expect(session.contents?.data.get('p')).toEqual(preset)
+    const cached = await backgroundStore.read('i1')
+    expect(new Uint8Array(await (cached as Blob).arrayBuffer())).toEqual(
+        new Uint8Array([7]),
+    )
+
+    await backgroundStore.remove('i1')
+    const records = await session.withKey((key) => readRecords(key, exported))
+    await session.replaceRecords(records ?? [])
+    expect(session.contents?.data.get('p')).toEqual(preset)
+    expect(await backgroundStore.has('i1')).toBe(true)
 })
 
 it('renames the open vault on this device and remembers it as the last opened', async () => {
