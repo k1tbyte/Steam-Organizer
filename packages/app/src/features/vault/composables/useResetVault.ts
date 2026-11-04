@@ -1,4 +1,10 @@
-import { DriveError, listBackups, listCopies } from '@so/core'
+import {
+    DriveError,
+    listBackups,
+    listCopies,
+    listImages,
+    removeFile,
+} from '@so/core'
 import { useToast } from '@so/ui'
 import { computed, type Ref, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -135,15 +141,7 @@ export function useResetVault(
         step.value = Math.max(1, step.value - 1)
     }
 
-    const removeFile = (id: string) =>
-        drive
-            .run((api) => api.remove(id))
-            .catch((error) => {
-                if (
-                    !(error instanceof DriveError && error.kind === 'not-found')
-                )
-                    throw error
-            })
+    const remove = (id: string) => drive.run((api) => removeFile(api, id))
 
     /** Drive first: a file that fails keeps the vault here, so the hold can be tried again. Other devices then keep the
      *  vault on their own, as its copy is gone. */
@@ -154,14 +152,15 @@ export function useResetVault(
         problem.value = null
         try {
             // Listed again: a list that landed after step 1 still finds it.
+            // Preset pictures go with the copy: nothing else reads them.
             if (isSynced(id) && drive.state.value !== 'disconnected')
-                for (const copy of await drive.run((api) =>
-                    listCopies(api, id),
-                ))
-                    await removeFile(copy.id)
+                for (const file of await drive.run(async (api) => [
+                    ...(await listCopies(api, id)),
+                    ...(await listImages(api, id)),
+                ]))
+                    await remove(file.id)
             if (hasBackups.value && alsoDeleteBackups.value)
-                for (const backup of backupIds.value ?? [])
-                    await removeFile(backup)
+                for (const backup of backupIds.value ?? []) await remove(backup)
             await session.remove(id)
         } catch (error) {
             if (error instanceof DriveError)

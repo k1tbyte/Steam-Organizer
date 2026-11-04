@@ -16,6 +16,7 @@ defineProps<{
     submitLabel: string
     nameError: string | undefined
     canSubmit: boolean
+    note?: string
 }>()
 const emit = defineEmits<{ submit: []; cancel: [] }>()
 const draft = defineModel<string>({ required: true })
@@ -32,7 +33,7 @@ onMounted(() => input.value?.focus())
                 <PresetPreview :look :image />
                 <span v-if="caption" class="text-11.5 text-fg-3">{{ caption }}</span>
             </div>
-            <FpFormField :label="t('Preset name')" :error="nameError" class="min-w-0 flex-1">
+            <FpFormField :label="t('Preset name')" :error="nameError" :help="note" class="min-w-0 flex-1">
                 <FpInput
                     ref="input"
                     v-model="draft"

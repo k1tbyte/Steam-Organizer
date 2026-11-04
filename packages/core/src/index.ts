@@ -88,6 +88,7 @@ export {
     type DriveErrorKind,
     type DriveFile,
     driveApi,
+    removeFile,
 } from './drive/drive'
 export {
     DRIVE_SCOPE,
@@ -95,6 +96,14 @@ export {
     type GoogleToken,
     googleToken,
 } from './drive/google'
+export {
+    listImages,
+    openImage,
+    type PresetImageFile,
+    type PresetImagePlace,
+    saveImage,
+    sealImage,
+} from './drive/presetImages'
 export {
     listCopies,
     readCopy,

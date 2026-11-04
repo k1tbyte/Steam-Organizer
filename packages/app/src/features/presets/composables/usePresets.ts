@@ -19,6 +19,7 @@ import {
     presetName,
 } from '../services/presets'
 import { usePresetFollow } from '../stores/usePresetFollow'
+import { usePresetPictures } from '../stores/usePresetPictures'
 
 function livePreset(contents: VaultContents, id: string) {
     const record = contents.records.find((found) => found.id === id)
@@ -31,6 +32,7 @@ export function usePresets() {
     const { t } = useI18n()
     const session = useVaultSession()
     const follows = usePresetFollow()
+    const pictures = usePresetPictures()
     const deleteWithUndo = useUndoDelete()
     const { look, apply: applyLook } = useLook()
 
@@ -89,10 +91,13 @@ export function usePresets() {
             followAs(preset)
             // Painted even when it is the current picture: the stage may never have loaded one.
             if (preset.look.background === 'image')
-                return backgroundImage.show(
-                    preset.image,
-                    preset.image && preset.name,
-                )
+                return backgroundImage
+                    .show(preset.image, preset.image && preset.name)
+                    .then((painted) => {
+                        // Its colours show meanwhile; Drive brings the picture.
+                        if (!painted && preset.image)
+                            void pictures.fetch(preset.image)
+                    })
         })
     }
 
@@ -101,6 +106,7 @@ export function usePresets() {
         const current = look.value
         const image =
             current.background === 'image' ? backgroundImage.keep() : null
+        if (image) void pictures.refresh([image.id])
         return { id, name, look: current, image, builtIn: false }
     }
 

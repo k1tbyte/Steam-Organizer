@@ -4,6 +4,7 @@ import {
     listBackups,
     listCopies,
     readCopy,
+    removeFile,
     saveBackup,
     saveCopy,
     type VaultCopy,
@@ -24,6 +25,7 @@ import {
 } from '#core'
 import { useDrive } from '#features/drive'
 import { useNotificationLog } from '#features/notifications'
+import { usePresetPictures } from '#features/presets'
 import {
     type LockedSnapshot,
     type MergedCopy,
@@ -59,12 +61,6 @@ interface Exchange {
     at: string
 }
 
-// A file already gone is what a delete wanted.
-const goneIsDone = (error: unknown) => {
-    if (!(error instanceof DriveError && error.kind === 'not-found'))
-        throw error
-}
-
 /** Syncs the open vault with its Drive copy: list, merge, push, then record the version left. One run at a time;
  *  results for another vault or Google account never land. Holds the device's sync settings. */
 export const useVaultSync = defineStore('vault-sync', () => {
@@ -72,6 +68,7 @@ export const useVaultSync = defineStore('vault-sync', () => {
     const drive = useDrive()
     const backups = useBackupList()
     const notifications = useNotificationLog()
+    const pictures = usePresetPictures()
     const settings = ref(storedSettings())
     const running = ref(false)
     const failed = shallowRef<{ at: string; error: unknown } | null>(null)
@@ -110,7 +107,12 @@ export const useVaultSync = defineStore('vault-sync', () => {
         if (link.account !== null && link.account !== email) return gone(vault)
         running.value = true
         try {
-            await drive.run((api) => exchange(api, vault))
+            await drive.run(async (api) => {
+                await exchange(api, vault)
+                // Pictures follow the merged records; theirs fail on their own, waiting for the next sync.
+                if (backups.scope === at && session.vault?.sync)
+                    await pictures.sync(api, vault.id)
+            })
             if (failed.value?.at === at) failed.value = null
         } catch (error) {
             if (backups.scope !== at) return
@@ -151,8 +153,7 @@ export const useVaultSync = defineStore('vault-sync', () => {
             )
             if (stale()) return
             await mark(merged, saved)
-            for (const extra of extras)
-                await api.remove(extra.id).catch(goneIsDone)
+            for (const extra of extras) await removeFile(api, extra.id)
         }
 
         // Drive's copy is the one merged last: only this device's changes may be missing there.
@@ -269,8 +270,7 @@ export const useVaultSync = defineStore('vault-sync', () => {
                     all = [saved, ...found]
                 }
                 const pruned = prunedAutoBackups(all)
-                for (const old of pruned)
-                    await api.remove(old.id).catch(goneIsDone)
+                for (const old of pruned) await removeFile(api, old.id)
                 if (pruned.length && backups.list) await backups.load()
             })
         } catch (error) {

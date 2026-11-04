@@ -6,6 +6,7 @@ import {
     FpFormField,
     FpIcon,
     FpInput,
+    FpSpinner,
     type MenuEntries,
     tip,
 } from '@so/ui'
@@ -13,6 +14,7 @@ import { useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { MAX_PRESET_NAME, type Preset } from '../model'
+import type { PictureStatus } from '../services/pictureSync'
 import PresetPreview from './PresetPreview.vue'
 
 const props = defineProps<{
@@ -24,7 +26,20 @@ const props = defineProps<{
     renaming: boolean
     nameError: string | undefined
     canSubmit: boolean
+    picture: { kind: PictureStatus; text: string } | null
 }>()
+
+const PICTURE_ICONS = {
+    waiting: 'icon-[lucide--cloud-upload]',
+    offline: 'icon-[lucide--cloud-off]',
+    missing: 'icon-[lucide--image-off]',
+}
+const PICTURE_TONES = {
+    loading: 'text-fg-3',
+    waiting: 'text-fg-3',
+    offline: 'text-warning',
+    missing: 'text-danger',
+}
 const emit = defineEmits<{ apply: [event: MouseEvent]; submit: []; cancel: [] }>()
 const draft = defineModel<string>('draft', { required: true })
 
@@ -91,5 +106,13 @@ watch(
                 </FpButton>
             </FpDropdownMenu>
         </div>
+        <span
+            v-if="picture"
+            class="flex items-start gap-1.5 px-1 text-11.5"
+            :class="PICTURE_TONES[picture.kind]">
+            <FpSpinner v-if="picture.kind === 'loading'" size="sm" class="shrink-0" />
+            <FpIcon v-else :name="PICTURE_ICONS[picture.kind]" class="mt-px shrink-0" />
+            <span class="line-clamp-2 text-fg-3">{{ picture.text }}</span>
+        </span>
     </div>
 </template>

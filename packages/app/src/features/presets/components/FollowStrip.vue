@@ -3,7 +3,13 @@ import { FpBadge, FpButton, FpDot, FpIcon } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
 /** The preset this device follows; once modified, the ways back. */
-defineProps<{ name: string; modified: boolean; canUpdate: boolean }>()
+defineProps<{
+    name: string
+    modified: boolean
+    canUpdate: boolean
+    /** Why the picture shows as its colours. */
+    note: string | null
+}>()
 const emit = defineEmits<{ update: []; saveNew: []; revert: [event: MouseEvent] }>()
 
 const { t } = useI18n()
@@ -48,5 +54,9 @@ const { t } = useI18n()
             <FpButton variant="outline" size="sm" :label="t('Save as new')" @click="emit('saveNew')" />
             <FpButton variant="ghost" size="sm" :label="t('Revert')" @click="emit('revert', $event)" />
         </div>
+        <p v-if="note" class="flex w-full items-start gap-2 border-stroke-1 border-t pt-2.5 text-12.5 text-fg-2">
+            <FpIcon name="icon-[lucide--info]" class="mt-0.5 shrink-0 text-fg-3" />
+            {{ note }}
+        </p>
     </div>
 </template>

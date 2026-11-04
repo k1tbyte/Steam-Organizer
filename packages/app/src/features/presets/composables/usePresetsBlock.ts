@@ -6,6 +6,7 @@ import { backgroundImage } from '#core'
 
 import type { Preset } from '../model'
 import { findPreset, presetName } from '../services/presets'
+import { usePictureStatus } from './usePictureStatus'
 import { usePresets } from './usePresets'
 
 type Naming = { mode: 'save' } | { mode: 'rename'; preset: Preset }
@@ -15,6 +16,7 @@ export function usePresetsBlock() {
     const { t } = useI18n()
     const presets = usePresets()
     const desktop = useDesktopLayout()
+    const pictures = usePictureStatus(() => presets.presets.value)
 
     const naming = ref<Naming | null>(null)
     const draft = ref('')
@@ -89,6 +91,7 @@ export function usePresetsBlock() {
                 modified: followed && presets.modified.value,
                 renaming: renaming.value?.id === preset.id,
                 menu: preset.builtIn ? null : menu(preset),
+                picture: pictures.label(preset, followed),
             }
         }),
     )
@@ -100,6 +103,7 @@ export function usePresetsBlock() {
                 name: preset.name,
                 modified: presets.modified.value,
                 canUpdate: !preset.builtIn,
+                note: pictures.note(preset),
             }
         )
     })
@@ -108,6 +112,15 @@ export function usePresetsBlock() {
         look: presets.look.value,
         image: backgroundImage.picture.value,
     }))
+
+    /** Under the save field: where a picture saved with the preset goes. */
+    const saveNote = computed(() =>
+        pictures.synced.value && current.value.look.background === 'image'
+            ? t(
+                  'The picture is saved with the preset and goes to Google Drive with your vault.',
+              )
+            : undefined,
+    )
 
     // Phones name a preset in a sheet; desktop saves in a panel and renames in the tile.
     const sheet = computed(() => {
@@ -120,18 +133,21 @@ export function usePresetsBlock() {
                   look: preset.look,
                   image: preset.image,
                   caption: undefined,
+                  note: undefined,
               }
             : {
                   title: t('Save preset'),
                   submit: t('Save'),
                   ...current.value,
                   caption: t('Current look'),
+                  note: saveNote.value,
               }
     })
 
     return {
         tiles,
         strip,
+        saveNote,
         /** The look Save would keep, for its preview. */
         current,
         sheet,

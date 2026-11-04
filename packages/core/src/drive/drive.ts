@@ -198,3 +198,13 @@ export function driveApi(
 }
 
 export type DriveApi = ReturnType<typeof driveApi>
+
+/** Deletes file `id`; one already gone is what the delete wanted. */
+export async function removeFile(api: Pick<DriveApi, 'remove'>, id: string) {
+    try {
+        await api.remove(id)
+    } catch (error) {
+        if (!(error instanceof DriveError && error.kind === 'not-found'))
+            throw error
+    }
+}

@@ -4,10 +4,12 @@ import {
     type DriveFile,
     listBackups,
     listCopies,
+    RECORD,
     readCopy,
     type SealedRecord,
     saveBackup,
     sealRecord,
+    updateData,
 } from '@so/core'
 import { IDBFactory } from 'fake-indexeddb'
 import { createPinia, setActivePinia } from 'pinia'
@@ -122,15 +124,34 @@ beforeEach(async () => {
  *  the BroadcastChannel stay the process's, but each device reads only its own disk. */
 async function device() {
     vi.resetModules()
+    // The facade loads the presets' components; the lane needs only the pictures store. Mocked per device: a factory's
+    // result outlives resetModules, so one mock would hand every device the first one's store and cache.
+    vi.doMock('#features/presets', async () => ({
+        usePresetPictures: (
+            await import('../../presets/stores/usePresetPictures')
+        ).usePresetPictures,
+    }))
     vi.stubGlobal('indexedDB', new IDBFactory())
     const { useVaultSession } = await import('#features/vault')
     const { useVaultSync } = await import('./useVaultSync')
+    const { usePresetPictures } = await import(
+        '../../presets/stores/usePresetPictures'
+    )
+    const { backgroundStore } = await import('@so/core')
+    // Opened now, on this device's disk: the next device swaps the global.
+    await backgroundStore.has('')
     setActivePinia(createPinia())
     const session = useVaultSession()
     const engine = useVaultSync()
     const notices: SyncNotice[] = []
     engine.onNotice((notice) => notices.push(notice))
-    return { session, engine, notices }
+    return {
+        session,
+        engine,
+        notices,
+        pictures: usePresetPictures(),
+        cache: backgroundStore,
+    }
 }
 
 type Device = Awaited<ReturnType<typeof device>>
@@ -394,4 +415,72 @@ it('saves an auto backup at most once a day after a change, keeping the newest t
     expect(backups.some(({ id }) => id === 'manual')).toBe(true)
     expect(backups.map(({ id }) => id)).not.toContain('old1')
     expect(backups.map(({ id }) => id)).toContain('old2')
+})
+
+const presetWith = (image: string) => ({
+    kind: RECORD.PRESET,
+    name: 'Night',
+    look: { background: 'image' },
+    image: { id: image, colors: '' },
+})
+const pictureFiles = () =>
+    drive.files.filter((file) => file.appProperties.type === 'preset-image')
+const bytesOf = async (blob: Blob | undefined) =>
+    blob && new Uint8Array(await blob.arrayBuffer())
+
+it('carries a preset picture to the other device, sealed, one file per preset', async () => {
+    const { a, b, vaultId } = await twoDevices()
+    const picture = new Uint8Array([1, 2, 3])
+    await a.cache.write('i1', new Blob([picture]))
+    await a.session.transact(async (_, key) => [
+        await sealRecord(key, {
+            id: 'p1',
+            updatedAt: 2,
+            data: presetWith('i1'),
+        }),
+    ])
+    await a.engine.sync()
+    expect(pictureFiles().map((file) => file.appProperties)).toEqual([
+        { type: 'preset-image', vault: vaultId, preset: 'p1', image: 'i1' },
+    ])
+    expect(pictureFiles()[0]?.body).not.toEqual(picture)
+
+    await b.engine.sync()
+    expect(await b.cache.has('i1')).toBe(false)
+    await b.pictures.fetch({ id: 'i1', colors: '' })
+    expect(await bytesOf(await b.cache.read('i1'))).toEqual(picture)
+
+    const next = new Uint8Array([4, 5])
+    await a.cache.write('i2', new Blob([next]))
+    await a.session.transact(async (contents, key) => {
+        const record = contents.records.find(({ id }) => id === 'p1')
+        if (!record || 'deleted' in record) return []
+        return [await updateData(key, record, presetWith('i2'), 3)]
+    })
+    await a.engine.sync()
+    await b.engine.sync()
+    expect(pictureFiles().map((file) => file.appProperties.image)).toEqual([
+        'i2',
+    ])
+    await b.pictures.fetch({ id: 'i2', colors: '' })
+    expect(await bytesOf(await b.cache.read('i2'))).toEqual(next)
+})
+
+it('keeps a fresh picture of a preset it does not know yet, and drops an old one', async () => {
+    const a = await device()
+    await a.session.create('Main', PASSWORD, true)
+    const vault = a.session.vault?.id ?? ''
+    const stray = (id: string, modifiedTime: number) => ({
+        id,
+        name: 'preset-image.bin',
+        size: 1,
+        createdTime: modifiedTime,
+        modifiedTime,
+        version: '1',
+        appProperties: { type: 'preset-image', vault, preset: id, image: id },
+        body: new Uint8Array([0]),
+    })
+    drive.files.push(stray('fresh', Date.now()), stray('old', 0))
+    await a.engine.sync()
+    expect(pictureFiles().map(({ id }) => id)).toEqual(['fresh'])
 })
