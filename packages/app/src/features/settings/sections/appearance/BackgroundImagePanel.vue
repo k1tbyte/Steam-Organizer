@@ -2,6 +2,8 @@
 import { FpButton, FpFootnote, FpIcon, FpSlider } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
+import { BLUR_MAX, DIM_MAX } from '#core'
+
 defineProps<{
     name: string
     hasCustomImage: boolean
@@ -29,12 +31,12 @@ const { t } = useI18n()
         </div>
         <div class="grid grid-cols-[3rem_minmax(0,1fr)_3rem] items-center gap-3">
             <span class="text-12.5 text-fg-2">{{ t('Blur') }}</span>
-            <FpSlider v-model="blur" :min="0" :max="60" :step="2" size="xs" :label="t('Blur')" />
+            <FpSlider v-model="blur" :min="0" :max="BLUR_MAX" :step="2" size="xs" :label="t('Blur')" />
             <span class="text-right font-medium font-mono text-12 text-fg-2">{{ t('{value}px', { value: blur }) }}</span>
         </div>
         <div class="grid grid-cols-[3rem_minmax(0,1fr)_3rem] items-center gap-3">
             <span class="text-12.5 text-fg-2">{{ t('Dim') }}</span>
-            <FpSlider v-model="dim" :min="0" :max="85" :step="5" size="xs" :label="t('Dim')" />
+            <FpSlider v-model="dim" :min="0" :max="DIM_MAX" :step="5" size="xs" :label="t('Dim')" />
             <span class="text-right font-medium font-mono text-12 text-fg-2">{{ dim }}%</span>
         </div>
         <FpFootnote v-if="suggestGlass" dashed>

@@ -48,18 +48,22 @@ export function restoreAppearance(
     if (stateOf('background').value === 'image') void restoreBackground()
 }
 
+function store(name: PrefName, value: string) {
+    stateOf(name).value = value
+    const { storageKey } = prefSpec(name)
+    if (isPrefDefault(name, value)) removeStored(storageKey)
+    else writeStored(storageKey, value)
+    applyPref(document.documentElement, name, value)
+}
+
 /** One appearance pref as state: `set` persists it and applies it to <html> at once. */
 export function useAppearancePref<K extends PrefName>(name: K) {
     const state = stateOf(name)
 
     function set(value: PrefValue<K>, origin?: RevealOrigin) {
         const apply = () => {
-            state.value = value
             pauseThemeTransitions()
-            const { storageKey } = prefSpec(name)
-            if (isPrefDefault(name, value)) removeStored(storageKey)
-            else writeStored(storageKey, value)
-            applyPref(document.documentElement, name, value)
+            store(name, value)
         }
         // Only a mode change reveals from `origin`; the rest land at once.
         if (name === 'mode') void revealThemeChange(apply, origin)
@@ -67,4 +71,11 @@ export function useAppearancePref<K extends PrefName>(name: K) {
     }
 
     return { state: readonly(state) as Readonly<Ref<PrefValue<K>>>, set }
+}
+
+/** Several prefs at once, without a reveal: the caller runs it inside one (a preset put on). */
+export function storePrefs(values: { [K in PrefName]?: PrefValue<K> }) {
+    pauseThemeTransitions()
+    for (const [name, value] of Object.entries(values))
+        store(name as PrefName, value)
 }

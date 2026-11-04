@@ -8,6 +8,7 @@ import {
     orderKeys,
     RECORD,
     readAccount,
+    readPreset,
     readTag,
     rekeyTies,
     sealRecord,
@@ -52,6 +53,12 @@ it('reads a record of its kind with defaults for the fields it lacks', () => {
         kind: RECORD.TAG,
         label: 'farm',
         hue: 0,
+    })
+    expect(readPreset({ kind: RECORD.SERVICE, name: 'x' })).toBeNull()
+    expect(readPreset({ kind: RECORD.PRESET })).toEqual({
+        kind: RECORD.PRESET,
+        name: '',
+        look: {},
     })
 })
 

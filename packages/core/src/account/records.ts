@@ -148,6 +148,25 @@ export interface ServiceData {
     icon?: string
 }
 
+/** A look the user saved, shared by every device of the vault; built-in looks are app constants. */
+export interface PresetData {
+    kind: typeof RECORD.PRESET
+    name: string
+    /** Appearance settings as a device stores them, as text; the app coerces each one. */
+    look: Record<string, string>
+    /** With an Image background only. */
+    image?: PresetImage
+}
+
+export interface PresetImage {
+    /** The picture in each device's cache and on Drive. */
+    id: string
+    /** Its colours as a small grid (base64 RGB), painted until the picture is there. */
+    colors: string
+    /** The picture itself (base64 JPEG), only inside a whole export. */
+    bytes?: string
+}
+
 const isObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === 'object' && value !== null
 
@@ -176,6 +195,11 @@ export function readTag(value: unknown): TagData | null {
 export function readService(value: unknown): ServiceData | null {
     if (!isObject(value) || value.kind !== RECORD.SERVICE) return null
     return { name: '', ...value } as ServiceData
+}
+
+export function readPreset(value: unknown): PresetData | null {
+    if (!isObject(value) || value.kind !== RECORD.PRESET) return null
+    return { name: '', look: {}, ...value } as PresetData
 }
 
 /** `count` order keys between two neighbours (null past either end), ascending. */
