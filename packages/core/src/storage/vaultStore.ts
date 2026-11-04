@@ -17,6 +17,8 @@ export interface VaultSync {
     /** The local revision that copy holds: a newer one has changes to push. */
     revision: number
     syncedAt: number | null
+    /** New at every link, so a sync read under an earlier one never marks this one synced, in any page. */
+    linkId?: string
 }
 
 /** The device's working copy; `name` labels it on the unlock picker and never enters the file. */

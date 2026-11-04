@@ -9,13 +9,11 @@ import {
     saveBackup,
     sealRecord,
 } from '@so/core'
+import { IDBFactory } from 'fake-indexeddb'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, expect, it, vi } from 'vitest'
 
-import { useVaultSession } from '#features/vault'
-
 import type { SyncNotice } from '../model'
-import { useVaultSync } from './useVaultSync'
 
 const PASSWORD = 'correct horse'
 
@@ -120,8 +118,13 @@ beforeEach(async () => {
     })
 })
 
-/** A device: its own Pinia, so its own session and engine. */
-function device() {
+/** A device: its own modules over its own IndexedDB and session area, so its own session and engine. The Web Lock and
+ *  the BroadcastChannel stay the process's, but each device reads only its own disk. */
+async function device() {
+    vi.resetModules()
+    vi.stubGlobal('indexedDB', new IDBFactory())
+    const { useVaultSession } = await import('#features/vault')
+    const { useVaultSync } = await import('./useVaultSync')
     setActivePinia(createPinia())
     const session = useVaultSession()
     const engine = useVaultSync()
@@ -130,7 +133,7 @@ function device() {
     return { session, engine, notices }
 }
 
-type Device = ReturnType<typeof device>
+type Device = Awaited<ReturnType<typeof device>>
 
 async function write(on: Device, id: string, updatedAt: number, n: number) {
     await on.session.transact(async (_, key) => [
@@ -149,11 +152,11 @@ const dataOf = (on: Device) =>
 
 /** Device A creates a synced vault and pushes it; device B joins through its copy, as Restore does. */
 async function twoDevices() {
-    const a = device()
+    const a = await device()
     await a.session.create('Main', PASSWORD, true)
     await write(a, 'one', 1, 1)
     await a.engine.sync()
-    const b = device()
+    const b = await device()
     const [copy] = await listCopies(drive.api, a.session.vault?.id)
     if (!copy) throw new Error('nothing pushed')
     expect(
@@ -173,7 +176,7 @@ async function twoDevices() {
 }
 
 it('pushes a new synced vault once and then only marks it synced', async () => {
-    const a = device()
+    const a = await device()
     await a.session.create('Main', PASSWORD, true)
     expect(a.session.vault?.sync?.pending).toBe(true)
     await a.engine.sync()

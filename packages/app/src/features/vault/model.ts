@@ -35,8 +35,8 @@ export interface SyncReceipt {
         copyId: string | null
         version: string | null
     }
-    /** Moves with every link and unlink on this device: a receipt from before one is refused. */
-    linkEpoch: number
+    /** The link it was read under (`VaultSync.linkId`): one from before another link is refused. */
+    linkId?: string
 }
 
 /** The open vault's file after a merge with its Drive copy; `push` when the copy lacks something. */

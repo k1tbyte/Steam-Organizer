@@ -41,7 +41,7 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | loading, empty, error states | `FpAsyncView` fed by one `status` |
 | sample data for a block without a source | `defineMock` + `useMock` (`core/mock/README.md`) |
 | client state that survives a reload | `readStored` / `writeStored` with a key constant in `core/storage.ts`, read back with `parseRecord` / `oneOf` / `flag` (never a `JSON.parse` of your own); `localStorage` fails lint. A store writes in its actions, never from a `watch`: Vue ties a watcher to the component whose setup first used the store and keeps that page alive |
-| async work that must run one at a time (writes over one file, a sync lane) | `serialQueue()` from `#core`: a failed task rejects its caller and never blocks the next |
+| async work that must run one at a time (writes over one file, a sync lane) | `serialQueue()` from `#core`: a failed task rejects its caller and never blocks the next; across pages of the origin, `acrossPages(name, work)` (a Web Lock), never `navigator.locks` directly |
 | failure | `reportError(error, scope, context?)`, the only `console.error` (`noConsole` fails lint) |
 | debounce, interval | `useTimer` from `@so/ui/useTimer` |
 | an age label that moves with the time ("2 min ago", "2 h") | `useMinuteClock()` from `#core`: one interval for every reader, never a clock of your own |

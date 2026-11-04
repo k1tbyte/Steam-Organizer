@@ -2,12 +2,13 @@ import {
     openSecret,
     restampEdited,
     type SealedRecord,
+    type StoredVault,
     type VaultFile,
     type VaultKey,
     type VaultSlots,
-    vaultStore,
     writeRecords,
 } from '@so/core'
+import { withFileRecovery } from '../services/openVault'
 import { restoredRecords } from '../services/restoredRecords'
 import {
     openContents,
@@ -23,7 +24,7 @@ export function vaultRecords(
     files: ReturnType<typeof vaultFiles>,
     { opened, recordKeys, contentsOf, epoch }: OpenState,
 ) {
-    const { serial, get: storedVault, save, remember } = files
+    const { serial, get: storedVault, save } = files
 
     /** Writes the records `change` returns to the vault open now; it runs in the queue on the latest records, so changes to one record never overwrite each other. */
     function transact(
@@ -102,38 +103,45 @@ export function vaultRecords(
         return target ? use(target.key, target.vault.file.slots) : undefined
     }
 
-    /** Reads the open vault's stored file again. One another page changed (an edit, a deletion, a password change, a new
-     *  account lock) opens its records again with the held key and drops the held record keys: `changed`. `gone`: the
-     *  vault was removed; `unreadable`: the held key no longer opens the file. Else `same`, after one read. */
-    function refreshOpen(): Promise<
-        'same' | 'changed' | 'gone' | 'unreadable'
-    > {
+    /** Takes in the open vault as stored, before a write and at `refresh`: a new file opens again with the held key, and
+     *  the held keys of records whose secret changed drop (an account password set, changed or removed elsewhere seals it
+     *  anew). `gone`: removed; `unreadable`: the held key no longer opens the file. */
+    async function follow(
+        stored: StoredVault | undefined,
+    ): Promise<'followed' | 'gone' | 'unreadable'> {
         const target = opened.value
-        if (!target) return Promise.resolve('same')
-        return serial(async () => {
-            const at = epoch()
-            const stored = await vaultStore.get(target.vault.id)
-            // A lock, another open or a write of this page since: that is newer than this read.
-            const moved = () => at !== epoch() || opened.value !== target
-            if (moved()) return 'same'
-            if (!stored) return 'gone'
-            const held = target.vault
-            if (
-                (stored.revision ?? 0) === (held.revision ?? 0) &&
-                stored.file.body === held.file.body
-            )
-                return 'same'
+        if (!target || stored === target.vault) return 'followed'
+        if (!stored) return 'gone'
+        const at = epoch()
+        const key =
+            stored.file.slots.recovery?.publicKey ===
+            target.vault.file.slots.recovery?.publicKey
+                ? target.key
+                : await withFileRecovery(target.key, stored.file)
+        let contents = target.contents
+        // A rename, a link or a password change keep the records.
+        if (stored.file.body !== target.vault.file.body)
             try {
-                const contents = await openContents(target.key, stored.file)
-                if (moved()) return 'same'
-                remember(stored)
-                opened.value = { vault: stored, key: target.key, contents }
-                recordKeys.clear()
-                return 'changed'
+                contents = await openContents(key, stored.file)
             } catch {
                 return 'unreadable'
             }
-        })
+        // A lock or another open meanwhile is newer than this file.
+        if (at !== epoch() || opened.value !== target) return 'followed'
+        opened.value = { vault: stored, key, contents }
+        const secrets = new Map(
+            contents.records.map((record) => [
+                record.id,
+                'deleted' in record ? undefined : record.secret,
+            ]),
+        )
+        for (const record of target.contents.records)
+            if (
+                !('deleted' in record) &&
+                secrets.get(record.id) !== record.secret
+            )
+                recordKeys.drop(record.id)
+        return 'followed'
     }
 
     return {
@@ -142,6 +150,6 @@ export function vaultRecords(
         snapshot,
         secretOf,
         withKey,
-        refreshOpen,
+        follow,
     }
 }

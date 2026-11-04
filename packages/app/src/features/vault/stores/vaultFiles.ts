@@ -6,26 +6,81 @@ import {
 } from '@so/core'
 import { shallowRef } from 'vue'
 
-import { reportError, serialQueue } from '#core'
+import { acrossPages, reportError, serialQueue } from '#core'
 
 import type { SyncReceipt } from '../model'
 import type { VaultContents } from '../services/vaultContents'
-import { FIRST_PUSH, receiptOf } from '../services/vaultSync'
+import { newLink, receiptOf } from '../services/vaultSync'
+
+// The lock every page's write turn holds, and the channel it tells the other pages on.
+const VAULTS = 'so:vaults'
+
+// Every change to the file moves the revision; a rename or a link keeps it.
+const sameStored = (a: StoredVault, b: StoredVault) =>
+    (a.revision ?? 0) === (b.revision ?? 0) &&
+    a.file.body === b.file.body &&
+    a.name === b.name &&
+    JSON.stringify(a.sync) === JSON.stringify(b.sync)
 
 /** The session's storage half: the vaults on this device, the one write queue over them and their Drive links.
- *  `saved` hears every stored change, so the open vault follows its file. */
+ *  `saved` hears this page's every stored change; `followOpen` runs once the list took in other pages', before a write. */
 export function vaultFiles(
     saved: (vault: StoredVault, contents?: VaultContents) => void,
+    followOpen: () => Promise<void>,
 ) {
     // Null until `load()`: the autofill entry never calls it, so a Steam page's storage stays untouched.
     const list = shallowRef<StoredVault[] | null>(null)
     let loading: Promise<void> | null = null
-    // One writer at a time: each change reads the latest file inside the queue, so none restores an older one.
-    const serial = serialQueue()
-    // Bumped by every link and unlink: a sync read before one never marks the new link synced.
-    const linkEpochs = new Map<string, number>()
+    const queue = serialQueue()
+    let channel: BroadcastChannel | undefined
+    // A catch-up waits already: another message needs none of its own.
+    let behind = false
 
-    // Inside the queue the list holds each vault's latest file: every save lands there, lock or not.
+    /** One writer across pages: a write holds the lock and first takes in what other pages stored, the open vault too, so
+     *  it never writes over a file it has not read. A lock that causes lands first: the work finds its vault gone or closed. */
+    const serial = <T>(work: () => Promise<T>) =>
+        queue(() =>
+            acrossPages(VAULTS, async () => {
+                await takeStored()
+                await followOpen()
+                return work()
+            }),
+        )
+
+    /** Takes in what other pages stored, then the open vault follows: in this page's queue, outside the lock, so a
+     *  read never stalls their writes. */
+    const refresh = () =>
+        queue(async () => {
+            behind = false
+            await takeStored()
+            await followOpen()
+        })
+
+    async function takeStored() {
+        if (!list.value) return
+        const stored = await vaultStore.list()
+        const kept = list.value.filter(({ id }) =>
+            stored.some((vault) => vault.id === id),
+        )
+        if (kept.length < list.value.length) list.value = kept
+        for (const vault of stored) {
+            const known = get(vault.id)
+            if (known && sameStored(known, vault)) continue
+            remember(vault)
+        }
+    }
+
+    function listen() {
+        if (channel || typeof BroadcastChannel === 'undefined') return
+        channel = new BroadcastChannel(VAULTS)
+        channel.onmessage = () => {
+            if (behind) return
+            behind = true
+            refresh().catch((error) => reportError(error, 'vault-session'))
+        }
+    }
+
+    // Inside a turn the list holds each vault's latest file, other pages' taken in: every save lands there, lock or not.
     const get = (id: string) => list.value?.find((item) => item.id === id)
 
     function remember(vault: StoredVault) {
@@ -42,6 +97,7 @@ export function vaultFiles(
         opening?: () => void,
     ) {
         await vaultStore.put(vault)
+        channel?.postMessage(vault.id)
         opening?.()
         saved(vault, contents)
         remember(vault)
@@ -55,17 +111,12 @@ export function vaultFiles(
         revision: (stored.revision ?? 0) + 1,
     })
 
-    function relink(id: string) {
-        linkEpochs.set(id, (linkEpochs.get(id) ?? 0) + 1)
-    }
-
     return {
         list,
         serial,
         get,
         remember,
         persist,
-        relink,
         load() {
             loading ??= vaultStore
                 .list()
@@ -75,6 +126,7 @@ export function vaultFiles(
                 })
                 .then((found) => {
                     list.value = found
+                    listen()
                 })
             return loading
         },
@@ -84,37 +136,25 @@ export function vaultFiles(
             file: VaultFile,
             contents?: VaultContents,
         ) => persist(withFile(stored, file), contents),
-        /** Takes in what another page stored since this one loaded: vaults it lacks, and newer files of those it has. */
-        refresh: () =>
-            serial(async () => {
-                for (const stored of await vaultStore.list()) {
-                    const known = get(stored.id)
-                    if (
-                        !known ||
-                        (stored.revision ?? 0) > (known.revision ?? 0)
-                    )
-                        remember(stored)
-                }
-            }),
+        /** Takes in what other pages stored and this one may not have heard (a page asleep misses their messages). */
+        refresh,
         async remove(id: string) {
             await vaultStore.remove(id)
+            channel?.postMessage(id)
             list.value = (list.value ?? []).filter((item) => item.id !== id)
         },
-        receipt: (vault: StoredVault): SyncReceipt =>
-            receiptOf(vault, linkEpochs.get(vault.id) ?? 0),
+        receipt: (vault: StoredVault): SyncReceipt => receiptOf(vault),
         /** Links vault `id` to Drive: its next sync pushes it, or merges it into the copy Drive has. */
         link: (id: string | undefined) =>
             serial(async () => {
                 const vault = id === undefined ? undefined : get(id)
                 if (!vault || vault.sync) return
-                relink(vault.id)
-                await persist({ ...vault, sync: FIRST_PUSH })
+                await persist({ ...vault, sync: newLink() })
             }),
         unlink: (id: string | undefined) =>
             serial(async () => {
                 const vault = id === undefined ? undefined : get(id)
                 if (!vault?.sync) return
-                relink(vault.id)
                 const { sync: _, ...unlinked } = vault
                 await persist(unlinked)
             }),
@@ -124,15 +164,13 @@ export function vaultFiles(
         ) =>
             serial(async () => {
                 const vault = get(receipt.vaultId)
-                if (
-                    !vault?.sync ||
-                    (linkEpochs.get(vault.id) ?? 0) !== receipt.linkEpoch
-                )
+                if (!vault?.sync || vault.sync.linkId !== receipt.linkId)
                     return false
                 await persist({
                     ...vault,
                     sync: {
                         ...at,
+                        linkId: vault.sync.linkId,
                         revision: receipt.revision,
                         syncedAt: Date.now(),
                     },

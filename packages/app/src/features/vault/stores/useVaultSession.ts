@@ -45,7 +45,7 @@ import {
     withCopySlots,
 } from '../services/openVault'
 import { EMPTY_CONTENTS, type OpenVault } from '../services/vaultContents'
-import { FIRST_PUSH, newVault, pendingIn } from '../services/vaultSync'
+import { newLink, newVault, pendingIn } from '../services/vaultSync'
 import { deviceFacts } from './deviceFacts'
 import { keptRestore } from './keptRestore'
 import { keptSession } from './keptSession'
@@ -68,7 +68,7 @@ export const useVaultSession = defineStore('vault-session', () => {
                 key: active.key,
                 contents: contents ?? active.contents,
             }
-    })
+    }, followOpen)
     const { serial, get: storedVault, save, persist } = files
     const sync = vaultSyncSide(files, openVaultState)
     const records = vaultRecords(files, openVaultState)
@@ -303,20 +303,18 @@ export const useVaultSession = defineStore('vault-session', () => {
         return result
     }
 
-    /** Takes in what another page stored for the open vault since it opened (a long-lived page: the vault host). A
-     *  vault removed meanwhile, or whose file the held key no longer opens, locks this page; a kept session that
-     *  replaced it restores. */
-    async function refreshOpen() {
+    /** The open vault as other pages stored it. Removed, or a file the held key no longer opens, it locks this page, and
+     *  a kept session that replaced it restores (after this turn: it queues an open). */
+    async function followOpen() {
         const id = opened.value?.vault.id
-        // Nothing open: the vaults another page made since (a host started before the first vault) come in.
-        if (!id) return files.refresh()
-        const result = await records.refreshOpen()
-        if (result === 'gone')
-            files.list.value = (files.list.value ?? []).filter(
-                (vault) => vault.id !== id,
-            )
-        if (result === 'gone' || result === 'unreadable') lockLocal()
-        if (result === 'unreadable') await revival.follow()
+        if (!id) return
+        const result = await records.follow(storedVault(id))
+        if (result === 'followed') return
+        lockLocal()
+        if (result === 'unreadable')
+            revival
+                .follow()
+                .catch((error) => reportError(error, 'vault-session'))
     }
 
     /** Checks the open vault's master password without touching the session. */
@@ -333,7 +331,7 @@ export const useVaultSession = defineStore('vault-session', () => {
     /** Creates a vault on this device and opens it; `sync` links it to Drive, so its first sync pushes it. */
     async function create(name: string, password: string, sync = false) {
         const { file, key } = await createVault(password)
-        const vault = newVault(name, file, sync ? FIRST_PUSH : undefined)
+        const vault = newVault(name, file, sync ? newLink() : undefined)
         // `createVault` hands back only the key: the slot the device seal moves the secret from is one more PBKDF2.
         const slot = await passwordSlotOf(file, password)
         const sealed =
@@ -371,12 +369,12 @@ export const useVaultSession = defineStore('vault-session', () => {
                 const baseline = newVault(
                     name,
                     file,
-                    sync && { ...sync, revision: 0, syncedAt: Date.now() },
+                    sync &&
+                        newLink({ ...sync, revision: 0, syncedAt: Date.now() }),
                 )
                 const vault = next.upgraded
                     ? files.withFile(baseline, next.upgraded)
                     : baseline
-                files.relink(vault.id)
                 await storeOpen({ ...next, vault }, sealed)
                 return 'opened'
             } catch (error) {
@@ -482,7 +480,8 @@ export const useVaultSession = defineStore('vault-session', () => {
         changePassword,
         transact: records.transact,
         replaceRecords: records.replaceRecords,
-        refreshOpen,
+        /** Takes in what other pages stored now: a page that may have slept (the vault host) calls it before it answers. */
+        refreshOpen: files.refresh,
         snapshot: records.snapshot,
         secretOf: records.secretOf,
         withKey: records.withKey,

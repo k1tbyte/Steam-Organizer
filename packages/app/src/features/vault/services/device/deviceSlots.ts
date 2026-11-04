@@ -16,6 +16,7 @@ import {
 } from '@so/core'
 
 import { reportError } from '../../../../core/reportError'
+import { acrossPages } from '../../../../core/serialQueue'
 import { sessionArea } from '../../../../core/session/sessionArea'
 import { parseRecord } from '../../../../core/storage'
 import type { SecuritySettings } from '../../model'
@@ -87,12 +88,9 @@ async function writeAt(home: Home, vaultId: string, placed: Placed) {
     else await sessionArea().set(areaKey(vaultId), JSON.stringify(slots))
 }
 
-/** One transition across pages: a Web Lock per vault is held over re-reading a slot, using it and saving it.
- *  Where there are no Web Locks (node tests) it runs directly. */
-export function withSlotsLock<T>(vaultId: string, work: () => Promise<T>) {
-    const locks = globalThis.navigator?.locks
-    return locks ? locks.request(`so:slots:${vaultId}`, work) : work()
-}
+/** One transition across pages: a Web Lock per vault is held over re-reading a slot, using it and saving it. */
+export const withSlotsLock = <T>(vaultId: string, work: () => Promise<T>) =>
+    acrossPages(`so:slots:${vaultId}`, work)
 
 export const readPlaced = (
     vaultId: string,

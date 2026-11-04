@@ -7,3 +7,9 @@ export function serialQueue() {
         return run
     }
 }
+
+/** Runs `work` once no other page of this origin runs one under `name` (a Web Lock); directly where there are none. */
+export function acrossPages<T>(name: string, work: () => Promise<T>) {
+    const locks = globalThis.navigator?.locks
+    return locks ? locks.request(name, work) : work()
+}

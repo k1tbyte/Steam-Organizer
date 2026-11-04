@@ -27,6 +27,11 @@ export const FIRST_PUSH: VaultSync = {
     syncedAt: null,
 }
 
+/** A new link to Drive, `FIRST_PUSH` unless it starts at a copy. */
+export const newLink = (
+    sync: Omit<VaultSync, 'linkId'> = FIRST_PUSH,
+): VaultSync => ({ ...sync, linkId: crypto.randomUUID() })
+
 /** A vault new on this device, at revision 0; `sync` links it to Drive. */
 export const newVault = (
     name: string,
@@ -45,10 +50,7 @@ export const newVault = (
 export const pendingIn = (vault: StoredVault) =>
     vault.sync !== undefined && (vault.revision ?? 0) !== vault.sync.revision
 
-export const receiptOf = (
-    vault: StoredVault,
-    linkEpoch: number,
-): SyncReceipt => ({
+export const receiptOf = (vault: StoredVault): SyncReceipt => ({
     vaultId: vault.id,
     revision: vault.revision ?? 0,
     link: {
@@ -56,7 +58,7 @@ export const receiptOf = (
         copyId: vault.sync?.copyId ?? null,
         version: vault.sync?.version ?? null,
     },
-    linkEpoch,
+    linkId: vault.sync?.linkId,
 })
 
 export interface CopyMerge {

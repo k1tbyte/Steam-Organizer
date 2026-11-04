@@ -1,4 +1,5 @@
 import {
+    importRecovery,
     newerSlots,
     passwordSecretSlot,
     readRecords,
@@ -32,7 +33,14 @@ export async function openVault(
         password === undefined ? null : await withRecovery(file, key, password)
     return upgraded
         ? { key: upgraded.key, contents, upgraded: upgraded.file }
-        : { key, contents }
+        : { key: await withFileRecovery(key, file), contents }
+}
+
+/** `key` sealing new account locks to `file`'s recovery pair: one unwrapped from an older file (before another page or
+ *  device added or merged a pair) holds another, or none. */
+export async function withFileRecovery(key: VaultKey, file: VaultFile) {
+    const { recovery } = file.slots
+    return recovery ? { ...key, recovery: await importRecovery(recovery) } : key
 }
 
 /** The slot `password` makes of the file's password slot (the one PBKDF2), or `unreadable` for a damaged one. */
