@@ -1,5 +1,5 @@
 import { STEAM_ID_DISPLAY_FORMATS, type SteamIdDisplayFormat } from '@so/core'
-import { oneOf, parseRecord } from '../../../core/storage'
+import { oneOf, parseRecord } from '#core/storage'
 import { PROFILE_SECTIONS, type ProfileSection } from '../model'
 
 export const DEFAULT_ID_FORMAT: SteamIdDisplayFormat = 'account-id'

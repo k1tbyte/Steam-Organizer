@@ -1,9 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
-
+import { NOTIFICATIONS_STORAGE_KEY } from '#core/storage'
 import { useVaultSession } from '#features/vault'
-
-import { NOTIFICATIONS_STORAGE_KEY } from '../../../core/storage'
 import type { NotificationEvent } from '../model'
 import { useNotificationLog } from './notificationLog'
 

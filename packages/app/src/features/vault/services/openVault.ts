@@ -11,7 +11,7 @@ import {
     withRecovery,
 } from '@so/core'
 
-import { reportError } from '../../../core/reportError'
+import { reportError } from '#core/reportError'
 import type { OpenRefusal } from '../model'
 import { openContents, type VaultContents } from './vaultContents'
 

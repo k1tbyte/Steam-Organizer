@@ -1,7 +1,7 @@
 import { type PresetData, RECORD, readPreset } from '@so/core'
 
-import type { Picture } from '../../../core/appearance/background'
-import { type Look, parseLook } from '../../../core/appearance/look'
+import type { Picture } from '#core/appearance/background'
+import { type Look, parseLook } from '#core/appearance/look'
 import { MAX_PRESET_NAME, type Preset } from '../model'
 
 export function presetName(text: string): string {

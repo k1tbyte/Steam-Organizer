@@ -1,7 +1,7 @@
 import { RECORD } from '@so/core'
 import { expect, it } from 'vitest'
 
-import { parseLook } from '../../../core/appearance/look'
+import { parseLook } from '#core/appearance/look'
 import { findPreset, ownPresets, presetData, presetName } from './presets'
 
 const look = parseLook({ mode: 'light', radius: '8' })

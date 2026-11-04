@@ -7,8 +7,8 @@ import {
     type VaultKey,
 } from '@so/core'
 
-import { reportError } from '../../../../core/reportError'
-import { passkeyRpId } from '../../../../core/session/passkeys'
+import { reportError } from '#core/reportError'
+import { passkeyRpId } from '#core/session/passkeys'
 import { readPlaced, saveSlot, withSlotsLock } from './deviceSlots'
 
 /** A ceremony never throws a `DOMException` into the UI: a cancel, a missing PRF and a failure are results. `no-prf`: a

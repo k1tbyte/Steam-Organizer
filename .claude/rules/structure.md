@@ -27,9 +27,9 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 
 ## Imports
 
-- Subpath imports from `package.json#imports`: `#core`, `#features/<name>`, `#components/<File>.vue`. Inside a feature or `core/`, relative paths.
+- Subpath imports from `package.json#imports`: `#core`, `#core/<module>` (services only, below), `#features/<name>`, `#components/<File>.vue`. Inside a feature or `core/`, relative paths.
 - `@so/app` and `@so/ui` declare `sideEffects` for CSS only, so an import from a facade or the kit keeps just what is used: a module never relies on running at import.
-- `core/` (`core/index.ts`) is shared infra and never imports features or components. Code moves there when a second feature needs it. A `services/` file imports a Vue-free core module by path.
+- `core/` (`core/index.ts`) is shared infra and never imports features or components. Code moves there when a second feature needs it. A `services/` file imports a Vue-free core module by its subpath (`#core/storage`): the index pulls Vue in.
 - App-root `components/` holds app-wide components with no feature owner (`MockPanel`, `PageTopbar`, `NotFound`).
 - Dependencies point one way, no cycles (`pnpm arch`).
 

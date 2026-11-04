@@ -15,10 +15,10 @@ import {
     type VaultKey,
 } from '@so/core'
 
-import { reportError } from '../../../../core/reportError'
-import { acrossPages } from '../../../../core/serialQueue'
-import { sessionArea } from '../../../../core/session/sessionArea'
-import { parseRecord } from '../../../../core/storage'
+import { reportError } from '#core/reportError'
+import { acrossPages } from '#core/serialQueue'
+import { sessionArea } from '#core/session/sessionArea'
+import { parseRecord } from '#core/storage'
 import type { SecuritySettings } from '../../model'
 import { readSecuritySettings } from './lockPolicy'
 

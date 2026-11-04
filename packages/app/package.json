@@ -14,6 +14,7 @@
     },
     "imports": {
         "#core": "./src/core/index.ts",
+        "#core/*": "./src/core/*.ts",
         "#components/*": "./src/components/*",
         "#features/*": "./src/features/*/index.ts"
     },

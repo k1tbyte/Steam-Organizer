@@ -1,6 +1,6 @@
 import { BAN_KINDS } from '@so/core'
 
-import { parseRecord } from '../../../core/storage'
+import { parseRecord } from '#core/storage'
 import type { LoggedNotification, NotificationEvent } from '../model'
 
 /** Entries a vault's log keeps, newest first. */

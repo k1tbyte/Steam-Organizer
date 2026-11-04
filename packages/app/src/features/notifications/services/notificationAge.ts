@@ -1,4 +1,4 @@
-import { backupDay } from '../../../core/format'
+import { backupDay } from '#core/format'
 
 const MINUTE_MS = 60_000
 const DAY_MS = 86_400_000

@@ -45,7 +45,7 @@ module.exports = {
         {
             name: 'services-framework-free',
             comment:
-                'features/*/services is plain TS: no vue/pinia/router/kit, no core index (it pulls Vue in) - testable without DOM. Import a Vue-free core file by path',
+                'features/*/services is plain TS: no vue/pinia/router/kit, no core index (it pulls Vue in) - testable without DOM. Import a Vue-free core module by subpath (#core/storage)',
             severity: 'error',
             from: { path: `^${FEATURE}/services/` },
             to: { path: [...FRAMEWORK_MODULES, `^${APP}/core/index\\.ts$`] },
@@ -53,7 +53,7 @@ module.exports = {
         {
             name: 'core-only-via-index',
             comment:
-                'Outside core, import #core (index.ts). Framework-free services take a Vue-free core module by path, since the index pulls Vue in',
+                'Outside core, import #core (index.ts). Framework-free services take a Vue-free core module by subpath (#core/storage), since the index pulls Vue in',
             severity: 'error',
             from: {
                 path: `^${APP}/`,
@@ -109,7 +109,7 @@ module.exports = {
         doNotFollow: { path: 'node_modules' },
         tsPreCompilationDeps: true,
         // The schema has no importsFields; enhanced-resolve reads package.json "imports"
-        // (#core, #features/*, #components/*) by default.
+        // (#core, #core/*, #features/*, #components/*) by default.
         enhancedResolveOptions: {
             exportsFields: ['exports'],
             conditionNames: ['import', 'default'],

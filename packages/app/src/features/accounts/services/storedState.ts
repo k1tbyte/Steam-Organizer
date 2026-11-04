@@ -1,4 +1,4 @@
-import { flag, oneOf, parseRecord } from '../../../core/storage'
+import { flag, oneOf, parseRecord } from '#core/storage'
 import {
     type AccountsView,
     BAN_KINDS,

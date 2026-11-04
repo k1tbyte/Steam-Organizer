@@ -4,7 +4,7 @@ import {
     parseRecord,
     readStored,
     SECURITY_SETTINGS_STORAGE_KEY,
-} from '../../../../core/storage'
+} from '#core/storage'
 import {
     LOCK_AFTER,
     type LockAfter,
