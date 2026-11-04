@@ -12,7 +12,7 @@ import SettingsMobileRow from './SettingsMobileRow.vue'
 const { t } = useI18n()
 const { groups } = useSettingsSections()
 const { summaryOf, vaultName, vaultLine, syncColor, lock } = useSettingsSummary()
-const about = useAboutApp()
+const { version } = useAboutApp()
 </script>
 
 <template>
@@ -51,8 +51,8 @@ const about = useAboutApp()
                     :to="section.soon ? undefined : `/settings/${section.key}`" />
             </FpCard>
         </section>
-        <p v-if="about" class="text-center font-mono text-12.5 text-fg-3">
-            {{ t('Steam Organizer {version}', { version: about.version }) }}
+        <p class="text-center font-mono text-12.5 text-fg-3">
+            {{ t('Steam Organizer {version}', { version }) }}
         </p>
     </div>
 </template>

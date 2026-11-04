@@ -314,20 +314,21 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 
 ### Phase 2: Vue App + Web Shell
 - [x] Wire view-models to core: accounts, vault, profile, backups, Drive, Steam, linked services, Settings (Tags, Fields, Linked services, Steam, Vault, Security, Sync & backup)
-- [ ] Drop the remaining mocks: notifications, version and update check, Steam site access, onboarding (Get the extension, Folder, Grant access)
+- [ ] Drop the remaining mocks: notifications, Steam site access, onboarding (Get the extension, Folder, Grant access)
 - [x] Lock policy and kept session: device key, session area, cross-page lock, idle timeout
 - [x] PIN: device slot, three tries across pages, restart re-arm
 - [x] Hello (WebAuthn PRF): enroll and unlock, RP ID per shell, OS label
 - [x] Pages: accounts, profile (summary, games, friends), backups, settings
 - [ ] Accounts import / export (toolbar button and edit bar emit, nothing handles them), list loading state
 - [ ] Notifications from real sources (refresh results, VAC finds, backup saves, updates), row click, read state kept
-- [ ] Settings: version and update check in the nav footer, background image to IndexedDB
+- [x] Settings: version and update check in the nav footer (one version, the root `package.json`'s)
+- [ ] Settings: background image to IndexedDB
 - [ ] Appearance presets synced through the vault (`PRESET` kind reserved, no writer)
 - [ ] Stop syncing a vault from Drive (`unlink` runs only for a gone copy, no UI)
 - [ ] One writer per vault across tabs and the popup (Web Lock + `BroadcastChannel`, see 6)
 - [ ] File and Folder vault homes (onboarding's Folder creates a device vault)
 - [x] `apps/web`: PWA shell, Steam data read-only (`Platform.fetch` null)
-- [ ] Web: "update available" prompt (`registerType: 'prompt'` is set, no UI)
+- [x] Web: "update available" prompt: a waiting service worker, named by the build's `version.json`, offered by a toast and the Settings footer (`core/update`)
 
 ### Phase 3: Extension
 - [x] `apps/extension` on WXT: app page, popup, background

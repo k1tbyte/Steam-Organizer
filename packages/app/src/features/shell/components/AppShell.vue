@@ -9,6 +9,7 @@ import { useAutoLock } from '#features/vault'
 
 import { useLockClearsToasts } from '../composables/useLockClearsToasts'
 import { useSectionMemory, useShellNav } from '../composables/useShellNav'
+import { useUpdatePrompt } from '../composables/useUpdatePrompt'
 import ShellPages from './ShellPages.vue'
 import ShellRail from './ShellRail.vue'
 import ShellTabBar from './ShellTabBar.vue'
@@ -20,6 +21,8 @@ useLockClearsToasts()
 useAutoSync()
 // And the lock policy: the idle timeout and Immediately, for this page.
 useAutoLock()
+// Nothing before unlock offers an update, so the watch starts with the shell.
+useUpdatePrompt()
 const settings = useSettingsEntry()
 provideSettingsLink((section) => settings.open(section as SectionKey))
 const { showTabBar } = useShellNav()

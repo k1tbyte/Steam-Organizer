@@ -10,7 +10,7 @@ const props = defineProps<{ groups: SettingsGroup[]; current: SectionKey }>()
 defineEmits<{ select: [section: SectionKey] }>()
 
 const { t } = useI18n()
-const about = useAboutApp()
+const { version, updateLabel, apply } = useAboutApp()
 
 const items = computed(() =>
     props.groups.flatMap((group) =>
@@ -39,11 +39,11 @@ const items = computed(() =>
                 :aria-label="t('Settings')"
                 @update:model-value="$emit('select', $event as SectionKey)" />
         </FpScrollArea>
-        <div v-if="about" class="flex items-center gap-2 px-2.5 py-2 font-mono text-12 text-fg-3">
-            {{ t('v{version}', { version: about.version }) }}
+        <div class="flex items-center gap-2 px-2.5 py-2 font-mono text-12 text-fg-3">
+            {{ t('v{version}', { version }) }}
             <span class="flex-1" />
-            <FpButton v-if="about.update" variant="link" color="accent" class="font-sans text-12!">
-                {{ t('Update to {version}', { version: about.update }) }}
+            <FpButton v-if="updateLabel" variant="link" color="accent" class="font-sans text-12!" @click="apply">
+                {{ updateLabel }}
             </FpButton>
         </div>
     </nav>

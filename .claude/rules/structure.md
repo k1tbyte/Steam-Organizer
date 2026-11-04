@@ -56,6 +56,7 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | the page's scroll offset (a header that changes once scrolled, the dock) | `useScrollTop()` from `#core`: the layer reads `scrollTop` once per scroll, before the page's own handlers re-render it; never a scroll listener of your own |
 | whether the page is current (a resident page stays mounted behind another) | `usePageActive()` from `#core`: a ticker pauses on it; `useQueryOverlay`, `PageTopbar` and the kit overlays already follow it |
 | a strip pinned above the page's scroll (filters) | the route's `header` named view (`components: { default, header }`): `ShellLayer` renders it outside the scroller, so it moves with its page and nothing scrolls under it |
+| the running version, a new build waiting to replace it (web) | `useAppUpdate()` from `#core` (`version`, `update`, `apply`); the shell's `useUpdatePrompt` starts the watch once, never a service worker listener of your own |
 | desktop or phone layout in script | `useDesktopLayout()` from `@so/ui`; prefer `lg:` CSS when markup alone differs |
 
 ## Routes and overlays

@@ -2,6 +2,8 @@ import { fpIcons } from '@so/ui/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'wxt'
 
+import { version } from '../../package.json'
+
 // Where autofill runs; Firefox MV3 asks for these at runtime.
 const STEAM_HOSTS = [
     'https://store.steampowered.com/*',
@@ -48,6 +50,7 @@ export default defineConfig({
     }),
     manifest: ({ browser }) => ({
         name: 'Steam Organizer',
+        version,
         ...(browser !== 'firefox' && { key: DEV_KEY }),
         permissions: ['storage', 'unlimitedStorage', 'identity'],
         // The Web APIs are fetched by the app pages only: no content script runs there.
