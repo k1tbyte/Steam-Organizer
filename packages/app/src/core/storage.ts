@@ -16,6 +16,9 @@ export const BG_NAME_STORAGE_KEY = 'so:bg-name'
 export const BG_BLUR_STORAGE_KEY = 'so:bg-blur'
 export const BG_DIM_STORAGE_KEY = 'so:bg-dim'
 
+// Presets (features/presets): the preset this device follows, its vault and the look it put on.
+export const PRESET_FOLLOW_STORAGE_KEY = 'so:preset'
+
 // Accounts list (features/accounts): card fields, and the filter and sort view per vault (`:<vault id>`).
 export const ACCOUNTS_CARD_FIELDS_STORAGE_KEY = 'so:accounts:fields'
 export const ACCOUNTS_VIEW_STORAGE_KEY = 'so:accounts:view'

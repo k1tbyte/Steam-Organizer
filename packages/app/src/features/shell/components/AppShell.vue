@@ -4,6 +4,7 @@ import { computed, shallowRef } from 'vue'
 
 import { type PageContext, providePage, provideSettingsLink, useTopbarOutlets } from '#core'
 import { useAutoSync } from '#features/backups'
+import { useFollowPreset } from '#features/presets'
 import { type SectionKey, SettingsHost, useSettingsEntry } from '#features/settings'
 import { useAutoLock } from '#features/vault'
 
@@ -21,6 +22,7 @@ useLockClearsToasts()
 useAutoSync()
 // And the lock policy: the idle timeout and Immediately, for this page.
 useAutoLock()
+useFollowPreset()
 // Nothing before unlock offers an update, so the watch starts with the shell.
 useUpdatePrompt()
 const settings = useSettingsEntry()

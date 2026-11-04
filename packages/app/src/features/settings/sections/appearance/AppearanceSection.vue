@@ -2,6 +2,8 @@
 import { FpFormRow, FpIcon, FpSlider, FpSwitch, FpToggleGroup } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
+import { PresetsBlock } from '#features/presets'
+
 import AccentSwatches from './AccentSwatches.vue'
 import BackgroundImagePanel from './BackgroundImagePanel.vue'
 import PreviewChoices from './PreviewChoices.vue'
@@ -13,6 +15,7 @@ const view = useAppearanceSection()
 
 <template>
     <div>
+        <PresetsBlock />
         <FpFormRow plain :label="t('Theme')" :description="t('System follows the OS setting')">
             <FpToggleGroup
                 :model-value="view.mode.value"

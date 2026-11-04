@@ -40,6 +40,7 @@ let source: Source | undefined
 let generation = 0
 // Bumped by every render, so a slower earlier encode never replaces a newer stage image.
 let renders = 0
+let latest: Promise<void> = Promise.resolve()
 let stageUrl: string | null = null
 
 function readNumber(key: string, fallback: number): number {
@@ -106,6 +107,13 @@ function gridCanvas(colors: string): Source {
     return canvas
 }
 
+/** A picture as a tile shows it: its colour grid (blurred by the tile) or the sample. */
+export function pictureThumb(picture: Picture | null): string {
+    return picture
+        ? (gridCanvas(picture.colors) as HTMLCanvasElement).toDataURL()
+        : sampleUrl
+}
+
 function loadImage(src: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
         const img = new Image()
@@ -129,8 +137,13 @@ function hasCanvasFilter(context: CanvasRenderingContext2D): boolean {
     return 'filter' in context
 }
 
-/** Paints the blurred source into `--stage-image`; the kit's `data-bg="image"` stage reads it. */
-function renderBackground(blur: number) {
+/** Paints the blurred source into `--stage-image`, resolving once it or a newer render is there; the kit's `data-bg="image"` stage reads it. */
+function renderBackground(blur: number): Promise<void> {
+    latest = paint(blur)
+    return latest
+}
+
+async function paint(blur: number) {
     if (source === undefined) return
     const width = STAGE_WIDTH
     const height = Math.round((source.height / source.width) * width)
@@ -158,16 +171,16 @@ function renderBackground(blur: number) {
         context.drawImage(small, -pad, -pad, width + pad * 2, height + pad * 2)
     }
     const mine = ++renders
-    void jpeg(canvas).then((blob) => {
-        if (blob === null || mine !== renders) return
-        const previous = stageUrl
-        stageUrl = URL.createObjectURL(blob)
-        document.documentElement.style.setProperty(
-            '--stage-image',
-            `url("${stageUrl}")`,
-        )
-        if (previous !== null) URL.revokeObjectURL(previous)
-    })
+    const blob = await jpeg(canvas)
+    if (mine !== renders) return latest
+    if (blob === null) return
+    const previous = stageUrl
+    stageUrl = URL.createObjectURL(blob)
+    document.documentElement.style.setProperty(
+        '--stage-image',
+        `url("${stageUrl}")`,
+    )
+    if (previous !== null) URL.revokeObjectURL(previous)
 }
 
 /** Paints the current picture from the cache, its colours while it is not there, or the sample; true once the picture itself shows. */
@@ -192,7 +205,9 @@ async function loadBackground(): Promise<boolean> {
     }
     if (mine !== generation) return false
     source = loaded
-    renderBackground(readBlur())
+    // Here, not only at restore: a preset can put the Image background on a page that never loaded it.
+    applyDim(readDim())
+    await renderBackground(readBlur())
     return cached || current === null
 }
 
@@ -202,7 +217,6 @@ let restored = false
 export async function restoreBackground() {
     if (restored) return
     restored = true
-    applyDim(readDim())
     await loadBackground()
 }
 
@@ -234,7 +248,7 @@ export async function uploadBackground(file: File) {
         }
         writeStored(BG_NAME_STORAGE_KEY, file.name)
         source = canvas
-        renderBackground(readBlur())
+        void renderBackground(readBlur())
         return true
     } finally {
         URL.revokeObjectURL(url)
@@ -243,7 +257,7 @@ export async function uploadBackground(file: File) {
 
 export function setBlur(blur: number) {
     writeStored(BG_BLUR_STORAGE_KEY, String(blur))
-    renderBackground(blur)
+    void renderBackground(blur)
 }
 
 export function setDim(dim: number) {
@@ -251,7 +265,7 @@ export function setDim(dim: number) {
     applyDim(dim)
 }
 
-/** Makes `picture` the one painted (null: the sample), named `name` in Settings; false while it is not in the cache. */
+/** Makes `picture` the one painted (null: the sample), named `name` in Settings, resolving once painted; false while it is not in the cache. */
 export async function showPicture(
     picture: Picture | null,
     name: string | null,

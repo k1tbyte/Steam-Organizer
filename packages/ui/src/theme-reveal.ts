@@ -12,7 +12,8 @@ export type RevealOrigin =
 type Point = { x: number; y: number }
 
 export async function revealThemeChange(
-    apply: () => void,
+    /** May resolve later (a picture painting): the reveal waits for it. */
+    apply: () => unknown,
     origin: RevealOrigin,
 ) {
     if (typeof document === 'undefined' || typeof window === 'undefined') {
@@ -33,7 +34,7 @@ export async function revealThemeChange(
     const { x, y } = toPoint(origin)
     const transition = document.startViewTransition({
         update: async () => {
-            apply()
+            await apply()
             await nextTick()
         },
         types: ['theme'],

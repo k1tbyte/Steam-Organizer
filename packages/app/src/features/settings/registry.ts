@@ -17,7 +17,8 @@ export const SECTION_DEFS: readonly SectionDef[] = [
         group: 'app',
         icon: 'icon-[lucide--palette]',
         title: 'Appearance',
-        description: 'Theme, accent and density. Saved on this device.',
+        description:
+            'Presets sync with your vault. The current look is saved on this device.',
     },
     {
         key: 'security',

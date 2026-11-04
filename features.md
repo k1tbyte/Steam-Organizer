@@ -213,8 +213,9 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Fields `[new]`: login, note, phone and email searchable or secret in every account; Apply moves them with progress (an interrupted move finishes later); nickname stays searchable, credentials secret; folder vault - which fields are visible in Obsidian notes.
 - Appearance presets `[new]`, saved in the vault for every device of it:
   - A preset is a named look: theme, accent, tint, surface, background (with the picture, blur and dim), corner radius, density. Motion and language stay per device.
-  - Save the current look as a preset; pick one to apply it and follow it on this device: its changes made elsewhere arrive. Changing a setting while following leaves it modified: Update preset, Save as new, Revert.
+  - Save the current look as a preset; pick one to apply it and follow it on this device: its changes made elsewhere arrive. Changing a setting while following leaves it modified: Update preset, Save as new, Revert. Following and modified are worked out from the look the device put on, not tracked.
   - Rename, update from the current look, delete with Undo; a duplicate name is refused. Deleting the followed one keeps the look, unfollowed.
-  - The picture travels with the preset: synced vaults keep it in Drive, a device-only vault on the device; a whole export carries it, backups do not. Offline or missing, the sample shows with the reason.
-  - No built-in presets.
+  - Tiles preview each look in its own colours; a picture shows as its colour grid (8x5, kept in the record), which also paints the stage, blurred, while the picture itself is not on the device.
+  - The picture travels with the preset: synced vaults keep it in Drive, a device-only vault on the device; a whole export carries it, backups do not. Offline or missing, its colours show with the reason.
+  - Built-in presets, read only: Midnight, Night glass (the sample picture), Daylight, Blueprint, Focus. Followed and modified, they offer Save as new and Revert.
 - Danger zone: reset vault.
