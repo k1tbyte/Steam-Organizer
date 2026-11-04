@@ -211,4 +211,10 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 - Tags `[new]`: rename, recolor, create, delete (an unused tag at once, a used one asks first; Undo either way).
 - Linked services `[new]`: add, rename, upload or remove an SVG icon (one color, follows the theme), delete with Undo; the built-in set listed read-only.
 - Fields `[new]`: login, note, phone and email searchable or secret in every account; Apply moves them with progress (an interrupted move finishes later); nickname stays searchable, credentials secret; folder vault - which fields are visible in Obsidian notes.
+- Appearance presets `[new]`, saved in the vault for every device of it:
+  - A preset is a named look: theme, accent, tint, surface, background (with the picture, blur and dim), corner radius, density. Motion and language stay per device.
+  - Save the current look as a preset; pick one to apply it and follow it on this device: its changes made elsewhere arrive. Changing a setting while following leaves it modified: Update preset, Save as new, Revert.
+  - Rename, update from the current look, delete with Undo; a duplicate name is refused. Deleting the followed one keeps the look, unfollowed.
+  - The picture travels with the preset: synced vaults keep it in Drive, a device-only vault on the device; a whole export carries it, backups do not. Offline or missing, the sample shows with the reason.
+  - No built-in presets.
 - Danger zone: reset vault.
