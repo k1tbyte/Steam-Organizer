@@ -1,15 +1,14 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends PickerAccount">
 import { type AsyncStatus, FpAsyncView, FpIcon, FpScrollArea } from '@so/ui'
 import { computed, toRef, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { Account } from '#features/accounts'
-
 import { usePickerRows } from '../../composables/usePickerRows'
-import { LIST_INSET_PX, LISTBOX_ID, ROW_PX } from '../../model'
+// biome-ignore lint/correctness/noUnusedImports: PickerAccount is read by the generic clause, which biome does not parse
+import { LIST_INSET_PX, LISTBOX_ID, type PickerAccount, ROW_PX } from '../../model'
 
 const props = defineProps<{
-    rows: Account[]
+    rows: T[]
     revealed: { index: number }
     /** False: the vault is empty, not the search. */
     hasAccounts: boolean
@@ -17,7 +16,7 @@ const props = defineProps<{
 }>()
 
 defineSlots<{
-    row(props: { account: Account; index: number }): unknown
+    row(props: { account: T; index: number }): unknown
 }>()
 
 const { t } = useI18n()

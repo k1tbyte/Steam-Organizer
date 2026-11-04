@@ -1,12 +1,16 @@
 import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { useCopyFeedback, useMock, usePlatform } from '#core'
-import { type Account, useAccountCredentials } from '#features/accounts'
+import { reportError, useCopyFeedback, usePlatform } from '#core'
+import {
+    type Account,
+    useAccountCredentials,
+    useVaultAccounts,
+} from '#features/accounts'
 
-import { tabMock } from '../mocks'
 import { isPaletteKeyIgnored } from '../services/picker'
 import { useAccountPicker } from './useAccountPicker'
+import { useActiveTab } from './useActiveTab'
 import { useFillFeedback } from './useFillFeedback'
 import { usePopupAccountGate } from './usePopupAccountGate'
 
@@ -28,8 +32,9 @@ function hasSelectedText(target: EventTarget | null) {
 export function useQuickAccess() {
     const { t } = useI18n()
     const platform = usePlatform()
-    const tab = useMock(() => undefined, tabMock)
-    const picker = useAccountPicker()
+    const { tab, fill: fillTab } = useActiveTab()
+    const { accounts } = useVaultAccounts()
+    const picker = useAccountPicker(accounts)
     const gate = usePopupAccountGate()
     const { loginOf, passwordOf } = useAccountCredentials()
     const { filled, markFilled } = useFillFeedback()
@@ -55,7 +60,8 @@ export function useQuickAccess() {
     const canFill = computed(() => {
         const account = picker.selected.value
         if (!account || !banner.value) return false
-        return tab.value?.kind === 'signin' || account.guard
+        // A locked account's flag may be hidden by its lock: the gate opens it, then the fill checks the authenticator.
+        return tab.value?.kind === 'signin' || account.guard || account.locked
     })
 
     const fillLabel = computed(() => {
@@ -65,11 +71,22 @@ export function useQuickAccess() {
         return name ? t('Fill as {name}', { name }) : t('Fill')
     })
 
-    // Waits on the content script of the active tab.
+    // After the account's own password, when it has one. A fill that took closes the popup, as Bitwarden's does: the
+    // focus goes back to the page. A sample banner only shows the feedback.
+    async function send(account: Account) {
+        try {
+            const result = await fillTab(account)
+            if (result !== 'missed') markFilled()
+            if (result === 'filled') window.close()
+        } catch (error) {
+            reportError(error, 'quick-access')
+        }
+    }
+
     function fill() {
         const account = picker.selected.value
         if (!account || !canFill.value) return
-        gate.guard(account, markFilled)
+        gate.guard(account, () => void send(account))
     }
 
     function copyLogin(account: Account) {

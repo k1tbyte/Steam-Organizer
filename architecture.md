@@ -57,6 +57,9 @@ interface Platform {
   openApp?(path: string): void      // popup and content script: open the full app at a route
   session?: SessionArea             // where a kept session lives: get/set/remove/watch(key), restartBound; absent = the tab's sessionStorage
   passkeys?: { rpId: string }       // WebAuthn relying party; absent = no Hello (Firefox extension)
+  vaultHost?: { request(message): Promise<unknown> }       // content script: the way to the vault host (autofill:* messages)
+  activeTab?: { request(message): Promise<unknown | undefined> } // popup: the active tab's content script (tab:* messages); undefined = nothing answered
+  onTabRequest?(handler): () => void                       // content script: hears the popup
 }
 ```
 
@@ -79,14 +82,14 @@ interface Platform {
 | Drive sync | ✓ | ✓ | ✓ |
 | Steam Guard codes (TOTP from `shared_secret`) | ✓ local clock | ✓ | ✓ |
 | Steam profiles, games, bans, prices | - | ✓ | ✓ |
-| Steam login autofill | - | UI built, no vault in the content script yet (see 10) | ✓ Windows (see Desktop autofill) |
+| Steam login autofill | - | ✓ the picker and the Guard prompt fill from the open vault, held by the vault host (see 6) | ✓ Windows (see Desktop autofill) |
 | Game launcher autofill (Epic, Battle.net, EA, Ubisoft) | - | - | ✓ Windows |
 | Bots via ASF (see 9) | - | ✓ | ✓ |
 
 ### Extension browsers
 - Chrome, Edge, Firefox (desktop + Android). Safari is not supported.
 - Full UI opens as an extension page (WXT unlisted page), compact popup for quick access.
-- Extension pages fetch Steam directly. Content scripts can't bypass CORS - they go through background.
+- Extension pages fetch Steam directly. Content scripts can't bypass CORS and hold no vault: they message the vault host (see 6).
 - Firefox MV3: the user can withhold `host_permissions`. To do: the app requests them via `permissions.request` and shows grant state; no request flow exists yet (onboarding and Settings show sample grants).
 
 ### Desktop (parked)
@@ -114,7 +117,8 @@ Firefox Android extension covers Android. iOS only via Obsidian plugin (later), 
 ## 6. Data & Encryption
 
 - Master password is never stored.
-- Extension: the kept session is shared by app page and popup through `storage.session` (see lock policy). Content scripts get credentials only via background messages (to do: the background relays only `open-app` today, so the autofill content script holds no vault).
+- Extension: the kept session is shared by app page and popup through `storage.session` (see lock policy). The autofill content script never holds a key or a record: the **vault host** does (below), and a password reaches the Steam page only as the answer to a fill.
+- **The vault host** is the app's own session, headless, in an extension page: kept-session restore, the cross-page lock, the lock policy (`useAutoLock({ hidden: true })`), accounts and Guard codes, unchanged. Chrome and Edge: an offscreen document (`vault-host.html`, reason `LOCAL_STORAGE`) the background creates on the first autofill request; it has `runtime` only, so its session area is relayed through the background, which pushes `storage.session` changes back. Firefox: the background page itself (an event page with a DOM), with `storage.session` directly. The content script asks it (`Platform.vaultHost`) for picker rows, and for one login and password or one Guard code at the moment of a fill; before every answer the host reads the lock policy and the open vault's stored file again (it lives long and may have slept), and a fill counts as activity. An account with its own password is never filled from the page: the popup asks its password and fills the tab (`Platform.activeTab`). Trust: the background (Chrome) or the host (Firefox) answers `autofill:*` only from this extension's content script on a Steam login page (top frame, URL under the content script's own `matches`); the content script takes `tab:*` only from the extension's pages; the offscreen host takes only what the background forwards; a web page cannot reach `runtime.onMessage`.
 - Steam Web API key is stored inside the vault (`SettingsSecret.steamApiKey`, the settings record's secret).
 
 ### Vault locations
@@ -180,7 +184,7 @@ The **vault key** is a random 256-bit secret, held after unlock as a non-extract
 - **"Master password after restart":** nothing that opens the vault survives a restart. The PIN slot (and the passkey's, below) lives in the session area instead of IndexedDB, and the material to rebuild it - the PIN's PBKDF2 bits - stays in IndexedDB sealed under the vault's `records` key. The next master-password unlock opens it and rebuilds the slot in the session area, so the PIN is not asked for twice. The web has no area bound to the browser's run, so there the slots stay in page memory only and a reload asks the master password (it fails closed). Toggling the option moves the existing slots.
 - **Hello (WebAuthn PRF):** enabling confirms the master password, runs `navigator.credentials.create` (platform authenticator, `userVerification: 'required'`, `extensions.prf`) and, if it returned no PRF result, one `get` with `prf.eval` (a fixed salt per vault id); the 32 bytes wrap the secret and are sealed under `records` as the re-arm material (zeroed once used). Unlocking is a `get` with `allowCredentials: [id]`. The RP ID comes from the shell (`Platform.passkeys`) and is the same for enrollment and assertions: the web's `location.hostname`; a Chrome extension's ID, which the manifest key keeps stable; **none in the Firefox extension** (its moz-extension host is a per-profile UUID), where Hello shows as unavailable. A passkey without PRF output (a password manager's: Bitwarden gives none) is refused at enabling, with a line to save it on the device instead. Hello is not offered in the popup (a platform dialog may close it): the popup restores a kept session or takes the password. The label follows the OS (Windows Hello, Touch ID, Fingerprint on Android, else Passkey).
 - **Session area** (`Platform.session`): the extension's `storage.session`, shared by the app page and the popup and gone at browser restart; on the web the tab's `sessionStorage`, which survives a reload. It says which kind it is (`restartBound`). The web has no area bound to the browser's run, so there "On browser restart" lasts until the tab closes (a restored tab may bring it back), a documented weaker guarantee. The same holds for the kept entry under Never with "Master password after restart" (it stays in `sessionStorage`); only the PIN and passkey slots, in page memory, fail closed.
-- **The kept entry in the session area is the one live signal under every policy.** A lock in one page removes it (and the IndexedDB copy) and every other page locks; an unlock writes it and a locked page restores. The session subscribes in `load()` and keeps the subscription while locked; the auto-lock composable only watches its page (activity, visibility, the deadline). Autofill (a content script without `storage.session`) stays out.
+- **The kept entry in the session area is the one live signal under every policy.** A lock in one page removes it (and the IndexedDB copy) and every other page locks; an unlock writes it and a locked page restores. The session subscribes in `load()` and keeps the subscription while locked; the auto-lock composable only watches its page (activity, visibility, the deadline). The autofill content script stays out (it has no `storage.session`): the vault host is the page of the session that answers it, and a host is never visible, so under Immediately it is always locked.
 
 ### Records
 A record is `{ id, updatedAt, data, secret? }`: a random `id` (UUID, not SteamID), two sealed parts. A deleted record stays as a tombstone (`{ id, updatedAt, deleted: true }`), so a sync tells a deletion from a record another copy never had, until a sync purges it after 90 days (Sync 4).
@@ -262,7 +266,7 @@ The old backend aggregated these calls and cached prices server-side for all use
 | Server time (TOTP) | `POST ITwoFactorService/QueryTime/v1` |
 | Prices | `store.steampowered.com/api/appdetails?filters=price_overview&appids=...` |
 
-- Steam Guard codes run on Steam's clock: `steamClockOffset` reads `QueryTime` (keyless, POST, no CORS) at most hourly where Steam is reachable; web and the autofill content script stay on the device clock.
+- Steam Guard codes run on Steam's clock: `steamClockOffset` reads `QueryTime` (keyless, POST, no CORS) at most hourly where Steam is reachable; the web stays on the device clock (the autofill content script computes no code: the vault host, an extension page, reads Steam's clock).
 - Web API calls go through `steamApi(fetch, key)` in `core/steam`; a failure is a `SteamError`: `no-key` (no request made), `bad-key` (401/403), `offline` (fetch failed), `rate-limit` (429), `server` (anything else). The extension holds `api.steampowered.com` in `host_permissions`.
 - Add resolves the identifier locally (friend codes included) or by `ResolveVanityURL`, then reads summaries, bans, the level and collector badge (badge 13: Steam counts it apart from the library list) of a public profile; a failure blocks Add with Retry or a link to the key.
 - A refresh writes only `steam` (`useSteamRefresh`): an everything-locked account refreshes only while open, through `joinAccount` / `splitAccount`. Avatars load from `avatars.steamstatic.com` by the stored hash (`avatarUrl`).
@@ -339,8 +343,8 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 - [ ] Host permission flow (Firefox optional permissions)
 - [x] Google OAuth via `identity.launchWebAuthFlow`
 - [x] Steam login autofill content script: detects the login and Guard prompt, picker, field fill
-- [ ] Autofill reads the vault: the content script loads none, the background relays only `open-app`
-- [ ] Popup fill into the active tab (needs content script messaging; the tab context is a mock)
+- [x] Autofill reads the vault: the vault host (offscreen document on Chrome and Edge, the background page on Firefox) answers the content script
+- [x] Popup fill into the active tab: the popup asks the content script what the tab shows (`Platform.activeTab`, `tab:*` messages), fills the sign-in or the Guard code and closes
 - [x] Builds: Chrome, Edge, Firefox
 
 ### Phase 4: Desktop (parked)

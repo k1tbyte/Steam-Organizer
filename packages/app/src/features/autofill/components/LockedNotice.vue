@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FpButton, FpIcon, FpIconTile } from '@so/ui'
 
-defineProps<{ title: string; hint: string; action: string }>()
+defineProps<{ title: string; hint: string; action?: string }>()
 defineEmits<{ open: [] }>()
 </script>
 
@@ -12,7 +12,7 @@ defineEmits<{ open: [] }>()
             <span class="font-semibold text-13.5 text-fg-1">{{ title }}</span>
             <span class="text-12.5 leading-snug text-fg-3 text-pretty">{{ hint }}</span>
         </div>
-        <FpButton color="accent" size="sm" @click="$emit('open')">
+        <FpButton v-if="action" color="accent" size="sm" @click="$emit('open')">
             {{ action }}
             <FpIcon name="icon-[lucide--arrow-up-right]" />
         </FpButton>

@@ -1,6 +1,6 @@
 import { defineAsyncComponent } from 'vue'
 
-export { useAutoLock } from './composables/useAutoLock'
+export { type AutoLock, useAutoLock } from './composables/useAutoLock'
 export { useHelloLabel } from './composables/useHelloLabel'
 export { useUndoDelete } from './composables/useUndoDelete'
 export { useVaultPlace } from './composables/useVaultPlace'
@@ -17,6 +17,7 @@ export {
     type SyncReceipt,
 } from './model'
 export { installVaultGuard, vaultRoutes } from './routes'
+export { sessionBound } from './services/device/keptEntry'
 export { PIN_LENGTH } from './services/device/pinAttempts'
 export { tally, type VaultContents } from './services/vaultContents'
 export { useLockPolicy } from './stores/useLockPolicy'

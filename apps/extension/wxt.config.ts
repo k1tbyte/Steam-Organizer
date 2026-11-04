@@ -52,7 +52,16 @@ export default defineConfig({
         name: 'Steam Organizer',
         version,
         ...(browser !== 'firefox' && { key: DEV_KEY }),
-        permissions: ['storage', 'unlimitedStorage', 'identity'],
+        // Chromium: `runtime.getContexts` finds the offscreen host.
+        ...(browser !== 'firefox' && { minimum_chrome_version: '116' }),
+        // `activeTab`: the popup reaches the tab it was opened on. `offscreen`: Chromium's vault host page.
+        permissions: [
+            'storage',
+            'unlimitedStorage',
+            'identity',
+            'activeTab',
+            ...(browser !== 'firefox' ? ['offscreen'] : []),
+        ],
         // The Web APIs are fetched by the app pages only: no content script runs there.
         host_permissions: [
             ...STEAM_HOSTS,

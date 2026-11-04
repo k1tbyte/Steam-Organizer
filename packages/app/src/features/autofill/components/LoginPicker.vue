@@ -3,13 +3,12 @@ import { FpButton, FpIcon, FpInput, FpKbd, FpLogo } from '@so/ui'
 import { onMounted, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { Account } from '#features/accounts'
-import { LISTBOX_ID, PickerList, PickerRow } from '#features/quick-access'
+import { LISTBOX_ID, type PickerAccount, PickerList, PickerRow } from '#features/quick-access'
 
 import { useLoginPicker } from '../composables/useLoginPicker'
 import LockedNotice from './LockedNotice.vue'
 
-const emit = defineEmits<{ fill: [account: Account]; close: [] }>()
+const emit = defineEmits<{ fill: [account: PickerAccount]; close: [] }>()
 
 const { t } = useI18n()
 const {
@@ -19,6 +18,7 @@ const {
     activeId,
     revealed,
     hasAccounts,
+    loaded,
     select,
     choose,
     notice,
@@ -69,7 +69,7 @@ onMounted(() => search.value?.focus())
             :hint="notice.hint"
             :action="notice.action"
             @open="openApp" />
-        <template v-else>
+        <template v-else-if="loaded">
             <PickerList compact class="max-h-48.75" :rows :revealed :has-accounts="hasAccounts">
                 <template #row="{ account, index: at }">
                     <PickerRow

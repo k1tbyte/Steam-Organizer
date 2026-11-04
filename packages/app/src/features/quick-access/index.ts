@@ -3,5 +3,12 @@ export { default as PickerRow } from './components/picker/PickerRow.vue'
 export { default as QuickAccessApp } from './components/QuickAccessApp.vue'
 export { useAccountPicker } from './composables/useAccountPicker'
 export { useFillFeedback } from './composables/useFillFeedback'
-export { LISTBOX_ID } from './model'
+export {
+    LISTBOX_ID,
+    type PickerAccount,
+    type TabContext,
+    type TabFillAnswer,
+    type TabRequest,
+} from './model'
 export { isPaletteKeyIgnored } from './services/picker'
+export { parseTabRequest } from './services/tabMessages'

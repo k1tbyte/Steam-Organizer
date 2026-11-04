@@ -1,10 +1,10 @@
-import type { Account } from '#features/accounts'
+import type { PickerAccount } from '../model'
 
 /** Pinned first, then the rest in vault order; the query matches nickname and login. */
-export function rankAccounts(
-    accounts: readonly Account[],
+export function rankAccounts<T extends PickerAccount>(
+    accounts: readonly T[],
     query: string,
-): Account[] {
+): T[] {
     const needle = query.trim().toLowerCase()
     const found = accounts.filter(
         (account) =>

@@ -27,6 +27,14 @@ export interface Platform {
     /** The WebAuthn relying party this shell's pages sign in to; absent where no stable one exists (Firefox's
      *  per-profile extension host), so Hello shows as unavailable there. */
     passkeys?: { rpId: string }
+    /** The content script's way to the vault host (the extension's background or offscreen page), which answers
+     *  the autofill messages; absent where nothing injects. */
+    vaultHost?: { request(message: unknown): Promise<unknown> }
+    /** The popup's way to the active tab's content script: undefined when nothing answers there. */
+    activeTab?: { request(message: unknown): Promise<unknown | undefined> }
+    /** The content script hears the popup: the handler's answer goes back, `undefined` means not for it. Returns
+     *  the unsubscribe. */
+    onTabRequest?(handler: (message: unknown) => unknown): () => void
 }
 
 export const PLATFORM: InjectionKey<Platform> = Symbol('platform')

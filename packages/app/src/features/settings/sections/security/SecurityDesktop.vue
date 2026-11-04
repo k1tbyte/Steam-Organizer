@@ -23,7 +23,7 @@ const view = useSecuritySection(emit)
         <FpEyebrow class="ml-0! pt-1.5 pb-2">{{ t('Auto-lock') }}</FpEyebrow>
         <FpFormRow
             :label="t('Lock after')"
-            :description="t('Time without activity in the app or popup')">
+            :description="t('Time without activity in the app, popup or autofill')">
             <div class="w-full sm:w-52.5">
                 <FpSelect
                     size="sm"

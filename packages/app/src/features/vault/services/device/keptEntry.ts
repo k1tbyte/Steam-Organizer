@@ -1,5 +1,6 @@
 import type { Sealed } from '@so/core'
 
+import { serialQueue } from '../../../../core/serialQueue'
 import { sessionArea } from '../../../../core/session/sessionArea'
 import { parseRecord } from '../../../../core/storage'
 
@@ -30,6 +31,32 @@ export const writeKept = (entry: KeptEntry) =>
 export async function removeKept() {
     await sessionArea().remove(KEPT_KEY)
     await sessionArea().remove(ACTIVE_KEY)
+    for (const key of await boundKeys()) await sessionArea().remove(key)
+    await sessionArea().remove(BOUND_KEY)
+}
+
+// The keys of `sessionBound` values: the session area cannot list its keys.
+const BOUND_KEY = 'so:kept:bound'
+const bindInTurn = serialQueue()
+
+async function boundKeys() {
+    const raw = await sessionArea()
+        .get(BOUND_KEY)
+        .catch(() => undefined)
+    return raw ? raw.split('\n') : []
+}
+
+/** Values that end with the open session: the lock that removes the entry, in whichever page, removes them, so a page
+ *  asleep through a lock and an unlock never reads an old one back. */
+export const sessionBound = {
+    read: (key: string) => sessionArea().get(key),
+    write: (key: string, value: string) =>
+        bindInTurn(async () => {
+            await sessionArea().set(key, value)
+            const keys = await boundKeys()
+            if (!keys.includes(key))
+                await sessionArea().set(BOUND_KEY, [...keys, key].join('\n'))
+        }),
 }
 
 /** When any page of the browser last saw activity. */

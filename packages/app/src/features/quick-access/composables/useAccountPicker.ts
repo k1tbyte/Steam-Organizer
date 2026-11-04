@@ -1,13 +1,13 @@
-import { computed, ref, shallowRef, watch } from 'vue'
+import { computed, type Ref, ref, shallowRef, watch } from 'vue'
 
-import { useVaultAccounts } from '#features/accounts'
-
-import { optionId } from '../model'
+import { optionId, type PickerAccount } from '../model'
 import { clampSelection, rankAccounts, stepSelection } from '../services/picker'
 
-/** Search and selection over the vault's accounts: the popup and the injected picker both drive it. */
-export function useAccountPicker() {
-    const { accounts } = useVaultAccounts()
+/** Search and selection over the rows it is given: the popup (the vault's accounts) and the injected picker (the
+ *  host's list) both drive it. */
+export function useAccountPicker<T extends PickerAccount>(
+    accounts: Readonly<Ref<readonly T[]>>,
+) {
     const query = ref('')
     const rows = computed(() => rankAccounts(accounts.value, query.value))
 

@@ -9,6 +9,7 @@
         ".": "./src/index.ts",
         "./popup": "./src/popup.ts",
         "./autofill": "./src/autofill.ts",
+        "./vault-host": "./src/vaultHost.ts",
         "./styles.css": "./src/styles.css"
     },
     "imports": {

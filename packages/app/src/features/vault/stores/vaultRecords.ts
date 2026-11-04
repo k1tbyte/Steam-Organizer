@@ -5,10 +5,15 @@ import {
     type VaultFile,
     type VaultKey,
     type VaultSlots,
+    vaultStore,
     writeRecords,
 } from '@so/core'
 import { restoredRecords } from '../services/restoredRecords'
-import { type VaultContents, withChanges } from '../services/vaultContents'
+import {
+    openContents,
+    type VaultContents,
+    withChanges,
+} from '../services/vaultContents'
 import type { OpenState } from './openState'
 import type { vaultFiles } from './vaultFiles'
 
@@ -16,9 +21,9 @@ import type { vaultFiles } from './vaultFiles'
  *  opened on demand, and the key for what needs it outside the queue. */
 export function vaultRecords(
     files: ReturnType<typeof vaultFiles>,
-    { opened, recordKeys, contentsOf }: OpenState,
+    { opened, recordKeys, contentsOf, epoch }: OpenState,
 ) {
-    const { serial, get: storedVault, save } = files
+    const { serial, get: storedVault, save, remember } = files
 
     /** Writes the records `change` returns to the vault open now; it runs in the queue on the latest records, so changes to one record never overwrite each other. */
     function transact(
@@ -97,5 +102,46 @@ export function vaultRecords(
         return target ? use(target.key, target.vault.file.slots) : undefined
     }
 
-    return { transact, replaceRecords, snapshot, secretOf, withKey }
+    /** Reads the open vault's stored file again. One another page changed (an edit, a deletion, a password change, a new
+     *  account lock) opens its records again with the held key and drops the held record keys: `changed`. `gone`: the
+     *  vault was removed; `unreadable`: the held key no longer opens the file. Else `same`, after one read. */
+    function refreshOpen(): Promise<
+        'same' | 'changed' | 'gone' | 'unreadable'
+    > {
+        const target = opened.value
+        if (!target) return Promise.resolve('same')
+        return serial(async () => {
+            const at = epoch()
+            const stored = await vaultStore.get(target.vault.id)
+            // A lock, another open or a write of this page since: that is newer than this read.
+            const moved = () => at !== epoch() || opened.value !== target
+            if (moved()) return 'same'
+            if (!stored) return 'gone'
+            const held = target.vault
+            if (
+                (stored.revision ?? 0) === (held.revision ?? 0) &&
+                stored.file.body === held.file.body
+            )
+                return 'same'
+            try {
+                const contents = await openContents(target.key, stored.file)
+                if (moved()) return 'same'
+                remember(stored)
+                opened.value = { vault: stored, key: target.key, contents }
+                recordKeys.clear()
+                return 'changed'
+            } catch {
+                return 'unreadable'
+            }
+        })
+    }
+
+    return {
+        transact,
+        replaceRecords,
+        snapshot,
+        secretOf,
+        withKey,
+        refreshOpen,
+    }
 }

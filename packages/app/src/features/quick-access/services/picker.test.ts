@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 
 import type { Account } from '#features/accounts'
 
+import type { PickerAccount } from '../model'
+
 import {
     clampSelection,
     isPaletteKeyIgnored,
@@ -66,6 +68,35 @@ describe('rankAccounts', () => {
 
     it('returns nothing when nothing matches', () => {
         expect(rankAccounts(list, 'zzz')).toEqual([])
+    })
+
+    it('ranks rows that carry only the picker fields, as the host sends them', () => {
+        const rows: PickerAccount[] = [
+            {
+                id: 'a',
+                nickname: 'Ash',
+                login: 'ash',
+                hue: 1,
+                level: 2,
+                guard: false,
+                locked: false,
+                pinned: false,
+                anonymous: false,
+            },
+            {
+                id: 'b',
+                nickname: 'Birch',
+                login: '',
+                hue: 3,
+                level: 4,
+                guard: true,
+                locked: true,
+                pinned: true,
+                anonymous: false,
+            },
+        ]
+        expect(rankAccounts(rows, '').map((a) => a.id)).toEqual(['b', 'a'])
+        expect(rankAccounts(rows, 'ash').map((a) => a.id)).toEqual(['a'])
     })
 })
 

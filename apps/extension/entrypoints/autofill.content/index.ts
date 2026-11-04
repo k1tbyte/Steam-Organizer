@@ -5,13 +5,10 @@ import { createShadowRootUi } from 'wxt/utils/content-script-ui/shadow-root'
 import { defineContentScript } from 'wxt/utils/define-content-script'
 
 import { contentPlatform } from '../../utils/platform'
+import { STEAM_LOGIN_MATCHES } from '../../utils/steamPages'
 
 export default defineContentScript({
-    matches: [
-        'https://store.steampowered.com/login*',
-        'https://steamcommunity.com/login*',
-        'https://help.steampowered.com/*/wizard/Login*',
-    ],
+    matches: STEAM_LOGIN_MATCHES,
     cssInjectionMode: 'ui',
     async main(ctx) {
         const ui = await createShadowRootUi(ctx, {

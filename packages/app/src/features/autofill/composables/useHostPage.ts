@@ -1,5 +1,6 @@
+import { durationToken, easingToken } from '@so/ui'
 import { useDebounceFn, useMutationObserver } from '@vueuse/core'
-import { onMounted, shallowRef } from 'vue'
+import { onMounted, type Ref, shallowRef } from 'vue'
 
 import { classifyPage, type FieldInfo } from '../services/classify'
 
@@ -63,8 +64,31 @@ function setValue(input: HTMLInputElement, value: string) {
     input.dispatchEvent(new Event('change', { bubbles: true }))
 }
 
-/** The login or Steam Guard inputs on the page, kept current as the page rebuilds itself, and the writes into them. */
-export function useHostPage() {
+// The fields just written grow and settle, so the eye finds them; the Guard boxes one after another. About 12px
+// wider whatever the size: a wide login grows a little, a code box a lot. Off: the duration token is ~0.
+function pulse(inputs: HTMLInputElement[], root: Element) {
+    const duration = durationToken('--dur-slow', root)
+    if (!(duration > 1)) return
+    const stagger = durationToken('--dur-stagger', root)
+    const rise = easingToken('--ease-out', root)
+    const settle = easingToken('--ease-spring', root)
+    const widths = inputs.map((input) => input.offsetWidth)
+    inputs.forEach((input, i) => {
+        const grow = Math.min(1.2, Math.max(1.04, 1 + 12 / (widths[i] || 1)))
+        input.animate(
+            [
+                { transform: 'scale(1)', easing: rise },
+                { transform: `scale(${grow})`, offset: 0.3, easing: settle },
+                { transform: 'scale(1)' },
+            ],
+            { duration, delay: i * stagger },
+        )
+    })
+}
+
+/** The login or Steam Guard inputs on the page, kept current as the page rebuilds itself, and the writes into them.
+ *  `themed`: the UI's shadow host, which holds the motion tokens. */
+export function useHostPage(themed: Ref<Element | undefined>) {
     const target = shallowRef<HostTarget | null>(null)
 
     function scan() {
@@ -89,16 +113,19 @@ export function useHostPage() {
             if (page?.kind !== 'login') return
             setValue(page.login, login)
             setValue(page.password, password)
+            if (themed.value) pulse([page.login, page.password], themed.value)
         },
         fillCode(code: string) {
             const page = target.value
             if (page?.kind !== 'guard') return
             // A split entry takes one character a box.
             const [only] = page.code
-            if (page.code.length === 1 && only) return setValue(only, code)
-            page.code.forEach((input, i) => {
-                setValue(input, code[i] ?? '')
-            })
+            if (page.code.length === 1 && only) setValue(only, code)
+            else
+                page.code.forEach((input, i) => {
+                    setValue(input, code[i] ?? '')
+                })
+            if (themed.value) pulse(page.code, themed.value)
         },
     }
 }

@@ -1,18 +1,14 @@
 import { useWindowSize } from '@vueuse/core'
-import { computed, ref, watch } from 'vue'
+import { computed, type Ref, ref, watch } from 'vue'
 
-import { reportError } from '#core'
-import {
-    type Account,
-    useAccountCredentials,
-    useVaultAccounts,
-} from '#features/accounts'
-import { useFillFeedback } from '#features/quick-access'
+import { type PickerAccount, useFillFeedback } from '#features/quick-access'
 
 import { floatStyle, placeFloat, placeInField } from '../services/placement'
 import { useAnchorBox } from './useAnchorBox'
+import { provideAutofillVault } from './useAutofillVault'
 import { fieldsOf, useHostPage } from './useHostPage'
 import { useLockNotice } from './useLockNotice'
+import { useTabRequests } from './useTabRequests'
 
 /** The in-field button, in px. */
 const TRIGGER_PX = 30
@@ -24,21 +20,25 @@ const GUARD_SIZE = { width: 348, height: 48 }
 const GUARD_GAP_PX = 38
 
 /** The injected UI as a whole: what the page asks for, where the controls sit, and what a fill does. */
-export function useAutofill() {
-    const host = useHostPage()
-    const { accounts } = useVaultAccounts()
-    const { loginOf, passwordOf } = useAccountCredentials()
+export function useAutofill(themed: Ref<Element | undefined>) {
+    const host = useHostPage(themed)
+    const vault = provideAutofillVault()
     const { filled, markFilled } = useFillFeedback()
     const viewport = useWindowSize()
+    useTabRequests(host, vault)
 
     const pickerOpen = ref(false)
+    // Each pick and each opening or closing of the picker moves it: a slower answer for an earlier pick is dropped.
+    let pick = 0
     const guardDismissed = ref(false)
-    const lastFilledId = ref<string>()
 
     const kind = computed(() => host.target.value?.kind)
-    watch(host.target, () => {
+    // Steam's sign-in swaps the form for the code prompt in place: the prompt asks the host who it is for.
+    watch(host.target, (target) => {
         pickerOpen.value = false
         guardDismissed.value = false
+        vault.cancel()
+        if (target?.kind === 'guard') void vault.refresh()
     })
 
     const fields = computed(() => fieldsOf(host.target.value))
@@ -60,18 +60,18 @@ export function useAutofill() {
         height: viewport.height.value,
     }))
 
-    // The code belongs to the account just filled, even when it has none; a fresh page falls back to the first
-    // with an authenticator. Waits on the last-filled account in session storage.
-    const guardAccount = computed<Account | undefined>(() => {
-        if (lastFilledId.value === undefined)
-            return accounts.value.find((a) => a.guard)
-        const filledAccount = accounts.value.find(
-            (a) => a.id === lastFilledId.value,
+    // The host names the account: the one last filled on this tab (even with no authenticator), else the first with one.
+    const guardAccount = computed<PickerAccount | undefined>(() => {
+        const named = vault.accounts.value.find(
+            ({ id }) => id === vault.guardFor.value,
         )
-        return filledAccount?.guard ? filledAccount : undefined
+        // An `everything` lock hides the flag too: a locked account gets its notice, never a code.
+        return named?.guard || named?.locked ? named : undefined
     })
-    const { notice: guardNotice, openApp: openGuardNotice } =
-        useLockNotice(guardAccount)
+    const { notice: guardNotice, openApp: openGuardNotice } = useLockNotice(
+        guardAccount,
+        vault,
+    )
 
     return {
         showTrigger: computed(() => kind.value === 'login' && inView.value),
@@ -111,10 +111,15 @@ export function useAutofill() {
         ),
         pickerOpen,
         togglePicker: () => {
+            pick += 1
             pickerOpen.value = !pickerOpen.value
+            if (pickerOpen.value) void vault.refresh()
+            else vault.cancel()
         },
         closePicker: () => {
+            pick += 1
             pickerOpen.value = false
+            vault.cancel()
         },
         guardAccount,
         guardNotice,
@@ -123,20 +128,29 @@ export function useAutofill() {
         dismissGuard: () => {
             guardDismissed.value = true
         },
-        async fillAccount(account: Account) {
-            lastFilledId.value = account.id
+        async fillAccount(account: PickerAccount) {
             pickerOpen.value = false
-            try {
-                host.fillLogin(
-                    await loginOf(account),
-                    await passwordOf(account),
-                )
-            } catch (error) {
-                reportError(error, 'autofill')
-            }
+            const target = host.target.value
+            const mine = ++pick
+            const answer = await vault.login(
+                account.id,
+                () => pick === mine && host.target.value === target,
+            )
+            if (!answer) return
+            // Refused: the host's list was read again, and the picker comes back with the notice.
+            if ('refused' in answer) pickerOpen.value = true
+            else host.fillLogin(answer.login, answer.password)
         },
-        fillCode(code: string) {
-            host.fillCode(code)
+        async fillCode() {
+            const account = guardAccount.value
+            if (!account) return
+            const target = host.target.value
+            const answer = await vault.code(
+                account.id,
+                () => host.target.value === target,
+            )
+            if (!answer || 'refused' in answer) return
+            host.fillCode(answer.code)
             markFilled()
         },
     }

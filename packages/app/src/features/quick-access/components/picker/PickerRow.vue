@@ -2,12 +2,12 @@
 import { FpIcon } from '@so/ui'
 import { computed } from 'vue'
 
-import { type Account, LevelAvatar } from '#features/accounts'
+import { LevelAvatar } from '#features/accounts'
 
-import { optionId, ROW_PX, SECRET_MASK } from '../../model'
+import { optionId, type PickerAccount, ROW_PX, SECRET_MASK } from '../../model'
 
 const props = defineProps<{
-    account: Account
+    account: PickerAccount
     selected: boolean
     /** A locked account's login stays hidden. */
     concealed: boolean

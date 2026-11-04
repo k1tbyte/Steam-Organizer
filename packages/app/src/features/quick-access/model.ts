@@ -1,3 +1,21 @@
+import type { Account } from '#features/accounts'
+
+/** What the picker renders and searches, nothing more (no notes, phone, email or Steam snapshot): the injected UI
+ *  gets only these from the vault host. A locked account's login is empty, as in the app. */
+export type PickerAccount = Pick<
+    Account,
+    | 'id'
+    | 'nickname'
+    | 'login'
+    | 'avatar'
+    | 'hue'
+    | 'level'
+    | 'guard'
+    | 'locked'
+    | 'pinned'
+    | 'anonymous'
+>
+
 /** What the active browser tab asks of the popup: a Steam sign-in form, a Steam Guard prompt, or nothing. */
 export type TabKind = 'signin' | 'guard' | 'other'
 
@@ -5,6 +23,17 @@ export interface TabContext {
     kind: TabKind
     /** Host and path, as the banner prints it. */
     address: string
+}
+
+/** Popup -> the content script of the active tab (`Platform.activeTab`). No receiver means `other`. */
+export type TabRequest =
+    | { type: 'tab:context' }
+    | { type: 'tab:fill-login'; id: string; login: string; password: string }
+    | { type: 'tab:fill-code'; code: string }
+
+/** The answer to a fill: whether the page had the fields to put it in. */
+export interface TabFillAnswer {
+    filled: boolean
 }
 
 /** Row heights in px: PickerRow's height and the step the list windows by. */

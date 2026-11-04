@@ -1,23 +1,29 @@
-import { shallowRef } from 'vue'
+import { computed, shallowRef } from 'vue'
 
-import type { Account } from '#features/accounts'
-import { isPaletteKeyIgnored, useAccountPicker } from '#features/quick-access'
+import {
+    isPaletteKeyIgnored,
+    type PickerAccount,
+    useAccountPicker,
+} from '#features/quick-access'
 
+import { useAutofillVault } from './useAutofillVault'
 import { useLockNotice } from './useLockNotice'
 
 interface PickerActions {
-    fill: (account: Account) => void
+    fill: (account: PickerAccount) => void
     close: () => void
 }
 
-/** The injected picker: the shared account palette, plus the notice a locked vault or account swaps in. */
+/** The injected picker: the shared account palette over the host's list, plus the notice a locked vault or account
+ *  swaps in. */
 export function useLoginPicker({ fill, close }: PickerActions) {
-    const picker = useAccountPicker()
+    const vault = useAutofillVault()
+    const picker = useAccountPicker(vault.accounts)
     // The locked account that was picked: its notice shows until the user backs out.
-    const blocked = shallowRef<Account>()
-    const { notice, openApp } = useLockNotice(blocked)
+    const blocked = shallowRef<PickerAccount>()
+    const { notice, openApp } = useLockNotice(blocked, vault)
 
-    function choose(account: Account) {
+    function choose(account: PickerAccount) {
         if (account.locked) blocked.value = account
         else fill(account)
     }
@@ -47,6 +53,8 @@ export function useLoginPicker({ fill, close }: PickerActions) {
         activeId: picker.activeId,
         revealed: picker.revealed,
         hasAccounts: picker.hasAccounts,
+        // Held back until the host has answered once: no flash of an empty list or a wrong notice.
+        loaded: computed(() => vault.state.value !== undefined),
         select: picker.select,
         choose,
         notice,

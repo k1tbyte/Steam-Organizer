@@ -1,13 +1,16 @@
 // Script-driven animations read the same tokens as CSS (motion.css).
 import { type Ref, shallowRef } from 'vue'
 
-function rootStyle(): CSSStyleDeclaration {
-    return getComputedStyle(document.documentElement)
+// `root`: where the tokens are, the shadow host in a content script's UI (the page's <html> has none).
+function rootStyle(
+    root: Element = document.documentElement,
+): CSSStyleDeclaration {
+    return getComputedStyle(root)
 }
 
 /** Milliseconds of a `--dur-*` token. */
-export function durationToken(name: `--dur-${string}`): number {
-    const value = rootStyle().getPropertyValue(name).trim()
+export function durationToken(name: `--dur-${string}`, root?: Element): number {
+    const value = rootStyle(root).getPropertyValue(name).trim()
     return Number.parseFloat(value) * (value.endsWith('ms') ? 1 : 1000)
 }
 
@@ -39,6 +42,6 @@ export function useMotionLevel(): Readonly<Ref<MotionLevel>> {
 }
 
 /** A `--ease-*` token as a Web Animations easing. */
-export function easingToken(name: `--ease-${string}`): string {
-    return rootStyle().getPropertyValue(name).trim()
+export function easingToken(name: `--ease-${string}`, root?: Element): string {
+    return rootStyle(root).getPropertyValue(name).trim()
 }

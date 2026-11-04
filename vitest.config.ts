@@ -28,6 +28,7 @@ export default defineConfig({
             project('core', 'packages/core/src/**/*.test.ts'),
             project('app', 'packages/app/src/**/*.test.ts'),
             project('ui', 'packages/ui/src/**/*.test.ts'),
+            project('extension', 'apps/extension/utils/**/*.test.ts'),
             project('ui-contract', 'tests/ui/*.test.ts'),
             project('docs', 'tests/docs/*.test.ts'),
         ],

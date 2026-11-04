@@ -19,9 +19,14 @@ const ACTIVITY: string[] = [
     'touchstart',
 ]
 
+export interface AutoLockOptions {
+    /** A page that is never visible (the vault host): Immediately holds it locked, as for a hidden page. */
+    hidden?: boolean
+}
+
 /** Locks the page by the lock policy: after the idle time every page of the browser shares, and for Immediately when
  *  it is hidden. Watches only this page; the session locks and restores across pages. Call once per page. */
-export function useAutoLock() {
+export function useAutoLock({ hidden = false }: AutoLockOptions = {}) {
     const session = useVaultSession()
     const policy = useLockPolicy()
     const timer = useTimer()
@@ -45,6 +50,8 @@ export function useAutoLock() {
     async function check(local = active) {
         timer.cancel()
         if (!open()) return
+        if (hidden && readSecuritySettings().lockAfter === 'now')
+            return session.lock()
         const left = await idleTime(local)
         if (left === null) return
         if (left === 0) session.lock()
@@ -98,4 +105,15 @@ export function useAutoLock() {
         },
         { immediate: true },
     )
+
+    return {
+        /** Reads the policy and the shared stamp again and locks past the deadline (or, hidden, under Immediately);
+         *  resolves once decided, so an answer that follows needs no timer to have fired. Rejects when it cannot
+         *  read the stamp: the caller must not answer as if the session were alive. */
+        check: () => check(),
+        /** Counts as activity, as a pointer event does: the shared stamp moves at most every 15 s. */
+        touch: () => onActivity().catch(failed),
+    }
 }
+
+export type AutoLock = ReturnType<typeof useAutoLock>

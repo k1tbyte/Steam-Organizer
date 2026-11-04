@@ -303,6 +303,22 @@ export const useVaultSession = defineStore('vault-session', () => {
         return result
     }
 
+    /** Takes in what another page stored for the open vault since it opened (a long-lived page: the vault host). A
+     *  vault removed meanwhile, or whose file the held key no longer opens, locks this page; a kept session that
+     *  replaced it restores. */
+    async function refreshOpen() {
+        const id = opened.value?.vault.id
+        // Nothing open: the vaults another page made since (a host started before the first vault) come in.
+        if (!id) return files.refresh()
+        const result = await records.refreshOpen()
+        if (result === 'gone')
+            files.list.value = (files.list.value ?? []).filter(
+                (vault) => vault.id !== id,
+            )
+        if (result === 'gone' || result === 'unreadable') lockLocal()
+        if (result === 'unreadable') await revival.follow()
+    }
+
     /** Checks the open vault's master password without touching the session. */
     async function verify(credential: Credential): Promise<boolean> {
         const vault = opened.value?.vault
@@ -466,6 +482,7 @@ export const useVaultSession = defineStore('vault-session', () => {
         changePassword,
         transact: records.transact,
         replaceRecords: records.replaceRecords,
+        refreshOpen,
         snapshot: records.snapshot,
         secretOf: records.secretOf,
         withKey: records.withKey,

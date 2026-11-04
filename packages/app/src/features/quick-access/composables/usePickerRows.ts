@@ -1,14 +1,14 @@
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import { computed, type Ref, watch } from 'vue'
 
-import type { Account } from '#features/accounts'
+import type { PickerAccount } from '../model'
 
 const ROW_GAP_PX = 1
 const OVERSCAN_ROWS = 6
 
 /** The picker's rows, windowed against their scroller: a vault of thousands never mounts them all. */
-export function usePickerRows(
-    rows: Ref<Account[]>,
+export function usePickerRows<T extends PickerAccount>(
+    rows: Ref<T[]>,
     scroller: Ref<HTMLElement | null>,
     revealed: Ref<{ index: number }>,
     rowPx: Ref<number>,

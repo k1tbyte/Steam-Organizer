@@ -7,6 +7,11 @@ import GuardPrompt from './GuardPrompt.vue'
 import LoginFieldButton from './LoginFieldButton.vue'
 import LoginPicker from './LoginPicker.vue'
 
+const root = useTemplateRef('root')
+// The shadow host: it holds the motion tokens the page fills read.
+const host = computed(
+    () => (root.value?.getRootNode() as ShadowRoot | undefined)?.host as HTMLElement | undefined,
+)
 const {
     showTrigger,
     showPicker,
@@ -24,14 +29,9 @@ const {
     dismissGuard,
     fillAccount,
     fillCode,
-} = useAutofill()
-
-const root = useTemplateRef('root')
+} = useAutofill(host)
 // The shadow root is closed: a window listener sees a click on the picker or the trigger as one on the host.
 // The trigger toggles itself, so counting it as inside keeps it from closing the picker just to reopen it.
-const host = computed(
-    () => (root.value?.getRootNode() as ShadowRoot | undefined)?.host as HTMLElement | undefined,
-)
 onClickOutside(host, closePicker)
 </script>
 

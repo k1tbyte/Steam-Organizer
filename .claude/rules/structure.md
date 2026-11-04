@@ -60,6 +60,8 @@ A folder holds at most 12 modules, tests excluded (`crowded-folder`). Past that,
 | a strip pinned above the page's scroll (filters) | the route's `header` named view (`components: { default, header }`): `ShellLayer` renders it outside the scroller, so it moves with its page and nothing scrolls under it |
 | the running version, a new build waiting to replace it (web) | `useAppUpdate()` from `#core` (`version`, `update`, `apply`); the shell's `useUpdatePrompt` starts the watch once, never a service worker listener of your own |
 | desktop or phone layout in script | `useDesktopLayout()` from `@so/ui`; prefer `lg:` CSS when markup alone differs |
+| the injected autofill UI (the content script) reading accounts, a login, a Guard code or the lock state | `useAutofillVault()` from `features/autofill` over `Platform.vaultHost`; never `useVaultSession`, `useVaultAccounts`, `useAccountCredentials` or `useGuardCodes` there: the vault opens in the vault host only |
+| the popup reading or filling the active tab (what it asks, a fill) | `Platform.activeTab` and the `tab:*` messages of `quick-access`; never `browser.tabs` or a message of your own |
 
 ## Routes and overlays
 

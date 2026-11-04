@@ -17,6 +17,7 @@ export function createEntry(
     root: Component,
     platform: Platform,
     themed?: HTMLElement,
+    props?: Record<string, unknown>,
 ) {
     startMocks(import.meta.env.DEV)
     installSessionArea(platform.session)
@@ -30,7 +31,7 @@ export function createEntry(
         },
         { immediate: true },
     )
-    return createApp(root)
+    return createApp(root, props)
         .use(createPinia())
         .use(i18n)
         .provide(PLATFORM, platform)
