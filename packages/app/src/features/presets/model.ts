@@ -19,11 +19,6 @@ export const MAX_PRESET_NAME = 32
 export const BUILT_IN_PRESETS = [
     { id: 'midnight', name: 'Midnight', look: {} },
     {
-        id: 'night-glass',
-        name: 'Night glass',
-        look: { surface: 'glass', background: 'image' },
-    },
-    {
         id: 'daylight',
         name: 'Daylight',
         look: {

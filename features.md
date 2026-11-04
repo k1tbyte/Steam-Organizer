@@ -217,5 +217,5 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
   - Rename, update from the current look, delete with Undo; a duplicate name is refused. Deleting the followed one keeps the look, unfollowed.
   - Tiles preview each look in its own colours; a picture shows as its colour grid (8x5, kept in the record), which also paints the stage, blurred, while the picture itself is not on the device.
   - The picture travels with the preset: synced vaults keep it in Drive, a device-only vault on the device; a whole export carries it, backups do not. Tiles say when a picture waits to upload, loads, is offline (the followed one) or is missing; its colours show meanwhile.
-  - Built-in presets, read only: Midnight, Night glass (the sample picture), Daylight, Blueprint, Focus. Followed and modified, they offer Save as new and Revert.
+  - Built-in presets, read only: Midnight, Daylight, Blueprint, Focus. Followed and modified, they offer Save as new and Revert.
 - Danger zone: reset vault.
