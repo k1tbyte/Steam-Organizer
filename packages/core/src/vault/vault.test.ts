@@ -49,7 +49,7 @@ describe('vault file', () => {
     })
 
     it('shows no record, id or count without the password', () => {
-        const text = JSON.stringify(file)
+        const text = new TextDecoder().decode(serializeVaultFile(file))
         expect(text).not.toContain(id)
         expect(text).not.toContain('nova_owl0')
         expect(Object.keys(file).sort()).toEqual([
@@ -112,7 +112,7 @@ describe('vault file', () => {
                 UnsupportedVaultError,
             )
         }
-        const later = { ...file, version: 2 } as unknown as VaultFile
+        const later = { ...file, version: 3 } as unknown as VaultFile
         await expect(unlockVault(later, PASSWORD)).rejects.toBeInstanceOf(
             UnsupportedVaultError,
         )
@@ -150,7 +150,9 @@ describe('partial file', () => {
 
     it('reads a file without the field, or with another value, as a whole vault', () => {
         expect(parseVaultFile(serializeVaultFile(file)).partial).toBeUndefined()
-        const odd = parseVaultFile(JSON.stringify({ ...file, partial: 'yes' }))
+        const odd = parseVaultFile(
+            serializeVaultFile({ ...file, partial: 'yes' } as never),
+        )
         expect('partial' in odd).toBe(false)
     })
 
@@ -160,5 +162,58 @@ describe('partial file', () => {
         ])
         const { partial: _, ...stripped } = partial
         await expect(readRecords(key, stripped)).rejects.toThrow()
+    })
+})
+
+// The file as format v1 wrote it: JSON, the same seal in base64.
+const v1 = (of: VaultFile, patch: object = {}) =>
+    new TextEncoder().encode(
+        JSON.stringify({
+            ...of,
+            version: 1,
+            body: of.body.toBase64(),
+            ...patch,
+        }),
+    )
+
+describe('container', () => {
+    it('starts with its magic and holds the body as sealed, a quarter smaller than v1', () => {
+        const bytes = serializeVaultFile(file)
+        expect(new TextDecoder().decode(bytes.subarray(0, 8))).toBe('SOVAULT\0')
+        expect(parseVaultFile(bytes)).toEqual(file)
+        const many = { ...file, body: new Uint8Array(30_000) }
+        const ratio = serializeVaultFile(many).length / v1(many).length
+        expect(ratio).toBeLessThan(0.8)
+    })
+
+    it('reads a v1 file as this format, opening with the same key', async () => {
+        const read = parseVaultFile(v1(file))
+        expect(read).toEqual(file)
+        expect(await readRecords(key, read)).toEqual([live, gone])
+        const partial = await writeRecords(key, { ...empty, partial: true }, [
+            live,
+        ])
+        expect(parseVaultFile(v1(partial)).partial).toBe(true)
+        expect('partial' in parseVaultFile(v1(file, { partial: 'yes' }))).toBe(
+            false,
+        )
+    })
+
+    it('refuses a newer version, a damaged header or a cut file', () => {
+        const bytes = serializeVaultFile(file)
+        const refused = [
+            serializeVaultFile({ ...file, version: 3 } as never),
+            serializeVaultFile({ ...file, format: 'other' } as never),
+            bytes.slice(0, 10),
+            bytes.slice(0, 14),
+            bytes.slice(0, bytes.length - file.body.length),
+            v1({ ...file, body: file.body.slice(0, 27) }),
+            v1(file, { version: 2 }),
+            v1(file, { body: 'not base64!' }),
+            new TextEncoder().encode('{"format":'),
+            new Uint8Array([0x53, 0x4f]),
+        ]
+        for (const odd of refused)
+            expect(() => parseVaultFile(odd)).toThrow(UnsupportedVaultError)
     })
 })

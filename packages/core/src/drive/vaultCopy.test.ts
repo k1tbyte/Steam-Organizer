@@ -1,7 +1,9 @@
 import { expect, it } from 'vitest'
 
 import type { VaultSlots } from '../crypto/keys'
+import { SEAL_OVERHEAD } from '../crypto/seal'
 import { UnsupportedVaultError } from '../errors'
+import { serializeVaultFile } from '../vault/container'
 import { VAULT_FORMAT, type VaultFile } from '../vault/vault'
 import { saveBackup } from './backups'
 import type { DriveFile } from './drive'
@@ -9,7 +11,7 @@ import { listCopies, readCopy, saveCopy } from './vaultCopy'
 
 /** The fake Drive of `backups.test.ts`, with `update`, and a version that moves with each write. */
 function fakeDrive() {
-    const files: (DriveFile & { body: string })[] = []
+    const files: (DriveFile & { body: Uint8Array<ArrayBuffer> })[] = []
     let written = 0
     const find = (id: string) => {
         const file = files.find((item) => item.id === id)
@@ -28,7 +30,7 @@ function fakeDrive() {
         async create(
             name: string,
             appProperties: Record<string, string>,
-            body: string,
+            body: Uint8Array<ArrayBuffer>,
         ) {
             written++
             const file = {
@@ -47,7 +49,7 @@ function fakeDrive() {
         async update(
             id: string,
             appProperties: Record<string, string>,
-            body: string,
+            body: Uint8Array<ArrayBuffer>,
         ) {
             written++
             const file = find(id)
@@ -68,10 +70,10 @@ function fakeDrive() {
 
 const vaultFile = (id: string, body = 'sealed'): VaultFile => ({
     format: VAULT_FORMAT,
-    version: 1,
+    version: 2,
     id,
     slots: { password: {} } as VaultSlots,
-    body,
+    body: new TextEncoder().encode(body.padEnd(SEAL_OVERHEAD, '.')),
 })
 
 it('creates a copy without an id and writes over it with one, its version moving', async () => {
@@ -87,7 +89,7 @@ it('creates a copy without an id and writes over it with one, its version moving
         accounts: 3,
         version: '1',
         modifiedAt: 1,
-        sizeBytes: JSON.stringify(vaultFile('v1')).length,
+        sizeBytes: serializeVaultFile(vaultFile('v1')).length,
     })
     const updated = await saveCopy(
         drive,
@@ -152,8 +154,12 @@ it('refuses a copy of a newer format or a damaged one', async () => {
         accounts: 0,
     })
     const stored = drive.files[0]
-    if (stored) stored.body = JSON.stringify({ ...vaultFile('v1'), version: 2 })
+    if (stored)
+        stored.body = serializeVaultFile({
+            ...vaultFile('v1'),
+            version: 3,
+        } as unknown as VaultFile)
     await expect(readCopy(drive, id)).rejects.toThrow(UnsupportedVaultError)
-    if (stored) stored.body = '{"format":'
+    if (stored) stored.body = new TextEncoder().encode('{"format":')
     await expect(readCopy(drive, id)).rejects.toThrow(UnsupportedVaultError)
 })

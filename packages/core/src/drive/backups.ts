@@ -1,8 +1,5 @@
-import {
-    parseVaultFile,
-    serializeVaultFile,
-    type VaultFile,
-} from '../vault/vault'
+import { parseVaultFile, serializeVaultFile } from '../vault/container'
+import type { VaultFile } from '../vault/vault'
 import { type DriveApi, type DriveFile, fit } from './drive'
 
 export type BackupKind = 'auto' | 'manual'
@@ -55,7 +52,7 @@ export async function saveBackup(
     meta: BackupMeta,
 ): Promise<Backup> {
     const saved = await api.create(
-        'backup.json',
+        'backup.sovault',
         {
             type: TYPE,
             vault: file.id,

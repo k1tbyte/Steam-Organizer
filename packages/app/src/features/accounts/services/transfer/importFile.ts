@@ -30,9 +30,9 @@ function utf8(bytes: Uint8Array) {
     }
 }
 
-function vaultFile(text: string) {
+function vaultFile(bytes: Uint8Array<ArrayBuffer>) {
     try {
-        return parseVaultFile(text)
+        return parseVaultFile(bytes)
     } catch {
         return null
     }
@@ -42,14 +42,14 @@ export function importFile(
     bytes: Uint8Array<ArrayBuffer>,
     vaultId: string,
 ): ImportFile {
-    const text = utf8(bytes)
-    const file = text === null ? null : vaultFile(text)
+    const file = vaultFile(bytes)
     if (file) {
         const ours = file.id === vaultId
         if (file.partial)
             return { kind: ours ? 'merge' : 'other-partial', file }
         return ours ? { kind: 'replace', file } : { kind: 'other-vault' }
     }
+    const text = utf8(bytes)
     const accounts = text === null ? null : readV2Export(text)
     if (accounts) return { kind: 'v2', accounts }
     if (isV2Sealed(bytes)) return { kind: 'v2-sealed', bytes }

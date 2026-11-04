@@ -3,6 +3,7 @@ import {
     restampEdited,
     type SealedRecord,
     type StoredVault,
+    sameBody,
     type VaultFile,
     type VaultKey,
     type VaultSlots,
@@ -120,7 +121,7 @@ export function vaultRecords(
                 : await withFileRecovery(target.key, stored.file)
         let contents = target.contents
         // A rename, a link or a password change keep the records.
-        if (stored.file.body !== target.vault.file.body)
+        if (!sameBody(stored.file, target.vault.file))
             try {
                 contents = await openContents(key, stored.file)
             } catch {

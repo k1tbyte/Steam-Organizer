@@ -19,7 +19,7 @@ const PASSWORD = 'correct horse'
 
 /** One Drive for every device, its version moving with each write; `failing` makes the next download throw. */
 const drive = vi.hoisted(() => {
-    const files: (DriveFile & { body: string })[] = []
+    const files: (DriveFile & { body: Uint8Array<ArrayBuffer> })[] = []
     let written = 0
     const find = (id: string) => files.find((file) => file.id === id)
     return {
@@ -40,7 +40,7 @@ const drive = vi.hoisted(() => {
             async create(
                 name: string,
                 appProperties: Record<string, string>,
-                body: string,
+                body: Uint8Array<ArrayBuffer>,
             ) {
                 written++
                 const file = {
@@ -59,7 +59,7 @@ const drive = vi.hoisted(() => {
             async update(
                 id: string,
                 appProperties: Record<string, string>,
-                body: string,
+                body: Uint8Array<ArrayBuffer>,
             ) {
                 written++
                 const file = find(id)
@@ -76,7 +76,7 @@ const drive = vi.hoisted(() => {
             async download(id: string) {
                 await drive.gate
                 if (drive.failing) throw new Error('download failed')
-                return find(id)?.body ?? ''
+                return find(id)?.body ?? new Uint8Array()
             },
             async remove(id: string) {
                 const at = files.findIndex((file) => file.id === id)
@@ -370,23 +370,23 @@ it('saves an auto backup at most once a day after a change, keeping the newest t
     for (let day = 0; day < 12; day++)
         drive.files.push({
             id: `old${day}`,
-            name: 'backup.json',
+            name: 'backup.sovault',
             size: 1,
             createdTime: day,
             modifiedTime: day,
             version: '1',
             appProperties: { type: 'backup', vault: vaultId, kind: 'auto' },
-            body: '',
+            body: new Uint8Array(),
         })
     drive.files.push({
         id: 'manual',
-        name: 'backup.json',
+        name: 'backup.sovault',
         size: 1,
         createdTime: 0,
         modifiedTime: 0,
         version: '1',
         appProperties: { type: 'backup', vault: vaultId, kind: 'manual' },
-        body: '',
+        body: new Uint8Array(),
     })
     await a.engine.backUpIfDue()
     backups = await listBackups(drive.api, vaultId)

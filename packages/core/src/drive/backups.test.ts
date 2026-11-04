@@ -1,13 +1,15 @@
 import { expect, it } from 'vitest'
 
 import type { VaultSlots } from '../crypto/keys'
+import { SEAL_OVERHEAD } from '../crypto/seal'
 import { UnsupportedVaultError } from '../errors'
+import { serializeVaultFile } from '../vault/container'
 import { VAULT_FORMAT, type VaultFile } from '../vault/vault'
 import { listBackups, readBackup, saveBackup } from './backups'
 import type { DriveFile } from './drive'
 
 function fakeDrive() {
-    const files: (DriveFile & { body: string })[] = []
+    const files: (DriveFile & { body: Uint8Array<ArrayBuffer> })[] = []
     return {
         files,
         async list(properties: Record<string, string>) {
@@ -20,7 +22,7 @@ function fakeDrive() {
         async create(
             name: string,
             appProperties: Record<string, string>,
-            body: string,
+            body: Uint8Array<ArrayBuffer>,
         ) {
             const file = {
                 id: `f${files.length}`,
@@ -36,17 +38,19 @@ function fakeDrive() {
             return file
         },
         async download(id: string) {
-            return files.find((file) => file.id === id)?.body ?? ''
+            return (
+                files.find((file) => file.id === id)?.body ?? new Uint8Array()
+            )
         },
     }
 }
 
 const vaultFile = (id: string): VaultFile => ({
     format: VAULT_FORMAT,
-    version: 1,
+    version: 2,
     id,
     slots: { password: {} } as VaultSlots,
-    body: 'sealed',
+    body: new TextEncoder().encode('sealed'.padEnd(SEAL_OVERHEAD, '.')),
 })
 
 it('lists one vault, or every vault, newest first, with the metadata it was saved with', async () => {
@@ -73,7 +77,7 @@ it('lists one vault, or every vault, newest first, with the metadata it was save
         kind: 'auto',
         accounts: 4,
         createdAt: 2,
-        sizeBytes: JSON.stringify(vaultFile('v1')).length,
+        sizeBytes: serializeVaultFile(vaultFile('v1')).length,
     })
     expect((await listBackups(drive, 'v1')).map(({ id }) => id)).toEqual([
         'f2',
@@ -108,8 +112,12 @@ it('reads the vault file back, and refuses a newer format or a damaged file', as
     expect(await readBackup(drive, id)).toEqual(vaultFile('v1'))
 
     const newer = drive.files[0]
-    if (newer) newer.body = JSON.stringify({ ...vaultFile('v1'), version: 2 })
+    if (newer)
+        newer.body = serializeVaultFile({
+            ...vaultFile('v1'),
+            version: 3,
+        } as unknown as VaultFile)
     await expect(readBackup(drive, id)).rejects.toThrow(UnsupportedVaultError)
-    if (newer) newer.body = '{"format":'
+    if (newer) newer.body = new TextEncoder().encode('{"format":')
     await expect(readBackup(drive, id)).rejects.toThrow(UnsupportedVaultError)
 })

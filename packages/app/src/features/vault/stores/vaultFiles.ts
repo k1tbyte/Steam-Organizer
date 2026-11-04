@@ -1,5 +1,6 @@
 import {
     type StoredVault,
+    sameBody,
     type VaultFile,
     type VaultSync,
     vaultStore,
@@ -18,9 +19,9 @@ const VAULTS = 'so:vaults'
 // Every change to the file moves the revision; a rename or a link keeps it.
 const sameStored = (a: StoredVault, b: StoredVault) =>
     (a.revision ?? 0) === (b.revision ?? 0) &&
-    a.file.body === b.file.body &&
     a.name === b.name &&
-    JSON.stringify(a.sync) === JSON.stringify(b.sync)
+    JSON.stringify(a.sync) === JSON.stringify(b.sync) &&
+    sameBody(a.file, b.file)
 
 /** The session's storage half: the vaults on this device, the one write queue over them and their Drive links.
  *  `saved` hears this page's every stored change; `followOpen` runs once the list took in other pages', before a write. */

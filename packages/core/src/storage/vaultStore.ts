@@ -1,3 +1,4 @@
+import { fromV1 } from '../vault/container'
 import type { VaultFile } from '../vault/vault'
 import { idb } from './idb'
 
@@ -37,10 +38,21 @@ const db = idb(DB_NAME, 1, (opened) =>
     opened.createObjectStore(STORE, { keyPath: 'id' }),
 )
 
+// An entry stored before the binary container reads as one; its next write stores it so.
+const current = (vault: StoredVault): StoredVault =>
+    vault.file.version === 2 ? vault : { ...vault, file: fromV1(vault.file) }
+
 export const vaultStore = {
-    list: () => db.read<StoredVault[]>(STORE, (store) => store.getAll()),
-    get: (id: string) =>
-        db.read<StoredVault | undefined>(STORE, (store) => store.get(id)),
+    list: async () =>
+        (await db.read<StoredVault[]>(STORE, (store) => store.getAll())).map(
+            current,
+        ),
+    get: async (id: string) => {
+        const vault = await db.read<StoredVault | undefined>(STORE, (store) =>
+            store.get(id),
+        )
+        return vault && current(vault)
+    },
     put: (vault: StoredVault) => db.write(STORE, (store) => store.put(vault)),
     remove: (id: string) => db.write(STORE, (store) => store.delete(id)),
 }

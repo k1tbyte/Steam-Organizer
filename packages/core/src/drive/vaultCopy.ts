@@ -1,8 +1,5 @@
-import {
-    parseVaultFile,
-    serializeVaultFile,
-    type VaultFile,
-} from '../vault/vault'
+import { parseVaultFile, serializeVaultFile } from '../vault/container'
+import type { VaultFile } from '../vault/vault'
 import { type DriveApi, type DriveFile, fit } from './drive'
 
 /** A vault's synced copy in the app's Drive folder, one per vault; everything here reads before unlock. */
@@ -75,6 +72,6 @@ export async function saveCopy(
     const body = serializeVaultFile(file)
     const saved = id
         ? await api.update(id, properties, body)
-        : await api.create('vault.json', properties, body)
+        : await api.create('vault.sovault', properties, body)
     return toCopy(saved)
 }

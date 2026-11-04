@@ -7,22 +7,29 @@ import {
     type VaultKey,
     type VaultSlots,
 } from '../crypto/keys'
-import { openText, type Sealed, sealText } from '../crypto/seal'
+import {
+    openRaw,
+    openText,
+    type Sealed,
+    sealRaw,
+    sealText,
+} from '../crypto/seal'
 import { openSecretSlot, type SecretSlot } from '../crypto/secretSlots'
 import { UnsupportedVaultError } from '../errors'
 
 export const VAULT_FORMAT = 'steam-organizer-vault'
 
-/** The standalone container: without the password only the format, the vault id and the slot read. */
+/** The standalone container (`container.ts` reads and writes it): without the password only the format, the vault id
+ *  and the slots read. */
 export interface VaultFile {
     format: typeof VAULT_FORMAT
-    version: 1
+    version: 2
     id: string
     slots: VaultSlots
     /** Some of the vault's records (an export of picked accounts): an import adds them, never replaces. Missing reads as false. */
     partial?: true
-    /** JSONL of `SealedRecord`. */
-    body: Sealed
+    /** The IV and AES-GCM ciphertext of the JSONL of `SealedRecord`, raw. */
+    body: Uint8Array<ArrayBuffer>
 }
 
 interface Stamp {
@@ -47,6 +54,9 @@ export interface OpenRecord<Data, Secret> extends Stamp {
     secret?: Secret
 }
 
+const utf8 = new TextEncoder()
+const text = new TextDecoder()
+
 // The partial flag is sealed in: a file stripped of it can't pass for a whole vault and replace one.
 const bodyAad = (file: VaultFile) =>
     `${file.id}\0${file.partial ? 'partial' : 'body'}`
@@ -58,34 +68,12 @@ export async function createVault(
     const { slots, key } = await createKeys(password)
     const file: VaultFile = {
         format: VAULT_FORMAT,
-        version: 1,
+        version: 2,
         id: crypto.randomUUID(),
         slots,
-        body: '',
+        body: new Uint8Array(),
     }
     return { file: await writeRecords(key, file, []), key }
-}
-
-/** The file as Drive backups and exports hold it; `parseVaultFile` reads it back. */
-export const serializeVaultFile = (file: VaultFile) => JSON.stringify(file)
-
-/** A vault file from outside (a backup, an import): a newer format or a damaged file refuses. */
-export function parseVaultFile(text: string): VaultFile {
-    let file: Partial<VaultFile> | null
-    try {
-        file = JSON.parse(text)
-    } catch {
-        throw new UnsupportedVaultError()
-    }
-    const valid =
-        file?.format === VAULT_FORMAT &&
-        file.version === 1 &&
-        typeof file.id === 'string' &&
-        typeof file.body === 'string' &&
-        typeof file.slots?.password === 'object'
-    if (!valid) throw new UnsupportedVaultError()
-    const { partial, ...whole } = file as VaultFile
-    return partial === true ? { ...whole, partial } : whole
 }
 
 export async function unlockVault(
@@ -109,7 +97,7 @@ export async function unlockVaultWith(
 }
 
 function assertReadable(file: VaultFile) {
-    if (file.format !== VAULT_FORMAT || file.version !== 1)
+    if (file.format !== VAULT_FORMAT || file.version !== 2)
         throw new UnsupportedVaultError()
 }
 
@@ -155,7 +143,9 @@ export async function readRecords(
     key: VaultKey,
     file: VaultFile,
 ): Promise<SealedRecord[]> {
-    const body = await openText(key.records, file.body, bodyAad(file))
+    const body = text.decode(
+        await openRaw(key.records, file.body, bodyAad(file)),
+    )
     return body ? body.split('\n').map(parseRecord) : []
 }
 
@@ -165,7 +155,17 @@ export async function writeRecords(
     records: readonly SealedRecord[],
 ): Promise<VaultFile> {
     const body = records.map((record) => JSON.stringify(record)).join('\n')
-    return { ...file, body: await sealText(key.records, body, bodyAad(file)) }
+    return {
+        ...file,
+        body: await sealRaw(key.records, utf8.encode(body), bodyAad(file)),
+    }
+}
+
+/** Whether two files hold the same seal of their records. */
+export function sameBody(a: VaultFile, b: VaultFile) {
+    if (a.body === b.body) return true
+    if (a.body.length !== b.body.length) return false
+    return a.body.every((byte, i) => byte === b.body[i])
 }
 
 // A record this version cannot read stops the read: skipping it would drop it at the next write.

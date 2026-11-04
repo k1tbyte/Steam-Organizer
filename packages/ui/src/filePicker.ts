@@ -16,7 +16,7 @@ export function openFilePicker(options: {
     input.click()
 }
 
-export function saveFile(name: string, content: string, type: string): void {
+export function saveFile(name: string, content: BlobPart, type: string): void {
     const url = URL.createObjectURL(new Blob([content], { type }))
     const link = document.createElement('a')
     link.href = url

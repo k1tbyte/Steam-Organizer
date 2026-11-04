@@ -154,6 +154,7 @@ export {
     type VaultSync,
     vaultStore,
 } from './storage/vaultStore'
+export { parseVaultFile, serializeVaultFile } from './vault/container'
 export {
     type MergedRecords,
     mergeRecords,
@@ -168,11 +169,10 @@ export {
     type OpenRecord,
     openData,
     openSecret,
-    parseVaultFile,
     readRecords,
     type SealedRecord,
+    sameBody,
     sealRecord,
-    serializeVaultFile,
     type Tombstone,
     unlockVault,
     unlockVaultWith,

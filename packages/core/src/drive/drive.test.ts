@@ -47,7 +47,7 @@ it('uploads the metadata and the body as one multipart request', async () => {
         sent = {
             url,
             type: new Headers(init.headers).get('Content-Type') ?? '',
-            body: String(init.body),
+            body: await (init.body as Blob).text(),
         }
         return Response.json({
             id: 'new',
@@ -58,7 +58,7 @@ it('uploads the metadata and the body as one multipart request', async () => {
     const file = await driveApi(fetch, token).create(
         'backup',
         { kind: 'backup' },
-        '{"sealed":true}',
+        new TextEncoder().encode('{"sealed":true}'),
     )
     expect(file).toMatchObject({ id: 'new', size: 0, appProperties: {} })
     expect(sent?.url).toContain('uploadType=multipart')
@@ -85,11 +85,11 @@ it('replaces a file in place: its body and app properties, never its folder', as
             url,
             method: String(init.method),
             type: new Headers(init.headers).get('Content-Type') ?? '',
-            body: String(init.body),
+            body: await (init.body as Blob).text(),
         }
         return Response.json({
             id: 'v1',
-            name: 'vault.json',
+            name: 'vault.sovault',
             size: '9',
             createdTime: '2026-10-28T10:00:00Z',
             modifiedTime: '2026-10-30T10:00:00Z',
@@ -100,7 +100,7 @@ it('replaces a file in place: its body and app properties, never its folder', as
     const file = await driveApi(fetch, token).update(
         'v1',
         { type: 'vault' },
-        '{"sealed":2}',
+        new TextEncoder().encode('{"sealed":2}'),
     )
     expect(file).toMatchObject({
         version: '7',

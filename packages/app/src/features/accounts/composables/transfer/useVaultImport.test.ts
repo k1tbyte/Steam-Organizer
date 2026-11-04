@@ -48,8 +48,7 @@ beforeEach(async () => {
     setActivePinia(createPinia())
 })
 
-const bytesOf = (file: VaultFile) =>
-    new TextEncoder().encode(serializeVaultFile(file))
+const bytesOf = (file: VaultFile) => serializeVaultFile(file)
 
 function idOf(login: string) {
     const found = useVaultAccounts().accounts.value.find(

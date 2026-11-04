@@ -84,21 +84,21 @@ const toFile = (raw: RawFile): DriveFile => ({
     appProperties: raw.appProperties ?? {},
 })
 
-function multipart(metadata: object, body: string) {
+function multipart(metadata: object, body: Uint8Array<ArrayBuffer>) {
     const boundary = crypto.randomUUID()
+    const head = [
+        `--${boundary}`,
+        'Content-Type: application/json; charset=UTF-8',
+        '',
+        JSON.stringify(metadata),
+        `--${boundary}`,
+        'Content-Type: application/octet-stream',
+        '',
+        '',
+    ].join('\r\n')
     return {
         type: `multipart/related; boundary=${boundary}`,
-        body: [
-            `--${boundary}`,
-            'Content-Type: application/json; charset=UTF-8',
-            '',
-            JSON.stringify(metadata),
-            `--${boundary}`,
-            'Content-Type: application/octet-stream',
-            '',
-            body,
-            `--${boundary}--`,
-        ].join('\r\n'),
+        body: new Blob([head, body, `\r\n--${boundary}--`]),
     }
 }
 
@@ -144,13 +144,14 @@ export function driveApi(
             } while (pageToken)
             return files
         },
-        async download(id: string): Promise<string> {
-            return (await call(`${API}files/${id}?alt=media`)).text()
+        async download(id: string): Promise<Uint8Array<ArrayBuffer>> {
+            const response = await call(`${API}files/${id}?alt=media`)
+            return new Uint8Array(await response.arrayBuffer())
         },
         async create(
             name: string,
             appProperties: Record<string, string>,
-            body: string,
+            body: Uint8Array<ArrayBuffer>,
         ): Promise<DriveFile> {
             const upload = multipart(
                 { name, parents: ['appDataFolder'], appProperties },
@@ -170,7 +171,7 @@ export function driveApi(
         async update(
             id: string,
             appProperties: Record<string, string>,
-            body: string,
+            body: Uint8Array<ArrayBuffer>,
         ): Promise<DriveFile> {
             const upload = multipart({ appProperties }, body)
             const response = await call(

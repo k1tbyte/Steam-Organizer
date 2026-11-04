@@ -48,7 +48,7 @@ export function useImportFile() {
         problem.value = null
         let file: VaultFile
         try {
-            file = parseVaultFile(await source.text())
+            file = parseVaultFile(new Uint8Array(await source.arrayBuffer()))
         } catch {
             if (mine === reading)
                 fileProblem.value = t(
