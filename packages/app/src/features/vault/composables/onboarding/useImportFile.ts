@@ -57,6 +57,13 @@ export function useImportFile() {
             return
         }
         if (mine !== reading) return
+        // Picked accounts are no vault of their own: stored, its every later file would read as partial.
+        if (file.partial) {
+            fileProblem.value = t(
+                'This file holds accounts picked from a vault. Open a vault and import it there, from Accounts or Settings, Vault.',
+            )
+            return
+        }
         // Adopting would overwrite it unasked; Settings imports into it with a warning.
         if (session.vaults.some(({ id }) => id === file.id)) {
             fileProblem.value = t(

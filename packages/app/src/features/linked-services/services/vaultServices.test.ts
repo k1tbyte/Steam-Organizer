@@ -1,7 +1,12 @@
 import { RECORD } from '@so/core'
 import { expect, it } from 'vitest'
 
-import { findService, ownServices, serviceName } from './vaultServices'
+import {
+    findService,
+    numberedServiceName,
+    ownServices,
+    serviceName,
+} from './vaultServices'
 
 const data = new Map<string, unknown>([
     ['s2', { kind: RECORD.SERVICE, name: 'Wargaming', icon: '<svg/>' }],
@@ -24,4 +29,11 @@ it('finds a name ignoring case and spacing, built-in ones too', () => {
     expect(findService(own, 'DISCORD')?.id).toBe('discord')
     expect(findService(own, 'Steam')).toBeUndefined()
     expect(serviceName(' Epic   Games ')).toBe('Epic Games')
+})
+
+it('keeps the number of a name at the length limit', () => {
+    const long = 'Battle net account name 1'
+    expect(numberedServiceName(long, 2)).toBe('Battle net account nam 2')
+    expect(numberedServiceName(long, 10)).toBe('Battle net account na 10')
+    expect(numberedServiceName('GOG', 3)).toBe('GOG 3')
 })

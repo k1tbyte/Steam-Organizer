@@ -2,19 +2,21 @@
 import { FpAlert, FpButton, FpCheckbox, FpModal } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import PasswordFields from '../password/PasswordFields.vue'
-import { useExportVault } from './useExportVault'
+import PasswordFields from '#components/PasswordFields.vue'
+import { useExportVault } from '../../composables/transfer/useExportVault'
 
+// Picked accounts make a partial file of just those; none, the whole vault.
+const props = defineProps<{ ids?: readonly string[] }>()
 const open = defineModel<boolean>('open', { default: false })
 const { t } = useI18n()
-const view = useExportVault(open)
+const view = useExportVault(open, () => props.ids)
 </script>
 
 <template>
     <FpModal
         v-model:open="open"
-        :title="t('Export vault')"
-        :description="t('Every account, sealed in one file. Import it on another device, or here to bring this vault back to it.')"
+        :title="view.title.value"
+        :description="view.description.value"
         width="min(92vw, 30rem)">
         <form id="export-vault" class="flex flex-col gap-4" @submit.prevent="view.submit">
             <FpCheckbox

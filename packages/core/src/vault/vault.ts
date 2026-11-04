@@ -19,6 +19,8 @@ export interface VaultFile {
     version: 1
     id: string
     slots: VaultSlots
+    /** Some of the vault's records (an export of picked accounts): an import adds them, never replaces. Missing reads as false. */
+    partial?: true
     /** JSONL of `SealedRecord`. */
     body: Sealed
 }
@@ -45,7 +47,9 @@ export interface OpenRecord<Data, Secret> extends Stamp {
     secret?: Secret
 }
 
-const bodyAad = (file: VaultFile) => `${file.id}\0body`
+// The partial flag is sealed in: a file stripped of it can't pass for a whole vault and replace one.
+const bodyAad = (file: VaultFile) =>
+    `${file.id}\0${file.partial ? 'partial' : 'body'}`
 const partAad = (id: string, part: 'data' | 'secret') => `${id}\0${part}`
 
 export async function createVault(
@@ -80,7 +84,8 @@ export function parseVaultFile(text: string): VaultFile {
         typeof file.body === 'string' &&
         typeof file.slots?.password === 'object'
     if (!valid) throw new UnsupportedVaultError()
-    return file as VaultFile
+    const { partial, ...whole } = file as VaultFile
+    return partial === true ? { ...whole, partial } : whole
 }
 
 export async function unlockVault(

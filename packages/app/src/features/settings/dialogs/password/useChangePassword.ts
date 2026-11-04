@@ -1,10 +1,8 @@
 import { computed, type Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { reportError } from '#core'
+import { reportError, usePasswordFields } from '#core'
 import { useVaultSession } from '#features/vault'
-
-import { usePasswordFields } from './usePasswordFields'
 
 export function useChangePassword(open: Ref<boolean>) {
     const { t } = useI18n()

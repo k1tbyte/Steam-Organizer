@@ -101,6 +101,13 @@ export {
 } from './drive/vaultCopy'
 export { UnsupportedVaultError, WrongPasswordError } from './errors'
 export {
+    isV2Sealed,
+    openV2Export,
+    readV2Export,
+    type V2Account,
+    type V2Credential,
+} from './legacy/v2Export'
+export {
     isSteamKey,
     type SteamApi,
     SteamError,

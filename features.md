@@ -133,7 +133,14 @@ Tags: `[new]` - not in legacy app, `[no web]` - needs Steam API (extension/deskt
 ## 8. Export / Import
 
 - Export the whole vault to an encrypted file (the master password, or its own).
-- Import an encrypted file: replaces vault, warning first; only this vault's file, another vault's is added as a vault of its own (Add vault, Import encrypted file).
+- Export the accounts picked in edit mode: the same encrypted file holding only them and the tags they use, marked partial; importing it adds them and never replaces.
+- Import a file (the Accounts toolbar or Settings → Vault), by what it is:
+  - this vault's whole file (an export, a backup): replaces the vault, warning first;
+  - this vault's partial file: merges after a preview with its count (missing accounts added, the newer copy wins, nothing removed);
+  - another vault's partial file: asks its password (the export's or that vault's master password), then adds its accounts and tags (matched by name) to this vault; an account locked with its own password is skipped and counted;
+  - another vault's whole file: added as a vault of its own instead (Add vault, Import encrypted file);
+  - the old app's export (`.json`, or encrypted `.sodb` with its password): its accounts are added with pins, notes, phones, linked logins and Steam Guard.
+- An adding import skips an account the vault holds (same Steam ID, else same login) and says how many it imported and skipped.
 
 ---
 

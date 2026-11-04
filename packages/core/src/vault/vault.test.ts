@@ -7,9 +7,11 @@ import {
     newerSlots,
     openData,
     openSecret,
+    parseVaultFile,
     readRecords,
     type SealedRecord,
     sealRecord,
+    serializeVaultFile,
     UnsupportedVaultError,
     unlockVault,
     type VaultFile,
@@ -128,5 +130,35 @@ describe('vault file', () => {
         await expect(
             changePassword(damaged, PASSWORD, 'other'),
         ).rejects.toBeInstanceOf(UnsupportedVaultError)
+    })
+})
+
+describe('partial file', () => {
+    it('says so in its header and reads back with the vault key', async () => {
+        const partial = await writeRecords(key, { ...empty, partial: true }, [
+            live,
+        ])
+        const read = parseVaultFile(serializeVaultFile(partial))
+        expect(read.partial).toBe(true)
+        expect(await readRecords(key, read)).toEqual([live])
+        // A password of its own rewraps the slots and keeps the flag.
+        const own = await changePassword(read, PASSWORD, 'file password')
+        expect(own.partial).toBe(true)
+        const reopened = await unlockVault(own, 'file password')
+        expect(await readRecords(reopened, own)).toEqual([live])
+    })
+
+    it('reads a file without the field, or with another value, as a whole vault', () => {
+        expect(parseVaultFile(serializeVaultFile(file)).partial).toBeUndefined()
+        const odd = parseVaultFile(JSON.stringify({ ...file, partial: 'yes' }))
+        expect('partial' in odd).toBe(false)
+    })
+
+    it('never opens as a whole vault once the flag is stripped', async () => {
+        const partial = await writeRecords(key, { ...empty, partial: true }, [
+            live,
+        ])
+        const { partial: _, ...stripped } = partial
+        await expect(readRecords(key, stripped)).rejects.toThrow()
     })
 })

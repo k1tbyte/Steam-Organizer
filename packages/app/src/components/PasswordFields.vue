@@ -2,7 +2,7 @@
 import { FpFormField, FpIcon, FpInput, FpSegmentedMeter, FpShake } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
-import type { PasswordFields } from './usePasswordFields'
+import type { PasswordFields } from '#core'
 
 defineProps<{ fields: PasswordFields; nextLabel: string; repeatLabel: string }>()
 const { t } = useI18n()

@@ -3,15 +3,19 @@ import {
     type LiveRecord,
     publicData,
     updateData,
+    type VaultKey,
 } from '@so/core'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
 import { reportError } from '#core'
 
+import type { VaultContents } from '#features/vault'
+
 import {
     type NewAccount,
     newAccountRecord,
+    newAccountRecords,
     restoredRecords,
     type TakenAccount,
 } from '../services/accountRecords'
@@ -29,6 +33,12 @@ import { useAccountsSource } from './useAccountsSource'
 export type { NewAccount }
 
 export type AddResult = 'added' | 'login-taken' | 'steam-taken'
+
+/** Accounts for one write, made in the write queue from the latest records, with the records they need (new tags, services). */
+export type AccountsBatch = (
+    contents: VaultContents,
+    key: VaultKey,
+) => Promise<{ accounts: NewAccount[]; records?: LiveRecord[] }>
 
 type UserFields = Partial<Pick<AccountData, 'alias' | 'note'>>
 
@@ -106,6 +116,37 @@ export function useVaultAccounts() {
                 return []
             }
             return [record]
+        })
+        return result
+    }
+
+    /** Many accounts in one write; one the vault already holds (its Steam ID, else its login) is skipped and counted.
+     *  A record the batch brings goes only with an account that uses it. */
+    async function addMany(
+        batch: AccountsBatch,
+    ): Promise<{ added: number; skipped: number }> {
+        const result = { added: 0, skipped: 0 }
+        if (!onVault.value) return result
+        await session.transact(async (contents, key) => {
+            const { accounts, records = [] } = await batch(contents, key)
+            const made = await newAccountRecords(
+                key,
+                contents,
+                accounts,
+                Date.now(),
+            )
+            result.added = made.added.length
+            result.skipped = made.skipped
+            const used = new Set(
+                made.added.flatMap((account) => [
+                    ...(account.tags ?? []),
+                    ...(account.services ?? []).map(({ service }) => service),
+                ]),
+            )
+            return [
+                ...records.filter((record) => used.has(record.id)),
+                ...made.records,
+            ]
         })
         return result
     }
@@ -217,6 +258,7 @@ export function useVaultAccounts() {
             })
         },
         add,
+        addMany,
         /** The user's own fields of one account; an alias left out shows the Steam nickname. */
         edit(id: string, patch: UserFields) {
             if (patch.note === undefined)

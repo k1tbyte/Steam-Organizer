@@ -2,9 +2,9 @@
 import { FpAlert, FpButton, FpIconTile, FpModal } from '@so/ui'
 import { useI18n } from 'vue-i18n'
 
+import PasswordFields from '#components/PasswordFields.vue'
 import { useHelloLabel } from '#features/vault'
 
-import PasswordFields from './PasswordFields.vue'
 import { useChangePassword } from './useChangePassword'
 
 const open = defineModel<boolean>('open', { default: false })

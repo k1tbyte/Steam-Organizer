@@ -6,6 +6,8 @@ export { default as LevelAvatar } from './components/card/LevelAvatar.vue'
 export { default as RemoveAccountsDialog } from './components/remove/RemoveAccountsDialog.vue'
 export { default as AccountTagPicker } from './components/tags/AccountTagPicker.vue'
 export { default as TagSwatches } from './components/tags/TagSwatches.vue'
+export { default as ExportVaultDialog } from './components/transfer/ExportVaultDialog.vue'
+export { default as ImportVaultDialog } from './components/transfer/ImportVaultDialog.vue'
 export { useFieldPlacement } from './composables/fields/useFieldPlacement'
 export { useSteamRefresh } from './composables/refresh/useSteamRefresh'
 export { useAccountCredentials } from './composables/secrets/useAccountCredentials'
@@ -16,6 +18,10 @@ export { useUnlockForm } from './composables/secrets/useUnlockForm'
 export { useRemoveTag } from './composables/tags/useRemoveTag'
 export { useTagColors } from './composables/tags/useTagColors'
 export { useVaultTags } from './composables/tags/useVaultTags'
+export {
+    useImportVault,
+    type VaultImport,
+} from './composables/transfer/useImportVault'
 export { useRemoveAccounts } from './composables/useRemoveAccounts'
 export { useVaultAccounts } from './composables/useVaultAccounts'
 export type {

@@ -1,4 +1,10 @@
-import { readService } from '@so/core'
+import {
+    RECORD,
+    readService,
+    type ServiceData,
+    sealRecord,
+    type VaultKey,
+} from '@so/core'
 
 import {
     BUILT_IN_SERVICES,
@@ -8,6 +14,18 @@ import {
 
 export function serviceName(text: string): string {
     return text.trim().replace(/\s+/g, ' ').slice(0, MAX_SERVICE_NAME)
+}
+
+/** The name with a number, cut so the number survives the length limit. */
+export const numberedServiceName = (name: string, n: number) =>
+    `${serviceName(name)
+        .slice(0, MAX_SERVICE_NAME - String(n).length - 1)
+        .trimEnd()} ${n}`
+
+/** A new service's record: the one place its data takes shape (the registry, an import). */
+export function newServiceRecord(key: VaultKey, name: string, now: number) {
+    const data: ServiceData = { kind: RECORD.SERVICE, name }
+    return sealRecord(key, { id: crypto.randomUUID(), updatedAt: now, data })
 }
 
 /** The services the user added, by name. */

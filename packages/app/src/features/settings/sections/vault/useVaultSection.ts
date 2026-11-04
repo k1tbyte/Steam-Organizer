@@ -3,9 +3,8 @@ import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { reportError } from '#core'
+import { useImportVault } from '#features/accounts'
 import { tally, useVaultPlace, useVaultSession } from '#features/vault'
-
-import { useImportVault } from './useImportVault'
 
 export function useVaultSection() {
     const { t } = useI18n()

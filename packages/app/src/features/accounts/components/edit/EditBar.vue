@@ -9,8 +9,7 @@ import BanFilterChips from '../list/BanFilterChips.vue'
 import RemoveAccountsDialog from '../remove/RemoveAccountsDialog.vue'
 import BatchTagPicker from '../tags/BatchTagPicker.vue'
 import TagFilterMenu from '../tags/TagFilterMenu.vue'
-
-const emit = defineEmits<{ export: [ids: string[]] }>()
+import ExportVaultDialog from '../transfer/ExportVaultDialog.vue'
 
 const { t } = useI18n()
 const removal = reactive(useRemoveAccounts())
@@ -18,12 +17,17 @@ const removal = reactive(useRemoveAccounts())
 const root = useTemplateRef('root')
 const tagging = shallowRef<string[]>([])
 const tagsOpen = shallowRef(false)
+const exporting = shallowRef<string[]>([])
+const exportOpen = shallowRef(false)
 const bar = useEditBar({
     editTags: (ids) => {
         tagging.value = ids
         tagsOpen.value = true
     },
-    export: (ids) => emit('export', ids),
+    export: (ids) => {
+        exporting.value = ids
+        exportOpen.value = true
+    },
     delete: removal.ask,
 })
 </script>
@@ -58,5 +62,6 @@ const bar = useEditBar({
         <FpButton size="sm" color="accent" @click="bar.close()">{{ t('Done') }}</FpButton>
         <RemoveAccountsDialog :removal="removal" />
         <BatchTagPicker v-model:open="tagsOpen" :ids="tagging" :anchor="root ?? undefined" />
+        <ExportVaultDialog v-model:open="exportOpen" :ids="exporting" />
     </div>
 </template>

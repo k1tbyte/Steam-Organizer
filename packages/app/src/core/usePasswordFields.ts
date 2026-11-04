@@ -2,13 +2,13 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import {
+    canChangePassword,
     MIN_MASTER_LENGTH,
     passwordStrength,
+    repeatState,
     STRENGTH_LABELS,
     STRENGTH_TONES,
-} from '#core'
-
-import { canChangePassword, repeatState } from '../../services/passwordChange'
+} from './passwordStrength'
 
 /** The master password, a new password with its strength and its repeat: a password change and an export's own password. */
 export function usePasswordFields() {

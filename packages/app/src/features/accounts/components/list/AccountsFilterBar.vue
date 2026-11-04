@@ -9,11 +9,10 @@ import { useEditMode } from '../../composables/edit/useEditMode'
 import { useBulkRefresh } from '../../composables/refresh/useBulkRefresh'
 import EditBar from '../edit/EditBar.vue'
 import TagFilterMenu from '../tags/TagFilterMenu.vue'
+import TransferMenu from '../transfer/TransferMenu.vue'
 import BanFilterChips from './BanFilterChips.vue'
 import CardFieldsPanel from './CardFieldsPanel.vue'
 import SortMenu from './SortMenu.vue'
-
-defineEmits<{ importExport: [] }>()
 
 const { t } = useI18n()
 const desktop = useDesktopLayout()
@@ -58,15 +57,7 @@ const scrolled = computed(() => top.value > 0)
                 @click="bulk.refreshAll">
                 <FpIcon name="icon-[lucide--refresh-cw]" />
             </FpButton>
-            <FpButton
-                v-bind="tip(t('Import / export'), { label: true })"
-                square
-                size="sm"
-                variant="ghost"
-                class="text-fg-3!"
-                @click="$emit('importExport')">
-                <FpIcon name="icon-[lucide--ellipsis]" />
-            </FpButton>
+            <TransferMenu />
         </div>
         <div v-else class="flex items-center gap-1.5 overflow-x-auto overflow-y-hidden px-4 py-2.5">
             <SortMenu />

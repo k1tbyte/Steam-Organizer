@@ -13,7 +13,7 @@ import { useEditSelection } from './useEditSelection'
 // Esc there belongs to the overlay.
 const OVERLAY = '[role="dialog"], [role="menu"], [role="listbox"]'
 
-/** What the bar does with the picked accounts; export has no listener yet. */
+/** What the bar does with the picked accounts. */
 export interface BatchIntents {
     editTags: (ids: string[]) => void
     export: (ids: string[]) => void
@@ -105,6 +105,7 @@ export function useEditBar(intents: BatchIntents) {
                     label: t('Export'),
                     icon: 'icon-[lucide--download]',
                     disabled,
+                    opens: true,
                     onSelect: act(intents.export),
                 },
             ],

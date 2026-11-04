@@ -1,9 +1,7 @@
 import {
     type LiveRecord,
-    RECORD,
     readService,
     type ServiceData,
-    sealRecord,
     updateData,
 } from '@so/core'
 import { computed } from 'vue'
@@ -16,6 +14,7 @@ import { servicesMock } from '../mocks'
 import { BUILT_IN_SERVICES, type LinkedService } from '../model'
 import {
     findService,
+    newServiceRecord,
     ownServices,
     serviceName,
 } from '../services/vaultServices'
@@ -58,9 +57,9 @@ export function useVaultServices() {
         await session.transact(async (contents, key) => {
             id = findService(ownServices(contents.data), name)?.id ?? null
             if (id) return []
-            id = crypto.randomUUID()
-            const data: ServiceData = { kind: RECORD.SERVICE, name }
-            return [await sealRecord(key, { id, updatedAt: Date.now(), data })]
+            const record = await newServiceRecord(key, name, Date.now())
+            id = record.id
+            return [record]
         })
         return id
     }

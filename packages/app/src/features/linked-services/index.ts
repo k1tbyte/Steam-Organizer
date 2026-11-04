@@ -7,4 +7,10 @@ export {
     MAX_SERVICE_NAME,
 } from './model'
 export { MAX_ICON_BYTES, readSvg } from './services/serviceIcon'
-export { findService, serviceName } from './services/vaultServices'
+export {
+    findService,
+    newServiceRecord,
+    numberedServiceName,
+    ownServices,
+    serviceName,
+} from './services/vaultServices'
