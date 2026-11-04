@@ -21,13 +21,11 @@ export function useBackgroundImage() {
     void restoreBackground()
 
     async function upload(file: File) {
-        await uploadBackground(file)
-        name.value = file.name
+        if (await uploadBackground(file)) name.value = file.name
     }
 
     async function resetToSample() {
-        await resetBackground()
-        name.value = null
+        if (await resetBackground()) name.value = null
     }
 
     function setBlur(value: number) {

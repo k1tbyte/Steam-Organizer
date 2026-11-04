@@ -140,6 +140,7 @@ export {
 } from './steam/steamId'
 export { libraryPrices } from './steam/store'
 export { steamClockOffset } from './steam/time'
+export { backgroundStore } from './storage/backgroundStore'
 export {
     type DeviceSlots,
     deviceStore,

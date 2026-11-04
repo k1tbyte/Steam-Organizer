@@ -328,7 +328,7 @@ No own Steam client. [ASF](https://github.com/JustArchiNET/ArchiSteamFarm) (Apac
 - [x] Accounts import / export (toolbar menu, the edit bar's partial export, import by file kind, the old app's exports), list loading state
 - [x] Notifications from real sources (refresh results, new bans, backup saves, updates), row click, read state kept: a log per vault on this device, ids and numbers only
 - [x] Settings: version and update check in the nav footer (one version, the root `package.json`'s)
-- [ ] Settings: background image to IndexedDB
+- [x] Settings: background image to IndexedDB (a Blob, its own database, device-only)
 - [ ] Appearance presets synced through the vault (`PRESET` kind reserved, no writer)
 - [x] Stop syncing a vault from Drive (Settings → Sync & backup and Backups, `useVaultSync().stop()` over `unlink`)
 - [x] One writer per vault across tabs, the popup and the vault host (Web Lock + `BroadcastChannel`, see 6)

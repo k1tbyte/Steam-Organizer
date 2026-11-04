@@ -1,9 +1,10 @@
+import { backgroundStore } from '@so/core'
+
 import { reportError } from '../reportError'
 import {
     BG_BLUR_STORAGE_KEY,
     BG_DIM_STORAGE_KEY,
     BG_NAME_STORAGE_KEY,
-    BG_SRC_STORAGE_KEY,
     readStored,
     removeStored,
     writeStored,
@@ -17,7 +18,7 @@ const UPLOAD_WIDTH = 1280
 const STAGE_WIDTH = 640
 
 let source: (CanvasImageSource & { width: number; height: number }) | undefined
-// Bumped by every load or upload, so a slower earlier one never overwrites a newer picture.
+// Bumped as each load, upload or reset starts, so a slower earlier one never overwrites a newer picture.
 let generation = 0
 let stageUrl: string | null = null
 
@@ -39,6 +40,11 @@ function loadImage(src: string): Promise<HTMLImageElement> {
         img.src = src
     })
 }
+
+const jpeg = (canvas: HTMLCanvasElement) =>
+    new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, 'image/jpeg', 0.85),
+    )
 
 function applyDim(dim: number) {
     document.documentElement.style.setProperty('--stage-dim', `${dim}%`)
@@ -77,32 +83,32 @@ function renderBackground(blur: number) {
         context.imageSmoothingQuality = 'high'
         context.drawImage(small, -pad, -pad, width + pad * 2, height + pad * 2)
     }
-    canvas.toBlob(
-        (blob) => {
-            if (blob === null) return
-            const previous = stageUrl
-            stageUrl = URL.createObjectURL(blob)
-            document.documentElement.style.setProperty(
-                '--stage-image',
-                `url("${stageUrl}")`,
-            )
-            if (previous !== null) URL.revokeObjectURL(previous)
-        },
-        'image/jpeg',
-        0.85,
-    )
+    void jpeg(canvas).then((blob) => {
+        if (blob === null) return
+        const previous = stageUrl
+        stageUrl = URL.createObjectURL(blob)
+        document.documentElement.style.setProperty(
+            '--stage-image',
+            `url("${stageUrl}")`,
+        )
+        if (previous !== null) URL.revokeObjectURL(previous)
+    })
 }
 
 /** Loads the stored picture, or the generated sample when there is none or it fails. */
 async function loadBackground() {
     const mine = ++generation
-    const stored = readStored(BG_SRC_STORAGE_KEY)
     let loaded: HTMLImageElement
+    let url: string | undefined
     try {
-        loaded = await loadImage(stored ?? sampleUrl)
+        const stored = await backgroundStore.read()
+        if (stored) url = URL.createObjectURL(stored)
+        loaded = await loadImage(url ?? sampleUrl)
     } catch (error) {
         reportError(error, 'appearance.background')
         loaded = await loadImage(sampleUrl)
+    } finally {
+        if (url) URL.revokeObjectURL(url)
     }
     if (mine !== generation) return
     source = loaded
@@ -119,8 +125,9 @@ export async function restoreBackground() {
     await loadBackground()
 }
 
-/** Downsizes the picked file to the stored width, remembers it and renders it. */
+/** Downsizes the picked file to the stored width, remembers it and renders it; false once a later change took over. */
 export async function uploadBackground(file: File) {
+    const mine = ++generation
     const url = URL.createObjectURL(file)
     try {
         const img = await loadImage(url)
@@ -130,11 +137,16 @@ export async function uploadBackground(file: File) {
         canvas
             .getContext('2d')
             ?.drawImage(img, 0, 0, canvas.width, canvas.height)
-        writeStored(BG_SRC_STORAGE_KEY, canvas.toDataURL('image/jpeg', 0.85))
+        const image = await jpeg(canvas)
+        if (image === null) throw new Error('Background image failed to encode')
+        if (mine !== generation) return false
+        // A reset started meanwhile clears after this write: IndexedDB runs them in order.
+        await backgroundStore.write(image)
+        if (mine !== generation) return false
         writeStored(BG_NAME_STORAGE_KEY, file.name)
-        generation += 1
         source = canvas
         renderBackground(readBlur())
+        return true
     } finally {
         URL.revokeObjectURL(url)
     }
@@ -150,8 +162,12 @@ export function setDim(dim: number) {
     applyDim(dim)
 }
 
+/** Back to the sample; false once a later upload took over. */
 export async function resetBackground() {
-    removeStored(BG_SRC_STORAGE_KEY)
+    const mine = ++generation
+    await backgroundStore.clear()
+    if (mine !== generation) return false
     removeStored(BG_NAME_STORAGE_KEY)
     await loadBackground()
+    return true
 }
